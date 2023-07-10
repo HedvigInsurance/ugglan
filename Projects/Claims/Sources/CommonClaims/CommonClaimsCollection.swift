@@ -119,7 +119,7 @@ public struct CommonClaimsView: View {
             ) { commonClaims, _ in
                 hText(
                     commonClaims.isEmpty ? "" : L10n.claimsQuickChoiceHeader,
-                    style: .title2
+                    style: .title1
                 )
             }
         }

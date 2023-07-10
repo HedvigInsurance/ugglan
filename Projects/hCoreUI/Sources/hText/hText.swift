@@ -32,8 +32,6 @@ extension String {
 }
 
 public enum HFontTextStyle {
-    case prominentTitle
-    case largeTitle
     case title1
     case title2
     case title3
@@ -44,33 +42,87 @@ public enum HFontTextStyle {
     case footnote
     case caption1
     case caption2
+    case standardExtraSmall  //12
+    case standardSmall  //14
+    case standard  //18
+    case standardLarge  //24
+    case standardExtraLarge  //32
+    case standardExtraExtraLarge  //48
 
-    var uifontTextStyle: UIFont.TextStyle {
+    var fontSize: CGFloat {
         switch self {
-        case .prominentTitle:
-            return .largeTitle
-        case .largeTitle:
-            return .largeTitle
+        case .title1: return 28
+        case .title2: return 26
+        case .title3: return 24
+        case .headline: return 17
+        case .subheadline: return 15
+        case .body: return 17
+        case .callout: return 16
+        case .footnote: return 14
+        case .caption1: return 12
+        case .caption2: return 11
+        case .standardExtraSmall: return 12
+        case .standardSmall: return 14
+        case .standard: return 18
+        case .standardLarge: return 24
+        case .standardExtraLarge: return 32
+        case .standardExtraExtraLarge: return 48
+        }
+    }
+
+    var multiplier: CGFloat {
+        let sizeMultiplier: CGFloat = {
+            if UITraitCollection.current.preferredContentSizeCategory != .large {
+                let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
+                    withTextStyle: uifontTextStyle,
+                    compatibleWith: .current
+                )
+
+                let normalSizeDesciptor = UIFontDescriptor.preferredFontDescriptor(
+                    withTextStyle: uifontTextStyle,
+                    compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
+                )
+                return defaultDescriptor.pointSize / normalSizeDesciptor.pointSize
+            }
+            return 1
+        }()
+        return sizeMultiplier
+    }
+
+    private var uifontTextStyle: UIFont.TextStyle {
+        switch self {
         case .title1:
             return .title1
         case .title2:
             return .title2
         case .title3:
             return .title3
-        case .headline:
-            return .headline
-        case .subheadline:
-            return .subheadline
         case .body:
             return .body
-        case .callout:
-            return .callout
+        case .headline:
+            return .headline
         case .footnote:
             return .footnote
+        case .standardExtraSmall:
+            return .body  //12
+        case .standardSmall:
+            return .body  //14
+        case .standard:
+            return .body  //18
+        case .standardLarge:
+            return .body  //24
+        case .standardExtraLarge:
+            return .body  //32
+        case .standardExtraExtraLarge:
+            return .body  //48
+        case .subheadline:
+            return .body
+        case .callout:
+            return .body
         case .caption1:
-            return .caption1
+            return .footnote
         case .caption2:
-            return .caption2
+            return .footnote
         }
     }
 }
@@ -84,10 +136,10 @@ struct hFontModifier: ViewModifier {
 
     var lineSpacing: CGFloat {
         switch style {
-        case .largeTitle:
-            return 41 - font.lineHeight
+        //        case .largeTitle:
+        //            return 41 - font.lineHeight
         case .title1:
-            return 34 - font.lineHeight
+            return 32 - font.lineHeight
         case .title2:
             return 28 - font.lineHeight
         case .title3:

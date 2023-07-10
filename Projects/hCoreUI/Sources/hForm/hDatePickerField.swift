@@ -45,7 +45,7 @@ public struct hDatePickerField: View {
             )
             getValueLabel()
         }
-        .padding(.vertical, 10 - HFontTextStyleNew.title3.uifontLineHeightDifference + 5)
+        .padding(.vertical, 10 - HFontTextStyle.title3.fontSize + 5)
         .onChange(of: date) { date in
             selectedDate = date
         }
@@ -67,7 +67,7 @@ public struct hDatePickerField: View {
     private func getValueLabel() -> some View {
         HStack {
             Text(selectedDate?.displayDateDotFormat ?? L10n.generalSelectButton)
-                .modifier(hFontModifierNew(style: .title3))
+                .modifier(hFontModifier(style: .title3))
                 .foregroundColor(hTextColorNew.primary)
             Spacer()
         }
@@ -143,7 +143,6 @@ private struct DatePickerView: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
             }
-            .hUseNewStyle
         }
     }
 }

@@ -20,7 +20,7 @@ struct TravelInsuranceContractsScreen: View {
                 ) { travelInsuranceModels in
                     if !travelInsuranceModels.isEmpty {
                         hForm {
-                            hTextNew(L10n.TravelCertificate.selectContractTitle, style: .title3)
+                            hText(L10n.TravelCertificate.selectContractTitle, style: .title3)
                                 .padding(.vertical, 100)
                                 .padding(.horizontal, 16)
                                 .multilineTextAlignment(.center)
@@ -38,7 +38,6 @@ struct TravelInsuranceContractsScreen: View {
                             .padding(.bottom, 6)
                         }
                         .navigationTitle(L10n.TravelCertificate.cardTitle)
-                        .hUseNewStyle
                     }
                 }
             }
@@ -65,7 +64,7 @@ struct TravelInsuranceContractsScreen: View {
                 store.send(.setTravelInsuranceData(specification: item))
             }
         }
-        .sectionContainerStyle(.opaque(useNewDesign: true))
+        .sectionContainerStyle(.opaque)
     }
 
     @ViewBuilder

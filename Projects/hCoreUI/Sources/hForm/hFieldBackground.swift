@@ -60,20 +60,15 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
 
     var body: some View {
-        let sizeToScaleFrom = HFontTextStyleNew.title3.fontSize
-        let sizeToScaleTo = HFontTextStyleNew.footnote.fontSize
+        let sizeToScaleFrom = HFontTextStyle.title3.fontSize
+        let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        let padding = HFontTextStyleNew.title3.uifontLineHeightDifference * 15
-        return hTextNew(placeholder, style: .title3)
+        let padding = HFontTextStyle.title3.fontSize * 15 / 16
+        return hText(placeholder, style: .title3)
             .foregroundColor(getTextColor())
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
             .padding(.bottom, shouldMoveLabel ? 1 : padding)
             .padding(.top, shouldMoveLabel ? 0 : padding)
-            .frame(
-                height: shouldMoveLabel
-                    ? sizeToScaleFrom * ratio + HFontTextStyleNew.title3.uifontLineHeightDifference * 2 + 1
-                    : sizeToScaleFrom * 3
-            )
     }
 
     @hColorBuilder
@@ -91,7 +86,7 @@ struct hFieldLabel: View {
 struct hFieldLabel_Previews: PreviewProvider {
     @State static var value: String?
     @State static var animate: Bool = false
-    @State static var shouldMoveLabel: Bool = false
+    @State static var shouldMoveLabel: Bool = true
     static var previews: some View {
         hFieldLabel(
             placeholder: "PLACE",

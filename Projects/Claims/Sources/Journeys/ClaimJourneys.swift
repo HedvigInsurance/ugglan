@@ -81,7 +81,7 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
-        let screen = DatePickerScreen(type: type).hUseNewStyle
+        let screen = DatePickerScreen(type: type)
         HostingJourney(
             SubmitClaimStore.self,
             rootView: screen,

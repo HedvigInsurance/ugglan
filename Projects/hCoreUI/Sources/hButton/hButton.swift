@@ -151,7 +151,6 @@ extension View {
 }
 
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
     var size: ButtonSize
 
     struct Label: View {
@@ -193,11 +192,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var pressedColor: some hColor {
-        if hUseNewStyle {
-            hButtonColorNew.primaryHover
-        } else {
-            hOverlayColor.pressed
-        }
+        hButtonColorNew.primaryHover
     }
 
     func makeBody(configuration: Configuration) -> some View {
@@ -269,8 +264,6 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
 }
 
 struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
-
     struct Label: View {
         var configuration: Configuration
 
@@ -304,16 +297,11 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var getPressedColor: some hColor {
-        if hUseNewStyle {
-            hButtonColorNew.secondaryHover
-        } else {
-            hOverlayColor.pressed
-        }
+        hButtonColorNew.secondaryHover
     }
 }
 
 struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     struct Label: View {
         var configuration: Configuration
@@ -349,11 +337,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var getPressedColor: some hColor {
-        if hUseNewStyle {
-            hButtonColorNew.secondaryHover
-        } else {
-            hOverlayColor.pressed
-        }
+        hButtonColorNew.secondaryHover
     }
 }
 

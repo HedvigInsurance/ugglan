@@ -9,7 +9,6 @@ public struct DatePickerScreen: View {
     private let type: ClaimsNavigationAction.DatePickerType
     private let buttonTitle: String
     private let maxDate: Date
-    @Environment(\.hUseNewStyle) var useNewStyle
     public init(
         type: ClaimsNavigationAction.DatePickerType
     ) {
@@ -50,9 +49,7 @@ public struct DatePickerScreen: View {
             }
             .sectionContainerStyle(.transparent)
             .introspectDatePicker { date in
-                if useNewStyle {
-                    date.tintColor = .brandNew(.primaryText())
-                }
+                date.tintColor = .brandNew(.primaryText())
             }
         }
         .hFormAttachToBottom {
@@ -68,7 +65,7 @@ public struct DatePickerScreen: View {
                     }()
                     store.send(action)
                 } content: {
-                    hTextNew(buttonTitle, style: .body)
+                    hText(buttonTitle, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
                 LoadingButtonWithContent(
@@ -86,22 +83,10 @@ public struct DatePickerScreen: View {
                         store.send(action)
                     },
                     content: {
-                        hTextNew(L10n.generalNotSure, style: .body)
+                        hText(L10n.generalNotSure, style: .body)
                             .foregroundColor(hLabelColor.primary)
                     },
                     buttonStyleSelect: .textButton
-                )
-            }
-        }
-        .onDisappear {
-            if useNewStyle {
-                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
-            }
-        }
-        .onAppear {
-            if useNewStyle {
-                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
-                    .primaryText()
                 )
             }
         }
@@ -110,6 +95,6 @@ public struct DatePickerScreen: View {
 
 struct DatePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        DatePickerScreen(type: .setDateOfPurchase).hUseNewStyle
+        DatePickerScreen(type: .setDateOfPurchase)
     }
 }

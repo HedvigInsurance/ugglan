@@ -18,7 +18,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             hForm {
                 getFormContent(from: singleItemCheckoutStep)
             }
-            .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
@@ -28,7 +27,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         store.send(.singleItemCheckoutRequest)
                         store.send(.navigationAction(action: .openCheckoutTransferringScreen))
                     } content: {
-                        hTextNew(
+                        hText(
                             L10n.Claims.Payout.Button.label(
                                 singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
                             ),
@@ -40,7 +39,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     hButton.LargeButtonText {
                         store.send(.navigationAction(action: .dismissScreen))
                     } content: {
-                        hTextNew(
+                        hText(
                             L10n.generalBackButton,
                             style: .body
                         )
@@ -56,7 +55,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         VStack(spacing: 16) {
             hSection {
                 VStack(alignment: .center) {
-                    hTextNew(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
+                    hText(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
                         .foregroundColor(hTextColorNew.primary)
                 }
                 .background(
@@ -66,7 +65,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 .padding(.vertical, 6)
             }
             .withHeader {
-                hTextNew(L10n.Claims.Payout.Summary.subtitle, style: .body)
+                hText(L10n.Claims.Payout.Summary.subtitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
                     .padding(.top, 16)
             }
@@ -88,7 +87,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .withHeader {
                 HStack {
-                    hTextNew(L10n.claimsCheckoutCountTitle, style: .body)
+                    hText(L10n.claimsCheckoutCountTitle, style: .body)
                         .foregroundColor(hTextColorNew.primary)
                 }
             }
@@ -103,7 +102,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     let shouldShowCheckmark = payoutMethods.count > 1
                     ForEach(payoutMethods, id: \.id) { element in
                         hRow {
-                            hTextNew(element.getDisplayName(), style: .title3)
+                            hText(element.getDisplayName(), style: .title3)
                                 .foregroundColor(hTextColorNew.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -123,7 +122,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .withHeader {
                 HStack {
-                    hTextNew(L10n.Claims.Payout.Summary.method, style: .body)
+                    hText(L10n.Claims.Payout.Summary.method, style: .body)
                         .foregroundColor(hTextColorNew.primary)
                 }
             }
@@ -134,11 +133,11 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     func displayField(withTitle title: String, andFor model: MonetaryAmount?) -> some View {
         hRow {
             HStack {
-                hTextNew(title, style: .body)
+                hText(title, style: .body)
                     .foregroundColor(hTextColorNew.secondary)
                 Spacer()
 
-                hTextNew(
+                hText(
                     model?.formattedAmount ?? "",
                     style: .body
                 )

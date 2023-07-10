@@ -19,29 +19,28 @@ public struct UpdateAppScreen: View {
                 .padding(.bottom, 8)
 
             Group {
-                hTextNew(L10n.embarkUpdateAppTitle, style: .body)
+                hText(L10n.embarkUpdateAppTitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
 
-                hTextNew(L10n.embarkUpdateAppBody, style: .body)
+                hText(L10n.embarkUpdateAppBody, style: .body)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hTextColorNew.secondary)
             }
             .padding(.horizontal, 32)
         }
-        .hUseNewStyle
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButtonFilled {
                     UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {
-                    hTextNew(L10n.embarkUpdateAppButton, style: .body)
+                    hText(L10n.embarkUpdateAppButton, style: .body)
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonText {
                     onSelected()
                 } content: {
-                    hTextNew(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body)
                 }
                 .padding(.bottom, 2)
             }

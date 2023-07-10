@@ -88,7 +88,7 @@ struct ClaimDetailHeader: View {
 
                     Spacer()
                         .frame(width: 8)
-                    hText(payout.amount, style: .largeTitle)
+                    hText(payout.amount, style: .title1)
 
                     Spacer()
                         .frame(width: 2)

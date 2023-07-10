@@ -42,7 +42,7 @@ struct ImportantMessagesView: View {
                         SafariView(url: $url)
                     }
                 }
-                .withoutHorizontalPadding.sectionContainerStyle(.caution(useNewDesign: false))
+                .withoutHorizontalPadding.sectionContainerStyle(.caution)
             }
         }
     }

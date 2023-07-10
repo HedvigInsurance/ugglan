@@ -40,7 +40,7 @@ extension View {
 }
 
 private struct EnvironmentHFormTitle: EnvironmentKey {
-    static let defaultValue: (type: HFormTitleSpacingType, fontSize: HFontTextStyleNew, title: String)? = nil
+    static let defaultValue: (type: HFormTitleSpacingType, fontSize: HFontTextStyle, title: String)? = nil
 }
 
 public enum HFormTitleSpacingType {
@@ -67,27 +67,22 @@ public enum HFormTitleSpacingType {
 }
 
 extension EnvironmentValues {
-    public var hFormTitle: (HFormTitleSpacingType, HFontTextStyleNew, String)? {
+    public var hFormTitle: (HFormTitleSpacingType, HFontTextStyle, String)? {
         get { self[EnvironmentHFormTitle.self] }
         set { self[EnvironmentHFormTitle.self] = newValue }
     }
 }
 
 extension View {
-    public func hFormTitle(_ type: HFormTitleSpacingType, _ fontSize: HFontTextStyleNew, _ title: String) -> some View {
+    public func hFormTitle(_ type: HFormTitleSpacingType, _ fontSize: HFontTextStyle, _ title: String) -> some View {
         self.environment(\.hFormTitle, (type, fontSize, title))
     }
 }
 
 struct BackgroundView: UIViewRepresentable {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        if hUseNewStyle {
-            uiView.backgroundColor = .brandNew(.primaryBackground())
-        } else {
-            uiView.backgroundColor = .brand(.primaryBackground())
-        }
+        uiView.backgroundColor = .brandNew(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {
@@ -116,7 +111,6 @@ public struct hForm<Content: View>: View {
     @State var scrollViewHeight: CGFloat = 0
 
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
-    @Environment(\.hUseNewStyle) var hUseNewStyle
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
     var content: Content
@@ -176,8 +170,8 @@ public struct hForm<Content: View>: View {
     func getScrollView() -> some View {
         ScrollView {
             VStack {
-                if let hFormTitle, hUseNewStyle {
-                    hTextNew(hFormTitle.2, style: hFormTitle.1)
+                if let hFormTitle {
+                    hText(hFormTitle.2, style: hFormTitle.1)
                         .multilineTextAlignment(.center)
                         .padding(.top, hFormTitle.0.topMargin)
                         .padding(.bottom, hFormTitle.0.bottomMargin)
@@ -186,7 +180,7 @@ public struct hForm<Content: View>: View {
                 content
             }
             .frame(maxWidth: .infinity)
-            .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
+            .tint(hForm<Content>.returnTintColor())
             Color.clear
                 .frame(height: bottomAttachedViewHeight)
         }
@@ -204,28 +198,7 @@ public struct hForm<Content: View>: View {
     }
 
     @hColorBuilder
-    static func returnTintColor(useNewStyle: Bool) -> some hColor {
-        if useNewStyle {
-            hSignalColorNew.greenFill
-        } else {
-            hTintColor.lavenderOne
-        }
-    }
-}
-
-private struct EnvironmentHUseNewStyle: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hUseNewStyle: Bool {
-        get { self[EnvironmentHUseNewStyle.self] }
-        set { self[EnvironmentHUseNewStyle.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUseNewStyle: some View {
-        self.environment(\.hUseNewStyle, true)
+    static func returnTintColor() -> some hColor {
+        hSignalColorNew.greenFill
     }
 }
