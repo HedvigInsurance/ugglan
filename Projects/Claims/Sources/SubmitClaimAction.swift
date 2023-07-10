@@ -32,7 +32,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
-    case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
@@ -136,7 +135,7 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
 }
 
-public enum ClaimsLoadingType: Codable & Equatable & Hashable {
+public enum ClaimsLoadingType: LoadingProtocol {
     case startClaim
     case fetchClaimEntrypointGroups
     case postPhoneNumber

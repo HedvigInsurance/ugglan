@@ -30,7 +30,7 @@ public struct SubmitClaimSingleItem: View {
                     displayDamageField(claim: singleItemStep)
                     InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
                         .padding(.vertical, 12)
-                    LoadingButtonWithContent(.postSingleItem) {
+                    LoadingButtonWithContent(SubmitClaimStore.self, .postSingleItem) {
                         store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                     } content: {
                         hText(L10n.generalContinueButton)

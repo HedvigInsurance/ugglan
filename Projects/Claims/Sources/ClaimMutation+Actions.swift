@@ -75,7 +75,8 @@ extension GraphQLMutation {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
-            callback(.value(.setLoadingState(action: self.getLoadingType(), state: .loading)))
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            store.setLoading(for: self.getLoadingType())
             disposeBag += octopus.client.perform(mutation: self)
                 .map { data in
                     if let data = data as? ClaimStepId {
@@ -93,17 +94,10 @@ extension GraphQLMutation {
                         }
                     }
                     callback(.value(data[keyPath: keyPath].into()))
-                    callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
+                    store.removeLoading(for: self.getLoadingType())
                 }
                 .onError({ error in
-                    callback(
-                        .value(
-                            .setLoadingState(
-                                action: self.getLoadingType(),
-                                state: .error(error: L10n.General.errorBody)
-                            )
-                        )
-                    )
+                    store.setError(L10n.General.errorBody, for: self.getLoadingType())
                 })
             return disposeBag
         }

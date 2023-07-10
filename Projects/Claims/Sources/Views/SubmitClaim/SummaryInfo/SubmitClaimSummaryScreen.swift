@@ -34,7 +34,7 @@ public struct SubmitClaimSummaryScreen: View {
                 InfoCard(text: L10n.claimsComplementClaim, type: .info)
                     .padding(.bottom, 8)
                 Group {
-                    LoadingButtonWithContent(.postSummary) {
+                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
                         store.send(.summaryRequest)
                     } content: {
                         hText(L10n.embarkSubmitClaim)

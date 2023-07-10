@@ -53,7 +53,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .exact("2.0.20")
+                    .exact("2.0.21")
                 )
             ]
         case .dynamiccolor:
