@@ -41,7 +41,6 @@ public struct Contract: Codable, Hashable, Equatable {
         typeOfContract: TypeOfContract,
         upcomingAgreementsTable: DetailAgreementsTable,
         currentAgreementsTable: DetailAgreementsTable?,
-        gradientOption: Contract.GradientOption?,
         logo: IconEnvelope?,
         displayName: String,
         switchedFromInsuranceProvider: String?,
@@ -79,12 +78,12 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
-    public var gradientOption: GradientOption? {
+    public var pillowType: PillowType? {
         if self.currentAgreement?.status == .terminated {
             return nil
         }
 
-        return self.typeOfContract.gradientOption
+        return self.typeOfContract.pillowType
     }
 
     public let logo: IconEnvelope?
@@ -169,13 +168,18 @@ public struct Contract: Codable, Hashable, Equatable {
         terminationDate = nil
     }
 
-    public enum GradientOption: Codable {
-        case home
+    public enum PillowType: Codable {
         case accident
-        case house
-        case travel
         case car
+        case cat
+        case dog
+        case home
+        case homeOwner
         case pet
+        case rental
+        case student
+        case travel
+        case villa
         case unknown
     }
 
@@ -248,17 +252,20 @@ public struct Contract: Codable, Hashable, Equatable {
         return suitableType && isNotInTerminationProcess
     }
 
+    public func getDetails() -> String {
+        detailPills.joined(separator: " ∙ ")
+    }
 }
 
 extension Contract.TypeOfContract {
-    var gradientOption: Contract.GradientOption {
+    var pillowType: Contract.PillowType {
         switch self {
         case .seHouse:
-            return .house
+            return .home
         case .seApartmentBrf:
             return .home
         case .seApartmentRent:
-            return .home
+            return .rental
         case .seApartmentStudentBrf:
             return .home
         case .seApartmentStudentRent:
@@ -266,7 +273,7 @@ extension Contract.TypeOfContract {
         case .seAccident:
             return .accident
         case .seAccidentStudent:
-            return .accident
+            return .student
         case .seCarTraffic:
             return .car
         case .seCarHalf:
@@ -280,31 +287,31 @@ extension Contract.TypeOfContract {
         case .seQasaLongTermRental:
             return .home
         case .seDogBasic:
-            return .pet
+            return .dog
         case .seDogStandard:
-            return .pet
+            return .dog
         case .seDogPremium:
-            return .pet
+            return .dog
         case .seCatBasic:
-            return .pet
+            return .cat
         case .seCatStandard:
-            return .pet
+            return .cat
         case .seCatPremium:
-            return .pet
+            return .cat
         case .noHouse:
-            return .house
+            return .villa
         case .noHomeContentOwn:
-            return .home
+            return .homeOwner
         case .noHomeContentRent:
-            return .home
+            return .rental
         case .noHomeContentYouthOwn:
-            return .home
+            return .homeOwner
         case .noHomeContentYouthRent:
-            return .home
+            return .rental
         case .noHomeContentStudentOwn:
-            return .home
+            return .student
         case .noHomeContentStudentRent:
-            return .home
+            return .student
         case .noTravel:
             return .travel
         case .noTravelYouth:
@@ -314,15 +321,15 @@ extension Contract.TypeOfContract {
         case .noAccident:
             return .accident
         case .dkHomeContentOwn:
-            return .home
+            return .homeOwner
         case .dkHomeContentRent:
-            return .home
+            return .rental
         case .dkHomeContentStudentOwn:
-            return .home
+            return .homeOwner
         case .dkHomeContentStudentRent:
-            return .home
+            return .rental
         case .dkHouse:
-            return .house
+            return .villa
         case .dkAccident:
             return .accident
         case .dkAccidentStudent:

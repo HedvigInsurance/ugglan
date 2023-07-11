@@ -190,6 +190,6 @@ public struct hText: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body))
+        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .standard))
     }
 }

@@ -125,12 +125,7 @@ extension Contracts {
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Contracts(filter: filter),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
-            ]
+            rootView: Contracts(filter: filter)
         ) { action in
             if case let .openDetail(contractId) = action, openDetails {
                 ContractDetail(id: contractId).journey()
