@@ -38,18 +38,7 @@ private struct ContractRowChevron: View {
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let contract: Contract
-
-    @ViewBuilder func backgroundColor(configuration: Configuration) -> some View {
-        ZStack {
-            if configuration.isPressed {
-                hOverlayColor.pressed.opacity(0.3)
-            }
-
-            Color.clear
-        }
-    }
-
-    @ViewBuilder var gradientView: some View {
+    @ViewBuilder var background: some View {
         if let image = contract.pillowType?.bgImage {
             HStack(alignment: .center, spacing: 0) {
                 Rectangle()
@@ -62,12 +51,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                             .blur(radius: 20)
                     )
             }
-            .padding(0)
         } else {
-            hColorScheme(
-                light: hGrayscaleColor.one,
-                dark: hGrayscaleColor.five
-            )
+            hTextColorNew.secondary
         }
     }
 
@@ -111,7 +96,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .padding(16)
         .frame(minHeight: 200)
         .background(
-            gradientView
+            background
         )
         .clipShape(Squircle.default())
         .overlay(
@@ -211,7 +196,7 @@ struct ContractRow_Previews: PreviewProvider {
                     activeFrom: "Active from",
                     activeTo: "Active to",
                     premium: .sek(10),
-                    status: .active
+                    status: .terminated
                 ),
                 statusPills: ["Activates 20.03.2024."],
                 detailPills: ["Bellman", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
