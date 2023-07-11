@@ -30,23 +30,6 @@ public enum GradientType: Equatable {
                     Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
                 ]
             }
-        //        case .insurance:
-        //            return
-        //                .
-        //            switch scheme {
-        //            case .dark:
-        //                return [
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                ]
-        //            default:
-        //                return [
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                    Color(.brand(.primaryBackground(scheme == .dark))),
-        //                ]
-        //            }
         case .forever:
             switch scheme {
             case .dark:
