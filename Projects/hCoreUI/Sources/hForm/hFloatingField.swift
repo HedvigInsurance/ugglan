@@ -41,11 +41,11 @@ public struct hFloatingField: View {
                     shouldMoveLabel: shouldMoveLabel
                 )
                 if !value.isEmpty {
-                    getTextLabel
+                    getTextLabel.frame(height: HFontTextStyle.title3.fontSize)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, value.isEmpty ? 0 : 10 - HFontTextStyleNew.title3.uifontLineHeightDifference + 5)
+            .padding(.vertical, value.isEmpty ? 0 : 10)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -55,7 +55,7 @@ public struct hFloatingField: View {
         }
     }
     private var getTextLabel: some View {
-        hTextNew(value, style: .title3)
+        hText(value, style: .title3)
             .foregroundColor(hTextColorNew.primary)
     }
 
@@ -74,7 +74,7 @@ public struct hFloatingField: View {
 struct hFloatingField_Previews: PreviewProvider {
     static var previews: some View {
 
-        @State var value: String = ""
+        @State var value: String = " 2"
 
         VStack {
             hFloatingField(value: value, placeholder: "ni", error: nil) {

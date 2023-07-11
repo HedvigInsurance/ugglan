@@ -20,16 +20,13 @@ extension EnvironmentValues {
 }
 
 struct RowButtonStyle: SwiftUI.ButtonStyle {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
-
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
             .background(
                 configuration.isPressed
-                    ? (hUseNewStyle
-                        ? Color.clear
-                        : Color(UIColor.brand(.primaryBackground(true))).opacity(0.1))
+                    ? Color.clear
+
                     : Color.clear
             )
             .animation(
@@ -99,16 +96,11 @@ extension hRow where Accessory == EmptyView {
 }
 
 public struct StandaloneChevronAccessory: View {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     public init() {}
 
     public var body: some View {
-        if hUseNewStyle {
-            Image(uiImage: hCoreUIAssets.chevronRight.image)
-        } else {
-            Image(uiImage: hCoreUIAssets.arrowForward.image)
-        }
+        Image(uiImage: hCoreUIAssets.chevronRight.image)
     }
 }
 

@@ -18,7 +18,7 @@ public struct InfoCard: View {
             Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                 .foregroundColor(hSignalColorNew.blueElement)
 
-            hTextNew(text, style: .footnote)
+            hText(text, style: .footnote)
                 .foregroundColor(getTextColor)
                 .padding(.leading, 9)
         }

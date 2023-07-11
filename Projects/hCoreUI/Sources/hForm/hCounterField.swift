@@ -47,8 +47,7 @@ public struct hCounterField: View {
                         getTextLabel
                     }
                 }
-                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
-
+                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyle.title3.fontSize)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
@@ -106,7 +105,7 @@ public struct hCounterField: View {
     }
 
     private var getTextLabel: some View {
-        hTextNew(textToShow, style: .title3)
+        hText(textToShow, style: .title3)
             .foregroundColor(hTextColorNew.primary)
     }
 

@@ -10,29 +10,28 @@ public struct SubmitClaimSuccessScreen: View {
     public var body: some View {
         hForm {
             VStack(spacing: 16) {
-                hTextNew(L10n.claimsSuccessTitle, style: .customTitle)
+                hText(L10n.claimsSuccessTitle, style: .title1)
                     .foregroundColor(hTextColorNew.primary)
-                hTextNew(L10n.claimsSuccessLabel, style: .body)
+                hText(L10n.claimsSuccessLabel, style: .body)
                     .foregroundColor(hTextColorNew.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)
             .padding(.horizontal, 32)
         }
-        .hUseNewStyle
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {
-                    hTextNew(L10n.openChat, style: .body)
+                    hText(L10n.openChat, style: .body)
                 }
 
                 hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
-                    hTextNew(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body)
                 }
             }
             .padding(.horizontal, 16)

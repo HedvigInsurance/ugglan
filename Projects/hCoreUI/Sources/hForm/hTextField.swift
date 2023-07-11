@@ -63,7 +63,6 @@ extension View {
 public struct hTextField: View {
     @Environment(\.hTextFieldOptions) var options
     @Environment(\.hTextFieldError) var errorMessage
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var masking: Masking
     var placeholder: String?
