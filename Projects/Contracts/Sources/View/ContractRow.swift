@@ -91,7 +91,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
             }
             hText(contract.getDetails())
-                .foregroundColor(hTextColorNew.negative.opacity(0.415))
+                .foregroundColor(hGrayscaleTranslucentDarkColorNew.greyScaleTranslucent700)
         }
         .padding(16)
         .frame(minHeight: 200)
