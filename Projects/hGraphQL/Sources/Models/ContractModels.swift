@@ -253,7 +253,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public func getDetails() -> String {
-        detailPills.joined(separator: " ∙ ")
+        detailPills.joined(separator: " · ")
     }
 }
 

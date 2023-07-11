@@ -57,9 +57,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     .background(
                         Image(uiImage: image)
                             .resizable()
-                            .frame(width: 450, height: 450)
                             .aspectRatio(contentMode: .fill)
-                            .clipped()
+                            .scaleEffect(1.32)
                             .blur(radius: 20)
                     )
             }
@@ -193,8 +192,8 @@ struct ContractRow_Previews: PreviewProvider {
                 upcomingAgreementsTable: DetailAgreementsTable(
                     sections: [
                         DetailAgreementsTable.Section(
-                            title: "TITLE DETAILS",
-                            rows: [.init(title: "TITLE 1", subtitle: "Subtitle 1", value: "Value 1")]
+                            title: "TITLE Details",
+                            rows: [.init(title: "Title 1", subtitle: "Subtitle 1", value: "Value 1")]
                         )
                     ],
                     title: "Section title"
@@ -215,7 +214,7 @@ struct ContractRow_Previews: PreviewProvider {
                     status: .active
                 ),
                 statusPills: ["Activates 20.03.2024."],
-                detailPills: ["Bellman", "Ba"]
+                detailPills: ["Bellman", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
             )
             let contracts = [contract]
             store.send(.setContracts(contracts: contracts))
