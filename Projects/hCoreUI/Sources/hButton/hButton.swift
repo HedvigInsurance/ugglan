@@ -30,7 +30,7 @@ extension View {
         case .small:
             self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .subheadline)
         case .large:
-            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .body)
+            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .standard)
         }
     }
 }
@@ -240,7 +240,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
-                    .environment(\.defaultHTextStyle, .body)
+                    .environment(\.defaultHTextStyle, .standard)
             }
         }
     }
@@ -294,7 +294,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
             LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
-                    .environment(\.defaultHTextStyle, .body)
+                    .environment(\.defaultHTextStyle, .standard)
             }
         }
     }
@@ -333,7 +333,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
             LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
-                    .environment(\.defaultHTextStyle, .body)
+                    .environment(\.defaultHTextStyle, .standard)
             }
         }
     }

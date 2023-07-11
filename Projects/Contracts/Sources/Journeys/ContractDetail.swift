@@ -112,7 +112,6 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-
         LoadingViewWithContent(.startTermination(contractId: id)) {
             hForm {
                 hSection {
@@ -138,25 +137,6 @@ struct ContractDetail: View {
                             viewFor(view: panel)
                                 .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
                                 .animation(.interpolatingSpring(stiffness: 300, damping: 70))
-                        }
-                    }
-
-                    if hAnalyticsExperiment.terminationFlow {
-                        PresentableStoreLens(
-                            ContractStore.self,
-                            getter: { state in
-                                state.contractForId(id)
-                            }
-                        ) { contract in
-                            if (contract?.currentAgreement?.activeTo) == nil {
-                                hButton.LargeButtonText {
-                                    store.send(.startTermination(contractId: id))
-                                } content: {
-                                    hText(L10n.terminationButton, style: .body)
-                                        .foregroundColor(hSignalColorNew.redElement)
-                                }
-                                .padding(.horizontal, 16)
-                            }
                         }
                     }
                 }

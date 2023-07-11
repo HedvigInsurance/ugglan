@@ -19,45 +19,59 @@ struct ContractInformationView: View {
                 state.contractForId(id)
             }
         ) { contract in
-            if let contract = contract {
-                VStack {
-                    if contract.upcomingAgreementDate?.localDateString != nil {
-                        hSection {
-                            RenewalInformationCard(contract: contract)
-                        }
-                        .sectionContainerStyle(.transparent)
+            if let contract {
+                if contract.upcomingAgreementDate?.localDateString != nil {
+                    hSection {
+                        RenewalInformationCard(contract: contract)
                     }
-                    VStack {
-                        if let table = contract.currentAgreementsTable {
-                            ForEach(table.sections) { section in
-                                hSection(section.rows, id: \.title) { row in
-                                    hRow {
-                                        hText(row.title, style: .body)
-                                    }
-                                    .noSpacing()
-                                    .verticalPadding(16)
-                                    .withCustomAccessory({
-                                        Spacer()
-                                        hText(String(row.value), style: .body)
-                                            .foregroundColor(hTextColorNew.secondary)
-                                    })
+                }
+                VStack(spacing: 0) {
+                    if let table = contract.currentAgreementsTable {
+                        ForEach(table.sections) { section in
+                            hSection(section.rows, id: \.title) { row in
+                                hRow {
+                                    hText(row.title)
                                 }
-                                .withoutHorizontalPadding
-                                .sectionContainerStyle(.transparent)
+                                .noSpacing()
+                                .withCustomAccessory({
+                                    Spacer()
+                                    hText(row.value)
+                                        .foregroundColor(hTextColorNew.secondary)
+                                })
+
                             }
-                        }
-                        if contract.currentAgreement?.status != .terminated {
-                            hButton.LargeButtonSecondary {
-                                //edit info action
-                            } content: {
-                                hText(L10n.contractEditInfoLabel)
-                            }
-                            .padding(.horizontal, 16)
+                            .withoutHorizontalPadding
                         }
                     }
+
+                    hSection {
+                        VStack(spacing: 8) {
+                            if contract.currentAgreement?.status != .terminated {
+                                hButton.LargeButtonSecondary {
+                                    //edit info action
+                                } content: {
+                                    hText(L10n.contractEditInfoLabel)
+                                }
+                            }
+                            if hAnalyticsExperiment.terminationFlow {
+                                if (contract.currentAgreement?.activeTo) == nil {
+                                    hButton.LargeButtonText {
+                                        store.send(.startTermination(contractId: id))
+                                    } content: {
+                                        hText(L10n.terminationButton)
+                                            .foregroundColor(hSignalColorNew.redElement)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 16)
+
                 }
             }
         }
+        .sectionContainerStyle(.transparent)
+
     }
 }
 
