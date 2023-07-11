@@ -30,7 +30,7 @@ public struct UpdateAppScreen: View {
         }
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {

@@ -88,7 +88,7 @@ public struct ZignsecCredentialEntry: View {
                 }
             ) { zignsecState in
                 hSection {
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         onSubmit()
                     } content: {
                         hText(L10n.Login.continueButton)

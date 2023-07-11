@@ -3,12 +3,12 @@ import Foundation
 import Presentation
 import SnapshotTesting
 import SwiftUI
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
 import hCoreUI
 import hGraphQL
-import TestDependencies
 
 @testable import Contracts
 
@@ -49,9 +49,10 @@ extension Contract {
     public static func mock(displayName: String, status: ContractStatus) -> Contract {
         let contract = Contract(
             id: "mock_norwegian_123",
+            typeOfContract: .seHouse,
             upcomingAgreementsTable: .mock(),
             currentAgreementsTable: .mock(),
-            gradientOption: .one,
+            gradientOption: .home,
             logo: .none,
             displayName: displayName,
             switchedFromInsuranceProvider: nil,

@@ -41,7 +41,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     submit()
                 } content: {
                     if policyCoinsuredPerson == nil {
