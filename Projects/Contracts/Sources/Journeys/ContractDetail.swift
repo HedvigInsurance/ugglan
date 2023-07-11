@@ -134,7 +134,7 @@ struct ContractDetail: View {
                 VStack(spacing: 8) {
 
                     ForEach(ContractDetailsViews.allCases) { panel in
-                        if context.trigger == panel {  // panel = info, coverage, documents
+                        if context.trigger == panel {
                             viewFor(view: panel)
                                 .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
                                 .animation(.interpolatingSpring(stiffness: 300, damping: 70))
