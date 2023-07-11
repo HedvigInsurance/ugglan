@@ -16,7 +16,7 @@ extension GradientView {
         }
 
         public init(
-            gradientOption: Contract.GradientOption,
+            gradientOption: Contract.PillowType,
             shouldShimmer: Bool = true,
             shouldAnimate: Bool = true
         ) {
@@ -130,21 +130,31 @@ extension GradientView {
     }
 }
 
-extension Contract.GradientOption {
+extension Contract.PillowType {
     public var preset: GradientView.Preset {
         switch self {
-        case .home:
-            return .home
         case .accident:
             return .accident
-        case .house:
-            return .house
-        case .travel:
-            return .travel
         case .car:
             return .car
+        case .cat:
+            return .pet
+        case .dog:
+            return .pet
+        case .home:
+            return .home
+        case .homeOwner:
+            return .home
         case .pet:
             return .pet
+        case .rental:
+            return .home
+        case .student:
+            return .home
+        case .travel:
+            return .travel
+        case .villa:
+            return .house
         case .unknown:
             return .unknown
         }
