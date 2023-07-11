@@ -241,10 +241,6 @@ struct HonestyPledge: View {
 
 class VCViewModel: ObservableObject {
     weak var vc: UIViewController?
-
-    deinit {
-        let ss = ""
-    }
 }
 
 extension HonestyPledge {
