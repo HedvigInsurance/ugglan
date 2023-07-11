@@ -442,7 +442,7 @@ public struct hGrayscaleTranslucentDarkColorNew {
     }
 
     public static var greyScaleTranslucent700: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.415)
+        hGrayscaleColorNew.greyScale25.opacity(0.415)
     }
 
     public static var greyScaleTranslucent800: some hColor {
