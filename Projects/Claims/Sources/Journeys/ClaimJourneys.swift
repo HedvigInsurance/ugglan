@@ -21,8 +21,7 @@ public class ClaimJourneys {
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
             if case let .openPhoneNumberScreen(model) = navigationAction {
-                //                submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-                showClaimFailureScreen()
+                submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
             } else if case let .openDateOfOccurrencePlusLocationScreen(options) = navigationAction {
                 submitClaimOccurrancePlusLocationScreen(options: options).addDismissClaimsFlow()
             } else if case .openAudioRecordingScreen = navigationAction {
