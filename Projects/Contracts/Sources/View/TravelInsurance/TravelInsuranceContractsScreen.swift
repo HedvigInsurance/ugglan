@@ -29,7 +29,7 @@ struct TravelInsuranceContractsScreen: View {
                             }
                         }
                         .hFormAttachToBottom {
-                            hButton.LargeButtonFilled {
+                            hButton.LargeButtonPrimary {
                                 store.send(.navigation(.openTravelInsuranceForm))
                             } content: {
                                 hText(L10n.generalContinueButton)

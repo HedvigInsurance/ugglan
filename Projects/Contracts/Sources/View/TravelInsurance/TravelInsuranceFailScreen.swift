@@ -34,7 +34,7 @@ public struct TravelInsuranceFailScreen: View {
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.navigation(.openFreeTextChat))
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)

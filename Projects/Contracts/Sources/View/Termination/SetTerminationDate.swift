@@ -65,7 +65,7 @@ public struct SetTerminationDate: View {
             .hFormAttachToBottom {
 
                 VStack {
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         onSelected(terminationDate)
                     } content: {
                         hText(L10n.terminationConfirmButton, style: .body)

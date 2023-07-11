@@ -23,7 +23,7 @@ public struct GeneralDatePicker: View {
         }
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     model.onDateSelected(dateOfOccurrence)
                 } content: {
                     hText(model.buttonTitle, style: .body)

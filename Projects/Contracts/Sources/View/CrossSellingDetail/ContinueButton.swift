@@ -10,7 +10,7 @@ struct ContinueButton: View {
 
     var body: some View {
         hFormBottomAttachedBackground {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 if let embarkStoryName = crossSell.embarkStoryName {
                     store.send(.crossSellingDetailEmbark(name: embarkStoryName))
                 } else if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {

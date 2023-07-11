@@ -44,7 +44,7 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
                     }
                     .withCustomAccessory {
                         Spacer()
-                        Image(uiImage: hCoreUIAssets.chevronRight.image)
+                        Image(uiImage: hCoreUIAssets.arrowForward.image)
                     }
                     .onTap {
                         store.send(.openMovingFlow)

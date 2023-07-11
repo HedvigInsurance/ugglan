@@ -59,10 +59,10 @@ class ChatState {
             } else {
                 func createToast() -> Toast {
                     if UIApplication.shared.isRegisteredForRemoteNotifications {
-                        return Toast(symbol: .icon(hCoreUIAssets.chat.image), body: statusMessage)
+                        return Toast(symbol: .icon(hCoreUIAssets.chatQuickNav.image), body: statusMessage)
                     }
                     return Toast(
-                        symbol: .icon(hCoreUIAssets.chat.image),
+                        symbol: .icon(hCoreUIAssets.chatQuickNav.image),
                         body: statusMessage,
                         subtitle: L10n.chatToastPushNotificationsSubtitle,
                         duration: 6

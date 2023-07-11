@@ -59,9 +59,8 @@ struct SlideDragger: View {
             ZStack(alignment: .leading) {
                 ZStack(alignment: .leading) {
                     ZStack {
-                        Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
+                        Image(uiImage: hCoreUIAssets.chevronRight.image)
                             .foregroundColor(hTextColorNew.negative)
-
                     }
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                     .background(hTextColorNew.primary)

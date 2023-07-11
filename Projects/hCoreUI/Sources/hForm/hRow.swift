@@ -42,8 +42,8 @@ public struct hRow<Content: View, Accessory: View>: View {
 
     var content: Content
     var accessory: Accessory
-    var horizontalPadding: CGFloat = 21
-    var verticalPadding: CGFloat = 21
+    var horizontalPadding: CGFloat = 16
+    var verticalPadding: CGFloat = 16
 
     public init(
         _ accessory: Accessory,
@@ -100,7 +100,7 @@ public struct StandaloneChevronAccessory: View {
     public init() {}
 
     public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight2.image)
+        Image(uiImage: hCoreUIAssets.chevronRight.image)
     }
 }
 

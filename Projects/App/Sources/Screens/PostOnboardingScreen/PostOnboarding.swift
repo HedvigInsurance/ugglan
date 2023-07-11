@@ -34,7 +34,7 @@ struct PostOnboarding {
 
         let payment = ImageTextAction<TableAction>(
             image: .init(
-                image: Asset.paymentSetupIllustration.image,
+                image: hCoreUIAssets.paymentSetupIllustration.image,
                 size: CGSize(width: CGFloat.infinity, height: 200),
                 contentMode: .scaleAspectFit
             ),
@@ -63,7 +63,7 @@ struct PostOnboarding {
 
         let pushNotifications = ImageTextAction<TableAction>(
             image: .init(
-                image: Asset.activatePushNotificationsIllustration.image,
+                image: hCoreUIAssets.activatePushNotificationsIllustration.image,
                 size: CGSize(width: CGFloat.infinity, height: 200),
                 contentMode: .scaleAspectFit
             ),

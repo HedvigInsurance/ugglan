@@ -1,25 +1,26 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "filename" : "hedvig-symbol-light.pdf"
+      "filename" : "Style=Dark, Type=Symbol.svg",
+      "idiom" : "universal"
     },
     {
-      "idiom" : "universal",
-      "filename" : "hedvig-symbol.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",
           "value" : "dark"
         }
-      ]
+      ],
+      "filename" : "Style=Light, Type=Symbol.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true
+    "preserves-vector-representation" : true,
+    "template-rendering-intent" : "template"
   }
 }

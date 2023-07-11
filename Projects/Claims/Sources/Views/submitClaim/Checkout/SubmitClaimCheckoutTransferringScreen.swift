@@ -173,7 +173,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             Spacer()
 
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 store.send(.dissmissNewClaimFlow)
                 store.send(.submitClaimOpenFreeTextChat)
             } content: {

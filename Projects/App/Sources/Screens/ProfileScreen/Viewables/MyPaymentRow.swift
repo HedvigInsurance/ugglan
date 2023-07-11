@@ -5,6 +5,7 @@ import Payment
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 
 struct MyPaymentRow {
     let monthlyCostSignal = ReadWriteSignal<String?>(nil)
@@ -18,7 +19,7 @@ extension MyPaymentRow: Viewable {
         let row = IconRow(
             title: L10n.profilePaymentRowHeader,
             subtitle: "",
-            iconAsset: Asset.paymentRowIcon.image,
+            iconAsset: hCoreUIAssets.payments.image,
             options: [.withArrow]
         )
 

@@ -11,16 +11,16 @@ import hCoreUI
 import hGraphQL
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
-    case information
+    case overview
     case coverage
-    case documents
+    case details
 
     var id: String { self.rawValue }
     var title: String {
         switch self {
-        case .information: return L10n.InsuranceDetailsView.tab1Title
+        case .overview: return L10n.InsuranceDetailsView.tab1Title
         case .coverage: return L10n.InsuranceDetailsView.tab2Title
-        case .documents: return L10n.InsuranceDetailsView.tab3Title
+        case .details: return L10n.InsuranceDetailsView.tab3Title
         }
     }
 
@@ -36,7 +36,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
 
-    @Published var selected = Views.information {
+    @Published var selected = Views.overview {
         didSet {
             if previous != selected {
                 insertion = selected.move(previous)
@@ -50,8 +50,8 @@ class TabControllerContext: ObservableObject {
         }
     }
 
-    @Published var trigger = Views.information
-    @Published var previous = Views.information
+    @Published var trigger = Views.overview
+    @Published var previous = Views.overview
     var insertion: AnyTransition = .move(edge: .leading)
     var removal: AnyTransition = .move(edge: .trailing)
 }
@@ -62,20 +62,20 @@ struct ContractDetail: View {
 
     var id: String
 
-    let contractInformation: ContractInformationView
+    let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
     let contractDocuments: ContractDocumentsView
 
-    @State private var selectedView = ContractDetailsViews.information
+    @State private var selectedView = ContractDetailsViews.overview
 
     @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
         switch view {
-        case .information:
-            contractInformation
+        case .overview:
+            contractOverview
         case .coverage:
             contractCoverage
-        case .documents:
+        case .details:
             contractDocuments
         }
     }
@@ -85,7 +85,7 @@ struct ContractDetail: View {
     ) {
         self.id = id
 
-        contractInformation = ContractInformationView(id: id)
+        contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(
             id: id
         )
@@ -95,7 +95,7 @@ struct ContractDetail: View {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.secondaryText),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .normal
@@ -104,7 +104,7 @@ struct ContractDetail: View {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText(false)),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .selected
@@ -122,7 +122,7 @@ struct ContractDetail: View {
                     .padding(.bottom, 20)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title).tag(view)
+                            hText(view.title, style: .footnote).tag(view)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -130,29 +130,13 @@ struct ContractDetail: View {
                 .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
 
-                ForEach(ContractDetailsViews.allCases) { panel in
-                    if context.trigger == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
-                    }
-                }
+                VStack(spacing: 8) {
 
-                if hAnalyticsExperiment.terminationFlow {
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.contractForId(id)
-                        }
-                    ) { contract in
-                        if (contract?.currentAgreement?.activeTo) == nil {
-                            hButton.SmallButtonText {
-                                store.send(.startTermination(contractId: id))
-                            } content: {
-                                hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTintColor.red)
-                            }
-                            .padding(.bottom, 39)
+                    ForEach(ContractDetailsViews.allCases) { panel in
+                        if context.trigger == panel {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                         }
                     }
                 }

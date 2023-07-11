@@ -29,7 +29,7 @@ private struct ContractRowChevron: View {
 
     var body: some View {
         if isEnabled {
-            Image(uiImage: hCoreUIAssets.chevronRight.image)
+            Image(uiImage: hCoreUIAssets.arrowForward.image)
                 .resizable()
                 .frame(width: 24, height: 24)
         }
