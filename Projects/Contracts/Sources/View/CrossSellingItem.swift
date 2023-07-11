@@ -39,22 +39,24 @@ struct CrossSellingItem: View {
             //                openExternal()
             //            }
         } label: {
-            //            KFImage(crossSell.imageURL)
-            //                .fade(duration: 0.25)
-            Image(uiImage: crossSell.image)
-                .resizable()
-                .frame(width: 48, height: 48)
-                .aspectRatio(contentMode: .fill)
-            VStack(alignment: .leading, spacing: 0) {
-                hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
-                hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
-                    .multilineTextAlignment(.leading)
-            }
-            Spacer()
-            hButton.SmallButtonFilled {
-                openExternal()
-            } content: {
-                hText("Get Price")
+            HStack(spacing: 16) {
+                Image(uiImage: crossSell.image)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                    .aspectRatio(contentMode: .fill)
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
+                        hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer()
+                    hButton.SmallButtonFilled {
+                        openExternal()
+                    } content: {
+                        hText(L10n.crossSellGetPrice)
+                    }
+                }
             }
         }
     }
@@ -76,20 +78,6 @@ struct CrossSellingItemPreviews: PreviewProvider {
             infos: []
         )
     )
-
-    static var itemWithoutImage = CrossSellingItem(
-        crossSell: .init(
-            title: "Accident Insurance",
-            description: "From 79 SEK/mo.",
-            imageURL: URL(string: "https://hedvig.com/")!,
-            blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
-            buttonText: "Calculate price",
-            embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT",
-            infos: []
-        )
-    )
-
     static var previews: some View {
         itemWithImage.previewLayout(.sizeThatFits)
     }

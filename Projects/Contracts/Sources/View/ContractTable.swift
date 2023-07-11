@@ -66,17 +66,10 @@ extension ContractTable: View {
                     }
                 ) { terminatedContracts in
                     if !terminatedContracts.isEmpty {
-                        hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
+                        hSection {
                             hRow {
-                                hText(L10n.InsurancesTab.terminatedInsurancesLabel)
+                                hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
                             }
-                            .withCustomAccessory({
-                                Spacer()
-                                hText(String(terminatedContracts.count), style: .body)
-                                    .foregroundColor(hLabelColor.secondary)
-                                    .padding(.trailing, 8)
-                                StandaloneChevronAccessory()
-                            })
                             .onTap {
                                 store.send(.openTerminatedContracts)
                             }
