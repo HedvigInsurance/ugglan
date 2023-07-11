@@ -5,14 +5,14 @@ import hCoreUI
 import hGraphQL
 
 extension ForeverInvitation {
-    var imageAsset: ImageAsset {
+    var image: UIImage {
         switch self.state {
         case .active:
-            return ImageAsset(name: hCoreUIAssets.basketball.name)
+            return hCoreUIAssets.basketball.image
         case .pending:
-            return ImageAsset(name: hCoreUIAssets.circularClock.name)
+            return hCoreUIAssets.circularClock.image
         case .terminated:
-            return ImageAsset(name: hCoreUIAssets.circularCross.name)
+            return hCoreUIAssets.circularCross.image
         }
     }
 
@@ -85,7 +85,7 @@ struct InvitationRow: View {
     var body: some View {
         hRow {
             HStack {
-                Image(uiImage: row.imageAsset.image).resizable().frame(width: 18, height: 18)
+                Image(uiImage: row.image).resizable().frame(width: 18, height: 18)
                 VStack(alignment: .leading) {
                     hText(row.name).foregroundColor(row.nameLabelColor)
                     if row.invitedByOther {

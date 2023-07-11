@@ -32,7 +32,7 @@ public struct ForeverView: View {
                     }
                 ) { code in
                     if let code = code {
-                        hButton.LargeButtonFilled {
+                        hButton.LargeButtonPrimary {
                             store.send(.showShareSheetWithNotificationReminder(code: code))
                         } content: {
                             hText(L10n.ReferralsEmpty.shareCodeButton)

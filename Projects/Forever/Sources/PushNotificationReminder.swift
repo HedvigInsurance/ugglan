@@ -21,7 +21,7 @@ struct PushNotificationReminderView: View {
             .sectionContainerStyle(.transparent).padding(.top, 16)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 let center = UNUserNotificationCenter.current()
                 center.requestAuthorization(options: [.alert, .sound, .badge]) {
                     _,

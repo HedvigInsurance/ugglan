@@ -13,8 +13,7 @@ public struct TerminationDeleteScreen: View {
     }
 
     public var body: some View {
-
-        LoadingViewWithContent(.deleteTermination) {
+        LoadingViewWithContent(ContractStore.self, [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
                     ContractStore.self,
@@ -67,7 +66,7 @@ public struct TerminationDeleteScreen: View {
                             .foregroundColor(hLabelColor.primary)
                     }
                     .padding(.bottom, 4)
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         onSelected()
                     } content: {
                         hText(L10n.terminationContractDeletionConfirmButton, style: .body)

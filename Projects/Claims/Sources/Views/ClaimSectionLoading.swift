@@ -41,7 +41,7 @@ struct ClaimSectionLoading: View {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
         } else {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 hAnalyticsEvent.beginClaim(screen: .home).send()
                 store.send(.submitNewClaim(from: .generic))
             } content: {

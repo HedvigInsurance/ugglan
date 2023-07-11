@@ -21,7 +21,7 @@ public struct SubmitClaimSuccessScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {

@@ -38,7 +38,7 @@ struct AskForPushnotifications: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 12) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {

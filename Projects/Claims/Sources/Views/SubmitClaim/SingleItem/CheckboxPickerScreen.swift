@@ -39,7 +39,7 @@ struct CheckboxPickerScreen<T>: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     if selectedItems.count > 1 {
                         onSelected(selectedItems.map({ $0.object }))
                     } else {

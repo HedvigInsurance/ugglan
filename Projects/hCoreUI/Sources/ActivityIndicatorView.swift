@@ -69,7 +69,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     var content: () -> Content
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
-
+    @Environment(\.presentableStoreLensAnimation) var animation
     @State var presentError = false
     @State var error = ""
     @State var isLoading = false
@@ -88,7 +88,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         ZStack {
             contentView
             if isLoading {
-                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.1)))
+                loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             }
         }
         .onReceive(
@@ -99,10 +99,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             let actions = value.filter({ self.actions.contains($0.key) })
             if actions.count > 0 {
                 if actions.filter({ $0.value == .loading }).count > 0 {
-                    withAnimation {
-                        self.isLoading = true
-                        self.presentError = false
-                    }
+                    changeState(to: true, presentError: false)
                 } else {
                     var tempError = ""
                     for action in actions {
@@ -113,16 +110,25 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                             break
                         }
                     }
-                    self.error = tempError
-                    self.isLoading = false
-                    self.presentError = true
+                    changeState(to: false, presentError: true, error: tempError)
                 }
             } else {
-                withAnimation {
-                    self.isLoading = false
-                    self.presentError = false
-                }
+                changeState(to: false, presentError: false, error: nil)
             }
+        }
+    }
+
+    private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
+        if let animation {
+            withAnimation(animation) {
+                self.error = error ?? ""
+                self.isLoading = isLoading
+                self.presentError = presentError
+            }
+        } else {
+            self.error = error ?? ""
+            self.isLoading = isLoading
+            self.presentError = presentError
         }
     }
 
@@ -200,7 +206,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
 
         switch buttonStyleSelect {
         case .filledButton:
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 if !isLoading {
                     buttonAction()
                 }

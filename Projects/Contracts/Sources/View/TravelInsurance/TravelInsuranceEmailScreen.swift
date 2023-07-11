@@ -49,7 +49,7 @@ struct TravelInsuranceEmailScreen: View {
                 .clipShape(Squircle.default())
                 .padding(.horizontal, 16)
                 hSection {
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         validateAndSubmit()
                     } content: {
                         hText(L10n.generalContinueButton, style: .body)
