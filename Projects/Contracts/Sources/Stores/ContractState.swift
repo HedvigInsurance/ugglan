@@ -23,7 +23,6 @@ public struct ContractState: StateProtocol {
     var terminationDeleteStep: TerminationFlowDeletionNextModel?
     var successStep: TerminationFlowSuccessNextModel?
     var failedStep: TerminationFlowFailedNextModel?
-    var loadingStates: [ContractAction: LoadingState<String>] = [:]
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -55,9 +54,4 @@ extension ContractState {
         return contractBundles.flatMap({ $0.contracts }).contains(where: { $0.hasTravelInsurance })
             && hAnalyticsExperiment.travelInsurance
     }
-}
-
-public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
-    case loading
-    case error(error: T)
 }
