@@ -31,11 +31,11 @@ enum ProfileRowType {
         case .myCharity:
             return hCoreUIAssets.heart.image
         case .payment:
-            return hCoreUIAssets.paymentRowIcon.image
+            return hCoreUIAssets.payments.image
         case .appInfo:
             return hCoreUIAssets.infoIcon.image
         case .settings:
-            return hCoreUIAssets.settingsIconOld.image
+            return hCoreUIAssets.settingsIcon.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
                 return hCoreUIAssets.euroBonusWithValueRowIcon.image

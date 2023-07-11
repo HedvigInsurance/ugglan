@@ -29,7 +29,7 @@ struct BlockAccountDeletionView: View {
                 store.send(.openChat)
             } content: {
                 HStack(spacing: 10) {
-                    hCoreUIAssets.chat.view
+                    hCoreUIAssets.chatQuickNav.view
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24, height: 24)

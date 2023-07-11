@@ -74,10 +74,10 @@ struct SlideDragger: View {
                 ZStack(alignment: .leading) {
                     ZStack {
                         if hUseNewStyle {
-                            Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
+                            Image(uiImage: hCoreUIAssets.chevronRight.image)
                                 .foregroundColor(hTextColorNew.negative)
                         } else {
-                            Image(uiImage: hCoreUIAssets.continue.image)
+                            Image(uiImage: hCoreUIAssets.arrowForward.image)
                         }
                     }
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
