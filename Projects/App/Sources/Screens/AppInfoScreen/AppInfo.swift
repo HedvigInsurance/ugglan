@@ -183,7 +183,7 @@ extension AppInfo: Presentable {
             let languageRow = AppInfoRow(
                 title: language.title,
                 icon: language.icon,
-                trailingIcon: hCoreUIAssets.external.image,
+                trailingIcon: hCoreUIAssets.neArrowSmall.image,
                 trailingIconTintColor: UIColor.typographyColor(.secondary),
                 value: value(row: language)
             )

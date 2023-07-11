@@ -83,7 +83,7 @@ extension AudioPlayer: Viewable {
             try? AVAudioSession.sharedInstance().setCategory(.playback)
             timerBag.dispose()
             audioPlayer.play()
-            playIconImageView.image = hCoreUIAssets.pauseChat.image
+            playIconImageView.image = hCoreUIAssets.pause.image
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }

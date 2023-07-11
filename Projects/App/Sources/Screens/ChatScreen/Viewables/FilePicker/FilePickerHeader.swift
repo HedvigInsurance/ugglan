@@ -79,7 +79,7 @@ extension FilePickerHeader: Viewable {
                     .valueSignal.onValueDisposePrevious(processPickResult)
             }
 
-        let photoLibraryButton = PickerButton(icon: hCoreUIAssets.photoLibrary.image)
+        let photoLibraryButton = PickerButton(icon: hCoreUIAssets.pictures.image)
         bag += containerView.addArranged(photoLibraryButton)
             .onValueDisposePrevious { _ in
                 containerView.viewController?
@@ -91,7 +91,7 @@ extension FilePickerHeader: Viewable {
                     .valueSignal.onValueDisposePrevious(processPickResult)
             }
 
-        let filesButton = PickerButton(icon: hCoreUIAssets.files.image)
+        let filesButton = PickerButton(icon: hCoreUIAssets.documentsMultiple.image)
         bag += containerView.addArranged(filesButton)
             .onValueDisposePrevious { _ in
                 containerView.viewController?.present(DocumentPicker(), options: []).valueSignal

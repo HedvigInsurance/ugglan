@@ -15,7 +15,7 @@ extension AttachFileButton: Viewable {
 
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
-        let icon = Icon(icon: hCoreUIAssets.attachFile.image, iconWidth: 20)
+        let icon = Icon(icon: hCoreUIAssets.plusSmall.image, iconWidth: 20)
 
         bag += isOpenSignal.atOnce()
             .animated(style: SpringAnimationStyle.heavyBounce()) { isOpen in

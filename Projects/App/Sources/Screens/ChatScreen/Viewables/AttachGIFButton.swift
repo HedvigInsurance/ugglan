@@ -26,7 +26,7 @@ extension AttachGIFButton: Viewable {
             .animated(style: AnimationStyle.linear(duration: 0.1)) { isOpen in
                 if isOpen {
                     icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(45)))
-                    icon.icon = hCoreUIAssets.attachFile.image
+                    icon.icon = hCoreUIAssets.plusSmall.image
                     icon.iconWidth = 15
                 } else {
                     icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(0)))

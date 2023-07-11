@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "hedvig-symbol-light.pdf",
+      "filename" : "Style=Dark, Type=Symbol.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "hedvig-symbol.pdf",
+      "filename" : "Style=Light, Type=Symbol.svg",
       "idiom" : "universal"
     }
   ],
