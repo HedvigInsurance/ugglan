@@ -45,11 +45,10 @@ struct ButtonFilledStandardBackground: View {
         case .primary:
             if configuration.isPressed {
                 hButtonColorNew.primaryHover
-                if isEnabled {
-                    hButtonColorNew.primaryDefault
-                } else {
-                    hButtonColorNew.primaryDisabled
-                }
+            } else if isEnabled {
+                hButtonColorNew.primaryDefault
+            } else {
+                hButtonColorNew.primaryDisabled
             }
         case .secondary:
             if configuration.isPressed {
