@@ -23,7 +23,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             if let errorMessage = error {
                 HStack {
 
-                    Image(uiImage: HCoreUIAsset.warningFilledTriangle.image)
+                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
                         .foregroundColor(hSignalColorNew.amberElement)
                     hText(errorMessage, style: .footnote)
                         .frame(maxWidth: .infinity, alignment: .leading)

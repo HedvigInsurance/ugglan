@@ -57,7 +57,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
                 } else if let imageName = claim.imageName {
-                    Image(imageName, bundle: ClaimsResources.bundle)
+                    Image(imageName, bundle: HCoreUIResources.bundle)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24, height: 24).clipShape(Circle())

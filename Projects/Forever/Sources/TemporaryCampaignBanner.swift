@@ -28,7 +28,7 @@ struct LavenderButtonStyle: ButtonStyle {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Spacer(minLength: 20)
-            hCoreUIAssets.chevronRight.view
+            hCoreUIAssets.arrowForward.view
                 .frame(width: 15, height: 15)
         }
         .foregroundColor(foregroundColor(configuration: configuration))

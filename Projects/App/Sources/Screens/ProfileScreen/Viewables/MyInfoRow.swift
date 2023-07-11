@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 
 struct MyInfoRow {
     let nameSignal = ReadWriteSignal<(firstName: String, lastName: String)?>(nil)
@@ -17,7 +18,7 @@ extension MyInfoRow: Viewable {
         let row = IconRow(
             title: L10n.profileMyInfoRowTitle,
             subtitle: "",
-            iconAsset: Asset.myInfoRowIcon.image,
+            iconAsset: hCoreUIAssets.memberCard.image,
             options: [.withArrow]
         )
 

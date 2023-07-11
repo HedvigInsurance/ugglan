@@ -58,7 +58,7 @@ extension AdyenMethodsList: Presentable {
                     }
 
                     row.prepend(logoImageView)
-                    row.append(hCoreUIAssets.chevronRight.image)
+                    row.append(hCoreUIAssets.arrowForward.image)
 
                     return section.append(row)
                         .onValue {

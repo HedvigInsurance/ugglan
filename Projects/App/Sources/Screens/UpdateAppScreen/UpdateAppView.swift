@@ -29,7 +29,8 @@ struct UpdateAppView: View {
                 } content: {
                     HStack {
                         L10n.AppUpdateNeeded.appStoreButton.hText()
-                        Image(uiImage: hCoreUIAssets.external.image)
+                        Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                            .foregroundColor(hTextColorNew.negative)
                     }
                 }
             }

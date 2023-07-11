@@ -154,7 +154,7 @@ extension Message: Reusable {
         editButton.snp.makeConstraints { make in make.width.height.equalTo(20) }
         editButton.layer.cornerRadius = 6
 
-        let editButtonIcon = UIImageView(image: Asset.editIcon.image)
+        let editButtonIcon = UIImageView(image: hCoreUIAssets.editIconFilled.image)
         editButtonIcon.tintColor = .black
         editButtonIcon.contentMode = .scaleAspectFit
         editButton.addSubview(editButtonIcon)

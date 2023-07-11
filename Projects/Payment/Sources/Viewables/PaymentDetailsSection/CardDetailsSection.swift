@@ -87,7 +87,7 @@ extension CardDetailsSection: Viewable {
                 )
 
                 let connectImageView = UIImageView()
-                connectImageView.image = hCoreUIAssets.editIcon.image
+                connectImageView.image = hCoreUIAssets.edit.image
                 connectImageView.tintColor = .brand(.link)
 
                 connectRow.append(connectImageView)

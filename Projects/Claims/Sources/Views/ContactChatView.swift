@@ -52,7 +52,7 @@ struct ChatButtonStyle: ButtonStyle {
                 .fill(hBackgroundColor.primary)
                 .frame(width: 40, height: 40)
 
-            hCoreUIAssets.chat.view
+            hCoreUIAssets.chatQuickNav.view
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 23, height: 19)

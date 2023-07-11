@@ -164,7 +164,7 @@ extension DefaultStyling {
                 ? Fonts.fontFor(style: .headline) : Fonts.fontFor(style: .title1),
         ]
 
-        let backImage = hCoreUIAssets.backButton.image.withAlignmentRectInsets(
+        let backImage = hCoreUIAssets.arrowBack.image.withAlignmentRectInsets(
             UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(

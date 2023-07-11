@@ -100,7 +100,7 @@ public struct StandaloneChevronAccessory: View {
     public init() {}
 
     public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight2.image)
+        Image(uiImage: hCoreUIAssets.chevronRight.image)
     }
 }
 

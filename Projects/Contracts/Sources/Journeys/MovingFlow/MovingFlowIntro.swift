@@ -29,7 +29,7 @@ enum MovingFlowIntroState {
                 onTap()
             } content: {
                 HStack(spacing: 8) {
-                    hCoreUIAssets.chat.view
+                    hCoreUIAssets.chatQuickNav.view
                     hText(L10n.MovingIntro.manualHandlingButtonText)
                 }
             }

@@ -111,7 +111,7 @@ public struct MarketPickerView: View {
                                 viewState = .marketAndLanguage
                             }
                         }) {
-                            Image(uiImage: hCoreUIAssets.backButton.image)
+                            Image(uiImage: hCoreUIAssets.arrowBack.image)
                                 .resizable()
                                 .foregroundColor(hLabelColor.primary)
                         }

@@ -81,7 +81,7 @@ extension BankDetailsSection: Viewable {
 
             let setupImageView = UIImageView()
             setupImageView.image =
-                hasAlreadyConnected ? hCoreUIAssets.editIcon.image : hCoreUIAssets.circularPlus.image
+                hasAlreadyConnected ? hCoreUIAssets.edit.image : hCoreUIAssets.circularPlus.image
             setupImageView.tintColor = .brand(.link)
 
             paymentSetupRow.append(setupImageView)

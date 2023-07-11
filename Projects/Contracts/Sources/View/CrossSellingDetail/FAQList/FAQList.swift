@@ -41,7 +41,7 @@ public struct CrossSellingFAQList: View {
                         store.send(.crossSellingFAQListNavigation(action: .chat))
                     } content: {
                         ZStack {
-                            Image(uiImage: hCoreUIAssets.chat.image)
+                            Image(uiImage: hCoreUIAssets.chatQuickNav.image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 24, height: 24)

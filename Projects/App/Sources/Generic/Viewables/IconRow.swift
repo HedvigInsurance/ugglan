@@ -42,7 +42,7 @@ extension IconRow: Viewable {
         let rowView = RowView()
         let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
         if let iconTint = iconTint { icon.image.tintColor = iconTint }
-        let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
+        let arrow = Icon(frame: .zero, icon: hCoreUIAssets.arrowForward.image, iconWidth: 20)
 
         let labelsContainer = UIStackView()
         labelsContainer.axis = .vertical

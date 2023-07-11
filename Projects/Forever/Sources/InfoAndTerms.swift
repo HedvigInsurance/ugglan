@@ -21,7 +21,7 @@ public struct InfoAndTermsView: View {
         hForm {
             hSection {
                 VStack(spacing: 16) {
-                    Image(uiImage: Asset.infoAndTermsIllustration.image)
+                    Image(uiImage: hCoreUIAssets.infoAndTermsIllustration.image)
                     L10n.ReferralsInfoSheet.headline.hText(.title1)
                     L10n.ReferralsInfoSheet.body(potentialDiscount).hText().foregroundColor(hLabelColor.secondary)
                         .multilineTextAlignment(.center)

@@ -13,7 +13,7 @@ public struct UpdateAppScreen: View {
 
     public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningFilledTriangle.image)
+            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                 .foregroundColor(hSignalColorNew.amberElement)
                 .padding(.top, 254)
                 .padding(.bottom, 8)
