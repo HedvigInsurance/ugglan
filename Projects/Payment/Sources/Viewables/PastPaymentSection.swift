@@ -50,7 +50,7 @@ extension PastPaymentsSection: Viewable {
                 UILabel(value: L10n.paymentsBtnHistory, style: .brand(.headline(color: .primary)))
             )
 
-            let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
+            let arrow = Icon(frame: .zero, icon: hCoreUIAssets.arrowForward.image, iconWidth: 20)
 
             moreRow.append(arrow)
 

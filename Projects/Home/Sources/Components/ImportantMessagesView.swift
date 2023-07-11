@@ -32,7 +32,7 @@ struct ImportantMessagesView: View {
                                         .foregroundColor(hLabelColor.secondary.colorFor(.light, .base))
                                         .multilineTextAlignment(.leading)
                                     Spacer()
-                                    Image(uiImage: hCoreUIAssets.chevronRight.image).foregroundColor(.black)
+                                    Image(uiImage: hCoreUIAssets.arrowForward.image).foregroundColor(.black)
                                 }
                             }
                             .verticalPadding(12)

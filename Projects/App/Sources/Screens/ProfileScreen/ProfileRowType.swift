@@ -27,20 +27,20 @@ enum ProfileRowType {
     var icon: UIImage {
         switch self {
         case .myInfo:
-            return Asset.myInfoRowIcon.image
+            return hCoreUIAssets.memberCard.image
         case .myCharity:
-            return Asset.charityPlain.image
+            return hCoreUIAssets.heart.image
         case .payment:
-            return Asset.paymentRowIcon.image
+            return hCoreUIAssets.payments.image
         case .appInfo:
-            return Asset.infoIcon.image
+            return hCoreUIAssets.infoIcon.image
         case .settings:
-            return Asset.settingsIcon.image
+            return hCoreUIAssets.settingsIcon.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
-                return Asset.euroBonusWithValueRowIcon.image
+                return hCoreUIAssets.euroBonusWithValueRowIcon.image
             } else {
-                return Asset.euroBonusRowIcon.image
+                return hCoreUIAssets.eurobonus.image
             }
         }
     }

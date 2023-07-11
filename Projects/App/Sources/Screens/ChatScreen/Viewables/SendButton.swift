@@ -15,7 +15,7 @@ extension SendButton: Viewable {
 
         control.snp.makeConstraints { make in make.width.height.equalTo(30) }
 
-        let icon = Icon(icon: Asset.sendChat.image, iconWidth: 15)
+        let icon = Icon(icon: hCoreUIAssets.sendChat.image, iconWidth: 15)
         control.addSubview(icon)
 
         icon.snp.makeConstraints { make in make.width.height.equalTo(15)

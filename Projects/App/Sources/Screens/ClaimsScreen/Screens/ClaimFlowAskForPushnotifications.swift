@@ -24,7 +24,8 @@ struct AskForPushnotifications: View {
         hForm {
             VStack {
                 Spacer(minLength: 24)
-                Image(Asset.activatePushNotificationsIllustration.name).resizable().aspectRatio(contentMode: .fit)
+                Image(hCoreUIAssets.activatePushNotificationsIllustration.name).resizable()
+                    .aspectRatio(contentMode: .fit)
                     .frame(height: 200)
                 Spacer(minLength: 24)
                 hText(L10n.claimsActivateNotificationsHeadline, style: .title2).foregroundColor(.primary)
@@ -37,7 +38,7 @@ struct AskForPushnotifications: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 12) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {

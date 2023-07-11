@@ -21,7 +21,7 @@ public struct InfoAndTermsView: View {
         hForm {
             hSection {
                 VStack(spacing: 16) {
-                    Image(uiImage: Asset.infoAndTermsIllustration.image)
+                    Image(uiImage: hCoreUIAssets.infoAndTermsIllustration.image)
                     L10n.ReferralsInfoSheet.headline.hText(.title1)
                     L10n.ReferralsInfoSheet.body(potentialDiscount).hText().foregroundColor(hLabelColor.secondary)
                         .multilineTextAlignment(.center)
@@ -30,7 +30,7 @@ public struct InfoAndTermsView: View {
             .sectionContainerStyle(.transparent).padding(.top, 16)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 UIApplication.shared.open(URL(string: L10n.referralsTermsWebsiteUrl)!)
             } content: {
                 L10n.ReferralsInfoSheet.fullTermsAndConditions.hText()

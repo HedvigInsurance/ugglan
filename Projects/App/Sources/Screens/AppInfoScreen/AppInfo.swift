@@ -26,8 +26,8 @@ struct AppInfo {
 
         var icon: UIImage {
             switch self {
-            case .appInformation: return Asset.infoIcon.image
-            case .appSettings: return Asset.settingsIcon.image
+            case .appInformation: return hCoreUIAssets.infoIcon.image
+            case .appSettings: return hCoreUIAssets.settingsIcon.image
             }
         }
 
@@ -61,7 +61,7 @@ struct AppInfo {
                 switch self {
                 case .language: return hCoreUIAssets.language.image
                 case .market: return Localization.Locale.currentLocale.market.icon
-                case .version: return hCoreUIAssets.infoLarge.image
+                case .version: return hCoreUIAssets.infoIcon.image
                 case .memberId: return hCoreUIAssets.memberCard.image
                 case .deviceId: return hCoreUIAssets.profileCircleIcon.image
                 }
@@ -171,7 +171,7 @@ extension AppInfo: Presentable {
             let marketRow = AppInfoRow(
                 title: market.title,
                 icon: market.icon,
-                trailingIcon: hCoreUIAssets.chevronRight.image,
+                trailingIcon: hCoreUIAssets.arrowForward.image,
                 value: value(row: market)
             )
 
@@ -183,7 +183,7 @@ extension AppInfo: Presentable {
             let languageRow = AppInfoRow(
                 title: language.title,
                 icon: language.icon,
-                trailingIcon: hCoreUIAssets.external.image,
+                trailingIcon: hCoreUIAssets.neArrowSmall.image,
                 trailingIconTintColor: UIColor.typographyColor(.secondary),
                 value: value(row: language)
             )
@@ -253,7 +253,7 @@ extension MenuChild {
         MenuChild(
             title: L10n.aboutScreenTitle,
             style: .default,
-            image: hCoreUIAssets.infoLarge.image,
+            image: hCoreUIAssets.infoIcon.image,
             action: .appInformation
         )
     }

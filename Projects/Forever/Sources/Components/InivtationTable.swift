@@ -8,11 +8,11 @@ extension ForeverInvitation {
     var imageAsset: ImageAsset {
         switch self.state {
         case .active:
-            return Asset.activeInvite
+            return ImageAsset(name: hCoreUIAssets.basketball.name)
         case .pending:
-            return Asset.pendingInvite
+            return ImageAsset(name: hCoreUIAssets.circularClock.name)
         case .terminated:
-            return Asset.terminatedInvite
+            return ImageAsset(name: hCoreUIAssets.circularCross.name)
         }
     }
 

@@ -10,7 +10,7 @@ struct BusinessModelView: View {
 
     var body: some View {
         hForm {
-            Image(uiImage: Asset.milkywire.image)
+            Image(uiImage: hCoreUIAssets.milkywire.image)
                 .resizable()
                 .padding(.horizontal, 48)
                 .padding(.vertical, 20)
