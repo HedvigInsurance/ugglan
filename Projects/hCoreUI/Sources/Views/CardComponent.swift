@@ -35,7 +35,7 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
                         .padding(.leading, 16)
                 }
                 Spacer()
-                hCoreUIAssets.chevronRight.view
+                hCoreUIAssets.arrowForward.view
             }
             .padding([.leading, .trailing], 16)
             if let title = title {

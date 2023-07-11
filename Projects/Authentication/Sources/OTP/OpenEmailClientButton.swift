@@ -40,7 +40,7 @@ struct OpenEmailClientButton: View {
     var body: some View {
         ReadOTPState { state in
             hSection {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     sheetPresented = true
                 } content: {
                     hText(L10n.Login.openEmailAppButton)

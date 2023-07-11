@@ -55,7 +55,7 @@ struct EmbarkRecordAction: View {
                     TrackPlayer(audioPlayer: .init(recording: recording)) {
                         tracking.onPlay.send()
                     }
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         guard let url = audioRecorder.recording?.url else {
                             return
                         }

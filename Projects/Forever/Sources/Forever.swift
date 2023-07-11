@@ -32,7 +32,7 @@ public struct ForeverView: View {
                     }
                 ) { code in
                     if let code = code {
-                        hButton.LargeButtonFilled {
+                        hButton.LargeButtonPrimary {
                             store.send(.showShareSheetWithNotificationReminder(code: code))
                         } content: {
                             hText(L10n.ReferralsEmpty.shareCodeButton)
@@ -55,7 +55,7 @@ public struct ForeverView: View {
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
                         }) {
-                            Image(uiImage: hCoreUIAssets.infoLarge.image).foregroundColor(hLabelColor.primary)
+                            Image(uiImage: hCoreUIAssets.infoIcon.image).foregroundColor(hLabelColor.primary)
                         }
                     }
                 }

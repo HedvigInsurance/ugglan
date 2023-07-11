@@ -37,7 +37,7 @@ struct PriceInputScreen: View {
                     }
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButtonFilled {
+                            hButton.LargeButtonPrimary {
                                 UIApplication.dismissKeyboard()
                                 onSave(purchasePrice)
                             } content: {

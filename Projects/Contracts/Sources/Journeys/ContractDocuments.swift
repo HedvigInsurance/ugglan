@@ -50,7 +50,7 @@ struct ContractDocumentsView: View {
                         }
                         .withCustomAccessory {
                             Spacer()
-                            Image(uiImage: hCoreUIAssets.chevronRight.image)
+                            Image(uiImage: hCoreUIAssets.arrowForward.image)
                         }
                         .onTap {
                             store.send(

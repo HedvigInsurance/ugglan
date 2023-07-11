@@ -48,7 +48,7 @@ extension MyInfo: Presentable {
 
                 Toasts.shared.displayToast(
                     toast: Toast(
-                        symbol: .icon(hCoreUIAssets.editIcon.image),
+                        symbol: .icon(hCoreUIAssets.edit.image),
                         body: L10n.profileMyInfoSaveSuccessToastBody
                     )
                 )

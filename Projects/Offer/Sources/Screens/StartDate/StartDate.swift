@@ -83,7 +83,7 @@ extension StartDate: View {
         }
         .hFormAttachToBottom {
             hFormBottomAttachedBackground {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.updateStartDates(dateMap: selectedDatesMap))
                 } content: {
                     hText(L10n.generalSaveButton)

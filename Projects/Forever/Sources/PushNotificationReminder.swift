@@ -12,7 +12,7 @@ struct PushNotificationReminderView: View {
         hForm {
             hSection {
                 VStack(spacing: 16) {
-                    Image(uiImage: Asset.pushNotificationReminderIllustration.image)
+                    Image(uiImage: hCoreUIAssets.pushNotificationReminderIllustration.image)
                     L10n.ReferralsAllowPushNotificationSheet.headline.hText(.title1)
                     L10n.ReferralsAllowPushNotificationSheet.body.hText().foregroundColor(hLabelColor.secondary)
                         .multilineTextAlignment(.center)
@@ -21,7 +21,7 @@ struct PushNotificationReminderView: View {
             .sectionContainerStyle(.transparent).padding(.top, 16)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 let center = UNUserNotificationCenter.current()
                 center.requestAuthorization(options: [.alert, .sound, .badge]) {
                     _,

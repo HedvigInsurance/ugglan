@@ -40,7 +40,7 @@ public struct UpdateAppScreenOld: View {
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)

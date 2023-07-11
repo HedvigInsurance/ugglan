@@ -30,7 +30,7 @@ public struct InsurableLimitsSectionView<Header: View>: View {
             }
             .withCustomAccessory {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.infoLarge.image)
+                Image(uiImage: hCoreUIAssets.infoIcon.image)
             }
             .onTap {
                 didTap(limit)

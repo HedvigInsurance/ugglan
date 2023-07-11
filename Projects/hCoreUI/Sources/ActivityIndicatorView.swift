@@ -200,7 +200,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
 
         switch buttonStyleSelect {
         case .filledButton:
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 if !isLoading {
                     buttonAction()
                 }

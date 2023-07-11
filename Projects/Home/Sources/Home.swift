@@ -104,7 +104,11 @@ extension HomeView {
             }
         }
         .configureTitle(L10n.HomeTab.title)
-        .configureTabBarItem(title: L10n.HomeTab.title, image: Asset.tab.image, selectedImage: Asset.tabSelected.image)
+        .configureTabBarItem(
+            title: L10n.HomeTab.title,
+            image: hCoreUIAssets.homeTab.image,
+            selectedImage: hCoreUIAssets.homeTabActive.image
+        )
         .configureHomeScroll()
     }
 }

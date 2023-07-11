@@ -232,7 +232,7 @@ extension Embark: Presentable {
                     .onValue { redirect in callback(.value(redirect)) }
 
                 let backButton = UIBarButtonItem(
-                    image: hCoreUIAssets.backButton.image,
+                    image: hCoreUIAssets.arrowBack.image,
                     style: .plain,
                     target: nil,
                     action: nil
@@ -246,7 +246,7 @@ extension Embark: Presentable {
 
                     let closeAction = UIAction(
                         title: L10n.embarkExitButton,
-                        image: hCoreUIAssets.tinyCircledX.image,
+                        image: hCoreUIAssets.circularCross.image,
                         attributes: .destructive
                     ) { _ in callback(.end) }
 
@@ -340,7 +340,7 @@ extension Embark: Presentable {
                 }
 
                 let tooltipButton = UIButton()
-                tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
+                tooltipButton.setImage(hCoreUIAssets.infoIcon.image, for: .normal)
 
                 let didTapTooltip = tooltipButton.signal(for: .touchUpInside)
 

@@ -43,7 +43,7 @@ extension SignSection: View {
             ) { approveButtonTerminology in
                 switch signMethodForQuotes {
                 case .approveOnly:
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         isLoading = true
                         store.send(.startSign)
                     } content: {
