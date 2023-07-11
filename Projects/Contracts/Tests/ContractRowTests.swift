@@ -49,10 +49,9 @@ extension Contract {
     public static func mock(displayName: String, status: ContractStatus) -> Contract {
         let contract = Contract(
             id: "mock_norwegian_123",
-            typeOfContract: .seHouse,
+            typeOfContract: .noHouse,
             upcomingAgreementsTable: .mock(),
             currentAgreementsTable: .mock(),
-            gradientOption: .home,
             logo: .none,
             displayName: displayName,
             switchedFromInsuranceProvider: nil,
