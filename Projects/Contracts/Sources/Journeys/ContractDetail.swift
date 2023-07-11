@@ -138,25 +138,6 @@ struct ContractDetail: View {
                             .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                     }
                 }
-
-                if hAnalyticsExperiment.terminationFlow {
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.contractForId(id)
-                        }
-                    ) { contract in
-                        if (contract?.currentAgreement?.activeTo) == nil {
-                            hButton.SmallButtonText {
-                                store.send(.startTermination(contractId: id))
-                            } content: {
-                                hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTintColor.red)
-                            }
-                            .padding(.bottom, 39)
-                        }
-                    }
-                }
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
@@ -174,13 +155,14 @@ extension ContractDetail {
             style: style,
             options: options
         ) { action in
-            if case let .contractDetailNavigationAction(action: .peril(peril)) = action {
-                Journey(
-                    PerilDetail(peril: peril),
-                    style: .detented(.preferredContentSize, .large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
+            //            if case let .contractDetailNavigationAction(action: .peril(peril)) = action {
+            //                Journey(
+            //                    PerilDetail(peril: peril),
+            //                    style: .detented(.preferredContentSize, .large)
+            //                )
+            //                .withDismissButton
+            //            } else
+            if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InsurableLimitDetail(limit: limit).journey
             } else if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
                 Journey(

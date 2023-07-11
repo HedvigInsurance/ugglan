@@ -18,6 +18,8 @@ extension Array {
 
 struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
+    var selectedPerils: [Perils]
+    @State var nbOfPerils = 1
 
     @hColorBuilder func background(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
@@ -28,34 +30,41 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            HStack(spacing: 8) {
-                if let icon = peril.icon {
-                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
-                        .frame(width: 24, height: 24)
-                } else if let color = peril.color {
-                    Circle().fill(Color(hexString: color))
-                        .padding(4)
-                        .frame(width: 24, height: 24)
-                }
-                VStack {
-                    hText(peril.title, style: .headline)
-                        .lineLimit(1)
-                }
+        hRow {
+            if let icon = peril.icon {
+                RemoteVectorIconView(icon: icon, backgroundFetch: true)
+                    .frame(width: 24, height: 24)
+            } else if let color = peril.color {
+                Circle().fill(Color(hexString: color))
+                    .frame(width: 24, height: 24)
+            }
+            VStack {
+                hText(peril.title, style: .title3)
+                    .lineLimit(1)
             }
             Spacer()
+            Image(
+                uiImage: selectedPerils.contains(peril) ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+            )
+            .transition(.opacity.animation(.easeOut))
         }
-        .padding([.top, .bottom], 18)
-        .padding([.trailing, .leading], 12)
-        .frame(maxWidth: .infinity)
-        .background(background(configuration: configuration))
-        .cornerRadius(.defaultCornerRadius)
-        .shadow(
-            color: .black.opacity(0.1),
-            radius: 2,
-            x: 0,
-            y: 1
-        )
+
+        if selectedPerils.contains(peril) {
+            VStack(alignment: .leading, spacing: 12) {
+                hText(peril.description, style: .footnote)
+                    .padding(.bottom, 12)
+                ForEach(0..<peril.covered.count) { perilIndex in
+                    HStack(alignment: .top, spacing: 8) {
+                        hText(String(format: "%02d", perilIndex + 1), style: .footnote)
+                            .foregroundColor(hTextColorNew.tertiary)
+                        hText(peril.covered[perilIndex], style: .footnote)
+                    }
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 16)
+        }
     }
 }
 
@@ -68,6 +77,7 @@ extension Array where Element == Perils {
 public struct PerilCollection: View {
     public var perils: [Perils]
     public var didTapPeril: (_ peril: Perils) -> Void
+    @State var selectedPerils: [Perils] = []
 
     public init(
         perils: [Perils],
@@ -79,20 +89,23 @@ public struct PerilCollection: View {
 
     public var body: some View {
         ForEach(perils.chunked(into: 2), id: \.id) { chunk in
-            HStack {
+            VStack {
                 ForEach(chunk, id: \.title) { peril in
-                    SwiftUI.Button {
-                        didTapPeril(peril)
-                    } label: {
-                        EmptyView()
+                    hSection {
+                        SwiftUI.Button {
+                            didTapPeril(peril)
+                            if let index = self.selectedPerils.firstIndex(where: { $0 == peril }) {
+                                selectedPerils.remove(at: index)
+                            } else {
+                                selectedPerils.append(peril)
+                            }
+                        } label: {
+                            EmptyView()
+                        }
+                        .buttonStyle(PerilButtonStyle(peril: peril, selectedPerils: selectedPerils))
                     }
-                    .buttonStyle(PerilButtonStyle(peril: peril))
-                }
-                if chunk.count == 1 {
-                    Spacer().frame(maxWidth: .infinity)
                 }
             }
-            .padding(.bottom, 8)
         }
     }
 }
