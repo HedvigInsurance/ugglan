@@ -41,14 +41,13 @@ extension ContractTable: View {
                     ForEach(contracts, id: \.id) { contract in
                         ContractRow(id: contract.id)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 15)
+                            .padding(.top, 16)
                             .transition(.slide)
                     }
                 }
             }
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
-
         }
         PresentableStoreLens(
             ContractStore.self,
@@ -67,11 +66,16 @@ extension ContractTable: View {
                 ) { terminatedContracts in
                     if !terminatedContracts.isEmpty {
                         hSection {
-                            hRow {
-                                hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
-                            }
-                            .onTap {
+                            hButton.LargeButtonSecondary {
                                 store.send(.openTerminatedContracts)
+                            } content: {
+                                hRow {
+                                    hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
+                                        .foregroundColor(hTextColorNew.primary)
+                                }
+                                .withChevronAccessory
+                                .padding(.horizontal, -16)
+                                .foregroundColor(hTextColorNew.secondary)
                             }
                         }
                         .transition(.slide)
@@ -80,5 +84,8 @@ extension ContractTable: View {
                 .presentableStoreLensAnimation(.spring())
             }
         }
+        .sectionContainerStyle(.transparent)
+        .padding(.vertical, 16)
+
     }
 }

@@ -27,37 +27,29 @@ struct CrossSellingItem: View {
     }
 
     var body: some View {
-        SwiftUI.Button {
-            openExternal()
-            //            if !crossSell.infos.isEmpty {
-            //                hAnalyticsEvent.cardClickCrossSellDetail(
-            //                    id: crossSell.typeOfContract
-            //                )
-            //                .send()
-            //                store.send(.openCrossSellingDetail(crossSell: crossSell))
-            //            } else {
-            //                openExternal()
-            //            }
-        } label: {
-            HStack(spacing: 16) {
-                Image(uiImage: crossSell.image)
-                    .resizable()
-                    .frame(width: 48, height: 48)
-                    .aspectRatio(contentMode: .fill)
-                HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
-                        hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
-                            .multilineTextAlignment(.leading)
-                    }
-                    Spacer()
-                    hButton.SmallButtonFilled {
-                        openExternal()
-                    } content: {
-                        hText(L10n.crossSellGetPrice)
-                    }
+        HStack(spacing: 16) {
+            Image(uiImage: crossSell.image)
+                .resizable()
+                .frame(width: 48, height: 48)
+                .aspectRatio(contentMode: .fill)
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
+                    hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                        .multilineTextAlignment(.leading)
                 }
+                Spacer()
+                hButton.MediumButtonFilled {
+                    openExternal()
+                } content: {
+                    hText(L10n.crossSellGetPrice)
+                }
+                .hButtonConfigurationType(.primaryAlt)
             }
+        }
+        .onTapGesture {
+            openExternal()
+            ImpactGenerator.soft()
         }
     }
 }

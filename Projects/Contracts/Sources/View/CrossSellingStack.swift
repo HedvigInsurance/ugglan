@@ -30,7 +30,8 @@ struct CrossSellingStack: View {
                         VStack {
                             CrossSellingItem(crossSell: crossSell)
                         }
-                        .padding(.bottom, 15)
+                        .padding(.bottom, 16)
+                        .padding(.top, 8)
                         .transition(.slide)
                     }
                 }
