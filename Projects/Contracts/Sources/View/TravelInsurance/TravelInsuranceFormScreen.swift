@@ -30,7 +30,7 @@ struct TravelInsuranceFormScreen: View {
                             }
                             .padding([.leading, .trailing], 16)
                         }
-                        hButton.LargeButtonFilled {
+                        hButton.LargeButtonPrimary {
                             validateAndSubmit()
                         } content: {
                             hText(L10n.generalContinueButton)

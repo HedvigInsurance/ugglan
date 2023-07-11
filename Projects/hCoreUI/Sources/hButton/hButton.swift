@@ -37,20 +37,33 @@ extension View {
 
 struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     var configuration: SwiftUI.ButtonStyle.Configuration
 
     var body: some View {
-        if isEnabled {
-            hColorScheme(
-                light: hLabelColor.primary,
-                dark: hTintColor.lavenderOne
-            )
-        } else {
-            hColorScheme(
-                light: hGrayscaleColor.three,
-                dark: hGrayscaleColor.four
-            )
+        switch hButtonConfigurationType {
+        case .primary:
+            if configuration.isPressed {
+                hButtonColorNew.primaryHover
+                if isEnabled {
+                    hButtonColorNew.primaryDefault
+                } else {
+                    hButtonColorNew.primaryDisabled
+                }
+            }
+        case .secondary:
+            if configuration.isPressed {
+                hButtonColorNew.secondaryHover
+                    .hShadow()
+            } else if isEnabled {
+                hFillColorNew.translucentOne
+                    .hShadow()
+            } else {
+                hButtonColorNew.secondaryDisabled
+                    .hShadow()
+            }
         }
+
     }
 }
 
@@ -60,12 +73,9 @@ struct ButtonFilledOverImageBackground: View {
 
     var body: some View {
         if isEnabled {
-            hLabelColor.primary.colorScheme(.dark)
+            hButtonColorNew.primaryDefault
         } else {
-            hColorScheme(
-                light: hGrayscaleColor.three,
-                dark: hGrayscaleColor.four
-            )
+            hButtonColorNew.primaryDisabled
         }
     }
 }
@@ -86,10 +96,33 @@ extension EnvironmentValues {
     }
 }
 
+public enum hButtonConfigurationType {
+    case primary
+    case secondary
+}
+
+private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
+    static let defaultValue = hButtonConfigurationType.primary
+}
+
+extension EnvironmentValues {
+    var hButtonConfigurationType: hButtonConfigurationType {
+        get { self[EnvironmentHButtonConfigurationType.self] }
+        set { self[EnvironmentHButtonConfigurationType.self] = newValue }
+    }
+}
+
 extension View {
     /// set filled button style
     public func hButtonFilledStyle(_ style: hButtonFilledStyle) -> some View {
         self.environment(\.hButtonFilledStyle, style)
+    }
+}
+
+extension View {
+    /// set filled button style
+    public func hButtonConfigurationType(_ type: hButtonConfigurationType) -> some View {
+        self.environment(\.hButtonConfigurationType, type)
     }
 }
 
@@ -152,31 +185,26 @@ extension View {
 
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
+    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
+        @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
         var configuration: Configuration
 
         @hColorBuilder var foregroundColor: some hColor {
-            if !isEnabled {
+            switch hButtonConfigurationType {
+            case .primary:
                 switch hButtonFilledStyle {
                 case .standard:
-                    hColorScheme(
-                        light: hLabelColor.primary.inverted,
-                        dark: hLabelColor.quarternary
-                    )
+                    hTextColorNew.negative
                 case .overImage:
-                    hLabelColor.primary.colorFor(.light, .base)
+                    hTextColorNew.negative /* TODO: NOT SURE */
                 }
-            } else {
-                switch hButtonFilledStyle {
-                case .standard:
-                    hLabelColor.primary.inverted
-                case .overImage:
-                    hLabelColor.primary.colorFor(.light, .base)
-                }
+            case .secondary:
+                hTextColorNew.primary
             }
         }
 
@@ -190,11 +218,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
     }
 
-    @hColorBuilder
-    var pressedColor: some hColor {
-        hButtonColorNew.primaryHover
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
@@ -202,11 +225,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(ButtonFilledBackground(configuration: configuration))
-        .overlay(configuration.isPressed ? pressedColor : nil)
         .clipShape(Squircle.default())
     }
 }
 
+/* TODO: REMOVE */
 struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
 
@@ -368,7 +391,7 @@ struct _hButton<Content: View>: View {
 }
 
 public enum hButton {
-    public struct LargeButtonFilled<Content: View>: View {
+    public struct LargeButtonPrimary<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
 
@@ -387,6 +410,30 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.primary)
+        }
+    }
+
+    public struct LargeButtonSecondary<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.secondary)
         }
     }
 

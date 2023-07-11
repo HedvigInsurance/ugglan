@@ -23,7 +23,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                         .padding(.bottom, 8)
 
-                    hButton.LargeButtonFilled {
+                    hButton.LargeButtonPrimary {
                         store.send(.singleItemCheckoutRequest)
                         store.send(.navigationAction(action: .openCheckoutTransferringScreen))
                     } content: {

@@ -36,7 +36,7 @@ public struct TerminationFailScreen: View {
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.goToFreeTextChat)
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)

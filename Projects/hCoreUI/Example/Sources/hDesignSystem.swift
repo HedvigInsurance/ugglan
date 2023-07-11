@@ -38,12 +38,12 @@ struct FormShowcase: View {
             hSection(header: hText("Buttons")) {
                 hRow {
                     ButtonShowcase(title: "Large Button - Filled") {
-                        hButton.LargeButtonFilled {
+                        hButton.LargeButtonPrimary {
 
                         } content: {
                             hText("Enabled")
                         }
-                        hButton.LargeButtonFilled {
+                        hButton.LargeButtonPrimary {
 
                         } content: {
                             hText("Disabled")

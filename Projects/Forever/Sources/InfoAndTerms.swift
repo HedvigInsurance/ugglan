@@ -30,7 +30,7 @@ public struct InfoAndTermsView: View {
             .sectionContainerStyle(.transparent).padding(.top, 16)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 UIApplication.shared.open(URL(string: L10n.referralsTermsWebsiteUrl)!)
             } content: {
                 L10n.ReferralsInfoSheet.fullTermsAndConditions.hText()

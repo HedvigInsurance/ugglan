@@ -100,7 +100,7 @@ extension hSectionContainerStyle: ViewModifier {
             content
         case .opaque:
             content.background(
-                hFillColorNew.opaqueOne
+                hBackgroundColorNew.primary
             )
             .clipShape(Squircle.default())
         case .caution:

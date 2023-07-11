@@ -27,46 +27,35 @@ struct ContractInformationView: View {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    if let table = contract.currentAgreementsTable {
-                        ForEach(table.sections) { section in
-                            hSection(section.rows, id: \.title) { row in
-                                hRow {
-                                    hText(row.title)
+                    VStack {
+                        if let table = contract.currentAgreementsTable {
+                            ForEach(table.sections) { section in
+                                hSection(section.rows, id: \.title) { row in
+                                    hRow {
+                                        hText(row.title, style: .body)
+                                    }
+                                    .noSpacing()
+                                    .verticalPadding(16)
+                                    .withCustomAccessory({
+                                        Spacer()
+                                        hText(String(row.value), style: .body)
+                                            .foregroundColor(hTextColorNew.secondary)
+                                    })
                                 }
-                                .withCustomAccessory({
-                                    Spacer()
-                                    hText(String(row.value), style: .body)
-                                        .foregroundColor(hLabelColor.secondary)
-                                        .padding(.trailing, 8)
-                                })
-                            }
-                            .withHeader {
-                                hText(
-                                    section.title,
-                                    style: .headline
-                                )
-                                .foregroundColor(hLabelColor.secondary)
+                                .withoutHorizontalPadding
+                                .sectionContainerStyle(.transparent)
                             }
                         }
-                    }
-                    if contract.currentAgreement?.status != .terminated {
-                        if hAnalyticsExperiment.movingFlow, contract.showsMovingFlowButton {
-                            hSection {
-                                hButton.LargeButtonOutlined {
-                                    store.send(.goToMovingFlow)
-                                } content: {
-                                    hText(L10n.HomeTab.editingSectionChangeAddressLabel)
-                                }
+                        if contract.currentAgreement?.status != .terminated {
+                            hButton.LargeButtonSecondary {
+                                //edit info action
+                            } content: {
+                                hText(L10n.contractEditInfoLabel)
                             }
-                            .sectionContainerStyle(.transparent)
-                        }
-
-                        if contract.canChangeCoInsured {
-                            ChangePeopleView()
+                            .padding(.horizontal, 16)
                         }
                     }
                 }
-                .padding(.bottom, 20)
             }
         }
     }
@@ -82,11 +71,11 @@ struct ChangePeopleView: View {
                     .hText(.title2)
                 L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
                     .hText(.subheadline)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColorNew.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 10)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.goToFreeTextChat)
                 } content: {
                     L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
@@ -109,7 +98,7 @@ struct RenewalInformationCard: View {
                 bodyText: L10n.InsuranceDetails.AdressUpdateBody.No.address(
                     contract.upcomingAgreementDate?.displayDateDotFormat ?? ""
                 ),
-                backgroundColor: hTintColor.lavenderTwo
+                backgroundColor: hTintColor.lavenderTwo /* TODO: CHANGE */
             ) {
                 hButton.SmallButtonOutlined {
                     store.send(

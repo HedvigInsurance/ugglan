@@ -25,7 +25,7 @@ enum MovingFlowIntroState {
     @ViewBuilder func makeButton(onTap: @escaping () -> Void) -> some View {
         switch self {
         case .existing, .manual:
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 onTap()
             } content: {
                 HStack(spacing: 8) {
@@ -34,7 +34,7 @@ enum MovingFlowIntroState {
                 }
             }
         case .normal:
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 onTap()
             } content: {
                 hText(L10n.MovingIntro.openFlowButtonText)

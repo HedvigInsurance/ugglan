@@ -131,7 +131,7 @@ private struct DatePickerView: View {
                 .sectionContainerStyle(.transparent)
             }
             .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     action.execute()
                 } content: {
                     hText(

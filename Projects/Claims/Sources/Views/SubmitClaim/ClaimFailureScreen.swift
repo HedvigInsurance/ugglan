@@ -27,7 +27,7 @@ public struct ClaimFailureScreen: View {
         }
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
