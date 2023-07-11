@@ -32,7 +32,7 @@ public enum CrossSellingFAQListNavigationAction: ActionProtocol, Hashable {
     case chat
 }
 
-public indirect enum ContractAction: ActionProtocol, Hashable {
+public enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
     case fetch
@@ -75,8 +75,6 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case startTermination(contractId: String)
     case sendTerminationDate(terminationDate: Date)
     case deleteTermination
-
-    case setLoadingState(action: ContractAction, state: LoadingState<String>?)
     case setTerminationContext(context: String)
     case setTerminationContractId(id: String)
 
@@ -93,4 +91,12 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openTerminationDeletionScreen
+}
+
+public enum ContractLoadingAction: LoadingProtocol {
+    case fetchContractBundles
+    case fetchContracts
+    case startTermination
+    case sendTerminationDate
+    case deleteTermination
 }
