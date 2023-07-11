@@ -234,11 +234,17 @@ struct HonestyPledge: View {
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
+        .hUseNewStyle
+        .hDisableScroll
     }
 }
 
 class VCViewModel: ObservableObject {
     weak var vc: UIViewController?
+
+    deinit {
+        let ss = ""
+    }
 }
 
 extension HonestyPledge {
@@ -281,7 +287,5 @@ extension HonestyPledge {
                 }
             }
         }
-        .hUseNewStyle
-        .hDisableScroll
     }
 }
