@@ -6,7 +6,7 @@ struct hRowDividerSettings {
 }
 
 private struct EnvironmentHRowDividerSettings: EnvironmentKey {
-    static let defaultValue = hRowDividerSettings(insets: .init(top: 0, leading: 15, bottom: 0, trailing: 0))
+    static let defaultValue = hRowDividerSettings(insets: .init(top: 0, leading: 16, bottom: 0, trailing: 16))
 }
 
 extension EnvironmentValues {
