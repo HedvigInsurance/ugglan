@@ -64,25 +64,6 @@ struct ContractInformationView: View {
                                 }
                             }
                         }
-
-                        if hAnalyticsExperiment.terminationFlow {
-                            PresentableStoreLens(
-                                ContractStore.self,
-                                getter: { state in
-                                    state.contractForId(id)
-                                }
-                            ) { contract in
-                                if (contract?.currentAgreement?.activeTo) == nil {
-                                    hButton.LargeButtonText {
-                                        store.send(.startTermination(contractId: id))
-                                    } content: {
-                                        hText(L10n.terminationButton, style: .body)
-                                            .foregroundColor(hTintColor.red)
-                                    }
-                                    .padding(.bottom, 39)
-                                }
-                            }
-                        }
                     }
                     .padding(.vertical, 16)
 

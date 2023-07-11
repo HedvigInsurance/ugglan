@@ -24,7 +24,6 @@ struct ContractCoverageView: View {
                     InsurableLimitsSectionView(
                         limits: contract.insurableLimits
                     ) { limit in
-                        store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
                     }
                     Spacer()
                     PerilCollection(perils: contract.contractPerils) { peril in
