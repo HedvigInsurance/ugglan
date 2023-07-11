@@ -30,7 +30,7 @@ struct ContractTable {
 
 extension ContractTable: View {
     var body: some View {
-        LoadingViewWithContent(.fetchContractBundles, withRetry: true) {
+        LoadingViewWithContent(ContractStore.self, [.fetchContractBundles]) {
             hSection {
                 PresentableStoreLens(
                     ContractStore.self,
