@@ -112,7 +112,7 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(.startTermination(contractId: id)) {
+        LoadingViewWithContent(ContractStore.self, [.startTermination]) {
             hForm {
                 hSection {
                     ContractRow(
@@ -143,6 +143,7 @@ struct ContractDetail: View {
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
+        .presentableStoreLensAnimation(.default)
     }
 }
 
