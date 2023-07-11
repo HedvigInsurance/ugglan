@@ -88,23 +88,19 @@ public struct PerilCollection: View {
     }
 
     public var body: some View {
-        ForEach(perils.chunked(into: 2), id: \.id) { chunk in
-            VStack {
-                ForEach(chunk, id: \.title) { peril in
-                    hSection {
-                        SwiftUI.Button {
-                            didTapPeril(peril)
-                            if let index = self.selectedPerils.firstIndex(where: { $0 == peril }) {
-                                selectedPerils.remove(at: index)
-                            } else {
-                                selectedPerils.append(peril)
-                            }
-                        } label: {
-                            EmptyView()
-                        }
-                        .buttonStyle(PerilButtonStyle(peril: peril, selectedPerils: selectedPerils))
+        ForEach(perils, id: \.title) { peril in
+            hSection {
+                SwiftUI.Button {
+                    didTapPeril(peril)
+                    if let index = self.selectedPerils.firstIndex(where: { $0 == peril }) {
+                        selectedPerils.remove(at: index)
+                    } else {
+                        selectedPerils.append(peril)
                     }
+                } label: {
+                    EmptyView()
                 }
+                .buttonStyle(PerilButtonStyle(peril: peril, selectedPerils: selectedPerils))
             }
         }
     }
