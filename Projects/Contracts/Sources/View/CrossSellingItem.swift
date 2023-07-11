@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 import SwiftUI
 import hAnalytics
 import hCore
@@ -27,22 +28,35 @@ struct CrossSellingItem: View {
 
     var body: some View {
         SwiftUI.Button {
-            if !crossSell.infos.isEmpty {
-                hAnalyticsEvent.cardClickCrossSellDetail(
-                    id: crossSell.typeOfContract
-                )
-                .send()
-                store.send(.openCrossSellingDetail(crossSell: crossSell))
-            } else {
-                openExternal()
-            }
+            openExternal()
+            //            if !crossSell.infos.isEmpty {
+            //                hAnalyticsEvent.cardClickCrossSellDetail(
+            //                    id: crossSell.typeOfContract
+            //                )
+            //                .send()
+            //                store.send(.openCrossSellingDetail(crossSell: crossSell))
+            //            } else {
+            //                openExternal()
+            //            }
         } label: {
-            CrossSellingCardLabel(crossSell: crossSell) {
+            //            KFImage(crossSell.imageURL)
+            //                .fade(duration: 0.25)
+            Image(uiImage: crossSell.image)
+                .resizable()
+                .frame(width: 48, height: 48)
+                .aspectRatio(contentMode: .fill)
+            VStack(alignment: .leading, spacing: 0) {
+                hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
+                hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                    .multilineTextAlignment(.leading)
+            }
+            Spacer()
+            hButton.SmallButtonFilled {
                 openExternal()
+            } content: {
+                hText("Get Price")
             }
         }
-        .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
-        .contentShape(Rectangle())
     }
 }
 
@@ -78,6 +92,5 @@ struct CrossSellingItemPreviews: PreviewProvider {
 
     static var previews: some View {
         itemWithImage.previewLayout(.sizeThatFits)
-        itemWithoutImage.previewLayout(.sizeThatFits).colorScheme(.dark)
     }
 }
