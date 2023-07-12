@@ -127,8 +127,8 @@ extension Contracts {
             ContractStore.self,
             rootView: Contracts(filter: filter)
         ) { action in
-            if case let .openDetail(contractId) = action, openDetails {
-                ContractDetail(id: contractId).journey()
+            if case let .openDetail(contractId, title) = action, openDetails {
+                ContractDetail(id: contractId, title: title).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),

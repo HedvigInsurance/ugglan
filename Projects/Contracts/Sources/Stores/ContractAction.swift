@@ -61,7 +61,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
-    case openDetail(contractId: String)
+    case openDetail(contractId: String, title: String)
     case openTerminatedContracts
     case didSignFocusedCrossSell
     case resetSignedCrossSells

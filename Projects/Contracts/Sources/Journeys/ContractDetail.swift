@@ -61,6 +61,7 @@ struct ContractDetail: View {
     @EnvironmentObject var context: TabControllerContext
 
     var id: String
+    var title: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
@@ -81,10 +82,11 @@ struct ContractDetail: View {
     }
 
     init(
-        id: String
+        id: String,
+        title: String
     ) {
         self.id = id
-
+        self.title = title
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(
             id: id
@@ -170,5 +172,6 @@ extension ContractDetail {
                 .withDismissButton
             }
         }
+        .configureTitle(title)
     }
 }
