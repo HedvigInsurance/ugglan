@@ -21,24 +21,12 @@ struct ContractCoverageView: View {
         ) { contract in
             if let contract = contract {
                 VStack {
-                    hSection {
-                        PerilCollection(perils: contract.contractPerils) { peril in
-                            store.send(.contractDetailNavigationAction(action: .peril(peril: peril)))
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                    Spacer()
-                    SwiftUI.Divider()
-                    Spacer()
                     InsurableLimitsSectionView(
-                        header: hText(
-                            L10n.contractCoverageMoreInfo,
-                            style: .headline
-                        )
-                        .foregroundColor(hLabelColor.secondary),
                         limits: contract.insurableLimits
                     ) { limit in
-                        store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
+                    }
+                    Spacer()
+                    PerilCollection(perils: contract.contractPerils) { peril in
                     }
                 }
             }

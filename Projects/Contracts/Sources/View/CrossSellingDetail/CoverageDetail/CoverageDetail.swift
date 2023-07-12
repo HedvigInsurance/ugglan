@@ -33,9 +33,6 @@ public struct CrossSellingCoverageDetail: View {
 
             if !crossSellInfo.insurableLimits.isEmpty {
                 InsurableLimitsSectionView(
-                    header: hText(
-                        L10n.contractCoverageMoreInfo
-                    ),
                     limits: crossSellInfo.insurableLimits
                 ) { limit in
                     store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
