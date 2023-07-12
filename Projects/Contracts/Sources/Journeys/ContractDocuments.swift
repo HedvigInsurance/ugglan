@@ -20,6 +20,15 @@ enum Documents: CaseIterable {
         }
     }
 
+    var subTitle: String {
+        switch self {
+        case .certificate:
+            return L10n.myDoumentsInsurancePrepurchaseSubtitle
+        case .terms:
+            return L10n.myDocumentsInsuranceTermsSubtitle
+        }
+    }
+
     func url(from contract: Contract) -> URL? {
         switch self {
         case .certificate:
@@ -43,24 +52,35 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                hSection(Documents.allCases, id: \.title) { document in
-                    if let url = document.url(from: contract) {
-                        hRow {
-                            hText(document.title)
-                        }
-                        .withCustomAccessory {
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.arrowForward.image)
-                        }
-                        .onTap {
-                            store.send(
-                                .contractDetailNavigationAction(action: .document(url: url, title: document.title))
-                            )
+                ForEach(Documents.allCases, id: \.title) { document in
+                    hSection {
+                        if let url = document.url(from: contract) {
+                            hRow {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    HStack(spacing: 1) {
+                                        hText(document.title)
+                                        if #available(iOS 16.0, *) {
+                                            hText(L10n.documentPdfLabel, style: .footnote)
+                                                .baselineOffset(6.0)
+                                        }
+                                    }
+                                    hText(document.subTitle)
+                                        .foregroundColor(hTextColorNew.secondary)
+                                }
+                            }
+                            .withCustomAccessory {
+                                Spacer()
+                                Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                            }
+                            .onTap {
+                                store.send(
+                                    .contractDetailNavigationAction(action: .document(url: url, title: document.title))
+                                )
+                            }
                         }
                     }
                 }
             }
-
         }
     }
 }
