@@ -190,7 +190,7 @@ extension ContractDetail {
                         onSelected: { value in
                             if value.first == EditInformation.coInsured.value {
                                 store.send(.dismissEditInfo(type: .coInsured))
-                            } else if value.first == EditInformation.coInsured.title {
+                            } else if value.first == EditInformation.changeAddress.value {
                                 store.send(.dismissEditInfo(type: .changeAddress))
                             }
                         },
@@ -204,9 +204,9 @@ extension ContractDetail {
                 ) {
                     action in
                     if case let .dismissEditInfo(type) = action {
-                        DismissJourney()
+                        PopJourney()
                             .onPresent {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                     switch type {
                                     case .coInsured:
                                         store.send(.goToFreeTextChat)
