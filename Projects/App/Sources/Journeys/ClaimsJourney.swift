@@ -79,11 +79,7 @@ extension AppJourney {
                     AskForPushnotifications.journey(for: origin)
                 } else if case .openTriagingGroupScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                } else {
-                    ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                 }
-            } else {
-                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
             }
         }
     }
