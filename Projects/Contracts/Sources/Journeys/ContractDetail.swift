@@ -64,7 +64,7 @@ struct ContractDetail: View {
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
-    let contractDocuments: ContractDocumentsView
+    let contractDetails: ContractDocumentsView
 
     @State private var selectedView = ContractDetailsViews.overview
 
@@ -76,7 +76,7 @@ struct ContractDetail: View {
         case .coverage:
             contractCoverage
         case .details:
-            contractDocuments
+            contractDetails
         }
     }
 
@@ -89,7 +89,7 @@ struct ContractDetail: View {
         contractCoverage = ContractCoverageView(
             id: id
         )
-        contractDocuments = ContractDocumentsView(id: id)
+        contractDetails = ContractDocumentsView(id: id)
 
         let font = Fonts.fontFor(style: .footnote)
         UISegmentedControl.appearance()
@@ -119,7 +119,7 @@ struct ContractDetail: View {
                         id: id,
                         allowDetailNavigation: false
                     )
-                    .padding(.bottom, 20)
+                    .padding(.vertical, 16)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title, style: .footnote).tag(view)
@@ -137,6 +137,7 @@ struct ContractDetail: View {
                             .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                     }
                 }
+                .padding(.top, 8)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
