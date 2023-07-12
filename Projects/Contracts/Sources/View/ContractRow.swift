@@ -159,6 +159,7 @@ struct ContractRow: View {
             }
         }
         .presentableStoreLensAnimation(.easeInOut)
+        .hShadow()
     }
 }
 
