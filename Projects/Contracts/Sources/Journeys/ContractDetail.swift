@@ -241,8 +241,8 @@ enum EditInformation: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .coInsured: return "Edit co-insured"
-        case .changeAddress: return "Change address"
+        case .coInsured: return L10n.contractEditCoinsured
+        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         }
     }
 }
