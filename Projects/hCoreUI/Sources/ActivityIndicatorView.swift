@@ -245,6 +245,17 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .alert(isPresented: $presentError) {
+                Alert(
+                    title: Text(L10n.somethingWentWrong),
+                    message: Text(error),
+                    dismissButton: .default(Text(L10n.alertOk)) {
+                        for action in actions {
+                            store.removeLoading(for: action)
+                        }
+                    }
+                )
+            }
             .onReceive(
                 store.loadingSignal
                     .plain()
@@ -298,6 +309,17 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .alert(isPresented: $presentError) {
+                Alert(
+                    title: Text(L10n.somethingWentWrong),
+                    message: Text(error),
+                    dismissButton: .default(Text(L10n.alertOk)) {
+                        for action in actions {
+                            store.removeLoading(for: action)
+                        }
+                    }
+                )
+            }
             .onReceive(
                 store.loadingSignal
                     .plain()
@@ -340,57 +362,6 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
             }
         case .none:
             EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    private var contentView: some View {
-        if hUseNewStyle {
-            content()
-                .blur(radius: isLoading ? 10 : 0)
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
-                        }
-                    )
-                }
-        } else {
-            content()
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
-                        }
-                    )
-                }
-        }
-    }
-    @ViewBuilder
-    private var loadingIndicatorView: some View {
-        if hUseNewStyle {
-            HStack {
-                DotsActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColorNew.primary.opacity(0.01))
-            .edgesIgnoringSafeArea(.top)
-        } else {
-            HStack {
-                WordmarkActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColor.primary.opacity(0.7))
-            .cornerRadius(.defaultCornerRadius)
-            .edgesIgnoringSafeArea(.top)
         }
     }
 }

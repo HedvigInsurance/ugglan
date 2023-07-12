@@ -234,6 +234,8 @@ struct HonestyPledge: View {
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
+        .hUseNewStyle
+        .hDisableScroll
     }
 }
 
@@ -281,7 +283,5 @@ extension HonestyPledge {
                 }
             }
         }
-        .hUseNewStyle
-        .hDisableScroll
     }
 }
