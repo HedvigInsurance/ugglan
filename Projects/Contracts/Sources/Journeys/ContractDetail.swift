@@ -64,7 +64,7 @@ struct ContractDetail: View {
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
-    let contractDocuments: ContractDocumentsView
+    let contractDetails: ContractDetailsView
 
     @State private var selectedView = ContractDetailsViews.overview
 
@@ -76,7 +76,7 @@ struct ContractDetail: View {
         case .coverage:
             contractCoverage
         case .details:
-            contractDocuments
+            contractDetails
         }
     }
 
@@ -89,7 +89,7 @@ struct ContractDetail: View {
         contractCoverage = ContractCoverageView(
             id: id
         )
-        contractDocuments = ContractDocumentsView(id: id)
+        contractDetails = ContractDetailsView(id: id)
 
         let font = Fonts.fontFor(style: .footnote)
         UISegmentedControl.appearance()
