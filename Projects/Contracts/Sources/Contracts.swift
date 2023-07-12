@@ -82,7 +82,7 @@ extension Contracts: View {
         hForm(gradientType: .insurance(filter: filter.hashValue)) {
             ContractTable(filter: filter)
         }
-        .withChatButton {
+        .withOptionalChatButton(showChat: self.filter.displaysActiveContracts) {
             store.send(.goToFreeTextChat)
         }
         .onReceive(pollTimer) { _ in
@@ -105,6 +105,12 @@ extension Contracts: View {
                 .fetchContractsDone
             )
 
+        }
+        .hFormAttachToBottom {
+            if self.filter.displaysTerminatedContracts {
+                InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                    .padding(.bottom, 16)
+            }
         }
     }
 }
@@ -169,7 +175,9 @@ extension Contracts {
                 navigationController.hero.navigationAnimationType = .fade
             }
         })
-        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureTitle(
+            filter.displaysActiveContracts ? L10n.InsurancesTab.title : L10n.InsurancesTab.cancelledInsurancesTitle
+        )
         .configureContractsTabBarItem
     }
 }

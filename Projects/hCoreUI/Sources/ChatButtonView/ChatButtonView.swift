@@ -70,4 +70,14 @@ extension hForm {
     public func withChatButton(tooltip: Bool = false, action: @escaping () -> Void) -> some View {
         ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
     }
+
+    @ViewBuilder
+    public func withOptionalChatButton(showChat: Bool, tooltip: Bool = false, action: @escaping () -> Void) -> some View
+    {
+        if showChat {
+            ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
+        } else {
+            self
+        }
+    }
 }
