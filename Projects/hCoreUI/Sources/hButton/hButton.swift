@@ -10,6 +10,15 @@ struct LargeButtonModifier: ViewModifier {
     }
 }
 
+struct MediumButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(minHeight: 40)
+            .padding(.leading)
+            .padding(.trailing)
+    }
+}
+
 struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -21,6 +30,7 @@ struct SmallButtonModifier: ViewModifier {
 
 enum ButtonSize {
     case small
+    case medium
     case large
 }
 
@@ -29,6 +39,8 @@ extension View {
         switch size {
         case .small:
             self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .subheadline)
+        case .medium:
+            self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .standard)
         case .large:
             self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .standard)
         }
@@ -49,6 +61,14 @@ struct ButtonFilledStandardBackground: View {
                 hButtonColorNew.primaryDefault
             } else {
                 hButtonColorNew.primaryDisabled
+            }
+        case .primaryAlt:
+            if configuration.isPressed {
+                hButtonColorNew.primaryAltHover
+            } else if isEnabled {
+                hButtonColorNew.primaryAltDefault
+            } else {
+                hButtonColorNew.primaryAltDisabled
             }
         case .secondary:
             if configuration.isPressed {
@@ -97,6 +117,7 @@ extension EnvironmentValues {
 
 public enum hButtonConfigurationType {
     case primary
+    case primaryAlt
     case secondary
 }
 
@@ -202,6 +223,13 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 case .overImage:
                     hTextColorNew.negative /* TODO: NOT SURE */
                 }
+            case .primaryAlt:
+                switch hButtonFilledStyle {
+                case .standard:
+                    hTextColorNew.primary
+                case .overImage:
+                    hTextColorNew.primary /* TODO: NOT SURE */
+                }
             case .secondary:
                 hTextColorNew.primary
             }
@@ -218,6 +246,15 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
+        switch hButtonConfigurationType {
+        case .primary:
+            getView(configuration: configuration)
+        case .primaryAlt, .secondary:
+            getView(configuration: configuration).hShadow()
+        }
+    }
+
+    private func getView(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
                 .padding(.horizontal, 16)
@@ -413,6 +450,29 @@ public enum hButton {
         }
     }
 
+    public struct LargeButtonAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.primaryAlt)
+        }
+    }
+
     public struct LargeButtonSecondary<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -433,6 +493,26 @@ public enum hButton {
             }
             .buttonStyle(ButtonFilledStyle(size: .large))
             .hButtonConfigurationType(.secondary)
+        }
+    }
+
+    public struct MediumButtonFilled<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
         }
     }
 

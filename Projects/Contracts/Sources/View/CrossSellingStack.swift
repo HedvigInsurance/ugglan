@@ -15,18 +15,23 @@ struct CrossSellingStack: View {
         ) { crossSells in
             if !crossSells.isEmpty {
                 hSection(
-                    header: HStack(alignment: .center, spacing: 8) {
-                        CrossSellingUnseenCircle()
-                        hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
-                            .foregroundColor(hLabelColor.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                    header:
+                        VStack(spacing: 16) {
+                            HStack(alignment: .center, spacing: 8) {
+                                CrossSellingUnseenCircle()
+                                hText(L10n.InsuranceTab.CrossSells.title)
+                                    .foregroundColor(hTextColorNew.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            Divider()
+                        }
                 ) {
                     ForEach(crossSells, id: \.title) { crossSell in
                         VStack {
                             CrossSellingItem(crossSell: crossSell)
                         }
-                        .padding(.bottom, 15)
+                        .padding(.bottom, 16)
+                        .padding(.top, 8)
                         .transition(.slide)
                     }
                 }

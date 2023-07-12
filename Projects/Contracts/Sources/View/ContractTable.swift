@@ -41,14 +41,13 @@ extension ContractTable: View {
                     ForEach(contracts, id: \.id) { contract in
                         ContractRow(id: contract.id)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 15)
+                            .padding(.top, 16)
                             .transition(.slide)
                     }
                 }
             }
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
-
         }
         PresentableStoreLens(
             ContractStore.self,
@@ -66,19 +65,17 @@ extension ContractTable: View {
                     }
                 ) { terminatedContracts in
                     if !terminatedContracts.isEmpty {
-                        hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
-                            hRow {
-                                hText(L10n.InsurancesTab.terminatedInsurancesLabel)
-                            }
-                            .withCustomAccessory({
-                                Spacer()
-                                hText(String(terminatedContracts.count), style: .body)
-                                    .foregroundColor(hLabelColor.secondary)
-                                    .padding(.trailing, 8)
-                                StandaloneChevronAccessory()
-                            })
-                            .onTap {
+                        hSection {
+                            hButton.LargeButtonSecondary {
                                 store.send(.openTerminatedContracts)
+                            } content: {
+                                hRow {
+                                    hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
+                                        .foregroundColor(hTextColorNew.primary)
+                                }
+                                .withChevronAccessory
+                                .padding(.horizontal, -16)
+                                .foregroundColor(hTextColorNew.secondary)
                             }
                         }
                         .transition(.slide)
@@ -87,5 +84,8 @@ extension ContractTable: View {
                 .presentableStoreLensAnimation(.spring())
             }
         }
+        .sectionContainerStyle(.transparent)
+        .padding(.vertical, 16)
+
     }
 }
