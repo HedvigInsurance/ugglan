@@ -201,6 +201,7 @@ struct HonestyPledge: View {
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
+        .hDisableScroll
     }
 }
 
