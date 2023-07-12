@@ -68,6 +68,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
     case contractEditInfo
+    case dismissEditInfo(type: EditType?)
 
     case openSetTerminationDateScreen(contractId: String)
     case sendTermination(terminationDate: Date, surveyUrl: String)
@@ -100,4 +101,9 @@ public enum ContractLoadingAction: LoadingProtocol {
     case startTermination
     case sendTerminationDate
     case deleteTermination
+}
+
+public enum EditType: Codable, Hashable {
+    case coInsured
+    case changeAddress
 }

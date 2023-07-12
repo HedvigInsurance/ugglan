@@ -180,6 +180,7 @@ extension ContractDetail {
                 .withDismissButton
             } else if case .contractEditInfo = action {
                 HostingJourney(
+                    ContractStore.self,
                     rootView: CheckboxPickerScreen(
                         items: [
                             (EditInformation.coInsured.value, EditInformation.coInsured.title),
@@ -188,19 +189,36 @@ extension ContractDetail {
                         preSelectedItems: { [] },
                         onSelected: { value in
                             if value.first == EditInformation.coInsured.value {
-                                store.send(.goToFreeTextChat)
+                                store.send(.dismissEditInfo(type: .coInsured))
                             } else if value.first == EditInformation.coInsured.title {
-                                store.send(.goToMovingFlow)
+                                store.send(.dismissEditInfo(type: .changeAddress))
                             }
                         },
                         onCancel: {
-                            //pop
+                            store.send(.dismissEditInfo(type: nil))
                         },
                         singleSelect: true
                     ),
                     style: .detented(.scrollViewContentSize),
                     options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
-                )
+                ) {
+                    action in
+                    if case let .dismissEditInfo(type) = action {
+                        DismissJourney()
+                            .onPresent {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                    switch type {
+                                    case .coInsured:
+                                        store.send(.goToFreeTextChat)
+                                    case .changeAddress:
+                                        store.send(.goToMovingFlow)
+                                    case nil:
+                                        break
+                                    }
+                                }
+                            }
+                    }
+                }
                 .configureTitle(L10n.contractChangeInformationTitle)
                 .withDismissButton
             }
