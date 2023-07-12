@@ -438,23 +438,23 @@ public struct hGrayscaleTranslucentDarkColorNew {
     }
 
     public static var greyScaleTranslucent600: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.57)
+        hGrayscaleColorNew.greyScale25.opacity(0.57)
     }
 
     public static var greyScaleTranslucent700: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.415)
+        hGrayscaleColorNew.greyScale25.opacity(0.415)
     }
 
     public static var greyScaleTranslucent800: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.266)
+        hGrayscaleColorNew.greyScale25.opacity(0.266)
     }
 
     public static var greyScaleTranslucent900: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.13)
+        hGrayscaleColorNew.greyScale25.opacity(0.13)
     }
 
     public static var offBlackTranslucent: some hColor {
-        hGrayscaleColorNew.greyScale1000.opacity(0.2)
+        hGrayscaleColorNew.greyScale25.opacity(0.2)
     }
 }
 
