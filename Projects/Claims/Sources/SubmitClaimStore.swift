@@ -152,7 +152,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag +=
-                    self.octopus.client.fetch(query: query)
+                    self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { data in
                         let model = data.entrypointGroups.map { data in
                             ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
