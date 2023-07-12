@@ -193,10 +193,10 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             if header != nil {
                 VStack(alignment: .leading) {
                     header
-                        .environment(\.defaultHTextStyle, .title1)
+                        .environment(\.defaultHTextStyle, .standard)
                 }
                 .foregroundColor(hTextColorNew.primary)
-                .padding(.bottom, 10)
+                .padding(.bottom, 16)
             }
             hSectionContainer {
                 content
