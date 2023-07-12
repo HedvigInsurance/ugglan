@@ -64,7 +64,7 @@ struct ContractDetail: View {
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
-    let contractDetails: ContractDetailsView
+    let contractDetails: ContractDocumentsView
 
     @State private var selectedView = ContractDetailsViews.overview
 
@@ -89,7 +89,7 @@ struct ContractDetail: View {
         contractCoverage = ContractCoverageView(
             id: id
         )
-        contractDetails = ContractDetailsView(id: id)
+        contractDetails = ContractDocumentsView(id: id)
 
         let font = Fonts.fontFor(style: .footnote)
         UISegmentedControl.appearance()
@@ -130,8 +130,7 @@ struct ContractDetail: View {
                 .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
 
-                VStack(spacing: 8) {
-
+                VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
                             viewFor(view: panel)
@@ -140,6 +139,7 @@ struct ContractDetail: View {
                         }
                     }
                 }
+                .padding(.top, 8)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))

@@ -39,7 +39,7 @@ enum Documents: CaseIterable {
     }
 }
 
-struct ContractDetailsView: View {
+struct ContractDocumentsView: View {
     @PresentableStore var store: ContractStore
 
     let id: String
@@ -52,29 +52,31 @@ struct ContractDetailsView: View {
             }
         ) { contract in
             if let contract = contract {
-                hSection(Documents.allCases, id: \.title) { document in
-                    if let url = document.url(from: contract) {
-                        hRow {
-                            VStack(alignment: .leading, spacing: 0) {
-                                HStack(spacing: 1) {
-                                    hText(document.title)
-                                    if #available(iOS 16.0, *) {
-                                        hText(L10n.documentPdfLabel, style: .footnote)
-                                            .baselineOffset(6.0)
+                ForEach(Documents.allCases, id: \.title) { document in
+                    hSection {
+                        if let url = document.url(from: contract) {
+                            hRow {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    HStack(spacing: 1) {
+                                        hText(document.title)
+                                        if #available(iOS 16.0, *) {
+                                            hText(L10n.documentPdfLabel, style: .footnote)
+                                                .baselineOffset(6.0)
+                                        }
                                     }
+                                    hText(document.subTitle)
+                                        .foregroundColor(hTextColorNew.secondary)
                                 }
-                                hText(document.subTitle)
-                                    .foregroundColor(hTextColorNew.secondary)
                             }
-                        }
-                        .withCustomAccessory {
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.neArrowSmall.image)
-                        }
-                        .onTap {
-                            store.send(
-                                .contractDetailNavigationAction(action: .document(url: url, title: document.title))
-                            )
+                            .withCustomAccessory {
+                                Spacer()
+                                Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                            }
+                            .onTap {
+                                store.send(
+                                    .contractDetailNavigationAction(action: .document(url: url, title: document.title))
+                                )
+                            }
                         }
                     }
                 }
