@@ -30,41 +30,44 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        hRow {
-            if let icon = peril.icon {
-                RemoteVectorIconView(icon: icon, backgroundFetch: true)
-                    .frame(width: 24, height: 24)
-            } else if let color = peril.color {
-                Circle().fill(Color(hexString: color))
-                    .frame(width: 24, height: 24)
-            }
-            VStack {
+        VStack(alignment: .center, spacing: 11) {
+            HStack(spacing: 8) {
+                if let icon = peril.icon {
+                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
+                        .frame(width: 24, height: 24)
+                } else if let color = peril.color {
+                    Circle().fill(Color(hexString: color))
+                        .frame(width: 24, height: 24)
+                }
                 hText(peril.title, style: .title3)
                     .lineLimit(1)
+                Spacer()
+                Image(
+                    uiImage: selectedPerils.contains(peril)
+                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                )
+                .transition(.opacity.animation(.easeOut))
             }
-            Spacer()
-            Image(
-                uiImage: selectedPerils.contains(peril) ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-            )
-            .transition(.opacity.animation(.easeOut))
-        }
+            .padding(.vertical, 13)
 
-        if selectedPerils.contains(peril) {
-            VStack(alignment: .leading, spacing: 12) {
-                hText(peril.description, style: .footnote)
-                    .padding(.bottom, 12)
-                ForEach(0..<peril.covered.count) { perilIndex in
-                    HStack(alignment: .top, spacing: 8) {
-                        hText(String(format: "%02d", perilIndex + 1), style: .footnote)
-                            .foregroundColor(hTextColorNew.tertiary)
-                        hText(peril.covered[perilIndex], style: .footnote)
+            if selectedPerils.contains(peril) {
+                VStack(alignment: .leading, spacing: 12) {
+                    hText(peril.description, style: .footnote)
+                        .padding(.bottom, 12)
+                    ForEach(0..<peril.covered.count) { perilIndex in
+                        HStack(alignment: .top, spacing: 8) {
+                            hText(String(format: "%02d", perilIndex + 1), style: .footnote)
+                                .foregroundColor(hTextColorNew.tertiary)
+                            hText(peril.covered[perilIndex], style: .footnote)
+                        }
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 24)
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, 32)
-            .padding(.bottom, 16)
         }
+        .padding(.horizontal, 12)
     }
 }
 
