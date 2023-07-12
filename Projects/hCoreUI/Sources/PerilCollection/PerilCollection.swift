@@ -54,11 +54,11 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 VStack(alignment: .leading, spacing: 12) {
                     hText(peril.description, style: .footnote)
                         .padding(.bottom, 12)
-                    ForEach(0..<peril.covered.count) { perilIndex in
+                    ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
-                            hText(String(format: "%02d", perilIndex + 1), style: .footnote)
+                            hText(String(format: "%02d", index + 1), style: .footnote)
                                 .foregroundColor(hTextColorNew.tertiary)
-                            hText(peril.covered[perilIndex], style: .footnote)
+                            hText(item, style: .footnote)
                         }
                     }
                 }
