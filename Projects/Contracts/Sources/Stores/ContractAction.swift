@@ -67,6 +67,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
+    case contractEditInfo
 
     case openSetTerminationDateScreen(contractId: String)
     case sendTermination(terminationDate: Date, surveyUrl: String)

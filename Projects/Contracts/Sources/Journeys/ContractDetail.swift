@@ -178,7 +178,53 @@ extension ContractDetail {
                     style: .detented(.scrollViewContentSize, .large)
                 )
                 .withDismissButton
+            } else if case .contractEditInfo = action {
+                HostingJourney(
+                    rootView: CheckboxPickerScreen(
+                        items: [
+                            (EditInformation.coInsured.value, EditInformation.coInsured.title),
+                            (EditInformation.changeAddress.value, EditInformation.changeAddress.title),
+                        ],
+                        preSelectedItems: { [] },
+                        onSelected: { value in
+                            if value.first == EditInformation.coInsured.value {
+                                store.send(.goToFreeTextChat)
+                            } else if value.first == EditInformation.coInsured.title {
+                                store.send(.goToMovingFlow)
+                            }
+                        },
+                        onCancel: {
+                            //pop
+                        },
+                        singleSelect: true
+                    ),
+                    style: .detented(.scrollViewContentSize),
+                    options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+                )
+                .configureTitle(L10n.contractChangeInformationTitle)
+                .withDismissButton
             }
+        }
+    }
+}
+
+enum EditInformation: String, CaseIterable, Identifiable {
+    case coInsured
+    case changeAddress
+
+    var id: String { self.rawValue }
+
+    var value: String {
+        switch self {
+        case .coInsured: return "coInsured"
+        case .changeAddress: return "changeAddress"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .coInsured: return "Edit co-insured"
+        case .changeAddress: return "Change address"
         }
     }
 }
