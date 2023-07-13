@@ -4,16 +4,12 @@ import hGraphQL
 
 extension CrossSell {
     public var image: UIImage {
-        if typeOfContract.contains("HOME") {
-            return HCoreUIAsset.bigPillowHome.image
-        } else if typeOfContract.contains("PET") {
-            return HCoreUIAsset.bigPillowPet.image
-        } else if typeOfContract.contains("CAR") {
-            return HCoreUIAsset.bigPillowCar.image
-        } else if typeOfContract.contains("ACCIDENT") {
-            return HCoreUIAsset.bigPillowAccident.image
-        } else {
-            return HCoreUIAsset.bigPillowHome.image
+        switch type {
+        case .home: return HCoreUIAsset.bigPillowHome.image
+        case .car: return HCoreUIAsset.bigPillowCar.image
+        case .accident: return HCoreUIAsset.bigPillowAccident.image
+        case .pet: return HCoreUIAsset.bigPillowPet.image
+        case .unknown: return HCoreUIAsset.bigPillowHome.image
         }
     }
 }
