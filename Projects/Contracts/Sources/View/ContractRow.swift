@@ -200,7 +200,7 @@ struct ContractRow_Previews: PreviewProvider {
                     status: .terminated
                 ),
                 statusPills: ["Activates 20.03.2024."],
-                detailPills: ["Bellman", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
+                detailPills: ["BELLMAN 19A", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
             )
             let contracts = [contract]
             store.send(.setContracts(contracts: contracts))
