@@ -103,7 +103,7 @@ public enum ContractLoadingAction: LoadingProtocol {
     case deleteTermination
 }
 
-public enum EditType: String, Codable, Hashable {
+public enum EditType: String, Codable, Hashable, CaseIterable {
     case coInsured
     case changeAddress
 

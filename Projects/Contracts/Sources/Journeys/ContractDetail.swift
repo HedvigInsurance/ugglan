@@ -174,10 +174,7 @@ extension ContractDetail {
                 HostingJourney(
                     ContractStore.self,
                     rootView: CheckboxPickerScreen(
-                        items: [
-                            (EditType.coInsured, EditType.coInsured.title),
-                            (EditType.changeAddress, EditType.changeAddress.title),
-                        ],
+                        items: EditType.allCases.map({ ($0, $0.title) }),
                         preSelectedItems: { [] },
                         onSelected: { value in
                             if let selectedType = value.first {
