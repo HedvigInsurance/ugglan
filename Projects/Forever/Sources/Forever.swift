@@ -14,10 +14,12 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        hForm(gradientType: .forever) {
-            HeaderView()
-            DiscountCodeSectionView()
-            InvitationTable()
+        hForm {
+            VStack(spacing: 16) {
+                HeaderView()
+                DiscountCodeSectionView()
+                InvitationTable()
+            }
         }
         .onAppear {
             store.send(.fetch)

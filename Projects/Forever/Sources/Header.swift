@@ -12,10 +12,10 @@ struct HeaderView: View {
     var body: some View {
         hSection {
             VStack {
-                TemporaryCampaignBanner {
+                TemporaryCampaignBanner { /* TODO - can we remove this? */
                     store.send(.showTemporaryCampaignDetail)
                 }
-                VStack {
+                VStack(spacing: 24) {
                     PresentableStoreLens(
                         ForeverStore.self,
                         getter: { state in
@@ -23,8 +23,8 @@ struct HeaderView: View {
                         }
                     ) { grossAmount in
                         if let grossAmount = grossAmount {
-                            hText(grossAmount.formattedAmount, style: .caption2)
-                                .foregroundColor(hLabelColor.tertiary)
+                            hText(grossAmount.formattedAmount)
+                                .foregroundColor(hTextColorNew.secondary)
                         }
                     }
                     PresentableStoreLens(
@@ -52,30 +52,29 @@ struct HeaderView: View {
                                 ),
                                 newPrice: netAmount.formattedAmount
                             )
-                            .frame(width: 200, height: 175, alignment: .center)
+                            .frame(width: 215, height: 215, alignment: .center)
 
                             if grossAmount.amount != netAmount.amount {
                                 // Discount present
                                 PriceSectionView(grossAmount: grossAmount, netAmount: netAmount)
                             } else {
                                 // No discount present
-                                VStack(alignment: .center, spacing: 16) {
-                                    hText(L10n.ReferralsEmpty.headline, style: .title1)
-                                    hText(
-                                        L10n.ReferralsEmpty.body(
-                                            potentialDiscountAmount.formattedAmount,
-                                            MonetaryAmount(amount: 0, currency: potentialDiscountAmount.currency)
-                                                .formattedAmount
-                                        )
+                                hText(
+                                    L10n.ReferralsEmpty.body(
+                                        potentialDiscountAmount.formattedAmount,
+                                        MonetaryAmount(amount: 0, currency: potentialDiscountAmount.currency)
+                                            .formattedAmount
                                     )
-                                    .foregroundColor(hLabelColor.secondary).multilineTextAlignment(.center)
-                                }
-                                .padding(.vertical, 16)
+                                )
+                                .foregroundColor(hTextColorNew.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, 42)
                             }
                         }
                     }
                 }
             }
+            .padding(.top, 72)
         }
         .sectionContainerStyle(.transparent)
     }
