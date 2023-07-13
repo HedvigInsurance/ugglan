@@ -406,6 +406,7 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
         .hidesBackButton
         .addClaimsProgressBar
+        .addDismissClaimsFlow()
     }
 
     @JourneyBuilder
