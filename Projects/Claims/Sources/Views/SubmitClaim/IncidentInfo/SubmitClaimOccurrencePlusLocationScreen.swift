@@ -20,6 +20,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
                     displayFieldsAndNotice
+                        .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                     continueButton
                 }
             }

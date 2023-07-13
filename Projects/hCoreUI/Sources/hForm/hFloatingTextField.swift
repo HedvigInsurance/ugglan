@@ -6,6 +6,7 @@ import hCore
 
 public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hTextFieldOptions) var options
+    @Environment(\.isEnabled) var isEnabled
     private var masking: Masking
     private var placeholder: String
     private var suffix: String?
@@ -145,7 +146,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
-            .tint(hTextColorNew.primary)
+            .tint(foregroundColor)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                 if shouldUpdate {
                     value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -156,6 +157,15 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .frame(height: (shouldMoveLabel && suffix == nil) ? fieldPointSize : 0)
             .padding(.vertical, (shouldMoveLabel && suffix == nil) ? 2 : 0)
 
+    }
+
+    @hColorBuilder
+    private var foregroundColor: some hColor {
+        if isEnabled {
+            hTextColorNew.primary
+        } else {
+            hTextColorNew.secondary
+        }
     }
 
     private var getSuffixLabel: some View {

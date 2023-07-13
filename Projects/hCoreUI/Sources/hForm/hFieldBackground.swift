@@ -58,6 +58,7 @@ struct hFieldLabel: View {
     @Binding var animate: Bool
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
+    @Environment(\.isEnabled) var isEnabled
 
     var body: some View {
         let sizeToScaleFrom = HFontTextStyleNew.title3.fontSize
@@ -82,8 +83,10 @@ struct hFieldLabel: View {
             hSignalColorNew.amberText
         } else if animate {
             hSignalColorNew.greenText
-        } else {
+        } else if isEnabled {
             hTextColorNew.secondary
+        } else {
+            hTextColorNew.disabled
         }
     }
 }

@@ -49,6 +49,7 @@ public struct SelectClaimEntrypointGroup: View {
                     }
                 }
             }
+
         }
     }
 
@@ -259,6 +260,7 @@ struct ShowTagList: View {
                     )
                 }
             }
+            .disableOn(SubmitClaimStore.self, [.startClaim])
             LoadingButtonWithContent(SubmitClaimStore.self, .startClaim) {
                 if selection != nil && selection != "" {
                     notValid = false
