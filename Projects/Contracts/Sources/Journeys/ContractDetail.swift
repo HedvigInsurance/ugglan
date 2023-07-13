@@ -184,6 +184,44 @@ extension ContractDetail {
                 .withDismissButton
             } else if case .dismisscontractDetailNavigation = action {
                 DismissJourney()
+            } else if case .contractEditInfo = action {
+                HostingJourney(
+                    ContractStore.self,
+                    rootView: CheckboxPickerScreen(
+                        items: EditType.allCases.map({ ($0, $0.title) }),
+                        preSelectedItems: { [] },
+                        onSelected: { value in
+                            if let selectedType = value.first {
+                                store.send(.dismissEditInfo(type: selectedType))
+                            }
+                        },
+                        onCancel: {
+                            store.send(.dismissEditInfo(type: nil))
+                        },
+                        singleSelect: true
+                    ),
+                    style: .detented(.scrollViewContentSize),
+                    options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+                ) {
+                    action in
+                    if case let .dismissEditInfo(type) = action {
+                        PopJourney()
+                            .onPresent {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+                                    switch type {
+                                    case .coInsured:
+                                        store.send(.goToFreeTextChat)
+                                    case .changeAddress:
+                                        store.send(.goToMovingFlow)
+                                    case nil:
+                                        break
+                                    }
+                                }
+                            }
+                    }
+                }
+                .configureTitle(L10n.contractChangeInformationTitle)
+                .withDismissButton
             }
         }
         .configureTitle(title)
