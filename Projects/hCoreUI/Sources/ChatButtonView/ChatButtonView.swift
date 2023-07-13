@@ -38,11 +38,9 @@ struct ChatButtonView: View {
                 action()
             }) {
                 Image(uiImage: hCoreUIAssets.chatQuickNav.image)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding(10)
-                    .padding(.bottom, -2)
-                    .background(hBackgroundColor.tertiary)
-                    .clipShape(Circle())
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 32, height: 32)
                     .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
             }
             .animation(nil)
@@ -69,5 +67,15 @@ struct ChatButtonModifier: ViewModifier {
 extension hForm {
     public func withChatButton(tooltip: Bool = false, action: @escaping () -> Void) -> some View {
         ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
+    }
+
+    @ViewBuilder
+    public func withOptionalChatButton(showChat: Bool, tooltip: Bool = false, action: @escaping () -> Void) -> some View
+    {
+        if showChat {
+            ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
+        } else {
+            self
+        }
     }
 }

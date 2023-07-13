@@ -61,6 +61,7 @@ struct ContractDetail: View {
     @EnvironmentObject var context: TabControllerContext
 
     var id: String
+    var title: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
@@ -81,10 +82,11 @@ struct ContractDetail: View {
     }
 
     init(
-        id: String
+        id: String,
+        title: String
     ) {
         self.id = id
-
+        self.title = title
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(
             id: id
@@ -119,7 +121,7 @@ struct ContractDetail: View {
                         id: id,
                         allowDetailNavigation: false
                     )
-                    .padding(.bottom, 20)
+                    .padding(.vertical, 16)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title, style: .footnote).tag(view)
@@ -130,13 +132,11 @@ struct ContractDetail: View {
                 .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
 
-                VStack(spacing: 4) {
-                    ForEach(ContractDetailsViews.allCases) { panel in
-                        if context.trigger == panel {
-                            viewFor(view: panel)
-                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70))
-                        }
+                ForEach(ContractDetailsViews.allCases) { panel in
+                    if context.trigger == panel {
+                        viewFor(view: panel)
+                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                     }
                 }
                 .padding(.top, 8)
@@ -158,15 +158,7 @@ extension ContractDetail {
             style: style,
             options: options
         ) { action in
-            if case let .contractDetailNavigationAction(action: .peril(peril)) = action {
-                Journey(
-                    PerilDetail(peril: peril),
-                    style: .detented(.preferredContentSize, .large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(limit: limit).journey
-            } else if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
+            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
                 Journey(
                     Document(url: url, title: title),
                     style: .detented(.large)
@@ -223,6 +215,7 @@ extension ContractDetail {
                 .withDismissButton
             }
         }
+        .configureTitle(title)
     }
 }
 

@@ -48,33 +48,14 @@ class NavBar: UINavigationBar {
         super.layoutSubviews()
         if let additionalHeight {
             subviews.forEach { (subview) in
-                if subview.frame.size.height != self.frame.size.height + additionalHeight {
-                    let stringFromClass = NSStringFromClass(subview.classForCoder)
-                    if stringFromClass.contains("BarContent") {
-                        subview.frame = CGRect(
-                            x: 0,
-                            y: 0,
-                            width: self.frame.width,
-                            height: self.frame.size.height + additionalHeight
-                        )
-
-                    }
-                    if stringFromClass.contains("BarBackground") {
-                        subview.frame = CGRect(
-                            x: 0,
-                            y: 0,
-                            width: self.frame.width,
-                            height: self.frame.size.height + additionalHeight
-                        )
-                    }
-                    if stringFromClass.contains("UIProgressView") {
-                        subview.frame = CGRect(
-                            x: subview.frame.origin.x,
-                            y: -4,
-                            width: subview.frame.width,
-                            height: subview.frame.height
-                        )
-                    }
+                let stringFromClass = NSStringFromClass(subview.classForCoder)
+                if stringFromClass.contains("UIProgressView") {
+                    subview.frame = CGRect(
+                        x: subview.frame.origin.x,
+                        y: -4,
+                        width: subview.frame.width,
+                        height: subview.frame.height
+                    )
                 }
             }
         }
@@ -85,27 +66,6 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
     public init() {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
         additionalSafeAreaInsets.top = 90 - 56
-        if #available(iOS 15, *) {
-            let compact = UINavigationBarAppearance()
-            compact.configureWithTransparentBackground()
-            compact.backgroundColor = UIColor.clear
-            compact.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
-            compact.backgroundEffect = UIBlurEffect(style: .light)
-            DefaultStyling.applyCommonNavigationBarStyling(compact, useNewDesign: true)
-            self.navigationBar.compactAppearance = compact
-            self.navigationBar.standardAppearance = compact
-
-            let scrollEdgeNavigationBarAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeNavigationBarAppearance, useNewDesign: true)
-            scrollEdgeNavigationBarAppearance.backgroundColor = .clear
-            scrollEdgeNavigationBarAppearance.configureWithDefaultBackground()
-            scrollEdgeNavigationBarAppearance.shadowImage = UIColor.clear.asImage()
-            scrollEdgeNavigationBarAppearance.backgroundImage = nil
-
-            self.navigationBar.scrollEdgeAppearance = scrollEdgeNavigationBarAppearance
-            self.navigationBar.compactScrollEdgeAppearance = scrollEdgeNavigationBarAppearance
-            self.navigationBar.isTranslucent = true
-        }
     }
 
     required init?(
@@ -152,16 +112,14 @@ extension DefaultStyling {
         return .brand(.primaryBackground())
     })
 
-    public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance, useNewDesign: Bool) {
+    public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontFor(style: .headline) : Fonts.fontFor(style: .headline),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontFor(style: .headline) : Fonts.fontFor(style: .title1),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
 
         let backImage = hCoreUIAssets.arrowBack.image.withAlignmentRectInsets(
@@ -176,55 +134,58 @@ extension DefaultStyling {
         ]
     }
 
-    public static func scrollEdgeNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
+    public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        appearance.backgroundColor = .clear
+        appearance.configureWithDefaultBackground()
         appearance.shadowImage = UIColor.clear.asImage()
-
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
+        appearance.backgroundImage = nil
+        applyCommonNavigationBarStyling(appearance)
 
         return appearance
     }
 
-    public static func standardNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
+    public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = navigationBarBackgroundColor
-        appearance.shadowImage = UIColor.clear.asImage()
-
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.clear
+        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        applyCommonNavigationBarStyling(appearance)
 
         return appearance
     }
 
-    public static func compactNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
+    public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = navigationBarBackgroundColor
-        appearance.shadowImage = UIColor.clear.asImage()
-
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.clear
+        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        applyCommonNavigationBarStyling(appearance)
 
         return appearance
     }
 
     public static func setNavigationBarAppearance() {
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
-            scrollEdgeNavigationBarAppearance(useNewDesign: false)
+            scrollEdgeNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
-            standardNavigationBarAppearance(useNewDesign: false)
+            standardNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
-            compactNavigationBarAppearance(useNewDesign: false)
+            compactNavigationBarAppearance()
 
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .scrollEdgeAppearance =
-            scrollEdgeNavigationBarAppearance(useNewDesign: true)
+            scrollEdgeNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .standardAppearance =
-            standardNavigationBarAppearance(useNewDesign: true)
+            standardNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .compactAppearance =
-            compactNavigationBarAppearance(useNewDesign: true)
+            compactNavigationBarAppearance()
     }
 
     public static func installCustom() {

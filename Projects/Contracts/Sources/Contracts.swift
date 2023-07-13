@@ -82,7 +82,7 @@ extension Contracts: View {
         hForm(gradientType: .insurance(filter: filter.hashValue)) {
             ContractTable(filter: filter)
         }
-        .withChatButton {
+        .withOptionalChatButton(showChat: self.filter.displaysActiveContracts) {
             store.send(.goToFreeTextChat)
         }
         .onReceive(pollTimer) { _ in
@@ -106,6 +106,12 @@ extension Contracts: View {
             )
 
         }
+        .hFormAttachToBottom {
+            if self.filter.displaysTerminatedContracts {
+                InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                    .padding(.vertical, 16)
+            }
+        }
     }
 }
 
@@ -127,8 +133,8 @@ extension Contracts {
             ContractStore.self,
             rootView: Contracts(filter: filter)
         ) { action in
-            if case let .openDetail(contractId) = action, openDetails {
-                ContractDetail(id: contractId).journey()
+            if case let .openDetail(contractId, title) = action, openDetails {
+                ContractDetail(id: contractId, title: title).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),
@@ -169,7 +175,9 @@ extension Contracts {
                 navigationController.hero.navigationAnimationType = .fade
             }
         })
-        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureTitle(
+            filter.displaysActiveContracts ? L10n.InsurancesTab.title : L10n.InsurancesTab.cancelledInsurancesTitle
+        )
         .configureContractsTabBarItem
     }
 }
