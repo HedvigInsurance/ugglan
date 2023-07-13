@@ -200,6 +200,9 @@ struct HonestyPledge: View {
                     L10n.honestyPledgeTitle.hTextNew(.body)
                         .foregroundColor(hTextColorNew.primary)
                         .padding(.bottom, 8)
+                } else {
+                    L10n.honestyPledgeTitle.hTextNew(.body)
+                        .padding(.bottom, 8)
                 }
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)

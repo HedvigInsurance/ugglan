@@ -65,11 +65,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 )
                 .padding(.vertical, 6)
             }
-            .withHeader {
-                hTextNew(L10n.Claims.Payout.Summary.subtitle, style: .body)
-                    .foregroundColor(hTextColorNew.primary)
-                    .padding(.top, 16)
-            }
+            .padding(.top, 16)
             .padding(.bottom, 8)
 
             hSection {
@@ -91,6 +87,16 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     hTextNew(L10n.claimsCheckoutCountTitle, style: .body)
                         .foregroundColor(hTextColorNew.primary)
                 }
+            }
+            .sectionContainerStyle(.transparent)
+            .padding(.bottom, 16)
+
+            hSection {
+                displayField(
+                    withTitle: L10n.claimsPayoutHedvigLabel,
+                    useDarkTitle: true,
+                    andFor: singleItemCheckoutStep?.payoutAmount
+                )
             }
             .sectionContainerStyle(.transparent)
 
@@ -131,11 +137,16 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     }
 
     @ViewBuilder
-    func displayField(withTitle title: String, andFor model: MonetaryAmount?) -> some View {
+    func displayField(withTitle title: String, useDarkTitle: Bool = false, andFor model: MonetaryAmount?) -> some View {
         hRow {
             HStack {
-                hTextNew(title, style: .body)
-                    .foregroundColor(hTextColorNew.secondary)
+                if useDarkTitle {
+                    hTextNew(title, style: .body)
+                        .foregroundColor(hTextColorNew.primary)
+                } else {
+                    hTextNew(title, style: .body)
+                        .foregroundColor(hTextColorNew.secondary)
+                }
                 Spacer()
 
                 hTextNew(
