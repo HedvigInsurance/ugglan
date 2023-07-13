@@ -120,7 +120,7 @@ public struct hForm<Content: View>: View {
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
-        self.gradientType = gradientType
+        self.gradientType = .none
     }
 
     public var body: some View {
