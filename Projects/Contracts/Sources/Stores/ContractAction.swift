@@ -103,7 +103,14 @@ public enum ContractLoadingAction: LoadingProtocol {
     case deleteTermination
 }
 
-public enum EditType: Codable, Hashable {
+public enum EditType: String, Codable, Hashable {
     case coInsured
     case changeAddress
+
+    var title: String {
+        switch self {
+        case .coInsured: return L10n.contractEditCoinsured
+        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
+        }
+    }
 }

@@ -175,15 +175,13 @@ extension ContractDetail {
                     ContractStore.self,
                     rootView: CheckboxPickerScreen(
                         items: [
-                            (EditInformation.coInsured.value, EditInformation.coInsured.title),
-                            (EditInformation.changeAddress.value, EditInformation.changeAddress.title),
+                            (EditType.coInsured, EditType.coInsured.title),
+                            (EditType.changeAddress, EditType.changeAddress.title),
                         ],
                         preSelectedItems: { [] },
                         onSelected: { value in
-                            if value.first == EditInformation.coInsured.value {
-                                store.send(.dismissEditInfo(type: .coInsured))
-                            } else if value.first == EditInformation.changeAddress.value {
-                                store.send(.dismissEditInfo(type: .changeAddress))
+                            if let selectedType = value.first {
+                                store.send(.dismissEditInfo(type: selectedType))
                             }
                         },
                         onCancel: {
@@ -198,7 +196,7 @@ extension ContractDetail {
                     if case let .dismissEditInfo(type) = action {
                         PopJourney()
                             .onPresent {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
                                     switch type {
                                     case .coInsured:
                                         store.send(.goToFreeTextChat)
@@ -216,26 +214,5 @@ extension ContractDetail {
             }
         }
         .configureTitle(title)
-    }
-}
-
-enum EditInformation: String, CaseIterable, Identifiable {
-    case coInsured
-    case changeAddress
-
-    var id: String { self.rawValue }
-
-    var value: String {
-        switch self {
-        case .coInsured: return "coInsured"
-        case .changeAddress: return "changeAddress"
-        }
-    }
-
-    var title: String {
-        switch self {
-        case .coInsured: return L10n.contractEditCoinsured
-        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        }
     }
 }
