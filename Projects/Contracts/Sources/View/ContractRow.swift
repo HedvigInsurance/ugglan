@@ -90,7 +90,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 hText(contract.displayName)
                 Spacer()
             }
-            hText(contract.getDetails().capitalized)
+            hText(contract.getDetails())
                 .foregroundColor(hGrayscaleTranslucentDarkColorNew.greyScaleTranslucent700)
         }
         .padding(16)
