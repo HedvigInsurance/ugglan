@@ -132,11 +132,13 @@ struct ContractDetail: View {
                 .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
 
-                ForEach(ContractDetailsViews.allCases) { panel in
-                    if context.trigger == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
+                VStack(spacing: 4) {
+                    ForEach(ContractDetailsViews.allCases) { panel in
+                        if context.trigger == panel {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                .animation(.interpolatingSpring(stiffness: 300, damping: 70))
+                        }
                     }
                 }
                 .padding(.top, 8)
