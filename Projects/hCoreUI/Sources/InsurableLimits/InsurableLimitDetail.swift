@@ -25,6 +25,8 @@ public struct InsurableLimitDetail: View {
                         .foregroundColor(hTextColorNew.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .padding(.horizontal, 8)
+                .padding(.top, 32)
             }
             .sectionContainerStyle(.transparent)
         }
@@ -34,7 +36,7 @@ public struct InsurableLimitDetail: View {
             } content: {
                 hText(L10n.generalCloseButton)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 24)
         }
     }
 }
@@ -44,7 +46,7 @@ extension InsurableLimitDetail {
         HostingJourney(
             rootView: self,
             style: .detented(.scrollViewContentSize),
-            options: [.defaults, .blurredBackground]
+            options: [.blurredBackground]
         )
     }
 }

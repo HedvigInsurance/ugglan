@@ -163,6 +163,20 @@ extension Contracts {
                 } else if case .openTerminationDeletionScreen = navigationAction {
                     TerminationFlowJourney.openTerminationDeletionScreen()
                 }
+            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
+                InsurableLimitDetail(
+                    limit: limit,
+                    onDismiss: {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.dismisscontractDetailNavigation)
+                    }
+                )
+                .journey
+                .onAction(ContractStore.self) { action, presenter in
+                    if case .dismisscontractDetailNavigation = action {
+                        presenter.bag.dispose()
+                    }
+                }
             }
         }
         .onPresent({
