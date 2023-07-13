@@ -19,11 +19,15 @@ struct HeaderView: View {
                     PresentableStoreLens(
                         ForeverStore.self,
                         getter: { state in
-                            state.foreverData?.grossAmount
+                            state.foreverData
                         }
-                    ) { grossAmount in
-                        if let grossAmount = grossAmount {
-                            hText(grossAmount.formattedAmount)
+                    ) { data in
+                        if let netAmount = data?.netAmount, let grossAmount = data?.grossAmount {
+                            let discountValue = MonetaryAmount(
+                                amount: netAmount.value - grossAmount.value,
+                                currency: netAmount.currency
+                            )
+                            hText(discountValue.negative.formattedAmount)
                                 .foregroundColor(hTextColorNew.secondary)
                         }
                     }

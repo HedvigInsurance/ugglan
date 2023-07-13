@@ -31,21 +31,17 @@ struct PriceSectionView: View {
     @State private var discountAmountAnimate: MonetaryAmount = .init(amount: 0, currency: "")
 
     var body: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                hText(L10n.ReferralsActive.Discount.Per.Month.title, style: .footnote)
-                    .foregroundColor(hLabelColor.tertiary)
-                Color.clear
-                    .animatingAmountOverlay(for: discountAmountAnimate)
+        VStack(spacing: 0) {
+            hText("Your monthly cost")
+            HStack(spacing: 4) {
+                hText(grossAmount.formattedAmount)
+                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                    .onTapGesture {
+                        // add scroll to bottom here
+                    }
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                hText(L10n.ReferralsActive.Your.New.Price.title, style: .footnote).foregroundColor(hLabelColor.tertiary)
-                Color.clear
-                    .animatingAmountOverlay(for: netAmountAnimate)
-            }
+            .foregroundColor(hTextColorNew.secondary)
         }
-        .padding(16)
         .onAppear {
             netAmountAnimate = .init(amount: grossAmount.amount, currency: netAmount.currency)
             discountAmountAnimate = .init(amount: 0, currency: netAmount.currency)
