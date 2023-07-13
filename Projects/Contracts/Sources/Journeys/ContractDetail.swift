@@ -160,7 +160,17 @@ extension ContractDetail {
             style: style,
             options: options
         ) { action in
-            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
+            if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
+                InsurableLimitDetail(
+                    limit: limit,
+                    onDismiss: {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            store.send(.dismisscontractDetailNavigation)
+                        }
+                    }
+                )
+                .journey
+            } else if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
                 Journey(
                     Document(url: url, title: title),
                     style: .detented(.large)
@@ -172,6 +182,8 @@ extension ContractDetail {
                     style: .detented(.scrollViewContentSize, .large)
                 )
                 .withDismissButton
+            } else if case .dismisscontractDetailNavigation = action {
+                DismissJourney()
             }
         }
         .configureTitle(title)

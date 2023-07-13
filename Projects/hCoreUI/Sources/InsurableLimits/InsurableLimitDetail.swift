@@ -6,24 +6,35 @@ import hGraphQL
 
 public struct InsurableLimitDetail: View {
     var limit: InsurableLimits
+    var onDismiss: () -> Void
 
     public init(
-        limit: InsurableLimits
+        limit: InsurableLimits,
+        onDismiss: @escaping () -> Void
     ) {
         self.limit = limit
+        self.onDismiss = onDismiss
     }
 
     public var body: some View {
         hForm {
             hSection {
-                hText(
-                    limit.description,
-                    style: .body
-                )
-                .foregroundColor(hLabelColor.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: 8) {
+                    hText(L10n.contractCoverageMoreInfo)
+                    hText(limit.description)
+                        .foregroundColor(hTextColorNew.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
             .sectionContainerStyle(.transparent)
+        }
+        .hFormAttachToBottom {
+            hButton.LargeButtonGhost {
+                onDismiss()
+            } content: {
+                hText(L10n.generalCloseButton)
+            }
+            .padding(.horizontal, 16)
         }
     }
 }
@@ -33,13 +44,7 @@ extension InsurableLimitDetail {
         HostingJourney(
             rootView: self,
             style: .detented(.scrollViewContentSize),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-            ]
+            options: [.defaults, .blurredBackground]
         )
-        .configureTitle(L10n.contractCoverageMoreInfo)
-        .withDismissButton
     }
 }

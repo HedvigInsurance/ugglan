@@ -206,10 +206,16 @@ extension Offer: Presentable {
 
                             }
                     } else if case let .openInsurableLimit(limit) = action {
-                        viewController.present(InsurableLimitDetail(limit: limit).journey)
-                            .onValue { _ in
+                        viewController.present(
+                            InsurableLimitDetail(
+                                limit: limit,
+                                onDismiss: {}
+                            )
+                            .journey
+                        )
+                        .onValue { _ in
 
-                            }
+                        }
                     } else if case let .openDocument(url) = action {
                         let safariViewController = SFSafariViewController(url: url)
                         safariViewController.modalPresentationStyle = .formSheet

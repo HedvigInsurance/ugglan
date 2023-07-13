@@ -29,9 +29,9 @@ public struct InsurableLimitsSectionView: View {
                     .foregroundColor(hTextColorNew.secondary)
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .foregroundColor(hTextColorNew.secondary)
-            }
-            .onTap {
-                didTap(limit)
+                    .onTapGesture {
+                        didTap(limit)
+                    }
             }
         }
         .withoutHorizontalPadding

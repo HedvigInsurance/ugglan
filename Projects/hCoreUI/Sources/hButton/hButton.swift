@@ -81,8 +81,13 @@ struct ButtonFilledStandardBackground: View {
                 hButtonColorNew.secondaryDisabled
                     .hShadow()
             }
+        case .ghost:
+            if configuration.isPressed {
+                hFillColorNew.translucentOne
+            } else if isEnabled {
+                Color.clear
+            }
         }
-
     }
 }
 
@@ -119,6 +124,7 @@ public enum hButtonConfigurationType {
     case primary
     case primaryAlt
     case secondary
+    case ghost
 }
 
 private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
@@ -217,21 +223,33 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @hColorBuilder var foregroundColor: some hColor {
             switch hButtonConfigurationType {
             case .primary:
-                switch hButtonFilledStyle {
-                case .standard:
-                    hTextColorNew.negative
-                case .overImage:
-                    hTextColorNew.negative /* TODO: NOT SURE */
+                if isEnabled {
+                    switch hButtonFilledStyle {
+                    case .standard:
+                        hTextColorNew.negative
+                    case .overImage:
+                        hTextColorNew.negative /* TODO: NOT SURE */
+                    }
+                } else {
+                    hTextColorNew.disabled
                 }
             case .primaryAlt:
-                switch hButtonFilledStyle {
-                case .standard:
-                    hTextColorNew.primary
-                case .overImage:
-                    hTextColorNew.primary /* TODO: NOT SURE */
+                if isEnabled {
+                    switch hButtonFilledStyle {
+                    case .standard:
+                        hTextColorNew.primary
+                    case .overImage:
+                        hTextColorNew.primary /* TODO: NOT SURE */
+                    }
+                } else {
+                    hTextColorNew.disabled
                 }
-            case .secondary:
-                hTextColorNew.primary
+            case .secondary, .ghost:
+                if isEnabled {
+                    hTextColorNew.primary
+                } else {
+                    hTextColorNew.disabled
+                }
             }
         }
 
@@ -251,6 +269,8 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
         case .primaryAlt, .secondary:
             getView(configuration: configuration).hShadow()
+        case .ghost:
+            getView(configuration: configuration)
         }
     }
 
@@ -327,9 +347,9 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hLabelColor.primary) {
+            LoaderOrContent(color: hTextColorNew.primary) {
                 configuration.label
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColorNew.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -366,9 +386,9 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hLabelColor.primary) {
+            LoaderOrContent(color: hTextColorNew.primary) {
                 configuration.label
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColorNew.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -493,6 +513,29 @@ public enum hButton {
             }
             .buttonStyle(ButtonFilledStyle(size: .large))
             .hButtonConfigurationType(.secondary)
+        }
+    }
+
+    public struct LargeButtonGhost<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.ghost)
         }
     }
 
