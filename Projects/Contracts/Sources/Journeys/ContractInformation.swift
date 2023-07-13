@@ -49,6 +49,7 @@ struct ContractInformationView: View {
                             if contract.currentAgreement?.status != .terminated {
                                 hButton.LargeButtonSecondary {
                                     //edit info action
+                                    store.send(.contractEditInfo)
                                 } content: {
                                     hText(L10n.contractEditInfoLabel)
                                 }
