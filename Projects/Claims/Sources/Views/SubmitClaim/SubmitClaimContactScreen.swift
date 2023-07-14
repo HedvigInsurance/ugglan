@@ -27,6 +27,7 @@ public struct SubmitClaimContactScreen: View {
                         )
                     }
                     .sectionContainerStyle(.transparent)
+                    .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
                     LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
                         store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                         UIApplication.dismissKeyboard()
@@ -37,7 +38,6 @@ public struct SubmitClaimContactScreen: View {
                     .padding(.horizontal, 16)
                 }
             }
-
             .hUseNewStyle
     }
 }
