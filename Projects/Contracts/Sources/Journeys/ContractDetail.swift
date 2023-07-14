@@ -172,8 +172,6 @@ extension ContractDetail {
                     style: .detented(.scrollViewContentSize, .large)
                 )
                 .withDismissButton
-            } else if case .dismisscontractDetailNavigation = action {
-                DismissJourney()
             } else if case .contractEditInfo = action {
                 HostingJourney(
                     ContractStore.self,
