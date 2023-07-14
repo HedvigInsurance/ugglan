@@ -4,15 +4,15 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public struct InsurableLimitDetail: View {
-    var limit: InsurableLimits
-    var onDismiss: () -> Void
+public struct InfoView: View {
+    let description: String?
+    let onDismiss: () -> Void
 
     public init(
-        limit: InsurableLimits,
+        description: String?,
         onDismiss: @escaping () -> Void
     ) {
-        self.limit = limit
+        self.description = description
         self.onDismiss = onDismiss
     }
 
@@ -21,7 +21,7 @@ public struct InsurableLimitDetail: View {
             hSection {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(L10n.contractCoverageMoreInfo)
-                    hText(limit.description)
+                    hText(description ?? "")
                         .foregroundColor(hTextColorNew.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -41,7 +41,7 @@ public struct InsurableLimitDetail: View {
     }
 }
 
-extension InsurableLimitDetail {
+extension InfoView {
     public var journey: some JourneyPresentation {
         HostingJourney(
             rootView: self,

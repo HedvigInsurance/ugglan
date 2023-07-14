@@ -161,8 +161,8 @@ extension Contracts {
                     TerminationFlowJourney.openTerminationDeletionScreen()
                 }
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(
-                    limit: limit,
+                InfoView(
+                    description: limit.description,
                     onDismiss: {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.dismisscontractDetailNavigation)

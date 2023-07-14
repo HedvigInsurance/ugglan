@@ -73,10 +73,9 @@ extension CrossSellingCoverageDetail {
                 )
                 .withDismissButton
             } else if case let .crossSellingCoverageDetailNavigation(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(
-                    limit: limit,
+                InfoView(
+                    description: limit.description,
                     onDismiss: {
-
                     }
                 )
                 .journey
