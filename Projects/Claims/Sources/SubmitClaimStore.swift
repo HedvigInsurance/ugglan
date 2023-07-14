@@ -198,6 +198,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
             newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
+        case let .setInsurance(insuranceId):
+            newState.insuranceStep?.selectdeinsuranceId = insuranceId
         case .submitAudioRecording:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:

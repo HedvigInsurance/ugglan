@@ -1,13 +1,12 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
-struct CheckboxPickerScreen<T>: View {
+public struct CheckboxPickerScreen<T>: View {
     typealias PickerModel = (object: T, displayName: String)
     var items: [PickerModel]
     let preSelectedItems: [String]
     let onSelected: ([T]) -> Void
-    let onCancel: () -> Void
+    let onCancel: (() -> Void)?
     let singleSelect: Bool?
     let showDividers: Bool?
     @State var selectedItems: [PickerModel] = []
@@ -16,7 +15,7 @@ struct CheckboxPickerScreen<T>: View {
         items: [(object: T, displayName: String)],
         preSelectedItems: @escaping () -> [String],
         onSelected: @escaping ([T]) -> Void,
-        onCancel: @escaping () -> Void,
+        onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
         showDividers: Bool? = false
     ) {
@@ -28,40 +27,73 @@ struct CheckboxPickerScreen<T>: View {
         self.showDividers = showDividers
     }
 
-    var body: some View {
-        hForm {
-            ForEach(items, id: \.displayName) { item in
-                hSection {
-                    getCell(item: item)
+    public var body: some View {
+
+        if onCancel != nil {
+            hForm {}
+                .hUseNewStyle
+                .hFormAttachToBottom {
+                    content
                 }
-                .padding(.bottom, -4)
-            }
+                .onAppear {
+                    selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
+                }
+        } else {
+            hForm {}
+                .hFormTitle(.small, .customTitle, L10n.claimTriagingAboutTitile)
+                .hUseNewStyle
+                .hFormAttachToBottom {
+                    content
+                }
+                .onAppear {
+                    selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
+                }
         }
-        .hUseNewStyle
-        .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                hButton.LargeButtonFilled {
-                    if selectedItems.count > 1 {
-                        onSelected(selectedItems.map({ $0.object }))
-                    } else {
-                        if let object = selectedItems.first?.object {
-                            onSelected([object])
-                        }
+    }
+
+    @ViewBuilder
+    var content: some View {
+        VStack(spacing: 8) {
+            VStack(spacing: 4) {
+                ForEach(items, id: \.displayName) { item in
+                    hSection {
+                        getCell(item: item)
                     }
-                } content: {
-                    hTextNew(L10n.generalSaveButton, style: .body)
                 }
-                hButton.LargeButtonText {
-                    onCancel()
-                } content: {
-                    hTextNew(L10n.generalCancelButton, style: .body)
+            }
+            .padding(.top, 8)
+            VStack(spacing: 8) {
+                if onCancel != nil {
+                    hButton.LargeButtonFilled {
+                        sendSelectedItems
+                    } content: {
+                        hTextNew(L10n.generalSaveButton, style: .body)
+                    }
+                    hButton.LargeButtonText {
+                        onCancel?()
+                    } content: {
+                        hTextNew(L10n.generalCancelButton, style: .body)
+                    }
+                } else {
+                    hButton.LargeButtonFilled {
+                        sendSelectedItems
+                    } content: {
+                        hTextNew(L10n.generalContinueButton, style: .body)
+                    }
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16)
         }
-        .onAppear {
-            selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
+        .padding(.top, 16)
+    }
+
+    var sendSelectedItems: Void {
+        if selectedItems.count > 1 {
+            onSelected(selectedItems.map({ $0.object }))
+        } else {
+            if let object = selectedItems.first?.object {
+                onSelected([object])
+            }
         }
     }
 

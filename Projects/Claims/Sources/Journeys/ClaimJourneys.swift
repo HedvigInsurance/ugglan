@@ -51,6 +51,8 @@ public class ClaimJourneys {
                 showClaimEntrypointType().addDismissClaimsFlow()
             } else if case .openTriagingOptionScreen = navigationAction {
                 showClaimEntrypointOption().addDismissClaimsFlow()
+            } else if case .openInsuranceScreen = navigationAction {
+                openInsuranceScreen().addDismissClaimsFlow()
             }
         }
     }
@@ -60,6 +62,33 @@ public class ClaimJourneys {
             SubmitClaimStore.self,
             rootView: SubmitClaimContactScreen(model: model)
         ) { action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openInsuranceScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: CheckboxPickerScreen<FlowClaimInsuranceStepModel>(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.insuranceStep?.availableInsuranceOptions
+                        .compactMap({
+                            (object: $0, displayName: $0.displayName)
+                                as? (object: FlowClaimInsuranceStepModel, displayName: String)
+                        }) ?? []
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selectedInsurance in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setInsurance(insuranceId: selectedInsurance.first?.selectdeinsuranceId ?? ""))
+                },
+                singleSelect: true
+            )
+        ) {
+            action in
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss

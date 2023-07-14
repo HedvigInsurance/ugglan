@@ -35,6 +35,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
+    case setInsurance(insuranceId: String)
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
@@ -62,6 +63,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
+    case openInsuranceScreen
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
