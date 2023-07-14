@@ -1,8 +1,7 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
-struct CheckboxPickerScreen<T>: View {
+public struct CheckboxPickerScreen<T>: View {
     typealias PickerModel = (object: T, displayName: String)
     var items: [PickerModel]
     let preSelectedItems: [String]
@@ -28,7 +27,7 @@ struct CheckboxPickerScreen<T>: View {
         self.showDividers = showDividers
     }
 
-    var body: some View {
+    public var body: some View {
         hForm {
             ForEach(items, id: \.displayName) { item in
                 hSection {
