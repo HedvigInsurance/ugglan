@@ -67,6 +67,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
+    case dismisscontractDetailNavigation
     case contractEditInfo
     case dismissEditInfo(type: EditType?)
 
