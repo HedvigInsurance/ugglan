@@ -14,10 +14,12 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        hForm(gradientType: .forever) {
-            HeaderView()
-            DiscountCodeSectionView()
-            InvitationTable()
+        hForm {
+            VStack(spacing: 16) {
+                HeaderView()
+                DiscountCodeSectionView()
+                InvitationTable()
+            }
         }
         .onAppear {
             store.send(.fetch)
@@ -75,9 +77,7 @@ extension ForeverView {
                 .largeTitleDisplayMode(.always),
             ]
         ) { action in
-            if case .showTemporaryCampaignDetail = action {
-                TemporaryCampaignDetail().journey
-            } else if case .showChangeCodeDetail = action {
+            if case .showChangeCodeDetail = action {
                 Journey(
                     ChangeCode(service: ForeverServiceGraphQL()),
                     style: .modally()

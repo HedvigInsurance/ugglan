@@ -79,7 +79,7 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .insurance(filter: filter.hashValue)) {
+        hForm {
             ContractTable(filter: filter)
         }
         .onReceive(pollTimer) { _ in

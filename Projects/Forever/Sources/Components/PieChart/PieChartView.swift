@@ -19,7 +19,7 @@ public struct PieChartView: View {
         GeometryReader { geometry in
             ZStack {
                 Circle()
-                    .foregroundColor(Color(red: 1, green: 0.59, blue: 0.31, opacity: 1))
+                    .foregroundColor(hSignalColorNew.greenElement)
                 if !state.percentagePerSlice.isNaN && state.percentagePerSlice != 0 {
                     Slice(
                         startSlices: state.slices,
@@ -27,7 +27,7 @@ public struct PieChartView: View {
                         percentagePerSlice: state.percentagePerSlice,
                         slices: state.slices + 1
                     )
-                    .fill(.white.opacity(0.5))
+                    .fill(hTextColorNew.tertiaryTranslucent)
                     .onAppear {
                         withAnimation(self.animation.delay(state.slices == 0 ? 0 : 1.2).repeatForever()) {
                             self.nextSlicePercentage = 1.0
@@ -47,8 +47,8 @@ public struct PieChartView: View {
                 let offset = abs(cos(radAngle)) * 0.16 + 1.1
                 VStack {
                     if state.slices != 0 && !state.slices.isNaN && showNewAmount {
-                        hText(newPrice, style: .caption2)
-                            .foregroundColor(hLabelColor.tertiary)
+                        hText(newPrice)
+                            .foregroundColor(hTextColorNew.secondary)
                             .transition(.opacity)
                     }
                 }
@@ -63,5 +63,17 @@ public struct PieChartView: View {
             }
         }
         .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+struct PieChart_Previews: PreviewProvider {
+    static var previews: some View {
+        PieChartView(
+            state: .init(
+                percentagePerSlice: 2,
+                slices: 10
+            ),
+            newPrice: "100"
+        )
     }
 }
