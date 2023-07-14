@@ -74,3 +74,23 @@ public protocol ForeverService {
     func refetch()
     func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>>
 }
+
+extension ForeverData {
+    static func mock() -> ForeverData {
+        let foreverData = ForeverData(
+            grossAmount: .sek(100),
+            netAmount: .sek(80),
+            potentialDiscountAmount: .sek(10),
+            discountCode: "CODE",
+            invitations: [
+                .init(name: "First", state: .active, invitedByOther: false),
+                .init(name: "Second", state: .pending, invitedByOther: false),
+                .init(name: "Third", state: .terminated, invitedByOther: false),
+                .init(name: "Third", state: .active, invitedByOther: true),
+                .init(name: "Forth", state: .pending, invitedByOther: true),
+                .init(name: "Fifth", state: .terminated, invitedByOther: true),
+            ]
+        )
+        return foreverData
+    }
+}
