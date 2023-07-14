@@ -27,7 +27,6 @@ public struct ForeverState: StateProtocol {
 
 public indirect enum ForeverAction: ActionProtocol {
     case hasSeenFebruaryCampaign(value: Bool)
-    case showTemporaryCampaignDetail
     case showChangeCodeDetail
     case fetch
     case setForeverData(data: ForeverData)

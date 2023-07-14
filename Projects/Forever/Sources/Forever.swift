@@ -77,9 +77,7 @@ extension ForeverView {
                 .largeTitleDisplayMode(.always),
             ]
         ) { action in
-            if case .showTemporaryCampaignDetail = action {
-                TemporaryCampaignDetail().journey
-            } else if case .showChangeCodeDetail = action {
+            if case .showChangeCodeDetail = action {
                 Journey(
                     ChangeCode(service: ForeverServiceGraphQL()),
                     style: .modally()
