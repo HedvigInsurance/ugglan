@@ -67,7 +67,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             buttonText: "Calculate price",
             embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            infos: []
+            infos: [],
+            type: .accident
         )
     )
     static var previews: some View {

@@ -174,6 +174,39 @@ extension Contracts {
                         presenter.bag.dispose()
                     }
                 }
+            } else if case .contractEditInfo = action {
+                HostingJourney(
+                    ContractStore.self,
+                    rootView: CheckboxPickerScreen(
+                        items: EditType.allCases.map({ ($0, $0.title) }),
+                        preSelectedItems: { [] },
+                        onSelected: { value in
+                            if let selectedType = value.first {
+                                let store: ContractStore = globalPresentableStoreContainer.get()
+                                store.send(.dismissEditInfo(type: selectedType))
+                                switch selectedType {
+                                case .coInsured:
+                                    store.send(.goToFreeTextChat)
+                                case .changeAddress:
+                                    store.send(.goToMovingFlow)
+                                }
+                            }
+                        },
+                        onCancel: {
+                            let store: ContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissEditInfo(type: nil))
+                        },
+                        singleSelect: true
+                    ),
+                    style: .detented(.scrollViewContentSize),
+                    options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+                ) { action in
+                    if case .dismissEditInfo = action {
+                        DismissJourney()
+                    }
+                }
+                .configureTitle(L10n.contractChangeInformationTitle)
+                .withDismissButton
             }
         }
         .onPresent({
