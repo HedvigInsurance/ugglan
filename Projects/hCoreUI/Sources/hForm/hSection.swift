@@ -100,7 +100,7 @@ extension hSectionContainerStyle: ViewModifier {
             content
         case .opaque:
             content.background(
-                hBackgroundColorNew.primary
+                hFillColorNew.opaqueOne
             )
             .clipShape(Squircle.default())
         case .caution:
@@ -193,10 +193,10 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             if header != nil {
                 VStack(alignment: .leading) {
                     header
-                        .environment(\.defaultHTextStyle, .title1)
+                        .environment(\.defaultHTextStyle, .standard)
                 }
                 .foregroundColor(hTextColorNew.primary)
-                .padding(.bottom, 10)
+                .padding(.bottom, 16)
             }
             hSectionContainer {
                 content
@@ -212,7 +212,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
+        .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 16)
         .padding([.top, .bottom], 0)
     }
 
@@ -224,8 +224,8 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     /// removes hSection leading and trailing padding
     public var withoutHorizontalPadding: some View {
         self
-            .padding(.leading, horizontalSizeClass == .regular ? -60 : -15)
-            .padding(.trailing, horizontalSizeClass == .regular ? -60 : -15)
+            .padding(.leading, horizontalSizeClass == .regular ? -60 : -16)
+            .padding(.trailing, horizontalSizeClass == .regular ? -60 : -16)
     }
 
     public func withHeader<Header: View>(

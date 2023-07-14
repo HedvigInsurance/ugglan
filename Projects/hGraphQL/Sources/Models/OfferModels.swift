@@ -157,11 +157,11 @@ public struct QuoteBundle: Codable, Equatable {
     public let quotes: [Quote]
     public var inception: Inception
     public var displayName: String
-    public var gradientOption: Contract.GradientOption? {
+    public var pillowType: Contract.PillowType? {
         Contract.TypeOfContract(
             rawValue: self.quotes.first?.typeOfContract ?? ""
         )?
-        .gradientOption
+        .pillowType
     }
 
     public struct AppConfiguration: Codable, Equatable {

@@ -61,12 +61,15 @@ public enum ContractAction: ActionProtocol, Hashable {
     case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
-    case openDetail(contractId: String)
+    case openDetail(contractId: String, title: String)
     case openTerminatedContracts
     case didSignFocusedCrossSell
     case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
+    case dismisscontractDetailNavigation
+    case contractEditInfo
+    case dismissEditInfo(type: EditType?)
 
     case openSetTerminationDateScreen(contractId: String)
     case sendTermination(terminationDate: Date, surveyUrl: String)
@@ -99,4 +102,16 @@ public enum ContractLoadingAction: LoadingProtocol {
     case startTermination
     case sendTerminationDate
     case deleteTermination
+}
+
+public enum EditType: String, Codable, Hashable, CaseIterable {
+    case coInsured
+    case changeAddress
+
+    var title: String {
+        switch self {
+        case .coInsured: return L10n.contractEditCoinsured
+        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
+        }
+    }
 }

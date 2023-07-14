@@ -3,17 +3,14 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public struct InsurableLimitsSectionView<Header: View>: View {
-    var header: Header?
+public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
 
     public init(
-        header: Header? = nil,
         limits: [InsurableLimits],
         didTap: @escaping (InsurableLimits) -> Void
     ) {
-        self.header = header
         self.limits = limits
         self.didTap = didTap
     }
@@ -24,20 +21,20 @@ public struct InsurableLimitsSectionView<Header: View>: View {
                 VStack(alignment: .leading, spacing: 4) {
                     hText(limit.label)
                         .fixedSize(horizontal: false, vertical: true)
-                    hText(limit.limit)
-                        .foregroundColor(hLabelColor.secondary)
                 }
             }
             .withCustomAccessory {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.infoIcon.image)
-            }
-            .onTap {
-                didTap(limit)
+                hText(limit.limit)
+                    .foregroundColor(hTextColorNew.secondary)
+                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                    .foregroundColor(hTextColorNew.secondary)
+                    .onTapGesture {
+                        didTap(limit)
+                    }
             }
         }
-        .withHeader {
-            header
-        }
+        .withoutHorizontalPadding
+        .sectionContainerStyle(.transparent)
     }
 }

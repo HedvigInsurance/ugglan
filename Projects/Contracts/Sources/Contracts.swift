@@ -82,9 +82,6 @@ extension Contracts: View {
         hForm(gradientType: .insurance(filter: filter.hashValue)) {
             ContractTable(filter: filter)
         }
-        .withChatButton {
-            store.send(.goToFreeTextChat)
-        }
         .onReceive(pollTimer) { _ in
             fetch()
         }
@@ -106,6 +103,12 @@ extension Contracts: View {
             )
 
         }
+        .hFormAttachToBottom {
+            if self.filter.displaysTerminatedContracts {
+                InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                    .padding(.vertical, 16)
+            }
+        }
     }
 }
 
@@ -125,15 +128,10 @@ extension Contracts {
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Contracts(filter: filter),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
-            ]
+            rootView: Contracts(filter: filter)
         ) { action in
-            if case let .openDetail(contractId) = action, openDetails {
-                ContractDetail(id: contractId).journey()
+            if case let .openDetail(contractId, title) = action, openDetails {
+                ContractDetail(id: contractId, title: title).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),
@@ -162,6 +160,53 @@ extension Contracts {
                 } else if case .openTerminationDeletionScreen = navigationAction {
                     TerminationFlowJourney.openTerminationDeletionScreen()
                 }
+            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
+                InfoView(
+                    description: limit.description,
+                    onDismiss: {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.dismisscontractDetailNavigation)
+                    }
+                )
+                .journey
+                .onAction(ContractStore.self) { action, presenter in
+                    if case .dismisscontractDetailNavigation = action {
+                        presenter.bag.dispose()
+                    }
+                }
+            } else if case .contractEditInfo = action {
+                HostingJourney(
+                    ContractStore.self,
+                    rootView: CheckboxPickerScreen(
+                        items: EditType.allCases.map({ ($0, $0.title) }),
+                        preSelectedItems: { [] },
+                        onSelected: { value in
+                            if let selectedType = value.first {
+                                let store: ContractStore = globalPresentableStoreContainer.get()
+                                store.send(.dismissEditInfo(type: selectedType))
+                                switch selectedType {
+                                case .coInsured:
+                                    store.send(.goToFreeTextChat)
+                                case .changeAddress:
+                                    store.send(.goToMovingFlow)
+                                }
+                            }
+                        },
+                        onCancel: {
+                            let store: ContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissEditInfo(type: nil))
+                        },
+                        singleSelect: true
+                    ),
+                    style: .detented(.scrollViewContentSize),
+                    options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+                ) { action in
+                    if case .dismissEditInfo = action {
+                        DismissJourney()
+                    }
+                }
+                .configureTitle(L10n.contractChangeInformationTitle)
+                .withDismissButton
             }
         }
         .onPresent({
@@ -174,7 +219,9 @@ extension Contracts {
                 navigationController.hero.navigationAnimationType = .fade
             }
         })
-        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureTitle(
+            filter.displaysActiveContracts ? L10n.InsurancesTab.title : L10n.InsurancesTab.cancelledInsurancesTitle
+        )
         .configureContractsTabBarItem
     }
 }
