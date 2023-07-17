@@ -10,8 +10,6 @@ import hGraphQL
 
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
-    @State var disposeBag = DisposeBag()
-
     public init() {}
 
     public var body: some View {
