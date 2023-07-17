@@ -4,7 +4,6 @@ import hCoreUI
 
 struct CodeChangedView: View {
     var body: some View {
-        //        hForm {
         hSection {
             VStack(spacing: 20) {
                 Spacer()
@@ -17,7 +16,6 @@ struct CodeChangedView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        //        }
     }
 }
 struct CodeChangedView_Previews: PreviewProvider {
