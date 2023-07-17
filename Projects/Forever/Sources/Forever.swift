@@ -26,7 +26,8 @@ public struct ForeverView: View {
         }
         .hFormAttachToBottom {
             VStack {
-                Divider().background(Color(UIColor.brand(.primaryBorderColor))).padding(0).edgesIgnoringSafeArea(.all)
+                Divider().background(Color(UIColor.brandNew(.primaryBorderColor))).padding(0)
+                    .edgesIgnoringSafeArea(.all)
                 PresentableStoreLens(
                     ForeverStore.self,
                     getter: { state in
@@ -57,7 +58,8 @@ public struct ForeverView: View {
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
                         }) {
-                            Image(uiImage: hCoreUIAssets.infoIcon.image).foregroundColor(hLabelColor.primary)
+                            Image(uiImage: hCoreUIAssets.infoIcon.image)
+                                .foregroundColor(hTextColorNew.primary)
                         }
                     }
                 }
@@ -110,8 +112,16 @@ extension ForeverView {
 
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
         HostingJourney(
-            rootView: InfoAndTermsView(potentialDiscount: potentialDiscount),
-            style: .modally()
+            rootView: InfoView(
+                title: L10n.ReferralsInfoSheet.headline,
+                description: L10n.ReferralsInfoSheet.body(potentialDiscount),
+                onDismiss: {
+                    let store: ForeverStore = globalPresentableStoreContainer.get()
+                    store.send(.closeInfoSheet)
+                }
+            ),
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
         )
         .onAction(ForeverStore.self) { action in
             if case .closeInfoSheet = action {
