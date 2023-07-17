@@ -205,8 +205,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
             newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
-        case let .setInsurance(contractId):
-            newState.contractStep?.selectedContractId = contractId
         case .submitAudioRecording:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
@@ -252,7 +250,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 send(.navigationAction(action: .openAudioRecordingScreen))
             case let .setContractSelectStep(model):
                 newState.contractStep = model
-                send(.navigationAction(action: .openSelectContractScreen))
+                self.send(.navigationAction(action: .openSelectContractScreen))
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -266,6 +264,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.successStep = nil
             newState.failedStep = nil
             newState.audioRecordingStep = nil
+            newState.contractStep = nil
             newState.currentClaimContext = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method

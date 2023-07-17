@@ -3,15 +3,13 @@ import hGraphQL
 
 public struct FlowClaimContractSelectStepModel: FlowClaimStepModel {
     var selectedContractId: String
-    var availableContractOptions: [FlowClaimContractSelectOptionModel]
+    let availableContractOptions: [FlowClaimContractSelectOptionModel]
 
     init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
     ) {
         self.selectedContractId = data.id
-        self.availableContractOptions = data.options.map({ option in
-            FlowClaimContractSelectOptionModel(displayName: option.displayName, id: option.id)
-        })
+        self.availableContractOptions = data.options.map({ .init(with: $0) })
     }
 }
 
@@ -20,10 +18,9 @@ public struct FlowClaimContractSelectOptionModel: Codable, Equatable, Hashable {
     let id: String
 
     init(
-        displayName: String,
-        id: String
+        with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
     ) {
-        self.displayName = displayName
-        self.id = id
+        self.displayName = data.displayName
+        self.id = data.id
     }
 }

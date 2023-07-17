@@ -36,7 +36,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
-    case setInsurance(insuranceId: String)
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)

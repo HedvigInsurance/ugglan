@@ -71,19 +71,16 @@ public class ClaimJourneys {
     private static func openSelectContractScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: CheckboxPickerScreen<FlowClaimContractSelectStepModel>(
+            rootView: CheckboxPickerScreen<FlowClaimContractSelectOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.contractStep?.availableContractOptions
-                        .compactMap({
-                            (object: $0, displayName: $0.displayName)
-                                as? (object: FlowClaimContractSelectStepModel, displayName: String)
-                        }) ?? []
+                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
                 }(),
                 preSelectedItems: { [] },
                 onSelected: { selectedContract in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setInsurance(insuranceId: selectedContract.first?.selectedContractId ?? ""))
+                    store.send(.contractSelectRequest(contractId: selectedContract.first?.id))
                 },
                 singleSelect: true
             )
