@@ -10,15 +10,26 @@ import hGraphQL
 
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
+    @State var scrollTo: Int = -1
 
     public init() {}
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                HeaderView()
-                DiscountCodeSectionView()
-                InvitationTable()
+        ScrollViewReader { value in
+            hForm {
+                VStack(spacing: 16) {
+                    HeaderView { scrollTo = 2 }.id(0)
+                    DiscountCodeSectionView().id(1)
+                    InvitationTable().id(2)
+                }
+            }
+            .onChange(of: scrollTo) { newValue in
+                if newValue != 0 {
+                    withAnimation {
+                        value.scrollTo(newValue, anchor: .top)
+                    }
+                    scrollTo = 0
+                }
             }
         }
         .onAppear {
