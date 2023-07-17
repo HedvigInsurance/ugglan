@@ -78,6 +78,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
+                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .onAppear {

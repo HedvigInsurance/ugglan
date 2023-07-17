@@ -20,6 +20,7 @@ public struct SubmitClaimSummaryScreen: View {
                     dateOfPurchase
                     purchasePrice
                 }
+                .disableOn(SubmitClaimStore.self, [.postSummary])
             }
             .withHeader {
                 HStack {
@@ -45,6 +46,7 @@ public struct SubmitClaimSummaryScreen: View {
                     } content: {
                         hText(L10n.embarkGoBackButton)
                     }
+                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .padding([.leading, .trailing], 16)
             }

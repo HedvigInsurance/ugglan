@@ -10,14 +10,26 @@ import hGraphQL
 
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
+    @State var scrollTo: Int = -1
+
     public init() {}
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                HeaderView()
-                DiscountCodeSectionView()
-                InvitationTable()
+        ScrollViewReader { value in
+            hForm {
+                VStack(spacing: 16) {
+                    HeaderView { scrollTo = 2 }.id(0)
+                    DiscountCodeSectionView().id(1)
+                    InvitationTable().id(2)
+                }
+            }
+            .onChange(of: scrollTo) { newValue in
+                if newValue != 0 {
+                    withAnimation {
+                        value.scrollTo(newValue, anchor: .top)
+                    }
+                    scrollTo = 0
+                }
             }
         }
         .onAppear {
@@ -65,7 +77,8 @@ public struct ForeverView: View {
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
                         }) {
-                            Image(uiImage: hCoreUIAssets.infoIcon.image).foregroundColor(hLabelColor.primary)
+                            Image(uiImage: hCoreUIAssets.infoIcon.image)
+                                .foregroundColor(hTextColorNew.primary)
                         }
                     }
                 }
@@ -106,8 +119,16 @@ extension ForeverView {
 
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
         HostingJourney(
-            rootView: InfoAndTermsView(potentialDiscount: potentialDiscount),
-            style: .modally()
+            rootView: InfoView(
+                title: L10n.ReferralsInfoSheet.headline,
+                description: L10n.ReferralsInfoSheet.body(potentialDiscount),
+                onDismiss: {
+                    let store: ForeverStore = globalPresentableStoreContainer.get()
+                    store.send(.closeInfoSheet)
+                }
+            ),
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
         )
         .onAction(ForeverStore.self) { action in
             if case .closeInfoSheet = action {

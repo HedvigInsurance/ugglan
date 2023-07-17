@@ -108,8 +108,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                hText(L10n.claimsPayoutProgresLabel, style: .title3)
-
+                hText(L10n.claimsPayoutProgresLabel)
                 ProgressView(value: progress)
                     .tint(hTextColorNew.primary)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
