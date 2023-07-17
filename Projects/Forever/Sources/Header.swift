@@ -8,6 +8,7 @@ import hGraphQL
 
 struct HeaderView: View {
     @PresentableStore var store: ForeverStore
+    @Binding var scrollTo: (scrollTo: Int, nbOfElements: Int)
 
     var body: some View {
         hSection {
@@ -56,11 +57,11 @@ struct HeaderView: View {
 
                         if grossAmount.amount != netAmount.amount {
                             // Discount present
-                            PriceSectionView(netAmount: netAmount)
+                            PriceSectionView(netAmount: netAmount, scrollTo: $scrollTo)
                                 .padding(.bottom, 65)
                                 .padding(.top, 8)
                         } else {
-                            //                            // No discount present
+                            // No discount present
                             hText(
                                 L10n.ReferralsEmpty.body(
                                     potentialDiscountAmount.formattedAmount,

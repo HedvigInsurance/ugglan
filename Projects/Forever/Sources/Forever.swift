@@ -10,15 +10,33 @@ import hGraphQL
 
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
+    @State var scrollTo: (scrollTo: Int, nbOfElements: Int) = (0, 3)
 
     public init() {}
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                HeaderView()
-                DiscountCodeSectionView()
-                InvitationTable()
+        let viewItems: [AnyView] = [
+            AnyView(HeaderView(scrollTo: $scrollTo)),
+            AnyView(DiscountCodeSectionView()),
+            AnyView(InvitationTable()),
+        ]
+
+        ScrollViewReader { value in
+            //            hForm {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(viewItems.indices, id: \.self) { item in
+                        viewItems[item]
+                            .id(item)
+                    }
+                }
+            }
+            //            }
+            .onChange(of: scrollTo.scrollTo) { newValue in
+                if newValue != 0 {
+                    value.scrollTo(newValue)
+                    scrollTo.scrollTo = 0
+                }
             }
         }
         .onAppear {

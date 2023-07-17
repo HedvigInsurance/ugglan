@@ -25,6 +25,7 @@ extension View {
 
 struct PriceSectionView: View {
     @State var netAmount: MonetaryAmount
+    @Binding var scrollTo: (scrollTo: Int, nbOfElements: Int)
 
     @State private var netAmountAnimate: MonetaryAmount = .init(amount: 0, currency: "")
 
@@ -35,7 +36,7 @@ struct PriceSectionView: View {
                 hText(netAmountAnimate.formattedAmount + "/" + L10n.monthAbbreviationLabel)
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .onTapGesture {
-                        // add scroll to bottom here
+                        scrollTo.scrollTo = scrollTo.nbOfElements - 1
                     }
             }
             .foregroundColor(hTextColorNew.secondary)
