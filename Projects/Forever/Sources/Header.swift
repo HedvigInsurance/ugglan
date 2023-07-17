@@ -35,6 +35,7 @@ struct HeaderView: View {
                                 grossAmount: .init(amount: 0, currency: ""),
                                 netAmount: .init(amount: 0, currency: ""),
                                 potentialDiscountAmount: .init(amount: 0, currency: ""),
+                                otherDiscounts: .init(amount: 0, currency: ""),
                                 discountCode: "",
                                 invitations: []
                             )

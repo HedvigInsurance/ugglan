@@ -157,3 +157,28 @@ extension ForeverView {
         }
     }
 }
+struct ForeverView_Previews: PreviewProvider {
+    @PresentableStore static var store: ForeverStore
+
+    static var previews: some View {
+        ForeverView()
+            .onAppear {
+                store.send(
+                    .setForeverData(
+                        data: .init(
+                            grossAmount: .sek(200),
+                            netAmount: .sek(180),
+                            potentialDiscountAmount: .sek(50),
+                            otherDiscounts: .sek(0),
+                            discountCode: "CODE",
+                            invitations: [
+                                .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
+                                .init(name: "Second", state: .active, invitedByOther: false),
+                                .init(name: "Third", state: .terminated, invitedByOther: false),
+                            ]
+                        )
+                    )
+                )
+            }
+    }
+}
