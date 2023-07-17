@@ -7,7 +7,6 @@ import hCoreUI
 
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
-    @State var disposeBage = DisposeBag()
     var body: some View {
         VStack(spacing: 0) {
             PresentableStoreLens(
