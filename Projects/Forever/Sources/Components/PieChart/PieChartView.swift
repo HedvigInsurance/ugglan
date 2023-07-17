@@ -41,25 +41,6 @@ public struct PieChartView: View {
                             }
                         }
                 }
-
-                let radAngle = Angle(degrees: -(360.0 * state.slices * state.percentagePerSlice - 90.0)).radians
-                // Using cosine to make sure the label is positioned nicely around the whole circle
-                let offset = abs(cos(radAngle)) * 0.16 + 1.1
-                VStack {
-                    if state.slices != 0 && !state.slices.isNaN && showNewAmount {
-                        hText(newPrice)
-                            .foregroundColor(hTextColorNew.secondary)
-                            .transition(.opacity)
-                    }
-                }
-                .position(
-                    x: geometry.size.width * 0.5 * CGFloat(1.0 + offset * cos(radAngle)),
-                    y: geometry.size.height * 0.5 * CGFloat(1.0 - offset * sin(radAngle))
-                )
-                .animation(self.animation.delay(0.2))
-                .onAppear {
-                    self.showNewAmount.toggle()
-                }
             }
         }
         .aspectRatio(1, contentMode: .fit)
