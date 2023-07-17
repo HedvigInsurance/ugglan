@@ -51,8 +51,8 @@ public class ClaimJourneys {
                 showClaimEntrypointType().addDismissClaimsFlow()
             } else if case .openTriagingOptionScreen = navigationAction {
                 showClaimEntrypointOption().addDismissClaimsFlow()
-            } else if case .openInsuranceScreen = navigationAction {
-                openInsuranceScreen().addDismissClaimsFlow()
+            } else if case .openSelectContractScreen = navigationAction {
+                openSelectContractScreen().addDismissClaimsFlow()
             }
         }
     }
@@ -68,22 +68,22 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    private static func openInsuranceScreen() -> some JourneyPresentation {
+    private static func openSelectContractScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: CheckboxPickerScreen<FlowClaimInsuranceStepModel>(
+            rootView: CheckboxPickerScreen<FlowClaimContractSelectStepModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.insuranceStep?.availableInsuranceOptions
+                    return store.state.contractStep?.availableContractOptions
                         .compactMap({
                             (object: $0, displayName: $0.displayName)
-                                as? (object: FlowClaimInsuranceStepModel, displayName: String)
+                                as? (object: FlowClaimContractSelectStepModel, displayName: String)
                         }) ?? []
                 }(),
                 preSelectedItems: { [] },
-                onSelected: { selectedInsurance in
+                onSelected: { selectedContract in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setInsurance(insuranceId: selectedInsurance.first?.selectdeinsuranceId ?? ""))
+                    store.send(.setInsurance(insuranceId: selectedContract.first?.selectedContractId ?? ""))
                 },
                 singleSelect: true
             )

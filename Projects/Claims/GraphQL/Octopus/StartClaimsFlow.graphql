@@ -22,6 +22,7 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimSingleItemStepFragment
     ...FlowClaimSuccessStepFragment
     ...FlowClaimSummaryStepFragment
+    ...FlowClaimContractSelectStepFragment
   }
 }
 
@@ -51,6 +52,14 @@ fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep 
 
 fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
     id
+}
+
+fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
+    id
+    options {
+        displayName
+        id
+    }
 }
 
 fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
@@ -115,10 +124,10 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
     customName
 }
 
-
 fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
     id
 }
+
 fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     id
     title
@@ -131,19 +140,6 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     singleItemStep {
         ...FlowClaimSingleItemStepFragment
     }
-}
-fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
-    id
-    minDate
-    maxDate
-}
-fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
-    id
-}
-fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
-    id
-    terminationDate
-    surveyUrl
 }
 
 fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {

@@ -146,6 +146,13 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     return disposeBag
                 }
             }
+        case let .contractSelectRequest(contractId):
+            let contractSelectInput = OctopusGraphQL.FlowClaimContractSelectInput(contractId: contractId)
+            let mutation = OctopusGraphQL.FlowClaimContractSelectNextMutation(
+                input: contractSelectInput,
+                context: newClaimContext
+            )
+            return mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
         case .fetchEntrypointGroups:
             let entrypointType = OctopusGraphQL.EntrypointType.claim
             let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
@@ -198,8 +205,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
             newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
-        case let .setInsurance(insuranceId):
-            newState.insuranceStep?.selectdeinsuranceId = insuranceId
+        case let .setInsurance(contractId):
+            newState.contractStep?.selectedContractId = contractId
         case .submitAudioRecording:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
@@ -243,6 +250,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
                 send(.navigationAction(action: .openAudioRecordingScreen))
+            case let .setContractSelectStep(model):
+                newState.contractStep = model
+                send(.navigationAction(action: .openSelectContractScreen))
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -263,6 +273,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             setLoading(for: .postPhoneNumber)
         case .dateOfOccurrenceAndLocationRequest:
             setLoading(for: .postDateOfOccurrenceAndLocation)
+        case .contractSelectRequest:
+            setLoading(for: .postContractSelect)
         case .singleItemRequest:
             setLoading(for: .postSingleItem)
         case .summaryRequest:
