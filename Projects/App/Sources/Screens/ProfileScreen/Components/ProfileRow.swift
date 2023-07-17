@@ -8,14 +8,11 @@ struct ProfileRow: View {
     @PresentableStore var store: ProfileStore
 
     let row: ProfileRowType
-    let subtitle: String?
 
     init(
-        row: ProfileRowType,
-        subtitle: String? = nil
+        row: ProfileRowType
     ) {
         self.row = row
-        self.subtitle = subtitle
     }
 
     public var body: some View {
@@ -24,14 +21,9 @@ struct ProfileRow: View {
                 Image(uiImage: row.icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: row.imageSize, height: row.imageSize)
+                    .frame(width: 24, height: 24)
                     .padding(row.paddings)
-                VStack(alignment: .leading, spacing: 2) {
-                    hText(row.title)
-                    if let subtitle = subtitle, subtitle != "" {
-                        hText(subtitle, style: .footnote).foregroundColor(hLabelColor.secondary)
-                    }
-                }
+                hText(row.title)
             }
             .padding(0)
         }

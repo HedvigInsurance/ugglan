@@ -12,10 +12,6 @@ struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
-    private func getLogoutIcon() -> UIImage {
-        let icon = hCoreUIAssets.logout.image.withTintColor(.brand(.destructive))
-        return icon
-    }
 
     private var logoutAlert: SwiftUI.Alert {
         return Alert(
@@ -30,7 +26,7 @@ struct ProfileView: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .profile) {
+        hForm {
             PresentableStoreLens(
                 ProfileStore.self,
                 getter: { state in
@@ -38,60 +34,24 @@ struct ProfileView: View {
                 }
             ) { stateData in
                 hSection {
-                    ProfileRow(row: .myInfo, subtitle: stateData.memberFullName)
+                    ProfileRow(row: .myInfo)
 
                     if hAnalyticsExperiment.showCharity {
-                        ProfileRow(row: .myCharity, subtitle: nil)
+                        ProfileRow(row: .myCharity)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
                         ProfileRow(
-                            row: .eurobonus(hasEnteredNumber: hasEntereNumber),
-                            subtitle: hasEntereNumber ? number : L10n.SasIntegration.connectYourNumber
+                            row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
                     if hAnalyticsExperiment.paymentScreen {
-                        ProfileRow(row: .payment, subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)")
+                        ProfileRow(row: .payment)
                     }
-                }
-                .withoutHorizontalPadding
-                .sectionContainerStyle(.transparent)
-                hSection {
+
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
-
-                    hRow {
-                        HStack(spacing: 16) {
-                            Image(uiImage: hCoreUIAssets.logout.image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
-                                .foregroundColor(Color(.brand(.destructive)))
-                            VStack(alignment: .leading, spacing: 2) {
-                                hText(L10n.logoutButton).foregroundColor(Color(.brand(.destructive)))
-                            }
-
-                        }
-                        .padding(0)
-                    }
-                    .withCustomAccessory({
-                        Spacer()
-                    })
-                    .verticalPadding(12)
-                    .onTap {
-                        showLogoutAlert = true
-                    }
-                    .alert(isPresented: $showLogoutAlert) {
-                        logoutAlert
-                    }
-                }
-                .withHeader {
-                    hText(
-                        L10n.Profile.AppSettingsSection.title,
-                        style: .title2
-                    )
-                    .padding(.leading, 16)
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
@@ -100,6 +60,19 @@ struct ProfileView: View {
         .withChatButton {
             store.send(.openFreeTextChat)
         }
+        .hFormAttachToBottom {
+            hButton.LargeButtonGhost {
+                showLogoutAlert = true
+            } content: {
+                hText(L10n.logoutButton)
+                    .foregroundColor(hSignalColorNew.redElement)
+            }
+            .padding(16)
+            .alert(isPresented: $showLogoutAlert) {
+                logoutAlert
+            }
+        }
+
         .onAppear {
             store.send(.fetchProfileState)
         }
