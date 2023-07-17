@@ -25,26 +25,34 @@ public struct ForeverView: View {
             store.send(.fetch)
         }
         .hFormAttachToBottom {
-            VStack {
-                Divider().background(Color(UIColor.brandNew(.primaryBorderColor))).padding(0)
-                    .edgesIgnoringSafeArea(.all)
-                PresentableStoreLens(
-                    ForeverStore.self,
-                    getter: { state in
-                        state.foreverData?.discountCode
-                    }
-                ) { code in
-                    if let code = code {
-                        hButton.LargeButtonPrimary {
-                            store.send(.showShareSheetWithNotificationReminder(code: code))
-                        } content: {
-                            hText(L10n.ReferralsEmpty.shareCodeButton)
+            PresentableStoreLens(
+                ForeverStore.self,
+                getter: { state in
+                    state.foreverData?.discountCode
+                }
+            ) { code in
+                if let code = code {
+                    hSection {
+                        VStack(spacing: 8) {
+                            hButton.LargeButtonPrimary {
+                                store.send(.showShareSheetWithNotificationReminder(code: code))
+                            } content: {
+                                hText(L10n.ReferralsEmpty.shareCodeButton)
+                            }
+
+                            hButton.LargeButtonGhost {
+                                store.send(.showChangeCodeDetail)
+
+                            } content: {
+                                hText(L10n.ReferralsChange.changeCode)
+                            }
                         }
-                        .padding(.horizontal).padding(.vertical, 6)
                     }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.vertical, 16)
+
                 }
             }
-            .background(Color(DefaultStyling.tabBarBackgroundColor).edgesIgnoringSafeArea(.all))
         }
         .navigationBarItems(
             trailing:
@@ -55,6 +63,7 @@ public struct ForeverView: View {
                     }
                 ) { discountAmount in
                     if let discountAmount = discountAmount {
+
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
                         }) {
@@ -72,12 +81,7 @@ extension ForeverView {
     public static func journey() -> some JourneyPresentation {
         HostingJourney(
             ForeverStore.self,
-            rootView: ForeverView(),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-            ]
+            rootView: ForeverView()
         ) { action in
             if case .showChangeCodeDetail = action {
                 Journey(
@@ -167,28 +171,15 @@ extension ForeverView {
         }
     }
 }
+
 struct ForeverView_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
-
     static var previews: some View {
-        ForeverView()
+        Localization.Locale.currentLocale = .en_SE
+        return ForeverView()
             .onAppear {
-                store.send(
-                    .setForeverData(
-                        data: .init(
-                            grossAmount: .sek(200),
-                            netAmount: .sek(180),
-                            potentialDiscountAmount: .sek(50),
-                            otherDiscounts: .sek(0),
-                            discountCode: "CODE",
-                            invitations: [
-                                .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
-                                .init(name: "Second", state: .active, invitedByOther: false),
-                                .init(name: "Third", state: .terminated, invitedByOther: false),
-                            ]
-                        )
-                    )
-                )
+                let foreverData = ForeverData.mock()
+                store.send(.setForeverData(data: foreverData))
             }
     }
 }

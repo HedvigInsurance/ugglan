@@ -81,3 +81,33 @@ struct HeaderView: View {
         .sectionContainerStyle(.transparent)
     }
 }
+struct HeaderView_Previews: PreviewProvider {
+    @PresentableStore static var store: ForeverStore
+    static var previews: some View {
+        HeaderView()
+            .onAppear {
+                let foreverData = ForeverData.mock()
+                store.send(.setForeverData(data: foreverData))
+            }
+    }
+}
+
+struct HeaderView_Previews2: PreviewProvider {
+    @PresentableStore static var store: ForeverStore
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HeaderView()
+            .onAppear {
+
+                let foreverData = ForeverData(
+                    grossAmount: .sek(200),
+                    netAmount: .sek(160),
+                    potentialDiscountAmount: .sek(60),
+                    otherDiscounts: .sek(40),
+                    discountCode: "CODE2",
+                    invitations: []
+                )
+                store.send(.setForeverData(data: foreverData))
+            }
+    }
+}

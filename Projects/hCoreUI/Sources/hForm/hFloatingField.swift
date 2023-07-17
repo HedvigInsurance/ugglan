@@ -10,6 +10,7 @@ public struct hFloatingField: View {
     @Binding var error: String?
     private var value: String
     private let onTap: () -> Void
+    @Environment(\.hFieldTrailingView) var fieldTrailingView
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -41,7 +42,11 @@ public struct hFloatingField: View {
                     shouldMoveLabel: shouldMoveLabel
                 )
                 if !value.isEmpty {
-                    getTextLabel.frame(height: HFontTextStyle.title3.fontSize)
+                    HStack {
+                        getTextLabel.frame(height: HFontTextStyle.title3.fontSize)
+                        Spacer()
+                        fieldTrailingView
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -69,6 +74,7 @@ public struct hFloatingField: View {
             }
         }
     }
+
 }
 
 struct hFloatingField_Previews: PreviewProvider {
@@ -80,6 +86,26 @@ struct hFloatingField_Previews: PreviewProvider {
             hFloatingField(value: value, placeholder: "ni", error: nil) {
 
             }
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.copy.image)
+            }
         }
+    }
+}
+
+private struct EnvironmentHCFieldTrailingView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFieldTrailingView: (AnyView)? {
+        get { self[EnvironmentHCFieldTrailingView.self] }
+        set { self[EnvironmentHCFieldTrailingView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFieldTrailingView, AnyView(content()))
     }
 }
