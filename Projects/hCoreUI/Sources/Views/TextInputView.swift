@@ -95,8 +95,6 @@ public class TextInputViewModel: ObservableObject {
             .onValue { [weak self] error in
                 if let error {
                     self?.error = error
-                } else {
-                    self?.dismiss()
                 }
                 self?.isLoading = false
                 self?.type = .textField

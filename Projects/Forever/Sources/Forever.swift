@@ -110,6 +110,10 @@ extension ForeverView {
                 pushNotificationJourney {
                     ContinueJourney()
                 }
+            } else if case .showSuccessScreen = action {
+                pushNotificationJourney {
+                    ContinueJourney()
+                }
             }
         }
         .configureTitle(L10n.referralsScreenTitle)
@@ -192,7 +196,7 @@ extension ForeverView {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         let vm = TextInputViewModel(
             input: store.state.foreverData?.discountCode ?? "",
-            title: "Change your code"
+            title: L10n.ReferralsChange.changeCode
         ) { text in
             FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -202,8 +206,8 @@ extension ForeverView {
                             callback(.value(error.localizedDescription))
                         } else {
                             callback(.value(nil))
-                            store.send(.dismissChangeCodeDetail)
                             store.send(.fetch)
+                            store.send(.showSuccessScreen)
                         }
                     }
                 return disposeBag
@@ -219,8 +223,19 @@ extension ForeverView {
             style: .detented(.scrollViewContentSize),
             options: .largeNavigationBar
         ) { action in
-            if case .dismissChangeCodeDetail = action {
-                DismissJourney()
+            if case .showSuccessScreen = action {
+                HostingJourney(
+                    rootView: CodeChangedView(),
+                    style: .detented(.large, modally: false),
+                    options: [.prefersNavigationBarHidden(true)]
+                )
+                .onPresent {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        store.send(.dismissChangeCodeDetail)
+                    }
+                }
+                .hidesBackButton
+
             }
         }
         .onDismiss {
@@ -228,5 +243,11 @@ extension ForeverView {
             store.send(.fetch)
         }
         .configureTitle(L10n.ReferralsChange.changeCode)
+        .onAction(ForeverStore.self) { action, pres in
+            if case .dismissChangeCodeDetail = action {
+                pres.bag.dispose()
+            }
+        }
+
     }
 }
