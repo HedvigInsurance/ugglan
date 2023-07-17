@@ -203,7 +203,62 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
     }
 
     public var body: some View {
+        loadingButton
+            .alert(isPresented: $presentError) {
+                Alert(
+                    title: Text(L10n.somethingWentWrong),
+                    message: Text(error),
+                    dismissButton: .default(Text(L10n.alertOk)) {
+                        for action in actions {
+                            store.removeLoading(for: action)
+                        }
+                    }
+                )
+            }
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                let actions = value.filter({ self.actions.contains($0.key) })
+                if actions.count > 0 {
+                    if actions.filter({ $0.value == .loading }).count > 0 {
+                        withAnimation {
+                            self.isLoading = true
+                            self.presentError = false
+                        }
+                    } else {
+                        var tempError = ""
+                        for action in actions {
+                            switch action.value {
+                            case .error(let error):
+                                tempError = error
+                            default:
+                                break
+                            }
+                        }
+                        self.error = tempError
+                        self.isLoading = false
+                        self.presentError = true
+                    }
+                } else {
+                    if isLoading == true {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    } else {
+                        withAnimation {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    }
+                }
+            }
+    }
 
+    @ViewBuilder
+    var loadingButton: some View {
         switch buttonStyleSelect {
         case .filledButton:
             hButton.LargeButtonPrimary {
@@ -218,57 +273,6 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .alert(isPresented: $presentError) {
-                Alert(
-                    title: Text(L10n.somethingWentWrong),
-                    message: Text(error),
-                    dismissButton: .default(Text(L10n.alertOk)) {
-                        for action in actions {
-                            store.removeLoading(for: action)
-                        }
-                    }
-                )
-            }
-            .onReceive(
-                store.loadingSignal
-                    .plain()
-                    .publisher
-            ) { value in
-                let actions = value.filter({ self.actions.contains($0.key) })
-                if actions.count > 0 {
-                    if actions.filter({ $0.value == .loading }).count > 0 {
-                        withAnimation {
-                            self.isLoading = true
-                            self.presentError = false
-                        }
-                    } else {
-                        var tempError = ""
-                        for action in actions {
-                            switch action.value {
-                            case .error(let error):
-                                tempError = error
-                            default:
-                                break
-                            }
-                        }
-                        self.error = tempError
-                        self.isLoading = false
-                        self.presentError = true
-                    }
-                } else {
-                    if isLoading == true {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    } else {
-                        withAnimation {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    }
-                }
-            }
         case .textButton:
             hButton.LargeButtonText {
                 if !isLoading {
@@ -280,57 +284,6 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                 } else {
                     DotsActivityIndicator(.standard)
                         .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .alert(isPresented: $presentError) {
-                Alert(
-                    title: Text(L10n.somethingWentWrong),
-                    message: Text(error),
-                    dismissButton: .default(Text(L10n.alertOk)) {
-                        for action in actions {
-                            store.removeLoading(for: action)
-                        }
-                    }
-                )
-            }
-            .onReceive(
-                store.loadingSignal
-                    .plain()
-                    .publisher
-            ) { value in
-                let actions = value.filter({ self.actions.contains($0.key) })
-                if actions.count > 0 {
-                    if actions.filter({ $0.value == .loading }).count > 0 {
-                        withAnimation {
-                            self.isLoading = true
-                            self.presentError = false
-                        }
-                    } else {
-                        var tempError = ""
-                        for action in actions {
-                            switch action.value {
-                            case .error(let error):
-                                tempError = error
-                            default:
-                                break
-                            }
-                        }
-                        self.error = tempError
-                        self.isLoading = false
-                        self.presentError = true
-                    }
-                } else {
-                    if isLoading == true {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    } else {
-                        withAnimation {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    }
                 }
             }
         case .none:

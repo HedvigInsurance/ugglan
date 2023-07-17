@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -79,6 +80,24 @@ struct ContractDocumentsView: View {
                             }
                         }
                     }
+                }
+            }
+        }
+        if hAnalyticsExperiment.terminationFlow {
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    state.contractForId(id)
+                }
+            ) { contract in
+                if (contract?.currentAgreement?.activeTo) == nil {
+                    hButton.SmallButtonText {
+                        store.send(.startTermination(contractId: id))
+                    } content: {
+                        hText(L10n.terminationButton, style: .body)
+                            .foregroundColor(hTextColorNew.secondary)
+                    }
+                    .padding(.bottom, 39)
                 }
             }
         }
