@@ -108,6 +108,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
         .onChange(of: innerValue) { currentValue in
+            self.error = nil
             startAnimation(currentValue)
         }
         .onAppear {
@@ -116,6 +117,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
             textField?.becomeFirstResponder()
+        }
+        .onChange(of: error) { error in
+            self.animate = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.animate = false
+            }
         }
     }
 
@@ -162,9 +169,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
+    @State static var value: String = "Test"
+    @State static var error: String? = "Test"
     static var previews: some View {
-        @State var value: String = "Test"
-
         VStack {
             hFloatingTextField<Bool>(
                 masking: .init(type: .none),
@@ -179,7 +186,8 @@ struct hFloatingTextField_Previews: PreviewProvider {
                     }
                 ),
                 focusValue: true,
-                placeholder: "Label"
+                placeholder: "Label",
+                error: $error
             )
         }
     }

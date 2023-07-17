@@ -25,8 +25,9 @@ struct hFieldBackgroundModifier: ViewModifier {
 
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
                         .foregroundColor(hSignalColorNew.amberElement)
-                    hText(errorMessage, style: .footnote)
+                    hText(errorMessage, style: .standardSmall)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(hTextColorNew.primary)
 
                 }
                 .padding(.top, 6)
@@ -38,10 +39,12 @@ struct hFieldBackgroundModifier: ViewModifier {
 
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
-        if error != nil {
-            hSignalColorNew.amberFill
-        } else if animate {
-            hSignalColorNew.greenFill
+        if animate {
+            if error != nil {
+                hSignalColorNew.amberFill
+            } else {
+                hSignalColorNew.greenFill
+            }
         } else {
             hFillColorNew.opaqueOne
         }
@@ -94,6 +97,5 @@ struct hFieldLabel_Previews: PreviewProvider {
             error: $value,
             shouldMoveLabel: $shouldMoveLabel
         )
-        .background(Color.red)
     }
 }

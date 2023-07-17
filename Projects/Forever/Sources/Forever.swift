@@ -10,6 +10,7 @@ import hGraphQL
 
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
+    @State var disposeBag = DisposeBag()
 
     public init() {}
 
@@ -42,7 +43,6 @@ public struct ForeverView: View {
 
                             hButton.LargeButtonGhost {
                                 store.send(.showChangeCodeDetail)
-
                             } content: {
                                 hText(L10n.ReferralsChange.changeCode)
                             }
@@ -83,14 +83,7 @@ extension ForeverView {
             rootView: ForeverView()
         ) { action in
             if case .showChangeCodeDetail = action {
-                Journey(
-                    ChangeCode(service: ForeverServiceGraphQL()),
-                    style: .modally()
-                )
-                .onDismiss {
-                    let store: ForeverStore = globalPresentableStoreContainer.get()
-                    store.send(.fetch)
-                }
+                getChangeCodeJourney()
             } else if case let .showShareSheetWithNotificationReminder(code) = action {
                 pushNotificationJourney(onDismissAction: {
                     let store: ForeverStore = globalPresentableStoreContainer.get()
@@ -172,5 +165,49 @@ struct ForeverView_Previews: PreviewProvider {
                 let foreverData = ForeverData.mock()
                 store.send(.setForeverData(data: foreverData))
             }
+    }
+}
+
+extension ForeverView {
+    static func getChangeCodeJourney() -> some JourneyPresentation {
+        let store: ForeverStore = globalPresentableStoreContainer.get()
+        let vm = TextInputViewModel(
+            input: store.state.foreverData?.discountCode ?? "",
+            title: "Change your code"
+        ) { text in
+            FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += ForeverServiceGraphQL().changeDiscountCode(text)
+                    .onValue { value in
+                        if let error = value.right {
+                            callback(.value(error.localizedDescription))
+                        } else {
+                            callback(.value(nil))
+                            store.send(.dismissChangeCodeDetail)
+                            store.send(.fetch)
+                        }
+                    }
+                return disposeBag
+            }
+        } dismiss: {
+            store.send(.dismissChangeCodeDetail)
+        }
+
+        let view = TextInputView(vm: vm)
+        return HostingJourney(
+            ForeverStore.self,
+            rootView: view,
+            style: .detented(.scrollViewContentSize),
+            options: .largeNavigationBar
+        ) { action in
+            if case .dismissChangeCodeDetail = action {
+                DismissJourney()
+            }
+        }
+        .onDismiss {
+            let store: ForeverStore = globalPresentableStoreContainer.get()
+            store.send(.fetch)
+        }
+        .configureTitle(L10n.ReferralsChange.changeCode)
     }
 }
