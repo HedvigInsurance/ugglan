@@ -127,9 +127,12 @@ public enum HFontTextStyle {
     }
 }
 
-struct hFontModifier: ViewModifier {
+public struct hFontModifier: ViewModifier {
     public var style: HFontTextStyle
 
+    public init(style: HFontTextStyle) {
+        self.style = style
+    }
     var font: UIFont {
         Fonts.fontFor(style: style)
     }
@@ -163,7 +166,7 @@ struct hFontModifier: ViewModifier {
         }
     }
 
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content.font(Font(font))
             .lineSpacing(lineSpacing)
     }

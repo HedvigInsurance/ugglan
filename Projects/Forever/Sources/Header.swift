@@ -35,6 +35,7 @@ struct HeaderView: View {
                                 grossAmount: .init(amount: 0, currency: ""),
                                 netAmount: .init(amount: 0, currency: ""),
                                 potentialDiscountAmount: .init(amount: 0, currency: ""),
+                                otherDiscounts: .init(amount: 0, currency: ""),
                                 discountCode: "",
                                 invitations: []
                             )
@@ -99,9 +100,10 @@ struct HeaderView_Previews2: PreviewProvider {
             .onAppear {
 
                 let foreverData = ForeverData(
-                    grossAmount: .sek(100),
-                    netAmount: .sek(100),
-                    potentialDiscountAmount: .sek(0),
+                    grossAmount: .sek(200),
+                    netAmount: .sek(160),
+                    potentialDiscountAmount: .sek(60),
+                    otherDiscounts: .sek(40),
                     discountCode: "CODE2",
                     invitations: []
                 )
