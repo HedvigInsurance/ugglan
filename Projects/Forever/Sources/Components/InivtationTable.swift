@@ -37,7 +37,7 @@ extension ForeverInvitation {
     var discountLabelText: String {
         switch self.state {
         case .active:
-            return self.discount?.formattedAmount ?? ""
+            return self.discount?.negative.formattedAmount ?? ""
         case .pending:
             return L10n.ReferallsInviteeStates.awaiting
         case .terminated:
@@ -84,7 +84,7 @@ struct InvitationTable: View {
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    hText("\(otherDiscounts.formattedAmount)")
+                    hText("\(otherDiscounts.negative.formattedAmount)")
                 }
             }
         }
@@ -145,7 +145,6 @@ struct InvitationRow: View {
         .withCustomAccessory({
             Spacer()
             hText(row.discountLabelText).foregroundColor(row.discountLabelColor)
-
         })
     }
 }
