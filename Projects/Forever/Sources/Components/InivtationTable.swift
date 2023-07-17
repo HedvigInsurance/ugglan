@@ -28,9 +28,9 @@ extension ForeverInvitation {
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.state {
         case .active, .pending:
-            hTextColorNew.secondary
+            hTextColorNew.tertiary
         case .terminated:
-            hTextColorNew.secondary
+            hTextColorNew.tertiary
         }
     }
 
