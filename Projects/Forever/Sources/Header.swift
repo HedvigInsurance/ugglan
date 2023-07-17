@@ -8,7 +8,7 @@ import hGraphQL
 
 struct HeaderView: View {
     @PresentableStore var store: ForeverStore
-    @Binding var scrollTo: (scrollTo: Int, nbOfElements: Int)
+    let didPressInfo: () -> Void
 
     var body: some View {
         hSection {
@@ -57,7 +57,7 @@ struct HeaderView: View {
 
                         if grossAmount.amount != netAmount.amount {
                             // Discount present
-                            PriceSectionView(netAmount: netAmount, scrollTo: $scrollTo)
+                            PriceSectionView(netAmount: netAmount, didPressInfo: didPressInfo)
                                 .padding(.bottom, 65)
                                 .padding(.top, 8)
                         } else {
