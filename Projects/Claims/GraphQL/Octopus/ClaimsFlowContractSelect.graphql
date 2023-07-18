@@ -1,0 +1,10 @@
+mutation FlowClaimContractSelectNext($input: FlowClaimContractSelectInput!, $context: FlowContext!) {
+  flowClaimContractSelectNext(input: $input, context: $context) {
+    id
+    context
+    ...FlowClaimFragment
+    progress {
+        ...ProgressFragment
+    }
+  }
+}

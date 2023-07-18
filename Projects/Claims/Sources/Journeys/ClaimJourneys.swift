@@ -51,6 +51,8 @@ public class ClaimJourneys {
                 showClaimEntrypointType().addDismissClaimsFlow()
             } else if case .openTriagingOptionScreen = navigationAction {
                 showClaimEntrypointOption().addDismissClaimsFlow()
+            } else if case .openSelectContractScreen = navigationAction {
+                openSelectContractScreen().addDismissClaimsFlow()
             }
         }
     }
@@ -60,6 +62,18 @@ public class ClaimJourneys {
             SubmitClaimStore.self,
             rootView: SubmitClaimContactScreen(model: model)
         ) { action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openSelectContractScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SelectContractScreen()
+        ) {
+            action in
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
@@ -112,7 +126,7 @@ public class ClaimJourneys {
                 preSelectedItems: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     if let value = store.state.locationStep?.getSelectedOption() {
-                        return [value.displayName]
+                        return [value]
                     }
                     return []
                 },
@@ -231,7 +245,6 @@ public class ClaimJourneys {
                                         model.itemProblemId == item
                                     }) ?? false
                             }
-                            .map({ $0.displayName })
                         return preselected
                     }
                     return []
