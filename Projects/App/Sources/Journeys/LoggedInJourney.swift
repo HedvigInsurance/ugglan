@@ -103,8 +103,6 @@ extension AppJourney {
                     MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

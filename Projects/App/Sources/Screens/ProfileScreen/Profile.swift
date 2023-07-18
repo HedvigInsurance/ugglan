@@ -58,10 +58,8 @@ struct ProfileView: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
+                .padding(.top, 16)
             }
-        }
-        .withChatButton {
-            store.send(.openFreeTextChat)
         }
         .hFormAttachToBottom {
             hButton.LargeButtonGhost {
@@ -97,7 +95,6 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
-    case openFreeTextChat
 }
 
 extension ProfileView {
@@ -106,8 +103,7 @@ extension ProfileView {
     ) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
-            rootView: ProfileView(),
-            options: [.largeNavigationBar]
+            rootView: ProfileView()
         ) { action in
             if case .openProfile = action {
                 Journey(
@@ -130,8 +126,6 @@ extension ProfileView {
                     AppInfo(type: .appSettings),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
-            } else if case .openFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
             } else if case .openEuroBonus = action {
                 HostingJourney(
                     rootView: EuroBonusView(),
