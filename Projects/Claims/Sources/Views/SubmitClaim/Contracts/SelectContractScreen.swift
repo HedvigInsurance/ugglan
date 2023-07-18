@@ -4,6 +4,8 @@ import hCore
 import hCoreUI
 
 struct SelectContractScreen: View {
+    @PresentableStore var store: SubmitClaimStore
+    @State var isLoading: Bool = false
     var body: some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
@@ -17,7 +19,9 @@ struct SelectContractScreen: View {
                         .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
                 }(),
                 preSelectedItems: {
-                    if let preselected = contractStep?.availableContractOptions.first {
+                    if let preselected = contractStep?.availableContractOptions
+                        .first(where: { $0.id == contractStep?.selectedContractId })
+                    {
                         return [preselected]
                     }
                     return []
@@ -28,6 +32,16 @@ struct SelectContractScreen: View {
                 },
                 singleSelect: true
             )
+            .hButtonIsLoading(isLoading)
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                withAnimation {
+                    isLoading = value[.postContractSelect] == .loading
+                }
+            }
         }
 
     }

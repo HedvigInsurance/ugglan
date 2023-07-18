@@ -272,7 +272,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             setLoading(for: .postPhoneNumber)
         case .dateOfOccurrenceAndLocationRequest:
             setLoading(for: .postDateOfOccurrenceAndLocation)
-        case .contractSelectRequest:
+        case let .contractSelectRequest(selected):
+            newState.contractStep?.selectedContractId = selected
             setLoading(for: .postContractSelect)
         case .singleItemRequest:
             setLoading(for: .postSingleItem)

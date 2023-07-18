@@ -10,6 +10,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let singleSelect: Bool?
     let showDividers: Bool?
     @State var selectedItems: [T] = []
+    @Environment(\.hButtonIsLoading) var isLoading
 
     public init(
         items: [(object: T, displayName: String)],
@@ -28,7 +29,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     public var body: some View {
-
         if onCancel != nil {
             hForm {}
                 .hUseNewStyle
@@ -59,18 +59,19 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     hSection {
                         getCell(item: item)
                     }
+                    .disabled(isLoading)
                 }
             }
             .padding(.top, 8)
             VStack(spacing: 8) {
-                if onCancel != nil {
+                if let onCancel {
                     hButton.LargeButtonFilled {
                         sendSelectedItems
                     } content: {
                         hTextNew(L10n.generalSaveButton, style: .body)
                     }
                     hButton.LargeButtonText {
-                        onCancel?()
+                        onCancel()
                     } content: {
                         hTextNew(L10n.generalCancelButton, style: .body)
                     }
