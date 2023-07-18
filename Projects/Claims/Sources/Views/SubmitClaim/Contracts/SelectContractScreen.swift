@@ -16,7 +16,12 @@ struct SelectContractScreen: View {
                     return contractStep?.availableContractOptions
                         .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
                 }(),
-                preSelectedItems: { [] },
+                preSelectedItems: {
+                    if let preselected = contractStep?.availableContractOptions.first {
+                        return [preselected]
+                    }
+                    return []
+                },
                 onSelected: { selectedContract in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.contractSelectRequest(contractId: selectedContract.first?.id))
