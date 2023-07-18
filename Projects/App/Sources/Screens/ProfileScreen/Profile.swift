@@ -1,6 +1,8 @@
 import Apollo
 import Flow
 import Form
+import Home
+import Payment
 import Presentation
 import SwiftUI
 import hAnalytics
@@ -97,8 +99,12 @@ struct ProfileView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .withChatButton {
-            store.send(.openFreeTextChat)
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                ConnectPaymentCardView()
+                RenewalCardView()
+                NotificationsCardView()
+            }
         }
         .onAppear {
             store.send(.fetchProfileState)

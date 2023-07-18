@@ -4,6 +4,7 @@ import hCore
 public struct InfoCard: View {
     let text: String
     let type: InfoCardType
+    @Environment(\.hInfoCardButtonConfig) var buttonsConfig
 
     public init(
         text: String,
@@ -17,10 +18,36 @@ public struct InfoCard: View {
         HStack(alignment: .top, spacing: 0) {
             Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                 .foregroundColor(hSignalColorNew.blueElement)
-
-            hText(text, style: .footnote)
-                .foregroundColor(getTextColor)
-                .padding(.leading, 9)
+            VStack(alignment: .leading) {
+                hText(text, style: .footnote)
+                    .foregroundColor(getTextColor)
+                    .padding(.leading, 9)
+                if let buttonsConfig {
+                    if buttonsConfig.count > 1 {
+                        HStack(spacing: 8) {
+                            ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                                hButton.MediumButtonFilled {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .standardSmall)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .hButtonConfigurationType(.secondaryAlt)
+                            }
+                        }
+                    } else {
+                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            hButton.MediumButtonFilled {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .standardSmall)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .hButtonConfigurationType(.secondaryAlt)
+                        }
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
@@ -68,7 +95,38 @@ public struct InfoCard: View {
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+        VStack {
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    ),
+                    .init(
+                        buttonTitle: "Title 2",
+                        buttonAction: {
+
+                        }
+                    ),
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    )
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+        }
     }
 }
 
@@ -77,4 +135,31 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
+}
+
+private struct EnvironmentCardButtonsConfig: EnvironmentKey {
+    static let defaultValue: [InfoCardButtonConfig]? = nil
+}
+
+extension EnvironmentValues {
+    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
+        get { self[EnvironmentCardButtonsConfig.self] }
+        set { self[EnvironmentCardButtonsConfig.self] = newValue }
+    }
+}
+
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+        self.environment(\.hInfoCardButtonConfig, configs)
+    }
+}
+
+public struct InfoCardButtonConfig {
+    let buttonTitle: String
+    let buttonAction: () -> Void
+
+    public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
+        self.buttonTitle = buttonTitle
+        self.buttonAction = buttonAction
+    }
 }

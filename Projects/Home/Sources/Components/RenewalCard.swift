@@ -56,49 +56,48 @@ public struct RenewalCardView: View {
                         contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
                     }), let renewalDate = contracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
                 {
-                    hCard(
-                        titleIcon: hCoreUIAssets.document.image,
-                        title: L10n.dashboardMultipleRenewalsPrompterTitle,
-                        bodyText: L10n.dashboardMultipleRenewalsPrompterBody(
+                    InfoCard(
+                        text: L10n.dashboardMultipleRenewalsPrompterBody(
                             dateComponents(from: renewalDate).day ?? 0
                         ),
-                        backgroundColor: hTintColor.lavenderTwo
-                    ) {
-                        hButton.SmallButtonOutlined {
-                            showMultipleAlert = true
-                        } content: {
-                            L10n.dashboardMultipleRenewalsPrompterButton.hText()
-                        }
-                        .actionSheet(isPresented: $showMultipleAlert) {
-                            ActionSheet(
-                                title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                                buttons: buildSheetButtons(contracts: contracts)
-                            )
-                        }
+                        type: .info
+                    )
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                            buttonAction: {
+                                showMultipleAlert = true
+                            }
+                        )
+                    ])
+                    .actionSheet(isPresented: $showMultipleAlert) {
+                        ActionSheet(
+                            title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
+                            buttons: buildSheetButtons(contracts: contracts)
+                        )
                     }
                 } else {
                     VStack(spacing: 16) {
                         ForEach(contracts, id: \.displayName) { contract in
                             let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
-                            hCard(
-                                titleIcon: hCoreUIAssets.document.image,
-                                title: L10n.dashboardRenewalPrompterTitle(
-                                    contract.displayName.lowercased()
-                                ),
-                                bodyText: L10n.dashboardRenewalPrompterBody(
+                            InfoCard(
+                                text: L10n.dashboardMultipleRenewalsPrompterBody(
                                     dateComponents(from: renewalDate).day ?? 0
                                 ),
-                                backgroundColor: hTintColor.lavenderTwo
-                            ) {
-                                hButton.SmallButtonOutlined {
-                                    openDocument(contract)
-                                } content: {
-                                    L10n.dashboardRenewalPrompterBodyButton.hText()
-                                }
-                            }
+                                type: .info
+                            )
+                            .buttons([
+                                .init(
+                                    buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                                    buttonAction: {
+                                        openDocument(contract)
+                                    }
+                                )
+                            ])
                         }
                     }
                 }
+
             }
             .alert(isPresented: $showFailedToOpenUrlAlert) {
                 Alert(
@@ -109,5 +108,26 @@ public struct RenewalCardView: View {
             }
         }
         .presentableStoreLensAnimation(.default)
+    }
+}
+struct RenewalCardView_Previews: PreviewProvider {
+    @PresentableStore static var store: HomeStore
+
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return RenewalCardView()
+            .onAppear {
+                let state = MemberStateData(state: .active, name: "NAME")
+                let girafeContract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                    displayName: "CONTRACT NAME",
+                    status: .makeDeletedStatus(),
+                    upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal(
+                        renewalDate: "2023-10-10",
+                        draftCertificateUrl: "https://www.google.com"
+                    )
+                )
+                let contract = Home.Contract(contract: girafeContract)
+                store.send(.setMemberContractState(state: state, contracts: [contract]))
+            }
     }
 }
