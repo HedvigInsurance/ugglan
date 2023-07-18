@@ -1,19 +1,19 @@
 import SwiftUI
 import hCore
 
-public struct CheckboxPickerScreen<T>: View {
+public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: String)
     var items: [PickerModel]
-    let preSelectedItems: [String]
+    let preSelectedItems: [T]
     let onSelected: ([T]) -> Void
     let onCancel: (() -> Void)?
     let singleSelect: Bool?
     let showDividers: Bool?
-    @State var selectedItems: [PickerModel] = []
+    @State var selectedItems: [T] = []
 
     public init(
         items: [(object: T, displayName: String)],
-        preSelectedItems: @escaping () -> [String],
+        preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([T]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
@@ -36,7 +36,7 @@ public struct CheckboxPickerScreen<T>: View {
                     content
                 }
                 .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
+                    selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
                 }
         } else {
             hForm {}
@@ -46,7 +46,7 @@ public struct CheckboxPickerScreen<T>: View {
                     content
                 }
                 .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
+                    selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
                 }
         }
     }
@@ -55,7 +55,7 @@ public struct CheckboxPickerScreen<T>: View {
     var content: some View {
         VStack(spacing: 8) {
             VStack(spacing: 4) {
-                ForEach(items, id: \.displayName) { item in
+                ForEach(items, id: \.object) { item in
                     hSection {
                         getCell(item: item)
                     }
@@ -89,9 +89,9 @@ public struct CheckboxPickerScreen<T>: View {
 
     var sendSelectedItems: Void {
         if selectedItems.count > 1 {
-            onSelected(selectedItems.map({ $0.object }))
+            onSelected(selectedItems.map({ $0 }))
         } else {
-            if let object = selectedItems.first?.object {
+            if let object = selectedItems.first {
                 onSelected([object])
             }
         }
@@ -101,29 +101,30 @@ public struct CheckboxPickerScreen<T>: View {
     func getCell(item: (object: T, displayName: String)) -> some View {
         if showDividers ?? false {
             hRow {
-                displayContent(displayName: item.displayName)
+                displayContentFor(item.object)
             }
             .withEmptyAccessory
             .verticalPadding(9)
             .onTap {
-                onTapExecute(item: item)
+                onTapExecuteFor(item.object)
             }
             .hWithoutDivider
         } else {
 
             hRow {
-                displayContent(displayName: item.displayName)
+                displayContentFor(item.object)
             }
             .withEmptyAccessory
             .onTap {
-                onTapExecute(item: item)
+                onTapExecuteFor(item.object)
             }
         }
     }
 
     @ViewBuilder
-    func displayContent(displayName: String) -> some View {
-        let isSelected = selectedItems.first(where: { $0.displayName == displayName }) != nil
+    func displayContentFor(_ item: T) -> some View {
+        let isSelected = selectedItems.first(where: { $0 == item }) != nil
+        let displayName = items.first(where: { $0.object == item })?.displayName ?? ""
         HStack(spacing: 0) {
             hTextNew(displayName, style: .title3)
                 .foregroundColor(hTextColorNew.primary)
@@ -138,17 +139,17 @@ public struct CheckboxPickerScreen<T>: View {
         }
     }
 
-    func onTapExecute(item: (object: T, displayName: String)) {
+    func onTapExecuteFor(_ item: T) {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0)) {
             if !(singleSelect ?? true) {
-                if let index = self.selectedItems.firstIndex(where: { $0.displayName == item.displayName }) {
+                if let index = self.selectedItems.firstIndex(where: { $0 == item }) {
                     selectedItems.remove(at: index)
                 } else {
                     selectedItems.append(item)
                 }
             } else {
-                if !(selectedItems.first?.displayName == item.displayName) {
+                if !(selectedItems.first == item) {
                     selectedItems = [item]
                 }
             }
@@ -175,7 +176,7 @@ public struct CheckboxPickerScreen<T>: View {
 }
 struct CheckboxPickerScreen_Previews: PreviewProvider {
 
-    struct ModelForPreview {
+    struct ModelForPreview: Equatable, Hashable {
         let id: String
         let name: String
     }

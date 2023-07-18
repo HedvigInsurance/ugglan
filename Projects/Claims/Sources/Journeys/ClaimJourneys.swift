@@ -138,7 +138,7 @@ public class ClaimJourneys {
                 preSelectedItems: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     if let value = store.state.locationStep?.getSelectedOption() {
-                        return [value.displayName]
+                        return [value]
                     }
                     return []
                 },
@@ -257,7 +257,6 @@ public class ClaimJourneys {
                                         model.itemProblemId == item
                                     }) ?? false
                             }
-                            .map({ $0.displayName })
                         return preselected
                     }
                     return []
