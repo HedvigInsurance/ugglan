@@ -39,6 +39,7 @@ struct ProfileView: View {
                     if hAnalyticsExperiment.showCharity {
                         ProfileRow(row: .myCharity)
                     }
+
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
@@ -46,12 +47,14 @@ struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
+
                     if hAnalyticsExperiment.paymentScreen {
                         ProfileRow(row: .payment)
                     }
 
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
+                        .hWithoutDivider
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
@@ -104,11 +107,7 @@ extension ProfileView {
         HostingJourney(
             ProfileStore.self,
             rootView: ProfileView(),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-            ]
+            options: [.largeNavigationBar]
         ) { action in
             if case .openProfile = action {
                 Journey(

@@ -22,16 +22,13 @@ struct ProfileRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .padding(row.paddings)
                 hText(row.title)
             }
-            .padding(0)
         }
         .withCustomAccessory({
             Spacer()
             StandaloneChevronAccessory()
         })
-        .verticalPadding(12)
         .onTap {
             store.send(row.action)
         }
