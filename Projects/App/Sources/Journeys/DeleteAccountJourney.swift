@@ -21,16 +21,18 @@ extension AppJourney {
                     claimsStore: claimsStore,
                     contractsStore: contractsStore
                 )
-            )
+            ),
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
         ) { action in
             if action == .openChat {
                 AppJourney.freeTextChat()
             } else if case .sendAccountDeleteRequest(let memberDetails) = action {
                 AppJourney.sendAccountDeleteRequestJourney(details: memberDetails)
+            } else if case .dismissScreen = action {
+                PopJourney()
             }
         }
-        .setStyle(.detented(.large))
-        .withJourneyDismissButton
     }
 
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
