@@ -2,13 +2,11 @@ import Foundation
 import hGraphQL
 
 public struct FlowClaimContractSelectStepModel: FlowClaimStepModel {
-    var selectedContractId: String
     let availableContractOptions: [FlowClaimContractSelectOptionModel]
 
     init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
     ) {
-        self.selectedContractId = data.id
         self.availableContractOptions = data.options.map({ .init(with: $0) })
     }
 }
