@@ -21,7 +21,7 @@ public struct ConnectPaymentCardView: View {
                     InfoCard(text: L10n.InfoCardMissingPayment.body, type: .attention)
                         .buttons([
                             .init(
-                                buttonTitle: L10n.InfoCardMissingPayment.buttonText,
+                                buttonTitle: L10n.PayInExplainer.buttonText,
                                 buttonAction: {
                                     store.send(.connectPayments)
                                 }

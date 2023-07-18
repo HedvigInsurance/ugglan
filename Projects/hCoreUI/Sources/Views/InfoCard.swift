@@ -16,8 +16,8 @@ public struct InfoCard: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                .foregroundColor(hSignalColorNew.blueElement)
+            Image(uiImage: type.image)
+                .foregroundColor(imageColor)
             VStack(alignment: .leading) {
                 hText(text, style: .footnote)
                     .foregroundColor(getTextColor)
@@ -91,6 +91,20 @@ public struct InfoCard: View {
             hSignalColorNew.greenFill
         }
     }
+
+    @hColorBuilder
+    var imageColor: some hColor {
+        switch type {
+        case .info:
+            hSignalColorNew.blueElement
+        case .attention:
+            hSignalColorNew.amberElement
+        case .error:
+            hSignalColorNew.redElement
+        case .campaign:
+            hSignalColorNew.greenElement
+        }
+    }
 }
 
 struct InfoCard_Previews: PreviewProvider {
@@ -135,6 +149,20 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
+
+    var image: UIImage {
+        switch self {
+        case .info:
+            return hCoreUIAssets.infoIconFilled.image
+        case .attention:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .error:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .campaign:
+            return hCoreUIAssets.campaignSmall.image
+
+        }
+    }
 }
 
 private struct EnvironmentCardButtonsConfig: EnvironmentKey {

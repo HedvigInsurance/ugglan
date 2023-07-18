@@ -81,7 +81,7 @@ public struct RenewalCardView: View {
                         ForEach(contracts, id: \.displayName) { contract in
                             let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
                             InfoCard(
-                                text: L10n.dashboardMultipleRenewalsPrompterBody(
+                                text: L10n.dashboardRenewalPrompterBody(
                                     dateComponents(from: renewalDate).day ?? 0
                                 ),
                                 type: .info
