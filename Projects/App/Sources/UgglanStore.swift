@@ -29,7 +29,7 @@ struct UgglanState: StateProtocol {
 
     var shouldShowNotificationCard: Bool {
         return self.pushNotificationCurrentStatus() != .authorized
-            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-20)).distance(to: Date()) > 5
+            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-20)).distance(to: Date()) > 60 * 60
     }
 
 }
