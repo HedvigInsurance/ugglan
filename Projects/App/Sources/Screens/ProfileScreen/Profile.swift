@@ -124,7 +124,7 @@ extension ProfileView {
             } else if case .openAppSettings = action {
                 HostingJourney(
                     UgglanStore.self,
-                    rootView: SettingsScreen(),
+                    rootView: SettingsScreen(onActionExecuted: { _ in }),
                     options: [.defaults]
                 ) { action in
                     if case let .deleteAccount(details) = action {

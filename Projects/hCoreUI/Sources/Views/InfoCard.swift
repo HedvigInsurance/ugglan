@@ -1,16 +1,19 @@
 import SwiftUI
 import hCore
 
-public struct InfoCard: View {
+public struct InfoCard<T>: View where T: View {
     let text: String
     let type: InfoCardType
+    let buttonView: T?
 
     public init(
         text: String,
-        type: InfoCardType
+        type: InfoCardType,
+        buttonView: T? = nil
     ) {
         self.text = text
         self.type = type
+        self.buttonView = buttonView
     }
 
     public var body: some View {
@@ -18,9 +21,15 @@ public struct InfoCard: View {
             Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                 .foregroundColor(getIconColor)
 
-            hText(text, style: .footnote)
-                .foregroundColor(getTextColor)
-                .padding(.leading, 9)
+            VStack(spacing: 12) {
+                hText(text, style: .footnote)
+                    .foregroundColor(getTextColor)
+
+                if let buttonView = buttonView {
+                    buttonView
+                }
+            }
+            .padding(.leading, 9)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
@@ -82,7 +91,11 @@ public struct InfoCard: View {
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+        InfoCard(
+            text: L10n.changeAddressCoverageInfoText,
+            type: .info,
+            buttonView: EmptyView()
+        )
     }
 }
 

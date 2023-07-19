@@ -32,7 +32,7 @@ public struct SubmitClaimSummaryScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                InfoCard(text: L10n.claimsComplementClaim, type: .info)
+                InfoCard(text: L10n.claimsComplementClaim, type: .info, buttonView: EmptyView())
                     .padding(.bottom, 8)
                 Group {
                     LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {

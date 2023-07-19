@@ -14,6 +14,7 @@ struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 40)
+            .frame(minWidth: 129)
             .padding(.leading)
             .padding(.trailing)
     }
@@ -23,6 +24,7 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 40)
+            .frame(minWidth: 100)
             .padding(.leading)
             .padding(.trailing)
     }
@@ -87,6 +89,12 @@ struct ButtonFilledStandardBackground: View {
             } else if isEnabled {
                 Color.clear
             }
+        case .secondaryAlt:
+            if configuration.isPressed {
+                hGrayscaleTranslucentLightColorNew.offWhiteTranslucent
+            } else if isEnabled {
+                hBackgroundColor.primary
+            }
         case .alert:
             hSignalColorNew.redElement
         }
@@ -126,6 +134,7 @@ public enum hButtonConfigurationType {
     case primary
     case primaryAlt
     case secondary
+    case secondaryAlt
     case ghost
     case alert
 }
@@ -229,7 +238,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     case .standard:
                         hTextColorNew.negative
                     case .overImage:
-                        hTextColorNew.negative /* TODO: NOT SURE */
+                        hTextColorNew.negative
                     }
                 } else {
                     hTextColorNew.disabled
@@ -240,12 +249,12 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     case .standard:
                         hTextColorNew.primary
                     case .overImage:
-                        hTextColorNew.primary /* TODO: NOT SURE */
+                        hTextColorNew.primary
                     }
                 } else {
                     hTextColorNew.disabled
                 }
-            case .secondary, .ghost:
+            case .secondary, .ghost, .secondaryAlt:
                 if isEnabled {
                     hTextColorNew.primary
                 } else {
@@ -270,7 +279,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         switch hButtonConfigurationType {
         case .primary, .ghost, .alert:
             getView(configuration: configuration)
-        case .primaryAlt, .secondary:
+        case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration).hShadow()
         }
     }
@@ -580,6 +589,27 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .medium))
+        }
+    }
+
+    public struct SmallSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .small))
+            .hButtonConfigurationType(.secondaryAlt)
         }
     }
 

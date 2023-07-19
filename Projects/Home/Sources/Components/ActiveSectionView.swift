@@ -34,7 +34,8 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
                 if members.contains(memberId) {
                     InfoCard(
                         text: L10n.hometabAccountDeletionNotification,
-                        type: .attention
+                        type: .attention,
+                        buttonView: EmptyView()
                     )
                 }
             }

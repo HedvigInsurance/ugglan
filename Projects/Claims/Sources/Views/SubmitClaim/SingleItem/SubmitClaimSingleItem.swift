@@ -42,7 +42,7 @@ public struct SubmitClaimSingleItem: View {
         displayDateField(claim: singleItemStep)
         displayPurchasePriceField(claim: singleItemStep)
         displayDamageField(claim: singleItemStep)
-        InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
+        InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info, buttonView: EmptyView())
             .padding(.vertical, 12)
     }
 

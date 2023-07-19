@@ -20,7 +20,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
-                    InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                    InfoCard(text: L10n.claimsCheckoutNotice, type: .info, buttonView: EmptyView())
                         .padding(.bottom, 8)
 
                     hButton.LargeButtonPrimary {
