@@ -129,6 +129,8 @@ extension ProfileView {
                 ) { action in
                     if case let .deleteAccount(details) = action {
                         AppJourney.deleteAccountJourney(details: details)
+                    } else if case .deleteAccountAlreadyRequested = action {
+                        AppJourney.deleteRequestAlreadyPlacedJourney
                     }
                 }
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)

@@ -16,7 +16,7 @@ public struct InfoCard: View {
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
             Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                .foregroundColor(hSignalColorNew.blueElement)
+                .foregroundColor(getIconColor)
 
             hText(text, style: .footnote)
                 .foregroundColor(getTextColor)
@@ -62,6 +62,20 @@ public struct InfoCard: View {
             hSignalColorNew.redFill
         case .campaign:
             hSignalColorNew.greenFill
+        }
+    }
+
+    @hColorBuilder
+    var getIconColor: some hColor {
+        switch type {
+        case .info:
+            hSignalColorNew.blueElement
+        case .attention:
+            hSignalColorNew.amberElement
+        case .error:
+            hSignalColorNew.redElement
+        case .campaign:
+            hSignalColorNew.greenElement
         }
     }
 }

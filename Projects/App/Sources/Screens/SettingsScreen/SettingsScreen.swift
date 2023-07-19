@@ -56,18 +56,16 @@ struct SettingsScreen: View {
                 UgglanStore.self,
                 getter: { state in
                     state.memberDetails
-                        ?? MemberDetails(id: "no val", firstName: "", lastName: "", phone: "", email: "")
+                        ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
                 }
             ) { memberDetails in
                 hButton.LargeButtonGhost {
-
                     if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
                         let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
                         if hasAlreadyRequested {
-                            //                                AppJourney.deleteRequestAlreadyPlacedJourney
+                            store.send(.deleteAccountAlreadyRequested)
                         } else {
-
-                            let _ = store.send(.deleteAccount(details: memberDetails))
+                            store.send(.deleteAccount(details: memberDetails))
                         }
                     }
                 } content: {

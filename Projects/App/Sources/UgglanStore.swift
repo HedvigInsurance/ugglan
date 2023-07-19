@@ -42,6 +42,7 @@ enum UgglanAction: ActionProtocol {
     case setPushNotificationStatus(status: Int?)
     case setIsDemoMode(to: Bool)
     case deleteAccount(details: MemberDetails)
+    case deleteAccountAlreadyRequested
     case setMemberDetails(details: MemberDetails?)
     case fetchMemberDetails
 }
