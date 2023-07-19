@@ -17,8 +17,7 @@ struct DeleteRequestLoadingView: View {
 
     @ViewBuilder var sendingState: some View {
         VStack {
-            WordmarkActivityIndicator(.standard)
-            //change to screen with 3 dots
+            DotsActivityIndicator(.standard).useDarkColor
         }
     }
 
