@@ -28,8 +28,11 @@ struct UgglanState: StateProtocol {
     }
 
     var shouldShowNotificationCard: Bool {
+
+        let requiredTimeForSnooze: Double = TimeInterval.days(numberOfDays: 1)
         return self.pushNotificationCurrentStatus() != .authorized
-            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-20)).distance(to: Date()) > 60 * 60
+            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
+                .distance(to: Date()) > requiredTimeForSnooze
     }
 
 }
