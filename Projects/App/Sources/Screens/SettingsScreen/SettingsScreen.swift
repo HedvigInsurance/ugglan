@@ -44,10 +44,7 @@ struct SettingsScreen: View {
             }
 
             if notificationStatus != .authorized {
-                InfoCard(
-                    text: L10n.profileAllowNotificationsInfoLabel,
-                    type: .info
-                )
+                NotificationsCardView()
             }
         }
         .hFormAttachToBottom {
