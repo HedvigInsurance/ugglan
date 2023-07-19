@@ -61,7 +61,6 @@ public struct InfoCard: View {
                 )
         )
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 16)
     }
 
     @hColorBuilder

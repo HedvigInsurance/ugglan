@@ -103,12 +103,7 @@ extension AppJourney {
                     MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
             }
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
