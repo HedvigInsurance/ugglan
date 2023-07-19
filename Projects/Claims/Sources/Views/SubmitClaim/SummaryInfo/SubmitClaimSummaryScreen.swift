@@ -48,8 +48,8 @@ public struct SubmitClaimSummaryScreen: View {
                     }
                     .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
-                .padding([.leading, .trailing], 16)
             }
+            .padding(.horizontal, 16)
         }
     }
 

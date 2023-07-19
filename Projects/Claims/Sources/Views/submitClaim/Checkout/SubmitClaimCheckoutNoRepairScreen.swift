@@ -22,7 +22,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                         .padding(.bottom, 8)
-
                     hButton.LargeButtonPrimary {
                         store.send(.singleItemCheckoutRequest)
                         store.send(.navigationAction(action: .openCheckoutTransferringScreen))
@@ -34,7 +33,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                             style: .body
                         )
                     }
-                    .padding(.horizontal, 16)
 
                     hButton.LargeButtonText {
                         store.send(.navigationAction(action: .dismissScreen))
@@ -45,6 +43,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         )
                     }
                     .padding(.horizontal, 16)
+
                 }
             }
         }

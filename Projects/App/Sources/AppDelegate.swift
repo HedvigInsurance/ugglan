@@ -328,6 +328,8 @@ import hGraphQL
         }
         let store: UgglanStore = globalPresentableStoreContainer.get()
         ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
+        observeNotificationsSettings()
+
         return true
     }
 }

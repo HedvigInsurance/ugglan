@@ -270,6 +270,18 @@ public struct hButtonColorNew {
     public static var secondaryDisabled: some hColor {
         hGrayscaleColorNew.greyScale50
     }
+
+    public static var secondaryAltDefault: some hColor {
+        hGrayscaleColorNew.greyScale25
+    }
+
+    public static var secondaryAltHover: some hColor {
+        hGrayscaleColorNew.greyScale1000.opacity(0.2)
+    }
+
+    public static var secondaryAltDisabled: some hColor {
+        hGrayscaleColorNew.greyScale200
+    }
 }
 
 public struct hGrayscaleColorNew {
