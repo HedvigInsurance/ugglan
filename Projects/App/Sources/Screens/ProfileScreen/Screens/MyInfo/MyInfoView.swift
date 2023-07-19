@@ -154,6 +154,14 @@ class MyInfoViewModel: ObservableObject {
             let updateEmailFuture = self.getEmailFuture()
             join(updatePhoneFuture, updateEmailFuture)
                 .onValue { _ in
+                    DispatchQueue.main.async { [weak self] in
+                        Toasts.shared.displayToast(
+                            toast: Toast(
+                                symbol: .icon(hCoreUIAssets.edit.image),
+                                body: L10n.profileMyInfoSaveSuccessToastBody
+                            )
+                        )
+                    }
                     continuation.resume()
                 }
                 .onError { error in
