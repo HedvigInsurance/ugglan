@@ -185,10 +185,8 @@ struct LoaderOrContent<Content: View>: View {
 
     var body: some View {
         if isLoading {
-            ActivityIndicator(
-                style: .medium,
-                color: color
-            )
+            DotsActivityIndicator(.standard)
+                .fixedSize(horizontal: false, vertical: true)
         } else {
             content()
         }

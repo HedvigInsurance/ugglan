@@ -146,6 +146,13 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     return disposeBag
                 }
             }
+        case let .contractSelectRequest(contractId):
+            let contractSelectInput = OctopusGraphQL.FlowClaimContractSelectInput(contractId: contractId)
+            let mutation = OctopusGraphQL.FlowClaimContractSelectNextMutation(
+                input: contractSelectInput,
+                context: newClaimContext
+            )
+            return mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
         case .fetchEntrypointGroups:
             let entrypointType = OctopusGraphQL.EntrypointType.claim
             let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
@@ -241,6 +248,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
                 send(.navigationAction(action: .openAudioRecordingScreen))
+            case let .setContractSelectStep(model):
+                newState.contractStep = model
+                self.send(.navigationAction(action: .openSelectContractScreen))
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -254,6 +264,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.successStep = nil
             newState.failedStep = nil
             newState.audioRecordingStep = nil
+            newState.contractStep = nil
             newState.currentClaimContext = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
@@ -261,6 +272,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             setLoading(for: .postPhoneNumber)
         case .dateOfOccurrenceAndLocationRequest:
             setLoading(for: .postDateOfOccurrenceAndLocation)
+        case let .contractSelectRequest(selected):
+            newState.contractStep?.selectedContractId = selected
+            setLoading(for: .postContractSelect)
         case .singleItemRequest:
             setLoading(for: .postSingleItem)
         case .summaryRequest:

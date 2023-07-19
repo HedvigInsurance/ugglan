@@ -85,7 +85,7 @@ struct HeaderView: View {
 struct HeaderView_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
     static var previews: some View {
-        HeaderView(didPressInfo: {})
+        HeaderView {}
             .onAppear {
                 let foreverData = ForeverData.mock()
                 store.send(.setForeverData(data: foreverData))
@@ -97,7 +97,7 @@ struct HeaderView_Previews2: PreviewProvider {
     @PresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HeaderView(didPressInfo: {})
+        return HeaderView {}
             .onAppear {
 
                 let foreverData = ForeverData(
