@@ -107,9 +107,6 @@ extension AppJourney {
                 AppJourney.freeTextChat().withDismissButton
             }
         }
-        .onTabSelected {
-            GradientState.shared.gradientType = .profile
-        }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .profile || deepLink == .sasEuroBonus
