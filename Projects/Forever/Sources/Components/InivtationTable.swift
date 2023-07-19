@@ -100,7 +100,7 @@ struct InvitationTable: View {
                 HStack {
                     Spacer()
                     getGrossField(foreverData.grossAmount.formattedAmount)
-                    hText("\(foreverData.netAmount.formattedAmount)")
+                    hText("\(foreverData.netAmount.formattedAmount)/\(L10n.monthAbbreviationLabel)")
                 }
             }
             .hWithoutDivider
@@ -153,7 +153,8 @@ struct InvitationTable_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
 
     static var previews: some View {
-        InvitationTable()
+        Localization.Locale.currentLocale = .sv_SE
+        return InvitationTable()
             .onAppear {
                 store.send(
                     .setForeverData(

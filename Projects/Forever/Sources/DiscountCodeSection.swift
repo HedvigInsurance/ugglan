@@ -7,9 +7,8 @@ import hCoreUI
 
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
-
     var body: some View {
-        hSection {
+        VStack(spacing: 0) {
             PresentableStoreLens(
                 ForeverStore.self,
                 getter: { state in
@@ -17,18 +16,20 @@ struct DiscountCodeSectionView: View {
                 }
             ) { code in
                 if let code = code {
-                    hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
-                        UIPasteboard.general.string = code
-                        store.send(.showPushNotificationsReminder)
-                        Toasts.shared.displayToast(
-                            toast: .init(
-                                symbol: .icon(hCoreUIAssets.copy.image),
-                                body: L10n.ReferralsActiveToast.text
+                    hSection {
+                        hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
+                            UIPasteboard.general.string = code
+                            store.send(.showPushNotificationsReminder)
+                            Toasts.shared.displayToast(
+                                toast: .init(
+                                    symbol: .icon(hCoreUIAssets.copy.image),
+                                    body: L10n.ReferralsActiveToast.text
+                                )
                             )
-                        )
-                    }
-                    .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.copy.image)
+                        }
+                        .hFieldTrailingView {
+                            Image(uiImage: hCoreUIAssets.copy.image)
+                        }
                     }
                 }
             }

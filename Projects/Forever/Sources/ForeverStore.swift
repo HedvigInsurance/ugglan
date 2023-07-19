@@ -28,6 +28,8 @@ public struct ForeverState: StateProtocol {
 public indirect enum ForeverAction: ActionProtocol {
     case hasSeenFebruaryCampaign(value: Bool)
     case showChangeCodeDetail
+    case dismissChangeCodeDetail
+    case showSuccessScreen
     case fetch
     case setForeverData(data: ForeverData)
     case showShareSheetWithNotificationReminder(code: String)
