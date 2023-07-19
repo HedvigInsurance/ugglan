@@ -8,16 +8,7 @@ extension MenuChildAction {
             switch self {
             case MenuChildAction.appInformation:
                 Journey(
-                    AppInfo(type: .appInformation),
-                    style: .detented(.large),
-                    options: [
-                        .defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true),
-                    ]
-                )
-                .withDismissButton
-            case MenuChildAction.appSettings:
-                Journey(
-                    AppInfo(type: .appSettings),
+                    AppInfo(),
                     style: .detented(.large),
                     options: [
                         .defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true),

@@ -1,6 +1,23 @@
 import Foundation
 import SwiftUI
 
+private struct EnvironmentUseDarkColor: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var useDarkColor: Bool {
+        get { self[EnvironmentUseDarkColor.self] }
+        set { self[EnvironmentUseDarkColor.self] = newValue }
+    }
+}
+
+extension View {
+    public var useDarkColor: some View {
+        self.environment(\.useDarkColor, true)
+    }
+}
+
 public struct ActivityIndicator: UIViewRepresentable {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.userInterfaceLevel) var userInterfaceLevel
@@ -115,6 +132,7 @@ public struct DotsActivityIndicator: View {
 }
 
 private struct PulsingCircle: View {
+    @Environment(\.useDarkColor) var useDarkColor
     let totalNumber: CGFloat = 3
     let duration: CGFloat = 0.5
     let index: CGFloat
@@ -122,11 +140,20 @@ private struct PulsingCircle: View {
 
     public var body: some View {
         Circle()
-            .fill(hTextColorNew.negative)
+            .fill(getFillColor)
             .opacity(animate ? 0.4 : 1)
             .onAppear {
                 setAnimation()
             }
+    }
+
+    @hColorBuilder
+    var getFillColor: some hColor {
+        if useDarkColor {
+            hTextColorNew.primary
+        } else {
+            hTextColorNew.negative
+        }
     }
 
     private func setAnimation() {

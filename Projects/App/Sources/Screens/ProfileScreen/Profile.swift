@@ -122,16 +122,24 @@ extension ProfileView {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 Journey(
-                    AppInfo(type: .appInformation),
+                    AppInfo(),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney
             } else if case .openAppSettings = action {
-                Journey(
-                    AppInfo(type: .appSettings),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
+                HostingJourney(
+                    UgglanStore.self,
+                    rootView: SettingsScreen(),
+                    options: [.defaults]
+                ) { action in
+                    if case let .deleteAccount(details) = action {
+                        AppJourney.deleteAccountJourney(details: details)
+                    } else if case .deleteAccountAlreadyRequested = action {
+                        AppJourney.deleteRequestAlreadyPlacedJourney
+                    }
+                }
+                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 HostingJourney(
                     rootView: EuroBonusView(),

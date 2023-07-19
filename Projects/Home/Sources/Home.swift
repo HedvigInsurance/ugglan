@@ -17,14 +17,19 @@ public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
 
     var claimsContent: Claims
     var commonClaims: CommonClaims
+    var memberId: String
+
     public init(
         claimsContent: Claims,
         commonClaimsContent: CommonClaims,
-        statusCard: () -> Content
+        statusCard: () -> Content,
+        memberId: @escaping () -> String
     ) {
         self.statusCard = statusCard()
         self.claimsContent = claimsContent
         self.commonClaims = commonClaimsContent
+
+        self.memberId = memberId()
     }
 }
 
@@ -47,7 +52,12 @@ extension HomeView {
             ) { memberStateData in
                 switch memberStateData.state {
                 case .active:
-                    ActiveSectionView(claimsContent: claimsContent, commonClaims: commonClaims, statusCard: statusCard)
+                    ActiveSectionView(
+                        claimsContent: claimsContent,
+                        commonClaims: commonClaims,
+                        statusCard: statusCard,
+                        memberId: memberId
+                    )
                 case .future:
                     FutureSectionView(memberName: memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
@@ -73,6 +83,7 @@ extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
         claimsContent: Claims,
         commonClaimsContent: CommonClaims,
+        memberId: @escaping () -> String,
         @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
         statusCard: @escaping () -> Content
     ) -> some JourneyPresentation {
@@ -81,7 +92,8 @@ extension HomeView {
             rootView: HomeView(
                 claimsContent: claimsContent,
                 commonClaimsContent: commonClaimsContent,
-                statusCard: statusCard
+                statusCard: statusCard,
+                memberId: memberId
             ),
             options: [
                 .defaults,

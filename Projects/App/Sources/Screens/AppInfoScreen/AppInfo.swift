@@ -12,96 +12,64 @@ import hGraphQL
 
 struct AppInfo {
     @Inject var giraffe: hGiraffe
-    let type: AppInfoType
 
-    enum AppInfoType {
-        case appSettings, appInformation
+    enum InfoRows: CaseIterable {
+        case language
+        case market
+        case version
+        case memberId
+        case deviceId
 
         var title: String {
             switch self {
-            case .appInformation: return L10n.OnboardingContextualMenu.appInfoLabel
-            case .appSettings: return L10n.EmbarkOnboardingMoreOptions.settingsLabel
+            case .language: return L10n.aboutLanguageRow
+            case .market: return L10n.MarketLanguageScreen.marketLabel
+            case .version: return L10n.EmbarkOnboardingMoreOptions.versionLabel
+            case .memberId: return L10n.EmbarkOnboardingMoreOptions.userIdLabel
+            case .deviceId: return L10n.AppInfo.deviceIdLabel
             }
         }
 
-        var icon: UIImage {
+        var icon: UIImage? {
             switch self {
-            case .appInformation: return hCoreUIAssets.infoIcon.image
-            case .appSettings: return hCoreUIAssets.settingsIcon.image
+            case .language: return hCoreUIAssets.language.image
+            case .market: return Localization.Locale.currentLocale.market.icon
+            case .version: return hCoreUIAssets.infoIcon.image
+            case .memberId: return hCoreUIAssets.memberCard.image
+            case .deviceId: return hCoreUIAssets.profileCircleIcon.image
             }
         }
 
-        var trackingParcel: hAnalyticsParcel {
+        var isTappable: Bool {
             switch self {
-            case .appInformation:
-                return hAnalyticsEvent.screenView(screen: .appInformation)
-            case .appSettings:
-                return hAnalyticsEvent.screenView(screen: .appSettings)
-            }
-        }
-
-        enum InfoRows: CaseIterable {
-            case language
-            case market
-            case version
-            case memberId
-            case deviceId
-
-            var title: String {
-                switch self {
-                case .language: return L10n.aboutLanguageRow
-                case .market: return L10n.MarketLanguageScreen.marketLabel
-                case .version: return L10n.EmbarkOnboardingMoreOptions.versionLabel
-                case .memberId: return L10n.EmbarkOnboardingMoreOptions.userIdLabel
-                case .deviceId: return L10n.AppInfo.deviceIdLabel
-                }
-            }
-
-            var icon: UIImage? {
-                switch self {
-                case .language: return hCoreUIAssets.language.image
-                case .market: return Localization.Locale.currentLocale.market.icon
-                case .version: return hCoreUIAssets.infoIcon.image
-                case .memberId: return hCoreUIAssets.memberCard.image
-                case .deviceId: return hCoreUIAssets.profileCircleIcon.image
-                }
-            }
-
-            var isTappable: Bool {
-                switch self {
-                case .language: return true
-                case .version, .memberId, .market, .deviceId: return false
-                }
+            case .language: return true
+            case .version, .memberId, .market, .deviceId: return false
             }
         }
     }
-
-    init(type: AppInfoType) { self.type = type }
 }
 
 extension AppInfo: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = type.title
+        viewController.title = L10n.OnboardingContextualMenu.appInfoLabel
 
         let bag = DisposeBag()
 
         let form = FormView()
 
-        if type == .appInformation {
-            let debugGesture = UITapGestureRecognizer()
-            debugGesture.numberOfTapsRequired = 3
-            form.addGestureRecognizer(debugGesture)
+        let debugGesture = UITapGestureRecognizer()
+        debugGesture.numberOfTapsRequired = 3
+        form.addGestureRecognizer(debugGesture)
 
-            bag += debugGesture.signal(forState: .recognized)
-                .onValue { _ in
-                    viewController.present(
-                        UIHostingController(rootView: Debug()),
-                        style: .detented(.large),
-                        options: []
-                    )
-                }
-        }
+        bag += debugGesture.signal(forState: .recognized)
+            .onValue { _ in
+                viewController.present(
+                    UIHostingController(rootView: Debug()),
+                    style: .detented(.large),
+                    options: []
+                )
+            }
 
         func footerView() -> UIView? {
             let year = Calendar.current.component(.year, from: Date())
@@ -112,7 +80,7 @@ extension AppInfo: Presentable {
             )
             footerView.textAlignment = .center
 
-            return type == .appInformation ? footerView : nil
+            return footerView
         }
 
         form.appendSpacing(.inbetween)
@@ -121,7 +89,7 @@ extension AppInfo: Presentable {
 
         form.appendSpacing(.inbetween)
 
-        func value(row: AppInfoType.InfoRows) -> Future<String> {
+        func value(row: InfoRows) -> Future<String> {
             let innerBag = DisposeBag()
             return Future<String> { completion in
                 switch row {
@@ -166,7 +134,7 @@ extension AppInfo: Presentable {
         }
 
         func setupAppSettings() {
-            let market = AppInfoType.InfoRows.market
+            let market = InfoRows.market
 
             let marketRow = AppInfoRow(
                 title: market.title,
@@ -179,7 +147,7 @@ extension AppInfo: Presentable {
 
             bag += marketRow.onSelect.onValue { presentChangeMarketAlert() }
 
-            let language = AppInfoType.InfoRows.language
+            let language = InfoRows.language
             let languageRow = AppInfoRow(
                 title: language.title,
                 icon: language.icon,
@@ -193,26 +161,10 @@ extension AppInfo: Presentable {
             bag += languageRow.onSelect.onValue {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
-
-            bag +=
-                giraffe.client
-                .fetch(
-                    query: GiraffeGraphQL.MemberDetailsQuery(),
-                    cachePolicy: .returnCacheDataElseFetch,
-                    queue: .global(qos: .background)
-                )
-                .valueSignal
-                .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
-                .compactMap(on: .main) { details in
-                    /// Checks for application state as this screen can also be opened from other places
-                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                        bag += bodySection.append(DeleteAccountButton(memberDetails: details))
-                    }
-                }
         }
 
         func setupAppInfo() {
-            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version, AppInfoType.InfoRows.deviceId]
+            [InfoRows.memberId, InfoRows.version, InfoRows.deviceId]
                 .forEach { row in
                     bag += bodySection.append(
                         AppInfoRow(
@@ -225,14 +177,11 @@ extension AppInfo: Presentable {
                 }
         }
 
-        switch type {
-        case .appSettings: setupAppSettings()
-        case .appInformation: setupAppInfo()
-        }
+        setupAppInfo()
 
         bag += viewController.install(form)
 
-        viewController.trackOnAppear(type.trackingParcel)
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .appInformation))
 
         return (viewController, bag)
     }
@@ -241,10 +190,6 @@ extension AppInfo: Presentable {
 extension MenuChildAction {
     static var appInformation: MenuChildAction {
         MenuChildAction(identifier: "app-information")
-    }
-
-    static var appSettings: MenuChildAction {
-        MenuChildAction(identifier: "app-settings")
     }
 }
 
@@ -255,15 +200,6 @@ extension MenuChild {
             style: .default,
             image: hCoreUIAssets.infoIcon.image,
             action: .appInformation
-        )
-    }
-
-    static var appSettings: MenuChild {
-        MenuChild(
-            title: L10n.Profile.AppSettingsSection.title,
-            style: .default,
-            image: hCoreUIAssets.settingsIcon.image,
-            action: .appSettings
         )
     }
 }
