@@ -60,6 +60,8 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimSuccessStepFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimContractSelectStepFragment {
+            return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
@@ -139,6 +141,12 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data:
     }
 }
 
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimContractSelectNext.context
+    }
+}
+
 extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepContext {
     func getContext() -> String {
         return self.flowClaimAudioRecordingNext.context
@@ -186,6 +194,15 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data:
         return (
             clearedSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimContractSelectNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimContractSelectNext.progress?.totalSteps ?? 0
         )
     }
 }
@@ -279,6 +296,12 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation: ClaimStepLoading
 extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
         return .postDateOfOccurrenceAndLocation
+    }
+}
+
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation: ClaimStepLoadingType {
+    func getLoadingType() -> ClaimsLoadingType {
+        return .postContractSelect
     }
 }
 
