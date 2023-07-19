@@ -79,7 +79,7 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .insurance(filter: filter.hashValue)) {
+        hForm {
             ContractTable(filter: filter)
         }
         .onReceive(pollTimer) { _ in
@@ -162,6 +162,7 @@ extension Contracts {
                 }
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
+                    title: L10n.contractCoverageMoreInfo,
                     description: limit.description,
                     onDismiss: {
                         let store: ContractStore = globalPresentableStoreContainer.get()

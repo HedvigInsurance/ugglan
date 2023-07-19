@@ -6,12 +6,12 @@ import hGraphQL
 
 public struct InfoView: View {
     let title: String
-    let description: String?
+    let description: String
     let onDismiss: () -> Void
 
     public init(
-        title: String = L10n.contractCoverageMoreInfo,
-        description: String?,
+        title: String,
+        description: String,
         onDismiss: @escaping () -> Void
     ) {
         self.title = title
@@ -24,7 +24,7 @@ public struct InfoView: View {
             hSection {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(title)
-                    hText(description ?? "")
+                    hText(description)
                         .foregroundColor(hTextColorNew.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

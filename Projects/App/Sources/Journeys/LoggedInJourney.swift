@@ -69,9 +69,6 @@ extension AppJourney {
                 AppJourney.webRedirect(url: url)
             }
         }
-        .onTabSelected {
-            GradientState.shared.gradientType = .none
-        }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .insurances
@@ -89,9 +86,6 @@ extension AppJourney {
 
     fileprivate static var foreverTab: some JourneyPresentation {
         ForeverView.journey()
-            .onTabSelected {
-                GradientState.shared.gradientType = .forever
-            }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .forever

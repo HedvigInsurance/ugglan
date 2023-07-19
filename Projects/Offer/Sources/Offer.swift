@@ -208,6 +208,7 @@ extension Offer: Presentable {
                     } else if case let .openInsurableLimit(limit) = action {
                         viewController.present(
                             InfoView(
+                                title: L10n.contractCoverageMoreInfo,
                                 description: limit.description,
                                 onDismiss: {}
                             )

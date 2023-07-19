@@ -7,22 +7,8 @@ import hCoreUI
 
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
-
     var body: some View {
         VStack(spacing: 0) {
-            hSection {
-                HStack {
-                    hText(L10n.ReferralsEmpty.Code.headline)
-                    Spacer()
-                    Button(action: {
-                        store.send(.showChangeCodeDetail)
-                    }) {
-                        hText(L10n.ReferralsEmpty.Edit.Code.button)
-                            .foregroundColor(hLabelColor.link)
-                    }
-                }
-            }
-            .withoutBottomPadding.sectionContainerStyle(.transparent)
             PresentableStoreLens(
                 ForeverStore.self,
                 getter: { state in
@@ -30,40 +16,37 @@ struct DiscountCodeSectionView: View {
                 }
             ) { code in
                 if let code = code {
-                    Button(action: {
-                        UIPasteboard.general.string = code
-                        store.send(.showPushNotificationsReminder)
-                        Toasts.shared.displayToast(
-                            toast: .init(
-                                symbol: .icon(hCoreUIAssets.copy.image),
-                                body: L10n.ReferralsActiveToast.text
+                    hSection {
+                        hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
+                            UIPasteboard.general.string = code
+                            store.send(.showPushNotificationsReminder)
+                            Toasts.shared.displayToast(
+                                toast: .init(
+                                    symbol: .icon(hCoreUIAssets.copy.image),
+                                    body: L10n.ReferralsActiveToast.text
+                                )
                             )
-                        )
-                    }) {
-                        hSection {
-                            hText(code, style: .title3).foregroundColor(hLabelColor.primary).padding()
                         }
-                        .withoutBottomPadding
+                        .hFieldTrailingView {
+                            Image(uiImage: hCoreUIAssets.copy.image)
+                        }
                     }
-                    .transition(.opacity)
                 }
             }
             .presentableStoreLensAnimation(.spring())
-
-            hSection {
-                PresentableStoreLens(
-                    ForeverStore.self,
-                    getter: { state in
-                        state.foreverData?.potentialDiscountAmount
-                    }
-                ) { potentialDiscount in
-                    if let potentialDiscount = potentialDiscount {
-                        hText(L10n.ReferralsEmpty.Code.footer(potentialDiscount.formattedAmount), style: .footnote)
-                            .foregroundColor(hLabelColor.tertiary).multilineTextAlignment(.center)
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
         }
+        .sectionContainerStyle(.transparent)
+    }
+}
+
+struct DiscountCodeSectionView_Previews: PreviewProvider {
+    @PresentableStore static var store: ForeverStore
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return DiscountCodeSectionView()
+            .onAppear {
+                let foreverData = ForeverData.mock()
+                store.send(.setForeverData(data: foreverData))
+            }
     }
 }

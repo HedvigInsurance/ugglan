@@ -33,11 +33,13 @@ public struct ForeverData: Codable, Equatable {
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,
         potentialDiscountAmount: MonetaryAmount,
+        otherDiscounts: MonetaryAmount?,
         discountCode: String,
         invitations: [ForeverInvitation]
     ) {
         self.grossAmount = grossAmount
         self.netAmount = netAmount
+        self.otherDiscounts = otherDiscounts
         self.discountCode = discountCode
         self.potentialDiscountAmount = potentialDiscountAmount
         self.invitations = invitations
@@ -46,6 +48,7 @@ public struct ForeverData: Codable, Equatable {
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
     let potentialDiscountAmount: MonetaryAmount
+    let otherDiscounts: MonetaryAmount?
     var discountCode: String
     let invitations: [ForeverInvitation]
 
@@ -73,4 +76,25 @@ public protocol ForeverService {
     var dataSignal: ReadSignal<ForeverData?> { get }
     func refetch()
     func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>>
+}
+
+extension ForeverData {
+    static func mock() -> ForeverData {
+        let foreverData = ForeverData(
+            grossAmount: .sek(100),
+            netAmount: .sek(80),
+            potentialDiscountAmount: .sek(10),
+            otherDiscounts: .sek(20),
+            discountCode: "CODE",
+            invitations: [
+                .init(name: "First", state: .active, invitedByOther: false),
+                .init(name: "Second", state: .pending, invitedByOther: false),
+                .init(name: "Third", state: .terminated, invitedByOther: false),
+                .init(name: "Third", state: .active, invitedByOther: true),
+                .init(name: "Forth", state: .pending, invitedByOther: true),
+                .init(name: "Fifth", state: .terminated, invitedByOther: true),
+            ]
+        )
+        return foreverData
+    }
 }

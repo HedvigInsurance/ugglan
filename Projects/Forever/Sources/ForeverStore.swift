@@ -27,8 +27,9 @@ public struct ForeverState: StateProtocol {
 
 public indirect enum ForeverAction: ActionProtocol {
     case hasSeenFebruaryCampaign(value: Bool)
-    case showTemporaryCampaignDetail
     case showChangeCodeDetail
+    case dismissChangeCodeDetail
+    case showSuccessScreen
     case fetch
     case setForeverData(data: ForeverData)
     case showShareSheetWithNotificationReminder(code: String)
@@ -144,11 +145,24 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
                         )
                     }
 
+                    let otherDiscounts: MonetaryAmount? = {
+
+                        let referalDiscounts = invitations.compactMap({ $0.discount?.floatAmount })
+                            .reduce(0) { $0 + $1 }
+                        let gross = grossAmountMonetary.floatAmount
+                        let net = netAmountMonetary.floatAmount
+                        if gross - referalDiscounts > net {
+                            return .init(amount: gross - net - referalDiscounts, currency: grossAmountMonetary.currency)
+                        }
+                        return nil
+                    }()
+
                     return .setForeverData(
                         data: .init(
                             grossAmount: grossAmountMonetary,
                             netAmount: netAmountMonetary,
                             potentialDiscountAmount: potentialDiscountAmountMonetary,
+                            otherDiscounts: otherDiscounts,
                             discountCode: discountCode,
                             invitations: invitations
                         )
