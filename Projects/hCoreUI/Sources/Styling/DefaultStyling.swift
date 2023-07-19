@@ -132,6 +132,7 @@ extension DefaultStyling {
         appearance.backButtonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.clear
         ]
+
     }
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
@@ -143,7 +144,6 @@ extension DefaultStyling {
         appearance.shadowImage = UIColor.clear.asImage()
         appearance.backgroundImage = nil
         applyCommonNavigationBarStyling(appearance)
-
         return appearance
     }
 
@@ -301,7 +301,7 @@ extension DefaultStyling {
                 for: .highlighted
             )
 
-        UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
+        UIBarButtonItem.appearance().tintColor = .brandNew(.primaryText())
 
         let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
             hNavigationController.self
@@ -315,6 +315,7 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
+        barButtonItemAppearance.tintColor = .brandNew(.primaryText())
 
         UIDatePicker.appearance().tintColor = .brand(.link)
 
