@@ -19,9 +19,6 @@ struct SettingsScreen: View {
 
     var body: some View {
         hForm {
-            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-            let notificationStatus = ugglanStore.state.pushNotificationCurrentStatus()
-
             hSection {
                 hFloatingField(
                     value: Localization.Locale.currentLocale.displayName,
@@ -31,24 +28,32 @@ struct SettingsScreen: View {
                     }
                 )
             }
+            .padding(.top, 16)
 
-            hSection {
-                hFloatingField(
-                    value: (notificationStatus == .authorized)
-                        ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
-                    placeholder: L10n.pushNotificationsAlertTitle,
-                    onTap: {
-                        // todo: add action to allow notifications
-                    }
-                )
-            }
+            PresentableStoreLens(
+                UgglanStore.self,
+                getter: { state in
+                    state.pushNotificationStatus
+                }
+            ) { _ in
+                hSection {
+                    hFloatingField(
+                        value: store.state.pushNotificationCurrentStatus() == .authorized
+                            ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
+                        placeholder: L10n.pushNotificationsAlertTitle,
+                        onTap: {
+                            // todo: add action to allow notifications
+                        }
+                    )
+                }
 
-            if notificationStatus != .authorized {
-                NotificationsCardView()
+                if store.state.pushNotificationCurrentStatus() != .authorized {
+                    NotificationsCardView()
+
+                }
             }
         }
         .hFormAttachToBottom {
-
             PresentableStoreLens(
                 UgglanStore.self,
                 getter: { state in
