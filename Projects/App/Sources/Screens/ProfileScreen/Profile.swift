@@ -117,10 +117,6 @@ extension ProfileView {
             } else if case .openPayment = action {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {
-                //                Journey(
-                //                    AppInfo(),
-                //                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                //                )
                 HostingJourney(rootView: AppInfoView())
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney

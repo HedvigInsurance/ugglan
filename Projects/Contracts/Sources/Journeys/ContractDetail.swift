@@ -129,7 +129,6 @@ struct ContractDetail: View {
                     }
                     .pickerStyle(.segmented)
                 }
-                .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in

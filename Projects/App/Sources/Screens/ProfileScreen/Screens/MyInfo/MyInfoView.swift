@@ -14,26 +14,26 @@ struct MyInfoView: View {
     var body: some View {
         hForm {
             hSection {
-                hFloatingTextField(
-                    masking: .init(type: .digits),
-                    value: $vm.phone,
-                    equals: $vm.type,
-                    focusValue: .phone,
-                    placeholder: L10n.phoneNumberRowTitle,
-                    error: $vm.phoneError
-                )
+                VStack(spacing: 4) {
+                    hFloatingTextField(
+                        masking: .init(type: .digits),
+                        value: $vm.phone,
+                        equals: $vm.type,
+                        focusValue: .phone,
+                        placeholder: L10n.phoneNumberRowTitle,
+                        error: $vm.phoneError
+                    )
+                    hFloatingTextField(
+                        masking: .init(type: .email),
+                        value: $vm.email,
+                        equals: $vm.type,
+                        focusValue: .email,
+                        placeholder: L10n.emailRowTitle,
+                        error: $vm.emailError
+                    )
+                }
             }
             .padding(.top, 16)
-            hSection {
-                hFloatingTextField(
-                    masking: .init(type: .email),
-                    value: $vm.email,
-                    equals: $vm.type,
-                    focusValue: .email,
-                    placeholder: L10n.emailRowTitle,
-                    error: $vm.emailError
-                )
-            }
         }
         .sectionContainerStyle(.transparent)
         .disabled(vm.isLoading)

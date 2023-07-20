@@ -230,12 +230,6 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 16)
-        .padding([.top, .bottom], 0)
-    }
-
-    /// removes hSection bottom padding
-    public var withoutBottomPadding: some View {
-        self.padding(.bottom, 0)
     }
 
     /// removes hSection leading and trailing padding
