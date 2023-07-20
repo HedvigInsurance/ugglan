@@ -8,15 +8,18 @@ public struct InfoView: View {
     let title: String
     let description: String
     let onDismiss: () -> Void
+    let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
 
     public init(
         title: String,
         description: String,
-        onDismiss: @escaping () -> Void
+        onDismiss: @escaping () -> Void,
+        extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
         self.onDismiss = onDismiss
+        self.extraButton = extraButton
     }
 
     public var body: some View {
@@ -32,12 +35,31 @@ public struct InfoView: View {
                 .padding(.top, 32)
             }
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, 23)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonGhost {
-                onDismiss()
-            } content: {
-                hText(L10n.generalCloseButton)
+            VStack(spacing: 8) {
+                if let button = extraButton {
+                    if button.style != .alert {
+                        hButton.LargeButtonPrimary {
+                            button.action()
+                        } content: {
+                            hText(button.text)
+                        }
+                    } else {
+                        hButton.LargeButtonPrimaryAlert {
+                            button.action()
+                        } content: {
+                            hText(button.text)
+                        }
+
+                    }
+                }
+                hButton.LargeButtonGhost {
+                    onDismiss()
+                } content: {
+                    hText(L10n.generalCloseButton)
+                }
             }
             .padding(.horizontal, 24)
         }

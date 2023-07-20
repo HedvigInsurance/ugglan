@@ -106,7 +106,7 @@ extension Contracts: View {
         .hFormAttachToBottom {
             if self.filter.displaysTerminatedContracts {
                 InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
-                    .padding(.vertical, 16)
+                    .padding(16)
             }
         }
     }

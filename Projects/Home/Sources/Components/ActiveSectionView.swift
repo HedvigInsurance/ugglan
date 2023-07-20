@@ -12,6 +12,7 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
     var claimsContent: Claims
     var commonClaims: CommonClaims
     var statusCard: Content
+    let memberId: String
 
     var body: some View {
         PresentableStoreLens(
@@ -28,6 +29,13 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
                 }
                 claimsContent.addStatusCard {
                     statusCard
+                }
+                let members = ApolloClient.retreiveMembersWithDeleteRequests()
+                if members.contains(memberId) {
+                    InfoCard(
+                        text: L10n.hometabAccountDeletionNotification,
+                        type: .attention
+                    )
                 }
             }
             .slideUpFadeAppearAnimation()

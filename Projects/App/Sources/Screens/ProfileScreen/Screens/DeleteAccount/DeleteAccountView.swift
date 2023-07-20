@@ -1,3 +1,4 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,42 +8,40 @@ struct DeleteAccountView: View {
 
     var body: some View {
         if viewModel.hasActiveClaims || viewModel.hasActiveContracts {
-            BlockAccountDeletionView()
-        } else {
-            hForm {
-                hText(L10n.DeleteAccount.confirmationTitle, style: .title2)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                hSection {
-                    hText(L10n.DeleteAccount.deletedDataDescription, style: .callout)
-                        .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
-                        .padding(16)
-                }
-
-                hSection {
-                    hText(L10n.DeleteAccount.processingFooter, style: .callout)
-                        .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
-                        .padding(16)
-                }
-            }
-            .hFormAttachToBottom {
-                VStack {
-                    Button {
-                        viewModel.deleteAccount()
-                    } label: {
-                        hText(L10n.DeleteAccount.confirmButton, style: .body)
-                            .foregroundColor(.white)
-                            .frame(minHeight: 52)
-                            .frame(minWidth: 200)
-                            .frame(maxWidth: .infinity)
+            InfoView(
+                title: L10n.profileDeleteAccountFailed,
+                description: L10n.profileDeleteAccountFailedLabel,
+                onDismiss: {
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissScreen)
+                },
+                extraButton: (
+                    text: L10n.openChat, style: .primary,
+                    action: {
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.dismissScreen)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            store.send(.openChat)
+                        }
                     }
-                    .background(hTintColor.red)
-                    .cornerRadius(.defaultCornerRadius)
-                }
-                .padding()
-            }
+                )
+            )
+        } else {
+            InfoView(
+                title: L10n.DeleteAccount.confirmationTitle,
+                description: L10n.DeleteAccount.deletedDataDescription + "\n\n" + L10n.DeleteAccount.processingFooter,
+                onDismiss: {
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissScreen)
+                },
+                extraButton: (
+                    text: L10n.profileDeleteAccountConfirmDeleteion,
+                    style: .alert,
+                    action: {
+                        viewModel.deleteAccount()
+                    }
+                )
+            )
         }
     }
 }

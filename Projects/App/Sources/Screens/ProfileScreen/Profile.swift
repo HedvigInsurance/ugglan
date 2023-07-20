@@ -1,6 +1,8 @@
 import Apollo
 import Flow
 import Form
+import Home
+import Payment
 import Presentation
 import SwiftUI
 import hAnalytics
@@ -62,18 +64,22 @@ struct ProfileView: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonGhost {
-                showLogoutAlert = true
-            } content: {
-                hText(L10n.logoutButton)
-                    .foregroundColor(hSignalColorNew.redElement)
+            VStack(spacing: 8) {
+                ConnectPaymentCardView()
+                RenewalCardView()
+                NotificationsCardView()
+                hButton.LargeButtonGhost {
+                    showLogoutAlert = true
+                } content: {
+                    hText(L10n.logoutButton)
+                        .foregroundColor(hSignalColorNew.redElement)
+                }
+                .alert(isPresented: $showLogoutAlert) {
+                    logoutAlert
+                }
             }
             .padding(16)
-            .alert(isPresented: $showLogoutAlert) {
-                logoutAlert
-            }
         }
-
         .onAppear {
             store.send(.fetchProfileState)
         }
@@ -112,16 +118,24 @@ extension ProfileView {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 Journey(
-                    AppInfo(type: .appInformation),
+                    AppInfo(),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney
             } else if case .openAppSettings = action {
-                Journey(
-                    AppInfo(type: .appSettings),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
+                HostingJourney(
+                    UgglanStore.self,
+                    rootView: SettingsScreen(),
+                    options: [.defaults]
+                ) { action in
+                    if case let .deleteAccount(details) = action {
+                        AppJourney.deleteAccountJourney(details: details)
+                    } else if case .deleteAccountAlreadyRequested = action {
+                        AppJourney.deleteRequestAlreadyPlacedJourney
+                    }
+                }
+                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 HostingJourney(
                     rootView: EuroBonusView(),

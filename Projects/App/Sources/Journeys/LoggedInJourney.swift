@@ -18,7 +18,15 @@ extension AppJourney {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
         return
-            HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
+            HomeView.journey(
+                claimsContent: claims,
+                commonClaimsContent: commonClaims,
+                memberId: {
+                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                    return ugglanStore.state.memberDetails?.id ?? ""
+
+                }
+            ) { result in
                 switch result {
                 case .startMovingFlow:
                     AppJourney.movingFlow
