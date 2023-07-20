@@ -117,13 +117,13 @@ class MyInfoViewModel: ObservableObject {
     @Published var isLoading: Bool = false
 
     weak var vc: UIViewController?
-    private var originalPhone: String?
+    private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
     private let bag = DisposeBag()
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
-        originalPhone = store.state.memberPhone
+        originalPhone = store.state.memberPhone ?? ""
         originalEmail = store.state.memberEmail
         phone = store.state.memberPhone ?? ""
         email = store.state.memberEmail
