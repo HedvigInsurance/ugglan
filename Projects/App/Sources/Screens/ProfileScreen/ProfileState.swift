@@ -12,7 +12,6 @@ public struct ProfileState: StateProtocol {
     var memberPhone: String?
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
-    @OptionalTransient var updateEurobonusState: LoadingState<String>?
     public init() {}
 }
 
@@ -22,6 +21,9 @@ public enum ProfileAction: ActionProtocol {
     case openCharity
     case openPayment
     case openEuroBonus
+    case openChangeEuroBonus
+    case dismissChangeEuroBonus
+    case openSuccessChangeEuroBonus
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
@@ -32,7 +34,6 @@ public enum ProfileAction: ActionProtocol {
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
-    case updateEurobonusState(with: LoadingState<String>?)
 }
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
@@ -88,31 +89,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
                 return disposeBag
             }
-        case let .updateEurobonusNumber(number):
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: number)
-                disposeBag += self.octopus.client
-                    .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
-                    .onValue { result in
-                        if let error = result.memberUpdateEurobonusNumber.userError?.message, error != "" {
-                            callback(.value(.updateEurobonusState(with: .error(error: error))))
-                        } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
-                            .partnerDataFragment
-                        {
-                            callback(.value(.setEurobonusNumber(partnerData: PartnerData(with: partnerData))))
-                            callback(.value(.updateEurobonusState(with: nil)))
-                        } else {
-                            callback(
-                                .value(.updateEurobonusState(with: .error(error: L10n.SasIntegration.incorrectNumber)))
-                            )
-                        }
-                    }
-                    .onError { _ in
-                        callback(.value(.updateEurobonusState(with: .error(error: L10n.General.errorBody))))
-                    }
-                return disposeBag
-            }
         default:
             return nil
         }
@@ -130,18 +106,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.memberEmail = email
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
-        case .updateEurobonusNumber:
-            newState.updateEurobonusState = .loading
-        case let .updateEurobonusState(state):
-            newState.updateEurobonusState = state
-            if state == nil {
-                Toasts.shared.displayToast(
-                    toast: Toast(
-                        symbol: .icon(hCoreUIAssets.edit.image),
-                        body: L10n.profileMyInfoSaveSuccessToastBody
-                    )
-                )
-            }
         case let .setMemberEmail(email):
             newState.memberEmail = email
         case let .setMemberPhone(phone):
@@ -161,6 +125,9 @@ public struct PartnerData: Codable, Equatable {
         return sas?.eligible ?? false
     }
 
+    var isConnected: Bool {
+        return !(sas?.eurobonusNumber ?? "").isEmpty
+    }
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)

@@ -32,8 +32,14 @@ public struct TextInputView: View {
                     hSection {
                         VStack(spacing: 8) {
                             hButton.LargeButtonPrimary {
-                                withAnimation { [weak vm] in
-                                    vm?.save()
+                                Task { [weak vm] in
+                                    withAnimation {
+                                        vm?.isLoading = true
+                                    }
+                                    await vm?.save()
+                                    withAnimation {
+                                        vm?.isLoading = false
+                                    }
                                 }
                             } content: {
                                 hText(L10n.generalSaveButton, style: .body)
@@ -70,39 +76,32 @@ public class TextInputViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var type: TextInputView.InputViewFocus? = .textField
 
-    let saveButtonDisposeBag = DisposeBag()
     let title: String
-    let onSave: (String) -> FiniteSignal<String?>
+    public var onSave: ((String) async throws -> Void)?
     var dismiss: () -> Void = {}
 
     public init(
         input: String,
         title: String,
-        onSave: @escaping (String) -> FiniteSignal<String?>,
         dismiss: @escaping () -> Void
     ) {
         self.input = input
         self.title = title
-        self.onSave = onSave
         self.dismiss = dismiss
     }
 
-    func save() {
-        error = nil
-        isLoading = true
-        saveButtonDisposeBag.dispose()
-        saveButtonDisposeBag += onSave(input)
-            .onValue { [weak self] error in
-                if let error {
-                    self?.error = error
-                }
-                self?.isLoading = false
-                self?.type = .textField
-                self?.saveButtonDisposeBag.dispose()
+    func save() async {
+        DispatchQueue.main.async { [weak self] in
+            self?.type = nil
+            self?.error = nil
+            self?.isLoading = true
+        }
+        do {
+            try await onSave?(input)
+        } catch let error {
+            DispatchQueue.main.async { [weak self] in
+                self?.error = error.localizedDescription
             }
-    }
-
-    deinit {
-        let ss = ""
+        }
     }
 }

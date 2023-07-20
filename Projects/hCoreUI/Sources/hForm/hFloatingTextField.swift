@@ -14,8 +14,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var animate = false
     @State private var previousInnerValue: String = ""
     @State private var shouldMoveLabel: Bool = false
-    //    @State private var observer = TextFieldObserver()
-    @ObservedObject private var vm = TextFieldVM()
+    @State private var observer: TextFieldObserver = TextFieldObserver()
+    @StateObject private var vm = TextFieldVM()
+
     @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
@@ -69,24 +70,22 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .padding(.vertical, shouldMoveLabel ? 10 : 0)
         }
         .onChange(of: vm.textField) { textField in
-            textField?.delegate = vm.observer
-
+            textField?.delegate = observer
             if focusValue == Value.last {
                 textField?.returnKeyType = .done
             }
 
-            vm.observer?.onBeginEditing = {
+            observer.onBeginEditing = {
                 withAnimation {
                     self.error = nil
                 }
                 updateMoveLabel()
-                startAnimation(self.innerValue)
                 equals = focusValue
             }
-            vm.observer?.onDidEndEditing = {
+            observer.onDidEndEditing = {
                 updateMoveLabel()
             }
-            vm.observer?.onReturnTap = { [weak textField] in
+            observer.onReturnTap = { [weak textField] in
                 if let next = equals?.next {
                     equals = next
                 } else {
@@ -181,8 +180,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 }
 
 class TextFieldVM: ObservableObject {
-    weak var observer: TextFieldObserver?
     weak var textField: UITextField?
+
+    deinit {
+        let ss = ""
+    }
 
 }
 
