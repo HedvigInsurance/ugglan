@@ -154,7 +154,7 @@ class MyInfoViewModel: ObservableObject {
             let updateEmailFuture = self.getEmailFuture()
             join(updatePhoneFuture, updateEmailFuture)
                 .onValue { _ in
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async {
                         Toasts.shared.displayToast(
                             toast: Toast(
                                 symbol: .icon(hCoreUIAssets.edit.image),
@@ -285,7 +285,7 @@ class MyInfoViewModel: ObservableObject {
 struct MyInfoView_Previews: PreviewProvider {
     static var previews: some View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.setMember(name: "Ma", email: "sladjann@gmail.com", phone: nil))
+        store.send(.setMember(id: "1", name: "Ma", email: "sladjann@gmail.com", phone: nil))
         return NavigationView {
             MyInfoView()
         }
