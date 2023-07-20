@@ -25,7 +25,14 @@ struct SettingsScreen: View {
                         value: Localization.Locale.currentLocale.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-                            // todo: add action to display language picker
+                            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                return
+                            }
+                            DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                            UNUserNotificationCenter.current()
+                                .getNotificationSettings { settings in
+                                    settings.setValue(<#T##value: Any?##Any?#>, forKey: <#T##String#>)
+                                }
                         }
                     )
                     PresentableStoreLens(
@@ -39,7 +46,15 @@ struct SettingsScreen: View {
                                 ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
                             placeholder: L10n.pushNotificationsAlertTitle,
                             onTap: {
-                                // todo: add action to allow notifications
+                                if store.state.pushNotificationCurrentStatus() == .authorized {
+                                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                        return
+                                    }
+                                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                                } else {
+                                    _ = UIApplication.shared.appDelegate
+                                        .registerForPushNotifications()
+                                }
                             }
                         )
                     }
