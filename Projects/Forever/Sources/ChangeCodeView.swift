@@ -18,7 +18,7 @@ class ChangeCodeViewModel: ObservableObject {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             input: store.state.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsChange.changeCode,
+            title: L10n.ReferralsEmpty.Code.headline,
             dismiss: { [weak store] in
                 store?.send(.dismissChangeCodeDetail)
             }

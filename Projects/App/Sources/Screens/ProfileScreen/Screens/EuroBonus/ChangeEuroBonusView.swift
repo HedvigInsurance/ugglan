@@ -26,7 +26,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
-            title: L10n.ReferralsChange.changeCode,
+            title: "EuroBonus",
             dismiss: { [weak store] in
                 store?.send(.dismissChangeEuroBonus)
             }

@@ -22,7 +22,7 @@ public struct TextInputView: View {
                             value: $vm.input,
                             equals: $vm.type,
                             focusValue: .textField,
-                            placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
+                            placeholder: vm.title,
                             error: $vm.error
                         )
                         .disabled(vm.isLoading)
