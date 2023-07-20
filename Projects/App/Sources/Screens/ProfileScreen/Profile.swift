@@ -134,11 +134,7 @@ extension ProfileView {
                 }
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
-                HostingJourney(
-                    rootView: EuroBonusView(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-                .configureTitle(L10n.SasIntegration.title)
+                EuroBonusView.journey
             }
         }
         .configureTitle(L10n.profileTitle)

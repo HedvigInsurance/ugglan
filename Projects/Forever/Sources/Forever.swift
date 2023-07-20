@@ -94,7 +94,7 @@ extension ForeverView {
             rootView: ForeverView()
         ) { action in
             if case .showChangeCodeDetail = action {
-                getChangeCodeJourney()
+                ChangeCodeView.journey
             } else if case let .showShareSheetWithNotificationReminder(code) = action {
                 pushNotificationJourney(onDismissAction: {
                     let store: ForeverStore = globalPresentableStoreContainer.get()
@@ -188,66 +188,5 @@ struct ForeverView_Previews: PreviewProvider {
                 let foreverData = ForeverData.mock()
                 store.send(.setForeverData(data: foreverData))
             }
-    }
-}
-
-extension ForeverView {
-    static func getChangeCodeJourney() -> some JourneyPresentation {
-        let store: ForeverStore = globalPresentableStoreContainer.get()
-        let vm = TextInputViewModel(
-            input: store.state.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsChange.changeCode
-        ) { text in
-            FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += ForeverServiceGraphQL().changeDiscountCode(text)
-                    .onValue { value in
-                        if let error = value.right {
-                            callback(.value(error.localizedDescription))
-                        } else {
-                            callback(.value(nil))
-                            store.send(.fetch)
-                            store.send(.showSuccessScreen)
-                        }
-                    }
-                return disposeBag
-            }
-        } dismiss: {
-            store.send(.dismissChangeCodeDetail)
-        }
-
-        let view = TextInputView(vm: vm)
-        return HostingJourney(
-            ForeverStore.self,
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: .largeNavigationBar
-        ) { action in
-            if case .showSuccessScreen = action {
-                HostingJourney(
-                    rootView: CodeChangedView(),
-                    style: .detented(.large, modally: false),
-                    options: [.prefersNavigationBarHidden(true)]
-                )
-                .onPresent {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        store.send(.dismissChangeCodeDetail)
-                    }
-                }
-                .hidesBackButton
-
-            }
-        }
-        .onDismiss {
-            let store: ForeverStore = globalPresentableStoreContainer.get()
-            store.send(.fetch)
-        }
-        .configureTitle(L10n.ReferralsChange.changeCode)
-        .onAction(ForeverStore.self) { action, pres in
-            if case .dismissChangeCodeDetail = action {
-                pres.bag.dispose()
-            }
-        }
-
     }
 }
