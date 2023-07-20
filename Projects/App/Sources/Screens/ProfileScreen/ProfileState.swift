@@ -6,6 +6,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ProfileState: StateProtocol {
+    var memberId: String = ""
     var memberFullName: String = ""
     var memberEmail: String = ""
     var memberPhone: String?
@@ -25,7 +26,7 @@ public enum ProfileAction: ActionProtocol {
     case openAppInformation
     case openAppSettings
     case setMonthlyNet(monthlyNet: Int)
-    case setMember(name: String, email: String, phone: String?)
+    case setMember(id: String, name: String, email: String, phone: String?)
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
@@ -74,6 +75,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                             callback(
                                 .value(
                                     .setMember(
+                                        id: profileData.currentMember.id,
                                         name: name,
                                         email: profileData.currentMember.email,
                                         phone: profileData.currentMember.phoneNumber
@@ -121,7 +123,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         switch action {
         case .setMonthlyNet(let monthlyNet):
             newState.monthlyNet = monthlyNet
-        case let .setMember(name, email, phone):
+        case let .setMember(id, name, email, phone):
+            newState.memberId = id
             newState.memberFullName = name
             newState.memberPhone = phone
             newState.memberEmail = email
