@@ -7,12 +7,9 @@ extension MenuChildAction {
         GroupJourney {
             switch self {
             case MenuChildAction.appInformation:
-                Journey(
-                    AppInfo(),
-                    style: .detented(.large),
-                    options: [
-                        .defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true),
-                    ]
+                HostingJourney(
+                    rootView: AppInfoView(),
+                    style: .detented(.large)
                 )
                 .withDismissButton
             case MenuChildAction.login:

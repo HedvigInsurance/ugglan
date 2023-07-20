@@ -20,36 +20,37 @@ struct SettingsScreen: View {
     var body: some View {
         hForm {
             hSection {
-                hFloatingField(
-                    value: Localization.Locale.currentLocale.displayName,
-                    placeholder: L10n.settingsLanguageTitle,
-                    onTap: {
-                        // todo: add action to display language picker
-                    }
-                )
-            }
-            .padding(.top, 16)
-
-            PresentableStoreLens(
-                UgglanStore.self,
-                getter: { state in
-                    state
-                }
-            ) { _ in
-                hSection {
+                VStack(spacing: 4) {
                     hFloatingField(
-                        value: store.state.pushNotificationCurrentStatus() == .authorized
-                            ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
-                        placeholder: L10n.pushNotificationsAlertTitle,
+                        value: Localization.Locale.currentLocale.displayName,
+                        placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-                            // todo: add action to allow notifications
+                            // todo: add action to display language picker
                         }
                     )
+                    PresentableStoreLens(
+                        UgglanStore.self,
+                        getter: { state in
+                            state
+                        }
+                    ) { _ in
+                        hFloatingField(
+                            value: store.state.pushNotificationCurrentStatus() == .authorized
+                                ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
+                            placeholder: L10n.pushNotificationsAlertTitle,
+                            onTap: {
+                                // todo: add action to allow notifications
+                            }
+                        )
+                    }
                 }
                 NotificationsCardView()
+                    .padding(.vertical, 16)
+
             }
             .padding(.top, 16)
         }
+        .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             PresentableStoreLens(
                 UgglanStore.self,
