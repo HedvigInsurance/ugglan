@@ -50,7 +50,7 @@ struct MyInfoView: View {
         .onChange(of: vm.inEditMode) { inEditMode in
             vm.vc?.navigationController?.interactivePopGestureRecognizer?.isEnabled = !inEditMode
         }
-        .navigationTitle(vm.inEditMode ? "" : L10n.myInfoTitle)
+        .navigationTitle(vm.inEditMode ? "" : L10n.profileMyInfoRowTitle)
     }
 
     @ToolbarContentBuilder
