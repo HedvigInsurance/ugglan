@@ -33,7 +33,7 @@ struct SettingsScreen: View {
             PresentableStoreLens(
                 UgglanStore.self,
                 getter: { state in
-                    state.pushNotificationStatus
+                    state
                 }
             ) { _ in
                 hSection {
@@ -46,12 +46,9 @@ struct SettingsScreen: View {
                         }
                     )
                 }
-
-                if store.state.pushNotificationCurrentStatus() != .authorized {
-                    NotificationsCardView()
-
-                }
+                NotificationsCardView()
             }
+            .padding(.top, 16)
         }
         .hFormAttachToBottom {
             PresentableStoreLens(
@@ -78,20 +75,6 @@ struct SettingsScreen: View {
             .padding(16)
         }
     }
-}
-
-struct LanguagePicker {
-    var displayName: String
-    var icon: Image
-
-    init(
-        displayName: String,
-        icon: Image
-    ) {
-        self.displayName = displayName
-        self.icon = icon
-    }
-
 }
 
 struct SettingsScreen_Previews: PreviewProvider {
