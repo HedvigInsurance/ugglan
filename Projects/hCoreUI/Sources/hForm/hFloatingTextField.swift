@@ -14,8 +14,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var animate = false
     @State private var previousInnerValue: String = ""
     @State private var shouldMoveLabel: Bool = false
-    @State private var textField: UITextField?
-    @State private var observer = TextFieldObserver()
+    //    @State private var observer = TextFieldObserver()
+    @ObservedObject private var vm = TextFieldVM()
     @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
@@ -68,17 +68,14 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
             .padding(.vertical, shouldMoveLabel ? 10 : 0)
         }
-        .introspectTextField { textField in
-            if self.textField != textField {
-                self.textField = textField
-            }
-        }
-        .onChange(of: textField) { textField in
-            textField?.delegate = observer
+        .onChange(of: vm.textField) { textField in
+            textField?.delegate = vm.observer
+
             if focusValue == Value.last {
                 textField?.returnKeyType = .done
             }
-            observer.onBeginEditing = {
+
+            vm.observer?.onBeginEditing = {
                 withAnimation {
                     self.error = nil
                 }
@@ -86,10 +83,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 startAnimation(self.innerValue)
                 equals = focusValue
             }
-            observer.onDidEndEditing = {
+            vm.observer?.onDidEndEditing = {
                 updateMoveLabel()
             }
-            observer.onReturnTap = {
+            vm.observer?.onReturnTap = { [weak textField] in
                 if let next = equals?.next {
                     equals = next
                 } else {
@@ -105,7 +102,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: equals) { equals in
             if equals == focusValue {
-                self.textField?.becomeFirstResponder()
+                self.vm.textField?.becomeFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in
@@ -117,12 +114,17 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
-            textField?.becomeFirstResponder()
+            vm.textField?.becomeFirstResponder()
         }
         .onChange(of: error) { error in
             self.animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.animate = false
+            }
+        }
+        .introspectTextField { textField in
+            if self.vm.textField != textField {
+                self.vm.textField = textField
             }
         }
     }
@@ -137,7 +139,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private func updateMoveLabel() {
-        if ((textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
+        if ((vm.textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
             withAnimation(Animation.easeInOut(duration: 0.2)) {
                 shouldMoveLabel = true
             }
@@ -176,6 +178,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         hText(suffix ?? "", style: .title3)
             .foregroundColor(hTextColorNew.secondary)
     }
+}
+
+class TextFieldVM: ObservableObject {
+    weak var observer: TextFieldObserver?
+    weak var textField: UITextField?
+
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {

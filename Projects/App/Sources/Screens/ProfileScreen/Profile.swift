@@ -112,12 +112,8 @@ extension ProfileView {
             rootView: ProfileView()
         ) { action in
             if case .openProfile = action {
-                Journey(
-                    MyInfo(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .autoPop]
-                ) { _ in
-                    DismissJourney()
-                }
+                HostingJourney(rootView: MyInfoView())
+                    .configureTitle(L10n.profileMyInfoRowTitle)
             } else if case .openPayment = action {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {

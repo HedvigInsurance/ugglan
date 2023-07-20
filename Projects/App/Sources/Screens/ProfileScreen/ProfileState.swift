@@ -7,15 +7,12 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
+    var memberEmail: String = ""
+    var memberPhone: String?
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
     @OptionalTransient var updateEurobonusState: LoadingState<String>?
     public init() {}
-}
-
-public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
-    case loading
-    case error(error: T)
 }
 
 public enum ProfileAction: ActionProtocol {
@@ -28,7 +25,9 @@ public enum ProfileAction: ActionProtocol {
     case openAppInformation
     case openAppSettings
     case setMonthlyNet(monthlyNet: Int)
-    case setMemberName(name: String)
+    case setMember(name: String, email: String, phone: String?)
+    case setMemberEmail(email: String)
+    case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
@@ -72,7 +71,15 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                             let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
                             let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
-                            callback(.value(.setMemberName(name: name)))
+                            callback(
+                                .value(
+                                    .setMember(
+                                        name: name,
+                                        email: profileData.currentMember.email,
+                                        phone: profileData.currentMember.phoneNumber
+                                    )
+                                )
+                            )
                         }
                         callback(.value(.fetchProfileStateCompleted))
                     }
@@ -114,8 +121,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         switch action {
         case .setMonthlyNet(let monthlyNet):
             newState.monthlyNet = monthlyNet
-        case .setMemberName(let name):
+        case let .setMember(name, email, phone):
             newState.memberFullName = name
+            newState.memberPhone = phone
+            newState.memberEmail = email
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
         case .updateEurobonusNumber:
@@ -130,6 +139,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     )
                 )
             }
+        case let .setMemberEmail(email):
+            newState.memberEmail = email
+        case let .setMemberPhone(phone):
+            newState.memberPhone = phone
         default:
             break
         }
