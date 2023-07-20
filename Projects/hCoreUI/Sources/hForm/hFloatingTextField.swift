@@ -181,11 +181,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
 class TextFieldVM: ObservableObject {
     weak var textField: UITextField?
-
-    deinit {
-        let ss = ""
-    }
-
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {

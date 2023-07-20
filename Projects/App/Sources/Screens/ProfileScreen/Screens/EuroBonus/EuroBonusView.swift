@@ -17,13 +17,13 @@ struct EuroBonusView: View {
                 if let eurobonusNumber = partnerData?.sas?.eurobonusNumber, !eurobonusNumber.isEmpty {
                     return eurobonusNumber
                 }
-                return "Not connected"
+                return L10n.SasIntegration.notConnected
             }()
 
             hForm {
                 hSection {
                     VStack(spacing: 16) {
-                        hFloatingField(value: fieldValue, placeholder: "EuroBonus") {
+                        hFloatingField(value: fieldValue, placeholder: L10n.SasIntegration.title) {
                             store.send(.openChangeEuroBonus)
                         }
                     }
@@ -34,13 +34,13 @@ struct EuroBonusView: View {
                 if !(partnerData?.isConnected ?? false) {
                     hSection {
                         InfoCard(
-                            text: "You need to connect your EuroBonus number to your account in oder to earn points",
+                            text: L10n.SasIntegration.eurobonusInfo,
                             type: .info
                         )
                         hButton.LargeButtonPrimary {
                             store.send(.openChangeEuroBonus)
                         } content: {
-                            hText("Connect EuroBonus")
+                            hText(L10n.SasIntegration.connectEurobonus)
                         }
                         .padding(.vertical, 16)
                     }
@@ -49,7 +49,7 @@ struct EuroBonusView: View {
                         hButton.LargeButtonGhost {
                             store.send(.openChangeEuroBonus)
                         } content: {
-                            hText("Change EuroBonus number")
+                            hText(L10n.SasIntegration.changeEurobonusNumber)
                         }
                         .padding(.vertical, 16)
                     }
@@ -64,7 +64,7 @@ struct EuroBonusView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             EuroBonusView().navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("EuroBonus")
+                .navigationTitle(L10n.SasIntegration.title)
         }
     }
 }

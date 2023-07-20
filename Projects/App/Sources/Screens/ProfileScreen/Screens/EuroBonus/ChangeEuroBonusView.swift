@@ -26,7 +26,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
-            title: "EuroBonus",
+            title: L10n.SasIntegration.title,
             dismiss: { [weak store] in
                 store?.send(.dismissChangeEuroBonus)
             }
@@ -35,29 +35,36 @@ private class ChangeEurobonusViewModel: ObservableObject {
         inputVm.onSave = { [weak self] text in
             var error: Error?
             await withCheckedContinuation { continuation in
-                let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: text)
-                let octopusRequest = self?.octopus.client
-                    .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
-                    .onValue { result in
-                        if let graphQLError = result.memberUpdateEurobonusNumber.userError?.message,
-                            !graphQLError.isEmpty
-                        {
-                            error = ChangeEuroBonusError.error(message: graphQLError)
-                        } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
-                            .partnerDataFragment
-                        {
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.setEurobonusNumber(partnerData: PartnerData(with: partnerData)))
-                            store.send(.openSuccessChangeEuroBonus)
+                let text = text.toAlphaNumeric
+                if text.isEmpty {
+                    error = ChangeEuroBonusError.error(message: "")
+                    continuation.resume()
+                } else {
+                    let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: text)
+
+                    let octopusRequest = self?.octopus.client
+                        .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
+                        .onValue { result in
+                            if let graphQLError = result.memberUpdateEurobonusNumber.userError?.message,
+                                !graphQLError.isEmpty
+                            {
+                                error = ChangeEuroBonusError.error(message: graphQLError)
+                            } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
+                                .partnerDataFragment
+                            {
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
+                                store.send(.setEurobonusNumber(partnerData: PartnerData(with: partnerData)))
+                                store.send(.openSuccessChangeEuroBonus)
+                            }
+                            continuation.resume()
                         }
-                        continuation.resume()
+                        .onError { graphQLError in
+                            error = graphQLError
+                            continuation.resume()
+                        }
+                    if let octopusRequest {
+                        self?.disposeBag += octopusRequest
                     }
-                    .onError { graphQLError in
-                        error = graphQLError
-                        continuation.resume()
-                    }
-                if let octopusRequest {
-                    self?.disposeBag += octopusRequest
                 }
             }
             if let error {
@@ -95,7 +102,7 @@ extension ChangeEuroBonusView {
             if case .dismissChangeEuroBonus = action {
                 PopJourney()
             } else if case .openSuccessChangeEuroBonus = action {
-                SuccessScreen.journey(with: "EuroBonus connected")
+                SuccessScreen.journey(with: L10n.SasIntegration.eurobonusConnected)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -104,7 +111,7 @@ extension ChangeEuroBonusView {
                     }
             }
         }
-        .configureTitle("Enter your number")
+        .configureTitle(L10n.SasIntegration.enterYourNumber)
     }
 }
 extension String {
