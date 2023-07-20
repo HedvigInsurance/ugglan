@@ -1,35 +1,53 @@
 import SwiftUI
 import hCore
 
-public struct InfoCard<T>: View where T: View {
+public struct InfoCard: View {
     let text: String
     let type: InfoCardType
-    let buttonView: T?
+    @Environment(\.hInfoCardButtonConfig) var buttonsConfig
 
     public init(
         text: String,
-        type: InfoCardType,
-        buttonView: T? = nil
+        type: InfoCardType
     ) {
         self.text = text
         self.type = type
-        self.buttonView = buttonView
     }
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                .foregroundColor(getIconColor)
-
-            VStack(spacing: 12) {
+            Image(uiImage: type.image)
+                .foregroundColor(imageColor)
+            VStack(alignment: .leading) {
                 hText(text, style: .footnote)
                     .foregroundColor(getTextColor)
-
-                if let buttonView = buttonView {
-                    buttonView
+                    .padding(.leading, 9)
+                if let buttonsConfig {
+                    if buttonsConfig.count > 1 {
+                        HStack(spacing: 8) {
+                            ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                                hButton.MediumButtonFilled {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .standardSmall)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .hButtonConfigurationType(.secondaryAlt)
+                            }
+                        }
+                    } else {
+                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            hButton.MediumButtonFilled {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .standardSmall)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .hButtonConfigurationType(.secondaryAlt)
+                        }
+                    }
                 }
             }
-            .padding(.leading, 9)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
@@ -43,7 +61,6 @@ public struct InfoCard<T>: View where T: View {
                 )
         )
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 16)
     }
 
     @hColorBuilder
@@ -75,7 +92,7 @@ public struct InfoCard<T>: View where T: View {
     }
 
     @hColorBuilder
-    var getIconColor: some hColor {
+    var imageColor: some hColor {
         switch type {
         case .info:
             hSignalColorNew.blueElement
@@ -91,11 +108,38 @@ public struct InfoCard<T>: View where T: View {
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        InfoCard(
-            text: L10n.changeAddressCoverageInfoText,
-            type: .info,
-            buttonView: EmptyView()
-        )
+        VStack {
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    ),
+                    .init(
+                        buttonTitle: "Title 2",
+                        buttonAction: {
+
+                        }
+                    ),
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    )
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+        }
     }
 }
 
@@ -104,4 +148,45 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
+
+    var image: UIImage {
+        switch self {
+        case .info:
+            return hCoreUIAssets.infoIconFilled.image
+        case .attention:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .error:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .campaign:
+            return hCoreUIAssets.campaignSmall.image
+
+        }
+    }
+}
+
+private struct EnvironmentCardButtonsConfig: EnvironmentKey {
+    static let defaultValue: [InfoCardButtonConfig]? = nil
+}
+
+extension EnvironmentValues {
+    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
+        get { self[EnvironmentCardButtonsConfig.self] }
+        set { self[EnvironmentCardButtonsConfig.self] = newValue }
+    }
+}
+
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+        self.environment(\.hInfoCardButtonConfig, configs)
+    }
+}
+
+public struct InfoCardButtonConfig {
+    let buttonTitle: String
+    let buttonAction: () -> Void
+
+    public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
+        self.buttonTitle = buttonTitle
+        self.buttonAction = buttonAction
+    }
 }

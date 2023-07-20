@@ -39,6 +39,26 @@ extension AppDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         log.info("Failed to register for remote notifications with error: \(error))")
     }
+
+    func observeNotificationsSettings() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: OperationQueue.main,
+            using: { _ in
+                UNUserNotificationCenter.current()
+                    .getNotificationSettings { settings in
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                    }
+            }
+        )
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            }
+    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {

@@ -12,7 +12,7 @@ struct UgglanState: StateProtocol {
     var pushNotificationStatus: Int?
     var isDemoMode: Bool = false
     var memberDetails: MemberDetails?
-
+    var pushNotificationsSnoozeDate: Date?
     init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
@@ -28,6 +28,14 @@ struct UgglanState: StateProtocol {
         return .notDetermined
     }
 
+    var shouldShowNotificationCard: Bool {
+
+        let requiredTimeForSnooze: Double = TimeInterval.days(numberOfDays: 1)
+        return self.pushNotificationCurrentStatus() != .authorized
+            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
+                .distance(to: Date()) > requiredTimeForSnooze
+    }
+
 }
 
 enum UgglanAction: ActionProtocol {
@@ -40,6 +48,7 @@ enum UgglanAction: ActionProtocol {
     case businessModelDetail
     case aboutBusinessModel
     case setPushNotificationStatus(status: Int?)
+    case setPushNotificationsNotNow
     case setIsDemoMode(to: Bool)
     case deleteAccount(details: MemberDetails)
     case deleteAccountAlreadyRequested
@@ -89,6 +98,8 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             newState.isDemoMode = to
         case let .setMemberDetails(details):
             newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+        case .setPushNotificationsNotNow:
+            newState.pushNotificationsSnoozeDate = Date()
         default:
             break
         }

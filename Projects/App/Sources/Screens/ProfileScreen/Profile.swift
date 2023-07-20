@@ -1,6 +1,8 @@
 import Apollo
 import Flow
 import Form
+import Home
+import Payment
 import Presentation
 import SwiftUI
 import hAnalytics
@@ -62,18 +64,22 @@ struct ProfileView: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonGhost {
-                showLogoutAlert = true
-            } content: {
-                hText(L10n.logoutButton)
-                    .foregroundColor(hSignalColorNew.redElement)
+            VStack(spacing: 8) {
+                ConnectPaymentCardView()
+                RenewalCardView()
+                NotificationsCardView()
+                hButton.LargeButtonGhost {
+                    showLogoutAlert = true
+                } content: {
+                    hText(L10n.logoutButton)
+                        .foregroundColor(hSignalColorNew.redElement)
+                }
+                .alert(isPresented: $showLogoutAlert) {
+                    logoutAlert
+                }
             }
             .padding(16)
-            .alert(isPresented: $showLogoutAlert) {
-                logoutAlert
-            }
         }
-
         .onAppear {
             store.send(.fetchProfileState)
         }
@@ -124,7 +130,7 @@ extension ProfileView {
             } else if case .openAppSettings = action {
                 HostingJourney(
                     UgglanStore.self,
-                    rootView: SettingsScreen(onActionExecuted: { _ in }),
+                    rootView: SettingsScreen(),
                     options: [.defaults]
                 ) { action in
                     if case let .deleteAccount(details) = action {

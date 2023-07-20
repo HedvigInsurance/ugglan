@@ -69,12 +69,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     )
                 }
                 .sectionContainerStyle(.transparent)
-                InfoCard(
-                    text: L10n.claimsDateNotSureNoticeLabel,
-                    type: .info,
-                    buttonView: EmptyView()
-                )
-                .padding(.vertical, 16)
+                InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
+                    .padding(16)
             }
         }
     }

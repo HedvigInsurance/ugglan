@@ -12,53 +12,45 @@ import hGraphQL
 struct SettingsScreen: View {
     @PresentableStore var store: UgglanStore
     @Inject var giraffe: hGiraffe
-    @StateObject var vm = VCViewModel()
-    let onActionExecuted: (UIViewController?) -> Void
-    @StateObject private var infoModel = DismissInfoModel()
 
-    init(
-        onActionExecuted: @escaping (UIViewController?) -> Void
-    ) {
-        self.onActionExecuted = onActionExecuted
+    init() {
         store.send(.fetchMemberDetails)
     }
 
     var body: some View {
         hForm {
-            VStack(spacing: 4) {
+            hSection {
+                hFloatingField(
+                    value: Localization.Locale.currentLocale.displayName,
+                    placeholder: L10n.settingsLanguageTitle,
+                    onTap: {
+                        // todo: add action to display language picker
+                    }
+                )
+            }
+            .padding(.top, 16)
 
+            PresentableStoreLens(
+                UgglanStore.self,
+                getter: { state in
+                    state
+                }
+            ) { _ in
                 hSection {
                     hFloatingField(
-                        value: Localization.Locale.currentLocale.displayName,
-                        placeholder: L10n.settingsLanguageTitle,
+                        value: store.state.pushNotificationCurrentStatus() == .authorized
+                            ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
+                        placeholder: L10n.pushNotificationsAlertTitle,
                         onTap: {
-                            // todo: add action to display language picker
+                            // todo: add action to allow notifications
                         }
                     )
                 }
-
-                hSection {
-                    hFloatingField(
-                        value: infoModel.getNotificationStatus
-                            ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
-                        placeholder: L10n.pushNotificationsAlertTitle,
-                        onTap: {}
-                    )
-                }
-
-                if !infoModel.getNotificationStatus && !infoModel.hasDismissedNotificationInfo {
-                    InfoCard(
-                        text: L10n.profileAllowNotificationsInfoLabel,
-                        type: .info,
-                        buttonView: displayButtons
-                    )
-                    .padding(.top, 12)
-                }
+                NotificationsCardView()
             }
             .padding(.top, 16)
         }
         .hFormAttachToBottom {
-
             PresentableStoreLens(
                 UgglanStore.self,
                 getter: { state in
@@ -83,63 +75,10 @@ struct SettingsScreen: View {
             .padding(16)
         }
     }
-
-    var displayButtons: some View {
-        HStack(spacing: 8) {
-            hButton.SmallSecondaryAlt {
-                infoModel.changeDismissActiveValue(true)
-            } content: {
-                hText(L10n.pushNotificationsAlertActionNotNow)
-            }
-
-            hButton.SmallSecondaryAlt {
-                let current = UNUserNotificationCenter.current()
-                current.getNotificationSettings(completionHandler: { settings in
-                    DispatchQueue.main.async {
-                        UIApplication.shared.appDelegate
-                            .registerForPushNotifications()
-                            .onValue { status in
-                                onActionExecuted(vm.vc)
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    infoModel.updateNotificationStatus
-                                }
-                            }
-                    }
-                })
-            } content: {
-                hText(L10n.ReferralsAllowPushNotificationSheet.Allow.button)
-            }
-        }
-    }
 }
 
 struct SettingsScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsScreen(onActionExecuted: { _ in })
+        SettingsScreen()
     }
-}
-
-class DismissInfoModel: ObservableObject {
-    var hasDismissedNotificationInfo = false
-    var notificationsActivated = false
-
-    func changeDismissActiveValue(_ newValue: Bool) {
-        hasDismissedNotificationInfo = newValue
-        self.objectWillChange.send()
-    }
-
-    var updateNotificationStatus: Void {
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-        let notificationStatus = ugglanStore.state.pushNotificationCurrentStatus()
-        notificationsActivated = (notificationStatus == .authorized)
-        self.objectWillChange.send()
-    }
-
-    var getNotificationStatus: Bool {
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-        let notificationStatus = ugglanStore.state.pushNotificationCurrentStatus()
-        notificationsActivated = (notificationStatus == .authorized)
-        return notificationsActivated
-    }
-
 }

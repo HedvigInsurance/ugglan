@@ -83,6 +83,17 @@ struct ButtonFilledStandardBackground: View {
                 hButtonColorNew.secondaryDisabled
                     .hShadow()
             }
+        case .secondaryAlt:
+            if configuration.isPressed {
+                hButtonColorNew.secondaryAltHover
+                    .hShadow()
+            } else if isEnabled {
+                hButtonColorNew.secondaryAltDefault
+                    .hShadow()
+            } else {
+                hButtonColorNew.secondaryAltDisabled
+                    .hShadow()
+            }
         case .ghost:
             if configuration.isPressed {
                 hFillColorNew.translucentOne
@@ -262,6 +273,12 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 }
             case .alert:
                 hTextColorNew.negative
+            case .secondaryAlt:
+                if isEnabled {
+                    hTextColorNew.primary
+                } else {
+                    hTextColorNew.disabled
+                }
             }
         }
 
@@ -281,6 +298,10 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration).hShadow()
+        case .secondaryAlt:
+            getView(configuration: configuration).hShadow()
+        case .ghost:
+            getView(configuration: configuration)
         }
     }
 
@@ -546,6 +567,29 @@ public enum hButton {
             }
             .buttonStyle(ButtonFilledStyle(size: .large))
             .hButtonConfigurationType(.secondary)
+        }
+    }
+
+    public struct LargeButtonSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.secondaryAlt)
         }
     }
 
