@@ -156,7 +156,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .tint(foregroundColor)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                 if shouldUpdate {
-                    value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                    let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                    self.value = value
                     innerValue = value
                     previousInnerValue = value
                 }

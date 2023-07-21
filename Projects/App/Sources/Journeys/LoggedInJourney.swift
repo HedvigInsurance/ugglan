@@ -107,10 +107,23 @@ extension AppJourney {
         ProfileView.journey { result in
             switch result {
             case .openPayment:
-                Journey(
-                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
+                HostingJourney(
+                    PaymentStore.self,
+                    rootView: MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
+                ) { action in
+                    if case .openConnectBankAccount = action {
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        let hasAlreadyConnected = store.state.paymentStatus != .needsSetup
+                        PaymentSetup(
+                            setupType: hasAlreadyConnected ? .replacement : .initial,
+                            urlScheme: Bundle.main.urlScheme ?? ""
+                        )
+                        .journeyThenDismiss
+                    } else if case .openHistory = action {
+                        Journey(PaymentsHistory())
+                    }
+                }
+                .configureTitle(L10n.myPaymentTitle)
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

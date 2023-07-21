@@ -8,10 +8,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct PaymentsHistory { @Inject var giraffe: hGiraffe }
+public struct PaymentsHistory {
+    @Inject var giraffe: hGiraffe
+
+    public init() {}
+
+}
 
 extension PaymentsHistory: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.paymentHistoryTitle
         let bag = DisposeBag()
