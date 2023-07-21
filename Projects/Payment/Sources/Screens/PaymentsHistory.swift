@@ -3,57 +3,72 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct PaymentsHistory {
-    @Inject var giraffe: hGiraffe
+public struct PaymentHistory: View {
 
-    public init() {}
-
+    public var body: some View {
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentData?.paymentHistory
+            }
+        ) { history in
+            if let history {
+                hForm {
+                    hSection(history, id: \.date) { element in
+                        hRow {
+                            hText(element.date)
+                            Spacer()
+                            hText(element.amount.formattedAmount)
+                        }
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+            }
+        }
+    }
 }
 
-extension PaymentsHistory: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = L10n.paymentHistoryTitle
-        let bag = DisposeBag()
+extension PaymentHistory {
+    public static var journey: some JourneyPresentation {
+        HostingJourney(
+            rootView: PaymentHistory()
+        )
+        .configureTitle(L10n.paymentHistoryTitle)
+    }
+}
 
-        let form = FormView()
-        bag += viewController.install(form)
+struct PaymentHistory_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .sv_SE
+        return PaymentHistory()
+            .onAppear {
 
-        let section = form.appendSection(header: nil, footer: nil)
-
-        bag +=
-            giraffe.client
-            .watch(
-                query: GiraffeGraphQL.MyPaymentQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
+                    chargeEstimation: .init(
+                        subscription: .init(amount: "20", currency: "SEK"),
+                        charge: .init(amount: "30", currency: "SEK"),
+                        discount: .init(amount: "10", currency: "SEK")
+                    ),
+                    bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
+                    nextChargeDate: "May 26th 2023",
+                    payinMethodStatus: .active,
+                    redeemedCampaigns: [.init(code: "CODE")],
+                    balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
+                    chargeHistory: [
+                        .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
+                        .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
+                        .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
+                    ]
                 )
-            )
-            .onValueDisposePrevious { data -> Disposable? in let innerBag = DisposeBag()
-
-                innerBag += data.chargeHistory.map { chargeHistory -> Disposable in
-                    let row = KeyValueRow()
-                    row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-                    if let date = chargeHistory.date.localDateToDate {
-                        let dateDisplayFormatter = DateFormatter()
-                        dateDisplayFormatter.dateFormat = "dd MMMM, yyyy"
-                        row.keySignal.value = dateDisplayFormatter.string(from: date)
-                    }
-
-                    row.valueSignal.value =
-                        chargeHistory.amount.fragments.monetaryAmountFragment.monetaryAmount
-                        .formattedAmount
-
-                    return section.append(row)
-                }
-
-                return innerBag
+                let data = PaymentData(myPaymentQueryData)
+                store.send(.setPaymentData(data: data))
             }
-
-        return (viewController, bag)
     }
 }

@@ -130,7 +130,8 @@ public struct PaymentData: Codable, Equatable {
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ChargeHistory) {
             amount = MonetaryAmount(fragment: data.amount.fragments.monetaryAmountFragment)
-            date = data.date
+            let localDate = data.date.localDateToDate?.displayDateMMMDDYYYYFormat ?? ""
+            date = localDate
         }
     }
 

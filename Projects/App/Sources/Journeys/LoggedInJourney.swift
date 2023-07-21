@@ -120,7 +120,7 @@ extension AppJourney {
                         )
                         .journeyThenDismiss
                     } else if case .openHistory = action {
-                        Journey(PaymentsHistory())
+                        PaymentHistory.journey
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)
