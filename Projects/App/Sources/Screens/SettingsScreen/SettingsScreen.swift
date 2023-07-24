@@ -29,10 +29,6 @@ struct SettingsScreen: View {
                                 return
                             }
                             DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-                            UNUserNotificationCenter.current()
-                                .getNotificationSettings { settings in
-                                    settings.setValue(<#T##value: Any?##Any?#>, forKey: <#T##String#>)
-                                }
                         }
                     )
                     PresentableStoreLens(
