@@ -104,31 +104,35 @@ public struct MyPaymentsView: View {
 
     }
     public var body: some View {
-        hForm {
-            payment.padding(.top, 16)
-            paymentDetails
-        }
-        .sectionContainerStyle(.transparent)
-        .hFormAttachToBottom {
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentData
-                }
-            ) { paymentData in
-                hSection {
-                    hButton.LargeButtonPrimary {
-                        vm.store.send(.openConnectBankAccount)
-                    } content: {
-                        hText(
-                            paymentData?.status == .needsSetup
-                                ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
-                        )
+        LoadingViewWithContent(PaymentStore.self, [.getPaymentData]) {
+            hForm {
+                payment.padding(.top, 16)
+                paymentDetails
+            }
+            .sectionContainerStyle(.transparent)
+            .hFormAttachToBottom {
+                PresentableStoreLens(
+                    PaymentStore.self,
+                    getter: { state in
+                        state.paymentData
                     }
+                ) { paymentData in
+                    hSection {
+                        hButton.LargeButtonPrimary {
+                            vm.store.send(.openConnectBankAccount)
+                        } content: {
+                            hText(
+                                paymentData?.status == .needsSetup
+                                    ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
+                            )
+                        }
+                    }
+                    .padding(.vertical, 16)
                 }
-                .padding(.vertical, 16)
             }
         }
+        .presentableStoreLensAnimation(.default)
+        .useDarkColor
     }
 
     @ViewBuilder
@@ -143,42 +147,8 @@ public struct MyPaymentsView: View {
                 nextPayment
                 contractsList
                 discounts
-                hRow {
-                    VStack {
-                        Toggle(isOn: $vm.addCodeState) {
-                            hText(L10n.paymentsAddCodeLabel)
-                        }
-                        if vm.addCodeState {
-                            HStack {
-                                hFloatingTextField(
-                                    masking: .init(type: .none),
-                                    value: $vm.discountText,
-                                    equals: $vm.myPaymentEditType,
-                                    focusValue: .discount,
-                                    placeholder: "Skriv in din kod"
-                                )
-                                hButton.MediumButtonFilled {
+                addDiscount
 
-                                } content: {
-                                    hText(L10n.paymentsAddCodeButtonLabel)
-                                        .frame(height: 72)
-
-                                }
-                                .hButtonConfigurationType(.primaryAlt)
-
-                            }
-                        }
-                        if let code = paymentData?.code {
-                            HStack(alignment: .center) {
-                                hText(code, style: .standardSmall)
-                                Spacer()
-                            }
-                        }
-                    }
-                }
-                .onTapGesture {
-                    vm.addCodeState.toggle()
-                }
                 hRow {
                     VStack {
                         hText(L10n.PaymentDetails.ReceiptCard.total)
@@ -251,7 +221,7 @@ public struct MyPaymentsView: View {
             if let contracts = contracts {
                 ForEach(contracts, id: \.id) { item in
                     hRow {
-                        Image(uiImage: item.type.bgImage)
+                        Image(uiImage: item.type.pillowType.bgImage)
                             .resizable()
                             .frame(width: 32, height: 32)
                         hText(item.name)
@@ -276,6 +246,86 @@ public struct MyPaymentsView: View {
                     hText(L10n.paymentsDiscountsSectionTitle)
                     Spacer()
                     hText(discount.formattedAmount).foregroundColor(hLabelColor.secondary)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var addDiscount: some View {
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentData?.reedemCampaigns ?? []
+            }
+        ) { reedemCampaigns in
+            if reedemCampaigns.count > 0 {
+                ForEach(reedemCampaigns, id: \.code) { reedemCampaign in
+                    hRow {
+                        hText(reedemCampaign.code ?? "")
+                        Spacer()
+                        hText(reedemCampaign.displayValue ?? "")
+                            .foregroundColor(hLabelColor.secondary)
+                    }
+                }
+            } else {
+                hRow {
+                    VStack {
+                        Toggle(isOn: $vm.addCodeState.animation()) {
+                            hText(L10n.paymentsAddCodeLabel)
+                        }
+                        if vm.addCodeState {
+                            HStack {
+                                hFloatingTextField(
+                                    masking: .init(type: .none),
+                                    value: $vm.discountText,
+                                    equals: $vm.myPaymentEditType,
+                                    focusValue: .discount,
+                                    placeholder: "Skriv in din kod",
+                                    error: $vm.discountError,
+                                    onReturn: {}
+                                )
+                                .hFieldSize(.small)
+                                .disabled(vm.isLoadingDiscount)
+                                .background(
+                                    GeometryReader(content: { proxy in
+                                        Color.clear
+                                            .onAppear {
+                                                vm.fieldHeight = proxy.size.height
+                                            }
+                                            .onChange(of: vm.discountError) { _ in
+                                                vm.fieldHeight = proxy.size.height
+                                            }
+                                    })
+                                )
+                                hButton.MediumButtonFilled {
+                                    Task {
+                                        withAnimation {
+                                            vm.isLoadingDiscount = true
+                                        }
+                                        do {
+                                            try await vm.submitDiscount()
+                                        } catch let error {
+                                            withAnimation {
+                                                vm.discountError = error.localizedDescription
+                                            }
+                                        }
+                                        withAnimation {
+                                            vm.isLoadingDiscount = false
+                                        }
+                                    }
+                                } content: {
+                                    hText(L10n.paymentsAddCodeButtonLabel)
+                                        .frame(height: vm.fieldHeight)
+
+                                }
+                                .hButtonConfigurationType(.primaryAlt)
+                                .hButtonIsLoading(vm.isLoadingDiscount)
+
+                            }
+                            .transition(.opacity)
+                        }
+                    }
                 }
             }
         }
@@ -313,7 +363,11 @@ public struct MyPaymentsView: View {
                     Spacer()
                     hText(bankAccount.descriptor ?? "").foregroundColor(hLabelColor.secondary)
                 }
-
+                if status == .pending {
+                    hRow {
+                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    }
+                }
             }
         }
     }
@@ -345,13 +399,15 @@ class MyPaymentsViewModel: ObservableObject {
     @Inject var giraffe: hGiraffe
     @PresentableStore var store: PaymentStore
     let urlScheme: String
-    @State var addCodeState = true
-    @State var myPaymentEditType: MyPaymentEditType?
-    @State var discountText = ""
+    @Published var addCodeState = false
+    @Published var myPaymentEditType: MyPaymentEditType?
+    @Published var discountText = ""
+    @Published var isLoadingDiscount: Bool = false
+    @Published var discountError: String?
+    @Published var fieldHeight: CGFloat = 0
     public init(urlScheme: String) {
         self.urlScheme = urlScheme
         let store: PaymentStore = globalPresentableStoreContainer.get()
-        addCodeState = store.state.paymentData?.code != nil
         store.send(.load)
 
     }
@@ -365,6 +421,41 @@ class MyPaymentsViewModel: ObservableObject {
 
     func openHistory() {
         store.send(.openHistory)
+    }
+
+    func submitDiscount() async throws {
+        try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
+            self.giraffe.client
+                .perform(
+                    mutation: GiraffeGraphQL.RedeemCodeMutation(
+                        code: discountText,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .onValue { [weak self] data in
+                    guard data.redeemCodeV2.asSuccessfulRedeemResult != nil else {
+                        inCont.resume(throwing: AddDiscountError.missing)
+                        return
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                        self?.store.send(.load)
+                    }
+                    DispatchQueue.main.async {
+                        Toasts.shared.displayToast(
+                            toast: Toast(
+                                symbol: .icon(hCoreUIAssets.campaignSmall.image),
+                                body: L10n.discountRedeemSuccess,
+                                subtitle: L10n.discountRedeemSuccessBody
+                            )
+                        )
+                    }
+                    inCont.resume()
+
+                }
+                .onError { error in
+                    inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))
+                }
+        }
     }
 
     enum MyPaymentEditType: hTextFieldFocusStateCompliant {
@@ -381,6 +472,28 @@ class MyPaymentsViewModel: ObservableObject {
 
         case discount
     }
+
+    enum AddDiscountError: Error, LocalizedError {
+        case error(message: String)
+        case missing
+
+        public var errorDescription: String? {
+            switch self {
+            case let .error(message):
+                return message
+            case .missing:
+                return L10n.discountCodeMissingBody
+            }
+        }
+        var localizedDescription: String {
+            switch self {
+            case let .error(message):
+                return message
+            case .missing:
+                return L10n.discountCodeMissingBody
+            }
+        }
+    }
 }
 
 struct MyPaymentsView_Previews: PreviewProvider {
@@ -389,17 +502,15 @@ struct MyPaymentsView_Previews: PreviewProvider {
             .onAppear {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    chargeEstimation: .init(
-                        subscription: .init(amount: "20", currency: "SEK"),
-                        charge: .init(amount: "30", currency: "SEK"),
-                        discount: .init(amount: "10", currency: "SEK")
-                    ),
                     bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
                     nextChargeDate: "May 26th 2023",
-                    payinMethodStatus: .active,
+                    payinMethodStatus: .pending,
                     redeemedCampaigns: [.init(code: "CODE")],
-                    balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
-                    chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")]
+                    balance: .init(currentBalance: .init(amount: "20", currency: "SEK")),
+                    chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")],
+                    activeContractBundles: [
+                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "name")])
+                    ]
                 )
                 let data = PaymentData(myPaymentQueryData)
                 store.send(.setPaymentData(data: data))

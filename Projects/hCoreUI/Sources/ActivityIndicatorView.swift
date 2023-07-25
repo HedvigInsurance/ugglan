@@ -96,28 +96,34 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 .plain()
                 .publisher
         ) { value in
-            let actions = value.filter({ self.actions.contains($0.key) })
-            if actions.count > 0 {
-                if actions.filter({ $0.value == .loading }).count > 0 {
-                    changeState(to: true, presentError: false)
-                } else {
-                    var tempError = ""
-                    for action in actions {
-                        switch action.value {
-                        case .error(let error):
-                            tempError = error
-                        default:
-                            break
-                        }
-                    }
-                    changeState(to: false, presentError: true, error: tempError)
-                }
-            } else {
-                changeState(to: false, presentError: false, error: nil)
-            }
+            handle(allActions: value)
+        }
+        .onAppear {
+            handle(allActions: store.loadingSignal.value)
         }
     }
 
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                changeState(to: true, presentError: false)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                changeState(to: false, presentError: true, error: tempError)
+            }
+        } else {
+            changeState(to: false, presentError: false, error: nil)
+        }
+    }
     private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
         if let animation {
             withAnimation(animation) {

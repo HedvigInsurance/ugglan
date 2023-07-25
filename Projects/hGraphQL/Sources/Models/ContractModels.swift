@@ -258,7 +258,7 @@ public struct Contract: Codable, Hashable, Equatable {
 }
 
 extension Contract.TypeOfContract {
-    var pillowType: Contract.PillowType {
+    public var pillowType: Contract.PillowType {
         switch self {
         case .seHouse:
             return .home
@@ -673,6 +673,14 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
     ) {
         amount = fragment.amount
         currency = fragment.currency
+    }
+
+    public init?(
+        optionalFragment: GiraffeGraphQL.MonetaryAmountFragment?
+    ) {
+        guard let optionalFragment else { return nil }
+        amount = optionalFragment.amount
+        currency = optionalFragment.currency
     }
 
     public init(

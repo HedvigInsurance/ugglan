@@ -1,7 +1,0 @@
-query ChargeEstimation {
-    chargeEstimation {
-        subscription {
-            ...MonetaryAmountFragment
-        }
-    }
-}

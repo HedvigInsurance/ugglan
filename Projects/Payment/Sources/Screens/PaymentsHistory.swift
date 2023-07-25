@@ -51,11 +51,6 @@ struct PaymentHistory_Previews: PreviewProvider {
 
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    chargeEstimation: .init(
-                        subscription: .init(amount: "20", currency: "SEK"),
-                        charge: .init(amount: "30", currency: "SEK"),
-                        discount: .init(amount: "10", currency: "SEK")
-                    ),
                     bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
                     nextChargeDate: "May 26th 2023",
                     payinMethodStatus: .active,
@@ -65,6 +60,9 @@ struct PaymentHistory_Previews: PreviewProvider {
                         .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
                         .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
                         .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
+                    ],
+                    activeContractBundles: [
+                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
                     ]
                 )
                 let data = PaymentData(myPaymentQueryData)

@@ -113,7 +113,8 @@ extension AppJourney {
                 ) { action in
                     if case .openConnectBankAccount = action {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
-                        let hasAlreadyConnected = store.state.paymentStatus != .needsSetup
+                        let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                            .contains(store.state.paymentStatusData?.status ?? .active)
                         PaymentSetup(
                             setupType: hasAlreadyConnected ? .replacement : .initial,
                             urlScheme: Bundle.main.urlScheme ?? ""

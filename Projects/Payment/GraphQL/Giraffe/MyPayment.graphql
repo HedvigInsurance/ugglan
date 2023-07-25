@@ -1,9 +1,4 @@
 query MyPayment($locale: Locale!) {
-    chargeEstimation {
-        subscription {
-            ...MonetaryAmountFragment
-        }
-    }
     bankAccount {
         bankName
         descriptor
@@ -19,21 +14,31 @@ query MyPayment($locale: Locale!) {
         }
         failedCharges
     }
-    chargeEstimation {
-        charge {
-            ...MonetaryAmountFragment
-        }
-        discount {
-            ...MonetaryAmountFragment
-        }
-        subscription {
-            ...MonetaryAmountFragment
-        }
-    }
     chargeHistory {
         amount {
             ...MonetaryAmountFragment
         }
         date
+    }
+    
+    insuranceCost {
+        monthlyDiscount {
+            ...MonetaryAmountFragment
+        }
+        monthlyGross {
+            ...MonetaryAmountFragment
+        }
+        monthlyNet {
+            ...MonetaryAmountFragment
+        }
+    }
+    
+    activeContractBundles {
+        id
+        contracts {
+            id
+            typeOfContract
+            displayName
+        }
     }
 }

@@ -62,17 +62,18 @@ struct hFieldLabel: View {
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldSize) var size
 
     var body: some View {
-        let sizeToScaleFrom = HFontTextStyle.title3.fontSize
+        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        let padding = HFontTextStyle.title3.fontSize * 15 / 16
-        return hText(placeholder, style: .title3)
+        return hText(placeholder, style: size == .large ? .title3 : .standard)
             .foregroundColor(getTextColor())
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-            .padding(.bottom, shouldMoveLabel ? 1 : padding)
-            .padding(.top, shouldMoveLabel ? 0 : padding)
+            .frame(height: sizeToScaleFrom + 6)
+            .padding(.bottom, shouldMoveLabel ? (size == .large ? 1 : -1) : size == .large ? 21 : 16)
+            .padding(.top, shouldMoveLabel ? 0 : size == .large ? 21 : 16)
     }
 
     @hColorBuilder
@@ -92,7 +93,7 @@ struct hFieldLabel: View {
 struct hFieldLabel_Previews: PreviewProvider {
     @State static var value: String?
     @State static var animate: Bool = false
-    @State static var shouldMoveLabel: Bool = true
+    @State static var shouldMoveLabel: Bool = false
     static var previews: some View {
         hFieldLabel(
             placeholder: "PLACE",
@@ -100,5 +101,6 @@ struct hFieldLabel_Previews: PreviewProvider {
             error: $value,
             shouldMoveLabel: $shouldMoveLabel
         )
+        .hFieldSize(.small)
     }
 }
