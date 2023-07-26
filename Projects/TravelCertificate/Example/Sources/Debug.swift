@@ -53,7 +53,8 @@ extension Debug {
                             blurHash: "",
                             buttonText: "",
                             typeOfContract: "SE_ACCIDENT",
-                            infos: []
+                            infos: [],
+                            type: .home
                         )
 
                         return newState
@@ -86,7 +87,8 @@ extension CrossSell {
             blurHash: "blurHash",
             buttonText: "Button text",
             typeOfContract: "Type of contract",
-            infos: []
+            infos: [],
+            type: .home
         )
     }
 }
