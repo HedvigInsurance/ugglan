@@ -10,7 +10,6 @@ public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
     var memberEmail: String = ""
     var memberPhone: String?
-    var monthlyNet: Int = 0
     var partnerData: PartnerData?
     public init() {}
 }
@@ -27,7 +26,6 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setMonthlyNet(monthlyNet: Int)
     case setMember(id: String, name: String, email: String, phone: String?)
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
@@ -48,44 +46,32 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         case .fetchProfileState:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-
-                let getChargeEstimationData = self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.ChargeEstimationQuery(),
-                        cachePolicy: .fetchIgnoringCacheData
-                    )
-
                 let getProfileData = self.octopus.client
                     .fetch(
                         query: OctopusGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag += combineLatest(getChargeEstimationData.resultSignal, getProfileData.resultSignal)
-                    .onValue { (chargeEstimationData, profileData) in
-                        if let chargeEstimationData = chargeEstimationData.value {
-                            let monthlyNet = Int(
-                                chargeEstimationData.chargeEstimation.subscription.fragments.monetaryAmountFragment
-                                    .monetaryAmount.floatAmount
-                            )
-                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
-                        }
-                        if let profileData = profileData.value {
-                            let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
-                            let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
-                            callback(.value(.setEurobonusNumber(partnerData: partner)))
-                            callback(
-                                .value(
-                                    .setMember(
-                                        id: profileData.currentMember.id,
-                                        name: name,
-                                        email: profileData.currentMember.email,
-                                        phone: profileData.currentMember.phoneNumber
-                                    )
+                disposeBag +=
+                    getProfileData.onValue({ profileData in
+                        let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
+                        let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
+                        callback(.value(.setEurobonusNumber(partnerData: partner)))
+                        callback(
+                            .value(
+                                .setMember(
+                                    id: profileData.currentMember.id,
+                                    name: name,
+                                    email: profileData.currentMember.email,
+                                    phone: profileData.currentMember.phoneNumber
                                 )
                             )
-                        }
+                        )
                         callback(.value(.fetchProfileStateCompleted))
-                    }
+                    })
+                    .onError({ error in
+                        //TODO: HANDLE ERROR
+                        callback(.value(.fetchProfileStateCompleted))
+                    })
 
                 return disposeBag
             }
@@ -97,8 +83,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setMonthlyNet(let monthlyNet):
-            newState.monthlyNet = monthlyNet
         case let .setMember(id, name, email, phone):
             newState.memberId = id
             newState.memberFullName = name

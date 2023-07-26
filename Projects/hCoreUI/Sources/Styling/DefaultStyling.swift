@@ -122,7 +122,7 @@ extension DefaultStyling {
             NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
 
-        let backImage = hCoreUIAssets.arrowBack.image.withAlignmentRectInsets(
+        let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
             UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(

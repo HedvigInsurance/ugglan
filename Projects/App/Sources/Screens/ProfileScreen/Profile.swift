@@ -37,11 +37,9 @@ struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-
-                    if hAnalyticsExperiment.showCharity {
-                        ProfileRow(row: .myCharity)
+                    if hAnalyticsExperiment.paymentScreen {
+                        ProfileRow(row: .payment)
                     }
-
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
@@ -50,9 +48,9 @@ struct ProfileView: View {
                         )
                     }
 
-                    if hAnalyticsExperiment.paymentScreen {
-                        ProfileRow(row: .payment)
-                    }
+                    //                    if hAnalyticsExperiment.showCharity {
+                    //                        ProfileRow(row: .myCharity)
+                    //                    }
 
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)

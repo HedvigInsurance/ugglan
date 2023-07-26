@@ -56,7 +56,7 @@ public struct RowViewBuilder {
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle)
+                viewE.environment(\.hRowPosition, .bottom)
             )
         )
     }
@@ -73,7 +73,26 @@ public struct RowViewBuilder {
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle)
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .bottom)
+            )
+        )
+    }
+
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E,
+        _ viewF: F,
+        _ viewG: G
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
+                viewG.environment(\.hRowPosition, .bottom)
             )
         )
     }

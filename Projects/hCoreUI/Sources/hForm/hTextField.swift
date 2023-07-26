@@ -154,7 +154,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
-        return false
+        return true
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -164,6 +164,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         onBeginEditing()
     }
+
 }
 
 public protocol hTextFieldFocusStateCompliant: Hashable {
