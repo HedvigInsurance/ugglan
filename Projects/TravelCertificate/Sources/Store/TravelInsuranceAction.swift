@@ -19,6 +19,8 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
 
     case navigation(TravelInsuranceNavigationAction)
     case setLoadingState(action: TravelInsuranceLoadingAction, state: LoadingState<String>?)
+    case getTravelCertificateSpecification
+    case travelCertificateSpecificationSet
 }
 
 enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {

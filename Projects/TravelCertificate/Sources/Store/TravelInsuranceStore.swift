@@ -7,7 +7,7 @@ import hGraphQL
 
 final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuranceAction> {
     @Inject var octopus: hOctopus
-
+    var bag = DisposeBag()
     override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
@@ -62,6 +62,25 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                     }
                 return disposeBag
             }
+        case .getTravelCertificateSpecification:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client
+                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
+                    .onValue { data in
+                        let email = data.currentMember.email
+                        let specification = TravelInsuranceSpecification(
+                            data.currentMember.travelCertificateSpecifications,
+                            email: email
+                        )
+                        callback(.value(.setTravelInsurancesData(specification: specification)))
+                        callback(.value(.travelCertificateSpecificationSet))
+                    }
+                    .onError { error in
+                        // TODO
+                    }
+                return disposeBag
+            }
         default:
             return nil
         }
@@ -70,7 +89,10 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
     override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState {
         var newState = state
         switch action {
-
+        case .getTravelCertificateSpecification:
+            break
+        case .travelCertificateSpecificationSet:
+            break
         case let .setTravelInsurancesData(config):
             newState.loadingStates.removeValue(forKey: .getTravelInsurance)
             if let contractSpecification = config.travelCertificateSpecifications.first {
