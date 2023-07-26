@@ -77,8 +77,7 @@ extension PaymentSetup {
     /// Sets up payment and then dismisses
     public var journeyThenDismiss: some JourneyPresentation {
         journey { _, _ in
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            return PopJourney()
+            return DismissJourney()
         }
     }
 }

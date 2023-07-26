@@ -80,6 +80,7 @@ public struct hCounterField: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             self.startAnimation()
         }

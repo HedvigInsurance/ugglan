@@ -99,12 +99,6 @@ struct ButtonFilledStandardBackground: View {
             } else if isEnabled {
                 Color.clear
             }
-        case .secondaryAlt:
-            if configuration.isPressed {
-                hGrayscaleTranslucentLightColorNew.offWhiteTranslucent
-            } else if isEnabled {
-                hBackgroundColor.primary
-            }
         case .alert:
             hSignalColorNew.redElement
         }
@@ -147,6 +141,15 @@ public enum hButtonConfigurationType {
     case secondaryAlt
     case ghost
     case alert
+
+    var useDarkVersion: Bool {
+        switch self {
+        case .primary:
+            return false
+        case .primaryAlt, .secondary, .secondaryAlt, .ghost, .alert:
+            return true
+        }
+    }
 }
 
 private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
@@ -190,6 +193,7 @@ struct ButtonFilledBackground: View {
 
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
+    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
     var content: () -> Content
     var color: any hColor
@@ -204,8 +208,15 @@ struct LoaderOrContent<Content: View>: View {
 
     var body: some View {
         if isLoading {
-            DotsActivityIndicator(.standard)
-                .fixedSize(horizontal: false, vertical: true)
+            if hButtonConfigurationType.useDarkVersion {
+                DotsActivityIndicator(.standard)
+                    .useDarkColor
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                DotsActivityIndicator(.standard)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
         } else {
             content()
         }
@@ -272,12 +283,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 }
             case .alert:
                 hTextColorNew.negative
-            case .secondaryAlt:
-                if isEnabled {
-                    hTextColorNew.primary
-                } else {
-                    hTextColorNew.disabled
-                }
             }
         }
 
@@ -297,10 +302,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration).hShadow()
-        case .secondaryAlt:
-            getView(configuration: configuration).hShadow()
-        case .ghost:
-            getView(configuration: configuration)
         }
     }
 

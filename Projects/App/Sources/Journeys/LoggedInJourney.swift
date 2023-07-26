@@ -115,13 +115,21 @@ extension AppJourney {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
                             .contains(store.state.paymentStatusData?.status ?? .active)
-                        PaymentSetup(
+                        ConnectBankAccount(
                             setupType: hasAlreadyConnected ? .replacement : .initial,
                             urlScheme: Bundle.main.urlScheme ?? ""
                         )
                         .journeyThenDismiss
                     } else if case .openHistory = action {
                         PaymentHistory.journey
+                    } else if case let .openPayoutBankAccount(options) = action {
+                        AdyenPayOut(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
+                            .journey({ _ in
+                                DismissJourney()
+                            })
+                            .setStyle(.detented(.medium, .large))
+                            .setOptions([.defaults, .allowSwipeDismissAlways])
+                            .withJourneyDismissButton
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)

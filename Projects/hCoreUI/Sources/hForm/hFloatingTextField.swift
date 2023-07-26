@@ -8,6 +8,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hTextFieldOptions) var options
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldRightAttachedView) var rightAttachedView
+
     private var masking: Masking
     private var placeholder: String
     private var suffix: String?
@@ -47,28 +49,33 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     public var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 0) {
-
-                if suffix != nil, suffix != "" {
-                    HStack {
+        HStack(spacing: 8) {
+            VStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    if suffix != nil, suffix != "" {
+                        HStack {
+                            getTextField
+                            Spacer()
+                            getSuffixLabel
+                        }
+                        .padding(.vertical, 15)
+                    } else {
+                        hFieldLabel(
+                            placeholder: placeholder,
+                            animate: $animate,
+                            error: $error,
+                            shouldMoveLabel: $shouldMoveLabel
+                        )
                         getTextField
-                        Spacer()
-                        getSuffixLabel
+
                     }
-                    .padding(.vertical, 15)
-                } else {
-                    hFieldLabel(
-                        placeholder: placeholder,
-                        animate: $animate,
-                        error: $error,
-                        shouldMoveLabel: $shouldMoveLabel
-                    )
-                    getTextField
                 }
+                .padding(.vertical, shouldMoveLabel ? (size == .large ? 8.5 : 7.5) : 0)
             }
-            .padding(.vertical, shouldMoveLabel ? (size == .large ? 8.5 : 7.5) : 0)
+            .addFieldBackground(animate: $animate, error: $error)
+            rightAttachedView
         }
+        .addFieldError(animate: $animate, error: $error)
         .onChange(of: vm.textField) { textField in
             textField?.delegate = observer
             if focusValue == Value.last {
@@ -110,7 +117,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .onAppear {
             updateMoveLabel()
         }
-        .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
             self.equals = self.focusValue
         }
@@ -188,7 +194,7 @@ class TextFieldVM: ObservableObject {
 
 struct hFloatingTextField_Previews: PreviewProvider {
     @State static var value: String = "ss"
-    @State static var error: String? = nil
+    @State static var error: String? = "ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO "
     static var previews: some View {
         VStack {
             hFloatingTextField<Bool>(
@@ -248,4 +254,21 @@ extension View {
 public enum hFieldSize: Hashable {
     case small
     case large
+}
+
+private struct EnvironmentHFieldAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFieldRightAttachedView: AnyView? {
+        get { self[EnvironmentHFieldAttachedView.self] }
+        set { self[EnvironmentHFieldAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFieldRightAttachedView, AnyView(content()))
+    }
 }

@@ -5,7 +5,7 @@ struct hFieldBackgroundModifier: ViewModifier {
     @Binding var error: String?
 
     func body(content: Content) -> some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             if #available(iOS 15.0, *) {
                 content
                     .padding(.horizontal, 16)
@@ -19,20 +19,6 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
-            }
-            if let errorMessage = error {
-                HStack {
-
-                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColorNew.amberElement)
-                    hText(errorMessage, style: .standardSmall)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hTextColorNew.primary)
-
-                }
-                .padding(.top, 6)
-                .padding(.horizontal, 6)
-                .foregroundColor(hSignalColorNew.amberFill)
             }
         }
     }
@@ -56,6 +42,45 @@ extension View {
     }
 }
 
+struct hFieldErrorModifier: ViewModifier {
+    @Binding var animate: Bool
+    @Binding var error: String?
+
+    func body(content: Content) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            content
+            if let errorMessage = error {
+                HStack {
+                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
+                        .foregroundColor(hSignalColorNew.amberElement)
+                    hText(errorMessage, style: .standardSmall)
+                        .foregroundColor(hLabelColor.primary)
+                }
+                .padding(.top, 6)
+                .padding(.horizontal, 6)
+                .foregroundColor(hSignalColorNew.amberFill)
+            }
+        }
+    }
+
+    @hColorBuilder
+    private func getBackgroundColor() -> some hColor {
+        if animate {
+            if error != nil {
+                hSignalColorNew.amberFill
+            } else {
+                hSignalColorNew.greenFill
+            }
+        } else {
+            hFillColorNew.opaqueOne
+        }
+    }
+}
+extension View {
+    func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+        modifier(hFieldErrorModifier(animate: animate, error: error))
+    }
+}
 struct hFieldLabel: View {
     let placeholder: String
     @Binding var animate: Bool
@@ -92,15 +117,19 @@ struct hFieldLabel: View {
 
 struct hFieldLabel_Previews: PreviewProvider {
     @State static var value: String?
+    @State static var error: String? =
+        "ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR "
     @State static var animate: Bool = false
     @State static var shouldMoveLabel: Bool = false
     static var previews: some View {
         hFieldLabel(
             placeholder: "PLACE",
             animate: $animate,
-            error: $value,
+            error: $error,
             shouldMoveLabel: $shouldMoveLabel
         )
         .hFieldSize(.small)
+        .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
     }
 }

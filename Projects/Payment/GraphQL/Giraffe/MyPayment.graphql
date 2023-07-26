@@ -33,6 +33,18 @@ query MyPayment($locale: Locale!) {
         }
     }
     
+    chargeEstimation {
+        charge {
+            ...MonetaryAmountFragment
+        }
+        discount {
+            ...MonetaryAmountFragment
+        }
+        subscription {
+            ...MonetaryAmountFragment
+        }
+    }
+    
     activeContractBundles {
         id
         contracts {
