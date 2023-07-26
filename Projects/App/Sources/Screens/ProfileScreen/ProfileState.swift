@@ -66,9 +66,11 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                                 )
                             )
                         )
+                        callback(.value(.fetchProfileStateCompleted))
                     })
                     .onError({ error in
                         //TODO: HANDLE ERROR
+                        callback(.value(.fetchProfileStateCompleted))
                     })
 
                 return disposeBag

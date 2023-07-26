@@ -77,11 +77,11 @@ struct PaymentInfoView: View {
                 state.paymentData?.insuranceCost?.discount
             }
         ) { discount in
-            if let discount {
+            if let discount, discount.floatAmount > 0 {
                 hRow {
                     hText(L10n.paymentsDiscountsSectionTitle)
                     Spacer()
-                    hText(discount.formattedAmount).foregroundColor(hLabelColor.secondary)
+                    hText(discount.negative.formattedAmount).foregroundColor(hLabelColor.secondary)
                 }
             }
         }
