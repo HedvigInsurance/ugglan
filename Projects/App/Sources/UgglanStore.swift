@@ -54,6 +54,7 @@ enum UgglanAction: ActionProtocol {
     case deleteAccountAlreadyRequested
     case setMemberDetails(details: MemberDetails?)
     case fetchMemberDetails
+    case openTravelCertificate
 }
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {

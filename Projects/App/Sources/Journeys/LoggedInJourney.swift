@@ -9,6 +9,7 @@ import Home
 import Payment
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hAnalytics
 import hCore
 import hCoreUI
@@ -54,12 +55,22 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onAction(HomeStore.self) { action, _ in
-                if case .openTravelInsurance = action {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.getTravelCertificateSpecification)
+            .onAction(
+                HomeStore.self,
+                { action, _ in
+                    if case .openTravelInsurance = action {
+                        do {
+                            Task {
+                                let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
+                            }
+                        } catch let _ {
+                            //TODO: ERROR
+                        }
+                    }
                 }
-            }
+            )
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -82,12 +93,6 @@ extension AppJourney {
                 return deepLink == .insurances
             } else {
                 return false
-            }
-        }
-        .onAction(ContractStore.self) { action, _ in
-            if case let .setTravelCertificateSpecification(data) = action {
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
             }
         }
     }

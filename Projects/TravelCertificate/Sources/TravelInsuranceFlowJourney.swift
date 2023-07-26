@@ -5,6 +5,17 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
+    public static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<TravelInsuranceSpecification, Error>) -> Void in
+            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+            store.send(.getTravelCertificateSpecification)
+            let disposable = store.onAction(.travelCertificateSpecificationSet) {
+                inCont.resume(returning: store.state.travelInsuranceConfigs!)
+            }
+            store.bag.add(disposable)
+        }
+    }
     @JourneyBuilder
     public static func start(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
