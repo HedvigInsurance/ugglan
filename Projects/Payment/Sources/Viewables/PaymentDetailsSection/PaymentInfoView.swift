@@ -1,13 +1,6 @@
 import Flow
 import Form
 import Presentation
-//
-//  PaymentInfoView.swift
-//  Payment
-//
-//  Created by Sladan Nimcevic on 2023-07-25.
-//  Copyright © 2023 Hedvig. All rights reserved.
-//
 import SwiftUI
 import UIKit
 import hAnalytics
@@ -28,7 +21,6 @@ struct PaymentInfoView: View {
             discounts
             addDiscount
             total
-
         }
         .withHeader {
             nextPaymentHeader
@@ -124,7 +116,7 @@ struct PaymentInfoView: View {
                                     value: $vm.discountText,
                                     equals: $vm.myPaymentEditType,
                                     focusValue: .discount,
-                                    placeholder: "Skriv in din kod",
+                                    placeholder: L10n.referralAddcouponInputplaceholder,
                                     error: $vm.discountError,
                                     onReturn: {}
                                 )
@@ -150,9 +142,9 @@ struct PaymentInfoView: View {
                                         hText(L10n.paymentsAddCodeButtonLabel)
                                             .frame(height: vm.fieldHeight)
                                     }
-
                                     .hButtonConfigurationType(.primaryAlt)
                                     .hButtonIsLoading(vm.isLoadingDiscount)
+
                                 })
                                 .disabled(vm.isLoadingDiscount)
                                 .background(
