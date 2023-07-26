@@ -99,6 +99,8 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 newState.travelInsuranceConfig = contractSpecification
                 newState.travelInsuranceModel = TravelInsuranceModel(
                     startDate: contractSpecification.minStartDate,
+                    minStartDate: contractSpecification.minStartDate,
+                    maxStartDate: contractSpecification.maxStartDate,
                     email: config.email ?? ""
                 )
                 newState.travelInsuranceConfig = config.travelCertificateSpecifications.first
@@ -108,6 +110,8 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         case let .setTravelInsuranceData(config):
             newState.travelInsuranceModel = TravelInsuranceModel(
                 startDate: config.minStartDate,
+                minStartDate: config.minStartDate,
+                maxStartDate: config.maxStartDate,
                 email: newState.travelInsuranceConfigs?.email ?? ""
             )
             newState.travelInsuranceConfig = config

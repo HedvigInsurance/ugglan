@@ -317,10 +317,11 @@ extension DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brandNew(.primaryText())
 
-        UIDatePicker.appearance().tintColor = .brand(.link)
-
-        UIImageView.appearance().tintColor = .brand(.primaryTintColor)
-        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
+        UIDatePicker.appearance().tintColor = .brandNew(.primaryText())  //.brand(.primaryT)
+        UIImageView.appearance().tintColor = .brandNew(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
+            .primaryText()
+        )
 
         current = .custom
     }

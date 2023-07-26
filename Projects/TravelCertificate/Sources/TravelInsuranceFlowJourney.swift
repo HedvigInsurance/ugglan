@@ -23,7 +23,7 @@ public struct TravelInsuranceFlowJourney {
         if numberOfContracts > 1 {
             showContractsList(openChat)
         } else {
-            showEmail(openChat, detended: true)
+            showStartDateView(openChat, detended: true)
         }
     }
 
@@ -33,11 +33,11 @@ public struct TravelInsuranceFlowJourney {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: TravelInsuranceContractsScreen(),
-            style: .detented(.large)
+            style: .modally(presentationStyle: .overFullScreen)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openTravelInsuranceForm = navigationAction {
-                    TravelInsuranceFlowJourney.showEmail(openChat, detended: false)
+                    TravelInsuranceFlowJourney.showStartDateView(openChat, detended: false)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 } else if case .openSomethingWentWrongScreen = navigationAction {
@@ -48,14 +48,14 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
 
-    private static func showEmail(
+    private static func showStartDateView(
         _ openChat: @escaping (() -> some JourneyPresentation),
         detended: Bool
     ) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
-            rootView: TravelInsuranceEmailScreen(),
-            style: detended ? .detented(.large) : .default
+            rootView: StartDateView(),
+            style: detended ? .modally(presentationStyle: .overFullScreen) : .default
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openSomethingWentWrongScreen = navigationAction {
