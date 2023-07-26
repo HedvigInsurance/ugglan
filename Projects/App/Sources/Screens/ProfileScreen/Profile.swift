@@ -1,6 +1,8 @@
 import Apollo
 import Flow
 import Form
+import Home
+import Payment
 import Presentation
 import SwiftUI
 import hAnalytics
@@ -12,10 +14,6 @@ struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
-    private func getLogoutIcon() -> UIImage {
-        let icon = hCoreUIAssets.logout.image.withTintColor(.brand(.destructive))
-        return icon
-    }
 
     private var logoutAlert: SwiftUI.Alert {
         return Alert(
@@ -30,7 +28,7 @@ struct ProfileView: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .profile) {
+        hForm {
             PresentableStoreLens(
                 ProfileStore.self,
                 getter: { state in
@@ -38,67 +36,47 @@ struct ProfileView: View {
                 }
             ) { stateData in
                 hSection {
-                    ProfileRow(row: .myInfo, subtitle: stateData.memberFullName)
-
-                    if hAnalyticsExperiment.showCharity {
-                        ProfileRow(row: .myCharity, subtitle: nil)
+                    ProfileRow(row: .myInfo)
+                    if hAnalyticsExperiment.paymentScreen {
+                        ProfileRow(row: .payment)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
                         ProfileRow(
-                            row: .eurobonus(hasEnteredNumber: hasEntereNumber),
-                            subtitle: hasEntereNumber ? number : L10n.SasIntegration.connectYourNumber
+                            row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
-                    if hAnalyticsExperiment.paymentScreen {
-                        ProfileRow(row: .payment, subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)")
-                    }
-                }
-                .withoutHorizontalPadding
-                .sectionContainerStyle(.transparent)
-                hSection {
+
+                    //                    if hAnalyticsExperiment.showCharity {
+                    //                        ProfileRow(row: .myCharity)
+                    //                    }
+
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
-
-                    hRow {
-                        HStack(spacing: 16) {
-                            Image(uiImage: hCoreUIAssets.logout.image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
-                                .foregroundColor(Color(.brand(.destructive)))
-                            VStack(alignment: .leading, spacing: 2) {
-                                hText(L10n.logoutButton).foregroundColor(Color(.brand(.destructive)))
-                            }
-
-                        }
-                        .padding(0)
-                    }
-                    .withCustomAccessory({
-                        Spacer()
-                    })
-                    .verticalPadding(12)
-                    .onTap {
-                        showLogoutAlert = true
-                    }
-                    .alert(isPresented: $showLogoutAlert) {
-                        logoutAlert
-                    }
-                }
-                .withHeader {
-                    hText(
-                        L10n.Profile.AppSettingsSection.title,
-                        style: .title2
-                    )
-                    .padding(.leading, 16)
+                        .hWithoutDivider
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
+                .padding(.top, 16)
             }
         }
-        .withChatButton {
-            store.send(.openFreeTextChat)
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                ConnectPaymentCardView()
+                RenewalCardView()
+                NotificationsCardView()
+                hButton.LargeButtonGhost {
+                    showLogoutAlert = true
+                } content: {
+                    hText(L10n.logoutButton)
+                        .foregroundColor(hSignalColorNew.redElement)
+                }
+                .alert(isPresented: $showLogoutAlert) {
+                    logoutAlert
+                }
+            }
+            .padding(16)
         }
         .onAppear {
             store.send(.fetchProfileState)
@@ -121,7 +99,6 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
-    case openFreeTextChat
 }
 
 extension ProfileView {
@@ -130,42 +107,32 @@ extension ProfileView {
     ) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
-            rootView: ProfileView(),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-            ]
+            rootView: ProfileView()
         ) { action in
             if case .openProfile = action {
-                Journey(
-                    MyInfo(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .autoPop]
-                ) { _ in
-                    DismissJourney()
-                }
+                HostingJourney(rootView: MyInfoView())
+                    .configureTitle(L10n.profileMyInfoRowTitle)
             } else if case .openPayment = action {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {
-                Journey(
-                    AppInfo(type: .appInformation),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
+                HostingJourney(rootView: AppInfoView())
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney
             } else if case .openAppSettings = action {
-                Journey(
-                    AppInfo(type: .appSettings),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-            } else if case .openFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
-            } else if case .openEuroBonus = action {
                 HostingJourney(
-                    rootView: EuroBonusView(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-                .configureTitle(L10n.SasIntegration.title)
+                    UgglanStore.self,
+                    rootView: SettingsScreen(),
+                    options: [.defaults]
+                ) { action in
+                    if case let .deleteAccount(details) = action {
+                        AppJourney.deleteAccountJourney(details: details)
+                    } else if case .deleteAccountAlreadyRequested = action {
+                        AppJourney.deleteRequestAlreadyPlacedJourney
+                    }
+                }
+                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
+            } else if case .openEuroBonus = action {
+                EuroBonusView.journey
             }
         }
         .configureTitle(L10n.profileTitle)

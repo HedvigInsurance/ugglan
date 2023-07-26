@@ -4,93 +4,108 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import SwiftUI
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MyPayment {
-    @Inject var giraffe: hGiraffe
-    @PresentableStore var store: PaymentStore
-    let urlScheme: String
+public struct MyPaymentsView: View {
+    @ObservedObject private var vm: MyPaymentsViewModel
 
-    public init(urlScheme: String) { self.urlScheme = urlScheme }
+    let paymentType: PaymentType
+    public init(urlScheme: String) {
+        vm = .init(urlScheme: urlScheme, paymentType: hAnalyticsExperiment.paymentType)
+        self.paymentType = hAnalyticsExperiment.paymentType
+    }
+    public var body: some View {
+        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment]) {
+            hForm {
+                PaymentInfoView(urlScheme: vm.urlScheme)
+                PaymentView(paymentType: paymentType)
+                PayoutView(paymentType: paymentType)
+            }
+            .sectionContainerStyle(.transparent)
+            .hFormAttachToBottom {
+                PresentableStoreLens(
+                    PaymentStore.self,
+                    getter: { state in
+                        state.paymentData
+                    }
+                ) { paymentData in
+                    hSection {
+                        hButton.LargeButtonPrimary {
+                            vm.openConnectCard()
+                        } content: {
+                            hText(
+                                paymentData?.status == .needsSetup
+                                    ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
+                            )
+                        }
+                        .trackLoading(PaymentStore.self, action: .getAdyenAvailableMethods)
+                    }
+                    .padding(.vertical, 16)
+                }
+            }
+        }
+        .presentableStoreLensAnimation(.default)
+    }
+
 }
 
-extension MyPayment: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
-
+class MyPaymentsViewModel: ObservableObject {
+    @PresentableStore var store: PaymentStore
+    let urlScheme: String
+    let paymentType: PaymentType
+    public init(urlScheme: String, paymentType: PaymentType) {
+        self.urlScheme = urlScheme
+        let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
-
-        let dataSignal = giraffe.client.watch(
-            query: GiraffeGraphQL.MyPaymentQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale()
-            )
-        )
-        let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
-        let nextPaymentSignalData = dataSignal.map { $0.nextChargeDate }
-
-        let viewController = UIViewController()
-        viewController.title = L10n.myPaymentTitle
-
-        let form = FormView()
-        bag += viewController.install(form) { scrollView in
-            bag += scrollView.performEntryAnimation(
-                contentView: form,
-                onLoad: giraffe.client.fetch(
-                    query: GiraffeGraphQL.MyPaymentQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
-                ),
-                onError: { _ in }
-            )
-        }
-        bag += dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in form.alpha = 1
-            form.transform = CGAffineTransform.identity
-        }
-
-        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData)
-            .onValueDisposePrevious { failedCharges, nextPayment in let innerbag = DisposeBag()
-                if let failedCharges = failedCharges, let nextPayment = nextPayment {
-                    if failedCharges > 0 {
-                        let latePaymentHeaderCard = LatePaymentHeaderSection(
-                            failedCharges: failedCharges,
-                            lastDate: nextPayment
-                        )
-                        innerbag += form.prepend(latePaymentHeaderCard)
-                        innerbag += form.prepend(Spacing(height: 20))
-                    }
-                }
-                return innerbag
-            }
-
-        let paymentHeaderCard = PaymentHeaderCard()
-        bag += form.prepend(paymentHeaderCard)
-
-        let pastPaymentsSection = PastPaymentsSection(presentingViewController: viewController)
-        bag += form.append(pastPaymentsSection)
-
-        let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
-        bag += form.append(paymentDetailsSection)
-
-        switch hAnalyticsExperiment.paymentType {
-        case .trustly:
-            let bankDetailsSection = BankDetailsSection(urlScheme: urlScheme)
-            bag += form.append(bankDetailsSection)
+        self.paymentType = paymentType
+        switch paymentType {
         case .adyen:
-            let cardDetailsSection = CardDetailsSection(urlScheme: urlScheme)
-            bag += form.append(cardDetailsSection)
-
-            let payoutDetailsSection = PayoutDetailsSection(urlScheme: urlScheme)
-            bag += form.append(payoutDetailsSection)
+            store.send(.fetchActivePayment)
+            store.send(.fetchActivePayout)
+        case .trustly:
+            break
         }
 
-        bag += form.append(Spacing(height: 20))
+    }
+    func openConnectCard() {
+        switch paymentType {
+        case .adyen:
+            store.send(.fetchAdyenAvailableMethods)
+        case .trustly:
+            store.send(.openConnectBankAccount)
+        }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .payments))
+    }
+}
 
-        return (viewController, bag)
+struct MyPaymentsView_Previews: PreviewProvider {
+    static var previews: some View {
+        MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
+            .onAppear {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
+                    bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
+                    nextChargeDate: "May 26th 2023",
+                    payinMethodStatus: .pending,
+                    redeemedCampaigns: [.init(code: "CODE")],
+                    balance: .init(currentBalance: .init(amount: "20", currency: "SEK")),
+                    chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")],
+                    chargeEstimation: .init(
+                        charge: .init(amount: "20", currency: "SEK"),
+                        discount: .init(amount: "20", currency: "SEK"),
+                        subscription: .init(amount: "20", currency: "SEK")
+                    ),
+                    activeContractBundles: [
+                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "name")])
+                    ]
+                )
+                let data = PaymentData(myPaymentQueryData)
+                store.send(.setPaymentData(data: data))
+            }
     }
 }

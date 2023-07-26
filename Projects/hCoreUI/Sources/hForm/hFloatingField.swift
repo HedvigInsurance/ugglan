@@ -55,6 +55,7 @@ public struct hFloatingField: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             if isEnabled {
                 onTap()

@@ -18,7 +18,15 @@ extension AppJourney {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
         return
-            HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
+            HomeView.journey(
+                claimsContent: claims,
+                commonClaimsContent: commonClaims,
+                memberId: {
+                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                    return ugglanStore.state.memberDetails?.id ?? ""
+
+                }
+            ) { result in
                 switch result {
                 case .startMovingFlow:
                     AppJourney.movingFlow
@@ -99,16 +107,33 @@ extension AppJourney {
         ProfileView.journey { result in
             switch result {
             case .openPayment:
-                Journey(
-                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
+                HostingJourney(
+                    PaymentStore.self,
+                    rootView: MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
+                ) { action in
+                    if case .openConnectBankAccount = action {
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                            .contains(store.state.paymentStatusData?.status ?? .active)
+                        ConnectBankAccount(
+                            setupType: hasAlreadyConnected ? .replacement : .initial,
+                            urlScheme: Bundle.main.urlScheme ?? ""
+                        )
+                        .journeyThenDismiss
+                    } else if case .openHistory = action {
+                        PaymentHistory.journey
+                    } else if case let .openPayoutBankAccount(options) = action {
+                        AdyenPayOut(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
+                            .journey({ _ in
+                                DismissJourney()
+                            })
+                            .setStyle(.detented(.medium, .large))
+                            .setOptions([.defaults, .allowSwipeDismissAlways])
+                            .withJourneyDismissButton
+                    }
+                }
+                .configureTitle(L10n.myPaymentTitle)
             }
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {

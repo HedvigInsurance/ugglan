@@ -42,7 +42,6 @@ enum ChatResult {
                             title: nil,
                             children: [
                                 MenuChild.appInformation,
-                                MenuChild.appSettings,
                                 MenuChild.login,
                             ]
                         ),

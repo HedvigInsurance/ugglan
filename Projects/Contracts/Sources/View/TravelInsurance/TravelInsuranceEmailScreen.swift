@@ -22,7 +22,6 @@ struct TravelInsuranceEmailScreen: View {
                         .foregroundColor(hLabelColor.primary)
                 }
             }
-            .withoutBottomPadding
             hSection {
                 hRow {
                     hText(L10n.TravelCertificate.emailStepDescription2, style: .body)

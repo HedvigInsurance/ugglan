@@ -55,6 +55,7 @@ public struct hDatePickerField: View {
             }
         }
         .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             showDatePicker()
             animate = true

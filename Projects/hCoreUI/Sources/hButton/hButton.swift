@@ -23,6 +23,7 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 40)
+            .frame(minWidth: 100)
             .padding(.leading)
             .padding(.trailing)
     }
@@ -81,12 +82,25 @@ struct ButtonFilledStandardBackground: View {
                 hButtonColorNew.secondaryDisabled
                     .hShadow()
             }
+        case .secondaryAlt:
+            if configuration.isPressed {
+                hButtonColorNew.secondaryAltHover
+                    .hShadow()
+            } else if isEnabled {
+                hButtonColorNew.secondaryAltDefault
+                    .hShadow()
+            } else {
+                hButtonColorNew.secondaryAltDisabled
+                    .hShadow()
+            }
         case .ghost:
             if configuration.isPressed {
                 hFillColorNew.translucentOne
             } else if isEnabled {
                 Color.clear
             }
+        case .alert:
+            hSignalColorNew.redElement
         }
     }
 }
@@ -124,7 +138,18 @@ public enum hButtonConfigurationType {
     case primary
     case primaryAlt
     case secondary
+    case secondaryAlt
     case ghost
+    case alert
+
+    var useDarkVersion: Bool {
+        switch self {
+        case .primary:
+            return false
+        case .primaryAlt, .secondary, .secondaryAlt, .ghost, .alert:
+            return true
+        }
+    }
 }
 
 private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
@@ -168,6 +193,7 @@ struct ButtonFilledBackground: View {
 
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
+    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
     var content: () -> Content
     var color: any hColor
@@ -182,8 +208,15 @@ struct LoaderOrContent<Content: View>: View {
 
     var body: some View {
         if isLoading {
-            DotsActivityIndicator(.standard)
-                .fixedSize(horizontal: false, vertical: true)
+            if hButtonConfigurationType.useDarkVersion {
+                DotsActivityIndicator(.standard)
+                    .useDarkColor
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                DotsActivityIndicator(.standard)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
         } else {
             content()
         }
@@ -226,7 +259,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     case .standard:
                         hTextColorNew.negative
                     case .overImage:
-                        hTextColorNew.negative /* TODO: NOT SURE */
+                        hTextColorNew.negative
                     }
                 } else {
                     hTextColorNew.disabled
@@ -237,17 +270,19 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     case .standard:
                         hTextColorNew.primary
                     case .overImage:
-                        hTextColorNew.primary /* TODO: NOT SURE */
+                        hTextColorNew.primary
                     }
                 } else {
                     hTextColorNew.disabled
                 }
-            case .secondary, .ghost:
+            case .secondary, .ghost, .secondaryAlt:
                 if isEnabled {
                     hTextColorNew.primary
                 } else {
                     hTextColorNew.disabled
                 }
+            case .alert:
+                hTextColorNew.negative
             }
         }
 
@@ -263,12 +298,10 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         switch hButtonConfigurationType {
-        case .primary:
+        case .primary, .ghost, .alert:
             getView(configuration: configuration)
-        case .primaryAlt, .secondary:
+        case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration).hShadow()
-        case .ghost:
-            getView(configuration: configuration)
         }
     }
 
@@ -468,6 +501,29 @@ public enum hButton {
         }
     }
 
+    public struct LargeButtonPrimaryAlert<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.alert)
+        }
+    }
+
     public struct LargeButtonAlt<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -514,6 +570,29 @@ public enum hButton {
         }
     }
 
+    public struct LargeButtonSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.secondaryAlt)
+        }
+    }
+
     public struct LargeButtonGhost<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -554,6 +633,27 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .medium))
+        }
+    }
+
+    public struct SmallSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .small))
+            .hButtonConfigurationType(.secondaryAlt)
         }
     }
 

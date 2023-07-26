@@ -96,28 +96,34 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 .plain()
                 .publisher
         ) { value in
-            let actions = value.filter({ self.actions.contains($0.key) })
-            if actions.count > 0 {
-                if actions.filter({ $0.value == .loading }).count > 0 {
-                    changeState(to: true, presentError: false)
-                } else {
-                    var tempError = ""
-                    for action in actions {
-                        switch action.value {
-                        case .error(let error):
-                            tempError = error
-                        default:
-                            break
-                        }
-                    }
-                    changeState(to: false, presentError: true, error: tempError)
-                }
-            } else {
-                changeState(to: false, presentError: false, error: nil)
-            }
+            handle(allActions: value)
+        }
+        .onAppear {
+            handle(allActions: store.loadingSignal.value)
         }
     }
 
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                changeState(to: true, presentError: false)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                changeState(to: false, presentError: true, error: tempError)
+            }
+        } else {
+            changeState(to: false, presentError: false, error: nil)
+        }
+    }
     private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
         if let animation {
             withAnimation(animation) {
@@ -289,5 +295,77 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
         case .none:
             EmptyView()
         }
+    }
+}
+
+struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
+    @PresentableStore var store: StoreType
+    let actions: [StoreType.Loading]
+    @State private var isLoading = false
+    @Environment(\.presentableStoreLensAnimation) var animation
+
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading
+    ) {
+        self.actions = [action]
+    }
+    func body(content: Content) -> some View {
+        content
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                handle(allActions: value)
+            }
+            .onAppear {
+                handle(allActions: store.loadingSignal.value)
+            }
+            .hButtonIsLoading(isLoading)
+    }
+
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                changeState(to: true, presentError: false)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                changeState(to: false, presentError: true, error: tempError)
+            }
+        } else {
+            changeState(to: false, presentError: false, error: nil)
+        }
+    }
+    private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
+        if let animation {
+            withAnimation(animation) {
+                //                self.error = error ?? ""
+                self.isLoading = isLoading
+                //                self.presentError = presentError
+            }
+        } else {
+            //            self.error = error ?? ""
+            self.isLoading = isLoading
+            //            self.presentError = presentError
+        }
+    }
+}
+
+extension View {
+    public func trackLoading<StoreType: StoreLoading & Store>(
+        _ type: StoreType.Type,
+        action: StoreType.Loading
+    ) -> some View {
+        modifier(TrackLoadingButtonModifier(type, action))
     }
 }

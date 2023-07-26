@@ -5,7 +5,7 @@ struct hFieldBackgroundModifier: ViewModifier {
     @Binding var error: String?
 
     func body(content: Content) -> some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             if #available(iOS 15.0, *) {
                 content
                     .padding(.horizontal, 16)
@@ -19,20 +19,6 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
-            }
-            if let errorMessage = error {
-                HStack {
-
-                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColorNew.amberElement)
-                    hText(errorMessage, style: .standardSmall)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hTextColorNew.primary)
-
-                }
-                .padding(.top, 6)
-                .padding(.horizontal, 6)
-                .foregroundColor(hSignalColorNew.amberFill)
             }
         }
     }
@@ -56,23 +42,63 @@ extension View {
     }
 }
 
+struct hFieldErrorModifier: ViewModifier {
+    @Binding var animate: Bool
+    @Binding var error: String?
+
+    func body(content: Content) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            content
+            if let errorMessage = error {
+                HStack {
+                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
+                        .foregroundColor(hSignalColorNew.amberElement)
+                    hText(errorMessage, style: .standardSmall)
+                        .foregroundColor(hLabelColor.primary)
+                }
+                .padding(.top, 6)
+                .padding(.horizontal, 6)
+                .foregroundColor(hSignalColorNew.amberFill)
+            }
+        }
+    }
+
+    @hColorBuilder
+    private func getBackgroundColor() -> some hColor {
+        if animate {
+            if error != nil {
+                hSignalColorNew.amberFill
+            } else {
+                hSignalColorNew.greenFill
+            }
+        } else {
+            hFillColorNew.opaqueOne
+        }
+    }
+}
+extension View {
+    func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+        modifier(hFieldErrorModifier(animate: animate, error: error))
+    }
+}
 struct hFieldLabel: View {
     let placeholder: String
     @Binding var animate: Bool
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldSize) var size
 
     var body: some View {
-        let sizeToScaleFrom = HFontTextStyle.title3.fontSize
+        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        let padding = HFontTextStyle.title3.fontSize * 15 / 16
-        return hText(placeholder, style: .title3)
+        return hText(placeholder, style: size == .large ? .title3 : .standard)
             .foregroundColor(getTextColor())
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-            .padding(.bottom, shouldMoveLabel ? 1 : padding)
-            .padding(.top, shouldMoveLabel ? 0 : padding)
+            .frame(height: sizeToScaleFrom + 6)
+            .padding(.bottom, shouldMoveLabel ? (size == .large ? 1 : -1) : size == .large ? 21 : 16)
+            .padding(.top, shouldMoveLabel ? 0 : size == .large ? 21 : 16)
     }
 
     @hColorBuilder
@@ -91,14 +117,19 @@ struct hFieldLabel: View {
 
 struct hFieldLabel_Previews: PreviewProvider {
     @State static var value: String?
+    @State static var error: String? =
+        "ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR "
     @State static var animate: Bool = false
-    @State static var shouldMoveLabel: Bool = true
+    @State static var shouldMoveLabel: Bool = false
     static var previews: some View {
         hFieldLabel(
             placeholder: "PLACE",
             animate: $animate,
-            error: $value,
+            error: $error,
             shouldMoveLabel: $shouldMoveLabel
         )
+        .hFieldSize(.small)
+        .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
     }
 }

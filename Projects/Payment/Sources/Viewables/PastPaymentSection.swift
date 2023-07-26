@@ -56,9 +56,6 @@ extension PastPaymentsSection: Viewable {
 
             arrow.snp.makeConstraints { make in make.width.equalTo(20) }
 
-            innerBag += section.append(moreRow)
-                .onValue { _ in self.presentingViewController.present(PaymentsHistory()) }
-
             innerBag += { section.remove(moreRow) }
 
             return innerBag

@@ -53,6 +53,7 @@ extension PaymentSetup: Presentable {
 }
 
 extension PaymentSetup {
+
     public func journey<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
@@ -62,7 +63,6 @@ extension PaymentSetup {
             options: [.defaults, .autoPopSelfAndSuccessors]
         ) { result in
             let store: PaymentStore = globalPresentableStoreContainer.get()
-
             if let success = result.left {
                 next(success, store.state.paymentConnectionID)
             } else if let options = result.right {
@@ -77,7 +77,7 @@ extension PaymentSetup {
     /// Sets up payment and then dismisses
     public var journeyThenDismiss: some JourneyPresentation {
         journey { _, _ in
-            DismissJourney()
+            return DismissJourney()
         }
     }
 }
