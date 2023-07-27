@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct StartDateView: View {
+struct StartDateScreen: View {
 
     @StateObject var vm = StartDateViewModel()
     @PresentableStore var store: TravelInsuranceStore
@@ -71,6 +71,7 @@ struct StartDateView: View {
                             } content: {
                                 hText(L10n.generalContinueButton)
                             }
+                            .padding(.bottom, 16)
                         }
                     }
                 }
@@ -120,7 +121,7 @@ class StartDateViewModel: ObservableObject {
         if Masking(type: .email).isValid(text: emailValue) {
             DispatchQueue.main.async { [weak self] in
                 self?.emailError = nil
-                self?.store.send(.navigation(.openTravelInsuranceForm))
+                self?.store.send(.navigation(.openWhoIsTravelingScreen))
             }
         } else {
             DispatchQueue.main.async { [weak self] in
@@ -135,7 +136,7 @@ class StartDateViewModel: ObservableObject {
 struct StartDateView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            StartDateView()
+            StartDateScreen()
         }
     }
 }

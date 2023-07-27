@@ -1,8 +1,7 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
-struct BlurredProgressOverlay<Content: View>: View {
+public struct BlurredProgressOverlay<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var isAnimating = false
     var content: () -> Content
@@ -10,7 +9,7 @@ struct BlurredProgressOverlay<Content: View>: View {
     private var largeCircleDiameter: CGFloat = 354
     private var smallCircleDiameter: CGFloat = 284
 
-    init(
+    public init(
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
@@ -46,7 +45,7 @@ struct BlurredProgressOverlay<Content: View>: View {
             .frame(width: smallCircleDiameter, height: smallCircleDiameter)
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack(alignment: .center) {
             ZStack {
                 GeometryReader { geo in
@@ -67,7 +66,6 @@ struct BlurredProgressOverlay<Content: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             ZStack(alignment: .center) {
                 content()
-                    .padding(.horizontal, 24)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
