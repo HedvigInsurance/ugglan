@@ -3,48 +3,32 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct TravelInsuranceInsuredMemberScreen: View {
-    @State var fullName: String
-    @State var personalNumber: String
-    @State var fullNameError: String?
-    @State var personalNumberError: String?
-    @State var inputType: TravelInsuranceFieldTypeInt? = .fullName
-    @State var validInput = false
-    var personalNumberMaskeing: Masking {
-        Masking(type: .personalNumberCoInsured)
-    }
+struct InsuredMemberScreen: View {
 
-    private let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-    private let title: String
-    private let policyCoinsuredPerson: PolicyCoinsuredPersonModel?
+    @ObservedObject var vm: InsuredMemberViewModel
     init(
         _ policyCoinsuredPerson: PolicyCoinsuredPersonModel?
     ) {
-        if policyCoinsuredPerson == nil {
-            self.title = L10n.TravelCertificate.changeMemberTitle
-        } else {
-            self.title = L10n.TravelCertificate.editMemberTitle
-        }
-        self.policyCoinsuredPerson = policyCoinsuredPerson
-        self.fullName = policyCoinsuredPerson?.fullName ?? ""
-        self.personalNumber = policyCoinsuredPerson?.personalNumber ?? ""
-
+        vm = .init(policyCoinsuredPerson)
     }
 
     var body: some View {
         hForm {
             hSection {
-                fullNameField()
-                ssnField()
+                VStack(spacing: 4) {
+                    fullNameField()
+                    ssnField()
+                }
             }
-            .navigationTitle(title)
+            .hWithoutDivider
         }
+        .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 hButton.LargeButtonPrimary {
-                    submit()
+                    vm.submit()
                 } content: {
-                    if policyCoinsuredPerson == nil {
+                    if vm.policyCoinsuredPerson == nil {
                         hText(L10n.generalContinueButton)
                     } else {
                         hText(L10n.TravelCertificate.confirmButtonChangeMember)
@@ -52,7 +36,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 }
 
                 hButton.SmallButtonText {
-                    store.send(.navigation(.dismissAddUpdateCoinsured))
+                    vm.dismiss()
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -60,44 +44,69 @@ struct TravelInsuranceInsuredMemberScreen: View {
             .padding([.leading, .trailing], 16)
             .padding(.bottom, 6)
         }
-
+        .navigationTitle(vm.title)
     }
 
-    @ViewBuilder
     private func fullNameField() -> some View {
         hRow {
-            hTextField(
-                masking: Masking(type: .disabledSuggestion),
-                value: $fullName,
-                placeholder: L10n.fullNameText
+            hFloatingTextField(
+                masking: .init(type: .disabledSuggestion),
+                value: $vm.fullName,
+                equals: $vm.inputType,
+                focusValue: .fullName,
+                placeholder: L10n.fullNameText,
+                error: $vm.fullNameError
             )
-            .focused($inputType, equals: .fullName)
-            .hTextFieldError(fullNameError)
-            .hTextFieldOptions([.minimumHeight(height: 40)])
         }
+        .noSpacing()
     }
 
-    @ViewBuilder
     private func ssnField() -> some View {
         hRow {
-            hTextField(
-                masking: Masking(type: .personalNumberCoInsured),
-                value: $personalNumber
+            hFloatingTextField(
+                masking: .init(type: .personalNumberCoInsured),
+                value: $vm.personalNumber,
+                equals: $vm.inputType,
+                focusValue: .ssn,
+                placeholder: "Personal number",
+                error: $vm.personalNumberError
             )
-            .focused($inputType, equals: .ssn) {
-                submit()
-            }
-            .hTextFieldError(personalNumberError)
-            .hTextFieldOptions([.minimumHeight(height: 40)])
         }
+        .noSpacing()
+    }
+}
+
+class InsuredMemberViewModel: ObservableObject {
+    @Published var fullName: String
+    @Published var personalNumber: String
+    @Published var fullNameError: String?
+    @Published var personalNumberError: String?
+    @Published var inputType: TravelInsuranceFieldTypeInt? = .fullName
+    @Published var validInput = false
+    let title: String
+    let policyCoinsuredPerson: PolicyCoinsuredPersonModel?
+    @PresentableStore var store: TravelInsuranceStore
+    init(_ model: PolicyCoinsuredPersonModel?) {
+        if model == nil {
+            self.title = L10n.TravelCertificate.changeMemberTitle
+        } else {
+            self.title = L10n.TravelCertificate.editMemberTitle
+        }
+        self.policyCoinsuredPerson = model
+        self.fullName = model?.fullName ?? ""
+        self.personalNumber = model?.personalNumber ?? ""
     }
 
-    private func submit() {
+    var personalNumberMaskeing: Masking {
+        Masking(type: .personalNumberCoInsured)
+    }
+
+    func submit() {
         validate()
         if validInput {
             UIApplication.dismissKeyboard()
             let newPolicyCoInsured = PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber)
-            if let policyCoinsuredPerson {
+            if let policyCoinsuredPerson = policyCoinsuredPerson {
                 store.send(.updatePolicyCoInsured(policyCoinsuredPerson, with: newPolicyCoInsured))
             } else {
                 store.send(
@@ -124,11 +133,14 @@ struct TravelInsuranceInsuredMemberScreen: View {
             validInput = personalNumberError == nil && fullNameError == nil
         }
     }
-}
 
+    func dismiss() {
+        store.send(.navigation(.dismissAddUpdateCoinsured))
+    }
+}
 struct TravelInsuranceInsuredMemberScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TravelInsuranceInsuredMemberScreen(nil)
+        InsuredMemberScreen(nil)
     }
 }
 

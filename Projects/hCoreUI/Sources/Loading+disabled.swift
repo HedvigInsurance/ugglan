@@ -16,18 +16,26 @@ struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {
         self.actions = actions
     }
     func body(content: Content) -> some View {
-        content.onReceive(
-            store.loadingSignal
-                .plain()
-                .publisher
-        ) { value in
-            let actions = value.filter({ self.actions.contains($0.key) })
-            let hasLoadingActions = actions.filter({ $0.value == .loading }).count > 0
-            withAnimation {
-                disabled = hasLoadingActions
+        content
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                handleDisabled(value)
             }
+            .onAppear {
+                handleDisabled(store.loadingSignal.value)
+            }
+            .disabled(disabled)
+    }
+
+    private func handleDisabled(_ value: [StoreType.Loading: LoadingState<String>]) {
+        let actions = value.filter({ self.actions.contains($0.key) })
+        let hasLoadingActions = actions.filter({ $0.value == .loading }).count > 0
+        withAnimation {
+            disabled = hasLoadingActions
         }
-        .disabled(disabled)
     }
 }
 

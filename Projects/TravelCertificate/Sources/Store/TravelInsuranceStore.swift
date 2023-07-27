@@ -5,9 +5,11 @@ import Presentation
 import hCore
 import hGraphQL
 
-final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuranceAction> {
+final class TravelInsuranceStore: LoadingStateStore<
+    TravelInsuranceState, TravelInsuranceAction, TravelInsuranceLoadingAction
+>
+{
     @Inject var octopus: hOctopus
-    var bag = DisposeBag()
     override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
@@ -19,6 +21,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 guard let config = self.state.travelInsuranceConfig,
                     let travelInsuranceModel = self.state.travelInsuranceModel
                 else {
+                    self.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     return disposeBag
                 }
                 let input = OctopusGraphQL.TravelCertificateCreateInput(
@@ -32,33 +35,19 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 )
                 let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
                 disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
+                    .onValue { [weak self] data in
                         if let url = URL(string: data.travelCertificateCreate.signedUrl) {
                             callback(
                                 .value(
-                                    .navigation(.openTravelInsurance(url: url, title: L10n.TravelCertificate.cardTitle))
+                                    .setDownloadUrl(urL: url)
                                 )
                             )
                         } else {
-                            callback(
-                                .value(
-                                    .setLoadingState(
-                                        action: .postTravelInsurance,
-                                        state: .error(error: L10n.General.errorBody)
-                                    )
-                                )
-                            )
+                            self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
                         }
                     }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postTravelInsurance,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
+                    .onError { [weak self] error in
+                        self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     }
                 return disposeBag
             }
@@ -70,7 +59,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                     .onValue { data in
                         let email = data.currentMember.email
                         let specification = TravelInsuranceSpecification(
-                            data.currentMember.travelCertificateSpecifications,
+                            data.currentMember,
                             email: email
                         )
                         callback(.value(.setTravelInsurancesData(specification: specification)))
@@ -94,14 +83,15 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         case .travelCertificateSpecificationSet:
             break
         case let .setTravelInsurancesData(config):
-            newState.loadingStates.removeValue(forKey: .getTravelInsurance)
+            removeLoading(for: .getTravelInsurance)
             if let contractSpecification = config.travelCertificateSpecifications.first {
                 newState.travelInsuranceConfig = contractSpecification
                 newState.travelInsuranceModel = TravelInsuranceModel(
                     startDate: contractSpecification.minStartDate,
                     minStartDate: contractSpecification.minStartDate,
                     maxStartDate: contractSpecification.maxStartDate,
-                    email: config.email ?? ""
+                    email: config.email ?? "",
+                    fullName: config.fullName
                 )
                 newState.travelInsuranceConfig = config.travelCertificateSpecifications.first
                 newState.travelInsuranceConfigs = config
@@ -112,12 +102,13 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 startDate: config.minStartDate,
                 minStartDate: config.minStartDate,
                 maxStartDate: config.maxStartDate,
-                email: newState.travelInsuranceConfigs?.email ?? ""
+                email: newState.travelInsuranceConfigs?.email ?? "",
+                fullName: newState.travelInsuranceConfigs?.fullName ?? ""
             )
             newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
-            send(.navigation(.openTravelInsuranceForm))
+            send(.navigation(.openWhoIsTravelingScreen))
         case .toogleMyselfAsInsured:
             newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
@@ -145,17 +136,18 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 break
             }
         case .postTravelInsuranceForm:
-            newState.loadingStates[.postTravelInsurance] = .loading
+            setLoading(for: .postTravelInsurance)
+        case let .setDownloadUrl(url):
+            newState.downloadURL = url
+            removeLoading(for: .postTravelInsurance)
         case let .navigation(type):
             switch type {
-            case .openTravelInsuranceForm:
+            case .openStartDateScreen:
                 break
-            case .openDatePicker:
+            case .openWhoIsTravelingScreen:
                 break
             case .openCoinsured:
                 break
-            case .openTravelInsurance:
-                newState.loadingStates.removeValue(forKey: .postTravelInsurance)
             case .openSomethingWentWrongScreen:
                 break
             case .dismissAddUpdateCoinsured:
@@ -164,12 +156,8 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 break
             case .openFreeTextChat:
                 break
-            }
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
+            case .openProcessingScreen:
+                break
             }
         }
         return newState
