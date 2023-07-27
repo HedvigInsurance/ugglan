@@ -244,7 +244,7 @@ public struct hButtonColorNew {
     }
 
     public static var primaryDisabled: some hColor {
-        hGrayscaleColorNew.greyScale400
+        hGrayscaleColorNew.greyScale200
     }
 
     public static var primaryAltDefault: some hColor {
@@ -256,7 +256,7 @@ public struct hButtonColorNew {
     }
 
     public static var primaryAltDisabled: some hColor {
-        hGrayscaleColorNew.greyScale400
+        hGrayscaleColorNew.greyScale200
     }
 
     public static var secondaryDefault: some hColor {
@@ -268,7 +268,7 @@ public struct hButtonColorNew {
     }
 
     public static var secondaryDisabled: some hColor {
-        hGrayscaleColorNew.greyScale50
+        hGrayscaleColorNew.greyScale200
     }
 
     public static var secondaryAltDefault: some hColor {

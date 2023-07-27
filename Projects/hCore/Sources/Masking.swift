@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Introspect
 import SwiftUI
 import UIKit
 
@@ -30,6 +31,7 @@ public struct Masking {
         textField.keyboardType = keyboardType
         textField.textContentType = textContentType
         textField.autocapitalizationType = autocapitalizationType
+
     }
 
     public func isValidSignal(_ textField: UITextField) -> ReadSignal<Bool> {
@@ -238,6 +240,13 @@ public struct Masking {
         default: return false
         }
     }
+    public var spellCheckingType: UITextSpellCheckingType {
+        switch type {
+        case .none, .disabledSuggestion:
+            return .no
+        default: return .yes
+        }
+    }
 
     public func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
@@ -323,5 +332,8 @@ extension Masking: ViewModifier {
             .autocapitalization(autocapitalizationType)
             .disableAutocorrection(disableAutocorrection)
             .autocorrectionDisabled()
+            .introspectTextField { textField in
+                textField.spellCheckingType = spellCheckingType
+            }
     }
 }

@@ -10,13 +10,16 @@ struct TravelInsuranceState: StateProtocol {
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
     @OptionalTransient var travelInsuranceConfigs: TravelInsuranceSpecification?
     @OptionalTransient var travelInsuranceConfig: TravelInsuranceContractSpecification?
-    @Transient(defaultValue: [:]) var loadingStates: [TravelInsuranceLoadingAction: LoadingState<String>]
+    @OptionalTransient var downloadURL: URL?
 }
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: Date
+    var minStartDate: Date
+    var maxStartDate: Date
     var isPolicyHolderIncluded: Bool = true
     var email: String
+    let fullName: String
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 
     func isValidWithMessage() -> (valid: Bool, message: String?) {
@@ -33,13 +36,19 @@ public struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
     let infoSpecifications: [TravelInsuranceInfoSpecification]
     let travelCertificateSpecifications: [TravelInsuranceContractSpecification]
     let email: String?
+    let fullName: String
     public init(
-        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification,
+        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember,
         email: String
     ) {
         self.email = email
-        infoSpecifications = data.infoSpecifications.map({ TravelInsuranceInfoSpecification($0) })
-        travelCertificateSpecifications = data.contractSpecifications.map({ TravelInsuranceContractSpecification($0) })
+        self.fullName = data.firstName + " " + data.lastName
+        infoSpecifications = data.travelCertificateSpecifications.infoSpecifications.map({
+            TravelInsuranceInfoSpecification($0)
+        })
+        travelCertificateSpecifications = data.travelCertificateSpecifications.contractSpecifications.map({
+            TravelInsuranceContractSpecification($0)
+        })
     }
 }
 

@@ -1,8 +1,49 @@
+import Flow
 import Foundation
 import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
+
+public struct InfoViewHolder: View {
+    let title: String
+    let description: String
+    @State private var disposeBag = DisposeBag()
+    public init(title: String, description: String) {
+        self.title = title
+        self.description = description
+    }
+
+    public var body: some View {
+        SwiftUI.Button {
+            showInfoView()
+        } label: {
+            Image(uiImage: hCoreUIAssets.infoIcon.image)
+        }
+    }
+
+    private func showInfoView() {
+        let cancelAction = ReferenceAction {}
+        let view = InfoView(title: title, description: description) {
+            cancelAction.execute()
+        }
+        let journey = HostingJourney(
+            rootView: view,
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
+        )
+
+        let calendarJourney = journey.addConfiguration { presenter in
+            cancelAction.execute = {
+                presenter.dismisser(JourneyError.cancelled)
+            }
+        }
+        let vc = UIApplication.shared.getTopViewController()
+        if let vc {
+            disposeBag += vc.present(calendarJourney)
+        }
+    }
+}
 
 public struct InfoView: View {
     let title: String

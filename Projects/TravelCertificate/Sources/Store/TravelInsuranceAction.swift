@@ -16,37 +16,31 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setPolicyCoInsured(PolicyCoinsuredPersonModel)
     case updatePolicyCoInsured(PolicyCoinsuredPersonModel, with: PolicyCoinsuredPersonModel)
     case removePolicyCoInsured(PolicyCoinsuredPersonModel)
+    case setDownloadUrl(urL: URL)
 
     case navigation(TravelInsuranceNavigationAction)
-    case setLoadingState(action: TravelInsuranceLoadingAction, state: LoadingState<String>?)
+    case getTravelCertificateSpecification
+    case travelCertificateSpecificationSet
 }
 
 enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
-    case openTravelInsuranceForm
-    case openDatePicker(type: TravelInsuranceDatePickerType)
+    case openStartDateScreen
+    case openWhoIsTravelingScreen
     case openCoinsured(member: PolicyCoinsuredPersonModel?)
-    case openTravelInsurance(url: URL, title: String)
     case openSomethingWentWrongScreen
     case dismissAddUpdateCoinsured
     case dismissCreateTravelCertificate
     case openFreeTextChat
+    case openProcessingScreen
 }
 
-enum TravelInsuranceLoadingAction: ActionProtocol, Hashable {
+enum TravelInsuranceLoadingAction: LoadingProtocol {
     case getTravelInsurance
     case postTravelInsurance
+    case downloadCertificate
 }
 
 enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {
     case startDate
     case endDate
-
-    var title: String {
-        switch self {
-        case .startDate:
-            return "From"
-        case .endDate:
-            return "To"
-        }
-    }
 }

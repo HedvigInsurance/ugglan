@@ -1,6 +1,8 @@
 query TravelCertificate {
   currentMember {
     email
+    firstName
+    lastName
     travelCertificateSpecifications {
       contractSpecifications {
         contractId

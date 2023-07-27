@@ -42,6 +42,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     )
                 )
             }
+            .padding(.horizontal, 24)
         }
     }
 

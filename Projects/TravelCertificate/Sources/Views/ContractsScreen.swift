@@ -2,48 +2,46 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct TravelInsuranceContractsScreen: View {
+struct ContractsScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     public var body: some View {
-        TravelInsuranceLoadingView(.getTravelInsurance) {
+        PresentableStoreLens(
+            TravelInsuranceStore.self,
+            getter: { state in
+                state.travelInsuranceConfig
+            }
+        ) { travelInsuranceConfig in
             PresentableStoreLens(
                 TravelInsuranceStore.self,
                 getter: { state in
-                    state.travelInsuranceConfig
+                    state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
                 }
-            ) { travelInsuranceConfig in
-                PresentableStoreLens(
-                    TravelInsuranceStore.self,
-                    getter: { state in
-                        state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
-                    }
-                ) { travelInsuranceModels in
-                    if !travelInsuranceModels.isEmpty {
-                        hForm {
-                            hText(L10n.TravelCertificate.selectContractTitle, style: .title3)
-                                .padding(.vertical, 100)
-                                .padding(.horizontal, 16)
-                                .multilineTextAlignment(.center)
-                            ForEach(travelInsuranceModels, id: \.contractId) { item in
-                                getContractView(for: item, and: travelInsuranceConfig)
-                            }
+            ) { travelInsuranceModels in
+                if !travelInsuranceModels.isEmpty {
+                    hForm {
+                        hText(L10n.TravelCertificate.selectContractTitle, style: .title3)
+                            .padding(.vertical, 100)
+                            .padding(.horizontal, 16)
+                            .multilineTextAlignment(.center)
+                        ForEach(travelInsuranceModels, id: \.contractId) { item in
+                            getContractView(for: item, and: travelInsuranceConfig)
                         }
-                        .hFormAttachToBottom {
-                            hButton.LargeButtonPrimary {
-                                store.send(.navigation(.openTravelInsuranceForm))
-                            } content: {
-                                hText(L10n.generalContinueButton)
-                            }
-                            .padding([.leading, .trailing], 16)
-                            .padding(.bottom, 6)
-                        }
-                        .navigationTitle(L10n.TravelCertificate.cardTitle)
                     }
+                    .hFormAttachToBottom {
+                        hButton.LargeButtonPrimary {
+                            store.send(.navigation(.openStartDateScreen))
+                        } content: {
+                            hText(L10n.generalContinueButton)
+                        }
+                        .padding([.leading, .trailing], 16)
+                        .padding(.bottom, 6)
+                    }
+                    .navigationTitle(L10n.TravelCertificate.cardTitle)
                 }
             }
-            .presentableStoreLensAnimation(.spring())
-
         }
+        .presentableStoreLensAnimation(.spring())
+        .trackLoading(TravelInsuranceStore.self, action: .getTravelInsurance)
     }
 
     private func getContractView(
@@ -86,6 +84,6 @@ struct TravelInsuranceContractsScreen: View {
 
 struct TravelInsuranceContractsScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TravelInsuranceContractsScreen()
+        ContractsScreen()
     }
 }
