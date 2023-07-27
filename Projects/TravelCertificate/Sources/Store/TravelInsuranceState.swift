@@ -15,6 +15,8 @@ struct TravelInsuranceState: StateProtocol {
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: Date
+    var minStartDate: Date
+    var maxStartDate: Date
     var isPolicyHolderIncluded: Bool = true
     var email: String
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
