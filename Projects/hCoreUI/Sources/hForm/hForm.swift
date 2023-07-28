@@ -103,8 +103,6 @@ struct BackgroundBlurView: UIViewRepresentable {
 }
 
 public struct hForm<Content: View>: View {
-    @ObservedObject var gradientState = GradientState.shared
-    let gradientType: GradientType
 
     @State var shouldAnimateGradient = true
     @State var bottomAttachedViewHeight: CGFloat = 0
@@ -116,32 +114,14 @@ public struct hForm<Content: View>: View {
     var content: Content
 
     public init(
-        gradientType: GradientType = .none,
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
-        self.gradientType = .none
     }
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            if gradientType != .none {
-                hGradient(
-                    oldGradientType: $gradientState.oldGradientType,
-                    newGradientType: $gradientState.gradientType,
-                    animate: $shouldAnimateGradient
-                )
-                .onDisappear {
-                    shouldAnimateGradient = gradientState.gradientTypeBeforeNone != gradientType
-                }
-                .onAppear {
-                    if gradientState.gradientTypeBeforeNone == gradientType {
-                        gradientState.gradientTypeBeforeNone = nil
-                    }
-                }
-            } else {
-                BackgroundView().edgesIgnoringSafeArea(.all)
-            }
+            BackgroundView().edgesIgnoringSafeArea(.all)
             getScrollView()
             BackgroundBlurView()
                 .frame(
@@ -160,10 +140,6 @@ public struct hForm<Content: View>: View {
                     }
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
-        }
-
-        .onAppear {
-            self.gradientState.gradientType = gradientType
         }
     }
 

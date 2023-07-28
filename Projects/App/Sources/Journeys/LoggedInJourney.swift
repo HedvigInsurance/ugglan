@@ -42,9 +42,6 @@ extension AppJourney {
                     RenewalCardView()
                 }
             }
-            .onTabSelected {
-                GradientState.shared.gradientType = .home
-            }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .home
