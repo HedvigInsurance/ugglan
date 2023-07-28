@@ -75,6 +75,8 @@ public enum HomeAction: ActionProtocol {
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
+    case openOtherServices
+    case startClaim
 }
 
 public enum FutureStatus: Codable, Equatable {

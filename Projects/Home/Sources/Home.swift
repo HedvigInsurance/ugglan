@@ -10,24 +10,21 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
+public struct HomeView<Content: View, Claims: View>: View {
     @PresentableStore var store: HomeStore
 
     var statusCard: Content
 
     var claimsContent: Claims
-    var commonClaims: CommonClaims
     var memberId: String
 
     public init(
         claimsContent: Claims,
-        commonClaimsContent: CommonClaims,
         statusCard: () -> Content,
         memberId: @escaping () -> String
     ) {
         self.statusCard = statusCard()
         self.claimsContent = claimsContent
-        self.commonClaims = commonClaimsContent
 
         self.memberId = memberId()
     }
@@ -43,7 +40,6 @@ extension HomeView {
     public var body: some View {
         hForm {
             ImportantMessagesView()
-
             PresentableStoreLens(
                 HomeStore.self,
                 getter: { state in
@@ -54,8 +50,6 @@ extension HomeView {
                 case .active:
                     ActiveSectionView(
                         claimsContent: claimsContent,
-                        commonClaims: commonClaims,
-                        statusCard: statusCard,
                         memberId: memberId
                     )
                 case .future:
@@ -76,13 +70,34 @@ extension HomeView {
             fetch()
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
+        .hFormAttachToBottom {
+            hSection {
+                VStack(spacing: 8) {
+                    statusCard
+                    hButton.LargeButtonPrimary {
+                        hAnalyticsEvent.beginClaim(screen: .home).send()
+                        store.send(.startClaim)
+                    } content: {
+                        hText(L10n.HomeTab.claimButtonText)
+                    }
+
+                    if hAnalyticsExperiment.homeCommonClaim {
+                        hButton.LargeButtonGhost {
+                            store.send(.openOtherServices)
+                        } content: {
+                            hText(L10n.HomeTab.otherServices)
+                        }
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
     }
 }
 
 extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
         claimsContent: Claims,
-        commonClaimsContent: CommonClaims,
         memberId: @escaping () -> String,
         @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
         statusCard: @escaping () -> Content
@@ -91,7 +106,6 @@ extension HomeView {
             HomeStore.self,
             rootView: HomeView(
                 claimsContent: claimsContent,
-                commonClaimsContent: commonClaimsContent,
                 statusCard: statusCard,
                 memberId: memberId
             ),
@@ -113,6 +127,10 @@ extension HomeView {
                     style: .detented(.large),
                     options: .defaults
                 )
+            } else if case .openOtherServices = action {
+                resultJourney(.openOtherServices)
+            } else if case .startClaim = action {
+                resultJourney(.startNewClaim)
             }
         }
         .configureTitle(L10n.HomeTab.title)
@@ -129,4 +147,167 @@ public enum HomeResult {
     case startMovingFlow
     case openFreeTextChat
     case openConnectPayments
+    case openOtherServices
+    case startNewClaim
+}
+
+struct Active_Preview: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+
+        return HomeView(claimsContent: Text("")) {
+            Text("")
+        } memberId: {
+            "ID"
+        }
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                displayName: "DISPLAY NAME",
+                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                status: .makeActiveStatus(),
+                upcomingRenewal: .init(
+                    renewalDate: "2023-11-11",
+                    draftCertificateUrl: "URL"
+                )
+            )
+            store.send(
+                .setMemberContractState(
+                    state: .init(state: .active, name: "NAME"),
+                    contracts: [.init(contract: contract)]
+                )
+            )
+            store.send(.setFutureStatus(status: .none))
+            store.send(.setImportantMessage(message: .init(message: nil, link: nil)))
+        }
+
+    }
+}
+
+struct ActiveInFuture_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(claimsContent: Text("")) {
+            Text("")
+        } memberId: {
+            "ID"
+        }
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                displayName: "DISPLAY NAME",
+                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
+                upcomingRenewal: .init(
+                    renewalDate: "2023-11-11",
+                    draftCertificateUrl: "URL"
+                )
+            )
+            store.send(
+                .setMemberContractState(
+                    state: .init(state: .future, name: "NAME"),
+                    contracts: [.init(contract: contract)]
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
+        }
+
+    }
+}
+
+struct TerminatedToday_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(claimsContent: Text("")) {
+            Text("")
+        } memberId: {
+            "ID"
+        }
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                displayName: "DISPLAY NAME",
+                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                status: .makeTerminatedTodayStatus(),
+                upcomingRenewal: .init(
+                    renewalDate: "2023-11-11",
+                    draftCertificateUrl: "URL"
+                )
+            )
+            store.send(
+                .setMemberContractState(
+                    state: .init(state: .terminated, name: "NAME"),
+                    contracts: [.init(contract: contract)]
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
+        }
+
+    }
+}
+
+struct Terminated_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(claimsContent: Text("")) {
+            Text("")
+        } memberId: {
+            "ID"
+        }
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                displayName: "DISPLAY NAME",
+                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                status: .makeTerminatedStatus(),
+                upcomingRenewal: .init(
+                    renewalDate: "2023-11-11",
+                    draftCertificateUrl: "URL"
+                )
+            )
+            store.send(
+                .setMemberContractState(
+                    state: .init(state: .terminated, name: "NAME"),
+                    contracts: [.init(contract: contract)]
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
+        }
+
+    }
+}
+
+struct Deleted_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(claimsContent: Text("")) {
+            Text("")
+        } memberId: {
+            "ID"
+        }
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+                displayName: "DISPLAY NAME",
+                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                status: .makeDeletedStatus(),
+                upcomingRenewal: .init(
+                    renewalDate: "2023-11-11",
+                    draftCertificateUrl: "URL"
+                )
+            )
+            store.send(
+                .setMemberContractState(
+                    state: .init(state: .terminated, name: "NAME"),
+                    contracts: [.init(contract: contract)]
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+            store.send(.setImportantMessage(message: .init(message: nil, link: nil)))
+        }
+
+    }
 }

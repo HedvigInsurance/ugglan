@@ -87,6 +87,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
     }
 }
 
+//TODO: REMOVE
 public struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
     public init() {}

@@ -17,11 +17,9 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView()
         return
             HomeView.journey(
                 claimsContent: claims,
-                commonClaimsContent: commonClaims,
                 memberId: {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     return ugglanStore.state.memberDetails?.id ?? ""
@@ -35,6 +33,10 @@ extension AppJourney {
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
+                case .openOtherServices:
+                    DismissJourney()
+                case .startNewClaim:
+                    startClaimsJourney(from: .generic)
                 }
             } statusCard: {
                 VStack(spacing: 16) {
