@@ -38,7 +38,7 @@ extension FilePickerHeader: Viewable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.distribution = .fillEqually
-        containerView.spacing = 5
+        containerView.spacing = 8
 
         func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()

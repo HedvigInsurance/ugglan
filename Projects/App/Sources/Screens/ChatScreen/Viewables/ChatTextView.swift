@@ -19,7 +19,7 @@ struct ChatTextView {
 
 extension ChatTextView: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let defaultPlaceholder = "Aa"
+        let defaultPlaceholder = L10n.chatInputPlaceholder
 
         let textView = TextView(
             placeholder: defaultPlaceholder,

@@ -67,13 +67,14 @@ extension AttachFilePane: Viewable {
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 5
+        layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+        layout.sectionInset = UIEdgeInsets(horizontalInset: 8, verticalInset: 8)
         layout.headerReferenceSize = CGSize(width: 100, height: 1)
 
         let collectionKit = CollectionKit<EmptySection, AttachFileAsset>(table: Table(rows: []), layout: layout)
-        collectionKit.view.contentInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+        collectionKit.view.showsHorizontalScrollIndicator = false
+        collectionKit.view.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         bag.hold(collectionKit)
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in

@@ -36,7 +36,7 @@ struct AttachFileAsset: Reusable {
                         }
 
                         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-                        effectView.layer.cornerRadius = 5
+                        effectView.layer.cornerRadius = 12
                         effectView.clipsToBounds = true
                         effectView.alpha = 0
                         view.addSubview(effectView)
@@ -53,9 +53,9 @@ struct AttachFileAsset: Reusable {
 
                         let button = Button(
                             title: L10n.chatUploadPresend,
-                            type: .standard(
-                                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                                textColor: .brand(.primaryButtonTextColor)
+                            type: .standardSmall(
+                                backgroundColor: .brandNew(.primaryBackground()),
+                                textColor: .brandNew(.primaryText())
                             )
                         )
                         let loadableButton = LoadableButton(
@@ -132,7 +132,7 @@ struct AttachFileAsset: Reusable {
 
                         let imageView = UIImageView()
                         imageView.clipsToBounds = true
-                        imageView.layer.cornerRadius = 5
+                        imageView.layer.cornerRadius = 12
                         imageView.contentMode = .scaleAspectFill
                         imageView.alpha = 0
                         imageView.image = image
