@@ -12,7 +12,9 @@ extension AttachFileButton: Viewable {
         let control = UIControl()
         control.backgroundColor = .brand(.primaryBackground())
         control.layer.cornerRadius = 8
+        control.layer.borderWidth = 0.5
 
+        bag += control.applyBorderColor { _ in UIColor.BrandColorNew.primaryBorderColor.color }
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
         let icon = Icon(icon: hCoreUIAssets.plusSmall.image, iconWidth: 20)
