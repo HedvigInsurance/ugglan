@@ -25,8 +25,9 @@ extension ChatInput: Viewable {
 
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = UIColor.brand(.secondaryBackground()).withAlphaComponent(0.8)
 
+        backgroundView.backgroundColor = UIColor.brandNew(.primaryBackground()).withAlphaComponent(0.75)
+        //        backgroundView.backgroundColor = .clear
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
 
@@ -42,7 +43,14 @@ extension ChatInput: Viewable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         backgroundView.addSubview(containerView)
+        let dividerView = UIView()
+        dividerView.backgroundColor = .brandNew(.primaryBorderColor)
+        backgroundView.addSubview(dividerView)
 
+        dividerView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            make.height.equalTo(1)
+        }
         containerView.snp.makeConstraints { make in make.leading.trailing.top.bottom.equalToSuperview() }
 
         let contentView = UIStackView()
@@ -53,7 +61,8 @@ extension ChatInput: Viewable {
         inputBar.axis = .horizontal
         inputBar.alpha = 0
 
-        let padding: CGFloat = 10
+        let padding: CGFloat = 16
+        let bottomPadding: CGFloat = 8
 
         let attachFilePaneIsOpenSignal = ReadWriteSignal(false)
         let attachGIFPaneIsOpenSignal = ReadWriteSignal(false)
@@ -75,7 +84,7 @@ extension ChatInput: Viewable {
                 stackView.layoutMargins = UIEdgeInsets(
                     top: padding,
                     left: padding,
-                    bottom: padding,
+                    bottom: bottomPadding,
                     right: 0
                 )
 
@@ -116,8 +125,8 @@ extension ChatInput: Viewable {
                 stackView.isLayoutMarginsRelativeArrangement = true
                 stackView.layoutMargins = UIEdgeInsets(
                     top: padding,
-                    left: 10,
-                    bottom: padding,
+                    left: 8,
+                    bottom: bottomPadding,
                     right: 0
                 )
 
@@ -151,7 +160,7 @@ extension ChatInput: Viewable {
 
         bag += inputBar.addArranged(textView.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.layoutMargins = UIEdgeInsets(top: padding, left: 10, bottom: padding, right: padding)
+            stackView.layoutMargins = UIEdgeInsets(top: padding, left: 8, bottom: bottomPadding, right: padding)
 
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) {
                 attachGifPaneIsOpen in var isHidden: Bool

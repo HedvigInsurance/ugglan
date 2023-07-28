@@ -140,7 +140,7 @@ extension Message: Reusable {
 
         let bubble = UIView()
         bubble.backgroundColor = .brand(.primaryTintColor)
-
+        bubble.layer.cornerRadius = 12
         bubble.snp.makeConstraints { make in make.width.lessThanOrEqualTo(300) }
 
         bubbleContainer.addArrangedSubview(bubble)
@@ -265,14 +265,13 @@ extension Message: Reusable {
 
                     spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                    let messageTextColor =
-                        message.fromMyself ? UIColor.black : .brand(.primaryText())
+                    let messageTextColor = UIColor.brandNew(.primaryText(false))
 
                     switch message.type {
-                    case .image, .video: bubble.backgroundColor = .clear
+                    case .image, .video:
+                        bubble.backgroundColor = .clear
                     default:
-                        bubble.backgroundColor =
-                            message.fromMyself ? Self.bubbleColor : Self.hedvigBubbleColor
+                        bubble.backgroundColor = UIColor.brandNew(.messageBackground(message.fromMyself))
                     }
 
                     switch message.type {

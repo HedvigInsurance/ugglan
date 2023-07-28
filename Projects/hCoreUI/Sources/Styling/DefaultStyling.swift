@@ -63,9 +63,12 @@ class NavBar: UINavigationBar {
 }
 
 public class hNavigationControllerWithLargerNavBar: UINavigationController {
+
+    public static var navigationBarHeight: CGFloat = 90
+
     public init() {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
-        additionalSafeAreaInsets.top = 90 - 56
+        additionalSafeAreaInsets.top = hNavigationControllerWithLargerNavBar.navigationBarHeight - 56
     }
 
     required init?(
@@ -170,6 +173,11 @@ extension DefaultStyling {
     }
 
     public static func setNavigationBarAppearance() {
+
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance().standardAppearance = standardNavigationBarAppearance()
+        UINavigationBar.appearance().compactAppearance = compactNavigationBarAppearance()
+
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
             scrollEdgeNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =

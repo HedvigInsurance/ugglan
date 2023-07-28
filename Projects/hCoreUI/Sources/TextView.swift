@@ -55,12 +55,12 @@ extension TextView: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = .brand(.primaryBackground())
+        view.backgroundColor = UIColor.brandNew(.primaryBackground())
         view.isUserInteractionEnabled = true
-        view.layer.cornerRadius = 6
-        view.layer.borderWidth = 1
+        view.layer.cornerRadius = 8
+        view.layer.borderWidth = 0.5
 
-        bag += view.applyBorderColor { _ in .brand(.primaryBorderColor) }
+        bag += view.applyBorderColor { _ in UIColor.BrandColorNew.primaryBorderColor.color }
 
         let paddingView = UIStackView()
         paddingView.isUserInteractionEnabled = true
@@ -72,7 +72,7 @@ extension TextView: Viewable {
         paddingView.snp.makeConstraints { make in make.trailing.leading.top.bottom.equalToSuperview() }
 
         let textView = UITextView()
-        textView.tintColor = .brand(.primaryTintColor)
+        textView.tintColor = .brandNew(.primaryText())
         textView.font = Fonts.hedvigLettersStandard.withSize(14)
         textView.backgroundColor = .clear
 
@@ -109,8 +109,10 @@ extension TextView: Viewable {
         }
 
         paddingView.addArrangedSubview(textView)
-
-        let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.footnote(color: .secondary)))
+        let placeholderLabel = UILabel()
+        placeholderLabel.text = placeholder.value
+        placeholderLabel.font = Fonts.fontFor(style: .footnote)
+        placeholderLabel.textColor = .brandNew(.secondaryText)
         paddingView.addSubview(placeholderLabel)
 
         bag += placeholder.map { Optional($0) }

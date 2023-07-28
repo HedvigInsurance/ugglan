@@ -8,7 +8,8 @@ extension AppJourney {
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
         let chat = Chat()
 
-        return Journey(chat, style: style) { item in
+        return Journey(chat, style: style, options: [.embedInNavigationController, .preffersLargerNavigationBar]) {
+            item in
             item.journey
         }
         .onPresent {
@@ -25,23 +26,21 @@ extension AppJourney {
                     chat.chatState.errorSignal.value = (ChatError.mutationFailed, nil)
                 }
         }
-        .addConfiguration { presenter in
-            presenter.viewController.navigationItem.titleView = .titleWordmarkView
-        }
+        .configureTitle(L10n.chatTitle)
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
         let chat = Chat()
 
-        return Journey(chat, style: style) { item in
+        return Journey(chat, style: style, options: [.embedInNavigationController, .preffersLargerNavigationBar]) {
+            item in
             if case .notifications = item {
                 item.journey
             }
         }
         .onPresent {
             let giraffe: hGiraffe = Dependencies.shared.resolve()
-
             giraffe.client.perform(mutation: GiraffeGraphQL.TriggerFreeTextChatMutation())
                 .onValue { _ in
                     chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
@@ -49,9 +48,7 @@ extension AppJourney {
                     }
                 }
         }
-        .addConfiguration { presenter in
-            presenter.viewController.title = L10n.claimsChatTitle
-        }
+        .configureTitle(L10n.chatTitle)
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 }
