@@ -63,7 +63,7 @@ extension CommonClaimDetail: Presentable {
             )
             bag += topCardContentView.addArranged(claimButton)
 
-            let store: ClaimsStore = self.get()
+            let store: HomeStore = self.get()
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
@@ -73,10 +73,12 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
-                } else if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
+                } else if claim.id == CommonClaim.travelInsurance.id {
                     store.send(.openTravelInsurance)
                 } else {
-                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    //                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    store.send(.startClaim)
+                    //TODO: FIX START CLAIM WITH ID
                 }
             }
 
@@ -92,8 +94,4 @@ extension CommonClaimDetail: Presentable {
 
         return (viewController, bag)
     }
-}
-
-public enum ComonClaimsRedirectionType {
-    case travelInsurace
 }

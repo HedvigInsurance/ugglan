@@ -42,32 +42,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return disposeBag
             }
-        case .fetchCommonClaims:
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.CommonClaimsQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        )
-                    )
-                    .onValue { claimData in
-                        let commonClaims = claimData.commonClaims.map {
-                            CommonClaim(claim: $0)
-                        }
-                        callback(.value(ClaimsAction.setCommonClaims(commonClaims: commonClaims)))
-                    }
-                    .onError { error in
-                        if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
-                        } else {
-                            callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-                            )
-                        }
-                    }
-                return disposeBag
-            }
         default:
             return nil
         }
@@ -81,13 +55,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setClaims(claims):
             newState.loadingStates.removeValue(forKey: .fetchClaims)
             newState.claims = claims
-        case .fetchCommonClaims:
-            newState.loadingStates[action] = .loading
-        case let .setCommonClaims(commonClaims):
-            newState.loadingStates.removeValue(forKey: .fetchCommonClaims)
-            newState.commonClaims = commonClaims
-        case let .setShowTravelInsurance(shouldIncludeTravelInsurance):
-            newState.showTravelInsurance = shouldIncludeTravelInsurance
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
