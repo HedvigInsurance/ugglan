@@ -1,49 +1,5 @@
 import SwiftUI
 
-public enum PillStyle {
-    case outline
-    case fill
-}
-
-public struct hPillOutline: View {
-    public init(
-        text: String
-    ) {
-        self.text = text
-    }
-
-    public let text: String
-
-    public var body: some View {
-        hText(text, style: .caption2)
-            .modifier(PillModifier())
-    }
-
-    struct PillModifier: ViewModifier {
-        @SwiftUI.Environment(\.colorScheme) var colorScheme
-
-        func body(content: Content) -> some View {
-            if colorScheme == .light {
-                content
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: .smallCornerRadius)
-                            .stroke(hLabelColor.primary, lineWidth: 1.0)
-                    )
-            } else {
-                content
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: .smallCornerRadius)
-                            .stroke(hLabelColor.primary, lineWidth: 1.0)
-                    )
-            }
-        }
-    }
-}
-
 public struct hPillFill<T: hColor, L: hColor>: View {
     public init(
         text: String,
@@ -60,7 +16,7 @@ public struct hPillFill<T: hColor, L: hColor>: View {
     public let backgroundColor: T
 
     public var body: some View {
-        hText(text, style: .caption2)
+        hText(text, style: .standardSmall)
             .foregroundColor(textColor)
             .modifier(PillModifier(backgroundColor: backgroundColor))
     }
@@ -70,11 +26,24 @@ public struct hPillFill<T: hColor, L: hColor>: View {
 
         func body(content: Content) -> some View {
             content
-                .padding(5)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
                 .background(
-                    RoundedRectangle(cornerRadius: .smallCornerRadius)
+                    RoundedRectangle(cornerRadius: .defaultCornerRadius)
                         .fill(backgroundColor)
                 )
+        }
+    }
+}
+
+struct ClaimStatus_Previews: PreviewProvider {
+    static var previews: some View {
+        HStack {
+            hPillFill(
+                text: "TEXT",
+                textColor: hLabelColor.primary.inverted,
+                backgroundColor: hLabelColor.primary
+            )
         }
     }
 }

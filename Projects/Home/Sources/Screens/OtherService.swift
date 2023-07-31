@@ -71,7 +71,7 @@ extension OtherService {
             HomeStore.self,
             rootView: OtherService(),
             style: .detented(.scrollViewContentSize),
-            options: .largeNavigationBar
+            options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .openFreeTextChat = action {
                 DismissJourney()
