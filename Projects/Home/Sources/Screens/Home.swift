@@ -35,6 +35,7 @@ extension HomeView {
         store.send(.fetchMemberState)
         store.send(.fetchFutureStatus)
         store.send(.fetchImportantMessages)
+        store.send(.fetchCommonClaims)
     }
 
     public var body: some View {
@@ -119,6 +120,8 @@ extension HomeView {
                 resultJourney(.openFreeTextChat)
             } else if case .openMovingFlow = action {
                 resultJourney(.startMovingFlow)
+            } else if case .openTravelInsurance = action {
+                resultJourney(.openTravelInsurance)
             } else if case .connectPayments = action {
                 resultJourney(.openConnectPayments)
             } else if case let .openDocument(contractURL) = action {
@@ -128,7 +131,7 @@ extension HomeView {
                     options: .defaults
                 )
             } else if case .openOtherServices = action {
-                resultJourney(.openOtherServices)
+                OtherService.journey
             } else if case .startClaim = action {
                 resultJourney(.startNewClaim)
             }
@@ -147,8 +150,8 @@ public enum HomeResult {
     case startMovingFlow
     case openFreeTextChat
     case openConnectPayments
-    case openOtherServices
     case startNewClaim
+    case openTravelInsurance
 }
 
 struct Active_Preview: PreviewProvider {

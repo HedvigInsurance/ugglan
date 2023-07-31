@@ -1,0 +1,101 @@
+import Presentation
+import SwiftUI
+import TravelCertificate
+import hCore
+import hCoreUI
+import hGraphQL
+
+struct OtherService: View {
+    @PresentableStore var store: HomeStore
+    var body: some View {
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.allCommonClaims
+            }
+        ) { otherServices in
+            hForm {
+                ForEach(otherServices, id: \.id) { claim in
+                    hSection {
+                        hRow {
+                            hText(claim.displayTitle)
+                        }
+                        .withChevronAccessory
+                        .onTap {
+                            if claim.id == CommonClaim.chat.id {
+                                store.send(.openFreeTextChat)
+                            } else if claim.id == CommonClaim.moving.id {
+                                store.send(.openMovingFlow)
+                            } else if claim.id == CommonClaim.travelInsurance.id {
+                                do {
+                                    Task {
+                                        let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                        store.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
+                                    }
+                                } catch let _ {
+                                    //TODO: ERROR
+                                }
+                            } else {
+                                store.send(.openCommonClaimDetail(commonClaim: claim))
+                            }
+                        }
+                    }
+                }
+            }
+            .hFormAttachToBottom {
+                hSection {
+                    hButton.LargeButtonGhost {
+                        store.send(.dismissOtherServices)
+                    } content: {
+                        hText(L10n.generalCloseButton)
+                    }
+
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.vertical, 16)
+            }
+
+        }
+    }
+}
+
+struct OtherService_Previews: PreviewProvider {
+    static var previews: some View {
+        OtherService()
+    }
+}
+
+extension OtherService {
+    static var journey: some JourneyPresentation {
+        HostingJourney(
+            HomeStore.self,
+            rootView: OtherService(),
+            style: .detented(.scrollViewContentSize),
+            options: .largeNavigationBar
+        ) { action in
+            if case .openFreeTextChat = action {
+                DismissJourney()
+            } else if case .openMovingFlow = action {
+                DismissJourney()
+            } else if case .openTravelInsurance = action {
+                DismissJourney()
+            } else if case let .openCommonClaimDetail(claim) = action {
+                Journey(
+                    CommonClaimDetail(claim: claim),
+                    style: .detented(.large, modally: false)
+                )
+                .withJourneyDismissButton
+            } else if case .dismissOtherServices = action {
+                DismissJourney()
+            }
+        }
+        .configureTitle(L10n.HomeTab.otherServices)
+        .onAction(HomeStore.self) { action, pres in
+            if case .startClaim = action {
+                pres.bag.dispose()
+            } else if case .openTravelInsurance = action {
+                pres.bag.dispose()
+            }
+        }
+    }
+}

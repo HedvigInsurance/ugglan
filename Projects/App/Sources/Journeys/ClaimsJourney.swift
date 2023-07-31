@@ -83,24 +83,6 @@ extension AppJourney {
             }
         }
     }
-
-    @JourneyBuilder
-    static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
-        Journey(
-            CommonClaimDetail(claim: claim),
-            style: .detented(.medium, .large),
-            options: .defaults
-        )
-        .onAction(ClaimsStore.self) { action in
-            if case .submitNewClaim = action {
-                DismissJourney()
-            } else if case .openTravelInsurance = action {
-                DismissJourney()
-            }
-        }
-        .withJourneyDismissButton
-    }
-
     @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney

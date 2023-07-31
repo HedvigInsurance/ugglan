@@ -1,4 +1,3 @@
-import Home
 import Presentation
 import SwiftUI
 import hCore
@@ -6,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct CommonClaimsCollection: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: HomeStore
     var commonClaims: [CommonClaim]
     init(
         commonClaims: [CommonClaim]
@@ -20,9 +19,8 @@ struct CommonClaimsCollection: View {
                 HStack(spacing: 8) {
                     ForEach(claimsRow, id: \.id) { claim in
                         Button {
-                            if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
-                                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                                homeStore.send(.openTravelInsurance)
+                            if claim.id == CommonClaim.travelInsurance.id {
+                                store.send(.openTravelInsurance)
                             } else {
                                 store.send(.openCommonClaimDetail(commonClaim: claim))
                             }
@@ -84,49 +82,5 @@ struct CommonClaimButtonStyle: ButtonStyle {
             x: 0,
             y: 1
         )
-    }
-}
-
-//TODO: REMOVE
-public struct CommonClaimsView: View {
-    @PresentableStore var store: ClaimsStore
-    public init() {}
-    public var body: some View {
-        hSection {
-            hRow {
-                PresentableStoreLens(
-                    ClaimsStore.self,
-                    getter: { state in
-                        return state.getRecommendedForYou
-                    },
-                    setter: { _ in
-                        .fetchCommonClaims
-                    }
-                ) { commonClaims, _ in
-                    CommonClaimsCollection(commonClaims: commonClaims)
-                }
-            }
-            .noSpacing()
-        }
-        .withHeader {
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    return state.getRecommendedForYou
-                },
-                setter: { _ in
-                    .fetchCommonClaims
-                }
-            ) { commonClaims, _ in
-                hText(
-                    commonClaims.isEmpty ? "" : L10n.claimsQuickChoiceHeader,
-                    style: .title1
-                )
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .onAppear {
-            store.send(.fetchCommonClaims)
-        }
     }
 }

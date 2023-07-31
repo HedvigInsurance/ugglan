@@ -33,10 +33,12 @@ extension AppJourney {
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
-                case .openOtherServices:
-                    DismissJourney()
                 case .startNewClaim:
                     startClaimsJourney(from: .generic)
+                case .openTravelInsurance:
+                    TravelInsuranceFlowJourney.start {
+                        AppJourney.freeTextChat()
+                    }
                 }
             } statusCard: {
                 VStack(spacing: 16) {
@@ -54,22 +56,6 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onAction(
-                HomeStore.self,
-                { action, _ in
-                    if case .openTravelInsurance = action {
-                        do {
-                            Task {
-                                let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
-                            }
-                        } catch let _ {
-                            //TODO: ERROR
-                        }
-                    }
-                }
-            )
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -213,14 +199,6 @@ extension JourneyPresentation {
                             DismissJourney()
                         }
                     }
-            } else if case .openTravelInsurance = action {
-                TravelInsuranceFlowJourney.start {
-                    AppJourney.freeTextChat()
-                }
-            } else if case .openHowClaimsWork = action {
-                AppJourney.claimsInfoJourney()
-            } else if case let .openCommonClaimDetail(commonClaim) = action {
-                AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             }
