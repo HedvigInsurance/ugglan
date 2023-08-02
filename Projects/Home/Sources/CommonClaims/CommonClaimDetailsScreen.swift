@@ -10,6 +10,14 @@ struct CommonClaimDetailsScreen: View {
 
 struct CommonClaimDetailsScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CommonClaimDetailsScreen()
+        CommonClaimDetailsScreen(
+            claim: .init(
+                id: "id",
+                icon: nil,
+                imageName: nil,
+                displayTitle: "title",
+                layout: CommonClaim.Layout(titleAndBulletPoint: nil, emergency: nil)
+            )
+        )
     }
 }
