@@ -45,6 +45,7 @@ struct ClaimStatusBar: View {
             Rectangle()
                 .fill(barColor)
                 .frame(height: 4)
+                .cornerRadius(2)
             hText(status.text, style: .standardSmall)
                 .foregroundColor(textColor)
                 .lineLimit(1)

@@ -28,7 +28,7 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 mainContent
                 if let topTitle = topTitle {
                     hText(topTitle)
