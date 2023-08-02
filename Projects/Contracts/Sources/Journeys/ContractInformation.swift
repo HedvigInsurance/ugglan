@@ -53,16 +53,6 @@ struct ContractInformationView: View {
                                     hText(L10n.contractEditInfoLabel)
                                 }
                             }
-                            if hAnalyticsExperiment.terminationFlow {
-                                if (contract.currentAgreement?.activeTo) == nil {
-                                    hButton.LargeButtonText {
-                                        store.send(.startTermination(contractId: id))
-                                    } content: {
-                                        hText(L10n.terminationButton)
-                                            .foregroundColor(hSignalColorNew.redElement)
-                                    }
-                                }
-                            }
                         }
                     }
                     .padding(.vertical, 16)

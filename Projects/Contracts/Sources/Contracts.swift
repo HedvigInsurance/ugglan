@@ -196,7 +196,7 @@ extension Contracts {
         .addConfiguration({ presenter in
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
+                navigationController.hero.navigationAnimationType = .auto
             }
         })
         .configureTitle(
