@@ -9,15 +9,15 @@ struct ClaimStatusBar: View {
     @hColorBuilder var barColor: some hColor {
         switch status.type {
         case .currentlyActive:
-            hLabelColor.primary
+            hTextColorNew.primary
         case .pastInactive:
-            hLabelColor.secondary
+            hTextColorNew.secondary
         case .paid:
-            hTintColor.lavenderOne
+            hSignalColorNew.blueElement
         case .reopened:
-            hTintColor.orangeOne
+            hSignalColorNew.amberElement
         case .futureInactive:
-            hLabelColor.tertiary
+            hTextColorNew.tertiary
         case .none:
             hLabelColor.primary
         }
@@ -25,12 +25,18 @@ struct ClaimStatusBar: View {
 
     @hColorBuilder var textColor: some hColor {
         switch status.type {
-        case .paid, .reopened, .currentlyActive, .none:
-            hLabelColor.primary
-        case .futureInactive:
-            hLabelColor.tertiary
+        case .currentlyActive:
+            hTextColorNew.primary
         case .pastInactive:
-            hLabelColor.secondary
+            hTextColorNew.secondary
+        case .paid:
+            hTextColorNew.primary
+        case .reopened:
+            hTextColorNew.primary
+        case .futureInactive:
+            hTextColorNew.tertiary
+        case .none:
+            hTextColorNew.primary
         }
     }
 
@@ -39,9 +45,22 @@ struct ClaimStatusBar: View {
             Rectangle()
                 .fill(barColor)
                 .frame(height: 4)
-            hText(status.text, style: .caption1)
+                .cornerRadius(2)
+            hText(status.text, style: .standardSmall)
                 .foregroundColor(textColor)
+                .lineLimit(1)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+struct ClaimStatusBar_Previews: PreviewProvider {
+    static var previews: some View {
+        HStack {
+            ClaimStatusBar(status: .init(text: "currently Active", type: .currentlyActive))
+            ClaimStatusBar(status: .init(text: "future Inactive", type: .futureInactive))
+            ClaimStatusBar(status: .init(text: "paid", type: .paid))
+            ClaimStatusBar(status: .init(text: "past Inactive", type: .pastInactive))
+            ClaimStatusBar(status: .init(text: "reopened", type: .reopened))
+        }
     }
 }
