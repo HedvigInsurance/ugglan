@@ -92,17 +92,17 @@ extension ForeverData {
     static func mock() -> ForeverData {
         let foreverData = ForeverData(
             grossAmount: .sek(100),
-            netAmount: .sek(80),
+            netAmount: .sek(60),
             potentialDiscountAmount: .sek(10),
             otherDiscounts: .sek(20),
             discountCode: "CODE",
             invitations: [
-                .init(name: "First", state: .active, invitedByOther: false),
+                .init(name: "First", state: .active, discount: .sek(10), invitedByOther: false),
                 .init(name: "Second", state: .pending, invitedByOther: false),
                 .init(name: "Third", state: .terminated, invitedByOther: false),
-                .init(name: "Third", state: .active, invitedByOther: true),
-                .init(name: "Forth", state: .pending, invitedByOther: true),
-                .init(name: "Fifth", state: .terminated, invitedByOther: true),
+                .init(name: "Forth", state: .active, discount: .sek(10), invitedByOther: true),
+                .init(name: "Fifth", state: .pending, invitedByOther: true),
+                .init(name: "Sixth", state: .terminated, invitedByOther: true),
             ]
         )
         return foreverData

@@ -63,7 +63,9 @@ struct PaymentInfoView: View {
                             .frame(width: 32, height: 32)
                         hText(item.name)
                         Spacer()
-                        hText(item.amount?.formattedAmount ?? "").foregroundColor(hLabelColor.secondary)
+
+                        hText(item.amount?.formattedAmount.addSufix(L10n.perMonth) ?? "")
+                            .foregroundColor(hLabelColor.secondary)
                     }
                 }
             }
@@ -81,7 +83,8 @@ struct PaymentInfoView: View {
                 hRow {
                     hText(L10n.paymentsDiscountsSectionTitle)
                     Spacer()
-                    hText(discount.negative.formattedAmount).foregroundColor(hLabelColor.secondary)
+                    hText(discount.negative.formattedAmount.addSufix(L10n.perMonth))
+                        .foregroundColor(hLabelColor.secondary)
                 }
             }
         }
@@ -181,15 +184,19 @@ struct PaymentInfoView: View {
                     HStack {
                         if paymentData?.insuranceCost?.gross != paymentData?.insuranceCost?.net {
                             if #available(iOS 15.0, *) {
-                                Text(vm.attributedString(paymentData?.insuranceCost?.gross?.formattedAmount ?? ""))
-                                    .foregroundColor(hTextColorNew.secondary)
-                                    .modifier(hFontModifier(style: .standard))
+                                Text(
+                                    vm.attributedString(
+                                        paymentData?.insuranceCost?.gross?.formattedAmount.addSufix(L10n.perMonth) ?? ""
+                                    )
+                                )
+                                .foregroundColor(hTextColorNew.secondary)
+                                .modifier(hFontModifier(style: .standard))
                             } else {
-                                hText(paymentData?.insuranceCost?.gross?.formattedAmount ?? "")
+                                hText(paymentData?.insuranceCost?.gross?.formattedAmount.addSufix(L10n.perMonth) ?? "")
                                     .foregroundColor(hTextColorNew.secondary)
                             }
                         }
-                        hText(paymentData?.insuranceCost?.net?.formattedAmount ?? "")
+                        hText(paymentData?.insuranceCost?.net?.formattedAmount.addSufix(L10n.perMonth) ?? "")
                     }
                     hText("", style: .standardSmall)
                         .foregroundColor(hLabelColor.secondary)

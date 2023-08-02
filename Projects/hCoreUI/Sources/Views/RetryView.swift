@@ -3,16 +3,19 @@ import hCore
 
 public struct RetryView: View {
     var title: String
+    var subtitle: String
     var retryTitle: String
     var action: (() -> Void)?
     @Environment(\.hRetryBottomAttachedView) var bottomAttachedView
 
     public init(
-        title: String,
-        retryTitle: String,
+        title: String = L10n.somethingWentWrong,
+        subtitle: String,
+        retryTitle: String = L10n.generalRetry,
         action: (() -> Void)? = nil
     ) {
         self.title = title
+        self.subtitle = subtitle
         self.retryTitle = retryTitle
         self.action = action
     }
@@ -26,8 +29,8 @@ public struct RetryView: View {
                         .foregroundColor(hSignalColorNew.amberElement)
                         .frame(width: 24, height: 24)
                     VStack(spacing: 0) {
-                        hText(L10n.somethingWentWrong)
-                        hText(title, style: .body)
+                        hText(title)
+                        hText(subtitle, style: .body)
                             .foregroundColor(hTextColorNew.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -51,7 +54,7 @@ struct RetryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return RetryView(
-            title:
+            subtitle:
                 "very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption very long descrption ",
             retryTitle: "Try again"
         )

@@ -234,6 +234,17 @@ extension JourneyPresentation {
                 AppJourney.freeTextChat()
             }
         }
+        .onAction(
+            SubmitClaimStore.self,
+            { action, pre in
+                if case let .navigationAction(navigationAction) = action {
+                    if case .openSuccessScreen = navigationAction {
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.setPushNotificationsTo(date: nil))
+                    }
+                }
+            }
+        )
     }
 
     public var configurePaymentNavigation: some JourneyPresentation {

@@ -68,7 +68,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
     case dismisscontractDetailNavigation
-    case contractEditInfo
+    case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
 
     case openSetTerminationDateScreen(contractId: String)
@@ -103,13 +103,28 @@ public enum ContractLoadingAction: LoadingProtocol {
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {
-    case coInsured
     case changeAddress
+    case coInsured
+
+    var buttonTitle: String {
+        switch self {
+        case .changeAddress: return L10n.generalContinueButton
+        case .coInsured: return L10n.openChat
+        }
+    }
 
     var title: String {
         switch self {
         case .coInsured: return L10n.contractEditCoinsured
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         }
+    }
+
+    public static func getTypes(for contract: Contract) -> [EditType] {
+        var editTypes: [EditType] = [.changeAddress]
+        if contract.canChangeCoInsured {
+            editTypes.append(.coInsured)
+        }
+        return editTypes
     }
 }

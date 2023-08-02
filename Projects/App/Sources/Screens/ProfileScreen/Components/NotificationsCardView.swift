@@ -18,7 +18,7 @@ struct NotificationsCardView: View {
                         .init(
                             buttonTitle: L10n.pushNotificationsAlertActionNotNow,
                             buttonAction: {
-                                ugglanStore.send(.setPushNotificationsNotNow)
+                                ugglanStore.send(.setPushNotificationsTo(date: Date()))
                             }
                         ),
                         .init(
