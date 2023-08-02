@@ -32,6 +32,7 @@ struct SelectContractScreen: View {
                 },
                 singleSelect: true
             )
+            .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
             .hButtonIsLoading(isLoading)
             .onReceive(
                 store.loadingSignal

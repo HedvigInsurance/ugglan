@@ -15,16 +15,17 @@ struct DirectDebitSetup {
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
+
         switch setupType {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.PayInIframePostSign.skipButton,
-                style: .brand(.body(color: .destructive))
+                style: UIColor.brandNewStyle(.navigationButton)
             )
         default:
             return UIBarButtonItem(
                 title: L10n.PayInIframeInApp.cancelButton,
-                style: .brand(.body(color: .link))
+                style: UIColor.brandNewStyle(.navigationButton)
             )
         }
     }

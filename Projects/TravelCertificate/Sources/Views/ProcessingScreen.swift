@@ -65,8 +65,7 @@ struct ProcessingScreen: View {
         ZStack {
             BackgroundView().ignoresSafeArea()
             RetryView(
-                title: L10n.General.errorBody,
-                retryTitle: L10n.generalRetry
+                subtitle: L10n.General.errorBody
             ) {
                 vm.store.send(.postTravelInsuranceForm)
             }

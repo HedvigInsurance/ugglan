@@ -18,7 +18,6 @@ extension Message: Reusable {
 
     var shouldShowTimeStamp: Bool {
         guard let previous = previous else { return timeStamp < Date().timeIntervalSince1970 - fiveMinutes }
-
         return previous.timeStamp < timeStamp - fiveMinutes
     }
 
@@ -52,7 +51,7 @@ extension Message: Reusable {
             let timeStampText = NSAttributedString(
                 styledText: StyledText(
                     text: "11:33",
-                    style: TextStyle.brand(.footnote(color: .secondary)).centerAligned
+                    style: UIColor.brandNewStyle(.chatTimeStamp)
                 )
             )
 
@@ -76,7 +75,7 @@ extension Message: Reusable {
         }
 
         let attributedString = NSAttributedString(
-            styledText: StyledText(text: body, style: .brand(.body(color: .primary)))
+            styledText: StyledText(text: body, style: UIColor.brandNewStyle(.primaryText()))
         )
 
         let size = attributedString.boundingRect(
@@ -103,7 +102,7 @@ extension Message: Reusable {
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
 
     static var hedvigBubbleColor: UIColor {
-        UIColor(base: .brand(.secondaryBackground()), elevated: .brand(.primaryBackground()))
+        UIColor(base: UIColor.brandNew(.secondaryBackground()), elevated: UIColor.brandNew(.primaryBackground()))
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
@@ -124,12 +123,11 @@ extension Message: Reusable {
 
         let timeStampLabel = UILabel(
             value: "",
-            style: TextStyle.brand(.footnote(color: .quartenary)).centerAligned
+            style: UIColor.brandNewStyle(.chatTimeStamp)
         )
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
 
         spacingContainer.addArrangedSubview(timeStampLabelContainer)
-
         timeStampLabelContainer.snp.makeConstraints { make in make.width.equalToSuperview().inset(20) }
 
         let bubbleContainer = UIStackView()
@@ -139,7 +137,6 @@ extension Message: Reusable {
         spacingContainer.addArrangedSubview(bubbleContainer)
 
         let bubble = UIView()
-        bubble.backgroundColor = .brand(.primaryTintColor)
         bubble.layer.cornerRadius = 12
         bubble.snp.makeConstraints { make in make.width.lessThanOrEqualTo(300) }
 
@@ -180,6 +177,7 @@ extension Message: Reusable {
                 contentContainer.subviews.forEach { view in
                     view.removeFromSuperview()
                 }
+                timeStampLabel.textAlignment = message.fromMyself ? .right : .left
 
                 UIView.performWithoutAnimation {
                     func handleTimeStamp() {
@@ -191,7 +189,6 @@ extension Message: Reusable {
 
                         let date = Date(timeIntervalSince1970: message.timeStamp)
                         let dateFormatter = DateFormatter()
-
                         if !Calendar.current.isDateInWeek(from: date) {
                             dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
                             timeStampLabel.text = dateFormatter.string(from: date)
@@ -262,7 +259,7 @@ extension Message: Reusable {
                             applySpacing()
                             spacingContainer.layoutSuperviewsIfNeeded()
                         }
-
+                    timeStampLabelContainer.alignment = message.fromMyself ? .trailing : .leading
                     spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
                     let messageTextColor = UIColor.brandNew(.primaryText(false))
@@ -372,7 +369,7 @@ extension Message: Reusable {
 
                         contentContainer.addArrangedSubview(imageViewContainer)
                     case let .file(url):
-                        let textStyle = TextStyle.brand(.body(color: .primary))
+                        let textStyle = UIColor.brandNewStyle(.primaryText())
                             .colored(messageTextColor)
 
                         let text = L10n.chatFileDownload
@@ -448,7 +445,7 @@ extension Message: Reusable {
                                     )
                             }
                     case .text:
-                        let textStyle = TextStyle.brand(.body(color: .primary))
+                        let textStyle = UIColor.brandNewStyle(.primaryText())
                             .colored(messageTextColor)
                         let attributedString = NSMutableAttributedString(
                             text: message.body,

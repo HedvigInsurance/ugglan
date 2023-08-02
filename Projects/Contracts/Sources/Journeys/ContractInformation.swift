@@ -48,19 +48,9 @@ struct ContractInformationView: View {
                         VStack(spacing: 8) {
                             if contract.currentAgreement?.status != .terminated {
                                 hButton.LargeButtonSecondary {
-                                    store.send(.contractEditInfo)
+                                    store.send(.contractEditInfo(id: id))
                                 } content: {
                                     hText(L10n.contractEditInfoLabel)
-                                }
-                            }
-                            if hAnalyticsExperiment.terminationFlow {
-                                if (contract.currentAgreement?.activeTo) == nil {
-                                    hButton.LargeButtonText {
-                                        store.send(.startTermination(contractId: id))
-                                    } content: {
-                                        hText(L10n.terminationButton)
-                                            .foregroundColor(hSignalColorNew.redElement)
-                                    }
                                 }
                             }
                         }

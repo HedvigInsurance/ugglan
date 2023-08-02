@@ -44,7 +44,7 @@ public struct TextInputView: View {
                             } content: {
                                 hText(L10n.generalSaveButton, style: .body)
                             }
-                            hButton.LargeButtonText {
+                            hButton.LargeButtonGhost {
                                 vm.dismiss()
                             } content: {
                                 hText(L10n.generalCancelButton, style: .body)

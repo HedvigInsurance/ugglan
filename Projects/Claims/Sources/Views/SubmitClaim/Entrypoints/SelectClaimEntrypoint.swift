@@ -302,7 +302,7 @@ struct ShowTagList: View {
 
         } else {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hGrayscaleTranslucentLightColorNew.greyScaleTranslucent100)
+                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent100)
         }
     }
 }

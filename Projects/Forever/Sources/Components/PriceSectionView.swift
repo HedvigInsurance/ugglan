@@ -35,6 +35,8 @@ struct PriceSectionView: View {
             HStack(spacing: 4) {
                 hText(netAmountAnimate.formattedAmount + "/" + L10n.monthAbbreviationLabel)
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                    .resizable()
+                    .frame(width: 16, height: 16)
                     .onTapGesture {
                         didPressInfo()
                     }

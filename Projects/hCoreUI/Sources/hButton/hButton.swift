@@ -307,11 +307,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     private func getView(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
-                .padding(.horizontal, 16)
         }
         .buttonSizeModifier(size)
         .background(ButtonFilledBackground(configuration: configuration))
         .clipShape(Squircle.default())
+        .contentShape(Rectangle())
     }
 }
 
@@ -402,6 +402,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())
+        .contentShape(Rectangle())
     }
 
     @hColorBuilder

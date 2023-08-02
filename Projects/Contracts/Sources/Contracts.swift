@@ -175,39 +175,18 @@ extension Contracts {
                         presenter.bag.dispose()
                     }
                 }
-            } else if case .contractEditInfo = action {
+            } else if case let .contractEditInfo(id) = action {
                 HostingJourney(
                     ContractStore.self,
-                    rootView: CheckboxPickerScreen(
-                        items: EditType.allCases.map({ ($0, $0.title) }),
-                        preSelectedItems: { [] },
-                        onSelected: { value in
-                            if let selectedType = value.first {
-                                let store: ContractStore = globalPresentableStoreContainer.get()
-                                store.send(.dismissEditInfo(type: selectedType))
-                                switch selectedType {
-                                case .coInsured:
-                                    store.send(.goToFreeTextChat)
-                                case .changeAddress:
-                                    store.send(.goToMovingFlow)
-                                }
-                            }
-                        },
-                        onCancel: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissEditInfo(type: nil))
-                        },
-                        singleSelect: true
-                    ),
+                    rootView: EditContract(id: id),
                     style: .detented(.scrollViewContentSize),
-                    options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+                    options: [.largeNavigationBar, .blurredBackground]
                 ) { action in
                     if case .dismissEditInfo = action {
                         DismissJourney()
                     }
                 }
                 .configureTitle(L10n.contractChangeInformationTitle)
-                .withDismissButton
             }
         }
         .onPresent({
@@ -217,11 +196,12 @@ extension Contracts {
         .addConfiguration({ presenter in
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
+                navigationController.hero.navigationAnimationType = .auto
             }
         })
         .configureTitle(
-            filter.displaysActiveContracts ? L10n.InsurancesTab.title : L10n.InsurancesTab.cancelledInsurancesTitle
+            filter.displaysActiveContracts
+                ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle
         )
         .configureContractsTabBarItem
     }

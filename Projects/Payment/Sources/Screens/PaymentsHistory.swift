@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 public struct PaymentHistory: View {
-
+    @PresentableStore var store: PaymentStore
     public var body: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -19,16 +19,22 @@ public struct PaymentHistory: View {
             }
         ) { history in
             if let history {
-                hForm {
-                    hSection(history, id: \.date) { element in
-                        hRow {
-                            hText(element.date)
-                            Spacer()
-                            hText(element.amount.formattedAmount)
+                if history.isEmpty {
+                    RetryView(title: "No charge history", subtitle: "", retryTitle: "Go Back") {
+                        store.send(.goBack)
+                    }
+                } else {
+                    hForm {
+                        hSection(history, id: \.date) { element in
+                            hRow {
+                                hText(element.date)
+                                Spacer()
+                                hText(element.amount.formattedAmount)
+                            }
                         }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
             }
         }
     }
@@ -37,8 +43,13 @@ public struct PaymentHistory: View {
 extension PaymentHistory {
     public static var journey: some JourneyPresentation {
         HostingJourney(
+            PaymentStore.self,
             rootView: PaymentHistory()
-        )
+        ) { action in
+            if case .goBack = action {
+                PopJourney()
+            }
+        }
         .configureTitle(L10n.paymentHistoryTitle)
     }
 }

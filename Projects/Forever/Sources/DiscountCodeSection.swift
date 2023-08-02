@@ -8,14 +8,14 @@ import hCoreUI
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
     var body: some View {
-        VStack(spacing: 0) {
-            PresentableStoreLens(
-                ForeverStore.self,
-                getter: { state in
-                    state.foreverData?.discountCode
-                }
-            ) { code in
-                if let code = code {
+        PresentableStoreLens(
+            ForeverStore.self,
+            getter: { state in
+                state.foreverData?.discountCode
+            }
+        ) { code in
+            if let code = code {
+                VStack(spacing: 0) {
                     hSection {
                         hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
                             UIPasteboard.general.string = code
@@ -31,10 +31,27 @@ struct DiscountCodeSectionView: View {
                             Image(uiImage: hCoreUIAssets.copy.image)
                         }
                     }
+                    hSection {
+                        VStack(spacing: 8) {
+                            hButton.LargeButtonPrimary {
+                                store.send(.showShareSheetWithNotificationReminder(code: code))
+                            } content: {
+                                hText(L10n.ReferralsEmpty.shareCodeButton)
+                            }
+
+                            hButton.LargeButtonGhost {
+                                store.send(.showChangeCodeDetail)
+                            } content: {
+                                hText(L10n.ReferralsChange.changeCode)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 16)
                 }
+
             }
-            .presentableStoreLensAnimation(.spring())
         }
+        .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
     }
 }

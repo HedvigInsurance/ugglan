@@ -35,35 +35,6 @@ public struct ForeverView: View {
         .onAppear {
             store.send(.fetch)
         }
-        .hFormAttachToBottom {
-            PresentableStoreLens(
-                ForeverStore.self,
-                getter: { state in
-                    state.foreverData?.discountCode
-                }
-            ) { code in
-                if let code = code {
-                    hSection {
-                        VStack(spacing: 8) {
-                            hButton.LargeButtonPrimary {
-                                store.send(.showShareSheetWithNotificationReminder(code: code))
-                            } content: {
-                                hText(L10n.ReferralsEmpty.shareCodeButton)
-                            }
-
-                            hButton.LargeButtonGhost {
-                                store.send(.showChangeCodeDetail)
-                            } content: {
-                                hText(L10n.ReferralsChange.changeCode)
-                            }
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                    .padding(.vertical, 16)
-
-                }
-            }
-        }
         .navigationBarItems(
             trailing:
                 PresentableStoreLens(
@@ -150,7 +121,8 @@ extension ForeverView {
                     )
                 ) ?? ""
             ]),
-            style: .activityView
+            style: .activityView,
+            options: []
         )
     }
 

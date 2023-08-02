@@ -36,6 +36,7 @@ public enum PaymentAction: ActionProtocol {
     case setActivePayout(data: ActivePayoutData?)
     case fetchAdyenAvailableMethodsForPayout
     case setAdyenAvailableMethodsForPayout(data: AdyenOptions)
+    case goBack
 }
 
 public enum LoadingAction: LoadingProtocol {
@@ -281,7 +282,7 @@ public struct PaymentData: Codable, Equatable {
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
             amount = MonetaryAmount(optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment)
-            date = data.nextChargeDate
+            date = data.nextChargeDate?.localDateToDate?.displayDateMMMDDYYYYFormat
         }
     }
 
