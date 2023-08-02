@@ -194,6 +194,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case seCarTraffic = "SE_CAR_TRAFFIC"
         case seCarHalf = "SE_CAR_HALF"
         case seCarFull = "SE_CAR_FULL"
+        case seGroupApartmentBrf = "SE_GROUP_APARTMENT_BRF"
         case seGroupApartmentRent = "SE_GROUP_APARTMENT_RENT"
         case seQasaShortTermRental = "SE_QASA_SHORT_TERM_RENTAL"
         case seQasaLongTermRental = "SE_QASA_LONG_TERM_RENTAL"
@@ -253,7 +254,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public func getDetails() -> String {
-        detailPills.joined(separator: " · ").capitalized
+        detailPills.joined(separator: " · ")
     }
 }
 
@@ -261,19 +262,21 @@ extension Contract.TypeOfContract {
     public var pillowType: Contract.PillowType {
         switch self {
         case .seHouse:
-            return .home
+            return .villa
         case .seApartmentBrf:
-            return .home
+            return .homeOwner
+        case .seGroupApartmentBrf:
+            return .homeOwner
         case .seApartmentRent:
             return .rental
         case .seApartmentStudentBrf:
-            return .home
+            return .student
         case .seApartmentStudentRent:
-            return .home
+            return .student
         case .seAccident:
             return .accident
         case .seAccidentStudent:
-            return .student
+            return .accident
         case .seCarTraffic:
             return .car
         case .seCarHalf:
@@ -281,11 +284,11 @@ extension Contract.TypeOfContract {
         case .seCarFull:
             return .car
         case .seGroupApartmentRent:
-            return .home
+            return .rental
         case .seQasaShortTermRental:
-            return .home
+            return .rental
         case .seQasaLongTermRental:
-            return .home
+            return .rental
         case .seDogBasic:
             return .dog
         case .seDogStandard:
@@ -428,6 +431,8 @@ extension Contract {
             return true
         case .unknown:
             return false
+        case .seGroupApartmentBrf:
+            return true
         }
     }
 }

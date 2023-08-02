@@ -137,7 +137,7 @@ extension ProfileView {
         }
         .configureTitle(L10n.profileTitle)
         .configureTabBarItem(
-            title: L10n.profileTitle,
+            title: L10n.ProfileTab.title,
             image: hCoreUIAssets.profileTab.image,
             selectedImage: hCoreUIAssets.profileTabActive.image
         )

@@ -57,7 +57,6 @@ extension ContractTable: View {
         ) { displaysActiveContracts in
             if self.filter.displaysActiveContracts {
                 CrossSellingStack()
-
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in

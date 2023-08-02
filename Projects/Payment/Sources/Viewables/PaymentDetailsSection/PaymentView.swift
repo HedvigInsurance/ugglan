@@ -123,17 +123,15 @@ struct PaymentView: View {
                 state.paymentData?.paymentHistory
             }
         ) { history in
-            if let history, !history.isEmpty {
-                hRow {
-                    Image(uiImage: HCoreUIAsset.circularClock.image)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                    hText(L10n.paymentsPaymentHistoryButtonLabel)
-                }
-                .withChevronAccessory
-                .onTap {
-                    store.send(.openHistory)
-                }
+            hRow {
+                Image(uiImage: HCoreUIAsset.circularClock.image)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                hText(L10n.paymentsPaymentHistoryButtonLabel)
+            }
+            .withChevronAccessory
+            .onTap {
+                store.send(.openHistory)
             }
         }
     }

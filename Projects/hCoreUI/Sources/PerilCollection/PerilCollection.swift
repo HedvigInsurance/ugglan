@@ -48,6 +48,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 )
                 .transition(.opacity.animation(.easeOut))
             }
+            .contentShape(Rectangle())
             .padding(.vertical, 13)
 
             if selectedPerils.contains(peril) {
@@ -105,6 +106,38 @@ public struct PerilCollection: View {
                 }
                 .buttonStyle(PerilButtonStyle(peril: peril, selectedPerils: selectedPerils))
             }
+        }
+    }
+}
+struct PerilCollection_Previews: PreviewProvider {
+    static var previews: some View {
+        let perils: [Perils] =
+            [
+                .init(
+                    fragment: .init(
+                        covered: [],
+                        description: "DESC",
+                        exceptions: [],
+                        id: "1",
+                        info: "info",
+                        title: "title"
+                    )
+                ),
+                .init(
+                    fragment: .init(
+                        covered: [],
+                        description: "DESC",
+                        exceptions: [],
+                        id: "2",
+                        info: "info",
+                        title: "title2"
+                    )
+                ),
+            ]
+        PerilCollection(
+            perils: perils
+        ) { peril in
+
         }
     }
 }

@@ -1,4 +1,5 @@
 import DynamicColor
+import Form
 import Foundation
 import UIKit
 import hCore
@@ -28,6 +29,8 @@ extension UIColor {
         case primaryText(_ negative: Bool = false)
         case secondaryText
         case messageBackground(_ my: Bool = false)
+        case navigationButton
+        case chatTimeStamp
         public var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -76,9 +79,41 @@ extension UIColor {
                             .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
                     }
                 })
+            case .navigationButton:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.black
+                })
+            case .chatTimeStamp:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hTextColorNew.tertiary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            }
+        }
+        var textStyle: TextStyle {
+            TextStyle.default.restyled { (style: inout TextStyle) in
+                style.font = font
+                style.color = color
+                style.adjustsFontForContentSizeCategory = true
+            }
+        }
+
+        private var font: UIFont {
+            switch self {
+            case .primaryBackground: return Fonts.fontFor(style: .title1)
+            case .secondaryBackground: return Fonts.fontFor(style: .title1)
+            case .primaryBorderColor: return Fonts.fontFor(style: .title1)
+            case .primaryText: return Fonts.fontFor(style: .title2)
+            case .secondaryText: return Fonts.fontFor(style: .title3)
+            case .messageBackground: return Fonts.fontFor(style: .headline)
+            case .navigationButton: return Fonts.fontFor(style: .standard)
+            case .chatTimeStamp: return Fonts.fontFor(style: .standardExtraSmall)
             }
         }
     }
 
     public static func brandNew(_ color: BrandColorNew) -> UIColor { color.color }
+
+    public static func brandNewStyle(_ color: BrandColorNew) -> TextStyle { color.textStyle }
+
 }

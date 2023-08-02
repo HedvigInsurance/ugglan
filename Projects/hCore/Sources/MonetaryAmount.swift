@@ -82,3 +82,9 @@ extension GiraffeGraphQL.MonetaryAmountFragment {
         .init(amount: amount, currency: currency)
     }
 }
+
+extension String {
+    public func addSufix(_ sufix: String) -> String {
+        return self + sufix
+    }
+}

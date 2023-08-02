@@ -39,9 +39,9 @@ extension ForeverInvitation {
         case .active:
             return self.discount?.negative.formattedAmount ?? ""
         case .pending:
-            return L10n.ReferallsInviteeStates.awaiting
+            return L10n.referralPendingStatusLabel
         case .terminated:
-            return L10n.ReferallsInviteeStates.terminated
+            return L10n.referralTerminatedStatusLabel
         }
     }
 }
@@ -60,7 +60,7 @@ struct InvitationTable: View {
                 if !foreverData.invitations.isEmpty {
                     hSection {
                         hRow {
-                            hText(L10n.ReferralsActive.Invited.title)
+                            hText(L10n.foreverReferralListLabel)
                         }
                         ForEach(foreverData.invitations, id: \.hashValue) { row in
                             InvitationRow(row: row)
@@ -94,12 +94,12 @@ struct InvitationTable: View {
     private func getTotalRow(_ foreverData: ForeverData) -> some View {
         if foreverData.grossAmount.amount != foreverData.netAmount.amount {
             hRow {
-                hText(L10n.PaymentDetails.ReceiptCard.total)
+                hText(L10n.foreverTabTotalDiscountLabel)
             }
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    getGrossField(foreverData.grossAmount.formattedAmount)
+                    getGrossField(foreverData.grossAmount.formattedAmount.addSufix("/" + L10n.monthAbbreviationLabel))
                     hText("\(foreverData.netAmount.formattedAmount)/\(L10n.monthAbbreviationLabel)")
                 }
             }
@@ -153,7 +153,7 @@ struct InvitationTable_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
 
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale = .en_SE
         return InvitationTable()
             .onAppear {
                 store.send(
@@ -168,6 +168,7 @@ struct InvitationTable_Previews: PreviewProvider {
                                 .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
                                 .init(name: "Second", state: .active, invitedByOther: false),
                                 .init(name: "Third", state: .terminated, invitedByOther: false),
+                                .init(name: "Fourth", state: .pending, invitedByOther: false),
                             ]
                         )
                     )
@@ -205,6 +206,7 @@ struct InvitationRow_Previews: PreviewProvider {
     )
 
     static var previews: some View {
+
         Localization.Locale.currentLocale = .en_SE
         return hSection {
             InvitationRow(row: mockRow)
