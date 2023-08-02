@@ -99,7 +99,7 @@ struct InvitationTable: View {
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    getGrossField(foreverData.grossAmount.formattedAmount.addSufix(L10n.perMonth))
+                    getGrossField(foreverData.grossAmount.formattedAmount.addSufix("/" + L10n.monthAbbreviationLabel))
                     hText("\(foreverData.netAmount.formattedAmount)/\(L10n.monthAbbreviationLabel)")
                 }
             }

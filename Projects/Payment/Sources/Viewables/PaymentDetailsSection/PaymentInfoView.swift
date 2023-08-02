@@ -227,7 +227,43 @@ struct PaymentInfoView: View {
 
 struct PaymentInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentInfoView(urlScheme: "")
+        VStack {
+            PaymentInfoView(urlScheme: "")
+                .onAppear {
+                    let store: PaymentStore = globalPresentableStoreContainer.get()
+                    let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
+                        bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
+                        nextChargeDate: "May 26th 2023",
+                        payinMethodStatus: .active,
+                        redeemedCampaigns: [
+                            .init(code: "CODE", displayValue: "CODE DISPLAY VALUE VALUE CODE DISPLAY VALUE VALUE ")
+                        ],
+                        balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
+                        chargeHistory: [
+                            .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
+                            .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
+                            .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
+                        ],
+                        insuranceCost: .init(
+                            monthlyDiscount: .init(amount: "100", currency: "SEK"),
+                            monthlyGross: .init(amount: "100", currency: "SEK"),
+                            monthlyNet: .init(amount: "90", currency: "SEK")
+                        ),
+                        chargeEstimation: .init(
+                            charge: .init(amount: "200", currency: "SEKF"),
+                            discount: .init(amount: "20", currency: "SEK"),
+                            subscription: .init(amount: "180", currency: "SEK")
+                        ),
+                        activeContractBundles: [
+                            .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
+                        ]
+                    )
+                    let paymentData = PaymentData(myPaymentQueryData)
+                    store.send(.setPaymentData(data: paymentData))
+                }
+            Spacer()
+
+        }
     }
 }
 
