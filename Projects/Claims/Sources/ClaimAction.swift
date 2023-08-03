@@ -14,4 +14,5 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
+    case closeClaimStatus
 }

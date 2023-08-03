@@ -9,6 +9,10 @@ extension Date {
         return DateFormatters.localDateStringDayFirstFormatter.string(from: self)
     }
 
+    public var localDateStringWithTime: String? {
+        return DateFormatters.localDateStringWithTimeFormatter.string(from: self)
+    }
+
     public var displayDateDotFormat: String? {
         return DateFormatters.displayDateDotFormatFormatter.string(from: self)
     }
@@ -32,6 +36,12 @@ private struct DateFormatters {
     static let localDateStringDayFirstFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
+
+    static let localDateStringWithTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
         return formatter
     }()
 

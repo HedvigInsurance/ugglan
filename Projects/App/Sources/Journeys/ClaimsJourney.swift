@@ -15,14 +15,15 @@ extension AppJourney {
 
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
-            UgglanStore.self,
-            rootView: ClaimDetailView(claim: claim),
-            options: [.embedInNavigationController]
+            ClaimsStore.self,
+            rootView: ClaimDetailView(claim: claim)
         ) { action in
-            DismissJourney()
+            if case .closeClaimStatus = action {
+                PopJourney()
+            }
         }
-        .inlineTitle()
-        .configureTitle(L10n.ClaimStatus.title)
+        .configureTitle(L10n.claimsYourClaim)
+        .hidesBottomBarWhenPushed
     }
 
     static func claimsInfoJourney() -> some JourneyPresentation {
