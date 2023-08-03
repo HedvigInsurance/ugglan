@@ -168,7 +168,7 @@ public struct hForm<Content: View>: View {
                         Color.clear
                             .onAppear {
                                 contentHeight = proxy.size.height
-                                recalculate()
+                                recalculateHeight()
                             }
                     }
                 )
@@ -187,7 +187,7 @@ public struct hForm<Content: View>: View {
             }
             scrollViewHeight =
                 scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom
-            recalculate()
+            recalculateHeight()
         }
     }
 
@@ -196,7 +196,7 @@ public struct hForm<Content: View>: View {
         hSignalColorNew.greenFill
     }
 
-    func recalculate() {
+    func recalculateHeight() {
         let maxContentHeight =
             scrollViewHeight - bottomAttachedViewHeight - (UIApplication.shared.safeArea?.bottom ?? 0)
         if contentHeight <= maxContentHeight {
@@ -210,9 +210,6 @@ public struct hForm<Content: View>: View {
         } else {
             additionalSpaceFromTop = 0
         }
-        print(
-            "\(self.scrollViewHeight) - \(self.bottomAttachedViewHeight) = \(maxContentHeight) === \(self.contentHeight) === \(additionalSpaceFromTop)"
-        )
     }
 }
 
