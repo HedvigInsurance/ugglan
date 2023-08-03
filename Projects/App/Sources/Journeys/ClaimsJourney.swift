@@ -22,7 +22,7 @@ extension AppJourney {
                 PopJourney()
             }
         }
-        .configureTitle(L10n.ClaimStatus.title)
+        .configureTitle(L10n.claimsYourClaim)
         .hidesBottomBarWhenPushed
     }
 

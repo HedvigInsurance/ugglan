@@ -27,7 +27,6 @@ public struct ClaimDetailView: View {
         {
             return claim.claimDetailData.payout
         }
-
         return nil
     }
 

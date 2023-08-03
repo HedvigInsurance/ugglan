@@ -111,9 +111,7 @@ extension HomeView {
                 memberId: memberId
             ),
             options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
+                .defaults
             ]
         ) { action in
             if case .openFreeTextChat = action {
@@ -136,7 +134,6 @@ extension HomeView {
                 resultJourney(.startNewClaim)
             }
         }
-        .configureTitle(L10n.HomeTab.title)
         .configureTabBarItem(
             title: L10n.HomeTab.title,
             image: hCoreUIAssets.homeTab.image,
