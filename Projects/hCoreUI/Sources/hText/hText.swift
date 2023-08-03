@@ -32,6 +32,7 @@ extension String {
 }
 
 public enum HFontTextStyle {
+    case title
     case title1
     case title2
     case title3
@@ -51,6 +52,7 @@ public enum HFontTextStyle {
 
     var fontSize: CGFloat {
         switch self {
+        case .title: return 32
         case .title1: return 28
         case .title2: return 26
         case .title3: return 24
@@ -91,6 +93,8 @@ public enum HFontTextStyle {
 
     private var uifontTextStyle: UIFont.TextStyle {
         switch self {
+        case .title:
+            return .title1
         case .title1:
             return .title1
         case .title2:

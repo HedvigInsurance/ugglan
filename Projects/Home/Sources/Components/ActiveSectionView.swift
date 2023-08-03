@@ -25,14 +25,6 @@ struct ActiveSectionView<Claims: View>: View {
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-
-                let members = ApolloClient.retreiveMembersWithDeleteRequests()
-                if members.contains(memberId) {
-                    InfoCard(
-                        text: L10n.hometabAccountDeletionNotification,
-                        type: .attention
-                    )
-                }
                 claimsContent
             }
             .slideUpFadeAppearAnimation()
