@@ -4,7 +4,6 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    @Environment(\.hWithoutFootnote) var hWithoutFootnote
 
     let playbackTint: some hColor = hColorScheme(
         light: hTintColor.lavenderOne,
@@ -66,29 +65,7 @@ struct TrackPlayer: View {
             .onTapGesture {
                 audioPlayer.togglePlaying()
             }
-
-            if !hWithoutFootnote {
-                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                    .foregroundColor(hTextColorNew.secondary)
-            }
         }
-    }
-}
-
-private struct EnvironmentHWithoutFootnote: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutFootnote: Bool {
-        get { self[EnvironmentHWithoutFootnote.self] }
-        set { self[EnvironmentHWithoutFootnote.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutFootnote: some View {
-        self.environment(\.hWithoutFootnote, true)
     }
 }
 
@@ -97,6 +74,5 @@ struct TrackPlayer_Previews: PreviewProvider {
     static var previews: some View {
         let audioPlayer = AudioPlayer(url: nil)
         TrackPlayer(audioPlayer: audioPlayer)
-            .hWithoutFootnote
     }
 }

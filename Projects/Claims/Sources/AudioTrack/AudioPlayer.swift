@@ -73,12 +73,13 @@ class AudioPlayer: NSObject, ObservableObject {
             try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
             try session.setActive(true)
         } catch {
-            self.playbackState = .error(message: "Playing over the device's speakers failed")
+            //            self.playbackState = .error(message: "Playing over the device's speakers failed")
+            try? session.setCategory(.playback)
+            try? session.setActive(true)
         }
         if let url {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
-
             addAudioPlayerNotificationObserver()
 
             audioPlayer?
@@ -93,6 +94,10 @@ class AudioPlayer: NSObject, ObservableObject {
                             let duration = CMTimeGetSeconds(item.duration)
                             let timeInFloat = CMTimeGetSeconds(time)
                             self.progress = timeInFloat / duration
+                        case .failed:
+                            break
+                        case .unknown:
+                            break
                         default:
                             self.playbackState = .error(message: "Unknown playback error")
                         }

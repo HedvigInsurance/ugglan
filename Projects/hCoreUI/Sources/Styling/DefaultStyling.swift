@@ -126,7 +126,7 @@ extension DefaultStyling {
         ]
 
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+            UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(
             backImage,
@@ -177,22 +177,22 @@ extension DefaultStyling {
         UINavigationBar.appearance().standardAppearance = standardNavigationBarAppearance()
         UINavigationBar.appearance().compactAppearance = compactNavigationBarAppearance()
 
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
-        //            scrollEdgeNavigationBarAppearance()
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
-        //            standardNavigationBarAppearance()
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
-        //            compactNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
+            scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
+            standardNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
+            compactNavigationBarAppearance()
 
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
-        //            .scrollEdgeAppearance =
-        //            scrollEdgeNavigationBarAppearance()
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
-        //            .standardAppearance =
-        //            standardNavigationBarAppearance()
-        //        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
-        //            .compactAppearance =
-        //            compactNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
+            .scrollEdgeAppearance =
+            scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
+            .standardAppearance =
+            standardNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
+            .compactAppearance =
+            compactNavigationBarAppearance()
     }
 
     public static func installCustom() {

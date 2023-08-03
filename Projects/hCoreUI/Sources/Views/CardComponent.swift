@@ -35,10 +35,12 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
                         .padding(.leading, 16)
                 }
                 Spacer()
-                hCoreUIAssets.chevronRight.view
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(hTextColorNew.secondary)
+                if onSelected != nil {
+                    hCoreUIAssets.chevronRight.view
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(hTextColorNew.secondary)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 16)

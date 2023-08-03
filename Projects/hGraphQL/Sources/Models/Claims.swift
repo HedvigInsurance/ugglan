@@ -43,7 +43,7 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
     public let claimDetailData: ClaimDetailData
 
     public struct ClaimDetailData: Codable, Equatable, Hashable {
-        internal init(
+        public init(
             id: String,
             status: Claim.ClaimDetailData.ClaimStatus,
             outcome: Claim.ClaimDetailData.ClaimOutcome,
