@@ -91,8 +91,10 @@ extension HomeView {
                     }
                 }
             }
+            .padding(.bottom, 16)
             .sectionContainerStyle(.transparent)
         }
+        .hFormContentPosition(.center)
     }
 }
 
@@ -196,12 +198,9 @@ struct ActiveInFuture_Previews: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
                 displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
+                switchedFromInsuranceProvider: nil,
                 status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                upcomingRenewal: .init(
-                    renewalDate: "2023-11-11",
-                    draftCertificateUrl: "URL"
-                )
+                upcomingRenewal: nil
             )
             store.send(
                 .setMemberContractState(
@@ -209,7 +208,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
                     contracts: [.init(contract: contract)]
                 )
             )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
+            store.send(.setFutureStatus(status: .none))
             store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
         }
 

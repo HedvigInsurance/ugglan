@@ -30,7 +30,7 @@ struct OtherService: View {
                                 do {
                                     Task {
                                         let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                        store.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
+                                        store.send(.openTravelInsurance)
                                     }
                                 } catch let _ {
                                     //TODO: ERROR

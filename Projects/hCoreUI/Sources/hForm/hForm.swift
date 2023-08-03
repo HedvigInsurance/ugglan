@@ -107,10 +107,14 @@ public struct hForm<Content: View>: View {
     @State var shouldAnimateGradient = true
     @State var bottomAttachedViewHeight: CGFloat = 0
     @State var scrollViewHeight: CGFloat = 0
+    @State var contentHeight: CGFloat = 0
+    @State var titleHeight: CGFloat = 0
+    @State var additionalSpaceFromTop: CGFloat = 0
 
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
+    @Environment(\.hFormContentPosition) var contentPosition
     var content: Content
 
     public init(
@@ -120,43 +124,56 @@ public struct hForm<Content: View>: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().edgesIgnoringSafeArea(.all)
-            getScrollView()
-            BackgroundBlurView()
-                .frame(
-                    height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
-                    alignment: .bottom
-                )
-                .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
-                .ignoresSafeArea(.all)
-            bottomAttachedView
-                .background(
-                    GeometryReader { geo in
-                        Color.clear
-                            .onReceive(Just(geo.size.height)) { height in
-                                self.bottomAttachedViewHeight = height
-                            }
-                    }
-                )
-                .frame(maxHeight: .infinity, alignment: .bottom)
+        VStack {
+            if let hFormTitle {
+                hText(hFormTitle.2, style: hFormTitle.1)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, hFormTitle.0.topMargin)
+                    .padding(.bottom, hFormTitle.0.bottomMargin)
+                    .padding([.leading, .trailing], 16)
+            }
+            ZStack(alignment: .bottom) {
+                getScrollView()
+                BackgroundBlurView()
+                    .frame(
+                        height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
+                        alignment: .bottom
+                    )
+                    .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
+                    .ignoresSafeArea(.all)
+                bottomAttachedView
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onReceive(Just(geo.size.height)) { height in
+                                    self.bottomAttachedViewHeight = height
+                                }
+                        }
+                    )
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+            }
         }
+        .background(
+            BackgroundView().edgesIgnoringSafeArea(.all)
+        )
+
     }
 
     func getScrollView() -> some View {
         ScrollView {
-            VStack {
-                if let hFormTitle {
-                    hText(hFormTitle.2, style: hFormTitle.1)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, hFormTitle.0.topMargin)
-                        .padding(.bottom, hFormTitle.0.bottomMargin)
-                        .padding([.leading, .trailing], 16)
-                }
-                content
-            }
-            .frame(maxWidth: .infinity)
-            .tint(hForm<Content>.returnTintColor())
+            Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
+            content
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                contentHeight = proxy.size.height
+                                recalculate()
+                            }
+                    }
+                )
+                .frame(maxWidth: .infinity)
+                .tint(hForm<Content>.returnTintColor())
             Color.clear
                 .frame(height: bottomAttachedViewHeight)
         }
@@ -170,6 +187,7 @@ public struct hForm<Content: View>: View {
             }
             scrollViewHeight =
                 scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom
+            recalculate()
         }
     }
 
@@ -177,4 +195,70 @@ public struct hForm<Content: View>: View {
     static func returnTintColor() -> some hColor {
         hSignalColorNew.greenFill
     }
+
+    func recalculate() {
+        let maxContentHeight =
+            scrollViewHeight - bottomAttachedViewHeight - (UIApplication.shared.safeArea?.bottom ?? 0)
+        if contentHeight <= maxContentHeight {
+            self.additionalSpaceFromTop = {
+                switch contentPosition {
+                case .top: return 0
+                case .center: return (maxContentHeight - contentHeight) / 2
+                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
+                }
+            }()
+        } else {
+            additionalSpaceFromTop = 0
+        }
+        print(
+            "\(self.scrollViewHeight) - \(self.bottomAttachedViewHeight) = \(maxContentHeight) === \(self.contentHeight) === \(additionalSpaceFromTop)"
+        )
+    }
+}
+
+struct hForm_Previews: PreviewProvider {
+    static var previews: some View {
+        hForm {
+            hSection {
+                hText("Content").frame(height: 200).background(Color.red)
+                hText("Content").frame(height: 200)
+                hText("Content").frame(height: 200)
+                hText("Content").frame(height: 200)
+                    .background(Color.red)
+            }
+        }
+        .hFormAttachToBottom {
+            hButton.LargeButtonPrimary {
+
+            } content: {
+                hText("TEXT")
+            }
+
+        }
+        .hFormContentPosition(.bottom)
+        .hFormTitle(.small, .standard, "TITLE")
+    }
+}
+
+private struct EnvironmentHFormContentPosition: EnvironmentKey {
+    static let defaultValue: ContentPosition = .top
+}
+
+extension EnvironmentValues {
+    public var hFormContentPosition: ContentPosition {
+        get { self[EnvironmentHFormContentPosition.self] }
+        set { self[EnvironmentHFormContentPosition.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+        self.environment(\.hFormContentPosition, position)
+    }
+}
+
+public enum ContentPosition {
+    case top
+    case center
+    case bottom
 }

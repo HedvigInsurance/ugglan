@@ -73,7 +73,6 @@ extension ContractTable: View {
                                         .foregroundColor(hTextColorNew.primary)
                                 }
                                 .withChevronAccessory
-                                .padding(.horizontal, -16)
                                 .foregroundColor(hTextColorNew.secondary)
                             }
                         }
