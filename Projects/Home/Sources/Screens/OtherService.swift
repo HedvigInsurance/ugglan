@@ -15,28 +15,30 @@ struct OtherService: View {
             }
         ) { otherServices in
             hForm {
-                ForEach(otherServices, id: \.id) { claim in
-                    hSection {
-                        hRow {
-                            hText(claim.displayTitle)
-                        }
-                        .withChevronAccessory
-                        .onTap {
-                            if claim.id == CommonClaim.chat.id {
-                                store.send(.openFreeTextChat)
-                            } else if claim.id == CommonClaim.moving.id {
-                                store.send(.openMovingFlow)
-                            } else if claim.id == CommonClaim.travelInsurance.id {
-                                do {
-                                    Task {
-                                        let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                        store.send(.openTravelInsurance)
+                VStack(spacing: 4) {
+                    ForEach(otherServices, id: \.id) { claim in
+                        hSection {
+                            hRow {
+                                hText(claim.displayTitle)
+                            }
+                            .withChevronAccessory
+                            .onTap {
+                                if claim.id == CommonClaim.chat.id {
+                                    store.send(.openFreeTextChat)
+                                } else if claim.id == CommonClaim.moving.id {
+                                    store.send(.openMovingFlow)
+                                } else if claim.id == CommonClaim.travelInsurance.id {
+                                    do {
+                                        Task {
+                                            let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                            store.send(.openTravelInsurance)
+                                        }
+                                    } catch let _ {
+                                        //TODO: ERROR
                                     }
-                                } catch let _ {
-                                    //TODO: ERROR
+                                } else {
+                                    store.send(.openCommonClaimDetail(commonClaim: claim))
                                 }
-                            } else {
-                                store.send(.openCommonClaimDetail(commonClaim: claim))
                             }
                         }
                     }
