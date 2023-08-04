@@ -11,6 +11,7 @@ public struct ProfileState: StateProtocol {
     var memberEmail: String = ""
     var memberPhone: String?
     var partnerData: PartnerData?
+    var openSettingsDirectly = true
     public init() {}
 }
 
@@ -25,13 +26,14 @@ public enum ProfileAction: ActionProtocol {
     case openSuccessChangeEuroBonus
     case openFreeTextChat
     case openAppInformation
-    case openAppSettings
+    case openAppSettings(animated: Bool)
     case setMember(id: String, name: String, email: String, phone: String?)
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
+    case setOpenAppSettings(to: Bool)
 }
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
@@ -94,6 +96,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.memberEmail = email
         case let .setMemberPhone(phone):
             newState.memberPhone = phone
+        case let .setOpenAppSettings(to):
+            newState.openSettingsDirectly = to
         default:
             break
         }

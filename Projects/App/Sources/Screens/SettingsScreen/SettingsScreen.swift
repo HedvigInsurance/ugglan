@@ -25,10 +25,7 @@ struct SettingsScreen: View {
                         value: Localization.Locale.currentLocale.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-                            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                                return
-                            }
-                            DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                            store.send(.openLangaugePicker)
                         }
                     )
                     PresentableStoreLens(

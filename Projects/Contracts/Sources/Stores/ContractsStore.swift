@@ -18,7 +18,11 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchCrossSale:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.fetch(query: OctopusGraphQL.CrossSellsQuery())
+                disposeBag += self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.CrossSellsQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
                     .onValue({ data in
                         let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({
                             CrossSell($0)
