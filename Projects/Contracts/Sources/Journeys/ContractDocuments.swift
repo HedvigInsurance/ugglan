@@ -92,7 +92,7 @@ struct ContractDocumentsView: View {
             ) { contract in
                 if (contract?.currentAgreement?.activeTo) == nil {
                     hSection {
-                        hButton.SmallButtonText {
+                        hButton.LargeButtonGhost {
                             store.send(.startTermination(contractId: id))
                         } content: {
                             hText(L10n.terminationButton, style: .body)

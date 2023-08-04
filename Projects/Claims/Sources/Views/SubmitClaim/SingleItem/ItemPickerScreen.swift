@@ -18,21 +18,21 @@ public struct ItemPickerScreen<T>: View {
 
     public var body: some View {
         hForm {
-            ForEach(items, id: \.displayName) { item in
-                hSection {
-                    hRow {
-                        hText(item.displayName, style: .title3)
-                            .foregroundColor(hTextColorNew.primary)
+            VStack(spacing: 4) {
+                ForEach(items, id: \.displayName) { item in
+                    hSection {
+                        hRow {
+                            hText(item.displayName, style: .title3)
+                                .foregroundColor(hTextColorNew.primary)
+                        }
+                        .withChevronAccessory
+                        .verticalPadding(9)
+                        .onTap {
+                            onSelected(item.object)
+                        }
+                        .foregroundColor(hTextColorNew.tertiary)
                     }
-                    .withChevronAccessory
-                    .onTap {
-                        onSelected(item.object)
-                    }
-                    .foregroundColor(hTextColorNew.tertiary)
-                    .hWithoutDivider
-                    .padding(.vertical, -10)
                 }
-                .padding(.bottom, -4)
             }
         }
         .hFormAttachToBottom {

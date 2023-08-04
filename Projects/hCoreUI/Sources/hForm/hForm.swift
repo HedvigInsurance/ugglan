@@ -177,7 +177,7 @@ public struct hForm<Content: View>: View {
                         .padding(.bottom, hFormTitle.0.bottomMargin)
                         .padding([.leading, .trailing], 16)
                 }
-                content
+                content.padding(.bottom, -8)
             }
             .frame(maxWidth: .infinity)
             .tint(hForm<Content>.returnTintColor())

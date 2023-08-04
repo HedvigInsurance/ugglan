@@ -38,32 +38,33 @@ public struct PickLanguage: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
             }
-            ForEach(currentMarket.languages, id: \.lprojCode) { locale in
-                hSection {
-                    hRow {
-                        HStack(spacing: 0) {
-                            hText(locale.displayName, style: .title3)
-                                .foregroundColor(hTextColorNew.primary)
-                            Spacer()
-                            Circle()
-                                .strokeBorder(
-                                    getBorderColor(isSelected: locale == currentLocale),
-                                    lineWidth: locale == currentLocale ? 0 : 1.5
-                                )
-                                .background(Circle().foregroundColor(retColor(isSelected: locale == currentLocale)))
-                                .frame(width: 28, height: 28)
+            VStack(spacing: 4) {
+                ForEach(currentMarket.languages, id: \.lprojCode) { locale in
+                    hSection {
+                        hRow {
+                            HStack(spacing: 0) {
+                                hText(locale.displayName, style: .title3)
+                                    .foregroundColor(hTextColorNew.primary)
+                                Spacer()
+                                Circle()
+                                    .strokeBorder(
+                                        getBorderColor(isSelected: locale == currentLocale),
+                                        lineWidth: locale == currentLocale ? 0 : 1.5
+                                    )
+                                    .background(Circle().foregroundColor(retColor(isSelected: locale == currentLocale)))
+                                    .frame(width: 28, height: 28)
+                            }
                         }
-                    }
-                    .withEmptyAccessory
-                    .onTap {
-                        if onSave == nil {
-                            Localization.Locale.currentLocale = locale
+                        .withEmptyAccessory
+                        .onTap {
+                            if onSave == nil {
+                                Localization.Locale.currentLocale = locale
+                            }
+                            self.currentLocale = locale
                         }
-                        self.currentLocale = locale
                     }
                 }
                 .hWithoutDivider
-
             }
         }
         .hFormAttachToBottom {
@@ -86,6 +87,7 @@ public struct PickLanguage: View {
                     }
                 }
             }
+            .padding(.vertical, 16)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }

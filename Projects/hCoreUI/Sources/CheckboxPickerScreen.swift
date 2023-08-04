@@ -30,18 +30,18 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     public var body: some View {
         if onCancel != nil {
-            hForm {}
+            hForm { content }
                 .hFormAttachToBottom {
-                    content
+                    bottomContent
                 }
                 .onAppear {
                     selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
                 }
         } else {
-            hForm {}
+            hForm { content }
                 .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
                 .hFormAttachToBottom {
-                    content
+                    bottomContent
                 }
                 .onAppear {
                     selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
@@ -49,41 +49,37 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    @ViewBuilder
     var content: some View {
-        VStack(spacing: 8) {
-            VStack(spacing: 4) {
-                ForEach(items, id: \.object) { item in
-                    hSection {
-                        getCell(item: item)
-                    }
-                    .disabled(isLoading)
+
+        VStack(spacing: 4) {
+            ForEach(items, id: \.object) { item in
+                hSection {
+                    getCell(item: item)
                 }
+                .disabled(isLoading)
             }
-            .padding(.top, 8)
+        }
+    }
+
+    var bottomContent: some View {
+        hSection {
             VStack(spacing: 8) {
+                hButton.LargeButtonPrimary {
+                    sendSelectedItems
+                } content: {
+                    hText(L10n.generalContinueButton, style: .standard)
+                }
                 if let onCancel {
-                    hButton.LargeButtonPrimary {
-                        sendSelectedItems
-                    } content: {
-                        hText(L10n.generalSaveButton, style: .standard)
-                    }
                     hButton.LargeButtonText {
                         onCancel()
                     } content: {
                         hText(L10n.generalCancelButton, style: .standard)
                     }
-                } else {
-                    hButton.LargeButtonPrimary {
-                        sendSelectedItems
-                    } content: {
-                        hText(L10n.generalContinueButton, style: .standard)
-                    }
                 }
             }
-            .padding(.horizontal, 16)
         }
-        .padding(.top, 16)
+        .sectionContainerStyle(.transparent)
+        .padding(.vertical, 16)
     }
 
     var sendSelectedItems: Void {
@@ -109,7 +105,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
             .hWithoutDivider
         } else {
-
             hRow {
                 displayContentFor(item.object)
             }

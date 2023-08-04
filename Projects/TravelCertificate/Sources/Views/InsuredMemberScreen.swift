@@ -24,25 +24,26 @@ struct InsuredMemberScreen: View {
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                hButton.LargeButtonPrimary {
-                    vm.submit()
-                } content: {
-                    if vm.policyCoinsuredPerson == nil {
-                        hText(L10n.generalContinueButton)
-                    } else {
-                        hText(L10n.TravelCertificate.confirmButtonChangeMember)
+            hSection {
+                VStack(spacing: 8) {
+                    hButton.LargeButtonPrimary {
+                        vm.submit()
+                    } content: {
+                        if vm.policyCoinsuredPerson == nil {
+                            hText(L10n.generalContinueButton)
+                        } else {
+                            hText(L10n.TravelCertificate.confirmButtonChangeMember)
+                        }
+                    }
+
+                    hButton.SmallButtonText {
+                        vm.dismiss()
+                    } content: {
+                        hText(L10n.generalCancelButton)
                     }
                 }
-
-                hButton.SmallButtonText {
-                    vm.dismiss()
-                } content: {
-                    hText(L10n.generalCancelButton)
-                }
             }
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 6)
+            .padding(.vertical, 16)
         }
         .navigationTitle(vm.title)
     }
