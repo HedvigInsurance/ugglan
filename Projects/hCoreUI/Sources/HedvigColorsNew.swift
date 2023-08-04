@@ -32,6 +32,10 @@ extension UIColor {
         case navigationButton
         case chatTimeStamp
         case chatMessage
+        case toasterBackground
+        case toasterTitle
+        case toasterSubtitle
+
         public var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -94,6 +98,21 @@ extension UIColor {
                     hTextColorNew.primary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
+            case .toasterBackground:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColorNew.blueFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .toasterTitle:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColorNew.blueText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .toasterSubtitle:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColorNew.blueText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
             }
         }
         var textStyle: TextStyle {
@@ -115,6 +134,9 @@ extension UIColor {
             case .navigationButton: return Fonts.fontFor(style: .standard)
             case .chatTimeStamp: return Fonts.fontFor(style: .standardExtraSmall)
             case .chatMessage: return Fonts.fontFor(style: .standard)
+            case .toasterBackground: return Fonts.fontFor(style: .title1)
+            case .toasterTitle: return Fonts.fontFor(style: .standardSmall)
+            case .toasterSubtitle: return Fonts.fontFor(style: .standardExtraSmall)
             }
         }
     }
