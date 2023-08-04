@@ -323,11 +323,12 @@ public class ClaimJourneys {
     private static func openPriceInputScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: PriceInputScreen(onSave: { purchasePrice in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
-                store.send(.navigationAction(action: .dismissScreen))
-            }),
+            rootView:
+                PriceInputScreen(onSave: { purchasePrice in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
+                    store.send(.navigationAction(action: .dismissScreen))
+                }),
             style: .detented(.scrollViewContentSize),
             options: [
                 .largeNavigationBar, .blurredBackground,

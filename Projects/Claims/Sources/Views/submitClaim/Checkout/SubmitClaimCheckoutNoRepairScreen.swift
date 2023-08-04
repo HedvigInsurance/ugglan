@@ -19,32 +19,34 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 getFormContent(from: singleItemCheckoutStep)
             }
             .hFormAttachToBottom {
-                VStack(spacing: 8) {
-                    InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
-                        .padding(.bottom, 8)
-                    hButton.LargeButtonPrimary {
-                        store.send(.singleItemCheckoutRequest)
-                        store.send(.navigationAction(action: .openCheckoutTransferringScreen))
-                    } content: {
-                        hText(
-                            L10n.Claims.Payout.Button.label(
-                                singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
-                            ),
-                            style: .body
-                        )
-                    }
+                hSection {
+                    VStack(spacing: 8) {
+                        InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                            .padding(.bottom, 8)
+                        hButton.LargeButtonPrimary {
+                            store.send(.singleItemCheckoutRequest)
+                            store.send(.navigationAction(action: .openCheckoutTransferringScreen))
+                        } content: {
+                            hText(
+                                L10n.Claims.Payout.Button.label(
+                                    singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
+                                ),
+                                style: .body
+                            )
+                        }
 
-                    hButton.LargeButtonText {
-                        store.send(.navigationAction(action: .dismissScreen))
-                    } content: {
-                        hText(
-                            L10n.generalBackButton,
-                            style: .body
-                        )
+                        hButton.LargeButtonText {
+                            store.send(.navigationAction(action: .dismissScreen))
+                        } content: {
+                            hText(
+                                L10n.embarkGoBackButton,
+                                style: .body
+                            )
+                        }
                     }
-                    .padding(.horizontal, 16)
-
                 }
+                .padding(.vertical, 16)
+                .sectionContainerStyle(.transparent)
             }
         }
         .presentableStoreLensAnimation(.spring())

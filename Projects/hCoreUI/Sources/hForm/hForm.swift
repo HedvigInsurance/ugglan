@@ -124,34 +124,25 @@ public struct hForm<Content: View>: View {
     }
 
     public var body: some View {
-        VStack {
-            if let hFormTitle {
-                hText(hFormTitle.2, style: hFormTitle.1)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, hFormTitle.0.topMargin)
-                    .padding(.bottom, hFormTitle.0.bottomMargin)
-                    .padding([.leading, .trailing], 16)
-            }
-            ZStack(alignment: .bottom) {
-                getScrollView()
-                BackgroundBlurView()
-                    .frame(
-                        height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
-                        alignment: .bottom
-                    )
-                    .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
-                    .ignoresSafeArea(.all)
-                bottomAttachedView
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onReceive(Just(geo.size.height)) { height in
-                                    self.bottomAttachedViewHeight = height
-                                }
-                        }
-                    )
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-            }
+        ZStack(alignment: .bottom) {
+            getScrollView()
+            BackgroundBlurView()
+                .frame(
+                    height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
+                    alignment: .bottom
+                )
+                .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
+                .ignoresSafeArea(.all)
+            bottomAttachedView
+                .background(
+                    GeometryReader { geo in
+                        Color.clear
+                            .onReceive(Just(geo.size.height)) { height in
+                                self.bottomAttachedViewHeight = height
+                            }
+                    }
+                )
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
@@ -162,18 +153,27 @@ public struct hForm<Content: View>: View {
     func getScrollView() -> some View {
         ScrollView {
             Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
-            content
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear
-                            .onAppear {
-                                contentHeight = proxy.size.height
-                                recalculateHeight()
-                            }
-                    }
-                )
-                .frame(maxWidth: .infinity)
-                .tint(hForm<Content>.returnTintColor())
+            VStack(spacing: 0) {
+                if let hFormTitle {
+                    hText(hFormTitle.2, style: hFormTitle.1)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, hFormTitle.0.topMargin)
+                        .padding(.bottom, hFormTitle.0.bottomMargin)
+                        .padding([.leading, .trailing], 16)
+                }
+                content.padding(.bottom, -8)
+            }
+            .background(
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            contentHeight = proxy.size.height
+                            recalculateHeight()
+                        }
+                }
+            )
+            .frame(maxWidth: .infinity)
+            .tint(hForm<Content>.returnTintColor())
             Color.clear
                 .frame(height: bottomAttachedViewHeight)
         }

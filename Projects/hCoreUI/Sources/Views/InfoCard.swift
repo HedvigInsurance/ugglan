@@ -17,6 +17,7 @@ public struct InfoCard: View {
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
             Image(uiImage: type.image)
+                .resizable()
                 .foregroundColor(imageColor)
                 .frame(width: 16, height: 16)
             VStack(alignment: .leading) {
