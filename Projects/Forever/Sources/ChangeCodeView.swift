@@ -52,7 +52,7 @@ extension ChangeCodeView {
             ForeverStore.self,
             rootView: ChangeCodeView(),
             style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar]
+            options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .showChangeCodeSuccess = action {
                 SuccessScreen.journey(with: L10n.ReferralsChange.codeChanged)

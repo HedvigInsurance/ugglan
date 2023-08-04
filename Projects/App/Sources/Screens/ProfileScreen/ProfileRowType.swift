@@ -56,7 +56,7 @@ enum ProfileRowType {
         case .appInfo:
             return .openAppInformation
         case .settings:
-            return .openAppSettings
+            return .openAppSettings(animated: true)
         case .eurobonus:
             return .openEuroBonus
         }

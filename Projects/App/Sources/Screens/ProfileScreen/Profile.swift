@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Home
+import Market
 import Payment
 import Presentation
 import SwiftUI
@@ -14,6 +15,16 @@ struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
+
+    init() {
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        if store.state.openSettingsDirectly {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                store.send(.openAppSettings(animated: false))
+            }
+            store.send(.setOpenAppSettings(to: false))
+        }
+    }
 
     private var logoutAlert: SwiftUI.Alert {
         return Alert(
@@ -118,16 +129,34 @@ extension ProfileView {
                 HostingJourney(rootView: AppInfoView())
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney
-            } else if case .openAppSettings = action {
+            } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     UgglanStore.self,
                     rootView: SettingsScreen(),
-                    options: [.defaults]
+                    options: animated ? [.defaults] : [.defaults, .unanimated]
                 ) { action in
                     if case let .deleteAccount(details) = action {
                         AppJourney.deleteAccountJourney(details: details)
                     } else if case .deleteAccountAlreadyRequested = action {
                         AppJourney.deleteRequestAlreadyPlacedJourney
+                    } else if case .openLangaugePicker = action {
+                        PickLanguage {
+                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                                AppJourney.main
+                            )
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.setOpenAppSettings(to: true))
+                        } onCancel: {
+                            let store: UgglanStore = globalPresentableStoreContainer.get()
+                            store.send(.closeLanguagePicker)
+
+                        }
+                        .journey
+                        .onAction(UgglanStore.self) { action in
+                            if case .closeLanguagePicker = action {
+                                DismissJourney()
+                            }
+                        }
                     }
                 }
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
