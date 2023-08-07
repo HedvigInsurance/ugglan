@@ -41,7 +41,7 @@ extension AppJourney {
                     }
                 }
             } statusCard: {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }

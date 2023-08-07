@@ -16,14 +16,18 @@ public struct InfoCard: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            Image(uiImage: type.image)
-                .resizable()
-                .foregroundColor(imageColor)
-                .frame(width: 16, height: 16)
+            VStack(spacing: 0) {
+                Rectangle().fill(Color.clear)
+                    .frame(width: 0, height: 2)
+                Image(uiImage: type.image)
+                    .resizable()
+                    .foregroundColor(imageColor)
+                    .frame(width: 16, height: 16)
+            }
             VStack(alignment: .leading) {
                 hText(text, style: .footnote)
                     .foregroundColor(getTextColor)
-                    .padding(.leading, 9)
+                    .multilineTextAlignment(.leading)
                 if let buttonsConfig {
                     if buttonsConfig.count > 1 {
                         HStack(spacing: 8) {
@@ -50,10 +54,14 @@ public struct InfoCard: View {
                     }
                 }
             }
+            .padding(.leading, 8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
+
+        .padding(.leading, 12)
+        .padding(.trailing, 16)
         .background(
             Squircle.default()
                 .fill(getBackgroundColor)

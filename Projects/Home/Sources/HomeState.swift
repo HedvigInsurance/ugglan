@@ -216,22 +216,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     }
                 return disposeBag
             }
-        //        case .getTravelInsuranceData:
-        //            return FiniteSignal { callback in
-        //                let disposeBag = DisposeBag()
-        //                disposeBag += self.octopus.client
-        //                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
-        //                    .onValue { data in
-        //                        let email = data.currentMember.email
-        //
-        //                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
-        ////                        callback(.value(.setTravelInsurancesData(specification: specification)))
-        //                    }
-        //                    .onError { error in
-        ////                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
-        //                    }
-        //                return disposeBag
-        //            }
         default:
             return nil
         }
