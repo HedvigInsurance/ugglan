@@ -58,6 +58,7 @@ extension ContractTable: View {
         ) { displaysActiveContracts in
             if self.filter.displaysActiveContracts {
                 CrossSellingStack().id(ContractTable.crossSellingStackId)
+                    .padding(.top, 24)
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
@@ -84,6 +85,6 @@ extension ContractTable: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .padding(.vertical, 16)
+        .padding(.bottom, 24)
     }
 }
