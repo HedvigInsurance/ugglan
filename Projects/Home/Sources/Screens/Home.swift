@@ -12,7 +12,6 @@ import hGraphQL
 
 public struct HomeView<Content: View, Claims: View>: View {
     @PresentableStore var store: HomeStore
-
     var statusCard: Content
 
     var claimsContent: Claims
@@ -41,28 +40,7 @@ extension HomeView {
     public var body: some View {
         hForm {
             ImportantMessagesView()
-            PresentableStoreLens(
-                HomeStore.self,
-                getter: { state in
-                    state.memberStateData
-                }
-            ) { memberStateData in
-                switch memberStateData.state {
-                case .active:
-                    ActiveSectionView(
-                        claimsContent: claimsContent,
-                        memberId: memberId
-                    )
-                case .future:
-                    FutureSectionView(memberName: memberStateData.name ?? "")
-                        .slideUpFadeAppearAnimation()
-                case .terminated:
-                    TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
-                        .slideUpFadeAppearAnimation()
-                case .loading:
-                    EmptyView()
-                }
-            }
+            centralContent
         }
         .withChatButton(tooltip: true) {
             store.send(.openFreeTextChat)
@@ -72,29 +50,97 @@ extension HomeView {
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
         .hFormAttachToBottom {
-            hSection {
-                VStack(spacing: 8) {
-                    statusCard
-                    hButton.LargeButtonPrimary {
-                        hAnalyticsEvent.beginClaim(screen: .home).send()
-                        store.send(.startClaim)
-                    } content: {
-                        hText(L10n.HomeTab.claimButtonText)
-                    }
-
-                    if hAnalyticsExperiment.homeCommonClaim {
-                        hButton.LargeButtonGhost {
-                            store.send(.openOtherServices)
-                        } content: {
-                            hText(L10n.HomeTab.otherServices)
-                        }
-                    }
-                }
-            }
-            .padding(.bottom, 16)
-            .sectionContainerStyle(.transparent)
+            bottomContent
         }
+        .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
+    }
+
+    private var centralContent: some View {
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.memberStateData
+            }
+        ) { memberStateData in
+            switch memberStateData.state {
+            case .active:
+                ActiveSectionView(
+                    claimsContent: claimsContent,
+                    memberId: memberId
+                )
+            case .future:
+                hText(L10n.hedvigNameText, style: .title)
+                    .slideUpFadeAppearAnimation()
+            case .terminated:
+                TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
+                    .slideUpFadeAppearAnimation()
+            case .loading:
+                EmptyView()
+            }
+        }
+    }
+
+    private var bottomContent: some View {
+        hSection {
+            VStack(spacing: 8) {
+                statusCard
+                bottomActions
+            }
+        }
+        .padding(.bottom, 16)
+    }
+
+    @ViewBuilder
+    private var bottomActions: some View {
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.memberStateData
+            }
+        ) { memberStateData in
+            switch memberStateData.state {
+            case .active:
+                let members = ApolloClient.retreiveMembersWithDeleteRequests()
+                if members.contains(memberId) {
+                    InfoCard(
+                        text: L10n.hometabAccountDeletionNotification,
+                        type: .attention
+                    )
+                }
+                startAClaimButton
+                openOtherServices
+            case .future:
+                FutureSectionInfoView(memberName: memberStateData.name ?? "")
+                    .slideUpFadeAppearAnimation()
+            case .terminated:
+                InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                startAClaimButton
+                openOtherServices
+            case .loading:
+                EmptyView()
+            }
+        }
+    }
+
+    private var startAClaimButton: some View {
+        hButton.LargeButtonPrimary {
+            hAnalyticsEvent.beginClaim(screen: .home).send()
+            store.send(.startClaim)
+        } content: {
+            hText(L10n.HomeTab.claimButtonText)
+        }
+    }
+
+    @ViewBuilder
+    private var openOtherServices: some View {
+        if hAnalyticsExperiment.homeCommonClaim {
+            hButton.LargeButtonGhost {
+                store.send(.openOtherServices)
+            } content: {
+                hText(L10n.HomeTab.otherServices)
+            }
+        }
     }
 }
 
@@ -180,7 +226,6 @@ struct Active_Preview: PreviewProvider {
                 )
             )
             store.send(.setFutureStatus(status: .none))
-            store.send(.setImportantMessage(message: .init(message: nil, link: nil)))
         }
 
     }
@@ -195,6 +240,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
             "ID"
         }
         .onAppear {
+            ApolloClient.removeDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
             let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
                 displayName: "DISPLAY NAME",
@@ -208,8 +254,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
                     contracts: [.init(contract: contract)]
                 )
             )
-            store.send(.setFutureStatus(status: .none))
-            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
+            store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
         }
 
     }
@@ -241,7 +286,6 @@ struct TerminatedToday_Previews: PreviewProvider {
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
-            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
         }
 
     }
@@ -273,7 +317,6 @@ struct Terminated_Previews: PreviewProvider {
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
-            store.send(.setImportantMessage(message: .init(message: "MESSAGE", link: "https://www.hedvig.com")))
         }
 
     }
@@ -288,6 +331,7 @@ struct Deleted_Previews: PreviewProvider {
             "ID"
         }
         .onAppear {
+            ApolloClient.saveDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
             let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
                 displayName: "DISPLAY NAME",
@@ -300,12 +344,11 @@ struct Deleted_Previews: PreviewProvider {
             )
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .terminated, name: "NAME"),
+                    state: .init(state: .active, name: "NAME"),
                     contracts: [.init(contract: contract)]
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
-            store.send(.setImportantMessage(message: .init(message: nil, link: nil)))
         }
 
     }
