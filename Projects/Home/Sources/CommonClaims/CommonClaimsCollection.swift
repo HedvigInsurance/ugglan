@@ -22,7 +22,7 @@ struct CommonClaimsCollection: View {
                             if claim.id == CommonClaim.travelInsurance.id {
                                 store.send(.openTravelInsurance)
                             } else {
-                                store.send(.openCommonClaimDetail(commonClaim: claim))
+                                store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: true))
                             }
                         } label: {
 

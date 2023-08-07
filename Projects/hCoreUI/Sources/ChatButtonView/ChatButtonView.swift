@@ -69,13 +69,97 @@ extension hForm {
         ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
     }
 
-    @ViewBuilder
-    public func withOptionalChatButton(showChat: Bool, tooltip: Bool = false, action: @escaping () -> Void) -> some View
-    {
-        if showChat {
-            ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
-        } else {
-            self
+    public func setHomeNavigationBars(
+        with options: Binding<[ToolbarOptionType]>,
+        action: @escaping (_: ToolbarOptionType) -> Void
+    ) -> some View {
+        ModifiedContent(content: self, modifier: ToolbarButtonsViewModifier(action: action, types: options))
+    }
+}
+
+public enum ToolbarOptionType: String, Codable {
+    case newOffer
+    case firstVet
+    case chat
+
+    var image: UIImage {
+        switch self {
+        case .newOffer:
+            return hCoreUIAssets.campaignQuickNav.image
+        case .firstVet:
+            return hCoreUIAssets.firstVetQuickNav.image
+        case .chat:
+            return hCoreUIAssets.chatQuickNav.image
         }
+    }
+
+    var tooltipId: String {
+        switch self {
+        case .newOffer:
+            return "newOfferHint"
+        case .firstVet:
+            return "firstVettHint"
+        case .chat:
+            return "chatHint"
+        }
+    }
+}
+
+struct ToolbarButtonsView: View {
+    @State var displayTooltip = false
+    var action: ((_: ToolbarOptionType)) -> Void
+    @Binding var types: [ToolbarOptionType]
+
+    init(
+        types: Binding<[ToolbarOptionType]>,
+        action: @escaping (_: ToolbarOptionType) -> Void
+    ) {
+        self._types = types
+        self.action = action
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(types.enumerated()), id: \.element.rawValue) { index, type in
+                VStack {
+                    SwiftUI.Button(action: {
+                        withAnimation(.spring()) {
+                            displayTooltip = false
+                        }
+                        action(type)
+                    }) {
+                        Image(uiImage: type.image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 32, height: 32)
+                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
+                    }
+                    .animation(nil)
+                }
+                .background(
+                    VStack {
+                        ChatTooltipView(
+                            displayTooltip: $displayTooltip,
+                            defaultsId: type.tooltipId,
+                            timeInterval: .days(numberOfDays: 30)
+                        )
+                        .position(x: 37, y: 74)
+                        .fixedSize()
+                    }
+                )
+            }
+        }
+    }
+}
+
+struct ToolbarButtonsViewModifier: ViewModifier {
+    let action: (_: ToolbarOptionType) -> Void
+    @Binding var types: [ToolbarOptionType]
+    func body(content: Content) -> some View {
+        content
+            .navigationBarItems(
+                trailing:
+                    ToolbarButtonsView(types: $types, action: action)
+            )
     }
 }

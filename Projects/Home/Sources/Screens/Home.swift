@@ -1,4 +1,5 @@
 import Apollo
+import Combine
 import Flow
 import Form
 import Foundation
@@ -12,7 +13,7 @@ import hGraphQL
 
 public struct HomeView<Content: View, Claims: View>: View {
     @PresentableStore var store: HomeStore
-
+    @State var toolbarOptionTypes: [ToolbarOptionType] = []
     var statusCard: Content
 
     var claimsContent: Claims
@@ -25,8 +26,9 @@ public struct HomeView<Content: View, Claims: View>: View {
     ) {
         self.statusCard = statusCard()
         self.claimsContent = claimsContent
-
         self.memberId = memberId()
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        _toolbarOptionTypes = State(initialValue: store.state.toolbarOptionTypes)
     }
 }
 
@@ -64,11 +66,26 @@ extension HomeView {
                 }
             }
         }
-        .withChatButton(tooltip: true) {
-            store.send(.openFreeTextChat)
-        }
+        .setHomeNavigationBars(
+            with: $toolbarOptionTypes,
+            action: { type in
+                switch type {
+                case .newOffer:
+                    store.send(.showNewOffer)
+                case .firstVet:
+                    if let claim = store.state.commonClaims.first(where: {
+                        $0.id == "30" || $0.id == "31" || $0.id == "32"
+                    }) {
+                        store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
+                    }
+                case .chat:
+                    store.send(.openFreeTextChat)
+                }
+            }
+        )
         .onAppear {
             fetch()
+            self.toolbarOptionTypes = store.state.toolbarOptionTypes
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
         .hFormAttachToBottom {
@@ -95,6 +112,9 @@ extension HomeView {
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.center)
+        .onReceive(store.stateSignal.plain().publisher) { value in
+            self.toolbarOptionTypes = value.toolbarOptionTypes
+        }
     }
 }
 
@@ -122,6 +142,14 @@ extension HomeView {
                 resultJourney(.startMovingFlow)
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
+            } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
+                if !fromOtherService {
+                    Journey(
+                        CommonClaimDetail(claim: claim),
+                        style: .detented(.large, modally: true)
+                    )
+                    .withJourneyDismissButton
+                }
             } else if case .connectPayments = action {
                 resultJourney(.openConnectPayments)
             } else if case let .openDocument(contractURL) = action {
