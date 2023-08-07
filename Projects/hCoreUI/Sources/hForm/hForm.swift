@@ -170,6 +170,10 @@ public struct hForm<Content: View>: View {
                             contentHeight = proxy.size.height
                             recalculateHeight()
                         }
+                        .onChange(of: proxy.size) { size in
+                            contentHeight = size.height
+                            recalculateHeight()
+                        }
                 }
             )
             .frame(maxWidth: .infinity)
