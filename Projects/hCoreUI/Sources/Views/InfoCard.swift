@@ -23,6 +23,7 @@ public struct InfoCard: View {
             VStack(alignment: .leading) {
                 hText(text, style: .footnote)
                     .foregroundColor(getTextColor)
+                    .multilineTextAlignment(.leading)
                     .padding(.leading, 9)
                 if let buttonsConfig {
                     if buttonsConfig.count > 1 {

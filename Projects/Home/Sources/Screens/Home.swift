@@ -83,43 +83,48 @@ extension HomeView {
 
     private var bottomContent: some View {
         hSection {
-            VStack(spacing: 8) {
-                statusCard
-                bottomActions
-            }
+            bottomActions
         }
         .padding(.bottom, 16)
     }
 
     @ViewBuilder
     private var bottomActions: some View {
-        PresentableStoreLens(
-            HomeStore.self,
-            getter: { state in
-                state.memberStateData
-            }
-        ) { memberStateData in
-            switch memberStateData.state {
-            case .active:
-                let members = ApolloClient.retreiveMembersWithDeleteRequests()
-                if members.contains(memberId) {
-                    InfoCard(
-                        text: L10n.hometabAccountDeletionNotification,
-                        type: .attention
-                    )
+        VStack(spacing: 8) {
+            PresentableStoreLens(
+                HomeStore.self,
+                getter: { state in
+                    state.memberStateData
                 }
-                startAClaimButton
-                openOtherServices
-            case .future:
-                FutureSectionInfoView(memberName: memberStateData.name ?? "")
-                    .slideUpFadeAppearAnimation()
-            case .terminated:
-                InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
-                startAClaimButton
-                openOtherServices
-            case .loading:
-                EmptyView()
+            ) { memberStateData in
+                switch memberStateData.state {
+                case .active:
+                    statusCard
+                    deletedInfoView
+                    startAClaimButton
+                    openOtherServices
+                case .future:
+                    FutureSectionInfoView(memberName: memberStateData.name ?? "")
+                        .slideUpFadeAppearAnimation()
+                case .terminated:
+                    InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                    startAClaimButton
+                    openOtherServices
+                case .loading:
+                    EmptyView()
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var deletedInfoView: some View {
+        let members = ApolloClient.retreiveMembersWithDeleteRequests()
+        if members.contains(memberId) {
+            InfoCard(
+                text: L10n.hometabAccountDeletionNotification,
+                type: .attention
+            )
         }
     }
 
