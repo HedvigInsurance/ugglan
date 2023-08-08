@@ -18,7 +18,6 @@ public struct CommonClaimDetail {
 
     var layoutTitle: String {
         if let layoutTitle = claim.layout.emergency?.title { return layoutTitle }
-
         return claim.layout.titleAndBulletPoint?.title ?? ""
     }
 }
@@ -63,8 +62,8 @@ extension CommonClaimDetail: Presentable {
             )
             bag += topCardContentView.addArranged(claimButton)
 
-            let store: ClaimsStore = self.get()
-            bag += claimButton.onTapSignal.onValue {
+            let store: HomeStore = self.get()
+            bag += claimButton.onTapSignal.onValue { [weak store] in
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
                 if claim.id == "30" || claim.id == "31" || claim.id == "32" {
@@ -73,10 +72,12 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
-                } else if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
-                    store.send(.openTravelInsurance)
+                } else if claim.id == CommonClaim.travelInsurance.id {
+                    store?.send(.openTravelInsurance)
                 } else {
-                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    //                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    store?.send(.startClaim)
+                    //TODO: FIX START CLAIM WITH ID
                 }
             }
 
@@ -92,8 +93,4 @@ extension CommonClaimDetail: Presentable {
 
         return (viewController, bag)
     }
-}
-
-public enum ComonClaimsRedirectionType {
-    case travelInsurace
 }

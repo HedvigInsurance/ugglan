@@ -22,7 +22,7 @@ struct DiscountCodeSectionView: View {
                             store.send(.showPushNotificationsReminder)
                             Toasts.shared.displayToast(
                                 toast: .init(
-                                    symbol: .icon(hCoreUIAssets.copy.image),
+                                    symbol: .icon(hCoreUIAssets.checkmark.image),
                                     body: L10n.ReferralsActiveToast.text
                                 )
                             )

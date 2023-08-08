@@ -80,7 +80,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 ForEach(contract.statusPills, id: \.self) { pill in
-                    StatusPill(text: pill)
+                    StatusPill(text: pill).padding(.trailing, 4)
                 }
                 Spacer()
                 logo

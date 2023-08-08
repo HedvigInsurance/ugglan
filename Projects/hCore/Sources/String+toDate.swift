@@ -10,10 +10,11 @@ extension String {
     public var localDateToDate: Date? {
         return String.localDateToDateFormatter.date(from: self)
     }
-    public func localDateToIso8601Date(format: String) -> Date? {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .iso8601)
-        formatter.dateFormat = format
+    public var localDateToIso8601Date: Date? {
+        let formatter = ISO8601DateFormatter()
+
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = .current
         return formatter.date(from: self)
     }
 }

@@ -43,8 +43,8 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = .brand(.primaryText()),
-        backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
+        textColor: UIColor = .brandNew(.toasterTitle),
+        backgroundColor: UIColor = UIColor.brandNew(.toasterBackground),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
@@ -60,14 +60,20 @@ extension Toast: Viewable {
     var symbolView: UIView {
         switch symbol {
         case let .character(character):
-            let view = UILabel(value: String(character), style: .brand(.headline(color: .primary)))
+            let view = UILabel(value: String(character), style: UIColor.brandNewStyle(.primaryText()))
             view.minimumScaleFactor = 0.5
             view.adjustsFontSizeToFitWidth = true
             return view
         case let .icon(icon):
             let view = UIImageView()
             view.image = icon
-            view.tintColor = textColor
+            let symbolColor = UIColor(dynamic: { trait -> UIColor in
+                UIColor(
+                    hSignalColorNew.blueElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                        .color
+                )
+            })
+            view.tintColor = symbolColor
             view.contentMode = .scaleAspectFit
 
             view.snp.makeConstraints { make in
@@ -129,15 +135,19 @@ extension Toast: Viewable {
         stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        stackView.spacing = 12.5
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 11)
+        stackView.spacing = 8.25
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
 
         containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
+            //            make.top.bottom.trailing.leading.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
         }
 
         if symbol != nil {
@@ -146,7 +156,6 @@ extension Toast: Viewable {
             symbolContainer.insetsLayoutMarginsFromSafeArea = false
 
             stackView.addArrangedSubview(symbolContainer)
-
             symbolContainer.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
@@ -159,10 +168,9 @@ extension Toast: Viewable {
         textContainer.alignment = .leading
         textContainer.insetsLayoutMarginsFromSafeArea = false
         textContainer.spacing = 5
-
         let bodyLabel = UILabel(
             value: body,
-            style: TextStyle.brand(.headline(color: .primary)).colored(textColor)
+            style: UIColor.brandNewStyle(.toasterTitle).colored(textColor)
         )
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
@@ -172,7 +180,7 @@ extension Toast: Viewable {
         if let subtitle = subtitle {
             let bodySubtitleLabel = UILabel(
                 value: subtitle,
-                style: TextStyle.brand(.subHeadline(color: .secondary)).colored(textColor)
+                style: UIColor.brandNewStyle(.toasterSubtitle).colored(textColor)
             )
             textContainer.addArrangedSubview(bodySubtitleLabel)
         }

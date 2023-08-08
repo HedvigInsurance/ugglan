@@ -16,7 +16,7 @@ enum ProfileRowType {
         case .payment:
             return L10n.profilePaymentRowHeader
         case .appInfo:
-            return L10n.OnboardingContextualMenu.appInfoLabel
+            return L10n.profileAppInfo
         case .settings:
             return L10n.EmbarkOnboardingMoreOptions.settingsLabel
         case .eurobonus:

@@ -2,7 +2,9 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct ImportantMessage: Codable, Equatable {
@@ -49,32 +51,71 @@ public struct MemberStateData: Codable, Equatable {
     }
 }
 
+public struct OtherServiceData: Codable, Equatable {
+    let type: OtherServicesType
+}
+
+public enum OtherServicesType: String, Codable, Equatable {
+    case chat
+    case changeAddress
+    case travelCertificate
+    case contactFirstVet
+    case sickAbroad
+
+    var title: String {
+        switch self {
+        case .chat: return L10n.chatTitle
+        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
+        case .travelCertificate: return L10n.TravelCertificate.cardTitle
+        case .contactFirstVet: return "Contact FirstVet"
+        case .sickAbroad: return "Sick abroad"
+        }
+    }
+}
+
 public struct HomeState: StateProtocol {
     public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessage: ImportantMessage? = nil
-
+    public var commonClaims: [CommonClaim] = []
+    public var allCommonClaims: [CommonClaim] = []
+    public var shouldShowTravelInsurance: Bool = false
+    public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
+    }
+
+    public var hasFirstVet: Bool {
+        return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
     }
 
     public init() {}
 }
 
 public enum HomeAction: ActionProtocol {
-    case openFreeTextChat
     case fetchMemberState
     case fetchImportantMessages
     case setImportantMessage(message: ImportantMessage)
-    case openMovingFlow
-    case openTravelInsurance
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case fetchFutureStatus
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
+    case openOtherServices
+    case fetchCommonClaims
+    case setCommonClaims(commonClaims: [CommonClaim])
+    case startClaim
+    case openFreeTextChat
+    case openMovingFlow
+    case openTravelInsurance
+    case showNewOffer
+    case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+
+    case setShowTravelInsurance(show: Bool)
+    case dismissOtherServices
+
 }
 
 public enum FutureStatus: Codable, Equatable {
@@ -84,7 +125,11 @@ public enum FutureStatus: Codable, Equatable {
     case none
 }
 
-public final class HomeStore: StateStore<HomeState, HomeAction> {
+public enum HomeLoadingType: LoadingProtocol {
+    case fetchCommonClaim
+}
+
+public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
     public override func effects(
@@ -92,8 +137,6 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         _ action: HomeAction
     ) -> FiniteSignal<HomeAction>? {
         switch action {
-        case .openFreeTextChat:
-            return nil
         case .fetchImportantMessages:
             return
                 giraffe
@@ -149,22 +192,30 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     }
                 }
                 .valueThenEndSignal
-        //        case .getTravelInsuranceData:
-        //            return FiniteSignal { callback in
-        //                let disposeBag = DisposeBag()
-        //                disposeBag += self.octopus.client
-        //                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
-        //                    .onValue { data in
-        //                        let email = data.currentMember.email
-        //
-        //                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
-        ////                        callback(.value(.setTravelInsurancesData(specification: specification)))
-        //                    }
-        //                    .onError { error in
-        ////                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
-        //                    }
-        //                return disposeBag
-        //            }
+        case .fetchCommonClaims:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetch(
+                        query: GiraffeGraphQL.CommonClaimsQuery(
+                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                        )
+                    )
+                    .onValue { claimData in
+                        let commonClaims = claimData.commonClaims.map {
+                            CommonClaim(claim: $0)
+                        }
+                        callback(.value(.setCommonClaims(commonClaims: commonClaims)))
+                    }
+                    .onError { [weak self] error in
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setCommonClaims(commonClaims: [])))
+                        } else {
+                            self?.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                        }
+                    }
+                return disposeBag
+            }
         default:
             return nil
         }
@@ -183,11 +234,42 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             if let text = message.message, text != "" {
                 newState.importantMessage = message
             }
+        case .fetchCommonClaims:
+            setLoading(for: .fetchCommonClaim)
+        case let .setCommonClaims(commonClaims):
+            removeLoading(for: .fetchCommonClaim)
+            newState.commonClaims = commonClaims
+            setAllCommonClaims(&newState)
+        case let .setShowTravelInsurance(show):
+            newState.shouldShowTravelInsurance = show
+            setAllCommonClaims(&newState)
         default:
             break
         }
 
         return newState
+    }
+
+    private func setAllCommonClaims(_ state: inout HomeState) {
+        var allCommonClaims = [CommonClaim]()
+        allCommonClaims.append(.chat)
+        if hAnalyticsExperiment.movingFlow {
+            allCommonClaims.append(.moving)
+        }
+        if state.shouldShowTravelInsurance {
+            allCommonClaims.append(.travelInsurance)
+        }
+        allCommonClaims.append(contentsOf: state.commonClaims)
+        state.allCommonClaims = allCommonClaims
+        var types: [ToolbarOptionType] = []
+        types.append(.newOffer)
+        if state.hasFirstVet {
+            types.append(.firstVet)
+        }
+        types.append(.chat)
+
+        state.toolbarOptionTypes = types
+
     }
 }
 
@@ -221,4 +303,46 @@ extension GiraffeGraphQL.HomeQuery.Data {
             contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
         }
     }
+}
+
+extension CommonClaim {
+    public static let travelInsurance: CommonClaim = {
+        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(
+            color: "",
+            buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
+            title: "",
+            bulletPoints: []
+        )
+        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
+        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
+        let commonClaim = CommonClaim(
+            id: "travelInsurance",
+            icon: nil,
+            imageName: "travelCertificate",
+            displayTitle: L10n.TravelCertificate.cardTitle,
+            layout: layout
+        )
+        return commonClaim
+    }()
+
+    public static let chat: CommonClaim = {
+        CommonClaim(
+            id: "chat",
+            icon: nil,
+            imageName: nil,
+            displayTitle: L10n.chatTitle,
+            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+        )
+    }()
+
+    public static let moving: CommonClaim = {
+        CommonClaim(
+            id: "moving_flow",
+            icon: nil,
+            imageName: nil,
+            displayTitle: L10n.InsuranceDetails.changeAddressButton,
+            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+        )
+    }()
+
 }

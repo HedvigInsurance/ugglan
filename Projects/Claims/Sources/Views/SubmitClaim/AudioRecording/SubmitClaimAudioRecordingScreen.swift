@@ -58,7 +58,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
                         VStack(spacing: 12) {
                             TrackPlayer(audioPlayer: audioPlayer)
-                                .hWithoutFootnote
                                 .onAppear {
                                     minutes = 0
                                     seconds = 0

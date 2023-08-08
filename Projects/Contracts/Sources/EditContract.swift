@@ -21,37 +21,43 @@ struct EditContract: View {
     }
     var body: some View {
         hForm {
-            ForEach(editTypes, id: \.rawValue) { editType in
-                hSection {
-                    hRow {
-                        HStack(spacing: 0) {
-                            hText(editType.title, style: .title3)
-                                .foregroundColor(hTextColorNew.primary)
-                            Spacer()
-                            Circle()
-                                .strokeBorder(
-                                    getBorderColor(isSelected: editType == selectedType),
-                                    lineWidth: editType == selectedType ? 0 : 1.5
-                                )
-                                .background(Circle().foregroundColor(retColor(isSelected: editType == selectedType)))
-                                .frame(width: 28, height: 28)
+            VStack(spacing: 16) {
+                VStack(spacing: 4) {
+                    ForEach(editTypes, id: \.rawValue) { editType in
+                        hSection {
+                            hRow {
+                                HStack(spacing: 0) {
+                                    hText(editType.title, style: .title3)
+                                        .foregroundColor(hTextColorNew.primary)
+                                    Spacer()
+                                    Circle()
+                                        .strokeBorder(
+                                            getBorderColor(isSelected: editType == selectedType),
+                                            lineWidth: editType == selectedType ? 0 : 1.5
+                                        )
+                                        .background(
+                                            Circle().foregroundColor(retColor(isSelected: editType == selectedType))
+                                        )
+                                        .frame(width: 28, height: 28)
+                                }
+                                .padding(.vertical, 5)
+                            }
+                            .withEmptyAccessory
+                            .onTap {
+                                withAnimation(Animation.easeInOut(duration: 0.3)) {
+                                    selectedType = editType
+                                }
+                            }
                         }
-                        .padding(.vertical, 5)
                     }
-                    .withEmptyAccessory
-                    .onTap {
-                        withAnimation(Animation.easeInOut(duration: 0.3)) {
-                            selectedType = editType
-                        }
-                    }
-
                 }
+                hSection {
+                    infoView
+                        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+                }
+                .sectionContainerStyle(.transparent)
             }
-            hSection {
-                infoView
-                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-            }
-            .sectionContainerStyle(.transparent)
+
         }
         .hFormAttachToBottom {
             hSection {

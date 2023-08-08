@@ -103,45 +103,28 @@ struct BackgroundBlurView: UIViewRepresentable {
 }
 
 public struct hForm<Content: View>: View {
-    @ObservedObject var gradientState = GradientState.shared
-    let gradientType: GradientType
 
     @State var shouldAnimateGradient = true
     @State var bottomAttachedViewHeight: CGFloat = 0
     @State var scrollViewHeight: CGFloat = 0
+    @State var contentHeight: CGFloat = 0
+    @State var titleHeight: CGFloat = 0
+    @State var additionalSpaceFromTop: CGFloat = 0
 
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
+    @Environment(\.hFormContentPosition) var contentPosition
     var content: Content
 
     public init(
-        gradientType: GradientType = .none,
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
-        self.gradientType = .none
     }
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            if gradientType != .none {
-                hGradient(
-                    oldGradientType: $gradientState.oldGradientType,
-                    newGradientType: $gradientState.gradientType,
-                    animate: $shouldAnimateGradient
-                )
-                .onDisappear {
-                    shouldAnimateGradient = gradientState.gradientTypeBeforeNone != gradientType
-                }
-                .onAppear {
-                    if gradientState.gradientTypeBeforeNone == gradientType {
-                        gradientState.gradientTypeBeforeNone = nil
-                    }
-                }
-            } else {
-                BackgroundView().edgesIgnoringSafeArea(.all)
-            }
             getScrollView()
             BackgroundBlurView()
                 .frame(
@@ -161,15 +144,16 @@ public struct hForm<Content: View>: View {
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
+        .background(
+            BackgroundView().edgesIgnoringSafeArea(.all)
+        )
 
-        .onAppear {
-            self.gradientState.gradientType = gradientType
-        }
     }
 
     func getScrollView() -> some View {
         ScrollView {
-            VStack {
+            Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
+            VStack(spacing: 0) {
                 if let hFormTitle {
                     hText(hFormTitle.2, style: hFormTitle.1)
                         .multilineTextAlignment(.center)
@@ -179,6 +163,19 @@ public struct hForm<Content: View>: View {
                 }
                 content.padding(.bottom, -8)
             }
+            .background(
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            contentHeight = proxy.size.height
+                            recalculateHeight()
+                        }
+                        .onChange(of: proxy.size) { size in
+                            contentHeight = size.height
+                            recalculateHeight()
+                        }
+                }
+            )
             .frame(maxWidth: .infinity)
             .tint(hForm<Content>.returnTintColor())
             Color.clear
@@ -194,6 +191,7 @@ public struct hForm<Content: View>: View {
             }
             scrollViewHeight =
                 scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom
+            recalculateHeight()
         }
     }
 
@@ -201,4 +199,67 @@ public struct hForm<Content: View>: View {
     static func returnTintColor() -> some hColor {
         hSignalColorNew.greenFill
     }
+
+    func recalculateHeight() {
+        let maxContentHeight =
+            scrollViewHeight - bottomAttachedViewHeight - (UIApplication.shared.safeArea?.bottom ?? 0)
+        if contentHeight <= maxContentHeight {
+            self.additionalSpaceFromTop = {
+                switch contentPosition {
+                case .top: return 0
+                case .center: return (maxContentHeight - contentHeight) / 2
+                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
+                }
+            }()
+        } else {
+            additionalSpaceFromTop = 0
+        }
+    }
+}
+
+struct hForm_Previews: PreviewProvider {
+    static var previews: some View {
+        hForm {
+            hSection {
+                hText("Content").frame(height: 200).background(Color.red)
+                hText("Content").frame(height: 200)
+                hText("Content").frame(height: 200)
+                hText("Content").frame(height: 200)
+                    .background(Color.red)
+            }
+        }
+        .hFormAttachToBottom {
+            hButton.LargeButtonPrimary {
+
+            } content: {
+                hText("TEXT")
+            }
+
+        }
+        .hFormContentPosition(.bottom)
+        .hFormTitle(.small, .standard, "TITLE")
+    }
+}
+
+private struct EnvironmentHFormContentPosition: EnvironmentKey {
+    static let defaultValue: ContentPosition = .top
+}
+
+extension EnvironmentValues {
+    public var hFormContentPosition: ContentPosition {
+        get { self[EnvironmentHFormContentPosition.self] }
+        set { self[EnvironmentHFormContentPosition.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+        self.environment(\.hFormContentPosition, position)
+    }
+}
+
+public enum ContentPosition {
+    case top
+    case center
+    case bottom
 }

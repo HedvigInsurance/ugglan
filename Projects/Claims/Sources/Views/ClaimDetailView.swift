@@ -27,75 +27,93 @@ public struct ClaimDetailView: View {
         {
             return claim.claimDetailData.payout
         }
-
         return nil
     }
 
     public var body: some View {
         hForm {
-            // Header for Claim status details
-            ClaimDetailHeader(
-                title: claim.title,
-                subtitle: claim.subtitle,
-                submitted: claim.claimDetailData.submittedAt,
-                closed: claim.claimDetailData.closedAt,
-                payout: payoutDisplayAmount
-            )
-            .padding(.vertical, 24)
-
-            // Card showing the status of claim
-            RaisedCard(alignment: .leading) {
-                HStack(spacing: 6) {
-                    ForEach(claim.segments, id: \.text) { segment in
-                        ClaimStatusBar(status: segment)
+            VStack(spacing: 8) {
+                ClaimDetailHeader(claim: claim)
+                hSection {
+                    hRow {
+                        hText(statusParagraph)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
+                    }
+                    hRow {
+                        ContactChatView(
+                            store: self.store,
+                            id: self.claim.id,
+                            status: self.claim.claimDetailData.status.rawValue
+                        )
+                        .padding(.bottom, 4)
                     }
                 }
-                .padding([.horizontal, .top], 16)
-                .padding(.bottom, 24)
-
-                hText(statusParagraph)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 20)
-
-                Divider()
-
-                ContactChatView(
-                    store: self.store,
-                    id: self.claim.id,
-                    status: self.claim.claimDetailData.status.rawValue
-                )
-            }
-            .padding(.horizontal, 16)
-
-            Spacer()
-                .frame(height: 52)
-
-            // Section to show attachments for the claim
-            if let url = URL(string: claim.claimDetailData.signedAudioURL) {
-                let audioPlayer = AudioPlayer(url: url)
-                ClaimDetailFilesView(
-                    audioPlayer: audioPlayer
-                )
-                .onReceive(
-                    audioPlayer.objectWillChange
-                        .filter { $0.playbackState == .finished },
-                    perform: { player in
-                        hAnalyticsEvent.claimsDetailRecordingPlayed(
-                            claimId: self.claim.id
+                if let url = URL(string: claim.claimDetailData.signedAudioURL) {
+                    let audioPlayer = AudioPlayer(url: url)
+                    hSection {
+                        ClaimDetailFilesView(
+                            audioPlayer: audioPlayer
                         )
-                        .send()
                     }
-                )
-                .padding(.horizontal, 16)
+                    .withHeader {
+                        hText(L10n.ClaimStatusDetail.uploadedFiles)
+                    }
+                    .padding(.top, 8)
+                    .onReceive(
+                        audioPlayer.objectWillChange
+                            .filter { $0.playbackState == .finished },
+                        perform: { player in
+                            hAnalyticsEvent.claimsDetailRecordingPlayed(
+                                claimId: self.claim.id
+                            )
+                            .send()
+                        }
+                    )
+                }
             }
-
-            Spacer()
         }
         .trackOnAppear(
             hAnalyticsEvent.screenView(screen: .claimsStatusDetail)
         )
+        .hFormAttachToBottom {
+            hSection {
+                hButton.LargeButtonGhost {
+                    store.send(.closeClaimStatus)
+                } content: {
+                    hText(L10n.generalCloseButton)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
 
+    }
+
+}
+
+struct ClaimDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let claimDetails = Claim.ClaimDetailData.init(
+            id: "id",
+            status: .closed,
+            outcome: .paid,
+            submittedAt: "2019-07-03T19:07:38.494081Z",
+            closedAt: "2019-07-03T20:10:38.494081Z",
+            signedAudioURL: "https://www.hedvig.com",
+            progressSegments: [.init(text: "1", type: .futureInactive)],
+            statusParagraph:
+                "Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH ",
+            type: "TYPE",
+            payout: .sek(20)
+        )
+        let claim = Claim(
+            id: "id",
+            pills: [.init(text: "1", type: .closed)],
+            segments: [.init(text: "a", type: .pastInactive)],
+            title: "title",
+            subtitle: "subtitle",
+            claimDetailData: claimDetails
+        )
+        return ClaimDetailView(claim: claim)
     }
 }

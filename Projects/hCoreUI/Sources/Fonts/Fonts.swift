@@ -60,7 +60,7 @@ public enum Fonts {
         //        }
 
         switch style {
-        case .title1:
+        case .title1, .title:
             return getFont(hedvigLettersBig)
         default:
             return getFont(hedvigLettersStandard)

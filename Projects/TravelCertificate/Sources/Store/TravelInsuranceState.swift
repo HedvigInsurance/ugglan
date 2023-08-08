@@ -106,27 +106,3 @@ struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
     var personalNumber: String
 }
-
-extension TravelInsuranceSpecification {
-    public func asCommonClaim() -> CommonClaim {
-        let bulletPoints = self.infoSpecifications.compactMap({
-            CommonClaim.Layout.TitleAndBulletPoints.BulletPoint(title: $0.title, description: $0.body, icon: nil)
-        })
-        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(
-            color: "",
-            buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
-            title: "",
-            bulletPoints: bulletPoints
-        )
-        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
-        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
-        let commonClaim = CommonClaim(
-            id: "travelInsurance",
-            icon: nil,
-            imageName: "travelCertificate",
-            displayTitle: L10n.TravelCertificate.cardTitle,
-            layout: layout
-        )
-        return commonClaim
-    }
-}

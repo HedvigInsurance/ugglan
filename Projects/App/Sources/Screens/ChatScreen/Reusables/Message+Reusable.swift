@@ -75,7 +75,7 @@ extension Message: Reusable {
         }
 
         let attributedString = NSAttributedString(
-            styledText: StyledText(text: body, style: UIColor.brandNewStyle(.primaryText()))
+            styledText: StyledText(text: body, style: UIColor.brandNewStyle(.chatMessage))
         )
 
         let size = attributedString.boundingRect(
@@ -262,7 +262,7 @@ extension Message: Reusable {
                     timeStampLabelContainer.alignment = message.fromMyself ? .trailing : .leading
                     spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                    let messageTextColor = UIColor.brandNew(.primaryText(false))
+                    let messageTextColor = UIColor.brandNew(.chatMessage)
 
                     switch message.type {
                     case .image, .video:
@@ -369,7 +369,7 @@ extension Message: Reusable {
 
                         contentContainer.addArrangedSubview(imageViewContainer)
                     case let .file(url):
-                        let textStyle = UIColor.brandNewStyle(.primaryText())
+                        let textStyle = UIColor.brandNewStyle(.chatMessage)
                             .colored(messageTextColor)
 
                         let text = L10n.chatFileDownload
@@ -445,7 +445,7 @@ extension Message: Reusable {
                                     )
                             }
                     case .text:
-                        let textStyle = UIColor.brandNewStyle(.primaryText())
+                        let textStyle = UIColor.brandNewStyle(.chatMessage)
                             .colored(messageTextColor)
                         let attributedString = NSMutableAttributedString(
                             text: message.body,

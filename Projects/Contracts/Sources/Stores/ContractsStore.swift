@@ -211,6 +211,9 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
+            if value {
+                newState.scrollToCrossSells = false
+            }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
         case .didSignFocusedCrossSell:
@@ -241,6 +244,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             case let .setFailedStep(model):
                 newState.failedStep = model
             }
+        case .scrollToNewOffer:
+            newState.scrollToCrossSells = true
         default:
             break
         }

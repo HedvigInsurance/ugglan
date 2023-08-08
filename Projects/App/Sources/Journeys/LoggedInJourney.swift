@@ -17,11 +17,9 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView()
         return
             HomeView.journey(
                 claimsContent: claims,
-                commonClaimsContent: commonClaims,
                 memberId: {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     return ugglanStore.state.memberDetails?.id ?? ""
@@ -35,15 +33,18 @@ extension AppJourney {
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
+                case .startNewClaim:
+                    startClaimsJourney(from: .generic)
+                case .openTravelInsurance:
+                    TravelInsuranceFlowJourney.start {
+                        AppJourney.freeTextChat()
+                    }
                 }
             } statusCard: {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }
-            }
-            .onTabSelected {
-                GradientState.shared.gradientType = .home
             }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
@@ -55,22 +56,6 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onAction(
-                HomeStore.self,
-                { action, _ in
-                    if case .openTravelInsurance = action {
-                        do {
-                            Task {
-                                let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
-                            }
-                        } catch let _ {
-                            //TODO: ERROR
-                        }
-                    }
-                }
-            )
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -95,6 +80,18 @@ extension AppJourney {
                 return false
             }
         }
+        .makeTabSelected(
+            HomeStore.self,
+            { action in
+                if case .showNewOffer = action {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    contractStore.send(.scrollToNewOffer)
+                    return true
+                } else {
+                    return false
+                }
+            }
+        )
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
@@ -214,14 +211,6 @@ extension JourneyPresentation {
                             DismissJourney()
                         }
                     }
-            } else if case .openTravelInsurance = action {
-                TravelInsuranceFlowJourney.start {
-                    AppJourney.freeTextChat()
-                }
-            } else if case .openHowClaimsWork = action {
-                AppJourney.claimsInfoJourney()
-            } else if case let .openCommonClaimDetail(commonClaim) = action {
-                AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             }
