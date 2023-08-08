@@ -24,6 +24,7 @@ struct ContractInformationView: View {
                     hSection {
                         RenewalInformationCard(contract: contract)
                     }
+                    .padding(.top, 16)
                 }
                 VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
