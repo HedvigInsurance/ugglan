@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct ImportantMessage: Codable, Equatable {
@@ -80,8 +81,13 @@ public struct HomeState: StateProtocol {
     public var commonClaims: [CommonClaim] = []
     public var allCommonClaims: [CommonClaim] = []
     public var shouldShowTravelInsurance: Bool = false
+    public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
+    }
+
+    public var hasFirstVet: Bool {
+        return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
     }
 
     public init() {}
@@ -104,9 +110,9 @@ public enum HomeAction: ActionProtocol {
     case openFreeTextChat
     case openMovingFlow
     case openTravelInsurance
-    case openContactFirstVet
-    case openSickAbroad
-    case openCommonClaimDetail(commonClaim: CommonClaim)
+    case showNewOffer
+    case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
 
@@ -255,6 +261,15 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
         allCommonClaims.append(contentsOf: state.commonClaims)
         state.allCommonClaims = allCommonClaims
+        var types: [ToolbarOptionType] = []
+        types.append(.newOffer)
+        if state.hasFirstVet {
+            types.append(.firstVet)
+        }
+        types.append(.chat)
+
+        state.toolbarOptionTypes = types
+
     }
 }
 

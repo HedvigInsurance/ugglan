@@ -80,6 +80,18 @@ extension AppJourney {
                 return false
             }
         }
+        .makeTabSelected(
+            HomeStore.self,
+            { action in
+                if case .showNewOffer = action {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    contractStore.send(.scrollToNewOffer)
+                    return true
+                } else {
+                    return false
+                }
+            }
+        )
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {

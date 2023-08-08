@@ -84,6 +84,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
+    case scrollToNewOffer
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {

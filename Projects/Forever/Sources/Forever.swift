@@ -87,7 +87,7 @@ extension ForeverView {
                 }
             }
         }
-        .configureTitle(L10n.referralsScreenTitle)
+        .configureTitle(L10n.ReferralsInfoSheet.headline)
         .configureForeverTabBarItem
         .configureTabBarBorder
     }

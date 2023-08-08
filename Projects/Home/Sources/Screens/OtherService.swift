@@ -37,7 +37,7 @@ struct OtherService: View {
                                         //TODO: ERROR
                                     }
                                 } else {
-                                    store.send(.openCommonClaimDetail(commonClaim: claim))
+                                    store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: true))
                                 }
                             }
                         }
@@ -81,12 +81,14 @@ extension OtherService {
                 DismissJourney()
             } else if case .openTravelInsurance = action {
                 DismissJourney()
-            } else if case let .openCommonClaimDetail(claim) = action {
-                Journey(
-                    CommonClaimDetail(claim: claim),
-                    style: .detented(.large, modally: false)
-                )
-                .withJourneyDismissButton
+            } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
+                if fromOtherService {
+                    Journey(
+                        CommonClaimDetail(claim: claim),
+                        style: .detented(.large, modally: false)
+                    )
+                    .withJourneyDismissButton
+                }
             } else if case .dismissOtherServices = action {
                 DismissJourney()
             }
