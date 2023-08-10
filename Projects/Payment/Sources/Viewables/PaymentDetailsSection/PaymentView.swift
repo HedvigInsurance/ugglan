@@ -79,16 +79,13 @@ struct PaymentView: View {
                     let bankAccount = paymentData?.bankAccount
                 {
                     hRow {
-                        Image(uiImage: HCoreUIAsset.payments.image)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                        hText(bankAccount.name ?? "")
-                        Spacer()
-                        hText(bankAccount.descriptor ?? "").foregroundColor(hLabelColor.secondary)
-                    }
-                    if status == .pending {
-                        hRow {
-                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                        HStack(spacing: 24) {
+                            Image(uiImage: HCoreUIAsset.payments.image)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            hText(bankAccount.name ?? "")
+                            Spacer()
+                            hText(bankAccount.descriptor ?? "").foregroundColor(hLabelColor.secondary)
                         }
                     }
                 }
@@ -124,14 +121,33 @@ struct PaymentView: View {
             }
         ) { history in
             hRow {
-                Image(uiImage: HCoreUIAsset.circularClock.image)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                hText(L10n.paymentsPaymentHistoryButtonLabel)
+                HStack(spacing: 24) {
+                    Image(uiImage: HCoreUIAsset.waiting.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .aspectRatio(contentMode: .fit)
+                    hText(L10n.paymentsPaymentHistoryButtonLabel)
+                }
             }
             .withChevronAccessory
             .onTap {
                 store.send(.openHistory)
+            }
+            if paymentType == .trustly {
+                PresentableStoreLens(
+                    PaymentStore.self,
+                    getter: { state in
+                        state.paymentData
+                    }
+                ) { paymentData in
+                    if let status = paymentData?.status,
+                        status == .pending
+                    {
+                        hSection {
+                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                        }
+                    }
+                }
             }
         }
     }
@@ -139,6 +155,6 @@ struct PaymentView: View {
 
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentView(paymentType: .adyen)
+        PaymentView(paymentType: .trustly)
     }
 }

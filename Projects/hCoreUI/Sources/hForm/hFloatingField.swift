@@ -93,7 +93,7 @@ public struct hFloatingField: View {
 struct hFloatingField_Previews: PreviewProvider {
     static var previews: some View {
 
-        @State var value: String = " 2"
+        @State var value: String = ""
 
         VStack {
             hFloatingField(value: value, placeholder: "ni", error: nil) {

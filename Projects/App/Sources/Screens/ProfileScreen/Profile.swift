@@ -127,6 +127,7 @@ extension ProfileView {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
+                    .configureTitle(L10n.profileAppInfo)
             } else if case .openCharity = action {
                 AppJourney.businessModelDetailJourney
             } else if case let .openAppSettings(animated) = action {

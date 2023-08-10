@@ -82,13 +82,17 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     ) {
         self.actions = actions
         self.content = content
+        let store: StoreType = globalPresentableStoreContainer.get()
+        handle(allActions: store.loadingSignal.value)
     }
 
     public var body: some View {
         ZStack {
-            contentView
+            BackgroundView().edgesIgnoringSafeArea(.all)
             if isLoading {
                 loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
+            } else {
+                contentView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             }
         }
         .onReceive(
@@ -97,9 +101,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 .publisher
         ) { value in
             handle(allActions: value)
-        }
-        .onAppear {
-            handle(allActions: store.loadingSignal.value)
         }
     }
 
@@ -162,6 +163,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(hBackgroundColorNew.primary.opacity(0.01))
         .edgesIgnoringSafeArea(.top)
+        .useDarkColor
     }
 }
 
@@ -349,14 +351,10 @@ struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
     private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
         if let animation {
             withAnimation(animation) {
-                //                self.error = error ?? ""
                 self.isLoading = isLoading
-                //                self.presentError = presentError
             }
         } else {
-            //            self.error = error ?? ""
             self.isLoading = isLoading
-            //            self.presentError = presentError
         }
     }
 }

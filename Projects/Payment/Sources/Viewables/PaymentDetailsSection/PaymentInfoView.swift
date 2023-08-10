@@ -26,7 +26,6 @@ struct PaymentInfoView: View {
             nextPaymentHeader
         }
         .withoutHorizontalPadding
-        .padding(.top, 16)
     }
 
     private var nextPayment: some View {
@@ -64,7 +63,7 @@ struct PaymentInfoView: View {
                         hText(item.name)
                         Spacer()
 
-                        hText(item.amount?.formattedAmount.addSufix(L10n.perMonth) ?? "")
+                        hText(item.amount?.formattedAmount.addPerMonth ?? "")
                             .foregroundColor(hLabelColor.secondary)
                     }
                 }
@@ -83,7 +82,7 @@ struct PaymentInfoView: View {
                 hRow {
                     hText(L10n.paymentsDiscountsSectionTitle)
                     Spacer()
-                    hText(discount.negative.formattedAmount.addSufix(L10n.perMonth))
+                    hText(discount.negative.formattedAmount.addPerMonth)
                         .foregroundColor(hLabelColor.secondary)
                 }
             }
@@ -186,17 +185,17 @@ struct PaymentInfoView: View {
                             if #available(iOS 15.0, *) {
                                 Text(
                                     vm.attributedString(
-                                        paymentData?.insuranceCost?.gross?.formattedAmount.addSufix(L10n.perMonth) ?? ""
+                                        paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? ""
                                     )
                                 )
                                 .foregroundColor(hTextColorNew.secondary)
                                 .modifier(hFontModifier(style: .standard))
                             } else {
-                                hText(paymentData?.insuranceCost?.gross?.formattedAmount.addSufix(L10n.perMonth) ?? "")
+                                hText(paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? "")
                                     .foregroundColor(hTextColorNew.secondary)
                             }
                         }
-                        hText(paymentData?.insuranceCost?.net?.formattedAmount.addSufix(L10n.perMonth) ?? "")
+                        hText(paymentData?.insuranceCost?.net?.formattedAmount.addPerMonth ?? "")
                     }
                     hText("", style: .standardSmall)
                         .foregroundColor(hLabelColor.secondary)
@@ -212,7 +211,7 @@ struct PaymentInfoView: View {
                 state.paymentData
             }
         ) { paymentData in
-            if let amount = paymentData?.chargeEstimation?.net?.formattedAmount {
+            if let amount = paymentData?.chargeEstimation?.net?.formattedAmountWithoutDecimal {
                 hText(amount, style: .standardExtraExtraLarge)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)

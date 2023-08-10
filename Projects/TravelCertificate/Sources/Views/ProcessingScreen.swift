@@ -27,7 +27,8 @@ struct ProcessingScreen: View {
             VStack {
                 Spacer()
                 VStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.checkmark.image).foregroundColor(hSignalColorNew.greenElement)
+                    Image(uiImage: hCoreUIAssets.tick.image)
+                        .foregroundColor(hSignalColorNew.greenElement)
                     VStack(spacing: 0) {
                         hText(L10n.TravelCertificate.travelCertificateReady)
                         hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColorNew.secondary)

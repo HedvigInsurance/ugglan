@@ -70,7 +70,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
                     }
                 }
-                .padding(.vertical, shouldMoveLabel ? (size == .large ? 8.5 : 7.5) : 0)
+                .padding(.vertical, shouldMoveLabel ? (size == .large ? 10 : 7.5) : 0)
             }
             .addFieldBackground(animate: $animate, error: $error)
             rightAttachedView
@@ -85,11 +85,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 withAnimation {
                     self.error = nil
                 }
-                updateMoveLabel()
+                updateMoveLabel(true)
                 equals = focusValue
             }
             observer.onDidEndEditing = {
-                updateMoveLabel()
+                updateMoveLabel(true)
             }
             observer.onReturnTap = { [weak textField] in
                 if let next = equals?.next {
@@ -98,7 +98,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     equals = nil
                     textField?.resignFirstResponder()
                 }
-                updateMoveLabel()
+                updateMoveLabel(true)
                 onReturn()
             }
             if equals == focusValue {
@@ -114,9 +114,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             self.error = nil
             startAnimation(currentValue)
         }
-        .onAppear {
-            updateMoveLabel()
-        }
         .onTapGesture {
             self.equals = self.focusValue
         }
@@ -131,6 +128,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 self.vm.textField = textField
             }
         }
+        .onAppear {
+            updateMoveLabel(false)
+        }
     }
 
     private func startAnimation(_ value: String) {
@@ -142,14 +142,23 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
     }
 
-    private func updateMoveLabel() {
+    private func updateMoveLabel(_ animation: Bool) {
         if ((vm.textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
-            withAnimation(Animation.easeInOut(duration: 0.2)) {
+            if animation {
+                withAnimation(Animation.easeInOut(duration: 0.2)) {
+                    shouldMoveLabel = true
+                }
+            } else {
                 shouldMoveLabel = true
             }
         } else if shouldMoveLabel && innerValue == "" {
-            withAnimation(Animation.easeInOut(duration: 0.2)) {
-                shouldMoveLabel = false
+            if animation {
+
+                withAnimation(Animation.easeInOut(duration: 0.2)) {
+                    shouldMoveLabel = false
+                }
+            } else {
+                shouldMoveLabel = true
             }
         }
     }
@@ -160,6 +169,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .modifier(masking)
             .tint(foregroundColor)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                print("\(innerValue) --> \(previousInnerValue)")
                 if shouldUpdate {
                     let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
                     self.value = value
@@ -171,6 +181,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 height: (shouldMoveLabel && suffix == nil)
                     ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) : 0
             )
+
     }
 
     @hColorBuilder
@@ -193,8 +204,8 @@ class TextFieldVM: ObservableObject {
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
-    @State static var value: String = "ss"
-    @State static var error: String? = "ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO ERROR RO "
+    @State static var value: String = "Ss"
+    @State static var error: String?
     static var previews: some View {
         VStack {
             hFloatingTextField<Bool>(

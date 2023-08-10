@@ -23,33 +23,40 @@ public struct MyPaymentsView: View {
         LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment]) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
+                    .slideUpFadeAppearAnimation()
+                    .padding(.top, 8)
                 PaymentView(paymentType: paymentType)
+                    .slideUpFadeAppearAnimation()
                 PayoutView(paymentType: paymentType)
+                    .slideUpFadeAppearAnimation(delay: 0.4)
+                bottomButtonView
+                    .slideUpFadeAppearAnimation(delay: 0.4)
             }
             .sectionContainerStyle(.transparent)
-            .hFormAttachToBottom {
-                PresentableStoreLens(
-                    PaymentStore.self,
-                    getter: { state in
-                        state.paymentData
-                    }
-                ) { paymentData in
-                    hSection {
-                        hButton.LargeButtonPrimary {
-                            vm.openConnectCard()
-                        } content: {
-                            hText(
-                                paymentData?.status == .needsSetup
-                                    ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
-                            )
-                        }
-                        .trackLoading(PaymentStore.self, action: .getAdyenAvailableMethods)
-                    }
-                    .padding(.vertical, 16)
-                }
-            }
         }
-        .presentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.easeInOut(duration: 0.2))
+    }
+
+    private var bottomButtonView: some View {
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentData
+            }
+        ) { paymentData in
+            hSection {
+                hButton.LargeButtonPrimary {
+                    vm.openConnectCard()
+                } content: {
+                    hText(
+                        paymentData?.status == .needsSetup
+                            ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
+                    )
+                }
+                .trackLoading(PaymentStore.self, action: .getAdyenAvailableMethods)
+            }
+            .padding(.vertical, 16)
+        }
     }
 
 }

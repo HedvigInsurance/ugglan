@@ -28,8 +28,7 @@ struct StartDateScreen: View {
                                         minDate: travelInsuranceModel?.minStartDate,
                                         maxDate: travelInsuranceModel?.maxStartDate,
                                         placeholder: L10n.TravelCertificate.startDateTitle,
-                                        title: L10n.TravelCertificate.startDateTitle,
-                                        subtitle: travelInsuranceModel?.startDate.displayDateDotFormat
+                                        title: L10n.TravelCertificate.startDateTitle
                                     ),
                                     selectedDate: travelInsuranceModel?.startDate
                                 ) { date in

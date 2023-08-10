@@ -24,7 +24,7 @@ struct DeleteRequestLoadingView: View {
     @ViewBuilder private var successState: some View {
         hForm {
             VStack(spacing: 0) {
-                Image(uiImage: hCoreUIAssets.checkmarkSmall.image)
+                Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColorNew.greenElement)

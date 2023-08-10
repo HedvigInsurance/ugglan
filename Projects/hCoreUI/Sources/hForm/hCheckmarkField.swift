@@ -22,7 +22,7 @@ public struct hCheckmarkField: View {
             hText(text, style: .title3)
             Spacer()
             if selected {
-                Image(uiImage: hCoreUIAssets.checkmark.image)
+                Image(uiImage: hCoreUIAssets.tick.image).resizable().frame(width: 24, height: 24)
             }
         }
         .padding(.vertical, 20)
