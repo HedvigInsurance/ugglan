@@ -97,8 +97,8 @@ struct hFieldLabel: View {
             .foregroundColor(getTextColor())
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
             .frame(height: sizeToScaleFrom + 6)
-            .padding(.bottom, shouldMoveLabel ? (size == .large ? 1 : -1) : size == .large ? 21 : 16)
-            .padding(.top, shouldMoveLabel ? 0 : size == .large ? 21 : 16)
+            .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
+            .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }
 
     @hColorBuilder
@@ -117,10 +117,9 @@ struct hFieldLabel: View {
 
 struct hFieldLabel_Previews: PreviewProvider {
     @State static var value: String?
-    @State static var error: String? =
-        "ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR ERRORRRR "
+    @State static var error: String?
     @State static var animate: Bool = false
-    @State static var shouldMoveLabel: Bool = false
+    @State static var shouldMoveLabel: Bool = true
     static var previews: some View {
         hFieldLabel(
             placeholder: "PLACE",
