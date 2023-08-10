@@ -40,7 +40,6 @@ struct EditContract: View {
                                         )
                                         .frame(width: 28, height: 28)
                                 }
-                                .padding(.vertical, 5)
                             }
                             .withEmptyAccessory
                             .onTap {
@@ -51,39 +50,36 @@ struct EditContract: View {
                         }
                     }
                 }
-                hSection {
-                    infoView
-                        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-                }
-                .sectionContainerStyle(.transparent)
+                infoView
             }
-
         }
         .hFormAttachToBottom {
             hSection {
-                if selectedType != nil {
-                    hButton.LargeButtonPrimary {
-                        store.send(.dismissEditInfo(type: selectedType))
-                        switch selectedType {
-                        case .coInsured:
-                            store.send(.goToFreeTextChat)
-                        case .changeAddress:
-                            store.send(.goToMovingFlow)
-                        case nil:
-                            break
+                VStack(spacing: 4) {
+                    if selectedType != nil {
+                        hButton.LargeButtonPrimary {
+                            store.send(.dismissEditInfo(type: selectedType))
+                            switch selectedType {
+                            case .coInsured:
+                                store.send(.goToFreeTextChat)
+                            case .changeAddress:
+                                store.send(.goToMovingFlow)
+                            case nil:
+                                break
+                            }
+                        } content: {
+                            hText(selectedType?.buttonTitle ?? "", style: .standard)
                         }
+                    }
+                    hButton.LargeButtonText {
+                        store.send(.dismissEditInfo(type: nil))
                     } content: {
-                        hText(selectedType?.buttonTitle ?? "", style: .standard)
+                        hText(L10n.generalCancelButton, style: .standard)
                     }
                 }
-                hButton.LargeButtonText {
-                    store.send(.dismissEditInfo(type: nil))
-                } content: {
-                    hText(L10n.generalCancelButton, style: .standard)
-                }
             }
-            .padding(.top, 16)
             .sectionContainerStyle(.transparent)
+            .padding(.vertical, 16)
         }
         .introspectViewController { vc in
             weak var `vc` = vc
@@ -93,7 +89,7 @@ struct EditContract: View {
         }
         .onChange(of: selectedType) { newValue in
             if #available(iOS 16.0, *) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     vc?.sheetPresentationController?
                         .animateChanges {
                             vc?.sheetPresentationController?.invalidateDetents()
@@ -101,59 +97,20 @@ struct EditContract: View {
                 }
             }
         }
-
-        //            CheckboxPickerScreen(
-        //                items: EditType.getTypes(for: contract).compactMap({($0, $0.title)}),
-        //                preSelectedItems: { [] },
-        //                onChange: { value in
-        //                    withAnimation {
-        //                        selectedType = value.first
-        //                    }
-        //                },
-        //                onSelected: { value in
-        //                    if let selectedType = value.first {
-        //                        let store: ContractStore = globalPresentableStoreContainer.get()
-        //                        store.send(.dismissEditInfo(type: selectedType))
-        //                        switch selectedType {
-        //                        case .coInsured:
-        //                            store.send(.goToFreeTextChat)
-        //                        case .changeAddress:
-        //                            store.send(.goToMovingFlow)
-        //                        }
-        //                    }
-        //                },
-        //                onCancel: {
-        //                    let store: ContractStore = globalPresentableStoreContainer.get()
-        //                    store.send(.dismissEditInfo(type: nil))
-        //                },
-        //                singleSelect: true
-        //            ).hFormAttachToBottom {
-        //                if case .coInsured = selectedType {
-        //                    InfoCard(text: "You need to contact us in the chat to edit the amount of co-insured on your insurance", type: .info).transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-        //                }
-        //            }.introspectViewController { vc in
-        //                weak var `vc` = vc
-        //                if self.vc != vc {
-        //                    self.vc = vc
-        //                }
-        //            }.onChange(of: selectedType) { newValue in
-        //                if #available(iOS 16.0, *) {
-        //                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-        //                        vc?.sheetPresentationController?.animateChanges {
-        //                            vc?.sheetPresentationController?.invalidateDetents()
-        //                        }
-        //                    }
-        //                }
-        //            }
     }
 
     @ViewBuilder
     var infoView: some View {
         if selectedType == .coInsured {
-            InfoCard(
-                text: "You need to contact us in the chat to edit the amount of co-insured on your insurance",
-                type: .info
-            )
+            hSection {
+                InfoCard(
+                    text: L10n.InsurancesTab.contactUsToEditCoInsured,
+                    type: .info
+                )
+            }
+            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .sectionContainerStyle(.transparent)
+
         }
     }
 

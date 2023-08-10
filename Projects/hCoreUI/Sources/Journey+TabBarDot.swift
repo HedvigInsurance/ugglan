@@ -29,7 +29,7 @@ extension JourneyPresentation {
 
                         presenter.viewController.tabBarItem = tabBarItem
                     } else {
-                        tabBarItem.badgeValue = ""
+                        tabBarItem.badgeValue = nil
                         tabBarItem.badgeColor = .clear
                         presenter.viewController.tabBarItem = tabBarItem
                     }

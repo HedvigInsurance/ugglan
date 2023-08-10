@@ -33,6 +33,7 @@ extension UIColor {
         case chatTimeStamp
         case chatMessage
         case toasterBackground
+        case toasterBorder
         case toasterTitle
         case toasterSubtitle
 
@@ -103,6 +104,12 @@ extension UIColor {
                     hSignalColorNew.blueFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
+            case .toasterBorder:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hBorderColorNew.translucentOne.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                        .color
+                        .uiColor()
+                })
             case .toasterTitle:
                 return UIColor(dynamic: { trait -> UIColor in
                     hSignalColorNew.blueText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
@@ -135,6 +142,7 @@ extension UIColor {
             case .chatTimeStamp: return Fonts.fontFor(style: .standardExtraSmall)
             case .chatMessage: return Fonts.fontFor(style: .standard)
             case .toasterBackground: return Fonts.fontFor(style: .title1)
+            case .toasterBorder: return Fonts.fontFor(style: .body)
             case .toasterTitle: return Fonts.fontFor(style: .standardSmall)
             case .toasterSubtitle: return Fonts.fontFor(style: .standardExtraSmall)
             }

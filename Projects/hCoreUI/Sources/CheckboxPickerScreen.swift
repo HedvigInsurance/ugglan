@@ -9,6 +9,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let onCancel: (() -> Void)?
     let singleSelect: Bool?
     let showDividers: Bool?
+    let attachToBottom: Bool
     @State var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
 
@@ -18,7 +19,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onSelected: @escaping ([T]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
-        showDividers: Bool? = false
+        showDividers: Bool? = false,
+        attachToBottom: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -26,31 +28,35 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.onCancel = onCancel
         self.singleSelect = singleSelect
         self.showDividers = showDividers
+        self.attachToBottom = attachToBottom
     }
 
     public var body: some View {
-        if onCancel != nil {
-            hForm { content }
+        if attachToBottom {
+            hForm {}
                 .hFormAttachToBottom {
-                    bottomContent
+                    VStack(spacing: 0) {
+                        content
+                        bottomContent
+                    }
                 }
                 .onAppear {
                     selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
                 }
         } else {
-            hForm { content }
-                .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
-                .hFormAttachToBottom {
-                    bottomContent
-                }
-                .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
-                }
+            hForm {
+                content
+            }
+            .hFormAttachToBottom {
+                bottomContent
+            }
+            .onAppear {
+                selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
+            }
         }
     }
 
     var content: some View {
-
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {

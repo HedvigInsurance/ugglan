@@ -22,27 +22,34 @@ public struct RetryView: View {
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            hSection {
-                Group {
-                    Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                        .resizable()
-                        .foregroundColor(hSignalColorNew.amberElement)
-                        .frame(width: 24, height: 24)
-                    VStack(spacing: 0) {
-                        hText(title)
-                        hText(subtitle, style: .body)
-                            .foregroundColor(hTextColorNew.secondary)
-                            .multilineTextAlignment(.center)
+            VStack {
+                Spacer()
+                Spacer()
+                hSection {
+                    Group {
+                        Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                            .resizable()
+                            .foregroundColor(hSignalColorNew.amberElement)
+                            .frame(width: 24, height: 24)
+                        VStack(spacing: 0) {
+                            hText(title)
+                            hText(subtitle, style: .body)
+                                .foregroundColor(hTextColorNew.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        hButton.SmallButtonFilled {
+                            action?()
+                        } content: {
+                            hText(retryTitle)
+                        }
                     }
-                    hButton.SmallButtonFilled {
-                        action?()
-                    } content: {
-                        hText(retryTitle)
-                    }
+                    .padding(8)
                 }
-                .padding(8)
+                .frame(maxWidth: 350)
+                Spacer()
+                Spacer()
+                Spacer()
             }
-            .frame(maxWidth: 350, maxHeight: .infinity)
             bottomAttachedView
         }
         .frame(maxHeight: .infinity)

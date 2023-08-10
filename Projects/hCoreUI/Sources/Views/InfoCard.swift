@@ -59,7 +59,6 @@ public struct InfoCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)
         .padding(.bottom, 16)
-
         .padding(.leading, 12)
         .padding(.trailing, 16)
         .background(
@@ -70,7 +69,7 @@ public struct InfoCard: View {
                         .strokeBorder(hBorderColorNew.translucentOne, lineWidth: 0.5)
                 )
         )
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @hColorBuilder

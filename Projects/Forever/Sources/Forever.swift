@@ -66,25 +66,10 @@ extension ForeverView {
         ) { action in
             if case .showChangeCodeDetail = action {
                 ChangeCodeView.journey
-            } else if case let .showShareSheetWithNotificationReminder(code) = action {
-                pushNotificationJourney(onDismissAction: {
-                    let store: ForeverStore = globalPresentableStoreContainer.get()
-                    store.send(.showShareSheetOnly(code: code))
-                }) {
-                    shareSheetJourney(code: code)
-                }
             } else if case let .showShareSheetOnly(code) = action {
                 shareSheetJourney(code: code)
             } else if case let .showInfoSheet(discount) = action {
                 infoSheetJourney(potentialDiscount: discount)
-            } else if case .showPushNotificationsReminder = action {
-                pushNotificationJourney {
-                    ContinueJourney()
-                }
-            } else if case .showSuccessScreen = action {
-                pushNotificationJourney {
-                    ContinueJourney()
-                }
             }
         }
         .configureTitle(L10n.ReferralsInfoSheet.headline)
@@ -124,30 +109,6 @@ extension ForeverView {
             style: .activityView,
             options: []
         )
-    }
-
-    static func pushNotificationJourney<ResultJourney: JourneyPresentation>(
-        onDismissAction: (() -> Void)? = nil,
-        @JourneyBuilder resultJourney: @escaping () -> ResultJourney
-    ) -> some JourneyPresentation {
-        GroupJourney {
-            if !UIApplication.shared.isRegisteredForRemoteNotifications {
-                HostingJourney(
-                    ForeverStore.self,
-                    rootView: PushNotificationReminderView(),
-                    style: .modal
-                ) { action in
-                    DismissJourney()
-                }
-                .onDismiss {
-                    if let onDismissAction = onDismissAction {
-                        onDismissAction()
-                    }
-                }
-            } else {
-                resultJourney()
-            }
-        }
     }
 }
 
