@@ -110,7 +110,7 @@ public struct hForm<Content: View>: View {
     @State var contentHeight: CGFloat = 0
     @State var titleHeight: CGFloat = 0
     @State var additionalSpaceFromTop: CGFloat = 0
-
+    @State var shouldIgnoreTitleMargins = false
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
@@ -157,8 +157,8 @@ public struct hForm<Content: View>: View {
                 if let hFormTitle {
                     hText(hFormTitle.2, style: hFormTitle.1)
                         .multilineTextAlignment(.center)
-                        .padding(.top, hFormTitle.0.topMargin)
-                        .padding(.bottom, hFormTitle.0.bottomMargin)
+                        .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.topMargin)
+                        .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.bottomMargin)
                         .padding([.leading, .trailing], 16)
                 }
                 content.padding(.bottom, -8)
@@ -189,10 +189,20 @@ public struct hForm<Content: View>: View {
             if hDisableScroll {
                 scrollView.bounces = false
             }
-            scrollViewHeight =
-                scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom
-            recalculateHeight()
         }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
+                    }
+                    .onChange(of: proxy.size) { size in
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
+                    }
+            }
+        )
     }
 
     @hColorBuilder
@@ -214,6 +224,10 @@ public struct hForm<Content: View>: View {
         } else {
             additionalSpaceFromTop = 0
         }
+        withAnimation {
+            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
+        }
+
     }
 }
 
