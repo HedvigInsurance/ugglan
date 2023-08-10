@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 struct ContractTable {
-    static let crossSellingStackId = "CrossSellingStack"
     let filter: ContractFilter
     @PresentableStore var store: ContractStore
 
@@ -42,7 +41,7 @@ extension ContractTable: View {
                     ForEach(contracts, id: \.id) { contract in
                         ContractRow(id: contract.id)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 16)
+                            .padding(.bottom, 16)
                             .transition(.slide)
                     }
                 }
@@ -57,7 +56,7 @@ extension ContractTable: View {
             }
         ) { displaysActiveContracts in
             if self.filter.displaysActiveContracts {
-                CrossSellingStack().id(ContractTable.crossSellingStackId)
+                CrossSellingStack(withHeader: true)
                     .padding(.top, 24)
                 PresentableStoreLens(
                     ContractStore.self,

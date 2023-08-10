@@ -20,7 +20,7 @@ struct ContractCoverageView: View {
             }
         ) { contract in
             if let contract = contract {
-                VStack {
+                VStack(spacing: 4) {
                     InsurableLimitsSectionView(
                         limits: contract.insurableLimits
                     ) { limit in

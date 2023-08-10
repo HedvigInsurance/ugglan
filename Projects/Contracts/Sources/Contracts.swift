@@ -62,7 +62,6 @@ extension ContractFilter {
 
 public struct Contracts {
     @PresentableStore var store: ContractStore
-    @State var shouldScrollToCrossSells = false
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
     let disposeBag = DisposeBag()
@@ -80,31 +79,14 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        ScrollViewReader { value in
-            hForm {
-                ContractTable(filter: filter)
-            }
-            .onChange(of: shouldScrollToCrossSells) { shouldScrollToCrossSells in
-                if shouldScrollToCrossSells {
-                    withAnimation {
-                        value.scrollTo(ContractTable.crossSellingStackId, anchor: .bottom)
-                    }
-                    self.shouldScrollToCrossSells = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        store.send(.hasSeenCrossSells(value: true))
-                    }
-                }
-            }
+        hForm {
+            ContractTable(filter: filter)
         }
-
         .onReceive(pollTimer) { _ in
             fetch()
         }
         .onAppear {
             fetch()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                shouldScrollToCrossSells = store.state.scrollToCrossSells
-            }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
         .introspectScrollView { scrollView in
@@ -210,12 +192,6 @@ extension Contracts {
         .onPresent({
             let store: ContractStore = globalPresentableStoreContainer.get()
             store.send(.resetSignedCrossSells)
-        })
-        .addConfiguration({ presenter in
-            if let navigationController = presenter.viewController as? UINavigationController {
-                navigationController.isHeroEnabled = true
-                navigationController.hero.navigationAnimationType = .auto
-            }
         })
         .configureTitle(
             filter.displaysActiveContracts

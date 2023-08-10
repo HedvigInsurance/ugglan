@@ -20,12 +20,6 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                if contract.upcomingAgreementDate?.localDateString != nil {
-                    hSection {
-                        RenewalInformationCard(contract: contract)
-                    }
-                    .padding(.top, 16)
-                }
                 VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
                         ForEach(table.sections) { section in
@@ -39,9 +33,9 @@ struct ContractInformationView: View {
                                     hText(row.value)
                                         .foregroundColor(hTextColorNew.secondary)
                                 })
-
                             }
                             .withoutHorizontalPadding
+                            .padding(.bottom, 16)
                         }
                     }
 
@@ -56,13 +50,23 @@ struct ContractInformationView: View {
                             }
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.bottom, 16)
 
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+    }
 
+    @ViewBuilder
+    private func changeAddressInfo(_ contract: Contract) -> some View {
+        if let date = contract.upcomingAgreementDate?.displayDateDotFormat,
+            let address = contract.upcomingAgreementsTable.sections.first?.rows.first?.value
+        {
+            hSection {
+                InfoCard(text: "Your insurance will switch to your new address \(address) on \(date)", type: .info)
+            }
+        }
     }
 }
 
@@ -88,33 +92,5 @@ struct ChangePeopleView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-}
-
-struct RenewalInformationCard: View {
-    @PresentableStore var store: ContractStore
-    let contract: Contract
-
-    var body: some View {
-        VStack {
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: L10n.InsuranceDetails.updateDetailsSheetTitle,
-                bodyText: L10n.InsuranceDetails.AdressUpdateBody.No.address(
-                    contract.upcomingAgreementDate?.displayDateDotFormat ?? ""
-                ),
-                backgroundColor: hTintColor.lavenderTwo /* TODO: CHANGE */
-            ) {
-                hButton.SmallButtonOutlined {
-                    store.send(
-                        .contractDetailNavigationAction(
-                            action: .upcomingAgreement(details: contract.upcomingAgreementsTable)
-                        )
-                    )
-                } content: {
-                    L10n.InsuranceDetails.addressUpdateButton.hText()
-                }
-            }
-        }
     }
 }

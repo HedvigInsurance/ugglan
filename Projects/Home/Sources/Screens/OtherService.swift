@@ -44,6 +44,7 @@ struct OtherService: View {
                     }
                 }
             }
+            .hDisableScroll
             .hFormAttachToBottom {
                 hSection {
                     hButton.LargeButtonGhost {

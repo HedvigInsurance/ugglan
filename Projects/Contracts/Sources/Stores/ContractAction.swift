@@ -23,7 +23,6 @@ public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case document(url: URL, title: String)
-    case upcomingAgreement(details: DetailAgreementsTable)
 }
 
 public enum CrossSellingFAQListNavigationAction: ActionProtocol, Hashable {
@@ -84,7 +83,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
-    case scrollToNewOffer
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {

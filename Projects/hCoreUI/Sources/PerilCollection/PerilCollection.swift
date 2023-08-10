@@ -48,7 +48,6 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 )
                 .transition(.opacity.animation(.easeOut))
             }
-            .contentShape(Rectangle())
             .padding(.vertical, 13)
 
             if selectedPerils.contains(peril) {
@@ -69,6 +68,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
             }
         }
         .padding(.horizontal, 12)
+        .contentShape(Rectangle())
     }
 }
 
