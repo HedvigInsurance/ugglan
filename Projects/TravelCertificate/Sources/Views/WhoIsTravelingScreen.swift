@@ -1,4 +1,5 @@
 import Flow
+import Foundation
 import Presentation
 import SwiftUI
 import hCore
@@ -39,6 +40,7 @@ struct WhoIsTravelingScreen: View {
                                             .foregroundColor(disabledColorOr(hTextColorNew.secondary))
                                     }
                                 }
+                                .toggleStyle(ChecboxToogleStyle())
                                 if model?.policyCoinsuredPersons.count ?? 0 == 0
                                     && vm.specifications?.numberOfCoInsured ?? 0 > 0
                                 {
@@ -162,5 +164,42 @@ struct WhoIsTravelingView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return WhoIsTravelingScreen()
+    }
+}
+
+struct ChecboxToogleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        if #available(iOS 15.0, *) {
+            HStack {
+                configuration.label
+                Spacer()
+                RoundedRectangle(cornerRadius: 9)
+                    .fill(backgroundColor(isOn: configuration.isOn))
+                    .overlay {
+                        Circle()
+                            .fill(hTextColorNew.negative)
+                            .padding(1)
+                            .offset(x: configuration.isOn ? 5 : -5)
+
+                    }
+                    .frame(width: 28, height: 18)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            configuration.isOn.toggle()
+                        }
+                    }
+            }
+        } else {
+            Text("ssd")
+        }
+    }
+
+    @hColorBuilder
+    func backgroundColor(isOn: Bool) -> some hColor {
+        if isOn {
+            hSignalColorNew.greenElement
+        } else {
+            hFillColorNew.opaqueThree
+        }
     }
 }

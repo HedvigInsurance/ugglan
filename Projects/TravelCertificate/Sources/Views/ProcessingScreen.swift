@@ -19,12 +19,20 @@ struct ProcessingScreen: View {
             }
         }
         .presentableStoreLensAnimation(.default)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                withAnimation(.easeInOut(duration: 1.25)) {
+                    vm.progress = 1
+                }
+            }
+        }
     }
 
     private var successView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
             VStack {
+                Spacer()
                 Spacer()
                 VStack(spacing: 16) {
                     Image(uiImage: hCoreUIAssets.tick.image)
@@ -34,6 +42,8 @@ struct ProcessingScreen: View {
                         hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColorNew.secondary)
                     }
                 }
+                Spacer()
+                Spacer()
                 Spacer()
             }
             hSection {
@@ -70,45 +80,26 @@ struct ProcessingScreen: View {
             ) {
                 vm.store.send(.postTravelInsuranceForm)
             }
-            .hRetryAttachToBottom {
-                hSection {
-                    VStack(spacing: 8) {
-                        hButton.LargeButtonPrimary {
-                            vm.store.send(.navigation(.openFreeTextChat))
-                        } content: {
-                            hText(L10n.openChat)
-                        }
-                        hButton.LargeButtonGhost {
-                            vm.store.send(.navigation(.openFreeTextChat))
-                        } content: {
-                            hText(L10n.generalCloseButton)
-                        }
-                    }
-                    .padding(.bottom, 16)
-                }
-            }
         }
     }
 
     private var loadingView: some View {
         VStack {
+            Spacer()
+            Spacer()
             hText(L10n.TravelCertificate.generating)
             ProgressView(value: vm.progress)
                 .tint(hTextColorNew.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        withAnimation(.easeInOut(duration: 2).delay(0.5)) {
-                            vm.progress = 1
-                        }
-                    }
-                }
+            Spacer()
+            Spacer()
+            Spacer()
         }
     }
 }
 
 class ProcessingViewModel: ObservableObject {
-    @State var progress: Float = 0
+    @Published var progress: Float = 0
     @PresentableStore var store: TravelInsuranceStore
 
     func presentShare() async {
@@ -157,10 +148,12 @@ struct SuccessScreen_Previews: PreviewProvider {
         ProcessingScreen()
             .onAppear {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-                //            store.setLoading(for: .postTravelInsurance)
-                //            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                store.setError("ERROR", for: .postTravelInsurance)
-                //            }
+                store.setLoading(for: .postTravelInsurance)
+
+                //                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                //                    store.removeLoading(for: .postTravelInsurance)
+                store.setError("error", for: .postTravelInsurance)
+                //                }
             }
     }
 }
