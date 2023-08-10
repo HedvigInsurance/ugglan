@@ -12,7 +12,6 @@ struct AppInfoView: View {
                 state
             }
         ) { state in
-
             hForm {
                 hSection {
                     memberId
@@ -20,7 +19,7 @@ struct AppInfoView: View {
                     deviceId
                 }
                 .withoutHorizontalPadding
-                .padding(.top, 16)
+                .padding(.top, 8)
             }
 
             .sectionContainerStyle(.transparent)
@@ -45,7 +44,7 @@ struct AppInfoView: View {
                     hText(memberId).foregroundColor(hLabelColor.secondary)
                 }
             }
-            .onLongPressGesture {
+            .onTap {
                 UIPasteboard.general.value = memberId
                 showToaster()
             }
@@ -66,7 +65,7 @@ struct AppInfoView: View {
                     .foregroundColor(hLabelColor.secondary)
             }
         }
-        .onLongPressGesture {
+        .onTap {
             UIPasteboard.general.value = appVersion
             showToaster()
         }
@@ -89,7 +88,7 @@ struct AppInfoView: View {
 
             }
         }
-        .onLongPressGesture {
+        .onTap {
             UIPasteboard.general.value = deviceId
             showToaster()
         }

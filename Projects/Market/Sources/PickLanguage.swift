@@ -10,6 +10,7 @@ public struct PickLanguage: View {
     @PresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale
+    @State var code: String? = Localization.Locale.currentLocale.lprojCode
 
     public init(
         currentMarket: Market
@@ -38,34 +39,26 @@ public struct PickLanguage: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
             }
-            VStack(spacing: 4) {
-                ForEach(currentMarket.languages, id: \.lprojCode) { locale in
-                    hSection {
-                        hRow {
-                            HStack(spacing: 0) {
-                                hText(locale.displayName, style: .title3)
-                                    .foregroundColor(hTextColorNew.primary)
-                                Spacer()
-                                Circle()
-                                    .strokeBorder(
-                                        getBorderColor(isSelected: locale == currentLocale),
-                                        lineWidth: locale == currentLocale ? 0 : 1.5
-                                    )
-                                    .background(Circle().foregroundColor(retColor(isSelected: locale == currentLocale)))
-                                    .frame(width: 28, height: 28)
-                            }
-                        }
-                        .withEmptyAccessory
-                        .onTap {
-                            if onSave == nil {
-                                Localization.Locale.currentLocale = locale
-                            }
-                            self.currentLocale = locale
-                        }
+            hSection {
+                VStack(spacing: 4) {
+                    ForEach(currentMarket.languages, id: \.lprojCode) { locale in
+                        hRadioField(
+                            id: locale.lprojCode,
+                            content: {
+                                HStack(spacing: 16) {
+                                    Image(uiImage: locale.icon)
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                    hText(locale.displayName, style: .title3)
+                                        .foregroundColor(hTextColorNew.primary)
+                                }
+                            },
+                            selected: $code
+                        )
                     }
                 }
-                .hWithoutDivider
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             hSection {
@@ -90,6 +83,15 @@ public struct PickLanguage: View {
             .padding(.vertical, 16)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
+        }
+        .onChange(of: code) { newValue in
+            if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
+                if onSave == nil {
+                    Localization.Locale.currentLocale = locale
+                } else {
+                    currentLocale = locale
+                }
+            }
         }
     }
 
@@ -125,6 +127,5 @@ extension PickLanguage {
             }
         }
         .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
-        .withDismissButton
     }
 }

@@ -9,7 +9,7 @@ struct SlideUpFadeAppearAnimationModifier: ViewModifier {
 
     var offset: CGFloat {
         if height == 0 {
-            return .infinity
+            return 0
         }
 
         return animateAppearPerformed ? 0 : height * 0.1

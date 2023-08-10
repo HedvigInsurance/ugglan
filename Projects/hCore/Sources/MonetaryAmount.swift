@@ -75,6 +75,16 @@ extension MonetaryAmount {
         formatter.locale = currencyLocale
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
+
+    public var formattedAmountWithoutDecimal: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 0
+        formatter.locale = currencyLocale
+        return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
+    }
 }
 
 extension GiraffeGraphQL.MonetaryAmountFragment {
@@ -84,7 +94,7 @@ extension GiraffeGraphQL.MonetaryAmountFragment {
 }
 
 extension String {
-    public func addSufix(_ sufix: String) -> String {
-        return self + sufix
+    public var addPerMonth: String {
+        return self + "/" + L10n.monthAbbreviationLabel
     }
 }
