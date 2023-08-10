@@ -19,7 +19,6 @@ struct DiscountCodeSectionView: View {
                     hSection {
                         hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
                             UIPasteboard.general.string = code
-                            store.send(.showPushNotificationsReminder)
                             Toasts.shared.displayToast(
                                 toast: .init(
                                     symbol: .icon(hCoreUIAssets.tick.image),
@@ -34,7 +33,7 @@ struct DiscountCodeSectionView: View {
                     hSection {
                         VStack(spacing: 8) {
                             hButton.LargeButtonPrimary {
-                                store.send(.showShareSheetWithNotificationReminder(code: code))
+                                store.send(.showShareSheetOnly(code: code))
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
@@ -48,7 +47,6 @@ struct DiscountCodeSectionView: View {
                     }
                     .padding(.vertical, 16)
                 }
-
             }
         }
         .presentableStoreLensAnimation(.spring())

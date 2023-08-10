@@ -158,6 +158,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                     presenting: presenting,
                     useBlur: options.contains(.blurredBackground)
                 )
+                presentationController.preferredCornerRadius = 16
                 return presentationController
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
@@ -742,6 +743,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+
         self.detents = [
             .custom(resolver: { context in
                 return 0

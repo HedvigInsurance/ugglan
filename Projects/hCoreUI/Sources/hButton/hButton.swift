@@ -14,8 +14,8 @@ struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 32)
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
     }
 }
 
@@ -23,8 +23,8 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 32)
-            .padding(.leading)
-            .padding(.trailing)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
     }
 }
 

@@ -181,6 +181,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 height: (shouldMoveLabel && suffix == nil)
                     ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) : 0
             )
+            .showClearButton($innerValue, equals: $equals, focusValue: focusValue)
 
     }
 
@@ -281,5 +282,46 @@ extension EnvironmentValues {
 extension View {
     public func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hFieldRightAttachedView, AnyView(content()))
+    }
+}
+
+struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier {
+    @Binding var fieldText: String
+    @Binding var equals: Value?
+    let focusValue: Value
+    func body(content: Content) -> some View {
+        HStack(alignment: .center) {
+            content
+            if fieldText != "" && equals == focusValue {
+                Color.clear
+                    .fixedSize()
+                    .background(
+                        SwiftUI.Button(
+                            action: {
+                                withAnimation {
+                                    fieldText = ""
+                                }
+                            },
+                            label: {
+                                Image(uiImage: hCoreUIAssets.close.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(hTextColorNew.primary)
+                            }
+                        )
+                    )
+
+            }
+        }
+    }
+}
+
+extension View {
+    func showClearButton<Value: hTextFieldFocusStateCompliant>(
+        _ text: Binding<String>,
+        equals: Binding<Value?>,
+        focusValue: Value
+    ) -> some View {
+        self.modifier(TextFieldClearButton(fieldText: text, equals: equals, focusValue: focusValue))
     }
 }

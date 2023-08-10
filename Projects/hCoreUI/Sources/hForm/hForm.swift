@@ -168,12 +168,16 @@ public struct hForm<Content: View>: View {
                 GeometryReader { proxy in
                     Color.clear
                         .onAppear {
-                            contentHeight = proxy.size.height
-                            recalculateHeight()
+                            withAnimation {
+                                contentHeight = proxy.size.height
+                                recalculateHeight()
+                            }
                         }
                         .onChange(of: proxy.size) { size in
-                            contentHeight = size.height
-                            recalculateHeight()
+                            withAnimation {
+                                contentHeight = size.height
+                                recalculateHeight()
+                            }
                         }
                 }
             )
@@ -187,20 +191,26 @@ public struct hForm<Content: View>: View {
             if #available(iOS 15, *) {
                 scrollView.viewController?.setContentScrollView(scrollView)
             }
-            if hDisableScroll {
+            if hDisableScroll || additionalSpaceFromTop > 0 {
                 scrollView.bounces = false
+            } else {
+                scrollView.bounces = true
             }
         }
         .background(
             GeometryReader { proxy in
                 Color.clear
                     .onAppear {
-                        scrollViewHeight = proxy.size.height
-                        recalculateHeight()
+                        withAnimation {
+                            scrollViewHeight = proxy.size.height
+                            recalculateHeight()
+                        }
                     }
                     .onChange(of: proxy.size) { size in
-                        scrollViewHeight = proxy.size.height
-                        recalculateHeight()
+                        withAnimation {
+                            scrollViewHeight = proxy.size.height
+                            recalculateHeight()
+                        }
                     }
             }
         )
@@ -225,9 +235,8 @@ public struct hForm<Content: View>: View {
         } else {
             additionalSpaceFromTop = 0
         }
-        withAnimation {
-            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
-        }
+
+        shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
     }
 }
 

@@ -31,6 +31,7 @@ public struct Toast: Equatable {
     let subtitle: String?
     let textColor: UIColor
     let backgroundColor: UIColor
+    let borderColor: UIColor
     let duration: TimeInterval
     public var onTap: Signal<Void> {
         onTapCallbacker.providedSignal
@@ -45,6 +46,7 @@ public struct Toast: Equatable {
         subtitle: String? = nil,
         textColor: UIColor = .brandNew(.toasterTitle),
         backgroundColor: UIColor = UIColor.brandNew(.toasterBackground),
+        borderColor: UIColor = UIColor.brandNew(.toasterBorder),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
@@ -52,6 +54,7 @@ public struct Toast: Equatable {
         self.subtitle = subtitle
         self.textColor = textColor
         self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
         self.duration = duration
     }
 }
@@ -120,16 +123,8 @@ extension Toast: Viewable {
             }
 
         containerView.backgroundColor = backgroundColor
-        bag += containerView.applyShadow { trait in
-            UIView.ShadowProperties(
-                opacity: trait.userInterfaceStyle == .dark ? 0 : 0.25,
-                offset: CGSize(width: 0, height: 0),
-                blurRadius: 3,
-                color: UIColor.darkGray,
-                path: nil,
-                radius: 10
-            )
-        }
+        containerView.layer.borderColor = borderColor.cgColor
+        containerView.layer.borderWidth = 0.5
 
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false

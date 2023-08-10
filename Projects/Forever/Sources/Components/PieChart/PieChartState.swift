@@ -21,6 +21,10 @@ public struct PieChartState {
     ) {
         let totalNeededSlices = grossAmount.value / potentialDiscountAmount.value
         slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
-        percentagePerSlice = 1 / CGFloat(totalNeededSlices)
+        if grossAmount == netAmount {
+            percentagePerSlice = 0.1
+        } else {
+            percentagePerSlice = 1 / CGFloat(totalNeededSlices)
+        }
     }
 }

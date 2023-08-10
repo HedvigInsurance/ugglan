@@ -13,49 +13,47 @@ public struct TextInputView: View {
     }
 
     public var body: some View {
-        hForm {}
-            .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .none),
-                            value: $vm.input,
-                            equals: $vm.type,
-                            focusValue: .textField,
-                            placeholder: vm.title,
-                            error: $vm.error
-                        )
-                        .disabled(vm.isLoading)
-
-                    }
-                    .sectionContainerStyle(.transparent)
-                    hSection {
-                        VStack(spacing: 8) {
-                            hButton.LargeButtonPrimary {
-                                Task { [weak vm] in
-                                    withAnimation {
-                                        vm?.isLoading = true
-                                    }
-                                    await vm?.save()
-                                    withAnimation {
-                                        vm?.isLoading = false
-                                    }
+        hForm {
+            VStack(spacing: 0) {
+                hSection {
+                    hFloatingTextField(
+                        masking: Masking(type: .none),
+                        value: $vm.input,
+                        equals: $vm.type,
+                        focusValue: .textField,
+                        placeholder: vm.title,
+                        error: $vm.error
+                    )
+                    .disabled(vm.isLoading)
+                }
+                hSection {
+                    VStack(spacing: 8) {
+                        hButton.LargeButtonPrimary {
+                            Task { [weak vm] in
+                                withAnimation {
+                                    vm?.isLoading = true
                                 }
-                            } content: {
-                                hText(L10n.generalSaveButton, style: .body)
+                                await vm?.save()
+                                withAnimation {
+                                    vm?.isLoading = false
+                                }
                             }
-                            hButton.LargeButtonGhost {
-                                vm.dismiss()
-                            } content: {
-                                hText(L10n.generalCancelButton, style: .body)
-                            }
+                        } content: {
+                            hText(L10n.generalSaveButton, style: .body)
+                        }
+                        hButton.LargeButtonGhost {
+                            vm.dismiss()
+                        } content: {
+                            hText(L10n.generalCancelButton, style: .body)
                         }
                     }
-                    .hButtonIsLoading(vm.isLoading)
-                    .sectionContainerStyle(.transparent)
-                    .padding(.bottom, 16)
                 }
+                .hButtonIsLoading(vm.isLoading)
+                .padding(.vertical, 16)
             }
+        }
+        .hDisableScroll
+        .sectionContainerStyle(.transparent)
     }
     enum InputViewFocus: hTextFieldFocusStateCompliant {
         static var last: InputViewFocus {

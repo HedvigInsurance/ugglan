@@ -91,7 +91,7 @@ class LargeNavBar: UINavigationBar {
             if subview.frame.size.height != barHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
-                    subview.frame = CGRect(x: 0, y: -(90 - 56) / 2, width: self.frame.width, height: barHeight)
+                    subview.frame = CGRect(x: 0, y: -12, width: self.frame.width, height: barHeight)
                 }
             }
         }
@@ -224,53 +224,8 @@ extension DefaultStyling {
         }
 
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
-
         setNavigationBarAppearance()
-
-        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
-        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
-        UITabBar.appearance().tintColor = .brand(.primaryText())
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .dark)
-        )
-        .backgroundImage =
-            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
-            .asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .light)
-        )
-        .backgroundImage =
-            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-            .asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .dark)
-        )
-        .shadowImage = UIColor.brand(.primaryBorderColor)
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .light)
-        )
-        .shadowImage = UIColor.brand(.primaryBorderColor)
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .normal
-            )
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .selected
-            )
+        setTabBarAppearance()
 
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
             .primaryTintColor
@@ -331,6 +286,84 @@ extension DefaultStyling {
         )
 
         current = .custom
+    }
+
+    private static func setTabBarAppearance() {
+        let standard = UITabBarAppearance()
+        standard.configureWithOpaqueBackground()
+
+        UITabBar.appearance().standardAppearance = standard
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = standard
+        }
+        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        UITabBar.appearance().tintColor = .brandNew(.primaryText())
+        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brandNew(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        }
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brandNew(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        }
+
+        UITabBarItem.appearance()
+            .setTitleTextAttributes(
+                [
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                ],
+                for: .normal
+            )
+        UITabBarItem.appearance()
+            .setTitleTextAttributes(
+                [
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                ],
+                for: .selected
+            )
     }
 
     public static let custom = DefaultStyling(

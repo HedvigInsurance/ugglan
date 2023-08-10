@@ -30,15 +30,11 @@ public indirect enum ForeverAction: ActionProtocol {
     case showChangeCodeDetail
     case showChangeCodeSuccess
     case dismissChangeCodeDetail
-    case showSuccessScreen
     case fetch
     case setForeverData(data: ForeverData)
-    case showShareSheetWithNotificationReminder(code: String)
     case showInfoSheet(discount: String)
     case closeInfoSheet
     case showShareSheetOnly(code: String)
-    case showPushNotificationsReminder
-    case dismissPushNotificationSheet
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {

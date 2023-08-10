@@ -20,7 +20,7 @@ struct ClaimDetailHeader: View {
                 }
             )
         }
-        .padding(.top, 16)
+        .padding(.top, 8)
     }
 
     @ViewBuilder
