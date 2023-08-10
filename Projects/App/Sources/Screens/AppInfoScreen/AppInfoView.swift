@@ -97,7 +97,7 @@ struct AppInfoView: View {
     private func showToaster() {
         Toasts.shared.displayToast(
             toast: Toast(
-                symbol: .icon(hCoreUIAssets.copy.image),
+                symbol: .icon(hCoreUIAssets.tick.image),
                 body: L10n.General.copied
             )
         )

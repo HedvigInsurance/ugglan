@@ -126,7 +126,7 @@ public struct SelectedAccessory: View {
     public var body: some View {
         Spacer()
         if selected {
-            Image(uiImage: hCoreUIAssets.checkmark.image)
+            Image(uiImage: hCoreUIAssets.tick.image)
         }
     }
 }

@@ -8,7 +8,7 @@ public struct SuccessScreen: View {
         hSection {
             VStack(spacing: 20) {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.checkmark.image)
+                Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
                     .foregroundColor(hSignalColorNew.greenElement)
                     .frame(width: 24, height: 24)
