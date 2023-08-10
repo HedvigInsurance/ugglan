@@ -93,7 +93,7 @@ struct ContractDetail: View {
         )
         contractDetails = ContractDocumentsView(id: id)
 
-        let font = Fonts.fontFor(style: .footnote)
+        let font = Fonts.fontFor(style: .standardSmall)
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
@@ -121,13 +121,14 @@ struct ContractDetail: View {
                         id: id,
                         allowDetailNavigation: false
                     )
-                    .padding(.vertical, 16)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title, style: .footnote).tag(view)
+                            hText(view.title, style: .standardSmall).tag(view)
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
                 }
                 .sectionContainerStyle(.transparent)
                 VStack(spacing: 4) {
@@ -135,11 +136,11 @@ struct ContractDetail: View {
                         if context.trigger == panel {
                             viewFor(view: panel)
                                 .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70))
+                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
                         }
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, 16)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
@@ -162,12 +163,6 @@ extension ContractDetail {
                 Journey(
                     Document(url: url, title: title),
                     style: .detented(.large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .upcomingAgreement(details)) = action {
-                Journey(
-                    UpcomingAddressChangeDetails(details: details),
-                    style: .detented(.scrollViewContentSize, .large)
                 )
                 .withDismissButton
             }

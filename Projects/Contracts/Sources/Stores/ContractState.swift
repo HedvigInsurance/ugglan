@@ -16,7 +16,6 @@ public struct ContractState: StateProtocol {
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
     public var crossSells: [CrossSell] = []
-    public var scrollToCrossSells = false
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
     var terminationDateStep: TerminationFlowDateNextStepModel?

@@ -111,6 +111,7 @@ public struct hForm<Content: View>: View {
     @State var titleHeight: CGFloat = 0
     @State var additionalSpaceFromTop: CGFloat = 0
     @State var shouldIgnoreTitleMargins = false
+
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
@@ -227,7 +228,6 @@ public struct hForm<Content: View>: View {
         withAnimation {
             shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
         }
-
     }
 }
 

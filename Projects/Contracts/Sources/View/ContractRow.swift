@@ -59,19 +59,11 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     @ViewBuilder var logo: some View {
         if let logo = contract.logo {
             RemoteVectorIconView(icon: logo, backgroundFetch: true)
-                .enableHero(
-                    "ContractRow_\(contract.id)_logo",
-                    modifiers: [.spring(stiffness: 250, damping: 25)]
-                )
                 .frame(width: 36, height: 36)
         } else {
             // Fallback to Hedvig logo if no logo
             Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                 .resizable()
-                .enableHero(
-                    "ContractRow_\(contract.id)_logo",
-                    modifiers: [.spring(stiffness: 250, damping: 25)]
-                )
                 .frame(width: 24, height: 24)
         }
     }
@@ -104,6 +96,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
         )
         .foregroundColor(hTextColorNew.negative)
+        .contentShape(Rectangle())
     }
 }
 
@@ -134,27 +127,6 @@ struct ContractRow: View {
                             self.frameWidth = width
                         }
                     }
-                )
-                .enableHero(
-                    "ContractRow_\(contract.id)",
-                    modifiers: [
-                        .spring(stiffness: 250, damping: 25),
-                        .when(
-                            { context -> Bool in !context.isMatched },
-                            [
-                                .init(applyFunction: { (state: inout HeroTargetState) in
-                                    state.append(
-                                        .translate(
-                                            x: -frameWidth
-                                                * 1.3,
-                                            y: 0,
-                                            z: 0
-                                        )
-                                    )
-                                })
-                            ]
-                        ),
-                    ]
                 )
             }
         }

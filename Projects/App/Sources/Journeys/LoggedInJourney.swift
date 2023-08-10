@@ -39,6 +39,12 @@ extension AppJourney {
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()
                     }
+                case .openCrossSells:
+                    CrossSellingScreen.journey { result in
+                        if case .openCrossSellingWebUrl(let url) = result {
+                            AppJourney.webRedirect(url: url)
+                        }
+                    }
                 }
             } statusCard: {
                 VStack(spacing: 8) {
@@ -80,18 +86,6 @@ extension AppJourney {
                 return false
             }
         }
-        .makeTabSelected(
-            HomeStore.self,
-            { action in
-                if case .showNewOffer = action {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.scrollToNewOffer)
-                    return true
-                } else {
-                    return false
-                }
-            }
-        )
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {

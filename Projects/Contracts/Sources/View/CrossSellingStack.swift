@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 
 struct CrossSellingStack: View {
+    let withHeader: Bool
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -14,8 +15,18 @@ struct CrossSellingStack: View {
             }
         ) { crossSells in
             if !crossSells.isEmpty {
-                hSection(
-                    header:
+                hSection {
+                    ForEach(crossSells, id: \.title) { crossSell in
+                        VStack {
+                            CrossSellingItem(crossSell: crossSell)
+                        }
+                        .padding(.bottom, 16)
+                        .padding(.top, 8)
+                        .transition(.slide)
+                    }
+                }
+                .withHeader {
+                    if withHeader {
                         VStack(spacing: 16) {
                             HStack(alignment: .center, spacing: 8) {
                                 CrossSellingUnseenCircle()
@@ -25,14 +36,6 @@ struct CrossSellingStack: View {
                             }
                             Divider()
                         }
-                ) {
-                    ForEach(crossSells, id: \.title) { crossSell in
-                        VStack {
-                            CrossSellingItem(crossSell: crossSell)
-                        }
-                        .padding(.bottom, 16)
-                        .padding(.top, 8)
-                        .transition(.slide)
                     }
                 }
                 .sectionContainerStyle(.transparent)

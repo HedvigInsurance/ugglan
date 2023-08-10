@@ -216,6 +216,8 @@ extension HomeView {
                 OtherService.journey
             } else if case .startClaim = action {
                 resultJourney(.startNewClaim)
+            } else if case .showNewOffer = action {
+                resultJourney(.openCrossSells)
             }
         }
         .configureTabBarItem(
@@ -233,6 +235,7 @@ public enum HomeResult {
     case openConnectPayments
     case startNewClaim
     case openTravelInsurance
+    case openCrossSells
 }
 
 struct Active_Preview: PreviewProvider {
