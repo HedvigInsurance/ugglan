@@ -42,11 +42,7 @@ struct StartDateScreen: View {
                                     focusValue: .email,
                                     placeholder: L10n.emailRowTitle,
                                     error: $vm.emailError
-                                ) {
-                                    Task {
-                                        await vm.submit()
-                                    }
-                                }
+                                )
                             }
                         }
                         hSection {

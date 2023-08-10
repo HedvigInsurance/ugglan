@@ -33,7 +33,7 @@ struct ContractsScreen: View {
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .padding([.leading, .trailing], 16)
+                        .padding(.horizontal, 16)
                         .padding(.bottom, 6)
                     }
                     .navigationTitle(L10n.TravelCertificate.cardTitle)

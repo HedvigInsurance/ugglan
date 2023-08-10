@@ -34,20 +34,23 @@ final class TravelInsuranceStore: LoadingStateStore<
                     email: travelInsuranceModel.email
                 )
                 let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { [weak self] data in
-                        if let url = URL(string: data.travelCertificateCreate.signedUrl) {
-                            callback(
-                                .value(
-                                    .setDownloadUrl(urL: url)
+                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
+                let minimumTime = Signal(after: 1.5).future
+                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
+                    .onValue { [weak self] mutation, minimumTime in
+                        if let data = mutation.value {
+                            if let url = URL(string: data.travelCertificateCreate.signedUrl) {
+                                callback(
+                                    .value(
+                                        .setDownloadUrl(urL: url)
+                                    )
                                 )
-                            )
-                        } else {
+                            } else {
+                                self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
+                            }
+                        } else if let _ = mutation.error {
                             self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
                         }
-                    }
-                    .onError { [weak self] error in
-                        self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     }
                 return disposeBag
             }
