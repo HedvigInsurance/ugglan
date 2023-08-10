@@ -20,6 +20,7 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
+                changeAddressInfo(contract)
                 VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
                         ForEach(table.sections) { section in
@@ -60,12 +61,21 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
-        if let date = contract.upcomingAgreementDate?.displayDateDotFormat,
-            let address = contract.upcomingAgreementsTable.sections.first?.rows.first?.value
-        {
+        if let date = contract.upcomingAgreementDate?.displayDateDotFormat {
             hSection {
-                InfoCard(text: "Your insurance will switch to your new address \(address) on \(date)", type: .info)
+                InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.InsurancesTab.viewDetails,
+                            buttonAction: {
+                                store.send(
+                                    .contractDetailNavigationAction(action: .openInsuranceUpdate(contract: contract))
+                                )
+                            }
+                        )
+                    ])
             }
+            .padding(.bottom, 16)
         }
     }
 }

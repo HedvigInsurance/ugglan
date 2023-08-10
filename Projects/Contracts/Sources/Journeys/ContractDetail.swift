@@ -149,8 +149,9 @@ struct ContractDetail: View {
 }
 
 extension ContractDetail {
-    public func journey(
+    public func journey<ResultJourney: JourneyPresentation>(
         style: PresentationStyle = .default,
+        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
         options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
     ) -> some JourneyPresentation {
         HostingJourney(
@@ -165,6 +166,10 @@ extension ContractDetail {
                     style: .detented(.large)
                 )
                 .withDismissButton
+            } else if case let .contractDetailNavigationAction(action: .openInsuranceUpdate(contract)) = action {
+                UpcomingChangesScreen.journey(contract: contract)
+            } else if case .goToFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
             }
         }
         .configureTitle(title)
