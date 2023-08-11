@@ -130,6 +130,7 @@ extension HomeView {
                     FutureSectionInfoView(memberName: memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:
+                    deletedInfoView
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
                     startAClaimButton
                     openOtherServices

@@ -49,6 +49,7 @@ public enum HFontTextStyle {
     case standardLarge  //24
     case standardExtraLarge  //32
     case standardExtraExtraLarge  //48
+    case badge
 
     var fontSize: CGFloat {
         switch self {
@@ -69,6 +70,7 @@ public enum HFontTextStyle {
         case .standardLarge: return 24
         case .standardExtraLarge: return 32
         case .standardExtraExtraLarge: return 48
+        case .badge: return 42
         }
     }
 
@@ -127,6 +129,8 @@ public enum HFontTextStyle {
             return .footnote
         case .caption2:
             return .footnote
+        case .badge:
+            return .title1
         }
     }
 }
