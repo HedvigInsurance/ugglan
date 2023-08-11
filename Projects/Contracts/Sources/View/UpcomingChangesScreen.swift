@@ -15,14 +15,12 @@ struct UpcomingChangesScreen: View {
     }
     var body: some View {
         hForm {
-            hSection {
-                ForEach(upcomingAgreementsTable.sections.first?.rows ?? [], id: \.title) { item in
-                    hRow {
-                        HStack {
-                            hText(item.title)
-                            Spacer()
-                            hText(item.value).foregroundColor(hLabelColor.secondary)
-                        }
+            hSection(upcomingAgreementsTable.sections.first?.rows ?? [], id: \.title) { item in
+                hRow {
+                    HStack {
+                        hText(item.title)
+                        Spacer()
+                        hText(item.value).foregroundColor(hLabelColor.secondary)
                     }
                 }
             }
