@@ -113,7 +113,7 @@ struct ContractDetail: View {
 
     var body: some View {
 
-        LoadingViewWithContent(.startTermination(contractId: id)) {
+        LoadingViewWithContent(ContractStore.self, [.startTermination]) {
             hForm {
                 hSection {
                     ContractRow(
@@ -138,28 +138,10 @@ struct ContractDetail: View {
                             .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                     }
                 }
-
-                if hAnalyticsExperiment.terminationFlow {
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.contractForId(id)
-                        }
-                    ) { contract in
-                        if (contract?.currentAgreement?.activeTo) == nil {
-                            hButton.SmallButtonText {
-                                store.send(.startTermination(contractId: id))
-                            } content: {
-                                hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTintColor.red)
-                            }
-                            .padding(.bottom, 39)
-                        }
-                    }
-                }
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
+        .presentableStoreLensAnimation(.default)
     }
 }
 

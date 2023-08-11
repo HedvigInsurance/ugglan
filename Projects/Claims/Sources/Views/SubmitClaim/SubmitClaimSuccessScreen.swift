@@ -9,11 +9,16 @@ public struct SubmitClaimSuccessScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 16) {
-                hTextNew(L10n.claimsSuccessTitle, style: .customTitle)
-                    .foregroundColor(hTextColorNew.primary)
+            VStack(spacing: 0) {
+                Image(uiImage: hCoreUIAssets.checkmarkSmall.image)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(hSignalColorNew.greenElement)
+                    .padding(.bottom, 16)
+                hTextNew(L10n.claimsSuccessTitle, style: .body)
+                    .foregroundColor(hTextColorNew.primaryTranslucent)
                 hTextNew(L10n.claimsSuccessLabel, style: .body)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColorNew.secondaryTranslucent)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)

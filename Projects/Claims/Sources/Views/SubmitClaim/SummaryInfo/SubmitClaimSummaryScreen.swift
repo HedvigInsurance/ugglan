@@ -20,6 +20,7 @@ public struct SubmitClaimSummaryScreen: View {
                     dateOfPurchase
                     purchasePrice
                 }
+                .disableOn(SubmitClaimStore.self, [.postSummary])
             }
             .withHeader {
                 HStack {
@@ -34,7 +35,7 @@ public struct SubmitClaimSummaryScreen: View {
                 InfoCard(text: L10n.claimsComplementClaim, type: .info)
                     .padding(.bottom, 8)
                 Group {
-                    LoadingButtonWithContent(.postSummary) {
+                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
                         store.send(.summaryRequest)
                     } content: {
                         hText(L10n.embarkSubmitClaim)
@@ -45,6 +46,7 @@ public struct SubmitClaimSummaryScreen: View {
                     } content: {
                         hText(L10n.embarkGoBackButton)
                     }
+                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .padding([.leading, .trailing], 16)
             }

@@ -24,6 +24,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case singleItemRequest(purchasePrice: Double?)
     case summaryRequest
     case singleItemCheckoutRequest
+    case contractSelectRequest(contractId: String?)
 
     case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
@@ -32,7 +33,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
-    case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
@@ -63,6 +63,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
+    case openSelectContractScreen
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
@@ -134,9 +135,10 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setSuccessStep(model: FlowClaimSuccessStepModel)
     case setFailedStep(model: FlowClaimFailedStepModel)
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
+    case setContractSelectStep(model: FlowClaimContractSelectStepModel)
 }
 
-public enum ClaimsLoadingType: Codable & Equatable & Hashable {
+public enum ClaimsLoadingType: LoadingProtocol {
     case startClaim
     case fetchClaimEntrypointGroups
     case postPhoneNumber
@@ -145,4 +147,5 @@ public enum ClaimsLoadingType: Codable & Equatable & Hashable {
     case postSummary
     case postSingleItemCheckout
     case postAudioRecording
+    case postContractSelect
 }

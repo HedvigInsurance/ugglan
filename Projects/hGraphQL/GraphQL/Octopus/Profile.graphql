@@ -1,5 +1,9 @@
-query ParnerData {
+query Profile {
   currentMember {
+  email
+  phoneNumber
+  firstName
+  lastName
     ...PartnerDataFragment
   }
 }

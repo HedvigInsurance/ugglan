@@ -5,7 +5,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public final class ContractStore: StateStore<ContractState, ContractAction> {
+public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
@@ -38,18 +38,12 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         )
                         callback(.value(.fetchContractBundlesDone))
                     }
-                    .onError { error in
+                    .onError { [unowned self] error in
                         if ApplicationContext.shared.isDemoMode {
-                            callback(
-                                .value(.setLoadingState(action: action, state: nil))
-                            )
+                            self.removeLoading(for: .fetchContractBundles)
                         } else {
                             if !self.state.hasLoadedContractBundlesOnce {
-                                callback(
-                                    .value(
-                                        .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                                    )
-                                )
+                                self.setError(L10n.General.errorBody, for: .fetchContractBundles)
                             }
                         }
                         callback(.value(.fetchContractBundlesDone))
@@ -75,7 +69,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 return disposeBag
             }
         case .fetchContracts:
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.giraffe.client
                     .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
@@ -83,17 +77,15 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         if getState().contracts != contracts {
                             callback(.value(.setContracts(contracts: contracts)))
                         } else {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
+                            self.removeLoading(for: .fetchContracts)
                         }
                         callback(.value(.fetchContractsDone))
                     }
                     .onError { error in
                         if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
+                            self.removeLoading(for: .fetchContracts)
                         } else {
-                            callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-                            )
+                            self.setError(L10n.General.errorBody, for: .fetchContracts)
                         }
                         callback(.value(.fetchContractsDone))
                     }
@@ -118,11 +110,10 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             .emitEachThenEnd
 
         case .startTermination(let contractId):
-            self.send(.setLoadingState(action: action, state: .loading))
             let mutation = OctopusGraphQL.FlowTerminationStartMutation(
                 input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
             )
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
@@ -135,17 +126,15 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        self.removeLoading(for: .startTermination)
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        self.setError(L10n.General.errorBody, for: .startTermination)
                     }
                 return disposeBag
             }
 
         case let .sendTerminationDate(terminationDate):
-            self.send(.setLoadingState(action: action, state: .loading))
-
             let inputDateToString = terminationDate.localDateString
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
@@ -153,7 +142,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 input: terminationDateInput,
                 context: terminationContext
             )
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
@@ -166,28 +155,25 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        self.removeLoading(for: .sendTerminationDate)
                     }
                     .onError { error in
                         if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
+                            self.removeLoading(for: .sendTerminationDate)
                         } else {
-                            callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-                            )
+                            self.setError(L10n.General.errorBody, for: .sendTerminationDate)
                         }
                     }
                 return disposeBag
             }
 
         case .deleteTermination:
-            self.send(.setLoadingState(action: action, state: .loading))
             let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
                 context: terminationContext,
                 input: state.terminationDeleteStep?.returnDeltionInput()
             )
 
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
@@ -200,18 +186,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        self.removeLoading(for: .deleteTermination)
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        self.setError(L10n.General.errorBody, for: .deleteTermination)
                     }
                 return disposeBag
             }
 
         case .getMoveIntent:
-
+            setLoading(for: .fetchMoveIntent)
             self.send(.setMoveIntent)
-
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 return disposeBag
@@ -228,17 +213,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         switch action {
         case .fetchContractBundles:
             if !newState.hasLoadedContractBundlesOnce {
-                newState.loadingStates[.fetchContractBundles] = .loading
+                setLoading(for: .fetchContractBundles)
             }
         case .fetchContracts:
-            newState.loadingStates[action] = .loading
+            setLoading(for: .fetchContracts)
         case .setContractBundles(let activeContractBundles):
             newState.hasLoadedContractBundlesOnce = true
-            newState.loadingStates.removeValue(forKey: .fetchContractBundles)
+            removeLoading(for: .fetchContractBundles)
             guard activeContractBundles != state.contractBundles else { return newState }
             newState.contractBundles = activeContractBundles
         case let .setContracts(contracts):
-            newState.loadingStates.removeValue(forKey: .fetchContracts)
+            removeLoading(for: .fetchContracts)
             newState.contracts = contracts
         case .setCrossSells(let crossSells):
             newState.crossSells = crossSells
@@ -256,13 +241,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .flatMap { $0 }
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
-
+        case .startTermination:
+            setLoading(for: .startTermination)
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context
 
         case let .setTerminationContractId(id):
             newState.terminationContractId = id
-
+        case .sendTerminationDate:
+            self.setLoading(for: .sendTerminationDate)
+        case .deleteTermination:
+            self.setLoading(for: .deleteTermination)
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):
@@ -274,13 +263,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             case let .setFailedStep(model):
                 newState.failedStep = model
             }
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
-            }
         case .setMoveIntent:
+            removeLoading(for: .fetchMoveIntent)
             newState.movingFlowModel = MovingFlowModel(
                 id: "1",
                 minMovingDate: "2023-05-13",

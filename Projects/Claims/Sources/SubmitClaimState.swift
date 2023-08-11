@@ -4,7 +4,6 @@ import hCore
 public struct SubmitClaimsState: StateProtocol {
     @Transient(defaultValue: "") var currentClaimId: String
     @OptionalTransient var currentClaimContext: String?
-    @Transient(defaultValue: [:]) var loadingStates: [ClaimsLoadingType: LoadingState<String>]
     @Transient(defaultValue: []) var claimEntrypoints: [ClaimEntryPointResponseModel]
     @Transient(defaultValue: []) var claimEntrypointGroups: [ClaimEntryPointGroupResponseModel]
     @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
@@ -17,17 +16,13 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var successStep: FlowClaimSuccessStepModel?
     @OptionalTransient var failedStep: FlowClaimFailedStepModel?
     @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
+    @OptionalTransient var contractStep: FlowClaimContractSelectStepModel?
     @OptionalTransient var progress: Float?
     @OptionalTransient var previousProgress: Float?
 
     @Transient(defaultValue: EntrypointState()) var entrypoints: EntrypointState
 
     public init() {}
-}
-
-public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
-    case loading
-    case error(error: T)
 }
 
 public enum ClaimsOrigin: Codable, Equatable, Hashable {

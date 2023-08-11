@@ -10,6 +10,7 @@ public struct hFloatingField: View {
     @Binding var error: String?
     private var value: String
     private let onTap: () -> Void
+    @Environment(\.isEnabled) var isEnabled
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -50,13 +51,24 @@ public struct hFloatingField: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
-            onTap()
-            self.startAnimation()
+            if isEnabled {
+                onTap()
+                self.startAnimation()
+            }
         }
     }
     private var getTextLabel: some View {
         hTextNew(value, style: .title3)
-            .foregroundColor(hTextColorNew.primary)
+            .foregroundColor(foregroundColor)
+    }
+
+    @hColorBuilder
+    private var foregroundColor: some hColor {
+        if isEnabled {
+            hTextColorNew.primary
+        } else {
+            hTextColorNew.secondary
+        }
     }
 
     private func startAnimation() {

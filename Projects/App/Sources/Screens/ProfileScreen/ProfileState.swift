@@ -27,7 +27,8 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setProfileState(name: String, monthlyNet: Int)
+    case setMonthlyNet(monthlyNet: Int)
+    case setMemberName(name: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
@@ -47,30 +48,31 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
 
-                let getProfileData = self.giraffe.client
+                let getChargeEstimationData = self.giraffe.client
                     .fetch(
-                        query: GiraffeGraphQL.ProfileQuery(),
+                        query: GiraffeGraphQL.ChargeEstimationQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
 
-                let getPartnerData = self.octopus.client
+                let getProfileData = self.octopus.client
                     .fetch(
-                        query: OctopusGraphQL.ParnerDataQuery(),
+                        query: OctopusGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag += combineLatest(getProfileData.resultSignal, getPartnerData.resultSignal)
-                    .onValue { (profileData, partnerData) in
-                        if let profileData = profileData.value {
-                            let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
+                disposeBag += combineLatest(getChargeEstimationData.resultSignal, getProfileData.resultSignal)
+                    .onValue { (chargeEstimationData, profileData) in
+                        if let chargeEstimationData = chargeEstimationData.value {
                             let monthlyNet = Int(
-                                profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
+                                chargeEstimationData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
-                            callback(.value(.setProfileState(name: name, monthlyNet: monthlyNet)))
+                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
                         }
-                        if let partnerData = partnerData.value {
-                            let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
+                        if let profileData = profileData.value {
+                            let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
+                            let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
+                            callback(.value(.setMemberName(name: name)))
                         }
                         callback(.value(.fetchProfileStateCompleted))
                     }
@@ -110,9 +112,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setProfileState(let name, let monthlyNet):
-            newState.memberFullName = name
+        case .setMonthlyNet(let monthlyNet):
             newState.monthlyNet = monthlyNet
+        case .setMemberName(let name):
+            newState.memberFullName = name
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
         case .updateEurobonusNumber:

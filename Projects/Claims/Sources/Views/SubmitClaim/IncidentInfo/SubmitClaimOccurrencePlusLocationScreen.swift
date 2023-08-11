@@ -20,6 +20,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
                     displayFieldsAndNotice
+                        .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                     continueButton
                 }
             }
@@ -77,7 +78,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var continueButton: some View {
-        LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
+        LoadingButtonWithContent(SubmitClaimStore.self, .postDateOfOccurrenceAndLocation) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)

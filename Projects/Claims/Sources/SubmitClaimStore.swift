@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsAction> {
+public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
 
     @Inject var octopus: hOctopus
     @Inject var fileUploaderClient: FileUploaderClient
@@ -63,7 +63,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             }
             return nil
         case let .submitAudioRecording(audioURL):
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 do {
                     if let url = self.state.audioRecordingStep?.audioContent?.audioUrl {
@@ -101,27 +101,13 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                                         callback(.value(action))
                                     })
                             })
-                            .onError({ error in
-                                callback(
-                                    .value(
-                                        .setLoadingState(
-                                            action: .postAudioRecording,
-                                            state: .error(error: L10n.General.errorBody)
-                                        )
-                                    )
-                                )
+                            .onError({ [weak self] error in
+                                self?.setError(L10n.General.errorBody, for: .postAudioRecording)
                             })
                             .disposable
                     }
                 } catch _ {
-                    callback(
-                        .value(
-                            .setLoadingState(
-                                action: .postAudioRecording,
-                                state: .error(error: L10n.General.errorBody)
-                            )
-                        )
-                    )
+                    self.setError(L10n.General.errorBody, for: .postAudioRecording)
                 }
 
                 return disposeBag
@@ -156,40 +142,32 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             } else {
                 return FiniteSignal { callback in
                     let disposeBag = DisposeBag()
-                    callback(
-                        .value(
-                            .setLoadingState(
-                                action: .postSingleItemCheckout,
-                                state: .error(error: L10n.General.errorBody)
-                            )
-                        )
-                    )
+                    self.setError(L10n.General.errorBody, for: .postSingleItemCheckout)
                     return disposeBag
                 }
             }
+        case let .contractSelectRequest(contractId):
+            let contractSelectInput = OctopusGraphQL.FlowClaimContractSelectInput(contractId: contractId)
+            let mutation = OctopusGraphQL.FlowClaimContractSelectNextMutation(
+                input: contractSelectInput,
+                context: newClaimContext
+            )
+            return mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
         case .fetchEntrypointGroups:
             let entrypointType = OctopusGraphQL.EntrypointType.claim
             let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag +=
-                    self.octopus.client.fetch(query: query)
+                    self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { data in
                         let model = data.entrypointGroups.map { data in
                             ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
                         }
                         callback(.value(.setClaimEntrypointGroupsForSelection(model)))
-                        callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
                     }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .fetchClaimEntrypointGroups,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
+                    .onError { [weak self] error in
+                        self?.setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
                     }
                     .disposable
                 return disposeBag
@@ -220,20 +198,15 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case let .setItemBrand(brand):
             newState.singleItemStep?.selectedItemModel = nil
             newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
-            }
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
         case let .setClaimEntrypointsForSelection(commonClaims):
             newState.claimEntrypoints = commonClaims
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
             newState.claimEntrypointGroups = entrypointGroups
+            removeLoading(for: .fetchClaimEntrypointGroups)
         case .submitAudioRecording:
-            newState.loadingStates[.postAudioRecording] = .loading
+            setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
             newState.audioRecordingStep?.audioContent = nil
         case let .stepModelAction(action):
@@ -275,9 +248,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
                 send(.navigationAction(action: .openAudioRecordingScreen))
+            case let .setContractSelectStep(model):
+                newState.contractStep = model
+                self.send(.navigationAction(action: .openSelectContractScreen))
             }
         case .startClaimRequest:
-            newState.loadingStates[.startClaim] = .loading
+            setLoading(for: .startClaim)
             newState.summaryStep = nil
             newState.dateOfOccurenceStep = nil
             newState.locationStep = nil
@@ -288,22 +264,28 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.successStep = nil
             newState.failedStep = nil
             newState.audioRecordingStep = nil
+            newState.contractStep = nil
             newState.currentClaimContext = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
-            newState.loadingStates[.postPhoneNumber] = .loading
+            setLoading(for: .postPhoneNumber)
         case .dateOfOccurrenceAndLocationRequest:
-            newState.loadingStates[.postDateOfOccurrenceAndLocation] = .loading
+            setLoading(for: .postDateOfOccurrenceAndLocation)
+        case let .contractSelectRequest(selected):
+            newState.contractStep?.selectedContractId = selected
+            setLoading(for: .postContractSelect)
         case .singleItemRequest:
-            newState.loadingStates[.postSingleItem] = .loading
+            setLoading(for: .postSingleItem)
         case .summaryRequest:
-            newState.loadingStates[.postSummary] = .loading
+            setLoading(for: .postSummary)
         case .singleItemCheckoutRequest:
-            newState.loadingStates[.postSingleItemCheckout] = .loading
+            setLoading(for: .postSingleItemCheckout)
             newState.progress = nil
         case .fetchEntrypointGroups:
-            newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                self?.setLoading(for: .fetchClaimEntrypointGroups)
+            }
             newState.progress = 0
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):

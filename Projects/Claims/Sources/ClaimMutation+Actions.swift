@@ -60,6 +60,8 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimSuccessStepFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimContractSelectStepFragment {
+            return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
@@ -75,7 +77,8 @@ extension GraphQLMutation {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
-            callback(.value(.setLoadingState(action: self.getLoadingType(), state: .loading)))
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            store.setLoading(for: self.getLoadingType())
             disposeBag += octopus.client.perform(mutation: self)
                 .map { data in
                     if let data = data as? ClaimStepId {
@@ -93,17 +96,10 @@ extension GraphQLMutation {
                         }
                     }
                     callback(.value(data[keyPath: keyPath].into()))
-                    callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
+                    store.removeLoading(for: self.getLoadingType())
                 }
                 .onError({ error in
-                    callback(
-                        .value(
-                            .setLoadingState(
-                                action: self.getLoadingType(),
-                                state: .error(error: L10n.General.errorBody)
-                            )
-                        )
-                    )
+                    store.setError(L10n.General.errorBody, for: self.getLoadingType())
                 })
             return disposeBag
         }
@@ -142,6 +138,12 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
 extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepContext {
     func getContext() -> String {
         return self.flowClaimDateOfOccurrencePlusLocationNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimContractSelectNext.context
     }
 }
 
@@ -192,6 +194,15 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data:
         return (
             clearedSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimContractSelectNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimContractSelectNext.progress?.totalSteps ?? 0
         )
     }
 }
@@ -285,6 +296,12 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation: ClaimStepLoading
 extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
         return .postDateOfOccurrenceAndLocation
+    }
+}
+
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation: ClaimStepLoadingType {
+    func getLoadingType() -> ClaimsLoadingType {
+        return .postContractSelect
     }
 }
 

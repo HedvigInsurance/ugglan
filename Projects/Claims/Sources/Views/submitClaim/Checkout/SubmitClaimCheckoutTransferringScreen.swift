@@ -26,7 +26,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
                 .opacity(loadingAnimation ? 0 : 1)
                 .animation(.spring(), value: loadingAnimation)
-                LoadingViewWithState(.postSingleItemCheckout) {
+                LoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
                     successView()
                 } onLoading: {
                     loadingView()
@@ -108,7 +108,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                hTextNew(L10n.claimsPayoutProgresLabel, style: .title3)
+                hTextNew(L10n.claimsPayoutProgresLabel)
 
                 ProgressView(value: progress)
                     .tint(hTextColorNew.primary)
