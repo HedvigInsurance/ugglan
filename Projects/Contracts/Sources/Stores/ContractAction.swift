@@ -23,6 +23,8 @@ public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case document(url: URL, title: String)
+    case openInsuranceUpdate(contract: Contract)
+    case dismissUpcomingChanges
 }
 
 public enum CrossSellingFAQListNavigationAction: ActionProtocol, Hashable {
