@@ -74,7 +74,7 @@ public struct Masking {
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
-        case .euroBonus: return true
+        case .euroBonus: return text.count > 3
         }
     }
 
