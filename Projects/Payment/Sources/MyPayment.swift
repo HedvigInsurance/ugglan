@@ -20,7 +20,7 @@ public struct MyPaymentsView: View {
         self.paymentType = hAnalyticsExperiment.paymentType
     }
     public var body: some View {
-        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment]) {
+        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment], vm.getActionsToSendToStore()) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
                     .slideUpFadeAppearAnimation()
@@ -70,6 +70,14 @@ class MyPaymentsViewModel: ObservableObject {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         self.paymentType = paymentType
+        for action in getActionsToSendToStore() {
+            store.send(action)
+        }
+    }
+
+    func getActionsToSendToStore() -> [PaymentAction] {
+        var actions = [PaymentAction]()
+        actions.append(.load)
         switch paymentType {
         case .adyen:
             store.send(.fetchActivePayment)
@@ -77,8 +85,9 @@ class MyPaymentsViewModel: ObservableObject {
         case .trustly:
             break
         }
-
+        return actions
     }
+
     func openConnectCard() {
         switch paymentType {
         case .adyen:

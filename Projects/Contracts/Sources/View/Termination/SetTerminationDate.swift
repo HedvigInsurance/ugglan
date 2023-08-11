@@ -17,7 +17,7 @@ public struct SetTerminationDate: View {
 
     public var body: some View {
 
-        LoadingViewWithContent(ContractStore.self, [.sendTerminationDate]) {
+        LoadingViewWithContent(ContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
             hForm {
                 HStack(spacing: 0) {
                     hText(L10n.setTerminationDateText, style: .body)

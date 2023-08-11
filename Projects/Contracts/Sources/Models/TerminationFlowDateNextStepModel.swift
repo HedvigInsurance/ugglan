@@ -7,6 +7,7 @@ public struct TerminationFlowDateNextStepModel: FlowClaimStepModel {
     let id: String
     let maxDate: String
     let minDate: String
+    var date: Date?
 
     init(
         with data: OctopusGraphQL.FlowTerminationDateStepFragment
@@ -14,5 +15,6 @@ public struct TerminationFlowDateNextStepModel: FlowClaimStepModel {
         self.id = data.id
         self.minDate = data.minDate
         self.maxDate = data.maxDate
+        self.date = nil
     }
 }
