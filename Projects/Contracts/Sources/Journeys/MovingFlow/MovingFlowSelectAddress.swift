@@ -13,7 +13,7 @@ struct MovingFlowSelectAddress: View {
     @State var selectedField: FieldType? = nil
 
     var body: some View {
-        LoadingViewWithContent(.setMoveIntent) {
+        LoadingViewWithContent(ContractStore.self, [.fetchMoveIntent]) {
             hForm {
                 addressField()
                 postalAndSquareField()

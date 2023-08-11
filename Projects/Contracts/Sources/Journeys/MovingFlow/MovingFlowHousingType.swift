@@ -13,7 +13,7 @@ public struct MovingFlowHousingType: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.setMoveIntent) {
+        LoadingViewWithContent(ContractStore.self, [.fetchMoveIntent]) {
             hForm {
                 VStack {
                     ForEach(housingTypes, id: \.self) { type in
