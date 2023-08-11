@@ -18,9 +18,9 @@ struct ChatButtonView: View {
     var tooltipView: some View {
         VStack {
             if withTooltip {
-                ChatTooltipView(
+                TooltipView(
                     displayTooltip: $displayTooltip,
-                    defaultsId: "chatHint",
+                    type: .chat,
                     timeInterval: .days(numberOfDays: 30)
                 )
                 .position(x: 37, y: 74)
@@ -138,13 +138,15 @@ struct ToolbarButtonsView: View {
                 }
                 .background(
                     VStack {
-                        ChatTooltipView(
-                            displayTooltip: $displayTooltip,
-                            defaultsId: type.tooltipId,
-                            timeInterval: .days(numberOfDays: 30)
-                        )
-                        .position(x: 37, y: 74)
-                        .fixedSize()
+                        if type == .chat {
+                            TooltipView(
+                                displayTooltip: $displayTooltip,
+                                type: type,
+                                timeInterval: .days(numberOfDays: 30)
+                            )
+                            .position(x: 37, y: 74)
+                            .fixedSize()
+                        }
                     }
                 )
             }
