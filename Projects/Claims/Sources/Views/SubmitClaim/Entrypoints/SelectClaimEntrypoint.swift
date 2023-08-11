@@ -17,7 +17,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(SubmitClaimStore.self, [.fetchClaimEntrypointGroups]) {
+        LoadingViewWithContent(SubmitClaimStore.self, [.fetchClaimEntrypointGroups], [.fetchEntrypointGroups]) {
             hForm {
             }
             .hFormTitle(.small, .title1, L10n.claimTriagingNavigationTitle)

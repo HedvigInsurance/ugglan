@@ -73,15 +73,20 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     @State var presentError = false
     @State var error = ""
     @State var isLoading = false
+    let retryActions: [StoreType.Action]
     var disposeBag = DisposeBag()
-
+    private let showLoading: Bool
     public init(
         _ type: StoreType.Type,
         _ actions: [StoreType.Loading],
+        _ retryActions: [StoreType.Action],
+        showLoading: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.actions = actions
         self.content = content
+        self.showLoading = showLoading
+        self.retryActions = retryActions
         let store: StoreType = globalPresentableStoreContainer.get()
         handle(allActions: store.loadingSignal.value)
     }
@@ -89,10 +94,16 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     public var body: some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
-            if isLoading {
+            if isLoading && showLoading {
                 loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
+            } else if presentError {
+                RetryView(subtitle: error) {
+                    for action in retryActions {
+                        store.send(action)
+                    }
+                }
             } else {
-                contentView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
+                content().transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             }
         }
         .onReceive(
@@ -139,22 +150,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         }
     }
 
-    @ViewBuilder
-    private var contentView: some View {
-        content()
-            .blur(radius: isLoading ? 10 : 0)
-            .alert(isPresented: $presentError) {
-                Alert(
-                    title: Text(L10n.somethingWentWrong),
-                    message: Text(error),
-                    dismissButton: .default(Text(L10n.alertOk)) {
-                        for action in actions {
-                            store.removeLoading(for: action)
-                        }
-                    }
-                )
-            }
-    }
     @ViewBuilder
     private var loadingIndicatorView: some View {
         HStack {

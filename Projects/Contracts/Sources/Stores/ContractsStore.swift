@@ -120,8 +120,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 return disposeBag
             }
 
-        case let .sendTerminationDate(terminationDate):
-            let inputDateToString = terminationDate.localDateString
+        case .sendTerminationDate:
+            let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
@@ -190,9 +190,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         var newState = state
         switch action {
         case .fetchContractBundles:
-            if !newState.hasLoadedContractBundlesOnce {
-                setLoading(for: .fetchContractBundles)
-            }
+            setLoading(for: .fetchContractBundles)
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case .setContractBundles(let activeContractBundles):
@@ -241,6 +239,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             case let .setFailedStep(model):
                 newState.failedStep = model
             }
+        case let .setTerminationDate(terminationDate):
+            newState.terminationDateStep?.date = terminationDate
         default:
             break
         }

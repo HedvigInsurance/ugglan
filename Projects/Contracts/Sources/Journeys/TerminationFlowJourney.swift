@@ -35,7 +35,8 @@ public struct TerminationFlowJourney {
                 onSelected: {
                     terminationDate in
                     let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.sendTerminationDate(terminationDate: terminationDate))
+                    store.send(.setTerminationDate(terminationDate: terminationDate))
+                    store.send(.sendTerminationDate)
                 }
             ),
             style: .detented(.large)

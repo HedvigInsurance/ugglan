@@ -114,7 +114,7 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.startTermination]) {
+        LoadingViewWithContent(ContractStore.self, [.startTermination], [.startTermination(contractId: id)]) {
             hForm {
                 hSection {
                     ContractRow(
