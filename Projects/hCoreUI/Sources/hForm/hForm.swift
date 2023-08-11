@@ -93,8 +93,8 @@ struct BackgroundView: UIViewRepresentable {
 struct BackgroundBlurView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        DispatchQueue.main.async {
-            view.superview?.superview?.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+        view.subviews.forEach { subview in
+            subview.backgroundColor = UIColor.clear
         }
         return view
     }
