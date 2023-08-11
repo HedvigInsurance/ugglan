@@ -103,13 +103,7 @@ extension BarButtonStyle {
 }
 
 extension DefaultStyling {
-    public static let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-        if trait.userInterfaceStyle == .dark {
-            return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
-        }
-
-        return UIColor.white
-    })
+    public static let tabBarBackgroundColor = UIColor.brandNew(.primaryBackground())
 
     public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
         return .brand(.primaryBackground())
@@ -292,6 +286,20 @@ extension DefaultStyling {
         let standard = UITabBarAppearance()
         standard.configureWithOpaqueBackground()
 
+        func configureTabBar(appearance: UITabBarItemStateAppearance) {
+            appearance.badgeBackgroundColor = .clear
+            appearance.badgePositionAdjustment.horizontal = 0
+            appearance.badgePositionAdjustment.vertical = -4
+            appearance.badgeTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.destructive),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
+            ]
+        }
+        configureTabBar(appearance: standard.stackedLayoutAppearance.normal)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
+
         UITabBar.appearance().standardAppearance = standard
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = standard
@@ -341,6 +349,10 @@ extension DefaultStyling {
         .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+
         if #available(iOS 15.0, *) {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
@@ -349,21 +361,10 @@ extension DefaultStyling {
             .shadowImage = UIColor.brandNew(.primaryText())
                 .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
         }
+    }
 
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .normal
-            )
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .selected
-            )
+    private func setTabBarItemBadgeAppearance(_ itemAppearance: UITabBarItemAppearance) {
+        itemAppearance.normal.badgeBackgroundColor = UIColor.green
     }
 
     public static let custom = DefaultStyling(
