@@ -25,6 +25,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
+            masking: .init(type: .euroBonus),
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
             title: L10n.SasIntegration.title,
             dismiss: { [weak store] in
@@ -37,33 +38,38 @@ private class ChangeEurobonusViewModel: ObservableObject {
             await withCheckedContinuation { continuation in
                 let text = text.toAlphaNumeric
                 if text.isEmpty {
-                    error = ChangeEuroBonusError.error(message: "")
+                    error = ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
                     continuation.resume()
                 } else {
-                    let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: text)
+                    if Masking(type: .euroBonus).isValid(text: text) {
+                        let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: text)
 
-                    let octopusRequest = self?.octopus.client
-                        .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
-                        .onValue { result in
-                            if let graphQLError = result.memberUpdateEurobonusNumber.userError?.message,
-                                !graphQLError.isEmpty
-                            {
-                                error = ChangeEuroBonusError.error(message: graphQLError)
-                            } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
-                                .partnerDataFragment
-                            {
-                                let store: ProfileStore = globalPresentableStoreContainer.get()
-                                store.send(.setEurobonusNumber(partnerData: PartnerData(with: partnerData)))
-                                store.send(.openSuccessChangeEuroBonus)
+                        let octopusRequest = self?.octopus.client
+                            .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
+                            .onValue { result in
+                                if let graphQLError = result.memberUpdateEurobonusNumber.userError?.message,
+                                    !graphQLError.isEmpty
+                                {
+                                    error = ChangeEuroBonusError.error(message: graphQLError)
+                                } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
+                                    .partnerDataFragment
+                                {
+                                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                                    store.send(.setEurobonusNumber(partnerData: PartnerData(with: partnerData)))
+                                    store.send(.openSuccessChangeEuroBonus)
+                                }
+                                continuation.resume()
                             }
-                            continuation.resume()
+                            .onError { graphQLError in
+                                error = graphQLError
+                                continuation.resume()
+                            }
+                        if let octopusRequest {
+                            self?.disposeBag += octopusRequest
                         }
-                        .onError { graphQLError in
-                            error = graphQLError
-                            continuation.resume()
-                        }
-                    if let octopusRequest {
-                        self?.disposeBag += octopusRequest
+                    } else {
+                        error = ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
+                        continuation.resume()
                     }
                 }
             }

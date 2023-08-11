@@ -17,7 +17,7 @@ public struct TextInputView: View {
             VStack(spacing: 0) {
                 hSection {
                     hFloatingTextField(
-                        masking: Masking(type: .none),
+                        masking: vm.masking,
                         value: $vm.input,
                         equals: $vm.type,
                         focusValue: .textField,
@@ -73,16 +73,19 @@ public class TextInputViewModel: ObservableObject {
     @Published var error: String?
     @Published var isLoading: Bool = false
     @Published var type: TextInputView.InputViewFocus? = .textField
+    let masking: Masking
 
     let title: String
     public var onSave: ((String) async throws -> Void)?
     var dismiss: () -> Void = {}
 
     public init(
+        masking: Masking,
         input: String,
         title: String,
         dismiss: @escaping () -> Void
     ) {
+        self.masking = masking
         self.input = input
         self.title = title
         self.dismiss = dismiss
