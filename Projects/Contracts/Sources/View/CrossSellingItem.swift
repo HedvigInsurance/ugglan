@@ -35,8 +35,14 @@ struct CrossSellingItem: View {
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
-                    hText(crossSell.description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
-                        .multilineTextAlignment(.leading)
+                    MarqueeText(
+                        text: crossSell.description,
+                        font: Fonts.fontFor(style: .standardSmall),
+                        leftFade: 3,
+                        rightFade: 3,
+                        startDelay: 0
+                    )
+                    .foregroundColor(hTextColorNew.secondary)
                 }
                 Spacer()
                 hButton.MediumButtonFilled {
