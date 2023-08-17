@@ -6,7 +6,7 @@ import hCoreUI
 public struct TerminationFlowJourney {
 
     @JourneyBuilder
-    public static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
+    public static func getScreenForAction(for action: TerminationContractAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case .openTerminationSuccessScreen = navigationAction {
@@ -30,11 +30,11 @@ public struct TerminationFlowJourney {
 
     static func openSetTerminationDateScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: SetTerminationDate(
                 onSelected: {
                     terminationDate in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
                     store.send(.sendTerminationDate)
                 }
@@ -50,7 +50,7 @@ public struct TerminationFlowJourney {
     static func openTerminationSuccessScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationSuccessScreen()
         ) {
             action in
@@ -59,14 +59,14 @@ public struct TerminationFlowJourney {
         .withJourneyDismissButton
         .hidesBackButton
         .onDismiss {
-            @PresentableStore var store: ContractStore
+            @PresentableStore var store: TerminationContractStore
             store.send(.dismissTerminationFlow)
         }
     }
 
     static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationFailScreen()
         ) {
             action in
@@ -78,10 +78,10 @@ public struct TerminationFlowJourney {
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: UpdateAppScreenOld(
                 onSelected: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }
             ),
@@ -96,10 +96,10 @@ public struct TerminationFlowJourney {
 
     static func openTerminationDeletionScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationDeleteScreen(
                 onSelected: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.deleteTermination)
                 }
             ),

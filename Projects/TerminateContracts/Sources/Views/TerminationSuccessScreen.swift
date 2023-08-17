@@ -3,14 +3,14 @@ import hCore
 import hCoreUI
 
 public struct TerminationSuccessScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: TerminationContractStore
 
     public init() {}
 
     public var body: some View {
 
         PresentableStoreLens(
-            ContractStore.self,
+            TerminationContractStore.self,
             getter: { state in
                 state.successStep
             }

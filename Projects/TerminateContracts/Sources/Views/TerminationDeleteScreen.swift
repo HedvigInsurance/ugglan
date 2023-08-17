@@ -2,8 +2,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+//import Contracts
+
 public struct TerminationDeleteScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: TerminationContractStore
     let onSelected: () -> Void
 
     public init(
@@ -13,10 +15,10 @@ public struct TerminationDeleteScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.deleteTermination], [.deleteTermination]) {
+        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
-                    ContractStore.self,
+                    TerminationContractStore.self,
                     getter: { state in
                         state.terminationDeleteStep
                     }
@@ -28,25 +30,26 @@ public struct TerminationDeleteScreen: View {
                         .padding([.bottom, .top], 4)
 
                     PresentableStoreLens(
-                        ContractStore.self
+                        TerminationContractStore.self
                     ) { state in
                         state.terminationContractId ?? ""
                     } _: { value in
 
-                        PresentableStoreLens(
-                            ContractStore.self
-                        ) { state in
-                            state.contractForId(value)
-                        } _: { value in
-
-                            hText(
-                                L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
-                                style: .title2
-                            )
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 16)
-                            .padding(.bottom, 4)
-                        }
+                        /* TODO: ADD BACK */
+                        //                        PresentableStoreLens(
+                        //                            ContractStore.self
+                        //                        ) { state in
+                        //                            state.contractForId(value)
+                        //                        } _: { value in
+                        //
+                        //                            hText(
+                        //                                L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
+                        //                                style: .title2
+                        //                            )
+                        //                            .frame(maxWidth: .infinity, alignment: .leading)
+                        //                            .padding(.leading, 16)
+                        //                            .padding(.bottom, 4)
+                        //                        }
                     }
 
                     hText(termination?.disclaimer ?? "", style: .body)

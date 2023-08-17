@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -41,7 +42,8 @@ enum Documents: CaseIterable {
 }
 
 struct ContractDocumentsView: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var contractStore: ContractStore
+    @PresentableStore var terminationContractStore: TerminationContractStore
 
     let id: String
 
@@ -74,7 +76,7 @@ struct ContractDocumentsView: View {
                                 Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                             }
                             .onTap {
-                                store.send(
+                                contractStore.send(
                                     .contractDetailNavigationAction(action: .document(url: url, title: document.title))
                                 )
                             }
@@ -93,7 +95,7 @@ struct ContractDocumentsView: View {
                 if (contract?.currentAgreement?.activeTo) == nil {
                     hSection {
                         hButton.LargeButtonGhost {
-                            store.send(.startTermination(contractId: id))
+                            terminationContractStore.send(.startTermination(contractId: id))
                         } content: {
                             hText(L10n.terminationButton, style: .body)
                                 .foregroundColor(hTextColorNew.secondary)

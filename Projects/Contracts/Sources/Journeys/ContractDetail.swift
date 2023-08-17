@@ -4,6 +4,7 @@ import Foundation
 import Hero
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -114,7 +115,8 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.startTermination], [.startTermination(contractId: id)]) {
+        LoadingViewWithContent(TerminationContractStore.self, [.startTermination], [.startTermination(contractId: id)])
+        {
             hForm {
                 hSection {
                     ContractRow(

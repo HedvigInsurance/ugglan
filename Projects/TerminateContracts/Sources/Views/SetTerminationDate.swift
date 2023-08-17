@@ -17,7 +17,7 @@ public struct SetTerminationDate: View {
 
     public var body: some View {
 
-        LoadingViewWithContent(ContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
+        LoadingViewWithContent(TerminationContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
             hForm {
                 HStack(spacing: 0) {
                     hText(L10n.setTerminationDateText, style: .body)
@@ -41,7 +41,7 @@ public struct SetTerminationDate: View {
                     }
 
                     PresentableStoreLens(
-                        ContractStore.self,
+                        TerminationContractStore.self,
                         getter: { state in
                             state.terminationDateStep
                         }

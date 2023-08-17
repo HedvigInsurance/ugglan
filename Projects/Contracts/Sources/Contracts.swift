@@ -148,18 +148,18 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .terminationInitialNavigation(navigationAction) = action {
-                if case .openTerminationSuccessScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationSuccessScreen()
-                } else if case .openTerminationSetDateScreen = navigationAction {
-                    TerminationFlowJourney.openSetTerminationDateScreen()
-                } else if case .openTerminationFailScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationFailScreen()
-                } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    TerminationFlowJourney.openUpdateAppTerminationScreen()
-                } else if case .openTerminationDeletionScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationDeletionScreen()
-                }
+                //            } else if case let .terminationInitialNavigation(navigationAction) = action {
+                //                if case .openTerminationSuccessScreen = navigationAction {
+                //                    TerminationFlowJourney.openTerminationSuccessScreen()
+                //                } else if case .openTerminationSetDateScreen = navigationAction {
+                //                    TerminationFlowJourney.openSetTerminationDateScreen()
+                //                } else if case .openTerminationFailScreen = navigationAction {
+                //                    TerminationFlowJourney.openTerminationFailScreen()
+                //                } else if case .openTerminationUpdateAppScreen = navigationAction {
+                //                    TerminationFlowJourney.openUpdateAppTerminationScreen()
+                //                } else if case .openTerminationDeletionScreen = navigationAction {
+                //                    TerminationFlowJourney.openTerminationDeletionScreen()
+                //                }
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,

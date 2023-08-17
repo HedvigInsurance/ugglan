@@ -5,13 +5,6 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum TerminationStepModelAction: ActionProtocol, Hashable {
-    case setTerminationDateStep(model: TerminationFlowDateNextStepModel)
-    case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
-    case setSuccessStep(model: TerminationFlowSuccessNextModel)
-    case setFailedStep(model: TerminationFlowFailedNextModel)
-}
-
 public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol, Hashable {
     case detail(info: CrossSellInfo)
     case peril(peril: Perils)
@@ -71,37 +64,11 @@ public enum ContractAction: ActionProtocol, Hashable {
     case dismisscontractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
-
-    case openSetTerminationDateScreen(contractId: String)
-    case sendTermination(terminationDate: Date, surveyUrl: String)
-    case dismissTerminationFlow
-
-    case startTermination(contractId: String)
-    case setTerminationDate(terminationDate: Date)
-    case sendTerminationDate
-    case deleteTermination
-    case setTerminationContext(context: String)
-    case setTerminationContractId(id: String)
-
-    case stepModelAction(action: TerminationStepModelAction)
-    case navigationAction(action: TerminationNavigationAction)
-    case terminationInitialNavigation(action: TerminationNavigationAction)
-}
-
-public enum TerminationNavigationAction: ActionProtocol, Hashable {
-    case openTerminationSuccessScreen
-    case openTerminationSetDateScreen
-    case openTerminationUpdateAppScreen
-    case openTerminationFailScreen
-    case openTerminationDeletionScreen
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
     case fetchContractBundles
     case fetchContracts
-    case startTermination
-    case sendTerminationDate
-    case deleteTermination
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {
