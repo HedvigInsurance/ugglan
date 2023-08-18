@@ -68,7 +68,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .withHeader {
                 hText(L10n.Claims.Payout.Summary.subtitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
-                    .padding(.top, 16)
+                    .padding(.top, 8)
             }
             .padding(.bottom, 8)
 
