@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-//import Contracts
+// import contracts
 
 public struct TerminationDeleteScreen: View {
     @PresentableStore var store: TerminationContractStore

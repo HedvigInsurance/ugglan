@@ -27,11 +27,10 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationSuccessScreen
-    case openTerminationSetDateScreen /* TODO: CHECK DUPLICATES */
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openTerminationDeletionScreen
-    case openSetTerminationDateScreen(contractId: String)
+    case openSetTerminationDateScreen
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {

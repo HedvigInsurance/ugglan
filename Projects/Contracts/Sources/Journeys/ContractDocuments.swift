@@ -96,6 +96,7 @@ struct ContractDocumentsView: View {
                     hSection {
                         hButton.LargeButtonGhost {
                             terminationContractStore.send(.startTermination(contractId: id))
+                            contractStore.send(.startTermination)
                         } content: {
                             hText(L10n.terminationButton, style: .body)
                                 .foregroundColor(hTextColorNew.secondary)

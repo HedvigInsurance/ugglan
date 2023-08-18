@@ -64,6 +64,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case dismisscontractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
+    case startTermination
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
