@@ -141,7 +141,7 @@ extension ProfileView {
                     } else if case .deleteAccountAlreadyRequested = action {
                         AppJourney.deleteRequestAlreadyPlacedJourney
                     } else if case .openLangaugePicker = action {
-                        PickLanguage {
+                        PickLanguage { _ in
                             UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
                                 AppJourney.main
                             )

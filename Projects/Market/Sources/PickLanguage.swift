@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct PickLanguage: View {
     let currentMarket: Market
-    let onSave: (() -> Void)?
+    let onSave: ((Localization.Locale) -> Void)?
     let onCancel: (() -> Void)?
     @PresentableStore var store: MarketStore
 
@@ -21,7 +21,7 @@ public struct PickLanguage: View {
     }
 
     public init(
-        onSave: @escaping () -> Void,
+        onSave: @escaping (Localization.Locale) -> Void,
         onCancel: @escaping () -> Void
     ) {
         let store: MarketStore = globalPresentableStoreContainer.get()
@@ -66,7 +66,8 @@ public struct PickLanguage: View {
                     if let onSave {
                         hButton.LargeButtonPrimary {
                             Localization.Locale.currentLocale = currentLocale
-                            onSave()
+                            onSave(currentLocale)
+                            store.send(.dismissPicker)
                         } content: {
                             hText(L10n.generalSaveButton)
                         }
@@ -122,7 +123,7 @@ extension PickLanguage {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case .selectMarket = action {
+            if case .dismissPicker = action {
                 PopJourney()
             }
         }
