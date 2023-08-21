@@ -24,32 +24,36 @@ extension AppJourney {
         )!
 
         if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
-            Journey(
-                BankIDLoginSweden(),
-                style: .detented(.medium, .large)
+
+            HostingJourney(
+                AuthenticationStore.self,
+                rootView: BankIDLoginSweden()
+                    //                style: .
             ) { result in
-                switch result {
-                case .qrCode:
-                    Journey(BankIDLoginQR()) { result in
-                        switch result {
-                        case .loggedIn:
-                            loginCompleted
-                        case .emailLogin:
-                            otp(style: .detented(.large, modally: false))
-                        case .close:
-                            DismissJourney()
+                if case let .bankIdSwedenResultAction(bankIdAction) = result {
+                    if case .qrCode = bankIdAction {
+                        Journey(BankIDLoginQR()) { result in
+                            switch result {
+                            case .loggedIn:
+                                loginCompleted
+                            case .emailLogin:
+                                otp(style: .detented(.large, modally: false))
+                            case .close:
+                                DismissJourney()
+                            }
                         }
+                        .withJourneyDismissButton
+                        .mapJourneyDismissToCancel
+                    } else if case .loggedIn = bankIdAction {
+                        loginCompleted
+                    } else if case .emailLogin = bankIdAction {
+                        otp(style: .detented(.large, modally: false))
+                    } else if case .close = bankIdAction {
+                        PopJourney()
                     }
-                    .withJourneyDismissButton
-                    .mapJourneyDismissToCancel
-                case .loggedIn:
-                    loginCompleted
-                case .emailLogin:
-                    otp(style: .detented(.large, modally: false))
-                case .close:
-                    PopJourney()
                 }
             }
+            .configureTitle(L10n.bankidLoginTitle)
             .withDismissButton
         } else {
             Journey(

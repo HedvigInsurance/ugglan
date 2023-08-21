@@ -11,12 +11,6 @@ public struct BankIDLoginQR {
     public init() {}
 }
 
-public enum BankIDLoginQRResult {
-    case loggedIn
-    case emailLogin
-    case close
-}
-
 extension BankIDLoginQR: Presentable {
     public func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
         let viewController = UIViewController()
