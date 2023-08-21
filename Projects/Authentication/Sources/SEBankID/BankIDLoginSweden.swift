@@ -46,6 +46,7 @@ public struct BankIDLoginSweden: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonGhost {
+                store.send(.openAlternativeLogin)
 
                 //                bag += alternativeLoginButton.onTapSignal.onValue { _ in
                 //                    let alert = Alert<Void>(actions: [

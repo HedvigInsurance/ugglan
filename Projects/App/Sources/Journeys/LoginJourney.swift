@@ -9,6 +9,24 @@ import hAnalytics
 import hCore
 import hCoreUI
 
+public enum AlternativeLoginMethods {
+    case email
+
+    public var value: String {
+        switch self {
+        case .email:
+            return "email"
+        }
+    }
+
+    public var displayName: String {
+        switch self {
+        case .email:
+            return L10n.emailRowTitle
+        }
+    }
+}
+
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
         AppJourney.loggedIn.onPresent {
@@ -28,7 +46,6 @@ extension AppJourney {
             HostingJourney(
                 AuthenticationStore.self,
                 rootView: BankIDLoginSweden()
-                    //                style: .
             ) { result in
                 if case let .bankIdSwedenResultAction(bankIdAction) = result {
                     if case .qrCode = bankIdAction {
@@ -51,6 +68,26 @@ extension AppJourney {
                     } else if case .close = bankIdAction {
                         PopJourney()
                     }
+                } else if case .openAlternativeLogin = result {
+                    HostingJourney(
+                        rootView: CheckboxPickerScreen<AlternativeLoginMethods>(
+                            items: [(object: AlternativeLoginMethods.email, displayName: "")],
+                            preSelectedItems: { [] },
+                            onSelected: { selectedValue in
+                                let store: AuthenticationStore = globalPresentableStoreContainer.get()
+
+                                if selectedValue.first?.displayName == L10n.emailRowTitle {
+                                    store.send(.cancel)
+                                    store.send(.bankIdSwedenResultAction(action: .emailLogin))
+                                    //                                    callback(.emailLogin)
+                                } else if selectedValue.first?.displayName == L10n.bankidOnAnotherDevice {
+                                    store.send(.cancel)
+                                    store.send(.bankIdSwedenResultAction(action: .qrCode))
+                                    //                                callback(.qrCode)
+                                }
+                            }
+                        )
+                    )
                 }
             }
             .configureTitle(L10n.bankidLoginTitle)

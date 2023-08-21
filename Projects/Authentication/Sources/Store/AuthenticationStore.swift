@@ -435,7 +435,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     .navigationAction(action: .authSuccess),
                     {
                         callback(.value(.cancel))
-                        callback(.value(.bankIdQrResultAction(action: .loggedIn)))
+                        callback(.value(.bankIdSwedenResultAction(action: .loggedIn)))
                     }
                 )
                 bag += self.actionSignal.onValue { action in

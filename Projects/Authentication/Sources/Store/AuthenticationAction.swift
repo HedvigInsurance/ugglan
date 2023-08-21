@@ -71,4 +71,5 @@ public enum AuthenticationAction: ActionProtocol {
     case bankIdQrResultAction(action: BankIDLoginQRResult)
     case openBankIdApp
     case checkLoginStatus
+    case openAlternativeLogin
 }
