@@ -16,9 +16,24 @@ extension AppJourney {
             } else if case .loginButtonTapped = action {
                 AppJourney.login
             } else if case let .presentMarketPicker(currentMarket) = action {
-                PickMarket(currentMarket: currentMarket).journey
-            } else if case let .presentLanguagePicker(currentMarket) = action {
-                PickLanguage(currentMarket: currentMarket).journey
+                PickMarket(
+                    currentMarket: currentMarket,
+                    onSave: { selectedMarket in
+                        let store: MarketStore = globalPresentableStoreContainer.get()
+                        store.send(.selectMarket(market: selectedMarket))
+                    },
+                    onCancel: {
+                    }
+                )
+                .journey
+            } else if case .presentLanguagePicker = action {
+                PickLanguage(
+                    onSave: { selectedLocale in
+                        Localization.Locale.currentLocale = selectedLocale
+                    },
+                    onCancel: {}
+                )
+                .journey
             }
         }
     }
