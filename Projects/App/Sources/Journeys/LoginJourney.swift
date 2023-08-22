@@ -79,11 +79,9 @@ extension AppJourney {
                                 if selectedValue.first?.displayName == L10n.emailRowTitle {
                                     store.send(.cancel)
                                     store.send(.bankIdSwedenResultAction(action: .emailLogin))
-                                    //                                    callback(.emailLogin)
                                 } else if selectedValue.first?.displayName == L10n.bankidOnAnotherDevice {
                                     store.send(.cancel)
                                     store.send(.bankIdSwedenResultAction(action: .qrCode))
-                                    //                                callback(.qrCode)
                                 }
                             }
                         )
