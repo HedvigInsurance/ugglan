@@ -31,10 +31,13 @@ struct CrossSellingStack: View {
                             HStack(alignment: .center, spacing: 8) {
                                 CrossSellingUnseenCircle()
                                 hText(L10n.InsuranceTab.CrossSells.title)
+                                    .padding(.leading, 2)
                                     .foregroundColor(hTextColorNew.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Divider()
+                                .overlay(hFillColorNew.translucentOne)
+                                .frame(height: 1)
                         }
                     }
                 }
