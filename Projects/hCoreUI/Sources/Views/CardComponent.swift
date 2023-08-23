@@ -64,7 +64,6 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
         .background(
             Squircle.default()
                 .fill(hFillColorNew.opaqueOne)
-                .hShadow()
         )
         .onTapGesture {
             if let onSelected = onSelected {
