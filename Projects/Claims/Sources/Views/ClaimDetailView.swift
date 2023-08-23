@@ -58,8 +58,9 @@ public struct ClaimDetailView: View {
                     }
                     .withHeader {
                         hText(L10n.ClaimStatusDetail.uploadedFiles)
+                            .padding(.leading, 2)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 16)
                     .onReceive(
                         audioPlayer.objectWillChange
                             .filter { $0.playbackState == .finished },
@@ -76,17 +77,6 @@ public struct ClaimDetailView: View {
         .trackOnAppear(
             hAnalyticsEvent.screenView(screen: .claimsStatusDetail)
         )
-        .hFormAttachToBottom {
-            hSection {
-                hButton.LargeButtonGhost {
-                    store.send(.closeClaimStatus)
-                } content: {
-                    hText(L10n.generalCloseButton)
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        }
-
     }
 
 }

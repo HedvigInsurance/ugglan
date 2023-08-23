@@ -81,7 +81,7 @@ struct CardComponent_Previews: PreviewProvider {
                 onSelected: {
 
                 },
-                mainContent: Text("T"),  //ClaimPills(claim: claim),
+                mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
                 bottomComponent: {
