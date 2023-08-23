@@ -141,6 +141,7 @@ struct ContractDetail: View {
                     }
                 }
                 .padding(.top, 16)
+                .padding(.bottom, 8)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
