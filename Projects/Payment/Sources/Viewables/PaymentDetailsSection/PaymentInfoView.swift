@@ -81,6 +81,7 @@ struct PaymentInfoView: View {
             if let discount, discount.floatAmount > 0 {
                 hRow {
                     hText(L10n.paymentsDiscountsSectionTitle)
+                        .padding(.leading, 2)
                     Spacer()
                     hText(discount.negative.formattedAmount.addPerMonth)
                         .foregroundColor(hLabelColor.secondary)
@@ -110,7 +111,9 @@ struct PaymentInfoView: View {
                     VStack {
                         Toggle(isOn: $vm.addCodeState.animation()) {
                             hText(L10n.paymentsAddCodeLabel)
+                                .padding(.leading, 2)
                         }
+                        .toggleStyle(ChecboxToggleStyle())
                         if vm.addCodeState {
                             HStack {
                                 hFloatingTextField(
@@ -176,6 +179,7 @@ struct PaymentInfoView: View {
             hRow {
                 VStack {
                     hText(L10n.PaymentDetails.ReceiptCard.total)
+                        .padding(.leading, 2)
                     Spacer()
                 }
                 Spacer()
