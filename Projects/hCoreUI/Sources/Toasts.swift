@@ -72,7 +72,7 @@ extension Toast: Viewable {
             view.image = icon
             let symbolColor = UIColor(dynamic: { trait -> UIColor in
                 UIColor(
-                    hSignalColorNew.blueElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColorNew.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                 )
             })
@@ -138,7 +138,6 @@ extension Toast: Viewable {
         containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
-            //            make.top.bottom.trailing.leading.equalToSuperview()
             make.top.bottom.equalToSuperview()
             make.centerX.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview()

@@ -101,7 +101,7 @@ extension UIColor {
                 })
             case .toasterBackground:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.blueFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColorNew.greenFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterBorder:
@@ -112,12 +112,12 @@ extension UIColor {
                 })
             case .toasterTitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.blueText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColorNew.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterSubtitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.blueText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColorNew.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             }
