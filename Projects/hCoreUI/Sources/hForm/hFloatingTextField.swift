@@ -303,7 +303,7 @@ struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier 
                                 }
                             },
                             label: {
-                                Image(uiImage: hCoreUIAssets.close.image)
+                                Image(uiImage: hCoreUIAssets.closeSmall.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
                                     .foregroundColor(hTextColorNew.primary)

@@ -72,7 +72,7 @@ struct HeaderView: View {
                             )
                             .foregroundColor(hTextColorNew.secondary)
                             .multilineTextAlignment(.center)
-                            .padding(.top, 49)
+                            .padding(.top, 8)
                         }
                     }
                 }
