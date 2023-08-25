@@ -121,6 +121,7 @@ struct ContractDetail: View {
                         id: id,
                         allowDetailNavigation: false
                     )
+                    .fixedSize(horizontal: false, vertical: true)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title, style: .standardSmall).tag(view)

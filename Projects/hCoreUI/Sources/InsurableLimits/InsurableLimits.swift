@@ -6,7 +6,7 @@ import hGraphQL
 public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
-
+    
     public init(
         limits: [InsurableLimits],
         didTap: @escaping (InsurableLimits) -> Void
@@ -14,21 +14,22 @@ public struct InsurableLimitsSectionView: View {
         self.limits = limits
         self.didTap = didTap
     }
-
+    
     public var body: some View {
         hSection(limits, id: \.label) { limit in
             hRow {
                 VStack(alignment: .leading, spacing: 4) {
                     hText(limit.label)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
             .withCustomAccessory {
                 Spacer()
                 HStack(alignment: .top) {
-                hText(limit.limit)
-                        .frame(maxHeight: .infinity, alignment: .top)
-                    .foregroundColor(hTextColorNew.secondary)
+                    hText(limit.limit)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(hTextColorNew.secondary)
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()
                         .foregroundColor(hTextColorNew.secondary)

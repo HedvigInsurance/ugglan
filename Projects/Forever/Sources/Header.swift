@@ -77,7 +77,7 @@ struct HeaderView: View {
                     }
                 }
             }
-            .padding(.top, 72)
+            .padding(.top, 64)
         }
         .sectionContainerStyle(.transparent)
     }
