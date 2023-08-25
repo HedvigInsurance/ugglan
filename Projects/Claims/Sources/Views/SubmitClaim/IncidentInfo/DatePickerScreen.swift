@@ -43,7 +43,7 @@ public struct DatePickerScreen: View {
                 .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                 .datePickerStyle(.graphical)
                 .frame(height: 350)
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
                 .padding([.top], 5)
                 .background(Color.clear)
             }
@@ -67,7 +67,7 @@ public struct DatePickerScreen: View {
                 } content: {
                     hText(buttonTitle, style: .body)
                 }
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
                 LoadingButtonWithContent(
                     SubmitClaimStore.self,
                     .postDateOfOccurrenceAndLocation,
