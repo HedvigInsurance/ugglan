@@ -43,7 +43,6 @@ extension HomeView {
 
     public var body: some View {
         hForm {
-            ImportantMessagesView()
             centralContent
         }
         .setHomeNavigationBars(
@@ -122,11 +121,13 @@ extension HomeView {
             ) { memberStateData in
                 switch memberStateData.state {
                 case .active:
+                    ImportantMessagesView()
                     statusCard
                     deletedInfoView
                     startAClaimButton
                     openOtherServices
                 case .future:
+                    ImportantMessagesView()
                     FutureSectionInfoView(memberName: memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:
