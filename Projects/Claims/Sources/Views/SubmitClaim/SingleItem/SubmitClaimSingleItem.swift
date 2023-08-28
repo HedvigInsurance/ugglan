@@ -7,9 +7,9 @@ import hGraphQL
 public struct SubmitClaimSingleItem: View {
     @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsFlowSingleItemFieldType?
-
+    
     public init() {}
-
+    
     public var body: some View {
         hForm {
         }
@@ -24,7 +24,7 @@ public struct SubmitClaimSingleItem: View {
                 ) { singleItemStep in
                     getFields(singleItemStep: singleItemStep)
                         .disableOn(SubmitClaimStore.self, [.postSingleItem])
-
+                    
                     LoadingButtonWithContent(SubmitClaimStore.self, .postSingleItem) {
                         store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                     } content: {
@@ -35,7 +35,7 @@ public struct SubmitClaimSingleItem: View {
             }
         }
     }
-
+    
     @ViewBuilder
     func getFields(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
         displayBrandAndModelField(singleItemStep: singleItemStep)
@@ -46,7 +46,7 @@ public struct SubmitClaimSingleItem: View {
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
     }
-
+    
     @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
@@ -63,21 +63,20 @@ public struct SubmitClaimSingleItem: View {
             .sectionContainerStyle(.transparent)
         }
     }
-
+    
     @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
-
         hSection {
-            hFloatingField(
-                value: claim?.purchaseDate?.localDateToDate?.displayDateDotFormat ?? "",
+            hDatePickerField(config: .init(
                 placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                onTap: {
-                    store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
-                }
-            )
+                title: L10n.Claims.Item.Screen.Date.Of.Purchase.button),
+                             selectedDate: claim?.purchaseDate?.localDateToDate
+            ) { date in
+                store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            }
         }
         .sectionContainerStyle(.transparent)
     }
-
+    
     @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
         if !(claim?.availableItemProblems.isEmpty ?? true) {
             hSection {
@@ -92,13 +91,13 @@ public struct SubmitClaimSingleItem: View {
             .sectionContainerStyle(.transparent)
         }
     }
-
+    
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
-
+        
         hSection {
             hFloatingField(
                 value: (claim?.purchasePrice != nil)
-                    ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
+                ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
                 placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
                 onTap: {
                     store.send(.navigationAction(action: .openPriceInput))
@@ -113,14 +112,14 @@ enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
     static var last: ClaimsFlowSingleItemFieldType {
         return ClaimsFlowSingleItemFieldType.purchasePrice
     }
-
+    
     var next: ClaimsFlowSingleItemFieldType? {
         switch self {
         case .purchasePrice:
             return nil
         }
     }
-
+    
     case purchasePrice
 }
 
