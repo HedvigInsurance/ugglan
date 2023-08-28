@@ -16,15 +16,13 @@ public struct DatePickerScreen: View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         self.maxDate = {
             switch type {
-            case .setDateOfOccurrence:
-                return store.state.dateOfOccurenceStep?.getMaxDate() ?? Date()
             case .setDateOfPurchase:
                 return Date()
             }
         }()
         self.buttonTitle = {
             switch type {
-            case .setDateOfOccurrence, .setDateOfPurchase:
+            case .setDateOfPurchase:
                 return L10n.generalSaveButton
             }
         }()
@@ -57,8 +55,6 @@ public struct DatePickerScreen: View {
                 LoadingButtonWithContent(SubmitClaimStore.self, .postDateOfOccurrenceAndLocation) {
                     let action: SubmitClaimsAction = {
                         switch type {
-                        case .setDateOfOccurrence:
-                            return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
                         case .setDateOfPurchase:
                             return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                         }
@@ -74,8 +70,6 @@ public struct DatePickerScreen: View {
                     buttonAction: {
                         let action: SubmitClaimsAction = {
                             switch type {
-                            case .setDateOfOccurrence:
-                                return .setNewDate(dateOfOccurrence: nil)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }

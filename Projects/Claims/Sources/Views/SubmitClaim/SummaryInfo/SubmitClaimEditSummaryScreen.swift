@@ -69,7 +69,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 .cornerRadius(.defaultCornerRadius)
             }
             .onTap {
-                store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
+//                store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
             }
         }
     }

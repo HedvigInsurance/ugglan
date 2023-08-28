@@ -72,13 +72,10 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public enum DatePickerType: ActionProtocol {
-        case setDateOfOccurrence
         case setDateOfPurchase
 
         var title: String {
             switch self {
-            case .setDateOfOccurrence:
-                return L10n.Claims.Incident.Screen.Date.Of.incident
             case .setDateOfPurchase:
                 return L10n.Claims.Item.Screen.Date.Of.Purchase.button
             }
