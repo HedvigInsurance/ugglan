@@ -7,9 +7,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
     @State var type: ClaimsFlowContactType?
-    @State var keyboardEnabled: Bool = false
-    
-    @State private var isKeyboardVisible = false
+    @State private var keyboardEnabled: Bool = false
     
     public init(
         model: FlowClaimPhoneNumberStepModel
@@ -30,12 +28,12 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle
                         )
                     }
-                    .onReceive(keyboardPublisher) { newIsKeyboardVisible in
-                        isKeyboardVisible = newIsKeyboardVisible
+                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                        keyboardEnabled = newIsKeyboardEnabled
                     }
                     .sectionContainerStyle(.transparent)
                     .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
-                    if isKeyboardVisible {
+                    if keyboardEnabled {
                         hButton.LargeButtonPrimary {
                             UIApplication.dismissKeyboard()
                         } content: {
