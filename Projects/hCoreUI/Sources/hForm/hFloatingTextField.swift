@@ -298,9 +298,7 @@ struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier 
                     .background(
                         SwiftUI.Button(
                             action: {
-                                withAnimation {
-                                    fieldText = ""
-                                }
+                                fieldText = ""
                             },
                             label: {
                                 Image(uiImage: hCoreUIAssets.closeSmall.image)
