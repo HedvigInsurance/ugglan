@@ -2,9 +2,9 @@ import Foundation
 import SwiftUI
 
 public struct ChecboxToggleStyle: ToggleStyle {
-    
-    public init(){}
-    
+
+    public init() {}
+
     public func makeBody(configuration: Configuration) -> some View {
         if #available(iOS 15.0, *) {
             HStack {
