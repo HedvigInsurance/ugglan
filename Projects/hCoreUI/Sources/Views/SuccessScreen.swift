@@ -29,7 +29,6 @@ extension SuccessScreen {
     public static func journey(with title: String) -> some JourneyPresentation {
         HostingJourney(
             rootView: SuccessScreen(title: title),
-            style: .detented(.large),
             options: [.prefersNavigationBarHidden(true)]
         )
         .hidesBackButton

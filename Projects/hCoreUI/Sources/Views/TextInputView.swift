@@ -72,7 +72,7 @@ public class TextInputViewModel: ObservableObject {
     @Published var input: String
     @Published var error: String?
     @Published var isLoading: Bool = false
-    @Published var type: TextInputView.InputViewFocus? = .textField
+    @Published var type: TextInputView.InputViewFocus? = nil
     let masking: Masking
 
     let title: String
