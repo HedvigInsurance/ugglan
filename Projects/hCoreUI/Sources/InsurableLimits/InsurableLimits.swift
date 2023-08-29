@@ -6,7 +6,7 @@ import hGraphQL
 public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
-    
+
     public init(
         limits: [InsurableLimits],
         didTap: @escaping (InsurableLimits) -> Void
@@ -14,7 +14,7 @@ public struct InsurableLimitsSectionView: View {
         self.limits = limits
         self.didTap = didTap
     }
-    
+
     public var body: some View {
         hSection(limits, id: \.label) { limit in
             hRow {

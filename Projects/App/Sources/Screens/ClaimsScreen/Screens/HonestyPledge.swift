@@ -13,13 +13,13 @@ struct SlideTrack: View {
     var shouldAnimate: Bool
     var labelOpacity: Double
     @Binding var didFinished: Bool
-    
+
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
                 L10n.claimsPledgeSlideLabel.hText(.body)
                     .foregroundColor(getLabelColor)
-                
+
             }
             .frame(maxWidth: .infinity)
             .opacity(didFinished ? 0 : labelOpacity)
@@ -30,7 +30,7 @@ struct SlideTrack: View {
         .background(hFillColorNew.opaqueTwo)
         .cornerRadius(29)
     }
-    
+
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
@@ -44,12 +44,12 @@ struct SlideTrack: View {
 struct DraggerGeometryEffect: GeometryEffect {
     var dragOffsetX: CGFloat
     var draggerSize: CGSize
-    
+
     var animatableData: CGFloat {
         get { dragOffsetX }
         set { dragOffsetX = newValue }
     }
-    
+
     func effectValue(size: CGSize) -> ProjectionTransform {
         let value = max(dragOffsetX, 0)
         let finalOffsetX = min(value, size.width - draggerSize.width)
@@ -62,7 +62,7 @@ struct SlideDragger: View {
     var dragOffsetX: CGFloat
     @Binding var didFinished: Bool
     static let size = CGSize(width: 50, height: 50)
-    
+
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
@@ -92,7 +92,7 @@ struct SlideDragger: View {
             .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
         }
     }
-    
+
     @hColorBuilder
     private var getIconBackgroundColor: some hColor {
         if didFinished {
@@ -131,11 +131,11 @@ struct SlideToConfirm: View {
     @GestureState var dragOffsetX: CGFloat = 0
     @State var draggedTillTheEnd = false
     let onConfirmAction: (() -> Void)?
-    
+
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
     }
-    
+
     var body: some View {
         ZStack(alignment: .leading) {
             SlideTrack(
@@ -165,9 +165,9 @@ struct SlideToConfirm: View {
                     body: { value, state, _ in
                         if value.startLocation.x > 50 {
                             state =
-                            (value.startLocation.x
-                             * (value.translation.width / 100))
-                            + value.translation.width
+                                (value.startLocation.x
+                                    * (value.translation.width / 100))
+                                + value.translation.width
                         } else {
                             state = value.translation.width
                         }
@@ -183,13 +183,13 @@ struct SlideToConfirm: View {
 struct HonestyPledge: View {
     @StateObject var vm = VCViewModel()
     let onConfirmAction: ((UIViewController?) -> Void)?
-    
+
     init(
         onConfirmAction: ((_ vc: UIViewController?) -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
-    
+
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
@@ -201,13 +201,13 @@ struct HonestyPledge: View {
                         .foregroundColor(hLabelColor.secondary)
                 }
                 .padding(.bottom, 32)
-                
+
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?(vm.vc)
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
-                
+
                 hButton.LargeButtonText {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
@@ -215,7 +215,7 @@ struct HonestyPledge: View {
                     L10n.generalCancelButton.hText(.body)
                         .foregroundColor(hTextColorNew.primary)
                 }
-                
+
             }
             .padding(.top, -32)
             .padding(.horizontal, 24)
