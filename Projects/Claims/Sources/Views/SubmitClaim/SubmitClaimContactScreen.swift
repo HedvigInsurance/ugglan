@@ -8,7 +8,6 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @State var phoneNumber: String
     @State var type: ClaimsFlowContactType?
     @State var keyboardEnabled: Bool = false
-    @State private var isKeyboardVisible = false
 
     public init(
         model: FlowClaimPhoneNumberStepModel
