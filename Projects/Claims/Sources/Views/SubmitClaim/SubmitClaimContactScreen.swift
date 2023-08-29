@@ -8,7 +8,6 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @State var phoneNumber: String
     @State var type: ClaimsFlowContactType?
     @State var keyboardEnabled: Bool = false
-
     @State private var isKeyboardVisible = false
 
     public init(
@@ -35,24 +34,18 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                     }
                     .sectionContainerStyle(.transparent)
                     .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
-                    if keyboardEnabled {
-                        hButton.LargeButtonPrimary {
+                    LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
+                        if keyboardEnabled {
                             UIApplication.dismissKeyboard()
-                        } content: {
-                            hText(L10n.generalSaveButton)
-                        }
-                        .padding(.horizontal, 16)
-
-                    } else {
-                        LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
+                        } else {
                             store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                             UIApplication.dismissKeyboard()
-                        } content: {
-                            hText(L10n.generalContinueButton, style: .body)
                         }
-                        .frame(maxWidth: .infinity, alignment: .bottom)
-                        .padding(.horizontal, 16)
+                    } content: {
+                        hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                     }
+                    .frame(maxWidth: .infinity, alignment: .bottom)
+                    .padding(.horizontal, 16)
                 }
                 .padding(.bottom, 16)
             }
