@@ -52,9 +52,17 @@ class NavBar: UINavigationBar {
                 if stringFromClass.contains("UIProgressView") {
                     subview.frame = CGRect(
                         x: subview.frame.origin.x,
-                        y: -4,
+                        y: -additionalHeight,
                         width: subview.frame.width,
                         height: subview.frame.height
+                    )
+                }
+                if stringFromClass.contains("BarContent") {
+                    subview.frame = CGRect(
+                        x: 0,
+                        y: additionalHeight,
+                        width: self.frame.width,
+                        height: subview.frame.size.height
                     )
                 }
             }
