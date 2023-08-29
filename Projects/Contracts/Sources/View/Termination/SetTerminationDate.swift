@@ -18,53 +18,46 @@ public struct SetTerminationDate: View {
     public var body: some View {
 
         LoadingViewWithContent(ContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
-            hForm {
-                HStack(spacing: 0) {
-                    hText(L10n.setTerminationDateText, style: .body)
-                        .padding([.leading, .trailing], 12)
-                        .padding([.top, .bottom], 16)
-                }
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding([.leading, .trailing], 16)
-                .padding(.top, 20)
-
-                hSection {
-                    hRow {
-                        HStack {
-                            hText(L10n.terminationDateText, style: .body)
-                            Spacer()
-                            hText(terminationDate.displayDateDotFormat ?? "", style: .body)
-                                .foregroundColor(hLabelColor.link)
-                        }
-                    }
-
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.terminationDateStep
-                        }
-                    ) { termination in
-
-                        DatePicker(
-                            L10n.terminationDateText,
-                            selection: self.$terminationDate,
-                            in: convertDateFormat(
-                                inputDate: termination?.minDate ?? ""
-                            )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
-                            displayedComponents: [.date]
-                        )
-                        .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
-                        .datePickerStyle(.graphical)
-                        .padding([.leading, .trailing], 16)
-                        .padding(.top, 5)
-                    }
-                }
-            }
+            hForm {}
+            .hDisableScroll
+            .hFormTitle(.small, .title1, L10n.setTerminationDateText)
             .hFormAttachToBottom {
+                VStack(spacing: 16) {
+                    hSection {
+                        hRow {
+                            HStack {
+                                hText(L10n.terminationDateText, style: .body)
+                                Spacer()
+                                hText(terminationDate.displayDateDotFormat ?? "", style: .body)
+                                    .foregroundColor(hLabelColor.link)
+                            }
+                            .padding(.bottom, 8)
+                            .padding(.horizontal, 8)
+                        }
+                        .noSpacing()
 
-                VStack {
+                        PresentableStoreLens(
+                            ContractStore.self,
+                            getter: { state in
+                                state.terminationDateStep
+                            }
+                        ) { termination in
+                                    DatePicker(
+                                        L10n.terminationDateText,
+                                        selection: self.$terminationDate.animation(.easeInOut(duration: 0.2)),
+                                        in: convertDateFormat(
+                                            inputDate: termination?.minDate ?? ""
+                                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
+                                        displayedComponents: [.date]
+                                        )
+                                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+                                    .datePickerStyle(.graphical)
+                                    .frame(height: 330)
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.bottom, 16)
+                    
                     hButton.LargeButtonPrimary {
                         onSelected(terminationDate)
                     } content: {
@@ -75,8 +68,8 @@ public struct SetTerminationDate: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
-                .padding([.top, .leading, .trailing], 16)
-                .padding(.bottom, 40)
+                .padding([.top, .horizontal], 16)
+                .padding(.bottom, 32)
             }
         }
     }
