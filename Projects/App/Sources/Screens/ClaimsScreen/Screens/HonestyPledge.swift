@@ -18,7 +18,7 @@ struct SlideTrack: View {
         ZStack {
             VStack(alignment: .center) {
                 L10n.claimsPledgeSlideLabel.hText(.body)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(getLabelColor)
 
             }
             .frame(maxWidth: .infinity)
@@ -29,6 +29,15 @@ struct SlideTrack: View {
         .frame(maxWidth: .infinity)
         .background(hFillColorNew.opaqueTwo)
         .cornerRadius(29)
+    }
+
+    @hColorBuilder
+    private var getLabelColor: some hColor {
+        if didFinished {
+            hTextColorNew.disabled
+        } else {
+            hTextColorNew.secondary
+        }
     }
 }
 
@@ -59,12 +68,21 @@ struct SlideDragger: View {
             ZStack(alignment: .leading) {
                 ZStack(alignment: .leading) {
                     ZStack {
-                        Image(uiImage: hCoreUIAssets.chevronRight.image)
-                            .foregroundColor(hTextColorNew.negative)
+                        Group {
+                            if didFinished {
+                                Image(uiImage: hCoreUIAssets.tick.image)
+                                    .transition(.scale)
+                            } else {
+                                Image(uiImage: hCoreUIAssets.chevronRight.image)
+                                    .transition(.asymmetric(insertion: .scale, removal: .opacity))
+                            }
+                        }
+                        .foregroundColor(hTextColorNew.negative)
+                        .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
+                        .background(getIconBackgroundColor)
+                        .clipShape(Circle())
                     }
-                    .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
-                    .background(hTextColorNew.primary)
-                    .clipShape(Circle())
+                    .animation(.interpolatingSpring(stiffness: 300, damping: 20))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -75,6 +93,15 @@ struct SlideDragger: View {
                 )
             }
             .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
+        }
+    }
+
+    @hColorBuilder
+    private var getIconBackgroundColor: some hColor {
+        if didFinished {
+            hSignalColorNew.greenElement
+        } else {
+            hTextColorNew.primary
         }
     }
 }
@@ -92,8 +119,10 @@ struct DidAcceptPledgeNotifier: View {
             ) { value in
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
-                    onConfirmAction?()
-                    store.send(.didAcceptHonestyPledge)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        onConfirmAction?()
+                        store.send(.didAcceptHonestyPledge)
+                    }
                 }
             }
         }

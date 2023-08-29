@@ -140,7 +140,7 @@ private struct DatePickerView: View {
             hSection {
                 datePicker
                     .datePickerStyle(.graphical)
-                    .frame(height: 330)
+                    .frame(height: 340)
             }
             .sectionContainerStyle(.transparent)
         }
