@@ -116,6 +116,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onTapGesture {
             self.equals = self.focusValue
+            self.vm.textField?.becomeFirstResponder()
         }
         .onChange(of: error) { error in
             self.animate = true
