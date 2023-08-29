@@ -40,7 +40,7 @@ struct WhoIsTravelingScreen: View {
                                             .foregroundColor(disabledColorOr(hTextColorNew.secondary))
                                     }
                                 }
-                                .toggleStyle(ChecboxToggleStyle())
+                                .toggleStyle(ChecboxToggleStyle(.top, spacing: 0))
                                 if model?.policyCoinsuredPersons.count ?? 0 == 0
                                     && vm.specifications?.numberOfCoInsured ?? 0 > 0
                                 {

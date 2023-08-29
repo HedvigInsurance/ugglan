@@ -22,6 +22,7 @@ struct InsuredMemberScreen: View {
             }
             .hWithoutDivider
         }
+        .hDisableScroll
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             hSection {
@@ -30,13 +31,13 @@ struct InsuredMemberScreen: View {
                         vm.submit()
                     } content: {
                         if vm.policyCoinsuredPerson == nil {
-                            hText(L10n.generalContinueButton)
+                            hText(L10n.generalSaveButton)
                         } else {
                             hText(L10n.TravelCertificate.confirmButtonChangeMember)
                         }
                     }
 
-                    hButton.SmallButtonText {
+                    hButton.LargeButtonGhost {
                         vm.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
@@ -108,11 +109,15 @@ class InsuredMemberViewModel: ObservableObject {
             UIApplication.dismissKeyboard()
             let newPolicyCoInsured = PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber)
             if let policyCoinsuredPerson = policyCoinsuredPerson {
+                dismiss()
                 store.send(.updatePolicyCoInsured(policyCoinsuredPerson, with: newPolicyCoInsured))
             } else {
-                store.send(
-                    .setPolicyCoInsured(newPolicyCoInsured)
-                )
+                dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.store.send(
+                        .setPolicyCoInsured(newPolicyCoInsured)
+                    )
+                }
             }
         } else {
 
