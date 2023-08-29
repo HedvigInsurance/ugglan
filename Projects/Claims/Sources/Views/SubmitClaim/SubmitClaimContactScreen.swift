@@ -1,14 +1,16 @@
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
-import Combine
 
 public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
     @State var type: ClaimsFlowContactType?
-    @State private var keyboardEnabled: Bool = false
-    
+    @State var keyboardEnabled: Bool = false
+
+    @State private var isKeyboardVisible = false
+
     public init(
         model: FlowClaimPhoneNumberStepModel
     ) {
@@ -40,7 +42,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             hText(L10n.generalSaveButton)
                         }
                         .padding(.horizontal, 16)
-                        
+
                     } else {
                         LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
                             store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
@@ -61,17 +63,16 @@ enum ClaimsFlowContactType: hTextFieldFocusStateCompliant {
     static var last: ClaimsFlowContactType {
         return ClaimsFlowContactType.phoneNumber
     }
-    
+
     var next: ClaimsFlowContactType? {
         switch self {
         default:
             return nil
         }
     }
-    
+
     case phoneNumber
 }
-
 
 protocol KeyboardReadable {
     var keyboardPublisher: AnyPublisher<Bool, Never> { get }
@@ -83,7 +84,7 @@ extension KeyboardReadable {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
                 .map { _ in true },
-            
+
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in false }
