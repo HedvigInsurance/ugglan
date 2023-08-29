@@ -58,10 +58,12 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
             if let dateOfOccurrenceStep = dateOfOccurenceStep {
                 hSection {
-                    hDatePickerField(config: .init(
-                        maxDate: dateOfOccurenceStep?.getMaxDate(),
-                        placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                        title: L10n.Claims.Incident.Screen.Date.Of.incident),
+                    hDatePickerField(
+                        config: .init(
+                            maxDate: dateOfOccurenceStep?.getMaxDate(),
+                            placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                            title: L10n.Claims.Incident.Screen.Date.Of.incident
+                        ),
                         selectedDate: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate,
                         placehodlerText: L10n.Claims.Item.Screen.Date.Of.Incident.button
                     ) { date in
