@@ -98,7 +98,7 @@ public enum ToolbarOptionType: String, Codable {
         case .newOffer:
             return "newOfferHint"
         case .firstVet:
-            return "firstVettHint"
+            return "firstVetHint"
         case .chat:
             return "chatHint"
         }
@@ -132,7 +132,7 @@ struct ToolbarButtonsView: View {
                             .resizable()
                             .scaledToFill()
                             .frame(width: 32, height: 32)
-                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
                     }
                     .animation(nil)
                 }
