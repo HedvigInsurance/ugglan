@@ -130,7 +130,7 @@ extension Toast: Viewable {
         stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 11)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 15.5)
         stackView.spacing = 8.25
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
@@ -258,16 +258,14 @@ extension Toasts: Viewable {
             containerView.isHidden = subviews.isEmpty
 
             containerView.snp.updateConstraints { make in
-                make.height.equalTo(
-                    subviews.max { (lhs, rhs) -> Bool in
-                        if lhs.frame.height > rhs.frame.height {
-                            return true
-                        }
+                subviews.max { (lhs, rhs) -> Bool in
+                    if lhs.frame.height > rhs.frame.height {
+                        return true
+                    }
 
-                        return false
-                    }?
-                    .frame.height ?? 0
-                )
+                    return false
+                }?
+                .frame.height ?? 0
             }
         }
 

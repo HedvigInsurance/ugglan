@@ -9,7 +9,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
-
+    @State private var animationEnabled: Bool = true
     private var masking: Masking
     private var placeholder: String
     private var suffix: String?
@@ -112,7 +112,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: innerValue) { currentValue in
             self.error = nil
-            startAnimation(currentValue)
+            if animationEnabled {
+                startAnimation(currentValue)
+            }
         }
         .onTapGesture {
             self.equals = self.focusValue
@@ -169,7 +171,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .modifier(masking)
             .tint(foregroundColor)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                print("\(innerValue) --> \(previousInnerValue)")
                 if shouldUpdate {
                     let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
                     self.value = value
@@ -181,7 +182,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 height: (shouldMoveLabel && suffix == nil)
                     ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) : 0
             )
-            .showClearButton($innerValue, equals: $equals, focusValue: focusValue)
+            .showClearButton($innerValue, equals: $equals, animationEnabled: $animationEnabled, focusValue: focusValue)
 
     }
 
@@ -288,6 +289,7 @@ extension View {
 struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier {
     @Binding var fieldText: String
     @Binding var equals: Value?
+    @Binding var animationEnabled: Bool
     let focusValue: Value
     func body(content: Content) -> some View {
         HStack(alignment: .center) {
@@ -298,8 +300,10 @@ struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier 
                     .background(
                         SwiftUI.Button(
                             action: {
-                                withAnimation {
-                                    fieldText = ""
+                                animationEnabled = false
+                                fieldText = ""
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    animationEnabled = true
                                 }
                             },
                             label: {
@@ -320,8 +324,16 @@ extension View {
     func showClearButton<Value: hTextFieldFocusStateCompliant>(
         _ text: Binding<String>,
         equals: Binding<Value?>,
+        animationEnabled: Binding<Bool>,
         focusValue: Value
     ) -> some View {
-        self.modifier(TextFieldClearButton(fieldText: text, equals: equals, focusValue: focusValue))
+        self.modifier(
+            TextFieldClearButton(
+                fieldText: text,
+                equals: equals,
+                animationEnabled: animationEnabled,
+                focusValue: focusValue
+            )
+        )
     }
 }
