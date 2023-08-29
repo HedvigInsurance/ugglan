@@ -13,15 +13,14 @@ public struct hDatePickerField: View {
     @Binding var error: String?
     @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
-    
+
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
             get: { !(selectedDate?.localDateString.isEmpty ?? true) },
             set: { _ in }
         )
     }
-    
-    
+
     public init(
         config: HDatePickerFieldConfig,
         selectedDate: Date?,
@@ -37,7 +36,7 @@ public struct hDatePickerField: View {
         self.date = date
         self.placeholderText = placehodlerText
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
@@ -47,7 +46,7 @@ public struct hDatePickerField: View {
                     error: $error,
                     shouldMoveLabel: shouldMoveLabel
                 )
-                if let date = selectedDate?.displayDateDotFormat {
+                if (selectedDate?.displayDateDotFormat) != nil {
                     getValueLabel()
                 }
             }
@@ -70,7 +69,7 @@ public struct hDatePickerField: View {
             }
         }
     }
-    
+
     private func getValueLabel() -> some View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
@@ -79,7 +78,7 @@ public struct hDatePickerField: View {
             Spacer()
         }
     }
-    
+
     private func showDatePicker() {
         let continueAction = ReferenceAction {}
         let cancelAction = ReferenceAction {}
@@ -94,7 +93,7 @@ public struct hDatePickerField: View {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         )
-        
+
         let calendarJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
                 self.onContinue(date)
@@ -109,13 +108,13 @@ public struct hDatePickerField: View {
             disposeBag += vc.present(calendarJourney)
         }
     }
-    
+
     public struct HDatePickerFieldConfig {
         let minDate: Date?
         let maxDate: Date?
         let placeholder: String
         let title: String
-        
+
         public init(
             minDate: Date? = nil,
             maxDate: Date? = nil,
@@ -135,7 +134,7 @@ private struct DatePickerView: View {
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var date: Date
     let config: hDatePickerField.HDatePickerFieldConfig
-    
+
     public var body: some View {
         hForm {
             hSection {
@@ -159,7 +158,7 @@ private struct DatePickerView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
-                
+
                 hButton.LargeButtonGhost {
                     cancelAction.execute()
                 } content: {
@@ -184,7 +183,7 @@ private struct DatePickerView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var datePicker: some View {
         let minDate = config.minDate
@@ -223,7 +222,7 @@ private struct DatePickerView: View {
 struct hDatePickerField_Previews: PreviewProvider {
     @State private static var date: Date?
     private static let config =
-    hDatePickerField
+        hDatePickerField
         .HDatePickerFieldConfig(
             placeholder: "Placeholder",
             title: "Departure date"
@@ -235,7 +234,7 @@ struct hDatePickerField_Previews: PreviewProvider {
 
 class ReferenceAction {
     var execute: () -> (Void)
-    
+
     init(
         execute: @escaping () -> Void
     ) {
