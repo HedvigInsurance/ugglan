@@ -41,7 +41,7 @@ struct OtherService: View {
                                 }
                             }
                         }
-                        .sectionContainerStyle((claim.layout.emergency?.color == "Yellow") ? .alert : .opaque)
+                        .sectionContainerStyle((claim.layout.emergency?.isAlert ?? false) ? .alert : .opaque)
                     }
                 }
             }
@@ -53,12 +53,11 @@ struct OtherService: View {
                     } content: {
                         hText(L10n.generalCloseButton)
                     }
-                    
+
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.vertical, 16)
             }
-            
         }
     }
 }
