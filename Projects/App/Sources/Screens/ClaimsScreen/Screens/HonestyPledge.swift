@@ -71,15 +71,18 @@ struct SlideDragger: View {
                         Group {
                             if didFinished {
                                 Image(uiImage: hCoreUIAssets.tick.image)
+                                    .transition(.scale)
                             } else {
                                 Image(uiImage: hCoreUIAssets.chevronRight.image)
+                                    .transition(.asymmetric(insertion: .scale, removal: .opacity))
                             }
                         }
                         .foregroundColor(hTextColorNew.negative)
+                        .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
+                        .background(getIconBackgroundColor)
+                        .clipShape(Circle())
                     }
-                    .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
-                    .background(getIconBackgroundColor)
-                    .clipShape(Circle())
+                    .animation(.interpolatingSpring(stiffness: 300, damping: 20))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -116,7 +119,7 @@ struct DidAcceptPledgeNotifier: View {
             ) { value in
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         onConfirmAction?()
                         store.send(.didAcceptHonestyPledge)
                     }
