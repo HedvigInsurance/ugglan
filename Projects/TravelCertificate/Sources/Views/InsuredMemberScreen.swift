@@ -69,7 +69,7 @@ struct InsuredMemberScreen: View {
                 value: $vm.personalNumber,
                 equals: $vm.inputType,
                 focusValue: .ssn,
-                placeholder: "Personal number",
+                placeholder: L10n.TravelCertificate.personalNumber,
                 error: $vm.personalNumberError
             )
         }
