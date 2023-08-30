@@ -70,7 +70,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
                     }
                 }
-                .padding(.vertical, shouldMoveLabel ? (size == .large ? 10 : 7.5) : 0)
+                .padding(.vertical, shouldMoveLabel ? (size == .large ? 10 : 7.5) : 3)
             }
             .addFieldBackground(animate: $animate, error: $error)
             rightAttachedView
@@ -180,11 +180,17 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 }
             }
             .frame(
-                height: (shouldMoveLabel && suffix == nil)
-                    ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) : 0
+                height: getHeight()
             )
             .showClearButton($innerValue, equals: $equals, animationEnabled: $animationEnabled, focusValue: focusValue)
 
+    }
+
+    private func getHeight() -> CGFloat {
+        let value =
+            (shouldMoveLabel && suffix == nil)
+            ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) + 6 : 0
+        return value
     }
 
     @hColorBuilder
