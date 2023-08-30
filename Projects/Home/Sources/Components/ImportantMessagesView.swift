@@ -13,36 +13,43 @@ struct ImportantMessagesView: View {
         PresentableStoreLens(
             HomeStore.self,
             getter: { state in
-                state.importantMessage
+                return state.hideImportantMessage
             }
-        ) { importantMessage in
-            if let importantMessage = importantMessage, let message = importantMessage.message,
-                !store.state.hideImportantMessage
-            {
-                if let stringUrl = importantMessage.link, let url = URL(string: stringUrl) {
-                    InfoCard(text: message, type: .attention)
-                        .buttons(
-                            [
-                                .init(
-                                    buttonTitle: L10n.ImportantMessage.hide,
-                                    buttonAction: {
-                                        store.send(.hideImportantMessage)
-                                    }
-                                ),
-                                .init(
-                                    buttonTitle: L10n.ImportantMessage.readMore,
-                                    buttonAction: {
-                                        self.url = url
-                                        showSafariView = true
-                                    }
-                                ),
-                            ]
-                        )
-                        .sheet(isPresented: $showSafariView) {
-                            SafariView(url: $url)
-                        }
-                } else {
-                    InfoCard(text: message, type: .attention)
+        ) { hideImportantMessage in
+            PresentableStoreLens(
+                HomeStore.self,
+                getter: { state in
+                    return state.importantMessage
+                }
+            ) { importantMessage in
+                if let importantMessage = importantMessage, let message = importantMessage.message,
+                    !hideImportantMessage
+                {
+                    if let stringUrl = importantMessage.link, let url = URL(string: stringUrl) {
+                        InfoCard(text: message, type: .attention)
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: L10n.ImportantMessage.hide,
+                                        buttonAction: {
+                                            store.send(.hideImportantMessage)
+                                        }
+                                    ),
+                                    .init(
+                                        buttonTitle: L10n.ImportantMessage.readMore,
+                                        buttonAction: {
+                                            self.url = url
+                                            showSafariView = true
+                                        }
+                                    ),
+                                ]
+                            )
+                            .sheet(isPresented: $showSafariView) {
+                                SafariView(url: $url)
+                            }
+                    } else {
+                        InfoCard(text: message, type: .attention)
+                    }
                 }
             }
         }
