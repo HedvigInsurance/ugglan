@@ -34,6 +34,7 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: 8) {
                 ClaimDetailHeader(claim: claim)
+                    .padding(.top, 8)
                 hSection {
                     hRow {
                         hText(statusParagraph)

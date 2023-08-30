@@ -132,6 +132,7 @@ struct ContractDetail: View {
                     .padding(.bottom, 8)
                 }
                 .sectionContainerStyle(.transparent)
+                .padding(.top, 8)
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {

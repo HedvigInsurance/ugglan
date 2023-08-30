@@ -33,6 +33,7 @@ struct MyInfoView: View {
                     )
                 }
             }
+            .padding(.top, 8)
         }
         .sectionContainerStyle(.transparent)
         .disabled(vm.isLoading)

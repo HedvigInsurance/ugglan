@@ -23,6 +23,7 @@ public struct MyPaymentsView: View {
         LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment], vm.getActionsToSendToStore()) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
+                    .padding(.top, 8)
                 PaymentView(paymentType: paymentType)
                 PayoutView(paymentType: paymentType)
                 bottomButtonView

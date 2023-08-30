@@ -81,6 +81,7 @@ extension Contracts: View {
     public var body: some View {
         hForm {
             ContractTable(filter: filter)
+                .padding(.top, 8)
         }
         .onReceive(pollTimer) { _ in
             fetch()

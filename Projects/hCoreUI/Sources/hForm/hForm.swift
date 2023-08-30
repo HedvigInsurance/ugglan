@@ -143,7 +143,14 @@ public struct hForm<Content: View>: View {
                     GeometryReader { geo in
                         Color.clear
                             .onReceive(Just(geo.size.height)) { height in
-                                self.bottomAttachedViewHeight = height
+                                if bottomAttachedViewHeight == 0 {
+                                    self.bottomAttachedViewHeight = height
+                                } else {
+                                    withAnimation {
+                                        self.bottomAttachedViewHeight = height
+                                        recalculateHeight()
+                                    }
+                                }
                             }
                     }
                 )
@@ -152,7 +159,6 @@ public struct hForm<Content: View>: View {
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
         )
-
     }
 
     func getScrollView() -> some View {
@@ -241,7 +247,6 @@ public struct hForm<Content: View>: View {
         } else {
             additionalSpaceFromTop = 0
         }
-
         shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
     }
 }
