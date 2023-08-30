@@ -113,7 +113,7 @@ struct PaymentInfoView: View {
                             hText(L10n.paymentsAddCodeLabel)
                                 .padding(.leading, 2)
                         }
-                        .toggleStyle(ChecboxToggleStyle())
+                        .toggleStyle(ChecboxToggleStyle(.center))
                         if vm.addCodeState {
                             HStack {
                                 hFloatingTextField(
