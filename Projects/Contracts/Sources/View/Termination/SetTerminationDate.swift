@@ -19,58 +19,58 @@ public struct SetTerminationDate: View {
 
         LoadingViewWithContent(ContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
             hForm {}
-            .hDisableScroll
-            .hFormTitle(.small, .title1, L10n.setTerminationDateText)
-            .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    hSection {
-                        hRow {
-                            HStack {
-                                hText(L10n.terminationDateText, style: .body)
-                                Spacer()
-                                hText(terminationDate.displayDateDotFormat ?? "", style: .body)
-                                    .foregroundColor(hLabelColor.link)
+                .hDisableScroll
+                .hFormTitle(.small, .title1, L10n.setTerminationDateText)
+                .hFormAttachToBottom {
+                    VStack(spacing: 16) {
+                        hSection {
+                            hRow {
+                                HStack {
+                                    hText(L10n.terminationDateText, style: .body)
+                                    Spacer()
+                                    hText(terminationDate.displayDateDotFormat ?? "", style: .body)
+                                        .foregroundColor(hTextColorNew.secondary)
+                                }
+                                .padding(.bottom, 8)
+                                .padding(.horizontal, 8)
                             }
-                            .padding(.bottom, 8)
-                            .padding(.horizontal, 8)
-                        }
-                        .noSpacing()
+                            .noSpacing()
+                            .slideUpFadeAppearAnimation(delay: 0.4)
 
-                        PresentableStoreLens(
-                            ContractStore.self,
-                            getter: { state in
-                                state.terminationDateStep
+                            PresentableStoreLens(
+                                ContractStore.self,
+                                getter: { state in
+                                    state.terminationDateStep
+                                }
+                            ) { termination in
+                                DatePicker(
+                                    L10n.terminationDateText,
+                                    selection: self.$terminationDate.animation(.easeInOut(duration: 0.2)),
+                                    in: convertDateFormat(
+                                        inputDate: termination?.minDate ?? ""
+                                    )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
+                                    displayedComponents: [.date]
+                                )
+                                .environment(
+                                    \.locale,
+                                    Locale.init(identifier: Localization.Locale.currentLocale.rawValue)
+                                )
+                                .datePickerStyle(.graphical)
+                                .slideUpFadeAppearAnimation(delay: 0.4)
                             }
-                        ) { termination in
-                                    DatePicker(
-                                        L10n.terminationDateText,
-                                        selection: self.$terminationDate.animation(.easeInOut(duration: 0.2)),
-                                        in: convertDateFormat(
-                                            inputDate: termination?.minDate ?? ""
-                                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
-                                        displayedComponents: [.date]
-                                        )
-                                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
-                                    .datePickerStyle(.graphical)
-                                    .frame(height: 330)
+                        }
+                        hSection {
+                            hButton.LargeButtonPrimary {
+                                onSelected(terminationDate)
+                            } content: {
+                                hText(L10n.terminationConfirmButton, style: .body)
+                                    .foregroundColor(hLabelColor.primary.inverted)
+                            }
                         }
                     }
-                    .sectionContainerStyle(.transparent)
                     .padding(.bottom, 16)
-                    
-                    hButton.LargeButtonPrimary {
-                        onSelected(terminationDate)
-                    } content: {
-                        hText(L10n.terminationConfirmButton, style: .body)
-                            .foregroundColor(hLabelColor.primary.inverted)
-                            .frame(minHeight: 52)
-                            .frame(minWidth: 200)
-                            .frame(maxWidth: .infinity)
-                    }
+                    .sectionContainerStyle(.transparent)
                 }
-                .padding([.top, .horizontal], 16)
-                .padding(.bottom, 32)
-            }
         }
     }
 
