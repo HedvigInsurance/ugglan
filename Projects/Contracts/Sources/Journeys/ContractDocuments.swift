@@ -1,3 +1,4 @@
+import Combine
 import Flow
 import Form
 import Foundation
@@ -12,7 +13,7 @@ import hGraphQL
 
 enum Documents: CaseIterable {
     case certificate, terms
-    
+
     var title: String {
         switch self {
         case .certificate:
@@ -21,7 +22,7 @@ enum Documents: CaseIterable {
             return L10n.myDocumentsInsuranceTerms
         }
     }
-    
+
     var subTitle: String {
         switch self {
         case .certificate:
@@ -30,7 +31,7 @@ enum Documents: CaseIterable {
             return L10n.myDocumentsInsuranceTermsSubtitle
         }
     }
-    
+
     func url(from contract: Contract) -> URL? {
         switch self {
         case .certificate:
@@ -44,9 +45,9 @@ enum Documents: CaseIterable {
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
-    
+    @StateObject private var vm = ContractsDocumentViewModel()
     let id: String
-    
+
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -94,19 +95,33 @@ struct ContractDocumentsView: View {
             ) { contract in
                 if (contract?.currentAgreement?.activeTo) == nil {
                     hSection {
-                        hButton.LargeButtonGhost {
-                            terminationContractStore.send(.setTerminationContractName(contractName: contract?.displayName ?? ""))
-                            terminationContractStore.send(.startTermination(contractId: id))
-                            contractStore.send(.startTermination)
-                        } content: {
-                            hText(L10n.terminationButton, style: .body)
-                                .foregroundColor(hTextColorNew.secondary)
-                        }
+                        LoadingButtonWithContent(
+                            TerminationContractStore.self,
+                            .startTermination,
+                            buttonAction: {
+                                terminationContractStore.send(
+                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                )
+                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
+                                    if case let .navigationAction(navigationAction) = action {
+                                        contractStore.send(.startTermination(action: navigationAction))
+                                        self.vm.cancellable = nil
+                                    }
+                                }
+                            },
+                            content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTextColorNew.secondary)
+                            },
+                            buttonStyleSelect: .textButton
+                        )
                     }
                     .sectionContainerStyle(.transparent)
-                    .padding(.vertical, 16)
                 }
             }
         }
     }
+}
+private class ContractsDocumentViewModel: ObservableObject {
+    var cancellable: AnyCancellable?
 }

@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import TerminateContracts
 import hCore
 import hGraphQL
 
@@ -64,7 +65,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case dismisscontractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
-    case startTermination
+    case startTermination(action: TerminationNavigationAction)
 }
 
 public enum ContractLoadingAction: LoadingProtocol {

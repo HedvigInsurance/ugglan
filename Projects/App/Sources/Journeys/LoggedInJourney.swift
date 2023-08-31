@@ -77,8 +77,8 @@ extension AppJourney {
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
-            case .startNewTermination:
-                AppJourney.startTerminationJourney()
+            case let .startNewTermination(action):
+                AppJourney.startTerminationJourney(action: action)
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

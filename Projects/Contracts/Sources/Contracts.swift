@@ -3,6 +3,7 @@ import Foundation
 import Introspect
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -119,7 +120,7 @@ public enum ContractsResult {
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
     case openCrossSellingWebUrl(url: URL)
-    case startNewTermination
+    case startNewTermination(type: TerminationNavigationAction)
 }
 
 extension Contracts {
@@ -150,8 +151,8 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case .startTermination = action {
-                resultJourney(.startNewTermination)
+            } else if case let .startTermination(navigationAction) = action {
+                resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,
