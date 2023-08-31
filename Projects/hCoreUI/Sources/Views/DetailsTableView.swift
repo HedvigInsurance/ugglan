@@ -41,6 +41,7 @@ public struct DetailAgreementsTableView: View {
                                     .foregroundColor(hLabelColor.secondary)
                             }
                         }
+                        .noHorizontalPadding()
                     }
                     .withHeader {
                         if hasTitle {
@@ -51,11 +52,15 @@ public struct DetailAgreementsTableView: View {
                             .foregroundColor(hLabelColor.secondary)
                         } else {
                             hText(section.title)
+                                .padding(.bottom, -8)
                         }
 
                     }
+                    .sectionContainerStyle(.transparent)
+
                 }
             }
+            .padding(.top, 8)
         }
     }
 }
@@ -63,7 +68,18 @@ public struct DetailAgreementsTableView: View {
 struct Previews_DetailAgreementsTableView: PreviewProvider {
     static var previews: some View {
         DetailAgreementsTableView(
-            table: DetailAgreementsTable(sections: [], title: "Mock title")
+            table: DetailAgreementsTable(
+                sections: [
+                    .init(
+                        title: "TITLE",
+                        rows: [
+                            .init(title: "TITLE 1", subtitle: nil, value: "value 1"),
+                            .init(title: "TITLE 2", subtitle: "subtitle 2", value: "value 2"),
+                        ]
+                    )
+                ],
+                title: "Mock title"
+            )
         )
     }
 }
