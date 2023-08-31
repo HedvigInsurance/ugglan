@@ -127,12 +127,16 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
         .introspectTextField { textField in
+            weak var `textField` = textField
             if self.vm.textField != textField {
                 self.vm.textField = textField
             }
         }
         .onAppear {
             updateMoveLabel(false)
+        }
+        .onDisappear {
+            vm.textField = nil
         }
     }
 
@@ -209,7 +213,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 }
 
 class TextFieldVM: ObservableObject {
-    weak var textField: UITextField?
+    @Published var textField: UITextField?
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
