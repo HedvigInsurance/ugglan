@@ -46,7 +46,6 @@ struct EuroBonusView: View {
         .alert(isPresented: $vm.showCancelAlert) {
             cancelAlert
         }
-        .slideUpFadeAppearAnimation()
     }
 
     @ToolbarContentBuilder
@@ -111,6 +110,7 @@ struct EuroBonusView: View {
             }
             .verticalPadding(10)
         }
+
     }
     private var cancelAlert: SwiftUI.Alert {
         return Alert(
