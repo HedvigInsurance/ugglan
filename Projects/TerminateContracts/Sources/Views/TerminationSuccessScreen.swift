@@ -2,15 +2,15 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct TerminationSuccessScreen: View {
-    @PresentableStore var store: ContractStore
+struct TerminationSuccessScreen: View {
+    @PresentableStore var store: TerminationContractStore
 
-    public init() {}
+    init() {}
 
-    public var body: some View {
+    var body: some View {
 
         PresentableStoreLens(
-            ContractStore.self,
+            TerminationContractStore.self,
             getter: { state in
                 state.successStep
             }
@@ -20,10 +20,10 @@ public struct TerminationSuccessScreen: View {
                     Image(uiImage: hCoreUIAssets.circularCheckmark.image)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 81)
-                    
+
                     hText(L10n.terminationSuccessfulTitle, style: .title1)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     hText(
                         L10n.terminationSuccessfulText(
                             formatAndPrintDate(dateStringInput: termination?.terminationDate ?? ""),

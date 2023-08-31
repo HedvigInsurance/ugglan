@@ -2,23 +2,23 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct TerminationFailScreen: View {
-    @PresentableStore var store: ContractStore
+struct TerminationFailScreen: View {
+    @PresentableStore var store: TerminationContractStore
 
-    public init() {}
+    init() {}
 
-    public var body: some View {
+    var body: some View {
 
         hForm {
             VStack(spacing: 8) {
                 Image(uiImage: hCoreUIAssets.warningTriangle.image)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 4)
-                
+
                 hText(L10n.terminationNotSuccessfulTitle, style: .title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 4)
-                
+
                 hText(L10n.somethingWentWrong, style: .body)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -37,6 +37,7 @@ public struct TerminationFailScreen: View {
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonPrimary {
+                    /* TODO: EITHER ADD TO TERMINATION CONTRACT OR USE CONTRACT STORE*/
                     store.send(.goToFreeTextChat)
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)
