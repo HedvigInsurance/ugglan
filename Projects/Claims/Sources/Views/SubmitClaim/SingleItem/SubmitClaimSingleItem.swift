@@ -65,15 +65,17 @@ public struct SubmitClaimSingleItem: View {
     }
 
     @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
-
         hSection {
-            hFloatingField(
-                value: claim?.purchaseDate?.localDateToDate?.displayDateDotFormat ?? "",
-                placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                onTap: {
-                    store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
-                }
-            )
+            hDatePickerField(
+                config: .init(
+                    maxDate: Date(),
+                    placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
+                    title: L10n.Claims.Item.Screen.Date.Of.Purchase.button
+                ),
+                selectedDate: claim?.purchaseDate?.localDateToDate
+            ) { date in
+                store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            }
         }
         .sectionContainerStyle(.transparent)
     }

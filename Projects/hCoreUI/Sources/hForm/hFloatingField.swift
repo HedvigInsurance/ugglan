@@ -62,6 +62,11 @@ public struct hFloatingField: View {
                 self.startAnimation()
             }
         }
+        .onChange(of: value) { newValue in
+            if isEnabled {
+                self.startAnimation()
+            }
+        }
     }
     private var getTextLabel: some View {
         hText(value, style: .title3)

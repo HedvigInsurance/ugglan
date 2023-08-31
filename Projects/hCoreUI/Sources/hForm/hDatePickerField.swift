@@ -12,10 +12,11 @@ public struct hDatePickerField: View {
     private var selectedDate: Date?
     @Binding var error: String?
     @State private var disposeBag = DisposeBag()
+    private var placeholderText: String?
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
-            get: { true },
+            get: { !(selectedDate?.localDateString.isEmpty ?? true) },
             set: { _ in }
         )
     }
@@ -23,6 +24,7 @@ public struct hDatePickerField: View {
     public init(
         config: HDatePickerFieldConfig,
         selectedDate: Date?,
+        placehodlerText: String? = "",
         error: Binding<String?>? = nil,
         onContinue: @escaping (_ date: Date) -> Void = { _ in }
     ) {
@@ -32,24 +34,31 @@ public struct hDatePickerField: View {
         self.selectedDate = selectedDate
         self._error = error ?? Binding.constant(nil)
         self.date = date
+        self.placeholderText = placehodlerText
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hFieldLabel(
-                placeholder: config.placeholder,
-                animate: $animate,
-                error: $error,
-                shouldMoveLabel: shouldMoveLabel
-            )
-            getValueLabel()
-        }
-        .padding(.vertical, 5)
-        .onChange(of: selectedDate) { date in
-            if let date {
-                onUpdate(date)
+            VStack(alignment: .leading, spacing: 0) {
+                hFieldLabel(
+                    placeholder: config.placeholder,
+                    animate: $animate,
+                    error: $error,
+                    shouldMoveLabel: shouldMoveLabel
+                )
+                if (selectedDate?.displayDateDotFormat) != nil {
+                    getValueLabel()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
+            .onChange(of: selectedDate) { date in
+                if let date {
+                    onUpdate(date)
+                }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -63,12 +72,11 @@ public struct hDatePickerField: View {
 
     private func getValueLabel() -> some View {
         HStack {
-            Text(selectedDate?.displayDateDotFormat ?? L10n.generalSelectButton)
+            Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
                 .foregroundColor(hTextColorNew.primary)
             Spacer()
         }
-
     }
 
     private func showDatePicker() {
@@ -132,7 +140,7 @@ private struct DatePickerView: View {
             hSection {
                 datePicker
                     .datePickerStyle(.graphical)
-                    .frame(height: 350)
+                    .frame(height: 340)
             }
             .sectionContainerStyle(.transparent)
         }
@@ -143,7 +151,7 @@ private struct DatePickerView: View {
                     continueAction.execute()
                 } content: {
                     hText(
-                        L10n.generalContinueButton,
+                        L10n.generalSaveButton,
                         style: .body
                     )
                     .foregroundColor(hLabelColor.primary.inverted)

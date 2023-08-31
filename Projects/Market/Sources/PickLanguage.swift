@@ -32,29 +32,31 @@ public struct PickLanguage: View {
 
     public var body: some View {
         hForm {
-            if onSave == nil {
-                hText(L10n.LanguagePickerModal.text, style: .body)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-            }
-            hSection {
-                VStack(spacing: 4) {
-                    ForEach(currentMarket.languages, id: \.lprojCode) { locale in
-                        hRadioField(
-                            id: locale.lprojCode,
-                            content: {
-                                HStack(spacing: 16) {
-                                    Image(uiImage: locale.icon)
-                                        .resizable()
-                                        .frame(width: 24, height: 24)
-                                    hText(locale.displayName, style: .title3)
-                                        .foregroundColor(hTextColorNew.primary)
-                                }
-                            },
-                            selected: $code
-                        )
+            VStack(spacing: 8) {
+                if onSave == nil {
+                    hSection {
+                        hText(L10n.LanguagePickerModal.text, style: .body)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                hSection {
+                    VStack(spacing: 4) {
+                        ForEach(currentMarket.languages, id: \.lprojCode) { locale in
+                            hRadioField(
+                                id: locale.lprojCode,
+                                content: {
+                                    HStack(spacing: 16) {
+                                        Image(uiImage: locale.icon)
+                                            .resizable()
+                                            .frame(width: 24, height: 24)
+                                        hText(locale.displayName, style: .title3)
+                                            .foregroundColor(hTextColorNew.primary)
+                                    }
+                                },
+                                selected: $code
+                            )
+                        }
                     }
                 }
             }
@@ -88,9 +90,8 @@ public struct PickLanguage: View {
             if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
                 if onSave == nil {
                     Localization.Locale.currentLocale = locale
-                } else {
-                    currentLocale = locale
                 }
+                currentLocale = locale
             }
         }
     }

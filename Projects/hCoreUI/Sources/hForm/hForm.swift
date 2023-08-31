@@ -126,7 +126,11 @@ public struct hForm<Content: View>: View {
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            getScrollView()
+            if hDisableScroll {
+                getScrollView().clipped()
+            } else {
+                getScrollView()
+            }
             BackgroundBlurView()
                 .frame(
                     height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
@@ -139,7 +143,14 @@ public struct hForm<Content: View>: View {
                     GeometryReader { geo in
                         Color.clear
                             .onReceive(Just(geo.size.height)) { height in
-                                self.bottomAttachedViewHeight = height
+                                if bottomAttachedViewHeight == 0 {
+                                    self.bottomAttachedViewHeight = height
+                                } else {
+                                    withAnimation {
+                                        self.bottomAttachedViewHeight = height
+                                        recalculateHeight()
+                                    }
+                                }
                             }
                     }
                 )
@@ -148,7 +159,6 @@ public struct hForm<Content: View>: View {
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
         )
-
     }
 
     func getScrollView() -> some View {
@@ -162,7 +172,7 @@ public struct hForm<Content: View>: View {
                         .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.bottomMargin)
                         .padding([.leading, .trailing], 16)
                 }
-                content.padding(.bottom, -8)
+                content.padding(.vertical, -8)
             }
             .background(
                 GeometryReader { proxy in
@@ -191,11 +201,13 @@ public struct hForm<Content: View>: View {
             if #available(iOS 15, *) {
                 scrollView.viewController?.setContentScrollView(scrollView)
             }
+
             if hDisableScroll || additionalSpaceFromTop > 0 {
                 scrollView.bounces = false
             } else {
                 scrollView.bounces = true
             }
+
         }
         .background(
             GeometryReader { proxy in
@@ -235,7 +247,6 @@ public struct hForm<Content: View>: View {
         } else {
             additionalSpaceFromTop = 0
         }
-
         shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
     }
 }

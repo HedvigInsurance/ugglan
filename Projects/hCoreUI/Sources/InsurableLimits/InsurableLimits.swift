@@ -21,19 +21,24 @@ public struct InsurableLimitsSectionView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     hText(limit.label)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
             .withCustomAccessory {
                 Spacer()
-                hText(limit.limit)
-                    .foregroundColor(hTextColorNew.secondary)
-                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                    .resizable()
-                    .foregroundColor(hTextColorNew.secondary)
-                    .frame(width: 16, height: 16)
-                    .onTapGesture {
-                        didTap(limit)
-                    }
+                HStack(alignment: .top) {
+                    hText(limit.limit)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(hTextColorNew.secondary)
+                    Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                        .resizable()
+                        .foregroundColor(hTextColorNew.secondary)
+                        .frame(width: 16, height: 16)
+                        .onTapGesture {
+                            didTap(limit)
+                        }
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
             }
             .onTap {
                 didTap(limit)

@@ -82,6 +82,7 @@ public struct HomeState: StateProtocol {
     public var allCommonClaims: [CommonClaim] = []
     public var shouldShowTravelInsurance: Bool = false
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
+    @Transient(defaultValue: false) var hideImportantMessage = false
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
@@ -115,6 +116,7 @@ public enum HomeAction: ActionProtocol {
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
+    case hideImportantMessage
 
 }
 
@@ -243,6 +245,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setShowTravelInsurance(show):
             newState.shouldShowTravelInsurance = show
             setAllCommonClaims(&newState)
+        case .hideImportantMessage:
+            newState.hideImportantMessage = true
         default:
             break
         }

@@ -104,7 +104,8 @@ public struct TravelInsuranceFlowJourney {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: InsuredMemberScreen(member),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar]
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .dismissAddUpdateCoinsured = navigationAction {

@@ -28,6 +28,7 @@ struct EuroBonusView: View {
                         }
                     }
                 }
+                .padding(.top, 8)
             }
             .sectionContainerStyle(.transparent)
             .hFormAttachToBottom {

@@ -13,37 +13,46 @@ struct ImportantMessagesView: View {
         PresentableStoreLens(
             HomeStore.self,
             getter: { state in
-                state.importantMessage
+                return state.hideImportantMessage
             }
-        ) { importantMessage in
-            if let importantMessage = importantMessage {
-                hSection {
-                    Button(
-                        action: {
-                            if let url = URL(string: importantMessage.link ?? "") {
-                                self.url = url
-                                showSafariView = true
+        ) { hideImportantMessage in
+            PresentableStoreLens(
+                HomeStore.self,
+                getter: { state in
+                    return state.importantMessage
+                }
+            ) { importantMessage in
+                if let importantMessage = importantMessage, let message = importantMessage.message,
+                    !hideImportantMessage
+                {
+                    if let stringUrl = importantMessage.link, let url = URL(string: stringUrl) {
+                        InfoCard(text: message, type: .attention)
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: L10n.ImportantMessage.hide,
+                                        buttonAction: {
+                                            store.send(.hideImportantMessage)
+                                        }
+                                    ),
+                                    .init(
+                                        buttonTitle: L10n.ImportantMessage.readMore,
+                                        buttonAction: {
+                                            self.url = url
+                                            showSafariView = true
+                                        }
+                                    ),
+                                ]
+                            )
+                            .sheet(isPresented: $showSafariView) {
+                                SafariView(url: $url)
                             }
-                        },
-                        label: {
-                            hRow {
-                                HStack {
-                                    hText(importantMessage.message ?? "", style: .subheadline)
-                                        .foregroundColor(hLabelColor.secondary.colorFor(.light, .base))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                    Image(uiImage: hCoreUIAssets.arrowForward.image).foregroundColor(.black)
-                                }
-                            }
-                            .verticalPadding(12)
-                        }
-                    )
-                    .sheet(isPresented: $showSafariView) {
-                        SafariView(url: $url)
+                    } else {
+                        InfoCard(text: message, type: .attention)
                     }
                 }
-                .withoutHorizontalPadding.sectionContainerStyle(.caution)
             }
         }
+        .presentableStoreLensAnimation(.default)
     }
 }

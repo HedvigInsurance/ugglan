@@ -2,10 +2,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-// import contracts
-
 public struct TerminationDeleteScreen: View {
-    @PresentableStore var store: TerminationContractStore
+    @PresentableStore var store: ContractStore
     let onSelected: () -> Void
 
     public init(
@@ -15,46 +13,45 @@ public struct TerminationDeleteScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
+        LoadingViewWithContent(ContractStore.self, [.deleteTermination], [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
-                    TerminationContractStore.self,
+                    ContractStore.self,
                     getter: { state in
                         state.terminationDeleteStep
                     }
                 ) { termination in
-
-                    Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
-                        .padding([.bottom, .top], 4)
-
-                    PresentableStoreLens(
-                        TerminationContractStore.self
-                    ) { state in
-                        state.terminationContractId ?? ""
-                    } _: { value in
-
-                        /* TODO: ADD BACK */
-                        //                        PresentableStoreLens(
-                        //                            ContractStore.self
-                        //                        ) { state in
-                        //                            state.contractForId(value)
-                        //                        } _: { value in
-                        //
-                        //                            hText(
-                        //                                L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
-                        //                                style: .title2
-                        //                            )
-                        //                            .frame(maxWidth: .infinity, alignment: .leading)
-                        //                            .padding(.leading, 16)
-                        //                            .padding(.bottom, 4)
-                        //                        }
+                    
+                    VStack(spacing: 8) {
+                        Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 4)
+                        
+                        PresentableStoreLens(
+                            ContractStore.self
+                        ) { state in
+                            state.terminationContractId ?? ""
+                        } _: { value in
+                            
+                            PresentableStoreLens(
+                                ContractStore.self
+                            ) { state in
+                                state.contractForId(value)
+                            } _: { value in
+                                
+                                hText(
+                                    L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
+                                    style: .title2
+                                )
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.bottom, 4)
+                            }
+                        }
+                        
+                        hText(termination?.disclaimer ?? "", style: .body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
-                    hText(termination?.disclaimer ?? "", style: .body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
+                    .padding(.leading, 16)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -123,6 +123,7 @@ struct ContractDetail: View {
                         id: id,
                         allowDetailNavigation: false
                     )
+                    .fixedSize(horizontal: false, vertical: true)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title, style: .standardSmall).tag(view)
@@ -133,6 +134,7 @@ struct ContractDetail: View {
                     .padding(.bottom, 8)
                 }
                 .sectionContainerStyle(.transparent)
+                .padding(.top, 8)
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
@@ -143,6 +145,7 @@ struct ContractDetail: View {
                     }
                 }
                 .padding(.top, 16)
+                .padding(.bottom, 8)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))

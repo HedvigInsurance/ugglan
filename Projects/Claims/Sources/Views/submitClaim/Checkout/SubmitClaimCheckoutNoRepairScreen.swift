@@ -20,9 +20,8 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 16) {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
-                            .padding(.bottom, 8)
                         hButton.LargeButtonPrimary {
                             store.send(.singleItemCheckoutRequest)
                             store.send(.navigationAction(action: .openCheckoutTransferringScreen))
@@ -31,15 +30,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                                 L10n.Claims.Payout.Button.label(
                                     singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
                                 ),
-                                style: .body
-                            )
-                        }
-
-                        hButton.LargeButtonText {
-                            store.send(.navigationAction(action: .dismissScreen))
-                        } content: {
-                            hText(
-                                L10n.embarkGoBackButton,
                                 style: .body
                             )
                         }
@@ -68,7 +58,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .withHeader {
                 hText(L10n.Claims.Payout.Summary.subtitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
-                    .padding(.top, 16)
+                    .padding(.top, 8)
             }
             .padding(.bottom, 8)
 

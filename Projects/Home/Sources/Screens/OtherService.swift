@@ -19,7 +19,7 @@ struct OtherService: View {
                     ForEach(otherServices, id: \.id) { claim in
                         hSection {
                             hRow {
-                                hText(claim.displayTitle)
+                                hText(claim.displayTitle, style: .title3)
                             }
                             .withChevronAccessory
                             .onTap {
@@ -41,6 +41,7 @@ struct OtherService: View {
                                 }
                             }
                         }
+                        .sectionContainerStyle((claim.layout.emergency?.isAlert ?? false) ? .alert : .opaque)
                     }
                 }
             }
@@ -57,7 +58,6 @@ struct OtherService: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.vertical, 16)
             }
-
         }
     }
 }

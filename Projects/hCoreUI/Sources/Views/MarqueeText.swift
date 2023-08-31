@@ -33,7 +33,7 @@ public struct MarqueeText: View {
                         Text(self.text)
                             .lineLimit(1)
                             .font(.init(font))
-                            .offset(x: 3)
+                            .offset(x: 0)
                             .offset(x: self.animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
                             .animation(
                                 self.animate

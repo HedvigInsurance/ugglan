@@ -15,30 +15,27 @@ public struct TerminationSuccessScreen: View {
                 state.successStep
             }
         ) { termination in
-
             hForm {
-                Image(uiImage: hCoreUIAssets.circularCheckmark.image)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 16)
-                    .padding(.top, 81)
-
-                hText(L10n.terminationSuccessfulTitle, style: .title1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 16)
-                    .padding([.bottom, .top], 10)
-
-                hText(
-                    L10n.terminationSuccessfulText(
-                        formatAndPrintDate(dateStringInput: termination?.terminationDate ?? ""),
-                        L10n.hedvigNameText
-                    ),
-                    style: .body
-                )
-                .foregroundColor(hLabelColor.secondary)
-                .padding([.leading, .trailing], 16)
-                .padding(.bottom, 300)
+                VStack(spacing: 8) {
+                    Image(uiImage: hCoreUIAssets.circularCheckmark.image)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 81)
+                    
+                    hText(L10n.terminationSuccessfulTitle, style: .title1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    hText(
+                        L10n.terminationSuccessfulText(
+                            formatAndPrintDate(dateStringInput: termination?.terminationDate ?? ""),
+                            L10n.hedvigNameText
+                        ),
+                        style: .body
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                    .padding(.bottom, 300)
+                }
+                .padding(.leading, 16)
             }
-            .padding(.bottom, -100)
 
             hButton.LargeButtonPrimary {
 
@@ -60,5 +57,11 @@ public struct TerminationSuccessScreen: View {
     func formatAndPrintDate(dateStringInput: String) -> String {
         let date = dateStringInput.localDateToDate ?? Date()
         return date.localDateStringDayFirst ?? ""
+    }
+}
+
+struct CTerminationSuccessScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        TerminationSuccessScreen()
     }
 }

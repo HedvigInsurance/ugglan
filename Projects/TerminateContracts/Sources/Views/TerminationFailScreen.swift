@@ -10,19 +10,19 @@ public struct TerminationFailScreen: View {
     public var body: some View {
 
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding([.bottom, .top], 4)
-
-            hText(L10n.terminationNotSuccessfulTitle, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding(.bottom, 4)
-
-            hText(L10n.somethingWentWrong, style: .body)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
+            VStack(spacing: 8) {
+                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 4)
+                
+                hText(L10n.terminationNotSuccessfulTitle, style: .title2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 4)
+                
+                hText(L10n.somethingWentWrong, style: .body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.leading, 16)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
