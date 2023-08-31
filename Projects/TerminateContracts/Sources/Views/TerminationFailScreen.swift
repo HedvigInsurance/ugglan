@@ -2,23 +2,23 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct TerminationFailScreen: View {
+struct TerminationFailScreen: View {
     @PresentableStore var store: TerminationContractStore
 
-    public init() {}
+    init() {}
 
-    public var body: some View {
+    var body: some View {
 
         hForm {
             VStack(spacing: 8) {
                 Image(uiImage: hCoreUIAssets.warningTriangle.image)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 4)
-                
+
                 hText(L10n.terminationNotSuccessfulTitle, style: .title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 4)
-                
+
                 hText(L10n.somethingWentWrong, style: .body)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

@@ -2,17 +2,17 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct TerminationDeleteScreen: View {
+struct TerminationDeleteScreen: View {
     @PresentableStore var store: TerminationContractStore
     let onSelected: () -> Void
 
-    public init(
+    init(
         onSelected: @escaping () -> Void
     ) {
         self.onSelected = onSelected
     }
 
-    public var body: some View {
+    var body: some View {
         LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(

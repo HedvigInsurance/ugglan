@@ -9,6 +9,7 @@ import Home
 import Payment
 import Presentation
 import SwiftUI
+import TerminateContracts
 import TravelCertificate
 import hAnalytics
 import hCore
@@ -78,7 +79,7 @@ extension AppJourney {
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):
-                AppJourney.startTerminationJourney(action: action)
+                TerminationFlowJourney.start(for: action)
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

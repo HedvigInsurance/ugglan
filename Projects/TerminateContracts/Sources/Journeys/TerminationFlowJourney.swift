@@ -4,8 +4,13 @@ import hCore
 import hCoreUI
 
 public class TerminationFlowJourney {
+
+    public static func start(for action: TerminationNavigationAction) -> some JourneyPresentation {
+        getScreenForAction(for: .navigationAction(action: action), withHidesBack: true)
+    }
+
     @JourneyBuilder
-    public static func getScreenForAction(
+    static func getScreenForAction(
         for action: TerminationContractAction,
         withHidesBack: Bool = false
     ) -> some JourneyPresentation {
@@ -17,7 +22,7 @@ public class TerminationFlowJourney {
     }
 
     @JourneyBuilder
-    public static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
+    static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
             if case .openTerminationSuccessScreen = navigationAction {
                 TerminationFlowJourney.openTerminationSuccessScreen()
@@ -37,7 +42,7 @@ public class TerminationFlowJourney {
         }
     }
 
-    public static func openSetTerminationDateScreen() -> some JourneyPresentation {
+    static func openSetTerminationDateScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: SetTerminationDate(

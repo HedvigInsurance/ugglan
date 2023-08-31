@@ -52,15 +52,15 @@ public final class TerminationContractStore: LoadingStateStore<
         switch action {
         case let .startTermination(_, contractName):
             newState.contractName = contractName
-            setLoading(for: .startTermination)
+        //            setLoading(for: .startTermination)
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context
         case let .setTerminationContractId(id):
             newState.terminationContractId = id
-        case .sendTerminationDate:
-            self.setLoading(for: .sendTerminationDate)
-        case .deleteTermination:
-            self.setLoading(for: .deleteTermination)
+        //        case .sendTerminationDate:
+        //            self.setLoading(for: .sendTerminationDate)
+        //        case .deleteTermination:
+        //            self.setLoading(for: .deleteTermination)
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):

@@ -5,13 +5,12 @@ import hCore
 public struct TerminationContractState: StateProtocol {
 
     public init() {}
-
     @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
-    var currentTerminationContext: String?
-    var terminationContractId: String? = ""
-    var contractName: String?
-    var terminationDateStep: TerminationFlowDateNextStepModel?
-    var terminationDeleteStep: TerminationFlowDeletionNextModel?
-    var successStep: TerminationFlowSuccessNextModel?
-    var failedStep: TerminationFlowFailedNextModel?
+    @OptionalTransient var currentTerminationContext: String?
+    @OptionalTransient var terminationContractId: String? = ""
+    @OptionalTransient var contractName: String?
+    @OptionalTransient var terminationDateStep: TerminationFlowDateNextStepModel?
+    @OptionalTransient var terminationDeleteStep: TerminationFlowDeletionNextModel?
+    @OptionalTransient var successStep: TerminationFlowSuccessNextModel?
+    @OptionalTransient var failedStep: TerminationFlowFailedNextModel?
 }
