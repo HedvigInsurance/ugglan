@@ -77,6 +77,8 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
+        case let .setTerminationContractName(contractName):
+            newState.contractName = contractName
         default:
             break
         }

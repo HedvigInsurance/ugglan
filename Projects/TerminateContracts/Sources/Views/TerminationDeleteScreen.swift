@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct TerminationDeleteScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: TerminationContractStore
     let onSelected: () -> Void
 
     public init(
@@ -13,41 +13,40 @@ public struct TerminationDeleteScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.deleteTermination], [.deleteTermination]) {
+        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
-                    ContractStore.self,
+                    TerminationContractStore.self,
                     getter: { state in
                         state.terminationDeleteStep
                     }
                 ) { termination in
-                    
+
                     VStack(spacing: 8) {
                         Image(uiImage: hCoreUIAssets.warningTriangle.image)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 4)
-                        
+
                         PresentableStoreLens(
-                            ContractStore.self
+                            TerminationContractStore.self
                         ) { state in
                             state.terminationContractId ?? ""
                         } _: { value in
-                            
+
                             PresentableStoreLens(
-                                ContractStore.self
+                                TerminationContractStore.self
                             ) { state in
-                                state.contractForId(value)
-                            } _: { value in
-                                
+                                state.contractName
+                            } _: { name in
                                 hText(
-                                    L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
+                                    L10n.terminationContractDeletionAlertDescription(name ?? ""),
                                     style: .title2
                                 )
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.bottom, 4)
                             }
                         }
-                        
+
                         hText(termination?.disclaimer ?? "", style: .body)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }

@@ -19,6 +19,7 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case deleteTermination
     case setTerminationContext(context: String)
     case setTerminationContractId(id: String)
+    case setTerminationContractName(contractName: String)
 
     case sendTermination(terminationDate: Date, surveyUrl: String)
     case dismissTerminationFlow

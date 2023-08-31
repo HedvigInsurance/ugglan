@@ -8,16 +8,15 @@ import hGraphQL
 public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     let onSelected: (Date) -> Void
-
+    
     public init(
         onSelected: @escaping (Date) -> Void
     ) {
         self.onSelected = onSelected
     }
-
+    
     public var body: some View {
-
-        LoadingViewWithContent(ContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
+        LoadingViewWithContent(TerminationContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
             hForm {}
                 .hDisableScroll
                 .hFormTitle(.small, .title1, L10n.setTerminationDateText)
@@ -36,9 +35,9 @@ public struct SetTerminationDate: View {
                             }
                             .noSpacing()
                             .slideUpFadeAppearAnimation(delay: 0.4)
-
+                            
                             PresentableStoreLens(
-                                ContractStore.self,
+                                TerminationContractStore.self,
                                 getter: { state in
                                     state.terminationDateStep
                                 }
@@ -53,7 +52,7 @@ public struct SetTerminationDate: View {
                                 )
                                 .environment(
                                     \.locale,
-                                    Locale.init(identifier: Localization.Locale.currentLocale.rawValue)
+                                     Locale.init(identifier: Localization.Locale.currentLocale.rawValue)
                                 )
                                 .datePickerStyle(.graphical)
                                 .slideUpFadeAppearAnimation(delay: 0.4)
@@ -73,7 +72,7 @@ public struct SetTerminationDate: View {
                 }
         }
     }
-
+    
     func convertDateFormat(inputDate: String) -> Date {
         return inputDate.localDateToDate ?? Date()
     }

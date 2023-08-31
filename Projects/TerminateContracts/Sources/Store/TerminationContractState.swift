@@ -9,6 +9,7 @@ public struct TerminationContractState: StateProtocol {
     @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
+    var contractName: String?
     var terminationDateStep: TerminationFlowDateNextStepModel?
     var terminationDeleteStep: TerminationFlowDeletionNextModel?
     var successStep: TerminationFlowSuccessNextModel?

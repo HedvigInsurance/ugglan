@@ -12,7 +12,7 @@ import hGraphQL
 
 enum Documents: CaseIterable {
     case certificate, terms
-
+    
     var title: String {
         switch self {
         case .certificate:
@@ -21,7 +21,7 @@ enum Documents: CaseIterable {
             return L10n.myDocumentsInsuranceTerms
         }
     }
-
+    
     var subTitle: String {
         switch self {
         case .certificate:
@@ -30,7 +30,7 @@ enum Documents: CaseIterable {
             return L10n.myDocumentsInsuranceTermsSubtitle
         }
     }
-
+    
     func url(from contract: Contract) -> URL? {
         switch self {
         case .certificate:
@@ -44,9 +44,9 @@ enum Documents: CaseIterable {
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
-
+    
     let id: String
-
+    
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -95,6 +95,7 @@ struct ContractDocumentsView: View {
                 if (contract?.currentAgreement?.activeTo) == nil {
                     hSection {
                         hButton.LargeButtonGhost {
+                            terminationContractStore.send(.setTerminationContractName(contractName: contract?.displayName ?? ""))
                             terminationContractStore.send(.startTermination(contractId: id))
                             contractStore.send(.startTermination)
                         } content: {
