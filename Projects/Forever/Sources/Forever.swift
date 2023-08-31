@@ -106,7 +106,7 @@ extension ForeverView {
                     )
                 ) ?? ""
             ]),
-            style: .activityView,
+            style: .detented(.medium, .large),
             options: []
         )
     }
