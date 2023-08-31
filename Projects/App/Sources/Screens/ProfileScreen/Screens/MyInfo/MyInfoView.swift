@@ -32,25 +32,41 @@ struct MyInfoView: View {
                         error: $vm.emailError
                     )
                 }
+                .disabled(vm.isLoading)
             }
             .padding(.top, 8)
         }
+        .hFormAttachToBottom({
+            hSection {
+                hButton.LargeButtonPrimary {
+                    Task {
+                        withAnimation {
+                            vm.isLoading = true
+                        }
+                        await vm.save()
+                        withAnimation {
+                            vm.isLoading = false
+                            vm.checkForChanges()
+                        }
+                    }
+                } content: {
+                    hText(L10n.generalSaveButton)
+                }
+                .hButtonIsLoading(vm.isLoading)
+            }
+            .sectionContainerStyle(.transparent)
+            .padding(.bottom, 8)
+            .opacity(vm.inEditMode ? 1 : 0)
+        })
         .sectionContainerStyle(.transparent)
-        .disabled(vm.isLoading)
-        .navigationBarBackButtonHidden(vm.inEditMode)
-        .toolbar {
-            toolbars
-        }
         .introspectViewController { vc in
             self.vm.vc = vc
         }
         .alert(isPresented: $vm.showAlert) {
             cancelAlert
         }
-        .onChange(of: vm.inEditMode) { inEditMode in
-            vm.vc?.navigationController?.interactivePopGestureRecognizer?.isEnabled = !inEditMode
-        }
-        .navigationTitle(vm.inEditMode ? "" : L10n.profileMyInfoRowTitle)
+        .navigationTitle(L10n.profileMyInfoRowTitle)
+
     }
 
     @ToolbarContentBuilder
