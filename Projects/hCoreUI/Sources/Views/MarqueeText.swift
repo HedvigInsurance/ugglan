@@ -15,13 +15,6 @@ public struct MarqueeText: View {
     public var body: some View {
         let stringWidth = text.widthOfString(usingFont: font)
         let stringHeight = text.heightOfString(usingFont: font)
-
-        let animation =
-            Animation
-            .easeInOut(duration: Double(stringWidth) / 50)
-            .delay(startDelay)
-            .repeatForever(autoreverses: true)
-
         let nullAnimation =
             Animation
             .linear(duration: 0)

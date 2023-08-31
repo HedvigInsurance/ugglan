@@ -150,7 +150,7 @@ class WhoIsTravelingViewModel: ObservableObject {
     }
 
     func validateAndSubmit() {
-        if let (valid, message) = store.state.travelInsuranceModel?.isValidWithMessage() {
+        if let (valid, _) = store.state.travelInsuranceModel?.isValidWithMessage() {
             if valid {
                 UIApplication.dismissKeyboard()
                 store.send(.postTravelInsuranceForm)

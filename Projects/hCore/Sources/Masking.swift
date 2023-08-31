@@ -289,7 +289,7 @@ public struct Masking {
             }
 
             if text.count <= maxCount {
-                var sanitizedText = String(
+                let sanitizedText = String(
                     text.filter { $0.isNumber || $0.isLetter }.enumerated()
                         .map { _, char in char }
                 )

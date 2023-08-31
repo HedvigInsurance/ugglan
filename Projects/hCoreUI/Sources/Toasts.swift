@@ -254,21 +254,6 @@ extension Toasts: Viewable {
             make.height.equalTo(0)
         }
 
-        self.bag += containerView.subviewsSignal.onValue { subviews in
-            containerView.isHidden = subviews.isEmpty
-
-            containerView.snp.updateConstraints { make in
-                subviews.max { (lhs, rhs) -> Bool in
-                    if lhs.frame.height > rhs.frame.height {
-                        return true
-                    }
-
-                    return false
-                }?
-                .frame.height ?? 0
-            }
-        }
-
         bag +=
             toastCallbacker
             .compactMap { $0 }

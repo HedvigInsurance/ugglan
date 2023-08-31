@@ -30,10 +30,10 @@ struct OtherService: View {
                                 } else if claim.id == CommonClaim.travelInsurance.id {
                                     do {
                                         Task {
-                                            let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
                                             store.send(.openTravelInsurance)
                                         }
-                                    } catch let _ {
+                                    } catch _ {
                                         //TODO: ERROR
                                     }
                                 } else {
