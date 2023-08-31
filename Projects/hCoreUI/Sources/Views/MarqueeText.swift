@@ -15,9 +15,7 @@ public struct MarqueeText: View {
     public var body: some View {
         let stringWidth = text.widthOfString(usingFont: font)
         let stringHeight = text.heightOfString(usingFont: font)
-        let nullAnimation =
-            Animation
-            .linear(duration: 0)
+        let nullAnimation = Animation.linear(duration: 0)
 
         return ZStack {
             GeometryReader { geo in

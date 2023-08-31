@@ -28,14 +28,15 @@ struct OtherService: View {
                                 } else if claim.id == CommonClaim.moving.id {
                                     store.send(.openMovingFlow)
                                 } else if claim.id == CommonClaim.travelInsurance.id {
-                                    do {
-                                        Task {
+                                    Task {
+                                        do {
                                             _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
                                             store.send(.openTravelInsurance)
+                                        } catch _ {
+                                            //TODO: ERROR
                                         }
-                                    } catch _ {
-                                        //TODO: ERROR
                                     }
+
                                 } else {
                                     store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: true))
                                 }
