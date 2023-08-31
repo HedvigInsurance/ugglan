@@ -81,6 +81,8 @@ extension AppJourney {
                 } else if case .openTriagingGroupScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
                 }
+            } else if case .dissmissNewClaimFlow = action {
+                DismissJourney()
             }
         }
     }
