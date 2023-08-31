@@ -26,7 +26,7 @@ public struct InsurableLimitsSectionView: View {
             }
             .withCustomAccessory {
                 Spacer()
-                HStack(alignment: .top) {
+                HStack(alignment: .center) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(hTextColorNew.secondary)

@@ -28,10 +28,7 @@ enum MovingFlowIntroState {
             hButton.LargeButtonPrimary {
                 onTap()
             } content: {
-                HStack(spacing: 8) {
-                    hCoreUIAssets.chatQuickNav.view
-                    hText(L10n.MovingIntro.manualHandlingButtonText)
-                }
+                hText(L10n.MovingIntro.manualHandlingButtonText)
             }
         case .normal:
             hButton.LargeButtonPrimary {

@@ -105,12 +105,10 @@ extension ChangeEuroBonusView {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case .dismissChangeEuroBonus = action {
-                PopJourney()
-            } else if case .openSuccessChangeEuroBonus = action {
+            if case .openSuccessChangeEuroBonus = action {
                 SuccessScreen.journey(with: L10n.SasIntegration.eurobonusConnected)
                     .onPresent {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.dismissChangeEuroBonus)
                         }
@@ -118,6 +116,11 @@ extension ChangeEuroBonusView {
             }
         }
         .configureTitle(L10n.SasIntegration.enterYourNumber)
+        .onAction(ProfileStore.self) { action in
+            if case .dismissChangeEuroBonus = action {
+                PopJourney()
+            }
+        }
     }
 }
 extension String {
