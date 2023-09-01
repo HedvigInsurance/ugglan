@@ -209,7 +209,7 @@ extension JourneyPresentation {
                         }
                     }
             } else if case .openFreeTextChat = action {
-                AppJourney.freeTextChat()
+                AppJourney.freeTextChat().withDismissButton
             }
         }
     }
