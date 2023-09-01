@@ -133,6 +133,7 @@ struct PaymentView: View {
             .onTap {
                 store.send(.openHistory)
             }
+            .padding(.bottom, 16)
             if paymentType == .trustly {
                 PresentableStoreLens(
                     PaymentStore.self,
@@ -146,6 +147,7 @@ struct PaymentView: View {
                         hSection {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
+                        .padding(.bottom, 16)
                     }
                 }
             }

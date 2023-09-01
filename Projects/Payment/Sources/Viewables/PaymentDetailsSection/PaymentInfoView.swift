@@ -10,7 +10,7 @@ import hGraphQL
 
 struct PaymentInfoView: View {
     @ObservedObject private var vm: MyPaymentInfoViewModel
-
+    
     public init(urlScheme: String) {
         vm = .init(urlScheme: urlScheme, paymentType: hAnalyticsExperiment.paymentType)
     }
@@ -27,7 +27,7 @@ struct PaymentInfoView: View {
         }
         .withoutHorizontalPadding
     }
-
+    
     private var nextPayment: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -46,7 +46,7 @@ struct PaymentInfoView: View {
             }
         }
     }
-
+    
     private var contractsList: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -62,7 +62,7 @@ struct PaymentInfoView: View {
                             .frame(width: 32, height: 32)
                         hText(item.name)
                         Spacer()
-
+                        
                         hText(item.amount?.formattedAmount.addPerMonth ?? "")
                             .foregroundColor(hLabelColor.secondary)
                     }
@@ -70,7 +70,7 @@ struct PaymentInfoView: View {
             }
         }
     }
-
+    
     private var discounts: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -89,7 +89,7 @@ struct PaymentInfoView: View {
             }
         }
     }
-
+    
     private var addDiscount: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -101,8 +101,11 @@ struct PaymentInfoView: View {
                 ForEach(reedemCampaigns, id: \.code) { reedemCampaign in
                     hRow {
                         hText(reedemCampaign.code ?? "")
+                            .frame(maxHeight: .infinity, alignment: .top)
                         Spacer()
                         hText(reedemCampaign.displayValue ?? "")
+                            .fixedSize(horizontal: false, vertical: true)
+                        
                             .foregroundColor(hLabelColor.secondary)
                     }
                 }
@@ -149,7 +152,7 @@ struct PaymentInfoView: View {
                                     }
                                     .hButtonConfigurationType(.primaryAlt)
                                     .hButtonIsLoading(vm.isLoadingDiscount)
-
+                                    
                                 })
                                 .disabled(vm.isLoadingDiscount)
                                 .background(
@@ -168,7 +171,7 @@ struct PaymentInfoView: View {
             }
         }
     }
-
+    
     private var total: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -207,7 +210,7 @@ struct PaymentInfoView: View {
             }
         }
     }
-
+    
     private var nextPaymentHeader: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -215,7 +218,7 @@ struct PaymentInfoView: View {
                 state.paymentData
             }
         ) { paymentData in
-            if let amount = paymentData?.chargeEstimation?.net?.formattedAmountWithoutDecimal {
+            if let amount = paymentData?.chargeEstimation?.gross?.formattedAmountWithoutDecimal {
                 hText(amount, style: .standardExtraExtraLarge)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
@@ -265,7 +268,7 @@ struct PaymentInfoView_Previews: PreviewProvider {
                     store.send(.setPaymentData(data: paymentData))
                 }
             Spacer()
-
+            
         }
     }
 }
@@ -285,14 +288,14 @@ class MyPaymentInfoViewModel: ObservableObject {
         self.urlScheme = urlScheme
         self.paymentType = paymentType
     }
-
+    
     @available(iOS 15, *)
     func attributedString(_ text: String) -> AttributedString {
         let attributes = AttributeContainer([NSAttributedString.Key.strikethroughStyle: 1])
         let result = AttributedString(text, attributes: attributes)
         return result
     }
-
+    
     func submitDiscount() async throws {
         try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
             self.giraffe.client
@@ -320,33 +323,33 @@ class MyPaymentInfoViewModel: ObservableObject {
                         )
                     }
                     inCont.resume()
-
+                    
                 }
                 .onError { error in
                     inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))
                 }
         }
     }
-
+    
     enum MyPaymentEditType: hTextFieldFocusStateCompliant {
         static var last: MyPaymentEditType {
             return MyPaymentEditType.discount
         }
-
+        
         var next: MyPaymentEditType? {
             switch self {
             case .discount:
                 return nil
             }
         }
-
+        
         case discount
     }
-
+    
     enum AddDiscountError: Error, LocalizedError {
         case error(message: String)
         case missing
-
+        
         public var errorDescription: String? {
             switch self {
             case let .error(message):

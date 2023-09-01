@@ -34,7 +34,7 @@ struct TerminationSuccessScreen: View {
                     .foregroundColor(hLabelColor.secondary)
                     .padding(.bottom, 300)
                 }
-                .padding(.leading, 16)
+                .padding(.horizontal, 16)
             }
 
             hButton.LargeButtonPrimary {
