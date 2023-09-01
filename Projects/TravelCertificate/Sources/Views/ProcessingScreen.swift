@@ -27,7 +27,7 @@ struct ProcessingScreen: View {
             }
         }
     }
-    
+
     private var successView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
@@ -60,7 +60,7 @@ struct ProcessingScreen: View {
                             hText(L10n.TravelCertificate.download)
                         }
                         .trackLoading(TravelInsuranceStore.self, action: .downloadCertificate)
-                        
+
                         hButton.LargeButtonGhost {
                             vm.store.send(.navigation(.dismissCreateTravelCertificate))
                         } content: {
@@ -70,10 +70,10 @@ struct ProcessingScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            
+
         }
     }
-    
+
     private var errorView: some View {
         ZStack {
             BackgroundView().ignoresSafeArea()
@@ -84,7 +84,7 @@ struct ProcessingScreen: View {
             }
         }
     }
-    
+
     private var loadingView: some View {
         VStack {
             Spacer()
@@ -103,7 +103,7 @@ struct ProcessingScreen: View {
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
     @PresentableStore var store: TravelInsuranceStore
-    
+
     func presentShare() async {
         store.setLoading(for: .downloadCertificate)
         do {
@@ -134,11 +134,11 @@ class ProcessingViewModel: ObservableObject {
             store.setError(exc.localizedDescription, for: .downloadCertificate)
         }
     }
-    
+
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"
     }
-    
+
     enum FileError: LocalizedError {
         case urlDoesNotExist
         case downloadError
@@ -156,11 +156,11 @@ struct SuccessScreen_Previews: PreviewProvider {
     }
 }
 struct BackgroundView: UIViewRepresentable {
-    
+
     func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.backgroundColor = .brandNew(.primaryBackground())
     }
-    
+
     func makeUIView(context: Context) -> some UIView {
         UIView()
     }
