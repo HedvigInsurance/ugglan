@@ -12,7 +12,7 @@ public struct MarketState: StateProtocol {
 public enum MarketAction: ActionProtocol {
     case selectMarket(market: Market)
     case dismissPicker
-    case presentMarketPicker(currentMarket: Market)
+    case presentMarketPicker
     case presentLanguagePicker(currentMarket: Market)
     case loginButtonTapped
     case onboard
