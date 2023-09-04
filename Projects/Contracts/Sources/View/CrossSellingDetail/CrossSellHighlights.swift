@@ -12,7 +12,7 @@ struct CrossSellHightlights: View {
             ForEach(info.highlights, id: \.title) { highlight in
                 HStack(alignment: .top, spacing: 18) {
                     Image(
-                        uiImage: hCoreUIAssets.checkmark.image
+                        uiImage: hCoreUIAssets.tick.image
                     )
                     .resizable()
                     .aspectRatio(contentMode: .fit)

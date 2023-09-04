@@ -38,7 +38,7 @@ extension FilePickerHeader: Viewable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.distribution = .fillEqually
-        containerView.spacing = 5
+        containerView.spacing = 8
 
         func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()
@@ -67,7 +67,7 @@ extension FilePickerHeader: Viewable {
             return innerBag
         }
 
-        let cameraButton = PickerButton(icon: Asset.camera.image)
+        let cameraButton = PickerButton(icon: hCoreUIAssets.camera.image)
         bag += containerView.addArranged(cameraButton)
             .onValueDisposePrevious { _ in
                 containerView.viewController?
@@ -79,7 +79,7 @@ extension FilePickerHeader: Viewable {
                     .valueSignal.onValueDisposePrevious(processPickResult)
             }
 
-        let photoLibraryButton = PickerButton(icon: Asset.photoLibrary.image)
+        let photoLibraryButton = PickerButton(icon: hCoreUIAssets.pictures.image)
         bag += containerView.addArranged(photoLibraryButton)
             .onValueDisposePrevious { _ in
                 containerView.viewController?
@@ -91,7 +91,7 @@ extension FilePickerHeader: Viewable {
                     .valueSignal.onValueDisposePrevious(processPickResult)
             }
 
-        let filesButton = PickerButton(icon: Asset.files.image)
+        let filesButton = PickerButton(icon: hCoreUIAssets.documentsMultiple.image)
         bag += containerView.addArranged(filesButton)
             .onValueDisposePrevious { _ in
                 containerView.viewController?.present(DocumentPicker(), options: []).valueSignal

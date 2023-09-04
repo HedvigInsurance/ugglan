@@ -19,16 +19,17 @@ public struct hCheckmarkField: View {
 
     public var body: some View {
         HStack {
-            hTextNew(text, style: .title3)
+            hText(text, style: .title3)
             Spacer()
             if selected {
-                Image(uiImage: hCoreUIAssets.checkmark.image)
+                Image(uiImage: hCoreUIAssets.tick.image).resizable().frame(width: 24, height: 24)
             }
         }
         .padding(.vertical, 20)
-        .modifier(hFontModifierNew(style: .body))
+        .modifier(hFontModifier(style: .body))
         .foregroundColor(hTextColorNew.primary)
         .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             self.selected.toggle()
             self.animate = true

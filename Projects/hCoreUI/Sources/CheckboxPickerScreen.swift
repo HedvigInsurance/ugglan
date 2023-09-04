@@ -9,6 +9,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let onCancel: (() -> Void)?
     let singleSelect: Bool?
     let showDividers: Bool?
+    let attachToBottom: Bool
     @State var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
 
@@ -18,7 +19,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onSelected: @escaping ([T]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
-        showDividers: Bool? = false
+        showDividers: Bool? = false,
+        attachToBottom: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -26,66 +28,64 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.onCancel = onCancel
         self.singleSelect = singleSelect
         self.showDividers = showDividers
+        self.attachToBottom = attachToBottom
     }
 
     public var body: some View {
-        if onCancel != nil {
+        if attachToBottom {
             hForm {}
-                .hUseNewStyle
                 .hFormAttachToBottom {
-                    content
+                    VStack(spacing: 0) {
+                        content
+                        bottomContent
+                    }
                 }
                 .onAppear {
                     selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
                 }
         } else {
-            hForm {}
-                .hFormTitle(.small, .customTitle, L10n.claimTriagingAboutTitile)
-                .hUseNewStyle
-                .hFormAttachToBottom {
-                    content
-                }
-                .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
-                }
+            hForm {
+                content
+            }
+            .hFormAttachToBottom {
+                bottomContent
+            }
+            .onAppear {
+                selectedItems = items.filter({ preSelectedItems.contains($0.object) }).map({ $0.object })
+            }
         }
     }
 
-    @ViewBuilder
     var content: some View {
-        VStack(spacing: 8) {
-            VStack(spacing: 4) {
-                ForEach(items, id: \.object) { item in
-                    hSection {
-                        getCell(item: item)
-                    }
-                    .disabled(isLoading)
+        VStack(spacing: 4) {
+            ForEach(items, id: \.object) { item in
+                hSection {
+                    getCell(item: item)
                 }
+                .disabled(isLoading)
             }
-            .padding(.top, 8)
+        }
+    }
+
+    var bottomContent: some View {
+        hSection {
             VStack(spacing: 8) {
+                hButton.LargeButtonPrimary {
+                    sendSelectedItems
+                } content: {
+                    hText(L10n.generalContinueButton, style: .standard)
+                }
                 if let onCancel {
-                    hButton.LargeButtonFilled {
-                        sendSelectedItems
-                    } content: {
-                        hTextNew(L10n.generalSaveButton, style: .body)
-                    }
                     hButton.LargeButtonText {
                         onCancel()
                     } content: {
-                        hTextNew(L10n.generalCancelButton, style: .body)
-                    }
-                } else {
-                    hButton.LargeButtonFilled {
-                        sendSelectedItems
-                    } content: {
-                        hTextNew(L10n.generalContinueButton, style: .body)
+                        hText(L10n.generalCancelButton, style: .standard)
                     }
                 }
             }
-            .padding(.horizontal, 16)
         }
-        .padding(.top, 16)
+        .sectionContainerStyle(.transparent)
+        .padding(.vertical, 16)
     }
 
     var sendSelectedItems: Void {
@@ -111,7 +111,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
             .hWithoutDivider
         } else {
-
             hRow {
                 displayContentFor(item.object)
             }
@@ -127,7 +126,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         let isSelected = selectedItems.first(where: { $0 == item }) != nil
         let displayName = items.first(where: { $0.object == item })?.displayName ?? ""
         HStack(spacing: 0) {
-            hTextNew(displayName, style: .title3)
+            hText(displayName, style: .title3)
                 .foregroundColor(hTextColorNew.primary)
             Spacer()
             Circle()

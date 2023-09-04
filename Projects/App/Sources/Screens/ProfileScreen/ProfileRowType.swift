@@ -16,7 +16,7 @@ enum ProfileRowType {
         case .payment:
             return L10n.profilePaymentRowHeader
         case .appInfo:
-            return L10n.OnboardingContextualMenu.appInfoLabel
+            return L10n.profileAppInfo
         case .settings:
             return L10n.EmbarkOnboardingMoreOptions.settingsLabel
         case .eurobonus:
@@ -27,20 +27,20 @@ enum ProfileRowType {
     var icon: UIImage {
         switch self {
         case .myInfo:
-            return Asset.myInfoRowIcon.image
+            return hCoreUIAssets.memberCard.image
         case .myCharity:
-            return Asset.charityPlain.image
+            return hCoreUIAssets.heart.image
         case .payment:
-            return Asset.paymentRowIcon.image
+            return hCoreUIAssets.payments.image
         case .appInfo:
-            return Asset.infoIcon.image
+            return hCoreUIAssets.infoIcon.image
         case .settings:
-            return Asset.settingsIcon.image
+            return hCoreUIAssets.settingsIcon.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
-                return Asset.euroBonusWithValueRowIcon.image
+                return hCoreUIAssets.euroBonusWithValueRowIcon.image
             } else {
-                return Asset.euroBonusRowIcon.image
+                return hCoreUIAssets.eurobonus.image
             }
         }
     }
@@ -56,7 +56,7 @@ enum ProfileRowType {
         case .appInfo:
             return .openAppInformation
         case .settings:
-            return .openAppSettings
+            return .openAppSettings(animated: true)
         case .eurobonus:
             return .openEuroBonus
         }

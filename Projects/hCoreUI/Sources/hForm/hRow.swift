@@ -20,16 +20,13 @@ extension EnvironmentValues {
 }
 
 struct RowButtonStyle: SwiftUI.ButtonStyle {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
-
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
             .background(
                 configuration.isPressed
-                    ? (hUseNewStyle
-                        ? Color.clear
-                        : Color(UIColor.brand(.primaryBackground(true))).opacity(0.1))
+                    ? Color.clear
+
                     : Color.clear
             )
             .animation(
@@ -45,8 +42,8 @@ public struct hRow<Content: View, Accessory: View>: View {
 
     var content: Content
     var accessory: Accessory
-    var horizontalPadding: CGFloat = 21
-    var verticalPadding: CGFloat = 21
+    var horizontalPadding: CGFloat = 16
+    var verticalPadding: CGFloat = 16
 
     public init(
         _ accessory: Accessory,
@@ -60,6 +57,12 @@ public struct hRow<Content: View, Accessory: View>: View {
     public func noSpacing() -> Self {
         var new = self
         new.verticalPadding = 0
+        new.horizontalPadding = 0
+        return new
+    }
+
+    public func noHorizontalPadding() -> Self {
+        var new = self
         new.horizontalPadding = 0
         return new
     }
@@ -99,16 +102,12 @@ extension hRow where Accessory == EmptyView {
 }
 
 public struct StandaloneChevronAccessory: View {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     public init() {}
 
     public var body: some View {
-        if hUseNewStyle {
-            Image(uiImage: hCoreUIAssets.chevronRight2.image)
-        } else {
-            Image(uiImage: hCoreUIAssets.chevronRight.image)
-        }
+        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+            .foregroundColor(hTextColorNew.secondary)
     }
 }
 
@@ -133,7 +132,7 @@ public struct SelectedAccessory: View {
     public var body: some View {
         Spacer()
         if selected {
-            Image(uiImage: hCoreUIAssets.checkmark.image)
+            Image(uiImage: hCoreUIAssets.tick.image)
         }
     }
 }

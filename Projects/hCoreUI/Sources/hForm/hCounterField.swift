@@ -47,8 +47,7 @@ public struct hCounterField: View {
                         getTextLabel
                     }
                 }
-                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
-
+                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyle.title3.fontSize)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
@@ -59,7 +58,7 @@ public struct hCounterField: View {
                     decrease()
                 }
             } label: {
-                Image(uiImage: hCoreUIAssets.minusIcon.image)
+                Image(uiImage: hCoreUIAssets.minusSmall.image)
                     .foregroundColor(
                         hTextColorNew.primary.opacity(value == 0 ? 0.4 : 1)
 
@@ -74,13 +73,14 @@ public struct hCounterField: View {
                     increase()
                 }
             } label: {
-                Image(uiImage: hCoreUIAssets.plusIcon.image)
+                Image(uiImage: hCoreUIAssets.plusSmall.image)
                     .foregroundColor(hTextColorNew.primary)
                     .frame(width: 35, height: 35)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             self.startAnimation()
         }
@@ -106,7 +106,7 @@ public struct hCounterField: View {
     }
 
     private var getTextLabel: some View {
-        hTextNew(textToShow, style: .title3)
+        hText(textToShow, style: .title3)
             .foregroundColor(hTextColorNew.primary)
     }
 

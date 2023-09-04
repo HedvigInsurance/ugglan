@@ -48,7 +48,7 @@ struct FAQList: View {
                     } content: {
                         HStack {
                             L10n.offerFooterButtonText.hText()
-                            hCoreUIAssets.chat.view.frame(width: 24, height: 24)
+                            hCoreUIAssets.chatQuickNav.view.frame(width: 24, height: 24)
                         }
                     }
                 }

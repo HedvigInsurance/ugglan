@@ -16,13 +16,8 @@ public struct ContractState: StateProtocol {
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
     public var crossSells: [CrossSell] = []
-
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
-    var terminationDateStep: TerminationFlowDateNextStepModel?
-    var terminationDeleteStep: TerminationFlowDeletionNextModel?
-    var successStep: TerminationFlowSuccessNextModel?
-    var failedStep: TerminationFlowFailedNextModel?
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })

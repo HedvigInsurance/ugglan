@@ -129,6 +129,66 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
     }
 }
 
+public struct PresentableLoadingStoreLens<
+    S: Store & StoreLoading,
+    LoadingContent: View,
+    ErrorContent: View,
+    FinishedContent: View
+>: View {
+    @Environment(\.presentableStoreLensAnimation) var animation
+    @State var state: LoadingState<String>?
+    var loadingState: S.Loading
+
+    var store: S
+    var loadingContent: () -> LoadingContent
+    var errorContent: (_ error: String) -> ErrorContent
+    var finishedContent: () -> FinishedContent
+
+    public init(
+        _ storeType: S.Type,
+        loadingState: S.Loading,
+        @ViewBuilder loading loadingContent: @escaping () -> LoadingContent,
+        @ViewBuilder error errorContent: @escaping (_ error: String) -> ErrorContent,
+        @ViewBuilder success finishedContent: @escaping () -> FinishedContent
+    ) {
+        self.loadingContent = loadingContent
+        self.errorContent = errorContent
+        self.finishedContent = finishedContent
+        let store: S = globalPresentableStoreContainer.get()
+        self.store = store
+        self.loadingState = loadingState
+        let value = store.loadingSignal.value.first(where: { $0.key == loadingState })?.value
+        self._state = State(initialValue: value)
+    }
+
+    public var body: some View {
+        Group {
+            switch state {
+            case .loading:
+                loadingContent()
+            case let .error(error):
+                errorContent(error)
+            case nil:
+                finishedContent()
+            }
+        }
+        .onReceive(
+            store.loadingSignal
+                .plain()
+                .publisher
+        ) { value in
+            let currentValue = value.first(where: { $0.key == loadingState })?.value
+            if let animation {
+                withAnimation(animation) {
+                    self.state = currentValue
+                }
+            } else {
+                self.state = currentValue
+            }
+        }
+    }
+}
+
 private struct EnvironmentPresentableStoreLensAnimation: EnvironmentKey {
     static let defaultValue: Animation? = nil
 }

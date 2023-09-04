@@ -9,35 +9,29 @@ public struct SubmitClaimSuccessScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 0) {
-                Image(uiImage: hCoreUIAssets.checkmarkSmall.image)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColorNew.greenElement)
-                    .padding(.bottom, 16)
-                hTextNew(L10n.claimsSuccessTitle, style: .body)
-                    .foregroundColor(hTextColorNew.primaryTranslucent)
-                hTextNew(L10n.claimsSuccessLabel, style: .body)
-                    .foregroundColor(hTextColorNew.secondaryTranslucent)
+            VStack(spacing: 16) {
+                hText(L10n.claimsSuccessTitle, style: .title1)
+                    .foregroundColor(hTextColorNew.primary)
+                hText(L10n.claimsSuccessLabel, style: .body)
+                    .foregroundColor(hTextColorNew.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)
             .padding(.horizontal, 32)
         }
-        .hUseNewStyle
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {
-                    hTextNew(L10n.openChat, style: .body)
+                    hText(L10n.openChat, style: .body)
                 }
 
                 hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
-                    hTextNew(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body)
                 }
             }
             .padding(.horizontal, 16)

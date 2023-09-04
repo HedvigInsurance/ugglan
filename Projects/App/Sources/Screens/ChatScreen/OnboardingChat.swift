@@ -4,6 +4,7 @@ import Form
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct OnboardingChat { @Inject var giraffe: hGiraffe }
@@ -37,13 +38,13 @@ extension OnboardingChat: Presentable {
         chat.chatState.fetch()
 
         let settingsButton = UIBarButtonItem()
-        settingsButton.image = Asset.menuIcon.image
+        settingsButton.image = hCoreUIAssets.menuIcon.image
         settingsButton.tintColor = .brand(.primaryText())
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
         let restartButton = UIBarButtonItem()
-        restartButton.image = Asset.restart.image
+        restartButton.image = HCoreUIAsset.restart.image
         restartButton.tintColor = .brand(.primaryText())
 
         bag += restartButton.onValue { _ in
@@ -74,7 +75,6 @@ extension OnboardingChat: Presentable {
                         title: nil,
                         children: [
                             MenuChild.appInformation,
-                            MenuChild.appSettings,
                             MenuChild.login,
                         ]
                     )

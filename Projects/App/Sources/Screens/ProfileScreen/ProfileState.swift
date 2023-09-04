@@ -6,16 +6,13 @@ import hCoreUI
 import hGraphQL
 
 public struct ProfileState: StateProtocol {
+    var memberId: String = ""
     var memberFullName: String = ""
-    var monthlyNet: Int = 0
+    var memberEmail: String = ""
+    var memberPhone: String?
     var partnerData: PartnerData?
-    @OptionalTransient var updateEurobonusState: LoadingState<String>?
+    var openSettingsDirectly = true
     public init() {}
-}
-
-public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
-    case loading
-    case error(error: T)
 }
 
 public enum ProfileAction: ActionProtocol {
@@ -24,15 +21,19 @@ public enum ProfileAction: ActionProtocol {
     case openCharity
     case openPayment
     case openEuroBonus
+    case openChangeEuroBonus
+    case dismissChangeEuroBonus
+    case openSuccessChangeEuroBonus
     case openFreeTextChat
     case openAppInformation
-    case openAppSettings
-    case setMonthlyNet(monthlyNet: Int)
-    case setMemberName(name: String)
+    case openAppSettings(animated: Bool)
+    case setMember(id: String, name: String, email: String, phone: String?)
+    case setMemberEmail(email: String)
+    case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
-    case updateEurobonusState(with: LoadingState<String>?)
+    case setOpenAppSettings(to: Bool)
 }
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
@@ -47,61 +48,33 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         case .fetchProfileState:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-
-                let getChargeEstimationData = self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.ChargeEstimationQuery(),
-                        cachePolicy: .fetchIgnoringCacheData
-                    )
-
                 let getProfileData = self.octopus.client
                     .fetch(
                         query: OctopusGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag += combineLatest(getChargeEstimationData.resultSignal, getProfileData.resultSignal)
-                    .onValue { (chargeEstimationData, profileData) in
-                        if let chargeEstimationData = chargeEstimationData.value {
-                            let monthlyNet = Int(
-                                chargeEstimationData.chargeEstimation.subscription.fragments.monetaryAmountFragment
-                                    .monetaryAmount.floatAmount
+                disposeBag +=
+                    getProfileData.onValue({ profileData in
+                        let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
+                        let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
+                        callback(.value(.setEurobonusNumber(partnerData: partner)))
+                        callback(
+                            .value(
+                                .setMember(
+                                    id: profileData.currentMember.id,
+                                    name: name,
+                                    email: profileData.currentMember.email,
+                                    phone: profileData.currentMember.phoneNumber
+                                )
                             )
-                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
-                        }
-                        if let profileData = profileData.value {
-                            let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
-                            let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
-                            callback(.value(.setEurobonusNumber(partnerData: partner)))
-                            callback(.value(.setMemberName(name: name)))
-                        }
+                        )
                         callback(.value(.fetchProfileStateCompleted))
-                    }
+                    })
+                    .onError({ error in
+                        //TODO: HANDLE ERROR
+                        callback(.value(.fetchProfileStateCompleted))
+                    })
 
-                return disposeBag
-            }
-        case let .updateEurobonusNumber(number):
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: number)
-                disposeBag += self.octopus.client
-                    .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
-                    .onValue { result in
-                        if let error = result.memberUpdateEurobonusNumber.userError?.message, error != "" {
-                            callback(.value(.updateEurobonusState(with: .error(error: error))))
-                        } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
-                            .partnerDataFragment
-                        {
-                            callback(.value(.setEurobonusNumber(partnerData: PartnerData(with: partnerData))))
-                            callback(.value(.updateEurobonusState(with: nil)))
-                        } else {
-                            callback(
-                                .value(.updateEurobonusState(with: .error(error: L10n.SasIntegration.incorrectNumber)))
-                            )
-                        }
-                    }
-                    .onError { _ in
-                        callback(.value(.updateEurobonusState(with: .error(error: L10n.General.errorBody))))
-                    }
                 return disposeBag
             }
         default:
@@ -112,24 +85,19 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setMonthlyNet(let monthlyNet):
-            newState.monthlyNet = monthlyNet
-        case .setMemberName(let name):
+        case let .setMember(id, name, email, phone):
+            newState.memberId = id
             newState.memberFullName = name
+            newState.memberPhone = phone
+            newState.memberEmail = email
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
-        case .updateEurobonusNumber:
-            newState.updateEurobonusState = .loading
-        case let .updateEurobonusState(state):
-            newState.updateEurobonusState = state
-            if state == nil {
-                Toasts.shared.displayToast(
-                    toast: Toast(
-                        symbol: .icon(hCoreUIAssets.editIcon.image),
-                        body: L10n.profileMyInfoSaveSuccessToastBody
-                    )
-                )
-            }
+        case let .setMemberEmail(email):
+            newState.memberEmail = email
+        case let .setMemberPhone(phone):
+            newState.memberPhone = phone
+        case let .setOpenAppSettings(to):
+            newState.openSettingsDirectly = to
         default:
             break
         }
@@ -145,6 +113,9 @@ public struct PartnerData: Codable, Equatable {
         return sas?.eligible ?? false
     }
 
+    var isConnected: Bool {
+        return !(sas?.eurobonusNumber ?? "").isEmpty
+    }
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)

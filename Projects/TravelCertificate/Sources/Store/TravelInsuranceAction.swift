@@ -1,0 +1,46 @@
+import Apollo
+import Flow
+import Presentation
+import SwiftUI
+import hCore
+import hGraphQL
+
+enum TravelInsuranceAction: ActionProtocol, Hashable {
+    case setTravelInsurancesData(specification: TravelInsuranceSpecification)
+    case setTravelInsuranceData(specification: TravelInsuranceContractSpecification)
+    case postTravelInsuranceForm
+
+    case setEmail(value: String)
+    case setDate(value: Date, type: TravelInsuranceDatePickerType)
+    case toogleMyselfAsInsured
+    case setPolicyCoInsured(PolicyCoinsuredPersonModel)
+    case updatePolicyCoInsured(PolicyCoinsuredPersonModel, with: PolicyCoinsuredPersonModel)
+    case removePolicyCoInsured(PolicyCoinsuredPersonModel)
+    case setDownloadUrl(urL: URL)
+
+    case navigation(TravelInsuranceNavigationAction)
+    case getTravelCertificateSpecification
+    case travelCertificateSpecificationSet
+}
+
+enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
+    case openStartDateScreen
+    case openWhoIsTravelingScreen
+    case openCoinsured(member: PolicyCoinsuredPersonModel?)
+    case openSomethingWentWrongScreen
+    case dismissAddUpdateCoinsured
+    case dismissCreateTravelCertificate
+    case openFreeTextChat
+    case openProcessingScreen
+}
+
+enum TravelInsuranceLoadingAction: LoadingProtocol {
+    case getTravelInsurance
+    case postTravelInsurance
+    case downloadCertificate
+}
+
+enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {
+    case startDate
+    case endDate
+}

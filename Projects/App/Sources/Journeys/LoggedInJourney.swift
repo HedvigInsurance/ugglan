@@ -9,6 +9,8 @@ import Home
 import Payment
 import Presentation
 import SwiftUI
+import TerminateContracts
+import TravelCertificate
 import hAnalytics
 import hCore
 import hCoreUI
@@ -16,9 +18,15 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView()
         return
-            HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
+            HomeView.journey(
+                claimsContent: claims,
+                memberId: {
+                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                    return ugglanStore.state.memberDetails?.id ?? ""
+
+                }
+            ) { result in
                 switch result {
                 case .startMovingFlow:
                     AppJourney.movingFlow
@@ -26,15 +34,24 @@ extension AppJourney {
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
+                case .startNewClaim:
+                    startClaimsJourney(from: .generic)
+                case .openTravelInsurance:
+                    TravelInsuranceFlowJourney.start {
+                        AppJourney.freeTextChat()
+                    }
+                case .openCrossSells:
+                    CrossSellingScreen.journey { result in
+                        if case .openCrossSellingWebUrl(let url) = result {
+                            AppJourney.webRedirect(url: url)
+                        }
+                    }
                 }
             } statusCard: {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }
-            }
-            .onTabSelected {
-                GradientState.shared.gradientType = .home
             }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
@@ -46,12 +63,6 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onAction(HomeStore.self) { action, _ in
-                if case .openTravelInsurance = action {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.getTravelCertificateSpecification)
-                }
-            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -67,10 +78,9 @@ extension AppJourney {
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
+            case let .startNewTermination(action):
+                TerminationFlowJourney.start(for: action)
             }
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .insurance(filter: 0)
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -79,19 +89,10 @@ extension AppJourney {
                 return false
             }
         }
-        .onAction(ContractStore.self) { action, _ in
-            if case let .setTravelCertificateSpecification(data) = action {
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
-            }
-        }
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
         ForeverView.journey()
-            .onTabSelected {
-                GradientState.shared.gradientType = .forever
-            }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .forever
@@ -105,16 +106,33 @@ extension AppJourney {
         ProfileView.journey { result in
             switch result {
             case .openPayment:
-                Journey(
-                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
+                HostingJourney(
+                    PaymentStore.self,
+                    rootView: MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
+                ) { action in
+                    if case .openConnectBankAccount = action {
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                            .contains(store.state.paymentStatusData?.status ?? .active)
+                        ConnectBankAccount(
+                            setupType: hasAlreadyConnected ? .replacement : .initial,
+                            urlScheme: Bundle.main.urlScheme ?? ""
+                        )
+                        .journeyThenDismiss
+                    } else if case .openHistory = action {
+                        PaymentHistory.journey
+                    } else if case let .openPayoutBankAccount(options) = action {
+                        AdyenPayOut(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
+                            .journey({ _ in
+                                DismissJourney()
+                            })
+                            .setStyle(.detented(.medium, .large))
+                            .setOptions([.defaults, .allowSwipeDismissAlways])
+                            .withJourneyDismissButton
+                    }
+                }
+                .configureTitle(L10n.myPaymentTitle)
             }
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -190,16 +208,8 @@ extension JourneyPresentation {
                             DismissJourney()
                         }
                     }
-            } else if case .openTravelInsurance = action {
-                TravelInsuranceFlowJourney.start {
-                    AppJourney.freeTextChat()
-                }
-            } else if case .openHowClaimsWork = action {
-                AppJourney.claimsInfoJourney()
-            } else if case let .openCommonClaimDetail(commonClaim) = action {
-                AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
-                AppJourney.freeTextChat()
+                AppJourney.freeTextChat().withDismissButton
             }
         }
     }
@@ -210,6 +220,17 @@ extension JourneyPresentation {
                 AppJourney.freeTextChat()
             }
         }
+        .onAction(
+            SubmitClaimStore.self,
+            { action, pre in
+                if case let .navigationAction(navigationAction) = action {
+                    if case .openSuccessScreen = navigationAction {
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.setPushNotificationsTo(date: nil))
+                    }
+                }
+            }
+        )
     }
 
     public var configurePaymentNavigation: some JourneyPresentation {

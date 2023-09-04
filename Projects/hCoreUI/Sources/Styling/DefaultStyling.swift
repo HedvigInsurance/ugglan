@@ -48,33 +48,22 @@ class NavBar: UINavigationBar {
         super.layoutSubviews()
         if let additionalHeight {
             subviews.forEach { (subview) in
-                if subview.frame.size.height != self.frame.size.height + additionalHeight {
-                    let stringFromClass = NSStringFromClass(subview.classForCoder)
-                    if stringFromClass.contains("BarContent") {
-                        subview.frame = CGRect(
-                            x: 0,
-                            y: 0,
-                            width: self.frame.width,
-                            height: self.frame.size.height + additionalHeight
-                        )
-
-                    }
-                    if stringFromClass.contains("BarBackground") {
-                        subview.frame = CGRect(
-                            x: 0,
-                            y: 0,
-                            width: self.frame.width,
-                            height: self.frame.size.height + additionalHeight
-                        )
-                    }
-                    if stringFromClass.contains("UIProgressView") {
-                        subview.frame = CGRect(
-                            x: subview.frame.origin.x,
-                            y: -4,
-                            width: subview.frame.width,
-                            height: subview.frame.height
-                        )
-                    }
+                let stringFromClass = NSStringFromClass(subview.classForCoder)
+                if stringFromClass.contains("UIProgressView") {
+                    subview.frame = CGRect(
+                        x: subview.frame.origin.x,
+                        y: -additionalHeight,
+                        width: subview.frame.width,
+                        height: subview.frame.height
+                    )
+                }
+                if stringFromClass.contains("BarContent") {
+                    subview.frame = CGRect(
+                        x: 0,
+                        y: additionalHeight,
+                        width: self.frame.width,
+                        height: subview.frame.size.height
+                    )
                 }
             }
         }
@@ -82,30 +71,12 @@ class NavBar: UINavigationBar {
 }
 
 public class hNavigationControllerWithLargerNavBar: UINavigationController {
+
+    public static var navigationBarHeight: CGFloat = 80
+
     public init() {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
-        additionalSafeAreaInsets.top = 90 - 56
-        if #available(iOS 15, *) {
-            let compact = UINavigationBarAppearance()
-            compact.configureWithTransparentBackground()
-            compact.backgroundColor = UIColor.clear
-            compact.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
-            compact.backgroundEffect = UIBlurEffect(style: .light)
-            DefaultStyling.applyCommonNavigationBarStyling(compact, useNewDesign: true)
-            self.navigationBar.compactAppearance = compact
-            self.navigationBar.standardAppearance = compact
-
-            let scrollEdgeNavigationBarAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeNavigationBarAppearance, useNewDesign: true)
-            scrollEdgeNavigationBarAppearance.backgroundColor = .clear
-            scrollEdgeNavigationBarAppearance.configureWithDefaultBackground()
-            scrollEdgeNavigationBarAppearance.shadowImage = UIColor.clear.asImage()
-            scrollEdgeNavigationBarAppearance.backgroundImage = nil
-
-            self.navigationBar.scrollEdgeAppearance = scrollEdgeNavigationBarAppearance
-            self.navigationBar.compactScrollEdgeAppearance = scrollEdgeNavigationBarAppearance
-            self.navigationBar.isTranslucent = true
-        }
+        additionalSafeAreaInsets.top = hNavigationControllerWithLargerNavBar.navigationBarHeight - 56
     }
 
     required init?(
@@ -116,19 +87,26 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
 }
 
 class LargeNavBar: UINavigationBar {
-    var barHeight: CGFloat = 90
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return CGSize(width: UIScreen.main.bounds.size.width, height: 90)
+        return CGSize(
+            width: UIScreen.main.bounds.size.width,
+            height: hNavigationControllerWithLargerNavBar.navigationBarHeight
+        )
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         subviews.forEach { (subview) in
-            if subview.frame.size.height != barHeight {
+            if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
-                    subview.frame = CGRect(x: 0, y: -(90 - 56) / 2, width: self.frame.width, height: barHeight)
+                    subview.frame = CGRect(
+                        x: 0,
+                        y: -6,
+                        width: self.frame.width,
+                        height: hNavigationControllerWithLargerNavBar.navigationBarHeight
+                    )
                 }
             }
         }
@@ -140,32 +118,24 @@ extension BarButtonStyle {
 }
 
 extension DefaultStyling {
-    public static let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-        if trait.userInterfaceStyle == .dark {
-            return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
-        }
-
-        return UIColor.white
-    })
+    public static let tabBarBackgroundColor = UIColor.brandNew(.primaryBackground())
 
     public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
         return .brand(.primaryBackground())
     })
 
-    public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance, useNewDesign: Bool) {
+    public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontForNewDesign(style: .headline) : Fonts.fontFor(style: .headline),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontForNewDesign(style: .headline) : Fonts.fontFor(style: .largeTitle),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
 
-        let backImage = hCoreUIAssets.backButton.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
+            UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(
             backImage,
@@ -174,57 +144,64 @@ extension DefaultStyling {
         appearance.backButtonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.clear
         ]
+
     }
 
-    public static func scrollEdgeNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
+    public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        appearance.backgroundColor = .clear
         appearance.shadowImage = UIColor.clear.asImage()
+        appearance.backgroundImage = nil
+        applyCommonNavigationBarStyling(appearance)
+        return appearance
+    }
 
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
+    public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.clear
+        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        applyCommonNavigationBarStyling(appearance)
 
         return appearance
     }
 
-    public static func standardNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
+    public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = navigationBarBackgroundColor
-        appearance.shadowImage = UIColor.clear.asImage()
-
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
-
-        return appearance
-    }
-
-    public static func compactNavigationBarAppearance(useNewDesign: Bool) -> UINavigationBarAppearance {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = navigationBarBackgroundColor
-        appearance.shadowImage = UIColor.clear.asImage()
-
-        applyCommonNavigationBarStyling(appearance, useNewDesign: useNewDesign)
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.clear
+        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        applyCommonNavigationBarStyling(appearance)
 
         return appearance
     }
 
     public static func setNavigationBarAppearance() {
+
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance().standardAppearance = standardNavigationBarAppearance()
+        UINavigationBar.appearance().compactAppearance = compactNavigationBarAppearance()
+
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
-            scrollEdgeNavigationBarAppearance(useNewDesign: false)
+            scrollEdgeNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
-            standardNavigationBarAppearance(useNewDesign: false)
+            standardNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
-            compactNavigationBarAppearance(useNewDesign: false)
+            compactNavigationBarAppearance()
 
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .scrollEdgeAppearance =
-            scrollEdgeNavigationBarAppearance(useNewDesign: true)
+            scrollEdgeNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .standardAppearance =
-            standardNavigationBarAppearance(useNewDesign: true)
+            standardNavigationBarAppearance()
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .compactAppearance =
-            compactNavigationBarAppearance(useNewDesign: true)
+            compactNavigationBarAppearance()
     }
 
     public static func installCustom() {
@@ -256,53 +233,8 @@ extension DefaultStyling {
         }
 
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
-
         setNavigationBarAppearance()
-
-        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
-        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
-        UITabBar.appearance().tintColor = .brand(.primaryText())
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .dark)
-        )
-        .backgroundImage =
-            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
-            .asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .light)
-        )
-        .backgroundImage =
-            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-            .asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .dark)
-        )
-        .shadowImage = UIColor.brand(.primaryBorderColor)
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .light)
-        )
-        .shadowImage = UIColor.brand(.primaryBorderColor)
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .normal
-            )
-        UITabBarItem.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
-                ],
-                for: .selected
-            )
+        setTabBarAppearance()
 
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
             .primaryTintColor
@@ -327,7 +259,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontForNewDesign(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
                 ],
                 for: .normal
             )
@@ -335,12 +267,12 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontForNewDesign(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
                 ],
                 for: .highlighted
             )
 
-        UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
+        UIBarButtonItem.appearance().tintColor = .brandNew(.primaryText())
 
         let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
             hNavigationController.self
@@ -354,13 +286,100 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
+        barButtonItemAppearance.tintColor = .brandNew(.primaryText())
 
-        UIDatePicker.appearance().tintColor = .brand(.link)
-
-        UIImageView.appearance().tintColor = .brand(.primaryTintColor)
-        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
+        UIDatePicker.appearance().tintColor = .brandNew(.primaryText())  //.brand(.primaryT)
+        UIImageView.appearance().tintColor = .brandNew(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
+            .primaryText()
+        )
 
         current = .custom
+    }
+
+    private static func setTabBarAppearance() {
+        let standard = UITabBarAppearance()
+        standard.configureWithOpaqueBackground()
+
+        func configureTabBar(appearance: UITabBarItemStateAppearance) {
+            appearance.badgeBackgroundColor = .clear
+            appearance.badgePositionAdjustment.horizontal = 0
+            appearance.badgePositionAdjustment.vertical = -4
+            appearance.badgeTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.destructive),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
+            ]
+        }
+        configureTabBar(appearance: standard.stackedLayoutAppearance.normal)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
+
+        UITabBar.appearance().standardAppearance = standard
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = standard
+        }
+        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        UITabBar.appearance().tintColor = .brandNew(.primaryText())
+        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brandNew(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        }
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brandNew(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        }
+    }
+
+    private func setTabBarItemBadgeAppearance(_ itemAppearance: UITabBarItemAppearance) {
+        itemAppearance.normal.badgeBackgroundColor = UIColor.green
     }
 
     public static let custom = DefaultStyling(

@@ -68,7 +68,7 @@ extension Offer: Presentable {
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-        DefaultStyling.applyCommonNavigationBarStyling(appearance, useNewDesign: false)
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
         viewController.navigationItem.standardAppearance = appearance
         viewController.navigationItem.compactAppearance = appearance
 
@@ -206,10 +206,16 @@ extension Offer: Presentable {
 
                             }
                     } else if case let .openInsurableLimit(limit) = action {
-                        viewController.present(InsurableLimitDetail(limit: limit).journey)
-                            .onValue { _ in
-
-                            }
+                        viewController.present(
+                            InfoView(
+                                title: L10n.contractCoverageMoreInfo,
+                                description: limit.description,
+                                onDismiss: {}
+                            )
+                            .journey
+                        )
+                        .onValue { _ in
+                        }
                     } else if case let .openDocument(url) = action {
                         let safariViewController = SFSafariViewController(url: url)
                         safariViewController.modalPresentationStyle = .formSheet

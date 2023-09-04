@@ -28,7 +28,6 @@ extension SingleQuoteCoverage: View {
             )
             .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
             InsurableLimitsSectionView(
-                header: L10n.contractCoverageMoreInfo.hText(),
                 limits: quote.insurableLimits
             ) { limit in
                 store.send(.openInsurableLimit(limit: limit))

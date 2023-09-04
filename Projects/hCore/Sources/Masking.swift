@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Introspect
 import SwiftUI
 import UIKit
 
@@ -30,6 +31,7 @@ public struct Masking {
         textField.keyboardType = keyboardType
         textField.textContentType = textContentType
         textField.autocapitalizationType = autocapitalizationType
+
     }
 
     public func isValidSignal(_ textField: UITextField) -> ReadSignal<Bool> {
@@ -72,7 +74,7 @@ public struct Masking {
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
-        case .euroBonus: return true
+        case .euroBonus: return text.count > 3
         }
     }
 
@@ -238,6 +240,13 @@ public struct Masking {
         default: return false
         }
     }
+    public var spellCheckingType: UITextSpellCheckingType {
+        switch type {
+        case .none, .disabledSuggestion:
+            return .no
+        default: return .yes
+        }
+    }
 
     public func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
@@ -280,7 +289,7 @@ public struct Masking {
             }
 
             if text.count <= maxCount {
-                var sanitizedText = String(
+                let sanitizedText = String(
                     text.filter { $0.isNumber || $0.isLetter }.enumerated()
                         .map { _, char in char }
                 )
@@ -323,5 +332,8 @@ extension Masking: ViewModifier {
             .autocapitalization(autocapitalizationType)
             .disableAutocorrection(disableAutocorrection)
             .autocorrectionDisabled()
+            .introspectTextField { textField in
+                textField.spellCheckingType = spellCheckingType
+            }
     }
 }

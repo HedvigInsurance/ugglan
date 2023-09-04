@@ -21,9 +21,9 @@ struct ContactChatView: View {
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
-                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .caption1)
+                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .standardSmall)
                     .foregroundColor(hLabelColor.secondary)
-                hText(L10n.ClaimStatus.Contact.Generic.title, style: .callout)
+                hText(L10n.ClaimStatus.Contact.Generic.title, style: .standard)
             }
             Spacer()
 
@@ -40,22 +40,14 @@ struct ContactChatView: View {
                 )
             )
         }
-        .padding(.top, 12)
-        .padding([.bottom, .horizontal], 16)
     }
 }
 
 struct ChatButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(hBackgroundColor.primary)
-                .frame(width: 40, height: 40)
-
-            hCoreUIAssets.chat.view
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 23, height: 19)
-        }
+        hCoreUIAssets.chatQuickNav.view
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 32, height: 32)
     }
 }

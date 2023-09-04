@@ -31,6 +31,7 @@ public struct Toast: Equatable {
     let subtitle: String?
     let textColor: UIColor
     let backgroundColor: UIColor
+    let borderColor: UIColor
     let duration: TimeInterval
     public var onTap: Signal<Void> {
         onTapCallbacker.providedSignal
@@ -43,8 +44,9 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = .brand(.primaryText()),
-        backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
+        textColor: UIColor = .brandNew(.toasterTitle),
+        backgroundColor: UIColor = UIColor.brandNew(.toasterBackground),
+        borderColor: UIColor = UIColor.brandNew(.toasterBorder),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
@@ -52,6 +54,7 @@ public struct Toast: Equatable {
         self.subtitle = subtitle
         self.textColor = textColor
         self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
         self.duration = duration
     }
 }
@@ -60,14 +63,20 @@ extension Toast: Viewable {
     var symbolView: UIView {
         switch symbol {
         case let .character(character):
-            let view = UILabel(value: String(character), style: .brand(.headline(color: .primary)))
+            let view = UILabel(value: String(character), style: UIColor.brandNewStyle(.primaryText()))
             view.minimumScaleFactor = 0.5
             view.adjustsFontSizeToFitWidth = true
             return view
         case let .icon(icon):
             let view = UIImageView()
             view.image = icon
-            view.tintColor = textColor
+            let symbolColor = UIColor(dynamic: { trait -> UIColor in
+                UIColor(
+                    hSignalColorNew.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                        .color
+                )
+            })
+            view.tintColor = symbolColor
             view.contentMode = .scaleAspectFit
 
             view.snp.makeConstraints { make in
@@ -114,30 +123,25 @@ extension Toast: Viewable {
             }
 
         containerView.backgroundColor = backgroundColor
-        bag += containerView.applyShadow { trait in
-            UIView.ShadowProperties(
-                opacity: trait.userInterfaceStyle == .dark ? 0 : 0.25,
-                offset: CGSize(width: 0, height: 0),
-                blurRadius: 3,
-                color: UIColor.darkGray,
-                path: nil,
-                radius: 10
-            )
-        }
+        containerView.layer.borderColor = borderColor.cgColor
+        containerView.layer.borderWidth = 0.5
 
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        stackView.spacing = 12.5
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 15.5)
+        stackView.spacing = 8.25
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
 
         containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
         }
 
         if symbol != nil {
@@ -146,7 +150,6 @@ extension Toast: Viewable {
             symbolContainer.insetsLayoutMarginsFromSafeArea = false
 
             stackView.addArrangedSubview(symbolContainer)
-
             symbolContainer.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
@@ -159,10 +162,9 @@ extension Toast: Viewable {
         textContainer.alignment = .leading
         textContainer.insetsLayoutMarginsFromSafeArea = false
         textContainer.spacing = 5
-
         let bodyLabel = UILabel(
             value: body,
-            style: TextStyle.brand(.headline(color: .primary)).colored(textColor)
+            style: UIColor.brandNewStyle(.toasterTitle).colored(textColor)
         )
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
@@ -172,7 +174,7 @@ extension Toast: Viewable {
         if let subtitle = subtitle {
             let bodySubtitleLabel = UILabel(
                 value: subtitle,
-                style: TextStyle.brand(.subHeadline(color: .secondary)).colored(textColor)
+                style: UIColor.brandNewStyle(.toasterSubtitle).colored(textColor)
             )
             textContainer.addArrangedSubview(bodySubtitleLabel)
         }
@@ -187,7 +189,7 @@ extension Toast: Viewable {
         chevronImageView.snp.makeConstraints { make in
             make.width.equalTo(20)
         }
-        chevronImageView.image = hCoreUIAssets.chevronRight.image
+        chevronImageView.image = hCoreUIAssets.arrowForward.image
 
         stackView.addArrangedSubview(chevronImageView)
 
@@ -250,23 +252,6 @@ extension Toasts: Viewable {
 
         containerView.snp.makeConstraints { make in
             make.height.equalTo(0)
-        }
-
-        self.bag += containerView.subviewsSignal.onValue { subviews in
-            containerView.isHidden = subviews.isEmpty
-
-            containerView.snp.updateConstraints { make in
-                make.height.equalTo(
-                    subviews.max { (lhs, rhs) -> Bool in
-                        if lhs.frame.height > rhs.frame.height {
-                            return true
-                        }
-
-                        return false
-                    }?
-                    .frame.height ?? 0
-                )
-            }
         }
 
         bag +=

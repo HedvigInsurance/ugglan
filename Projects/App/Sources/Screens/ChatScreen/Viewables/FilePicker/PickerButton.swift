@@ -9,18 +9,18 @@ struct PickerButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
         let button = UIControl()
-        button.backgroundColor = .brand(.secondaryBackground())
+        button.backgroundColor = .brandNew(.secondaryBackground())
         bag += button.applyBorderColor { _ in .brand(.primaryBorderColor) }
         button.layer.borderWidth = UIScreen.main.hairlineWidth
-        button.layer.cornerRadius = 5
+        button.layer.cornerRadius = 8
 
         let imageView = UIImageView()
         imageView.image = icon
-        imageView.tintColor = .brand(.primaryText())
+        imageView.tintColor = .brandNew(.primaryText())
 
         button.addSubview(imageView)
 
-        imageView.snp.makeConstraints { make in make.height.width.equalTo(45)
+        imageView.snp.makeConstraints { make in make.height.width.equalTo(24)
             make.center.equalToSuperview()
         }
 

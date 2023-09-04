@@ -15,17 +15,7 @@ extension AdyenMethodsList {
         let giraffe: hGiraffe = Dependencies.shared.resolve()
         return giraffe.client.fetch(query: GiraffeGraphQL.AdyenAvailableMethodsQuery())
             .compactMap { data in
-                guard
-                    let paymentMethodsData = data.availablePaymentMethods.paymentMethodsResponse
-                        .data(using: .utf8),
-                    let paymentMethods = try? JSONDecoder()
-                        .decode(PaymentMethods.self, from: paymentMethodsData)
-                else { return nil }
-
-                return AdyenOptions(
-                    paymentMethods: paymentMethods,
-                    clientEncrytionKey: data.adyenPublicKey
-                )
+                return AdyenOptions(data)
             }
     }
 }
@@ -65,12 +55,8 @@ public struct AdyenPayIn: Presentable {
                 .onValue { data in
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.giraffe.client
-                                .fetch(
-                                    query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
-                                    cachePolicy: .fetchIgnoringCacheData
-                                )
-                                .sink()
+                            let store: PaymentStore = globalPresentableStoreContainer.get()
+                            store.send(.fetchActivePayment)
                         }
                         paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(())))
@@ -98,9 +84,9 @@ public struct AdyenPayIn: Presentable {
             paymentStore.send(.fetchPayInMethodStatus)
 
             // refetch to refresh UI
-            Future().delay(by: 0.5)
-                .flatMapResult { _ in self.giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
-                .sink()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                paymentStore.send(.fetchActivePayment)
+            }
         }
         .materialize()
 

@@ -75,11 +75,12 @@ extension AttachGIFImage: Reusable {
 
                         let button = Button(
                             title: L10n.attachGifImageSend,
-                            type: .standard(
-                                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                                textColor: .brand(.primaryButtonTextColor)
+                            type: .standardSmall(
+                                backgroundColor: .brandNew(.primaryBackground()),
+                                textColor: .brandNew(.primaryText())
                             )
                         )
+
                         let loadableButton = LoadableButton(
                             button: button,
                             initialLoadingState: false

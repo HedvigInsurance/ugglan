@@ -24,7 +24,7 @@ struct ClaimsAskForPushnotifications: Presentable {
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
             image: .init(
-                image: Asset.activatePushNotificationsIllustration.image,
+                image: hCoreUIAssets.activatePushNotificationsIllustration.image,
                 size: CGSize(width: CGFloat.infinity, height: 200),
                 contentMode: .scaleAspectFit
             ),

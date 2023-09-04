@@ -25,7 +25,7 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
         @ViewBuilder content: @escaping (hCarouselItem) -> Content
     ) {
         self.spacing = spacing
-        self.cardWidth = screenWidth * zoomFactor - spacing * 2
+        self.cardWidth = screenWidth * zoomFactor
         self.numberOfItems = CGFloat(items.count)
         self.cardWithSpacing = cardWidth + spacing
         self.xOffsetToShift = cardWithSpacing * numberOfItems / 2 - cardWithSpacing / 2

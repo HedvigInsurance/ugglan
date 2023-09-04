@@ -6,12 +6,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View {
+struct ActiveSectionView<Claims: View>: View {
     @PresentableStore var store: HomeStore
 
     var claimsContent: Claims
-    var commonClaims: CommonClaims
-    var statusCard: Content
+    let memberId: String
 
     var body: some View {
         PresentableStoreLens(
@@ -22,42 +21,14 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
         ) { memberStateData in
             hSection {
                 if let name = memberStateData.name {
-                    hTextNew(L10n.HomeTab.welcomeTitle(name), style: .customTitle)
+                    hText(L10n.HomeTab.welcomeTitle(name), style: .title1)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                claimsContent.addStatusCard {
-                    statusCard
-                }
+                claimsContent
             }
             .slideUpFadeAppearAnimation()
             .sectionContainerStyle(.transparent)
-
-            if hAnalyticsExperiment.homeCommonClaim {
-                commonClaims.slideUpFadeAppearAnimation(delay: 0.4)
-            }
-            if hAnalyticsExperiment.movingFlow {
-                hSection {
-                    hRow {
-                        Image(uiImage: hCoreUIAssets.apartment.image)
-                        L10n.HomeTab.editingSectionChangeAddressLabel.hText()
-                    }
-                    .withCustomAccessory {
-                        Spacer()
-                        Image(uiImage: hCoreUIAssets.chevronRight.image)
-                    }
-                    .onTap {
-                        store.send(.openMovingFlow)
-                    }
-                }
-                .withHeader {
-                    hText(
-                        L10n.HomeTab.editingSectionTitle,
-                        style: .title2
-                    )
-                }
-                .slideUpFadeAppearAnimation(delay: 0.6)
-            }
         }
     }
 }

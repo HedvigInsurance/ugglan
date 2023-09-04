@@ -13,7 +13,6 @@ struct ClaimStatus: View {
     var tapAction: (Claim) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
-
             _ = hAnalyticsEvent.claimCardClick(
                 claimId: self.claim.id,
                 claimStatus: self.claim.claimDetailData.status.rawValue
@@ -52,39 +51,77 @@ struct ClaimPills: View {
     var body: some View {
         HStack {
             ForEach(claim.pills, id: \.text) { claimPill in
-                claimPill.pill
+                hPillFill(
+                    text: claimPill.text.capitalized,
+                    textColor: claimPill.type.textColor,
+                    backgroundColor: claimPill.type.backgroundColor
+                )
             }
         }
     }
 }
-
-extension Claim.ClaimPill {
-    @ViewBuilder
-    var pill: some View {
-        switch self.type {
-        case .open:
-            hPillOutline(text: self.text)
-        case .closed:
-            hPillFill(
-                text: text,
-                textColor: hLabelColor.primary,
-                backgroundColor: hBackgroundColor.primary.inverted
-            )
-            .invertColorScheme
-        case .payment:
-            hPillFill(
-                text: self.text,
-                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
-                backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
-            )
-        case .reopened:
-            hPillFill(
-                text: self.text,
-                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
-                backgroundColor: hTintColor.orangeTwo
-            )
-        case .none:
-            EmptyView()
+extension Claim.ClaimPill.ClaimPillType {
+    @hColorBuilder
+    var textColor: some hColor {
+        switch self {
+        case .none: hTextColorNew.primary
+        case .open: hTextColorNew.primary
+        case .reopened: hSignalColorNew.amberText
+        case .closed: hTextColorNew.negative
+        case .payment: hSignalColorNew.blueText
         }
+    }
+
+    @hColorBuilder
+    var backgroundColor: some hColor {
+        switch self {
+        case .none: hFillColorNew.opaqueTwo
+        case .open: hFillColorNew.opaqueTwo
+        case .reopened: hSignalColorNew.amberHighLight
+        case .closed: hTextColorNew.primary
+        case .payment: hSignalColorNew.blueHighLight
+        }
+    }
+}
+
+struct ClaimStatus_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = GiraffeGraphQL.ClaimStatusCardsQuery.Data.init(
+            claimsStatusCards: [
+                .init(
+                    id: "id",
+                    pills: [
+                        .init(text: "TEXT", type: .open),
+                        .init(text: "TEXT 2", type: .closed),
+                        .init(text: "TEXT 3", type: .payment),
+                        .init(text: "TEXT 4", type: .reopened),
+                    ],
+                    title: "TITLE",
+                    subtitle: "SUBTITLE",
+                    progressSegments: [
+                        .init(text: "STATUS 1", type: .currentlyActive),
+                        .init(text: "Status 2", type: .futureInactive),
+                        .init(text: "Status 3", type: .paid),
+                        .init(text: "Status 4", type: .pastInactive),
+                        .init(text: "Status 5", type: .reopened),
+                    ],
+                    claim: .init(
+                        id: "ID",
+                        submittedAt: "2023-11-23",
+                        status: .beingHandled,
+                        progressSegments: [.init(text: "PROGRESS", type: .currentlyActive)],
+                        statusParagraph: "STATUS"
+                    )
+                )
+            ]
+        )
+        let claimData = ClaimData(cardData: data)
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: claimData.claims.first!)
+            ClaimStatus(claim: claimData.claims.first!)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
     }
 }

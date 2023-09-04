@@ -42,3 +42,8 @@ public class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
 
     public init() {}
 }
+
+public enum GeneralLocalizedError: LocalizedError {
+    case general(message: String)
+
+}

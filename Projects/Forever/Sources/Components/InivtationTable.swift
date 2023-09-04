@@ -5,52 +5,43 @@ import hCoreUI
 import hGraphQL
 
 extension ForeverInvitation {
-    var imageAsset: ImageAsset {
+    @hColorBuilder var statusColor: some hColor {
         switch self.state {
         case .active:
-            return Asset.activeInvite
+            hSignalColorNew.greenElement
         case .pending:
-            return Asset.pendingInvite
+            hSignalColorNew.amberElement
         case .terminated:
-            return Asset.terminatedInvite
-        }
-    }
-
-    @hColorBuilder var nameLabelColor: some hColor {
-        switch self.state {
-        case .active, .pending:
-            hLabelColor.primary
-        case .terminated:
-            hLabelColor.tertiary
+            hSignalColorNew.redElement
         }
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.state {
         case .active:
-            hLabelColor.primary
+            hTextColorNew.primary
         case .pending, .terminated:
-            hLabelColor.tertiary
+            hTextColorNew.tertiary
         }
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.state {
         case .active, .pending:
-            hLabelColor.secondary
+            hTextColorNew.tertiary
         case .terminated:
-            hLabelColor.tertiary
+            hTextColorNew.tertiary
         }
     }
 
     var discountLabelText: String {
         switch self.state {
         case .active:
-            return self.discount?.formattedAmount ?? ""
+            return self.discount?.negative.formattedAmount ?? ""
         case .pending:
-            return L10n.ReferallsInviteeStates.awaiting
+            return L10n.referralPendingStatusLabel
         case .terminated:
-            return L10n.ReferallsInviteeStates.terminated
+            return L10n.referralTerminatedStatusLabel
         }
     }
 }
@@ -62,20 +53,76 @@ struct InvitationTable: View {
         PresentableStoreLens(
             ForeverStore.self,
             getter: { state in
-                state.foreverData?.invitations ?? []
+                state.foreverData
             }
-        ) { invitations in
-            if !invitations.isEmpty {
-                hSection(invitations, id: \.name) { row in
-                    InvitationRow(row: row)
+        ) { foreverData in
+            if let foreverData {
+                if !foreverData.invitations.isEmpty {
+                    hSection {
+                        hRow {
+                            hText(L10n.foreverReferralListLabel)
+                        }
+                        ForEach(foreverData.invitations, id: \.hashValue) { row in
+                            InvitationRow(row: row)
+                        }
+                        getOtherDiscountsRow(foreverData)
+                        getTotalRow(foreverData)
+                    }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.horizontal, -16)
                 }
-                .withHeader {
-                    hText(L10n.ReferralsActive.Invited.title, style: .title3)
-                }
-                .sectionContainerStyle(.transparent)
             }
         }
+    }
 
+    @ViewBuilder
+    private func getOtherDiscountsRow(_ foreverData: ForeverData) -> some View {
+        if let otherDiscounts = foreverData.otherDiscounts {
+            hRow {
+                hText(L10n.Referrals.yourOtherDiscounts)
+            }
+            .withCustomAccessory {
+                HStack {
+                    Spacer()
+                    hText("\(otherDiscounts.negative.formattedAmount)")
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func getTotalRow(_ foreverData: ForeverData) -> some View {
+        if foreverData.grossAmount.amount != foreverData.netAmount.amount {
+            hRow {
+                hText(L10n.foreverTabTotalDiscountLabel)
+            }
+            .withCustomAccessory {
+                HStack {
+                    Spacer()
+                    getGrossField(foreverData.grossAmount.formattedAmount.addPerMonth)
+                    hText("\(foreverData.netAmount.formattedAmount)/\(L10n.monthAbbreviationLabel)")
+                }
+            }
+            .hWithoutDivider
+        }
+    }
+
+    @ViewBuilder
+    private func getGrossField(_ text: String) -> some View {
+        if #available(iOS 15.0, *) {
+            Text(attributedString(text))
+                .foregroundColor(hTextColorNew.secondary)
+                .modifier(hFontModifier(style: .standard))
+        } else {
+            hText(text).foregroundColor(hTextColorNew.secondary)
+        }
+    }
+
+    @available(iOS 15, *)
+    private func attributedString(_ text: String) -> AttributedString {
+        let attributes = AttributeContainer([NSAttributedString.Key.strikethroughStyle: 1])
+        let result = AttributedString(text, attributes: attributes)
+        return result
     }
 }
 
@@ -84,10 +131,10 @@ struct InvitationRow: View {
 
     var body: some View {
         hRow {
-            HStack {
-                Image(uiImage: row.imageAsset.image).resizable().frame(width: 18, height: 18)
+            HStack(spacing: 8) {
+                Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
-                    hText(row.name).foregroundColor(row.nameLabelColor)
+                    hText(row.name).foregroundColor(hTextColorNew.primary)
                     if row.invitedByOther {
                         hText(L10n.ReferallsInviteeStates.invitedYou, style: .subheadline)
                             .foregroundColor(row.invitedByOtherLabelColor)
@@ -99,7 +146,34 @@ struct InvitationRow: View {
             Spacer()
             hText(row.discountLabelText).foregroundColor(row.discountLabelColor)
         })
-        .verticalPadding(row.invitedByOther ? 14 : 21)
+    }
+}
+
+struct InvitationTable_Previews: PreviewProvider {
+    @PresentableStore static var store: ForeverStore
+
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return InvitationTable()
+            .onAppear {
+                store.send(
+                    .setForeverData(
+                        data: .init(
+                            grossAmount: .sek(200),
+                            netAmount: .sek(160),
+                            potentialDiscountAmount: .sek(50),
+                            otherDiscounts: .sek(20),
+                            discountCode: "CODE",
+                            invitations: [
+                                .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
+                                .init(name: "Second", state: .active, invitedByOther: false),
+                                .init(name: "Third", state: .terminated, invitedByOther: false),
+                                .init(name: "Fourth", state: .pending, invitedByOther: false),
+                            ]
+                        )
+                    )
+                )
+            }
     }
 }
 
@@ -117,12 +191,28 @@ struct InvitationRow_Previews: PreviewProvider {
         invitedByOther: false
     )
 
+    static var mockRow3: ForeverInvitation = .init(
+        name: "Mock",
+        state: .pending,
+        discount: MonetaryAmount(amount: "10.0", currency: "SEK"),
+        invitedByOther: false
+    )
+
+    static var mockRow4: ForeverInvitation = .init(
+        name: "Mock",
+        state: .terminated,
+        discount: MonetaryAmount(amount: "10.0", currency: "SEK"),
+        invitedByOther: false
+    )
+
     static var previews: some View {
-        hSection {
-            InvitationRow(row: mockRow2)
+
+        Localization.Locale.currentLocale = .en_SE
+        return hSection {
             InvitationRow(row: mockRow)
             InvitationRow(row: mockRow2)
-            InvitationRow(row: mockRow2)
+            InvitationRow(row: mockRow3)
+            InvitationRow(row: mockRow4)
         }
         .sectionContainerStyle(.transparent)
         .previewLayout(PreviewLayout.sizeThatFits)
