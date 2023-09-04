@@ -19,7 +19,7 @@ struct OtherService: View {
                     ForEach(otherServices, id: \.id) { claim in
                         hSection {
                             hRow {
-                                hText(claim.displayTitle)
+                                hText(claim.displayTitle, style: .title3)
                             }
                             .withChevronAccessory
                             .onTap {
@@ -28,19 +28,21 @@ struct OtherService: View {
                                 } else if claim.id == CommonClaim.moving.id {
                                     store.send(.openMovingFlow)
                                 } else if claim.id == CommonClaim.travelInsurance.id {
-                                    do {
-                                        Task {
-                                            let data = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                    Task {
+                                        do {
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
                                             store.send(.openTravelInsurance)
+                                        } catch _ {
+                                            //TODO: ERROR
                                         }
-                                    } catch let _ {
-                                        //TODO: ERROR
                                     }
+
                                 } else {
                                     store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: true))
                                 }
                             }
                         }
+                        .sectionContainerStyle((claim.layout.emergency?.isAlert ?? false) ? .alert : .opaque)
                     }
                 }
             }
@@ -57,7 +59,6 @@ struct OtherService: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.vertical, 16)
             }
-
         }
     }
 }

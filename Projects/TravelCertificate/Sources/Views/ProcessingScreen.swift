@@ -40,7 +40,9 @@ struct ProcessingScreen: View {
                     VStack(spacing: 0) {
                         hText(L10n.TravelCertificate.travelCertificateReady)
                         hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColorNew.secondary)
+                            .multilineTextAlignment(.center)
                     }
+                    .padding(.horizontal, 16)
                 }
                 Spacer()
                 Spacer()
@@ -149,11 +151,7 @@ struct SuccessScreen_Previews: PreviewProvider {
             .onAppear {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postTravelInsurance)
-
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                //                    store.removeLoading(for: .postTravelInsurance)
                 store.setError("error", for: .postTravelInsurance)
-                //                }
             }
     }
 }

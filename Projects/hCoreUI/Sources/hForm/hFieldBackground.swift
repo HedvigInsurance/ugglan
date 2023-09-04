@@ -96,7 +96,7 @@ struct hFieldLabel: View {
         return hText(placeholder, style: size == .large ? .title3 : .standard)
             .foregroundColor(getTextColor())
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-            .frame(height: sizeToScaleFrom + 6)
+            .frame(height: sizeToScaleFrom)
             .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
             .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }

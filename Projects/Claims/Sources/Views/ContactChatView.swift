@@ -45,15 +45,9 @@ struct ContactChatView: View {
 
 struct ChatButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        //        ZStack {
-        //            RoundedRectangle(cornerRadius: .defaultCornerRadius)
-        //                .fill(hBackgroundColor.primary)
-        //                .frame(width: 40, height: 40)
-
         hCoreUIAssets.chatQuickNav.view
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 32, height: 32)
-        //        }
     }
 }

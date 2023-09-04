@@ -68,9 +68,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                 .background(hGrayscaleColor.one)
                 .cornerRadius(.defaultCornerRadius)
             }
-            .onTap {
-                store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
-            }
         }
     }
 
@@ -150,10 +147,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                 .cornerRadius(.defaultCornerRadius)
             }
         }
-        .onTap {
-            store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
-        }
-
     }
 
     @ViewBuilder func displayTypeOfDamageField() -> some View {

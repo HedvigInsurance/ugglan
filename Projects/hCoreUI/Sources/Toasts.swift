@@ -72,7 +72,7 @@ extension Toast: Viewable {
             view.image = icon
             let symbolColor = UIColor(dynamic: { trait -> UIColor in
                 UIColor(
-                    hSignalColorNew.blueElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColorNew.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                 )
             })
@@ -130,7 +130,7 @@ extension Toast: Viewable {
         stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 11)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 11, verticalInset: 15.5)
         stackView.spacing = 8.25
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
@@ -138,7 +138,6 @@ extension Toast: Viewable {
         containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
-            //            make.top.bottom.trailing.leading.equalToSuperview()
             make.top.bottom.equalToSuperview()
             make.centerX.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview()
@@ -253,23 +252,6 @@ extension Toasts: Viewable {
 
         containerView.snp.makeConstraints { make in
             make.height.equalTo(0)
-        }
-
-        self.bag += containerView.subviewsSignal.onValue { subviews in
-            containerView.isHidden = subviews.isEmpty
-
-            containerView.snp.updateConstraints { make in
-                make.height.equalTo(
-                    subviews.max { (lhs, rhs) -> Bool in
-                        if lhs.frame.height > rhs.frame.height {
-                            return true
-                        }
-
-                        return false
-                    }?
-                    .frame.height ?? 0
-                )
-            }
         }
 
         bag +=
