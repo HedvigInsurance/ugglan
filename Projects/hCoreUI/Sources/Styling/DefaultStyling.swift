@@ -52,9 +52,17 @@ class NavBar: UINavigationBar {
                 if stringFromClass.contains("UIProgressView") {
                     subview.frame = CGRect(
                         x: subview.frame.origin.x,
-                        y: -4,
+                        y: -additionalHeight,
                         width: subview.frame.width,
                         height: subview.frame.height
+                    )
+                }
+                if stringFromClass.contains("BarContent") {
+                    subview.frame = CGRect(
+                        x: 0,
+                        y: additionalHeight,
+                        width: self.frame.width,
+                        height: subview.frame.size.height
                     )
                 }
             }
@@ -64,7 +72,7 @@ class NavBar: UINavigationBar {
 
 public class hNavigationControllerWithLargerNavBar: UINavigationController {
 
-    public static var navigationBarHeight: CGFloat = 90
+    public static var navigationBarHeight: CGFloat = 80
 
     public init() {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
@@ -79,19 +87,26 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
 }
 
 class LargeNavBar: UINavigationBar {
-    var barHeight: CGFloat = 90
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return CGSize(width: UIScreen.main.bounds.size.width, height: 90)
+        return CGSize(
+            width: UIScreen.main.bounds.size.width,
+            height: hNavigationControllerWithLargerNavBar.navigationBarHeight
+        )
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         subviews.forEach { (subview) in
-            if subview.frame.size.height != barHeight {
+            if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
-                    subview.frame = CGRect(x: 0, y: -12, width: self.frame.width, height: barHeight)
+                    subview.frame = CGRect(
+                        x: 0,
+                        y: -6,
+                        width: self.frame.width,
+                        height: hNavigationControllerWithLargerNavBar.navigationBarHeight
+                    )
                 }
             }
         }

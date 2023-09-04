@@ -4,6 +4,7 @@ import Foundation
 import Hero
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -114,34 +115,35 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.startTermination], [.startTermination(contractId: id)]) {
-            hForm {
-                hSection {
-                    ContractRow(
-                        id: id,
-                        allowDetailNavigation: false
-                    )
-                    Picker("View", selection: $context.selected) {
-                        ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title, style: .standardSmall).tag(view)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.top, 16)
-                    .padding(.bottom, 8)
-                }
-                .sectionContainerStyle(.transparent)
-                VStack(spacing: 4) {
-                    ForEach(ContractDetailsViews.allCases) { panel in
-                        if context.trigger == panel {
-                            viewFor(view: panel)
-                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
-                        }
+        hForm {
+            hSection {
+                ContractRow(
+                    id: id,
+                    allowDetailNavigation: false
+                )
+                .fixedSize(horizontal: false, vertical: true)
+                Picker("View", selection: $context.selected) {
+                    ForEach(ContractDetailsViews.allCases) { view in
+                        hText(view.title, style: .standardSmall).tag(view)
                     }
                 }
+                .pickerStyle(.segmented)
                 .padding(.top, 16)
+                .padding(.bottom, 8)
             }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, 8)
+            VStack(spacing: 4) {
+                ForEach(ContractDetailsViews.allCases) { panel in
+                    if context.trigger == panel {
+                        viewFor(view: panel)
+                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                            .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                    }
+                }
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 8)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
         .presentableStoreLensAnimation(.default)

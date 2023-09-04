@@ -1,8 +1,10 @@
+import Combine
 import Flow
 import Form
 import Foundation
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -41,8 +43,9 @@ enum Documents: CaseIterable {
 }
 
 struct ContractDocumentsView: View {
-    @PresentableStore var store: ContractStore
-
+    @PresentableStore var contractStore: ContractStore
+    @PresentableStore var terminationContractStore: TerminationContractStore
+    @StateObject private var vm = ContractsDocumentViewModel()
     let id: String
 
     var body: some View {
@@ -74,7 +77,7 @@ struct ContractDocumentsView: View {
                                 Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                             }
                             .onTap {
-                                store.send(
+                                contractStore.send(
                                     .contractDetailNavigationAction(action: .document(url: url, title: document.title))
                                 )
                             }
@@ -92,17 +95,33 @@ struct ContractDocumentsView: View {
             ) { contract in
                 if (contract?.currentAgreement?.activeTo) == nil {
                     hSection {
-                        hButton.LargeButtonGhost {
-                            store.send(.startTermination(contractId: id))
-                        } content: {
-                            hText(L10n.terminationButton, style: .body)
-                                .foregroundColor(hTextColorNew.secondary)
-                        }
+                        LoadingButtonWithContent(
+                            TerminationContractStore.self,
+                            .startTermination,
+                            buttonAction: {
+                                terminationContractStore.send(
+                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                )
+                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
+                                    if case let .navigationAction(navigationAction) = action {
+                                        contractStore.send(.startTermination(action: navigationAction))
+                                        self.vm.cancellable = nil
+                                    }
+                                }
+                            },
+                            content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTextColorNew.secondary)
+                            },
+                            buttonStyleSelect: .textButton
+                        )
                     }
                     .sectionContainerStyle(.transparent)
-                    .padding(.vertical, 16)
                 }
             }
         }
     }
+}
+private class ContractsDocumentViewModel: ObservableObject {
+    var cancellable: AnyCancellable?
 }

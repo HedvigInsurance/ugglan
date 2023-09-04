@@ -5,6 +5,7 @@ import hCore
 public struct hRadioField<Content: View>: View {
     private let content: Content
     private let id: String
+    private var useAnimation: Bool
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
@@ -13,12 +14,14 @@ public struct hRadioField<Content: View>: View {
         id: String,
         content: @escaping () -> Content,
         selected: Binding<String?>,
-        error: Binding<String?>? = nil
+        error: Binding<String?>? = nil,
+        useAnimation: Bool = false
     ) {
         self.id = id
         self.content = content()
         self._selected = selected
         self._error = error ?? Binding.constant(nil)
+        self.useAnimation = useAnimation
     }
 
     public var body: some View {
@@ -42,9 +45,11 @@ public struct hRadioField<Content: View>: View {
             withAnimation(.none) {
                 self.selected = id
             }
-            self.animate = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.animate = false
+            if useAnimation {
+                self.animate = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.animate = false
+                }
             }
         }
     }

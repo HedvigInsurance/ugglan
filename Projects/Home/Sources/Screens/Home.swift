@@ -43,7 +43,6 @@ extension HomeView {
 
     public var body: some View {
         hForm {
-            ImportantMessagesView()
             centralContent
         }
         .setHomeNavigationBars(
@@ -73,6 +72,7 @@ extension HomeView {
         }
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
+        .hFormMergeBottomViewWithContentIfNeeded
         .onReceive(store.stateSignal.plain().publisher) { value in
             self.toolbarOptionTypes = value.toolbarOptionTypes
         }
@@ -122,11 +122,13 @@ extension HomeView {
             ) { memberStateData in
                 switch memberStateData.state {
                 case .active:
+                    ImportantMessagesView()
                     statusCard
                     deletedInfoView
                     startAClaimButton
                     openOtherServices
                 case .future:
+                    ImportantMessagesView()
                     FutureSectionInfoView(memberName: memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:

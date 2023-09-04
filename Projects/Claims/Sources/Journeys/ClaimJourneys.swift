@@ -45,8 +45,6 @@ public class ClaimJourneys {
                 openLocationScreen().configureTitle(L10n.Claims.Incident.Screen.location)
             } else if case .openUpdateAppScreen = navigationAction {
                 openUpdateAppTerminationScreen().withJourneyDismissButton
-            } else if case let .openDatePicker(type) = navigationAction {
-                openDatePickerScreen(type: type)
             } else if case .openTriagingEntrypointScreen = navigationAction {
                 showClaimEntrypointType().addDismissClaimsFlow()
             } else if case .openTriagingOptionScreen = navigationAction {
@@ -91,27 +89,6 @@ public class ClaimJourneys {
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
-    }
-
-    @JourneyBuilder
-    static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
-        let screen = DatePickerScreen(type: type)
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: screen,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) {
-            action in
-            if case .setNewDate = action {
-                PopJourney()
-            } else if case .setSingleItemPurchaseDate = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
-        }
-        .configureTitle(type.title)
     }
 
     static func openLocationScreen() -> some JourneyPresentation {
@@ -307,9 +284,7 @@ public class ClaimJourneys {
             rootView: SubmitClaimSingleItem()
         ) {
             action in
-            if case .navigationAction(.openDatePicker) = action {
-                openDatePickerScreen(type: .setDateOfPurchase)
-            } else if case .navigationAction(.openBrandPicker) = action {
+            if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
             } else if case .navigationAction(.openPriceInput) = action {
                 openPriceInputScreen()

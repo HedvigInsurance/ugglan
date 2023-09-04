@@ -51,36 +51,35 @@ struct EditContract: View {
                     }
                 }
                 infoView
-            }
-        }
-        .hFormAttachToBottom {
-            hSection {
-                VStack(spacing: 4) {
-                    if selectedType != nil {
-                        hButton.LargeButtonPrimary {
-                            store.send(.dismissEditInfo(type: selectedType))
-                            switch selectedType {
-                            case .coInsured:
-                                store.send(.goToFreeTextChat)
-                            case .changeAddress:
-                                store.send(.goToMovingFlow)
-                            case nil:
-                                break
+                hSection {
+                    VStack(spacing: 4) {
+                        if selectedType != nil {
+                            hButton.LargeButtonPrimary {
+                                store.send(.dismissEditInfo(type: selectedType))
+                                switch selectedType {
+                                case .coInsured:
+                                    store.send(.goToFreeTextChat)
+                                case .changeAddress:
+                                    store.send(.goToMovingFlow)
+                                case nil:
+                                    break
+                                }
+                            } content: {
+                                hText(selectedType?.buttonTitle ?? "", style: .standard)
                             }
+                        }
+                        hButton.LargeButtonText {
+                            store.send(.dismissEditInfo(type: nil))
                         } content: {
-                            hText(selectedType?.buttonTitle ?? "", style: .standard)
+                            hText(L10n.generalCancelButton, style: .standard)
                         }
                     }
-                    hButton.LargeButtonText {
-                        store.send(.dismissEditInfo(type: nil))
-                    } content: {
-                        hText(L10n.generalCancelButton, style: .standard)
-                    }
                 }
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, 16)
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.vertical, 16)
         }
+        .hDisableScroll
         .introspectViewController { vc in
             weak var `vc` = vc
             if self.vc != vc {
@@ -89,11 +88,14 @@ struct EditContract: View {
         }
         .onChange(of: selectedType) { newValue in
             if #available(iOS 16.0, *) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    vc?.sheetPresentationController?
-                        .animateChanges {
-                            vc?.sheetPresentationController?.invalidateDetents()
-                        }
+                for i in 1...3 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 + Double(i) * 0.05) {
+                        vc?.sheetPresentationController?.invalidateDetents()
+                        vc?.sheetPresentationController?
+                            .animateChanges {
+
+                            }
+                    }
                 }
             }
         }
@@ -108,7 +110,7 @@ struct EditContract: View {
                     type: .info
                 )
             }
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .transition(.opacity)
             .sectionContainerStyle(.transparent)
 
         }

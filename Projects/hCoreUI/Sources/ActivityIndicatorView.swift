@@ -277,7 +277,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                 }
             }
         case .textButton:
-            hButton.LargeButtonText {
+            hButton.LargeButtonGhost {
                 if !isLoading {
                     buttonAction()
                 }
@@ -286,6 +286,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                     content()
                 } else {
                     DotsActivityIndicator(.standard)
+                        .useDarkColor
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

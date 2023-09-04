@@ -3,6 +3,7 @@ import Foundation
 import Introspect
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -81,6 +82,7 @@ extension Contracts: View {
     public var body: some View {
         hForm {
             ContractTable(filter: filter)
+                .padding(.top, 8)
         }
         .onReceive(pollTimer) { _ in
             fetch()
@@ -118,6 +120,7 @@ public enum ContractsResult {
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
     case openCrossSellingWebUrl(url: URL)
+    case startNewTermination(type: TerminationNavigationAction)
 }
 
 extension Contracts {
@@ -148,18 +151,8 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .terminationInitialNavigation(navigationAction) = action {
-                if case .openTerminationSuccessScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationSuccessScreen()
-                } else if case .openTerminationSetDateScreen = navigationAction {
-                    TerminationFlowJourney.openSetTerminationDateScreen()
-                } else if case .openTerminationFailScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationFailScreen()
-                } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    TerminationFlowJourney.openUpdateAppTerminationScreen()
-                } else if case .openTerminationDeletionScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationDeletionScreen()
-                }
+            } else if case let .startTermination(navigationAction) = action {
+                resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,
