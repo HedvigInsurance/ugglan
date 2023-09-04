@@ -5,6 +5,10 @@ import SwiftUI
 import UIKit
 import hCore
 
+private enum AnimationKeys {
+    static let bottomAnimationKey = "bottomAnimationKey"
+}
+
 public struct hForm<Content: View>: View {
     @State var bottomAttachedViewHeight: CGFloat = 0
     @State var scrollViewHeight: CGFloat = 0
@@ -41,14 +45,12 @@ public struct hForm<Content: View>: View {
                         GeometryReader { geo in
                             Color.clear
                                 .onReceive(Just(geo.size.height)) { height in
-                                    if mergeBottomViewWithContent {
-                                        if bottomAttachedViewHeight == 0 {
+                                    if bottomAttachedViewHeight == 0 {
+                                        self.bottomAttachedViewHeight = height
+                                    } else {
+                                        withAnimation {
                                             self.bottomAttachedViewHeight = height
-                                        } else {
-                                            withAnimation {
-                                                self.bottomAttachedViewHeight = height
-                                                recalculateHeight()
-                                            }
+                                            recalculateHeight()
                                         }
                                     }
                                 }
@@ -65,19 +67,17 @@ public struct hForm<Content: View>: View {
                     .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
                     .ignoresSafeArea(.all)
                 bottomAttachedView
-                    .matchedGeometryEffect(id: "bottom", in: animation)
+                    .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
                     .background(
                         GeometryReader { geo in
                             Color.clear
                                 .onReceive(Just(geo.size.height)) { height in
-                                    if !mergeBottomViewWithContent {
-                                        if bottomAttachedViewHeight == 0 {
+                                    if bottomAttachedViewHeight == 0 {
+                                        self.bottomAttachedViewHeight = height
+                                    } else {
+                                        withAnimation {
                                             self.bottomAttachedViewHeight = height
-                                        } else {
-                                            withAnimation {
-                                                self.bottomAttachedViewHeight = height
-                                                recalculateHeight()
-                                            }
+                                            recalculateHeight()
                                         }
                                     }
                                 }
@@ -125,7 +125,7 @@ public struct hForm<Content: View>: View {
                 )
                 if mergeBottomViewWithContent {
                     bottomAttachedView
-                        .matchedGeometryEffect(id: "bottom", in: animation)
+                        .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
                 }
             }
             .frame(maxWidth: .infinity)
