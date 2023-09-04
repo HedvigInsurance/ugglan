@@ -3,38 +3,52 @@ import Presentation
 import hCore
 import hCoreUI
 
-public struct TerminationFlowJourney {
+public class TerminationFlowJourney {
+
+    public static func start(for action: TerminationNavigationAction) -> some JourneyPresentation {
+        getScreenForAction(for: .navigationAction(action: action), withHidesBack: true)
+    }
 
     @JourneyBuilder
-    public static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
-        GroupJourney {
-            if case let .navigationAction(navigationAction) = action {
-                if case .openTerminationSuccessScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationSuccessScreen()
-                } else if case .openTerminationSetDateScreen = navigationAction {
-                    TerminationFlowJourney.openSetTerminationDateScreen()
-                } else if case .openTerminationFailScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationFailScreen()
-                } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    TerminationFlowJourney.openUpdateAppTerminationScreen()
-                } else if case .openTerminationDeletionScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationDeletionScreen()
-                }
-            } else if case .dismissTerminationFlow = action {
-                DismissJourney()
-            } else if case .goToFreeTextChat = action {
-                DismissJourney()
+    static func getScreenForAction(
+        for action: TerminationContractAction,
+        withHidesBack: Bool = false
+    ) -> some JourneyPresentation {
+        if withHidesBack {
+            getScreen(for: action).hidesBackButton
+        } else {
+            getScreen(for: action).showsBackButton
+        }
+    }
+
+    @JourneyBuilder
+    static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
+        if case let .navigationAction(navigationAction) = action {
+            if case .openTerminationSuccessScreen = navigationAction {
+                TerminationFlowJourney.openTerminationSuccessScreen()
+            } else if case .openSetTerminationDateScreen = navigationAction {
+                TerminationFlowJourney.openSetTerminationDateScreen()
+            } else if case .openTerminationFailScreen = navigationAction {
+                TerminationFlowJourney.openTerminationFailScreen()
+            } else if case .openTerminationUpdateAppScreen = navigationAction {
+                TerminationFlowJourney.openUpdateAppTerminationScreen()
+            } else if case .openTerminationDeletionScreen = navigationAction {
+                TerminationFlowJourney.openTerminationDeletionScreen()
             }
+        } else if case .dismissTerminationFlow = action {
+            DismissJourney()
+        } else if case .goToFreeTextChat = action {
+            DismissJourney()
         }
     }
 
     static func openSetTerminationDateScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: SetTerminationDate(
                 onSelected: {
                     terminationDate in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
                     store.send(.sendTerminationDate)
                 }
@@ -50,7 +64,7 @@ public struct TerminationFlowJourney {
     static func openTerminationSuccessScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationSuccessScreen()
         ) {
             action in
@@ -59,14 +73,14 @@ public struct TerminationFlowJourney {
         .withJourneyDismissButton
         .hidesBackButton
         .onDismiss {
-            @PresentableStore var store: ContractStore
+            @PresentableStore var store: TerminationContractStore
             store.send(.dismissTerminationFlow)
         }
     }
 
     static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationFailScreen()
         ) {
             action in
@@ -78,10 +92,10 @@ public struct TerminationFlowJourney {
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: UpdateAppScreenOld(
                 onSelected: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }
             ),
@@ -96,10 +110,10 @@ public struct TerminationFlowJourney {
 
     static func openTerminationDeletionScreen() -> some JourneyPresentation {
         HostingJourney(
-            ContractStore.self,
+            TerminationContractStore.self,
             rootView: TerminationDeleteScreen(
                 onSelected: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.deleteTermination)
                 }
             ),

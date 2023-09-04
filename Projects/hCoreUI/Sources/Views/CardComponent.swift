@@ -64,7 +64,6 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
         .background(
             Squircle.default()
                 .fill(hFillColorNew.opaqueOne)
-                .hShadow()
         )
         .onTapGesture {
             if let onSelected = onSelected {
@@ -82,7 +81,7 @@ struct CardComponent_Previews: PreviewProvider {
                 onSelected: {
 
                 },
-                mainContent: Text("T"),  //ClaimPills(claim: claim),
+                mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
                 bottomComponent: {

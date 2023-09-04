@@ -179,7 +179,7 @@ public struct PresentableLoadingStoreLens<
         ) { value in
             let currentValue = value.first(where: { $0.key == loadingState })?.value
             if let animation {
-                withAnimation {
+                withAnimation(animation) {
                     self.state = currentValue
                 }
             } else {

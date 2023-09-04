@@ -46,6 +46,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         Squircle.default()
                             .fill(hFillColorNew.opaqueOne)
                     )
+                    .padding(.vertical, 12)
                     .padding(.leading, 16)
                     .padding(.trailing, 88)
                     .frame(maxWidth: .infinity, alignment: .leading)

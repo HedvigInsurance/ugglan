@@ -23,14 +23,10 @@ public struct MyPaymentsView: View {
         LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment], vm.getActionsToSendToStore()) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
-                    .slideUpFadeAppearAnimation()
                     .padding(.top, 8)
                 PaymentView(paymentType: paymentType)
-                    .slideUpFadeAppearAnimation()
                 PayoutView(paymentType: paymentType)
-                    .slideUpFadeAppearAnimation(delay: 0.4)
                 bottomButtonView
-                    .slideUpFadeAppearAnimation(delay: 0.4)
             }
             .sectionContainerStyle(.transparent)
         }

@@ -2,56 +2,55 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct TerminationDeleteScreen: View {
-    @PresentableStore var store: ContractStore
+struct TerminationDeleteScreen: View {
+    @PresentableStore var store: TerminationContractStore
     let onSelected: () -> Void
 
-    public init(
+    init(
         onSelected: @escaping () -> Void
     ) {
         self.onSelected = onSelected
     }
 
-    public var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.deleteTermination], [.deleteTermination]) {
+    var body: some View {
+        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
-                    ContractStore.self,
+                    TerminationContractStore.self,
                     getter: { state in
                         state.terminationDeleteStep
                     }
                 ) { termination in
 
-                    Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
-                        .padding([.bottom, .top], 4)
-
-                    PresentableStoreLens(
-                        ContractStore.self
-                    ) { state in
-                        state.terminationContractId ?? ""
-                    } _: { value in
+                    VStack(spacing: 8) {
+                        Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 4)
 
                         PresentableStoreLens(
-                            ContractStore.self
+                            TerminationContractStore.self
                         ) { state in
-                            state.contractForId(value)
+                            state.terminationContractId ?? ""
                         } _: { value in
 
-                            hText(
-                                L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
-                                style: .title2
-                            )
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 16)
-                            .padding(.bottom, 4)
+                            PresentableStoreLens(
+                                TerminationContractStore.self
+                            ) { state in
+                                state.contractName
+                            } _: { name in
+                                hText(
+                                    L10n.terminationContractDeletionAlertDescription(name ?? ""),
+                                    style: .title2
+                                )
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.bottom, 4)
+                            }
                         }
-                    }
 
-                    hText(termination?.disclaimer ?? "", style: .body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
+                        hText(termination?.disclaimer ?? "", style: .body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.leading, 16)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

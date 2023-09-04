@@ -15,16 +15,7 @@ public struct MarqueeText: View {
     public var body: some View {
         let stringWidth = text.widthOfString(usingFont: font)
         let stringHeight = text.heightOfString(usingFont: font)
-
-        let animation =
-            Animation
-            .easeInOut(duration: Double(stringWidth) / 50)
-            .delay(startDelay)
-            .repeatForever(autoreverses: true)
-
-        let nullAnimation =
-            Animation
-            .linear(duration: 0)
+        let nullAnimation = Animation.linear(duration: 0)
 
         return ZStack {
             GeometryReader { geo in
@@ -33,7 +24,7 @@ public struct MarqueeText: View {
                         Text(self.text)
                             .lineLimit(1)
                             .font(.init(font))
-                            .offset(x: 3)
+                            .offset(x: 0)
                             .offset(x: self.animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
                             .animation(
                                 self.animate

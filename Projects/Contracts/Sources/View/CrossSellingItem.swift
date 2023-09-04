@@ -40,7 +40,7 @@ struct CrossSellingItem: View {
                         font: Fonts.fontFor(style: .standardSmall),
                         leftFade: 3,
                         rightFade: 3,
-                        startDelay: 0
+                        startDelay: 2
                     )
                     .foregroundColor(hTextColorNew.secondary)
                 }

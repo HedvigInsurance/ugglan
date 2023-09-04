@@ -13,7 +13,6 @@ struct ClaimStatus: View {
     var tapAction: (Claim) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
-
             _ = hAnalyticsEvent.claimCardClick(
                 claimId: self.claim.id,
                 claimStatus: self.claim.claimDetailData.status.rawValue
@@ -53,7 +52,7 @@ struct ClaimPills: View {
         HStack {
             ForEach(claim.pills, id: \.text) { claimPill in
                 hPillFill(
-                    text: claimPill.text,
+                    text: claimPill.text.capitalized,
                     textColor: claimPill.type.textColor,
                     backgroundColor: claimPill.type.backgroundColor
                 )

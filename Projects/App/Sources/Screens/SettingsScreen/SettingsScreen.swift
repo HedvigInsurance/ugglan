@@ -56,7 +56,7 @@ struct SettingsScreen: View {
                     .padding(.vertical, 16)
 
             }
-            .padding(.top, 16)
+            .padding(.top, 8)
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
