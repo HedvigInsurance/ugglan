@@ -66,15 +66,11 @@ public enum ContractAction: ActionProtocol, Hashable {
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
     case startTermination(action: TerminationNavigationAction)
-
-    case getMoveIntent
-    case setMoveIntent
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
     case fetchContractBundles
     case fetchContracts
-    case fetchMoveIntent
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {

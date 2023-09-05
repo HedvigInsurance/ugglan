@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct MovingFlowSelectAddress: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: MoveFlowStore
     @State var type: MovingFlowSelectAddressFieldType?
     @State var address: String = ""
     @State var postalCode: String = ""

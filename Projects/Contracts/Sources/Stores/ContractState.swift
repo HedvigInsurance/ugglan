@@ -19,8 +19,6 @@ public struct ContractState: StateProtocol {
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
 
-    var movingFlowModel: MovingFlowModel?
-
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
             .first(where: { contract in

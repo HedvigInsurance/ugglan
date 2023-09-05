@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct MovingFlowHousingType: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: MoveFlowStore
     let housingTypes = ["Bostadsrätt", "Hyresrätt", "Villa"]
     @State var isSelected: String = ""
 

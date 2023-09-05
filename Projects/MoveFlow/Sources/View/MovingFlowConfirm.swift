@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct MovingFlowConfirm: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: MoveFlowStore
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
 

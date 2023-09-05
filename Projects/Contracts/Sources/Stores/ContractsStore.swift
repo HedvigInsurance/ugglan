@@ -93,13 +93,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .setFocusedCrossSell(focusedCrossSell: crossSell)
             ]
             .emitEachThenEnd
-        case .getMoveIntent:
-            setLoading(for: .fetchMoveIntent)
-            self.send(.setMoveIntent)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                return disposeBag
-            }
+        //        case .getMoveIntent:
+        //            setLoading(for: .fetchMoveIntent)
+        //            self.send(.setMoveIntent)
+        //            return FiniteSignal { callback in
+        //                let disposeBag = DisposeBag()
+        //                return disposeBag
+        //            }
         default:
             break
         }
@@ -137,41 +137,41 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .flatMap { $0 }
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
-        case .setMoveIntent:
-            removeLoading(for: .fetchMoveIntent)
-            newState.movingFlowModel = MovingFlowModel(
-                id: "1",
-                minMovingDate: "2023-05-13",
-                maxMovingDate: "2024-05-13",
-                numberCoInsured: 2,
-                currentHomeAddresses: MoveAddress(
-                    id: "111",
-                    street: "Tullingebergsvägen",
-                    postalCode: "14645",
-                    city: "Tullinge",
-                    bbrId: "11",
-                    apartmentNumber: "13",
-                    floor: "1"
-                ),
-                quotes: Quotes(
-                    address: MoveAddress(
-                        id: "2",
-                        street: "Nyvägen 3",
-                        postalCode: "11111",
-                        city: "Stockholm",
-                        bbrId: "3",
-                        apartmentNumber: "3",
-                        floor: "3"
-                    ),
-                    premium: MonetaryAmount(
-                        amount: 223,
-                        currency: "SEK"
-                    ),
-                    numberCoInsured: 2,
-                    startDate: "2024-05-22",
-                    termsVersion: TermsVersion(id: "")
-                )
-            )
+        //        case .setMoveIntent:
+        //            removeLoading(for: .fetchMoveIntent)
+        //            newState.movingFlowModel = MovingFlowModel(
+        //                id: "1",
+        //                minMovingDate: "2023-05-13",
+        //                maxMovingDate: "2024-05-13",
+        //                numberCoInsured: 2,
+        //                currentHomeAddresses: MoveAddress(
+        //                    id: "111",
+        //                    street: "Tullingebergsvägen",
+        //                    postalCode: "14645",
+        //                    city: "Tullinge",
+        //                    bbrId: "11",
+        //                    apartmentNumber: "13",
+        //                    floor: "1"
+        //                ),
+        //                quotes: Quotes(
+        //                    address: MoveAddress(
+        //                        id: "2",
+        //                        street: "Nyvägen 3",
+        //                        postalCode: "11111",
+        //                        city: "Stockholm",
+        //                        bbrId: "3",
+        //                        apartmentNumber: "3",
+        //                        floor: "3"
+        //                    ),
+        //                    premium: MonetaryAmount(
+        //                        amount: 223,
+        //                        currency: "SEK"
+        //                    ),
+        //                    numberCoInsured: 2,
+        //                    startDate: "2024-05-22",
+        //                    termsVersion: TermsVersion(id: "")
+        //                )
+        //            )
         default:
             break
         }

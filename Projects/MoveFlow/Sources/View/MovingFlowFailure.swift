@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct MovingFlowFailure: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: MoveFlowStore
     var body: some View {
         hForm {
             Image(uiImage: hCoreUIAssets.warningTriangle.image)
