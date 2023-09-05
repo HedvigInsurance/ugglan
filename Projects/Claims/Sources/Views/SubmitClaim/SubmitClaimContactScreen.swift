@@ -1,11 +1,13 @@
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimContactScreen: View {
+public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
     @State var type: ClaimsFlowContactType?
+    @State var keyboardEnabled: Bool = false
 
     public init(
         model: FlowClaimPhoneNumberStepModel
@@ -14,7 +16,7 @@ public struct SubmitClaimContactScreen: View {
     }
     public var body: some View {
         hForm {}
-            .hFormTitle(.small, .customTitle, L10n.claimsConfirmNumberTitle)
+            .hFormTitle(.small, .title1, L10n.claimsConfirmNumberTitle)
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     hSection {
@@ -26,19 +28,26 @@ public struct SubmitClaimContactScreen: View {
                             placeholder: L10n.phoneNumberRowTitle
                         )
                     }
+                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                        keyboardEnabled = newIsKeyboardEnabled
+                    }
                     .sectionContainerStyle(.transparent)
                     .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
                     LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
-                        store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
-                        UIApplication.dismissKeyboard()
+                        if keyboardEnabled {
+                            UIApplication.dismissKeyboard()
+                        } else {
+                            store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
+                            UIApplication.dismissKeyboard()
+                        }
                     } content: {
-                        hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
+                        hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                     }
                     .frame(maxWidth: .infinity, alignment: .bottom)
                     .padding(.horizontal, 16)
                 }
+                .padding(.bottom, 16)
             }
-            .hUseNewStyle
     }
 }
 
@@ -55,4 +64,23 @@ enum ClaimsFlowContactType: hTextFieldFocusStateCompliant {
     }
 
     case phoneNumber
+}
+
+protocol KeyboardReadable {
+    var keyboardPublisher: AnyPublisher<Bool, Never> { get }
+}
+
+extension KeyboardReadable {
+    var keyboardPublisher: AnyPublisher<Bool, Never> {
+        Publishers.Merge(
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillShowNotification)
+                .map { _ in true },
+
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillHideNotification)
+                .map { _ in false }
+        )
+        .eraseToAnyPublisher()
+    }
 }

@@ -4,9 +4,6 @@ import hCore
 
 public struct CardComponent<MainContent, BottomContent, MiddleContent>: View
 where MainContent: View, BottomContent: View, MiddleContent: View {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
-    @Environment(\.hCardComponentOptions) var options
-
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
     let middleContent: MiddleContent?
@@ -32,40 +29,39 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: 16) {
+            HStack(alignment: .center) {
                 mainContent
                 middleContent
-                if !options.hideArrow {
-                    Spacer()
+                Spacer()
+                if onSelected != nil {
                     hCoreUIAssets.chevronRight.view
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(hTextColorNew.secondary)
                 }
             }
             .padding(.horizontal, 16)
-            if let title = title {
-                Spacer().frame(height: 20)
-                hText(title)
-                    .padding([.leading, .trailing], 16)
+            .padding(.bottom, 16)
+            VStack(alignment: .leading, spacing: 0) {
+                if let title = title {
+                    hText(title)
+                }
+                hText(subTitle ?? " ", style: .standardSmall)
+                    .foregroundColor(hTextColorNew.secondary)
+
             }
-            if let subTitle = subTitle {
-                Spacer().frame(height: 4)
-                hText(subTitle, style: .caption1)
-                    .foregroundColor(hLabelColor.secondary)
-                    .padding([.leading, .trailing], 16)
-            }
+            .padding([.leading, .trailing], 16)
+
             Spacer().frame(height: 20)
-            if options.paddingOnDivider {
-                SwiftUI.Divider()
-                    .padding(.horizontal, 16)
-            } else {
-                SwiftUI.Divider()
-            }
+            SwiftUI.Divider()
             Spacer().frame(height: 16)
             bottomComponent()
                 .padding([.leading, .trailing], 16)
         }
-        .padding([.top, .bottom], 16)
+        .padding(.vertical, 16)
         .background(
-            getBackground
+            Squircle.default()
+                .fill(hFillColorNew.opaqueOne)
         )
         .onTapGesture {
             if let onSelected = onSelected {
@@ -76,46 +72,28 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
 
     @ViewBuilder
     var getBackground: some View {
-        if hUseNewStyle {
-            Squircle.default()
-                .fill(hFillColorNew.opaqueOne)
-        } else {
-            Squircle.default()
-                .fill(hBackgroundColor.tertiary)
-                .hShadow()
-        }
+        Squircle.default()
+            .fill(hFillColorNew.opaqueOne)
     }
 }
 
-public enum hCardComponentOptions: Hashable {
-    case hideArrow
-    case paddingOnDivider
-}
-
-extension Set where Element == hCardComponentOptions {
-
-    var hideArrow: Bool {
-        self.contains(.hideArrow)
-    }
-
-    var paddingOnDivider: Bool {
-        self.contains(.paddingOnDivider)
-    }
-}
-
-private struct EnvironmentHCardComponentOptions: EnvironmentKey {
-    static let defaultValue: Set<hCardComponentOptions> = []
-}
-
-extension EnvironmentValues {
-    public var hCardComponentOptions: Set<hCardComponentOptions> {
-        get { self[EnvironmentHCardComponentOptions.self] }
-        set { self[EnvironmentHCardComponentOptions.self] = newValue }
-    }
-}
-
-extension View {
-    public func hCardComponentOptions(_ options: Set<hCardComponentOptions>) -> some View {
-        self.environment(\.hCardComponentOptions, options)
-    }
-}
+//struct CardComponent_Previews: PreviewProvider {
+//    static var previews: some View {
+//        VStack {
+//            Spacer()
+//            CardComponent(
+//                onSelected: {
+//
+//                },
+//                mainContent: Text("T"),
+//                title: "TITLE",
+//                subTitle: "SUBTITLE",
+//                bottomComponent: {
+//                    Text("BOTTOM COMPONENT")
+//                }
+//            )
+//            Spacer()
+//        }
+//        .background(Color.gray)
+//    }
+//}

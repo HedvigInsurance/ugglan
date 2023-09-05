@@ -4,6 +4,7 @@ import Foundation
 import Hero
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -11,16 +12,16 @@ import hCoreUI
 import hGraphQL
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
-    case information
+    case overview
     case coverage
-    case documents
+    case details
 
     var id: String { self.rawValue }
     var title: String {
         switch self {
-        case .information: return L10n.InsuranceDetailsView.tab1Title
+        case .overview: return L10n.InsuranceDetailsView.tab1Title
         case .coverage: return L10n.InsuranceDetailsView.tab2Title
-        case .documents: return L10n.InsuranceDetailsView.tab3Title
+        case .details: return L10n.InsuranceDetailsView.tab3Title
         }
     }
 
@@ -36,7 +37,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
 
-    @Published var selected = Views.information {
+    @Published var selected = Views.overview {
         didSet {
             if previous != selected {
                 insertion = selected.move(previous)
@@ -50,8 +51,8 @@ class TabControllerContext: ObservableObject {
         }
     }
 
-    @Published var trigger = Views.information
-    @Published var previous = Views.information
+    @Published var trigger = Views.overview
+    @Published var previous = Views.overview
     var insertion: AnyTransition = .move(edge: .leading)
     var removal: AnyTransition = .move(edge: .trailing)
 }
@@ -61,41 +62,43 @@ struct ContractDetail: View {
     @EnvironmentObject var context: TabControllerContext
 
     var id: String
+    var title: String
 
-    let contractInformation: ContractInformationView
+    let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
-    let contractDocuments: ContractDocumentsView
+    let contractDetails: ContractDocumentsView
 
-    @State private var selectedView = ContractDetailsViews.information
+    @State private var selectedView = ContractDetailsViews.overview
 
     @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
         switch view {
-        case .information:
-            contractInformation
+        case .overview:
+            contractOverview
         case .coverage:
             contractCoverage
-        case .documents:
-            contractDocuments
+        case .details:
+            contractDetails
         }
     }
 
     init(
-        id: String
+        id: String,
+        title: String
     ) {
         self.id = id
-
-        contractInformation = ContractInformationView(id: id)
+        self.title = title
+        contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(
             id: id
         )
-        contractDocuments = ContractDocumentsView(id: id)
+        contractDetails = ContractDocumentsView(id: id)
 
-        let font = Fonts.fontFor(style: .footnote)
+        let font = Fonts.fontFor(style: .standardSmall)
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.secondaryText),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .normal
@@ -104,7 +107,7 @@ struct ContractDetail: View {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText(false)),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .selected
@@ -112,33 +115,35 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-
-        LoadingViewWithContent(ContractStore.self, [.startTermination]) {
-            hForm {
-                hSection {
-                    ContractRow(
-                        id: id,
-                        allowDetailNavigation: false
-                    )
-                    .padding(.bottom, 20)
-                    Picker("View", selection: $context.selected) {
-                        ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title).tag(view)
-                        }
+        hForm {
+            hSection {
+                ContractRow(
+                    id: id,
+                    allowDetailNavigation: false
+                )
+                .fixedSize(horizontal: false, vertical: true)
+                Picker("View", selection: $context.selected) {
+                    ForEach(ContractDetailsViews.allCases) { view in
+                        hText(view.title, style: .standardSmall).tag(view)
                     }
-                    .pickerStyle(.segmented)
                 }
-                .withoutBottomPadding
-                .sectionContainerStyle(.transparent)
-
+                .pickerStyle(.segmented)
+                .padding(.top, 16)
+                .padding(.bottom, 8)
+            }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, 8)
+            VStack(spacing: 4) {
                 ForEach(ContractDetailsViews.allCases) { panel in
                     if context.trigger == panel {
                         viewFor(view: panel)
                             .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
+                            .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
                     }
                 }
             }
+            .padding(.top, 16)
+            .padding(.bottom, 8)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
         .presentableStoreLensAnimation(.default)
@@ -146,8 +151,9 @@ struct ContractDetail: View {
 }
 
 extension ContractDetail {
-    public func journey(
+    public func journey<ResultJourney: JourneyPresentation>(
         style: PresentationStyle = .default,
+        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
         options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
     ) -> some JourneyPresentation {
         HostingJourney(
@@ -156,27 +162,18 @@ extension ContractDetail {
             style: style,
             options: options
         ) { action in
-            if case let .contractDetailNavigationAction(action: .peril(peril)) = action {
-                Journey(
-                    PerilDetail(peril: peril),
-                    style: .detented(.preferredContentSize, .large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(limit: limit).journey
-            } else if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
+            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
                 Journey(
                     Document(url: url, title: title),
                     style: .detented(.large)
                 )
                 .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .upcomingAgreement(details)) = action {
-                Journey(
-                    UpcomingAddressChangeDetails(details: details),
-                    style: .detented(.scrollViewContentSize, .large)
-                )
-                .withDismissButton
+            } else if case let .contractDetailNavigationAction(action: .openInsuranceUpdate(contract)) = action {
+                UpcomingChangesScreen.journey(contract: contract)
+            } else if case .goToFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
             }
         }
+        .configureTitle(title)
     }
 }

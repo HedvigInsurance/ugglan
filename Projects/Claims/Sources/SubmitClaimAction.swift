@@ -49,7 +49,6 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen
     case openLocationPicker
-    case openDatePicker(type: DatePickerType)
     case openSuccessScreen
     case openSingleItemScreen
     case openSummaryScreen
@@ -70,20 +69,6 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case dismissInfoScreens
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
-
-    public enum DatePickerType: ActionProtocol {
-        case setDateOfOccurrence
-        case setDateOfPurchase
-
-        var title: String {
-            switch self {
-            case .setDateOfOccurrence:
-                return L10n.Claims.Incident.Screen.Date.Of.incident
-            case .setDateOfPurchase:
-                return L10n.Claims.Item.Screen.Date.Of.Purchase.button
-            }
-        }
-    }
 
     public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         public let rawValue: UInt

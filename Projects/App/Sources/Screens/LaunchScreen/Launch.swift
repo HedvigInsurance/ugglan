@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 
 struct Launch {
     let completeAnimationCallbacker = Callbacker<Void>()
@@ -17,7 +18,7 @@ extension Launch: Presentable {
         containerView.backgroundColor = .brand(.primaryBackground())
 
         let imageView = UIImageView()
-        imageView.image = Asset.wordmark.image
+        imageView.image = hCoreUIAssets.wordmark.image
         imageView.contentMode = .scaleAspectFit
 
         containerView.addSubview(imageView)

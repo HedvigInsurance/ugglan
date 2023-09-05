@@ -14,10 +14,10 @@ public struct UpdateAppScreenOld: View {
 
     public var body: some View {
         hForm {
-            Group {
+            VStack(spacing: 8) {
                 Image(uiImage: hCoreUIAssets.warningTriangle.image)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding([.bottom, .top], 4)
+                    .padding(.leading, 4)
 
                 hText(L10n.embarkUpdateAppTitle, style: .title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -40,7 +40,7 @@ public struct UpdateAppScreenOld: View {
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)

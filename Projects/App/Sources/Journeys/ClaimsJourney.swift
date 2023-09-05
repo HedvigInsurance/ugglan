@@ -15,14 +15,15 @@ extension AppJourney {
 
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
-            UgglanStore.self,
-            rootView: ClaimDetailView(claim: claim),
-            options: [.embedInNavigationController]
+            ClaimsStore.self,
+            rootView: ClaimDetailView(claim: claim)
         ) { action in
-            DismissJourney()
+            if case .closeClaimStatus = action {
+                PopJourney()
+            }
         }
-        .inlineTitle()
-        .configureTitle(L10n.ClaimStatus.title)
+        .configureTitle(L10n.claimsYourClaim)
+        .hidesBottomBarWhenPushed
     }
 
     static func claimsInfoJourney() -> some JourneyPresentation {
@@ -80,27 +81,11 @@ extension AppJourney {
                 } else if case .openTriagingGroupScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
                 }
-            }
-        }
-    }
-
-    @JourneyBuilder
-    static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
-        Journey(
-            CommonClaimDetail(claim: claim),
-            style: .detented(.medium, .large),
-            options: .defaults
-        )
-        .onAction(ClaimsStore.self) { action in
-            if case .submitNewClaim = action {
-                DismissJourney()
-            } else if case .openTravelInsurance = action {
+            } else if case .dissmissNewClaimFlow = action {
                 DismissJourney()
             }
         }
-        .withJourneyDismissButton
     }
-
     @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney

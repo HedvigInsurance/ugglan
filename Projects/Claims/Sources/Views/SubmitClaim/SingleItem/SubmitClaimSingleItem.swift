@@ -13,8 +13,7 @@ public struct SubmitClaimSingleItem: View {
     public var body: some View {
         hForm {
         }
-        .hUseNewStyle
-        .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
+        .hFormTitle(.small, .title1, L10n.claimsSingleItemDetails)
         .hFormAttachToBottom {
             VStack(spacing: 4) {
                 PresentableStoreLens(
@@ -45,6 +44,7 @@ public struct SubmitClaimSingleItem: View {
         displayDamageField(claim: singleItemStep)
         InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
             .padding(.vertical, 12)
+            .padding(.horizontal, 16)
     }
 
     @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
@@ -65,15 +65,17 @@ public struct SubmitClaimSingleItem: View {
     }
 
     @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
-
         hSection {
-            hFloatingField(
-                value: claim?.purchaseDate?.localDateToDate?.displayDateDotFormat ?? "",
-                placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                onTap: {
-                    store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
-                }
-            )
+            hDatePickerField(
+                config: .init(
+                    maxDate: Date(),
+                    placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
+                    title: L10n.Claims.Item.Screen.Date.Of.Purchase.button
+                ),
+                selectedDate: claim?.purchaseDate?.localDateToDate
+            ) { date in
+                store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            }
         }
         .sectionContainerStyle(.transparent)
     }

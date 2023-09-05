@@ -10,28 +10,27 @@ public struct ClaimFailureScreen: View {
 
     public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningFilledTriangle.image)
+            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                 .foregroundColor(hSignalColorNew.amberElement)
                 .padding(.top, 254)
                 .padding(.bottom, 8)
 
             Group {
-                hTextNew(L10n.HomeTab.errorTitle, style: .body)
+                hText(L10n.HomeTab.errorTitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
 
-                hTextNew(L10n.HomeTab.errorBody, style: .body)
+                hText(L10n.HomeTab.errorBody, style: .body)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hTextColorNew.secondary)
             }
             .padding(.horizontal, 32)
         }
-        .hUseNewStyle
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
-                    hTextNew(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body)
                 }
                 .padding(.bottom, 4)
 
@@ -39,7 +38,7 @@ public struct ClaimFailureScreen: View {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {
-                    hTextNew(L10n.openChat, style: .body)
+                    hText(L10n.openChat, style: .body)
                 }
             }
             .padding([.leading, .trailing, .bottom], 16)

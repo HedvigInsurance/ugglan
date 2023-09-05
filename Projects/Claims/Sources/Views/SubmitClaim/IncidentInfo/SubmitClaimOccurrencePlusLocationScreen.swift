@@ -14,9 +14,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .customTitle, options.title)
+            .hFormTitle(.small, .title1, options.title)
             .hDisableScroll
-            .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
                     displayFieldsAndNotice
@@ -59,19 +58,21 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
             if let dateOfOccurrenceStep = dateOfOccurenceStep {
                 hSection {
-                    hFloatingField(
-                        value: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate?.displayDateDotFormat ?? "",
-                        placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                        onTap: {
-                            store.send(
-                                .navigationAction(action: .openDatePicker(type: .setDateOfOccurrence))
-                            )
-                        }
-                    )
+                    hDatePickerField(
+                        config: .init(
+                            maxDate: dateOfOccurenceStep?.getMaxDate(),
+                            placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                            title: L10n.Claims.Incident.Screen.Date.Of.incident
+                        ),
+                        selectedDate: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate,
+                        placehodlerText: L10n.Claims.Item.Screen.Date.Of.Incident.button
+                    ) { date in
+                        store.send(.setNewDate(dateOfOccurrence: date.localDateString))
+                    }
                 }
                 .sectionContainerStyle(.transparent)
                 InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
-                    .padding(.vertical, 16)
+                    .padding(16)
             }
         }
     }

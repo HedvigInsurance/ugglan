@@ -50,7 +50,7 @@ public struct CrossSellingSigned: View {
         }
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.closeCrossSellingSigned)
                 } content: {
                     hText(L10n.toolbarDoneButton)
@@ -80,7 +80,8 @@ struct CrossSellingSignedPreviews: PreviewProvider {
                 blurHash: "",
                 buttonText: "",
                 typeOfContract: "SE_ACCIDENT",
-                infos: []
+                infos: [],
+                type: .accident
             )
 
             return newState

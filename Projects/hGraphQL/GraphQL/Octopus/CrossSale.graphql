@@ -50,5 +50,6 @@ fragment CrossSellFragment on Member {
       productVariants {
         ...ProductVariantFragment
       }
+      type
     }
 }

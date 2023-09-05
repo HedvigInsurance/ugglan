@@ -42,7 +42,6 @@ enum ChatResult {
                             title: nil,
                             children: [
                                 MenuChild.appInformation,
-                                MenuChild.appSettings,
                                 MenuChild.login,
                             ]
                         ),
@@ -75,9 +74,7 @@ enum ChatResult {
                     UgglanStore.self,
                     rootView: AskForPushnotifications(
                         text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: { _ in
-
-                        }
+                        onActionExecuted: {}
                     ),
                     style: .detented(.large)
                 ) { action in
@@ -223,6 +220,14 @@ extension Chat: Presentable {
                     tableKit.view.layoutIfNeeded()
                 }
             )
+        let footerView = UIView()
+        footerView.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: 0,
+            height: hNavigationControllerWithLargerNavBar.navigationBarHeight
+        )
+        tableKit.view.tableFooterView = footerView
 
         bag += chatState.tableSignal.atOnce().delay(by: 0.5)
             .onValue { table in

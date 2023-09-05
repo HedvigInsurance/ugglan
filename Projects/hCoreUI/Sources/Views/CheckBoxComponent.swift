@@ -35,7 +35,7 @@ public struct CheckBoxComponent: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 48, height: 48)
-            hTextNew(displayName, style: .body)
+            hText(displayName, style: .body)
                 .foregroundColor(hTextColorNew.primary)
             Spacer()
             Circle()

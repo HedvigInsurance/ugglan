@@ -43,7 +43,7 @@ public struct MarketPickerView: View {
 
         Spacer().frame(height: 36)
 
-        hButton.LargeButtonFilled {
+        hButton.LargeButtonPrimary {
             hAnalyticsEvent.marketSelected(
                 locale: Localization.Locale.currentLocale.lprojCode
             )
@@ -79,7 +79,7 @@ public struct MarketPickerView: View {
         Spacer()
 
         if store.state.market.showGetQuote {
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 hAnalyticsEvent.buttonClickMarketingOnboard().send()
                 store.send(.onboard)
             } content: {
@@ -111,7 +111,7 @@ public struct MarketPickerView: View {
                                 viewState = .marketAndLanguage
                             }
                         }) {
-                            Image(uiImage: hCoreUIAssets.backButton.image)
+                            Image(uiImage: hCoreUIAssets.arrowBack.image)
                                 .resizable()
                                 .foregroundColor(hLabelColor.primary)
                         }

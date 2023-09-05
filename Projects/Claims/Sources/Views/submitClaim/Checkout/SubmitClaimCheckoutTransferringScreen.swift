@@ -42,6 +42,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     )
                 )
             }
+            .padding(.horizontal, 24)
         }
     }
 
@@ -57,13 +58,13 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     }
                 ) { singleItemCheckoutStep in
 
-                    hTextNew(
+                    hText(
                         (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
                         style: .title1
                     )
                     .foregroundColor(hTextColorNew.primary)
                 }
-                hTextNew(L10n.claimsPayoutSuccessLabel, style: .body)
+                hText(L10n.claimsPayoutSuccessLabel, style: .body)
                     .foregroundColor(hTextColorNew.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
@@ -80,7 +81,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             hButton.LargeButtonText {
                 store.send(.dissmissNewClaimFlow)
             } content: {
-                hTextNew(L10n.generalCloseButton, style: .body)
+                hText(L10n.generalCloseButton, style: .body)
                     .foregroundColor(hTextColorNew.primary)
             }
         }
@@ -108,8 +109,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                hTextNew(L10n.claimsPayoutProgresLabel)
-
+                hText(L10n.claimsPayoutProgresLabel)
                 ProgressView(value: progress)
                     .tint(hTextColorNew.primary)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
@@ -159,9 +159,9 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
-                hTextNew(L10n.HomeTab.errorTitle, style: .title3)
+                hText(L10n.HomeTab.errorTitle, style: .title3)
                     .foregroundColor(hLabelColor.primary)
-                hTextNew(error, style: .body)
+                hText(error, style: .body)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hLabelColor.primary)
             }
@@ -173,11 +173,11 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             Spacer()
 
-            hButton.LargeButtonFilled {
+            hButton.LargeButtonPrimary {
                 store.send(.dissmissNewClaimFlow)
                 store.send(.submitClaimOpenFreeTextChat)
             } content: {
-                hTextNew(L10n.openChat, style: .body)
+                hText(L10n.openChat, style: .body)
             }
             .padding([.leading, .trailing], 16)
             .cornerRadius(.defaultCornerRadius)
@@ -186,7 +186,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     store.send(.dissmissNewClaimFlow)
                 } label: {
                     HStack {
-                        hTextNew(L10n.generalCloseButton, style: .body)
+                        hText(L10n.generalCloseButton, style: .body)
                             .foregroundColor(hTextColorNew.secondary)
                             .padding(16)
                     }
@@ -204,7 +204,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     store.send(.singleItemCheckoutRequest)
                 } label: {
                     HStack {
-                        hTextNew(L10n.generalRetry, style: .body)
+                        hText(L10n.generalRetry, style: .body)
                             .foregroundColor(hTextColorNew.primary)
                             .padding(16)
                     }

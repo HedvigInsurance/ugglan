@@ -3,6 +3,7 @@ import Contracts
 import Flow
 import Form
 import Foundation
+import Home
 import Presentation
 import UIKit
 import hCore
@@ -127,8 +128,8 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
 
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         bag += contractStore.stateSignal.onValue { state in
-            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-            claimsStore.send(.setShowTravelInsurance(to: state.isTravelInsuranceIncluded))
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(.setShowTravelInsurance(show: state.isTravelInsuranceIncluded))
         }
     }
 }

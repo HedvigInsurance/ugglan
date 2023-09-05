@@ -1,0 +1,41 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect y="4" width="24" height="16" rx="2" fill="#30577E"/>
+<mask id="mask0_4826_5826" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="4" width="24" height="16">
+<rect y="4" width="24" height="16" rx="2" fill="#30577E"/>
+</mask>
+<g mask="url(#mask0_4826_5826)">
+<path d="M11.584 12.624L11.792 12.7627L11.9307 12.5547L12.4854 11.7226L12.624 11.5146L12.416 11.376L0.416031 3.37596L0.208019 3.23728L0.0693439 3.44529L-0.485356 4.27734L-0.624031 4.48536L-0.416019 4.62403L11.584 12.624Z" fill="#FF513A" stroke="#FAFAFA" stroke-width="0.5"/>
+<path d="M11.584 11.376L11.376 11.5146L11.5146 11.7226L12.0693 12.5547L12.208 12.7627L12.416 12.624L24.416 4.62403L24.624 4.48536L24.4854 4.27734L23.9307 3.44529L23.792 3.23728L23.584 3.37596L11.584 11.376Z" fill="#FF513A" stroke="#FAFAFA" stroke-width="0.5"/>
+<path d="M-0.416019 19.376L-0.624031 19.5146L-0.485356 19.7226L0.0693439 20.5547L0.208019 20.7627L0.416031 20.624L12.416 12.624L12.624 12.4854L12.4854 12.2773L11.9307 11.4453L11.792 11.2373L11.584 11.376L-0.416019 19.376Z" fill="#FF513A" stroke="#FAFAFA" stroke-width="0.5"/>
+<path d="M23.584 20.624L23.792 20.7627L23.9307 20.5547L24.4854 19.7226L24.624 19.5146L24.416 19.376L12.416 11.376L12.208 11.2373L12.0693 11.4453L11.5146 12.2773L11.376 12.4854L11.584 12.624L23.584 20.624Z" fill="#FF513A" stroke="#FAFAFA" stroke-width="0.5"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.7227 12.416L-0.277344 4.41602L0.277356 3.58397L12.2774 11.584L11.7227 12.416Z" fill="#FF513A"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M-0.277344 4.41602L5.126e-06 2.19722L13.6641 11.3066L11.7227 12.416L-0.277344 4.41602ZM12.2774 11.584L11.7227 12.416L-0.277344 4.41602L0.277355 3.58397L12.2774 11.584Z" fill="#FAFAFA"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.7227 11.584L23.7227 3.58397L24.2774 4.41602L12.2774 12.416L11.7227 11.584Z" fill="#FF513A"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M23.7227 3.58397L25.6641 4.69337L12 13.8028L11.7227 11.584L23.7227 3.58397ZM12.2774 12.416L11.7227 11.584L23.7227 3.58397L24.2774 4.41602L12.2774 12.416Z" fill="#FAFAFA"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M-0.277344 19.584L11.7227 11.584L12.2774 12.416L0.277356 20.416L-0.277344 19.584Z" fill="#FF513A"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 10.1972L12.2774 12.416L0.277358 20.416L-1.66409 19.3066L12 10.1972ZM0.277358 20.416L-0.277343 19.584L11.7227 11.584L12.2774 12.416L0.277358 20.416Z" fill="#FAFAFA"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M23.7227 20.416L11.7227 12.416L12.2774 11.584L24.2774 19.584L23.7227 20.416Z" fill="#FF513A"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10.3359 12.6934L12.2774 11.584L24.2774 19.584L24 21.8028L10.3359 12.6934ZM24.2774 19.584L23.7227 20.416L11.7227 12.416L12.2774 11.584L24.2774 19.584Z" fill="#FAFAFA"/>
+</g>
+<mask id="path-15-inside-1_4826_5826" fill="white">
+<path d="M0 10H24V14H0V10Z"/>
+</mask>
+<path d="M0 10H24V14H0V10Z" fill="#FAFAFA"/>
+<path d="M23.5 10V14H24.5V10H23.5ZM0.5 14V10H-0.5V14H0.5Z" fill="#121212" fill-opacity="0.07" mask="url(#path-15-inside-1_4826_5826)"/>
+<mask id="path-17-inside-2_4826_5826" fill="white">
+<path d="M10 4H14V20H10V4Z"/>
+</mask>
+<path d="M10 4H14V20H10V4Z" fill="#FAFAFA"/>
+<path d="M10 4.5H14V3.5H10V4.5ZM14 19.5H10V20.5H14V19.5Z" fill="#121212" fill-opacity="0.07" mask="url(#path-17-inside-2_4826_5826)"/>
+<mask id="path-19-inside-3_4826_5826" fill="white">
+<path d="M11 4H13V20H11V4Z"/>
+</mask>
+<path d="M11 4H13V20H11V4Z" fill="#FF513A"/>
+<path d="M11 4.5H13V3.5H11V4.5ZM13 19.5H11V20.5H13V19.5Z" fill="#121212" fill-opacity="0.07" mask="url(#path-19-inside-3_4826_5826)"/>
+<mask id="path-21-inside-4_4826_5826" fill="white">
+<path d="M0 11H24V13H0V11Z"/>
+</mask>
+<path d="M0 11H24V13H0V11Z" fill="#FF513A"/>
+<path d="M23.5 11V13H24.5V11H23.5ZM0.5 13V11H-0.5V13H0.5Z" fill="#121212" fill-opacity="0.07" mask="url(#path-21-inside-4_4826_5826)"/>
+<rect x="0.25" y="4.25" width="23.5" height="15.5" rx="1.75" stroke="#121212" stroke-opacity="0.07" stroke-width="0.5"/>
+</svg>

@@ -8,6 +8,7 @@ public enum Fonts {
     private static let favoritStdBookFontName = "FavoritStd-Book"
     private static let hedvigLettersStandardFontName = "HedvigLetters-Standard"
     private static let hedvigLettersSmallFontName = "HedvigLetters-Small"
+    private static let hedvigLettersBigFontName = "HedvigLetters-Big"
 
     private static func loadFont(resourceName: String) -> UIFont {
         let fontPath = Bundle(for: FontBundleToken.self).path(forResource: resourceName, ofType: "otf")
@@ -32,6 +33,10 @@ public enum Fonts {
         loadFont(resourceName: hedvigLettersSmallFontName)
     }()
 
+    public static var hedvigLettersBig: UIFont = {
+        loadFont(resourceName: hedvigLettersBigFontName)
+    }()
+
     public static var favoritStdBook: UIFont = {
         loadFont(resourceName: favoritStdBookFontName)
     }()
@@ -40,11 +45,7 @@ public enum Fonts {
 
     public static func fontFor(style: HFontTextStyle) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
-            let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
-                withTextStyle: style.uifontTextStyle,
-                compatibleWith: forceTraitCollection
-            )
-            let size = defaultDescriptor.pointSize
+            let size = style.fontSize * style.multiplier
             let fontDescriptor = UIFontDescriptor(fontAttributes: [
                 UIFontDescriptor.AttributeName.size: size,
                 UIFontDescriptor.AttributeName.family: font.familyName,
@@ -54,34 +55,15 @@ public enum Fonts {
             return UIFont(descriptor: fontDescriptor, size: size)
         }
 
-        if !hAnalyticsExperiment.useHedvigLettersFont {
-            return getFont(favoritStdBook)
-        }
+        //        if !hAnalyticsExperiment.useHedvigLettersFont {
+        //            return getFont(favoritStdBook)
+        //        }
 
         switch style {
-        case .prominentTitle:
-            return getFont(hedvigLettersSmall)
+        case .title1, .title:
+            return getFont(hedvigLettersBig)
         default:
             return getFont(hedvigLettersStandard)
         }
-    }
-
-    public static func fontForNewDesign(style: HFontTextStyleNew) -> UIFont {
-        func getFont(_ font: UIFont) -> UIFont {
-            let size = style.fontSize
-            let fontDescriptor = UIFontDescriptor(fontAttributes: [
-                UIFontDescriptor.AttributeName.size: size,
-                UIFontDescriptor.AttributeName.family: font.familyName,
-                UIFontDescriptor.AttributeName.name: font.fontName,
-            ])
-
-            return UIFont(descriptor: fontDescriptor, size: size)
-        }
-
-        if !hAnalyticsExperiment.useHedvigLettersFont {
-            return getFont(favoritStdBook)
-        }
-
-        return getFont(hedvigLettersStandard)
     }
 }

@@ -4,6 +4,7 @@ import hCore
 public struct InfoCard: View {
     let text: String
     let type: InfoCardType
+    @Environment(\.hInfoCardButtonConfig) var buttonsConfig
 
     public init(
         text: String,
@@ -15,16 +16,51 @@ public struct InfoCard: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            Image(uiImage: hCoreUIAssets.infoSmall.image)
-                .foregroundColor(hSignalColorNew.blueElement)
-
-            hTextNew(text, style: .footnote)
-                .foregroundColor(getTextColor)
-                .padding(.leading, 9)
+            VStack(spacing: 0) {
+                Rectangle().fill(Color.clear)
+                    .frame(width: 0, height: 2)
+                Image(uiImage: type.image)
+                    .resizable()
+                    .foregroundColor(imageColor)
+                    .frame(width: 16, height: 16)
+            }
+            VStack(alignment: .leading) {
+                hText(text, style: .footnote)
+                    .foregroundColor(getTextColor)
+                    .multilineTextAlignment(.leading)
+                if let buttonsConfig {
+                    if buttonsConfig.count > 1 {
+                        HStack(spacing: 8) {
+                            ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                                hButton.MediumButtonFilled {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .standardSmall)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .hButtonConfigurationType(.secondaryAlt)
+                            }
+                        }
+                    } else {
+                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            hButton.MediumButtonFilled {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .standardSmall)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .hButtonConfigurationType(.secondaryAlt)
+                        }
+                    }
+                }
+            }
+            .padding(.leading, 8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
+        .padding(.leading, 12)
+        .padding(.trailing, 16)
         .background(
             Squircle.default()
                 .fill(getBackgroundColor)
@@ -33,8 +69,7 @@ public struct InfoCard: View {
                         .strokeBorder(hBorderColorNew.translucentOne, lineWidth: 0.5)
                 )
         )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 16)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @hColorBuilder
@@ -64,11 +99,56 @@ public struct InfoCard: View {
             hSignalColorNew.greenFill
         }
     }
+
+    @hColorBuilder
+    var imageColor: some hColor {
+        switch type {
+        case .info:
+            hSignalColorNew.blueElement
+        case .attention:
+            hSignalColorNew.amberElement
+        case .error:
+            hSignalColorNew.redElement
+        case .campaign:
+            hSignalColorNew.greenElement
+        }
+    }
 }
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+        VStack {
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    ),
+                    .init(
+                        buttonTitle: "Title 2",
+                        buttonAction: {
+
+                        }
+                    ),
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: "Title",
+                        buttonAction: {
+
+                        }
+                    )
+                ])
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
+            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+        }
     }
 }
 
@@ -77,4 +157,45 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
+
+    var image: UIImage {
+        switch self {
+        case .info:
+            return hCoreUIAssets.infoIconFilled.image
+        case .attention:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .error:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .campaign:
+            return hCoreUIAssets.campaignSmall.image
+
+        }
+    }
+}
+
+private struct EnvironmentCardButtonsConfig: EnvironmentKey {
+    static let defaultValue: [InfoCardButtonConfig]? = nil
+}
+
+extension EnvironmentValues {
+    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
+        get { self[EnvironmentCardButtonsConfig.self] }
+        set { self[EnvironmentCardButtonsConfig.self] = newValue }
+    }
+}
+
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+        self.environment(\.hInfoCardButtonConfig, configs)
+    }
+}
+
+public struct InfoCardButtonConfig {
+    let buttonTitle: String
+    let buttonAction: () -> Void
+
+    public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
+        self.buttonTitle = buttonTitle
+        self.buttonAction = buttonAction
+    }
 }

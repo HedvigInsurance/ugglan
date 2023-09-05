@@ -82,26 +82,25 @@ struct MovingFlowConfirm: View {
                 chatComponent
             }
         }
-        .hUseNewStyle
         .hFormTitle(.standard, .title3, L10n.changeAddressAcceptOffer)
     }
 
     @ViewBuilder
     func returnMainContent(coverageName: String) -> some View {
         HStack {
-            Image(uiImage: hCoreUIAssets.plusIcon.image)
-            hTextNew(coverageName, style: .title3)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
+            hText(coverageName, style: .title3)
             Spacer()
-            Image(uiImage: hCoreUIAssets.plusIcon.image)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
         }
     }
 
     func returnMiddleComponent(insuranceName: String) -> some View {
         VStack(alignment: .leading, spacing: 1) {
-            hTextNew(insuranceName, style: .body)
+            hText(insuranceName, style: .body)
                 .foregroundColor(hTextColorNew.primary)
             HStack {
-                hTextNew(L10n.changeAddressActivationDate("02.12.24"), style: .body)
+                hText(L10n.changeAddressActivationDate("02.12.24"), style: .body)
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .resizable()
                     .frame(width: 14, height: 14)
@@ -113,11 +112,11 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     func returnBottomComponent(insuranceName: String, price: String) -> some View {
         HStack {
-            hTextNew(L10n.changeAddressDetails, style: .body)
+            hText(L10n.changeAddressDetails, style: .body)
             Image(uiImage: hCoreUIAssets.chevronDown.image)
                 .foregroundColor(hTextColorNew.tertiary)
             Spacer()
-            hTextNew(price, style: .body)
+            hText(price, style: .body)
         }
         .onTapGesture {
             if selectedInsurances.contains(insuranceName) {
@@ -131,50 +130,50 @@ struct MovingFlowConfirm: View {
         if selectedInsurances.contains(insuranceName) {
             VStack(alignment: .leading) {
                 HStack {
-                    hTextNew("Bostadstyp", style: .body)
+                    hText("Bostadstyp", style: .body)
                     Spacer()
-                    hTextNew("Bostadsrätt", style: .body)
+                    hText("Bostadsrätt", style: .body)
                 }
 
                 HStack {
-                    hTextNew("Adress", style: .body)
+                    hText("Adress", style: .body)
                     Spacer()
-                    hTextNew("Bellmansgatan 19A", style: .body)
+                    hText("Bellmansgatan 19A", style: .body)
                 }
 
                 HStack {
-                    hTextNew("Postkod", style: .body)
+                    hText("Postkod", style: .body)
                     Spacer()
-                    hTextNew("11847", style: .body)
+                    hText("11847", style: .body)
                 }
 
                 HStack {
-                    hTextNew("Postkod", style: .body)
+                    hText("Postkod", style: .body)
                     Spacer()
-                    hTextNew("11847", style: .body)
+                    hText("11847", style: .body)
                 }
 
                 HStack {
-                    hTextNew("Postkod", style: .body)
+                    hText("Postkod", style: .body)
                     Spacer()
-                    hTextNew("11847", style: .body)
+                    hText("11847", style: .body)
                 }
 
-                hTextNew("Dokument", style: .body)
+                hText("Dokument", style: .body)
                     .foregroundColor(hLabelColor.primary)
                     .padding(.vertical, 16)
 
-                hTextNew("Försäkringsvillkor", style: .body)
-                hTextNew("Försäkringsinformation", style: .body)
-                hTextNew("Produktfaktablad", style: .body)
+                hText("Försäkringsvillkor", style: .body)
+                hText("Försäkringsinformation", style: .body)
+                hText("Produktfaktablad", style: .body)
             }
             .padding(.vertical, 16)
             .foregroundColor(hTextColorNew.secondary)
 
             hButton.SmallButtonText {
-                store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
+                //                store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
             } content: {
-                hTextNew("Ändra", style: .body)
+                hText("Ändra", style: .body)
             }
 
         }
@@ -194,7 +193,6 @@ struct MovingFlowConfirm: View {
                 )
             }
         )
-        .hCardComponentOptions([.paddingOnDivider, .hideArrow])
         .padding(.horizontal, 16)
     }
 
@@ -211,29 +209,29 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     var overviewComponent: some View {
         HStack {
-            hTextNew(L10n.changeAddressTotal, style: .body)
+            hText(L10n.changeAddressTotal, style: .body)
             Spacer()
-            hTextNew("278 kr/mån", style: .body)
+            hText("278 kr/mån", style: .body)
         }
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 16)
 
-        hButton.LargeButtonFilled {
-            store.send(.navigationActionMovingFlow(action: .openFailureScreen))
+        hButton.LargeButtonPrimary {
+            //            store.send(.navigationActionMovingFlow(action: .openFailureScreen))
         } content: {
-            hTextNew(L10n.changeAddressAcceptOffer, style: .body)
+            hText(L10n.changeAddressAcceptOffer, style: .body)
         }
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 22)
 
-        hTextNew(L10n.changeAddressIncluded, style: .body)
+        hText(L10n.changeAddressIncluded, style: .body)
             .padding(.bottom, 98)
     }
 
     @ViewBuilder
     func whatIsCovered(insuranceName: String, fields: [FieldInfo]) -> some View {
         VStack {
-            hTextNew(insuranceName, style: .footnote)
+            hText(insuranceName, style: .footnote)
                 .padding([.top, .bottom], 4)
                 .padding([.leading, .trailing], 8)
 
@@ -247,9 +245,9 @@ struct MovingFlowConfirm: View {
 
         hSection(fields, id: \.self) { field in
             hRow {
-                hTextNew(field.name, style: .body)
+                hText(field.name, style: .body)
                 Spacer()
-                hTextNew(field.price, style: .body)
+                hText(field.price, style: .body)
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .resizable()
                     .frame(width: 14, height: 14)
@@ -259,7 +257,7 @@ struct MovingFlowConfirm: View {
         .sectionContainerStyle(.transparent)
 
         VStack {
-            hTextNew(L10n.changeAddressCovered, style: .footnote)
+            hText(L10n.changeAddressCovered, style: .footnote)
                 .padding([.top, .bottom], 4)
                 .padding([.leading, .trailing], 8)
 
@@ -299,7 +297,7 @@ struct MovingFlowConfirm: View {
 
     @ViewBuilder
     var questionAnswerComponent: some View {
-        hTextNew(L10n.changeAddressQa, style: .title3)
+        hText(L10n.changeAddressQa, style: .title3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 16)
         TextBoxComponent(
@@ -312,19 +310,19 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     var answerMainComponent: some View {
         HStack {
-            hTextNew("Vad ingår i en hemförsäkring?", style: .body)
+            hText("Vad ingår i en hemförsäkring?", style: .body)
             Spacer()
-            Image(uiImage: hCoreUIAssets.plusIcon.image)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
         }
     }
 
     @ViewBuilder
     var chatComponent: some View {
-        hTextNew(L10n.changeAddressNoFind, style: .body)
+        hText(L10n.changeAddressNoFind, style: .body)
         hButton.SmallButtonFilled {
             //open chat
         } content: {
-            hTextNew(L10n.openChat, style: .body)
+            hText(L10n.openChat, style: .body)
         }
     }
 }

@@ -12,35 +12,31 @@ import hCoreUI
 struct SlideTrack: View {
     var shouldAnimate: Bool
     var labelOpacity: Double
-    @Environment(\.hUseNewStyle) var hUseNewStyle
     @Binding var didFinished: Bool
 
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
-                if hUseNewStyle {
-                    L10n.claimsPledgeSlideLabel.hTextNew(.body)
-                        .foregroundColor(hTextColorNew.secondary)
-                } else {
-                    L10n.claimsPledgeSlideLabel.hText(.body)
-                }
+                L10n.claimsPledgeSlideLabel.hText(.body)
+                    .foregroundColor(getLabelColor)
+
             }
             .frame(maxWidth: .infinity)
             .opacity(didFinished ? 0 : labelOpacity)
             .animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
         }
-        .frame(height: hUseNewStyle ? 58 : 50)
+        .frame(height: 58)
         .frame(maxWidth: .infinity)
-        .background(backgroundColor)
-        .cornerRadius(hUseNewStyle ? 29 : 25)
+        .background(hFillColorNew.opaqueTwo)
+        .cornerRadius(29)
     }
 
     @hColorBuilder
-    private var backgroundColor: some hColor {
-        if hUseNewStyle {
-            hFillColorNew.opaqueTwo
+    private var getLabelColor: some hColor {
+        if didFinished {
+            hTextColorNew.disabled
         } else {
-            hBackgroundColor.secondary
+            hTextColorNew.secondary
         }
     }
 }
@@ -65,7 +61,6 @@ struct SlideDragger: View {
     var shouldAnimate: Bool
     var dragOffsetX: CGFloat
     @Binding var didFinished: Bool
-    @Environment(\.hUseNewStyle) var hUseNewStyle
     static let size = CGSize(width: 50, height: 50)
 
     var body: some View {
@@ -73,16 +68,21 @@ struct SlideDragger: View {
             ZStack(alignment: .leading) {
                 ZStack(alignment: .leading) {
                     ZStack {
-                        if hUseNewStyle {
-                            Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
-                                .foregroundColor(hTextColorNew.negative)
-                        } else {
-                            Image(uiImage: Asset.continue.image)
+                        Group {
+                            if didFinished {
+                                Image(uiImage: hCoreUIAssets.tick.image)
+                                    .transition(.scale)
+                            } else {
+                                Image(uiImage: hCoreUIAssets.chevronRight.image)
+                                    .transition(.asymmetric(insertion: .scale, removal: .opacity))
+                            }
                         }
+                        .foregroundColor(hTextColorNew.negative)
+                        .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
+                        .background(getIconBackgroundColor)
+                        .clipShape(Circle())
                     }
-                    .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
-                    .background(background)
-                    .clipShape(Circle())
+                    .animation(.interpolatingSpring(stiffness: 300, damping: 20))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -97,11 +97,11 @@ struct SlideDragger: View {
     }
 
     @hColorBuilder
-    private var background: some hColor {
-        if hUseNewStyle {
-            hTextColorNew.primary
+    private var getIconBackgroundColor: some hColor {
+        if didFinished {
+            hSignalColorNew.greenElement
         } else {
-            hTintColor.lavenderOne
+            hTextColorNew.primary
         }
     }
 }
@@ -119,8 +119,10 @@ struct DidAcceptPledgeNotifier: View {
             ) { value in
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
-                    onConfirmAction?()
-                    store.send(.didAcceptHonestyPledge)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        onConfirmAction?()
+                        store.send(.didAcceptHonestyPledge)
+                    }
                 }
             }
         }
@@ -132,7 +134,6 @@ struct SlideToConfirm: View {
     @GestureState var dragOffsetX: CGFloat = 0
     @State var draggedTillTheEnd = false
     let onConfirmAction: (() -> Void)?
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
@@ -150,7 +151,7 @@ struct SlideToConfirm: View {
                 dragOffsetX: dragOffsetX,
                 didFinished: $draggedTillTheEnd
             )
-            .padding(.all, hUseNewStyle ? 4 : 0)
+            .padding(.all, 4)
         }
         .background(
             DidAcceptPledgeNotifier(
@@ -183,12 +184,10 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
-    @Environment(\.hUseNewStyle) var hUseNewStyle
-    @StateObject var vm = VCViewModel()
-    let onConfirmAction: ((UIViewController?) -> Void)?
+    let onConfirmAction: (() -> Void)?
 
     init(
-        onConfirmAction: ((_ vc: UIViewController?) -> Void)?
+        onConfirmAction: (() -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -196,54 +195,37 @@ struct HonestyPledge: View {
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
-                if hUseNewStyle {
-                    L10n.honestyPledgeTitle.hTextNew(.body)
-                        .foregroundColor(hTextColorNew.primary)
-                        .padding(.bottom, 8)
-                } else {
-                    L10n.honestyPledgeTitle.hTextNew(.body)
-                        .padding(.bottom, 8)
-                }
+                L10n.honestyPledgeTitle.hText(.body)
+                    .foregroundColor(hTextColorNew.primary)
+                    .padding(.bottom, 8)
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
                         .foregroundColor(hLabelColor.secondary)
                 }
-                .padding(.bottom, hUseNewStyle ? 32 : 20)
+                .padding(.bottom, 32)
 
                 SlideToConfirm(onConfirmAction: {
-                    onConfirmAction?(vm.vc)
+                    onConfirmAction?()
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                if hUseNewStyle {
-                    hButton.LargeButtonText {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.dissmissNewClaimFlow)
-                    } content: {
-                        L10n.generalCancelButton.hTextNew(.body)
-                            .foregroundColor(hTextColorNew.primary)
-                    }
+                hButton.LargeButtonText {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                } content: {
+                    L10n.generalCancelButton.hText(.body)
+                        .foregroundColor(hTextColorNew.primary)
                 }
 
             }
-            .padding(.top, hUseNewStyle ? -32 : 0)
-            .padding(.horizontal, hUseNewStyle ? 24 : 15)
+            .padding(.top, -32)
+            .padding(.horizontal, 24)
             .fixedSize(horizontal: false, vertical: true)
         }
-        .introspectViewController { viewController in
-            if vm.vc != viewController {
-                vm.vc = viewController
-            }
-        }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
-        .hUseNewStyle
         .hDisableScroll
     }
-}
-
-class VCViewModel: ObservableObject {
-    weak var vc: UIViewController?
 }
 
 extension HonestyPledge {
@@ -271,20 +253,23 @@ extension HonestyPledge {
 extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
-        HonestyPledge { vc in
+        HonestyPledge {
             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
             if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .openNotificationsPermissionScreen))
             } else {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                 if #available(iOS 15.0, *) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak vc] in
+                    let vc = UIApplication.shared.getTopViewController()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                     }
                 }
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+
             }
         }
+        .hDisableScroll
     }
 }

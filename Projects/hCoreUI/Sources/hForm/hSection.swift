@@ -56,7 +56,43 @@ public struct RowViewBuilder {
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle)
+                viewE.environment(\.hRowPosition, .bottom)
+            )
+        )
+    }
+
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E,
+        _ viewF: F
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .bottom)
+            )
+        )
+    }
+
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E,
+        _ viewF: F,
+        _ viewG: G
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
+                viewG.environment(\.hRowPosition, .bottom)
             )
         )
     }
@@ -77,12 +113,13 @@ extension View {
 
 public enum hSectionContainerStyle {
     case transparent
-    case opaque(useNewDesign: Bool)
-    case caution(useNewDesign: Bool)
+    case opaque
+    case caution
+    case alert
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
-    static let defaultValue = hSectionContainerStyle.opaque(useNewDesign: false)
+    static let defaultValue = hSectionContainerStyle.opaque
 }
 
 extension EnvironmentValues {
@@ -98,44 +135,23 @@ extension hSectionContainerStyle: ViewModifier {
         switch self {
         case .transparent:
             content
-        case let .opaque(useNewStyle):
-            if useNewStyle {
-                content.background(
-                    getOpaqueBackground(useNewStyle: useNewStyle)
-                )
-                .clipShape(Squircle.default())
-            } else {
-                content.background(
-                    getOpaqueBackground(useNewStyle: useNewStyle)
-                )
-                .clipShape(Squircle.default())
-                .hShadow()
-            }
-        case let .caution(useNewStyle):
+        case .opaque:
             content.background(
-                getCautionBackground(useNewStyle: useNewStyle)
+                hFillColorNew.opaqueOne
+            )
+            .clipShape(Squircle.default())
+        case .caution:
+            content.background(
+                hSignalColorNew.amberElement
             )
             .border(
-                useNewStyle ? Color(UIColor.brandNew(.primaryBorderColor)) : Color(UIColor.brand(.primaryBorderColor))
+                Color(UIColor.brandNew(.primaryBorderColor))
             )
-        }
-    }
-
-    @hColorBuilder
-    private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
-        if useNewStyle {
-            hFillColorNew.opaqueOne
-        } else {
-            hBackgroundColor.tertiary
-        }
-    }
-
-    @hColorBuilder
-    private func getCautionBackground(useNewStyle: Bool) -> some hColor {
-        if useNewStyle {
-            hSignalColorNew.amberElement
-        } else {
-            hTintColor.yellowTwo
+        case .alert:
+            content.background(
+                hSignalColorNew.amberFill
+            )
+            .clipShape(Squircle.default())
         }
     }
 }
@@ -166,7 +182,6 @@ extension View {
 
 struct hSectionContainer<Content: View>: View {
     @Environment(\.hSectionContainerStyle) var containerStyle
-    @Environment(\.hUseNewStyle) var useNewStyle
     var content: Content
 
     init(
@@ -181,26 +196,14 @@ struct hSectionContainer<Content: View>: View {
                 content
             }
             .frame(maxWidth: .infinity)
-            .modifier(getProperContainerStyle())
+            .modifier(containerStyle)
         }
         .frame(maxWidth: .infinity)
-    }
-
-    func getProperContainerStyle() -> hSectionContainerStyle {
-        switch containerStyle {
-        case .caution:
-            return .caution(useNewDesign: useNewStyle)
-        case .opaque:
-            return .opaque(useNewDesign: useNewStyle)
-        case .transparent:
-            return .transparent
-        }
     }
 }
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var header: Header?
     var content: Content
@@ -231,72 +234,34 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
             if header != nil {
                 VStack(alignment: .leading) {
-                    if hUseNewStyle {
-                        header
-                            .environment(\.defaultHTextStyleNew, .title1)
-                    } else {
-                        header
-                            .environment(\.defaultHTextStyle, .title3)
-                    }
+                    header
+                        .environment(\.defaultHTextStyle, .standard)
                 }
-                .foregroundColor(hSection<Header, Content, Footer>.returnLabelColorPrimary(useNewStyle: hUseNewStyle))
-                .padding(.bottom, 10)
+                .foregroundColor(hTextColorNew.primary)
+                .padding(.bottom, 16)
             }
             hSectionContainer {
                 content
             }
             if footer != nil {
                 VStack(alignment: .leading) {
-                    if hUseNewStyle {
-                        footer
-                            .environment(\.defaultHTextStyleNew, .footnote)
-                    } else {
-                        footer
-                            .environment(\.defaultHTextStyle, .footnote)
-                    }
+                    footer
+                        .environment(\.defaultHTextStyle, .footnote)
                 }
-                .foregroundColor(hSection<Header, Content, Footer>.returnLabelColorSecondary(useNewStyle: hUseNewStyle))
+                .foregroundColor(hTextColorNew.secondary)
                 .padding([.leading, .trailing], 15)
                 .padding(.top, 10)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
-        .padding([.top, .bottom], hUseNewStyle ? 0 : 15)
-    }
-
-    @hColorBuilder
-    static func returnLabelColorPrimary(useNewStyle: Bool) -> some hColor {
-        if useNewStyle {
-            hTextColorNew.primary
-        } else {
-            hLabelColor.primary
-        }
-    }
-
-    @hColorBuilder
-    static func returnLabelColorSecondary(useNewStyle: Bool) -> some hColor {
-        if useNewStyle {
-            hTextColorNew.secondary
-        } else {
-            hLabelColor.secondary
-        }
-    }
-
-    public var withoutVerticalPadding: some View {
-        self.padding([.top, .bottom], -15)
-    }
-
-    /// removes hSection bottom padding
-    public var withoutBottomPadding: some View {
-        self.padding(.bottom, hUseNewStyle ? 0 : -15)
+        .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 16)
     }
 
     /// removes hSection leading and trailing padding
     public var withoutHorizontalPadding: some View {
         self
-            .padding(.leading, horizontalSizeClass == .regular ? -60 : -15)
-            .padding(.trailing, horizontalSizeClass == .regular ? -60 : -15)
+            .padding(.leading, horizontalSizeClass == .regular ? -60 : -16)
+            .padding(.trailing, horizontalSizeClass == .regular ? -60 : -16)
     }
 
     public func withHeader<Header: View>(

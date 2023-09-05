@@ -33,9 +33,6 @@ public struct CrossSellingCoverageDetail: View {
 
             if !crossSellInfo.insurableLimits.isEmpty {
                 InsurableLimitsSectionView(
-                    header: hText(
-                        L10n.contractCoverageMoreInfo
-                    ),
                     limits: crossSellInfo.insurableLimits
                 ) { limit in
                     store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
@@ -76,7 +73,13 @@ extension CrossSellingCoverageDetail {
                 )
                 .withDismissButton
             } else if case let .crossSellingCoverageDetailNavigation(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(limit: limit).journey
+                InfoView(
+                    title: L10n.contractCoverageMoreInfo,
+                    description: limit.description,
+                    onDismiss: {
+                    }
+                )
+                .journey
             } else if case let .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm)) = action {
                 Journey(
                     Document(url: insuranceTerm.url, title: insuranceTerm.displayName),

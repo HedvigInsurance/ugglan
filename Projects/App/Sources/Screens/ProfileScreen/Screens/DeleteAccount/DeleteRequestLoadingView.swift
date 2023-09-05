@@ -17,47 +17,34 @@ struct DeleteRequestLoadingView: View {
 
     @ViewBuilder var sendingState: some View {
         VStack {
-            WordmarkActivityIndicator(.standard)
+            DotsActivityIndicator(.standard).useDarkColor
         }
     }
 
     @ViewBuilder private var successState: some View {
-        VStack {
-            Spacer()
-            VStack {
-                hCoreUIAssets.circularCheckmark.view
-                    .frame(width: 32, height: 32)
-
-                Spacer()
-                    .frame(height: 24)
-
-                hText(L10n.DeleteAccount.processedTitle, style: .title2)
-                    .foregroundColor(.primary)
+        hForm {
+            VStack(spacing: 0) {
+                Image(uiImage: hCoreUIAssets.tick.image)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(hSignalColorNew.greenElement)
+                    .padding(.bottom, 16)
+                hText(L10n.DeleteAccount.processedTitle, style: .body)
+                    .foregroundColor(hTextColorNew.primaryTranslucent)
+                hText(L10n.DeleteAccount.processedDescription, style: .body)
+                    .foregroundColor(hTextColorNew.secondaryTranslucent)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                Spacer()
-                    .frame(height: 16)
-
-                hText(
-                    L10n.DeleteAccount.processedDescription,
-                    style: .callout
-                )
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
             }
-            Spacer()
-
-            hButton.LargeButtonOutlined {
+            .padding(.top, UIScreen.main.bounds.size.height / 3.5)
+            .padding(.horizontal, 32)
+        }
+        .hFormAttachToBottom {
+            hButton.LargeButtonText {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
-                hText(L10n.DeleteAccount.processedButton, style: .body)
-                    .foregroundColor(.primary)
-                    .frame(maxWidth: .infinity)
+                hText(L10n.generalCloseButton, style: .body)
             }
-            .padding([.top, .horizontal])
-            .padding(.bottom, 40)
+            .padding(.horizontal, 16)
         }
     }
 

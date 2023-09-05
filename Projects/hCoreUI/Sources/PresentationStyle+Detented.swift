@@ -158,6 +158,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                     presenting: presenting,
                     useBlur: options.contains(.blurredBackground)
                 )
+                presentationController.preferredCornerRadius = 16
                 return presentationController
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
@@ -730,18 +731,19 @@ extension PresentationStyle {
 @available(iOS 16.0, *)
 class BlurredSheetPresenationController: UISheetPresentationController {
 
-    let effectView: UIVisualEffectView?
+    let effectView: PassThroughEffectView?
 
     init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
         useBlur: Bool
     ) {
-        effectView = useBlur ? UIVisualEffectView(effect: UIBlurEffect(style: .regular)) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .regular)) : nil
         effectView?.clipsToBounds = true
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+
         self.detents = [
             .custom(resolver: { context in
                 return 0
@@ -774,5 +776,17 @@ class BlurredSheetPresenationController: UISheetPresentationController {
                 guard let self = self else { return }
                 self.effectView?.alpha = 0
             })
+    }
+}
+
+public class PassThroughEffectView: UIVisualEffectView {
+    override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+
+        if hitView == self {
+            return nil
+        }
+
+        return hitView
     }
 }

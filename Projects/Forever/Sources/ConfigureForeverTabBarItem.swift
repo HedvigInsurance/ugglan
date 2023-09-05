@@ -12,8 +12,8 @@ extension JourneyPresentation {
             ForeverStore.self,
             tabBarItem: UITabBarItem(
                 title: L10n.tabReferralsTitle,
-                image: Asset.tab.image,
-                selectedImage: Asset.tabActive.image
+                image: hCoreUIAssets.foreverTab.image,
+                selectedImage: hCoreUIAssets.foreverTabActive.image
             )
         ) { state in
             hAnalyticsExperiment.foreverFebruaryCampaign && !state.hasSeenFebruaryCampaign

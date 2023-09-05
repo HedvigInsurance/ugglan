@@ -43,7 +43,7 @@ extension AppJourney {
         ) { introRoute in
             switch introRoute {
             case .chat:
-                AppJourney.freeTextChat(style: .default).withJourneyDismissButton
+                AppJourney.freeTextChat().withJourneyDismissButton
             case let .embark(name):
                 AppJourney.embark(Embark(name: name), storeOffer: false) { offerResult in
                     switch offerResult {

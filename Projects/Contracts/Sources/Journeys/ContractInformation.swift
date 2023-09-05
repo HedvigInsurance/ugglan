@@ -19,55 +19,63 @@ struct ContractInformationView: View {
                 state.contractForId(id)
             }
         ) { contract in
-            if let contract = contract {
-                VStack {
-                    if contract.upcomingAgreementDate?.localDateString != nil {
-                        hSection {
-                            RenewalInformationCard(contract: contract)
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
+            if let contract {
+                changeAddressInfo(contract)
+                VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
                         ForEach(table.sections) { section in
                             hSection(section.rows, id: \.title) { row in
                                 hRow {
                                     hText(row.title)
                                 }
+                                .noSpacing()
                                 .withCustomAccessory({
                                     Spacer()
-                                    hText(String(row.value), style: .body)
-                                        .foregroundColor(hLabelColor.secondary)
-                                        .padding(.trailing, 8)
+                                    hText(row.value)
+                                        .foregroundColor(hTextColorNew.secondary)
                                 })
                             }
-                            .withHeader {
-                                hText(
-                                    section.title,
-                                    style: .headline
-                                )
-                                .foregroundColor(hLabelColor.secondary)
-                            }
+                            .withoutHorizontalPadding
+                            .padding(.bottom, 16)
                         }
                     }
-                    if contract.currentAgreement?.status != .terminated {
-                        if hAnalyticsExperiment.movingFlow, contract.showsMovingFlowButton {
-                            hSection {
-                                hButton.LargeButtonOutlined {
-                                    store.send(.goToMovingFlow)
+
+                    hSection {
+                        VStack(spacing: 8) {
+                            if contract.currentAgreement?.status != .terminated {
+                                hButton.LargeButtonSecondary {
+                                    store.send(.contractEditInfo(id: id))
                                 } content: {
-                                    hText(L10n.HomeTab.editingSectionChangeAddressLabel)
+                                    hText(L10n.contractEditInfoLabel)
                                 }
                             }
-                            .sectionContainerStyle(.transparent)
-                        }
-
-                        if contract.canChangeCoInsured {
-                            ChangePeopleView()
                         }
                     }
+                    .padding(.bottom, 16)
+
                 }
-                .padding(.bottom, 20)
             }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private func changeAddressInfo(_ contract: Contract) -> some View {
+        if let date = contract.upcomingAgreementDate?.displayDateDotFormat {
+            hSection {
+                InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.InsurancesTab.viewDetails,
+                            buttonAction: {
+                                store.send(
+                                    .contractDetailNavigationAction(action: .openInsuranceUpdate(contract: contract))
+                                )
+                            }
+                        )
+                    ])
+            }
+            .padding(.bottom, 16)
         }
     }
 }
@@ -82,11 +90,11 @@ struct ChangePeopleView: View {
                     .hText(.title2)
                 L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
                     .hText(.subheadline)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColorNew.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 10)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonPrimary {
                     store.send(.goToFreeTextChat)
                 } content: {
                     L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
@@ -94,33 +102,5 @@ struct ChangePeopleView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-}
-
-struct RenewalInformationCard: View {
-    @PresentableStore var store: ContractStore
-    let contract: Contract
-
-    var body: some View {
-        VStack {
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: L10n.InsuranceDetails.updateDetailsSheetTitle,
-                bodyText: L10n.InsuranceDetails.AdressUpdateBody.No.address(
-                    contract.upcomingAgreementDate?.displayDateDotFormat ?? ""
-                ),
-                backgroundColor: hTintColor.lavenderTwo
-            ) {
-                hButton.SmallButtonOutlined {
-                    store.send(
-                        .contractDetailNavigationAction(
-                            action: .upcomingAgreement(details: contract.upcomingAgreementsTable)
-                        )
-                    )
-                } content: {
-                    L10n.InsuranceDetails.addressUpdateButton.hText()
-                }
-            }
-        }
     }
 }

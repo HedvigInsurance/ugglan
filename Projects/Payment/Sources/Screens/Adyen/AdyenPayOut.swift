@@ -10,31 +10,26 @@ import hCoreUI
 import hGraphQL
 
 extension AdyenMethodsList {
-    static var payOutOptions: Future<AdyenOptions> {
+    static var payOutOptions: Future<AdyenOptions?> {
         let giraffe: hGiraffe = Dependencies.shared.resolve()
         return giraffe.client.fetch(query: GiraffeGraphQL.AdyenAvailableMethodsQuery())
             .compactMap { data in
-                guard
-                    let paymentMethodsData = data.availablePayoutMethods.paymentMethodsResponse
-                        .data(using: .utf8),
-                    let paymentMethods = try? JSONDecoder()
-                        .decode(PaymentMethods.self, from: paymentMethodsData)
-                else { return nil }
-
-                return AdyenOptions(
-                    paymentMethods: paymentMethods,
-                    clientEncrytionKey: data.adyenPublicKey
-                )
+                return AdyenOptions(data)
             }
     }
 }
 
-struct AdyenPayOut: Presentable {
+public struct AdyenPayOut: Presentable {
     @Inject var giraffe: hGiraffe
-    let adyenOptions: AdyenOptions
-    let urlScheme: String
+    public let adyenOptions: AdyenOptions
+    public let urlScheme: String
 
-    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
+    public init(adyenOptions: AdyenOptions, urlScheme: String) {
+        self.adyenOptions = adyenOptions
+        self.urlScheme = urlScheme
+    }
+
+    public func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -66,10 +61,8 @@ struct AdyenPayOut: Presentable {
                     }
                 }
         } onSuccess: {
-            giraffe.store.update(query: GiraffeGraphQL.ActivePayoutMethodsQuery()) {
-                (data: inout GiraffeGraphQL.ActivePayoutMethodsQuery.Data) in
-                data.activePayoutMethods = .init(status: .pending)
-            }
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(.setActivePayout(data: .init(status: .pending)))
         }
         .materialize()
 

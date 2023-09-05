@@ -3,6 +3,7 @@ import Foundation
 import Introspect
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -79,11 +80,9 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .insurance(filter: filter.hashValue)) {
+        hForm {
             ContractTable(filter: filter)
-        }
-        .withChatButton {
-            store.send(.goToFreeTextChat)
+                .padding(.top, 8)
         }
         .onReceive(pollTimer) { _ in
             fetch()
@@ -106,6 +105,12 @@ extension Contracts: View {
             )
 
         }
+        .hFormAttachToBottom {
+            if self.filter.displaysTerminatedContracts {
+                InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                    .padding(16)
+            }
+        }
     }
 }
 
@@ -115,6 +120,7 @@ public enum ContractsResult {
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
     case openCrossSellingWebUrl(url: URL)
+    case startNewTermination(type: TerminationNavigationAction)
 }
 
 extension Contracts {
@@ -125,15 +131,10 @@ extension Contracts {
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Contracts(filter: filter),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
-            ]
+            rootView: Contracts(filter: filter)
         ) { action in
-            if case let .openDetail(contractId) = action, openDetails {
-                ContractDetail(id: contractId).journey()
+            if case let .openDetail(contractId, title) = action, openDetails {
+                ContractDetail(id: contractId, title: title).journey(resultJourney: resultJourney)
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),
@@ -150,31 +151,45 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .terminationInitialNavigation(navigationAction) = action {
-                if case .openTerminationSuccessScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationSuccessScreen()
-                } else if case .openTerminationSetDateScreen = navigationAction {
-                    TerminationFlowJourney.openSetTerminationDateScreen()
-                } else if case .openTerminationFailScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationFailScreen()
-                } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    TerminationFlowJourney.openUpdateAppTerminationScreen()
-                } else if case .openTerminationDeletionScreen = navigationAction {
-                    TerminationFlowJourney.openTerminationDeletionScreen()
+            } else if case let .startTermination(navigationAction) = action {
+                resultJourney(.startNewTermination(type: navigationAction))
+            } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
+                InfoView(
+                    title: L10n.contractCoverageMoreInfo,
+                    description: limit.description,
+                    onDismiss: {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.dismisscontractDetailNavigation)
+                    }
+                )
+                .journey
+                .onAction(ContractStore.self) { action, presenter in
+                    if case .dismisscontractDetailNavigation = action {
+                        presenter.bag.dispose()
+                    }
                 }
+            } else if case let .contractEditInfo(id) = action {
+                HostingJourney(
+                    ContractStore.self,
+                    rootView: EditContract(id: id),
+                    style: .detented(.scrollViewContentSize),
+                    options: [.largeNavigationBar, .blurredBackground]
+                ) { action in
+                    if case .dismissEditInfo = action {
+                        DismissJourney()
+                    }
+                }
+                .configureTitle(L10n.contractChangeInformationTitle)
             }
         }
         .onPresent({
             let store: ContractStore = globalPresentableStoreContainer.get()
             store.send(.resetSignedCrossSells)
         })
-        .addConfiguration({ presenter in
-            if let navigationController = presenter.viewController as? UINavigationController {
-                navigationController.isHeroEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
-            }
-        })
-        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureTitle(
+            filter.displaysActiveContracts
+                ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle
+        )
         .configureContractsTabBarItem
     }
 }

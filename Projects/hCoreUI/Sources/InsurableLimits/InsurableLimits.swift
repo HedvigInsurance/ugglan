@@ -3,17 +3,14 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public struct InsurableLimitsSectionView<Header: View>: View {
-    var header: Header?
+public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
 
     public init(
-        header: Header? = nil,
         limits: [InsurableLimits],
         didTap: @escaping (InsurableLimits) -> Void
     ) {
-        self.header = header
         self.limits = limits
         self.didTap = didTap
     }
@@ -24,20 +21,30 @@ public struct InsurableLimitsSectionView<Header: View>: View {
                 VStack(alignment: .leading, spacing: 4) {
                     hText(limit.label)
                         .fixedSize(horizontal: false, vertical: true)
-                    hText(limit.limit)
-                        .foregroundColor(hLabelColor.secondary)
+                        .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
             .withCustomAccessory {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.infoLarge.image)
+                HStack(alignment: .center) {
+                    hText(limit.limit)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(hTextColorNew.secondary)
+                    Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                        .resizable()
+                        .foregroundColor(hTextColorNew.secondary)
+                        .frame(width: 16, height: 16)
+                        .onTapGesture {
+                            didTap(limit)
+                        }
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
             }
             .onTap {
                 didTap(limit)
             }
         }
-        .withHeader {
-            header
-        }
+        .withoutHorizontalPadding
+        .sectionContainerStyle(.transparent)
     }
 }

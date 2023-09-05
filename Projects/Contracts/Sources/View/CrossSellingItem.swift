@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 import SwiftUI
 import hAnalytics
 import hCore
@@ -26,23 +27,36 @@ struct CrossSellingItem: View {
     }
 
     var body: some View {
-        SwiftUI.Button {
-            if !crossSell.infos.isEmpty {
-                hAnalyticsEvent.cardClickCrossSellDetail(
-                    id: crossSell.typeOfContract
-                )
-                .send()
-                store.send(.openCrossSellingDetail(crossSell: crossSell))
-            } else {
-                openExternal()
-            }
-        } label: {
-            CrossSellingCardLabel(crossSell: crossSell) {
-                openExternal()
+        HStack(spacing: 16) {
+            Image(uiImage: crossSell.image)
+                .resizable()
+                .frame(width: 48, height: 48)
+                .aspectRatio(contentMode: .fill)
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(crossSell.title, style: .standard).foregroundColor(hTextColorNew.primary)
+                    MarqueeText(
+                        text: crossSell.description,
+                        font: Fonts.fontFor(style: .standardSmall),
+                        leftFade: 3,
+                        rightFade: 3,
+                        startDelay: 2
+                    )
+                    .foregroundColor(hTextColorNew.secondary)
+                }
+                Spacer()
+                hButton.MediumButtonFilled {
+                    openExternal()
+                } content: {
+                    hText(L10n.crossSellGetPrice)
+                }
+                .hButtonConfigurationType(.primaryAlt)
             }
         }
-        .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
-        .contentShape(Rectangle())
+        .onTapGesture {
+            openExternal()
+            ImpactGenerator.soft()
+        }
     }
 }
 
@@ -59,25 +73,11 @@ struct CrossSellingItemPreviews: PreviewProvider {
             buttonText: "Calculate price",
             embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            infos: []
+            infos: [],
+            type: .accident
         )
     )
-
-    static var itemWithoutImage = CrossSellingItem(
-        crossSell: .init(
-            title: "Accident Insurance",
-            description: "From 79 SEK/mo.",
-            imageURL: URL(string: "https://hedvig.com/")!,
-            blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
-            buttonText: "Calculate price",
-            embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT",
-            infos: []
-        )
-    )
-
     static var previews: some View {
         itemWithImage.previewLayout(.sizeThatFits)
-        itemWithoutImage.previewLayout(.sizeThatFits).colorScheme(.dark)
     }
 }

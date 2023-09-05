@@ -23,30 +23,6 @@ struct ClaimSectionLoading: View {
                 ClaimSection(claims: claims)
                     .padding([.bottom, .top])
             }
-
-            startClaimsButton(claims)
-                .padding([.bottom], 16)
-
-            HowClaimsWorkButton()
-        }
-    }
-
-    @ViewBuilder
-    func startClaimsButton(_ claims: [Claim]) -> some View {
-        if claims.count > 0 {
-            hButton.LargeButtonOutlined {
-                hAnalyticsEvent.beginClaim(screen: .home).send()
-                store.send(.submitNewClaim(from: .generic))
-            } content: {
-                L10n.Home.OpenClaim.startNewClaimButton.hText()
-            }
-        } else {
-            hButton.LargeButtonFilled {
-                hAnalyticsEvent.beginClaim(screen: .home).send()
-                store.send(.submitNewClaim(from: .generic))
-            } content: {
-                hText(L10n.HomeTab.claimButtonText)
-            }
         }
     }
 

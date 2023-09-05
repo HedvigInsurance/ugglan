@@ -1,8 +1,10 @@
+import Combine
 import Flow
 import Form
 import Foundation
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -21,6 +23,15 @@ enum Documents: CaseIterable {
         }
     }
 
+    var subTitle: String {
+        switch self {
+        case .certificate:
+            return L10n.myDoumentsInsurancePrepurchaseSubtitle
+        case .terms:
+            return L10n.myDocumentsInsuranceTermsSubtitle
+        }
+    }
+
     func url(from contract: Contract) -> URL? {
         switch self {
         case .certificate:
@@ -32,8 +43,9 @@ enum Documents: CaseIterable {
 }
 
 struct ContractDocumentsView: View {
-    @PresentableStore var store: ContractStore
-
+    @PresentableStore var contractStore: ContractStore
+    @PresentableStore var terminationContractStore: TerminationContractStore
+    @StateObject private var vm = ContractsDocumentViewModel()
     let id: String
 
     var body: some View {
@@ -44,24 +56,35 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                hSection(Documents.allCases, id: \.title) { document in
-                    if let url = document.url(from: contract) {
-                        hRow {
-                            hText(document.title)
-                        }
-                        .withCustomAccessory {
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.chevronRight.image)
-                        }
-                        .onTap {
-                            store.send(
-                                .contractDetailNavigationAction(action: .document(url: url, title: document.title))
-                            )
+                ForEach(Documents.allCases, id: \.title) { document in
+                    hSection {
+                        if let url = document.url(from: contract) {
+                            hRow {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    HStack(spacing: 1) {
+                                        hText(document.title)
+                                        if #available(iOS 16.0, *) {
+                                            hText(L10n.documentPdfLabel, style: .footnote)
+                                                .baselineOffset(6.0)
+                                        }
+                                    }
+                                    hText(document.subTitle)
+                                        .foregroundColor(hTextColorNew.secondary)
+                                }
+                            }
+                            .withCustomAccessory {
+                                Spacer()
+                                Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                            }
+                            .onTap {
+                                contractStore.send(
+                                    .contractDetailNavigationAction(action: .document(url: url, title: document.title))
+                                )
+                            }
                         }
                     }
                 }
             }
-
         }
         if hAnalyticsExperiment.terminationFlow {
             PresentableStoreLens(
@@ -71,15 +94,34 @@ struct ContractDocumentsView: View {
                 }
             ) { contract in
                 if (contract?.currentAgreement?.activeTo) == nil {
-                    hButton.SmallButtonText {
-                        store.send(.startTermination(contractId: id))
-                    } content: {
-                        hText(L10n.terminationButton, style: .body)
-                            .foregroundColor(hTextColorNew.secondary)
+                    hSection {
+                        LoadingButtonWithContent(
+                            TerminationContractStore.self,
+                            .startTermination,
+                            buttonAction: {
+                                terminationContractStore.send(
+                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                )
+                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
+                                    if case let .navigationAction(navigationAction) = action {
+                                        contractStore.send(.startTermination(action: navigationAction))
+                                        self.vm.cancellable = nil
+                                    }
+                                }
+                            },
+                            content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTextColorNew.secondary)
+                            },
+                            buttonStyleSelect: .textButton
+                        )
                     }
-                    .padding(.bottom, 39)
+                    .sectionContainerStyle(.transparent)
                 }
             }
         }
     }
+}
+private class ContractsDocumentViewModel: ObservableObject {
+    var cancellable: AnyCancellable?
 }

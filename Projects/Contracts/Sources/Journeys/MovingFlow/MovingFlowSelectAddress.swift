@@ -13,31 +13,30 @@ struct MovingFlowSelectAddress: View {
     @State var selectedField: FieldType? = nil
 
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.fetchMoveIntent]) {
-            hForm {
-                addressField()
-                postalAndSquareField()
-                numberOfCoinsuredField()
-                accessDateField()
-            }
-            .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
-            .hUseNewStyle
-            .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
-                } content: {
-                    hTextNew(L10n.generalContinueButton, style: .body)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
-            }
+        //        LoadingViewWithContent(ContractStore.self, [.fetchMoveIntent]) {
+        hForm {
+            addressField()
+            postalAndSquareField()
+            numberOfCoinsuredField()
+            accessDateField()
         }
+        .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
+        .hFormAttachToBottom {
+            hButton.LargeButtonPrimary {
+                //                store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
+            } content: {
+                hText(L10n.generalContinueButton, style: .body)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
+        }
+        //        }
         .onChange(of: type) { newValue in
             if newValue == nil {
                 UIApplication.dismissKeyboard()
             } else if newValue == .accessDate {
                 UIApplication.dismissKeyboard()
-                store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+                //                store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             }
         }
         .dismissKeyboard()
@@ -105,7 +104,7 @@ struct MovingFlowSelectAddress: View {
                         }
                     }
                 } label: {
-                    Image(uiImage: hCoreUIAssets.minusIcon.image)
+                    Image(uiImage: hCoreUIAssets.minusSmall.image)
                         .foregroundColor(
                             hGrayscaleColorNew.greyScale1000.opacity((Int(nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1)
                         )
@@ -117,7 +116,7 @@ struct MovingFlowSelectAddress: View {
                     let conisured = Int(nbOfCoInsured) ?? 0
                     nbOfCoInsured = "\(conisured + 1)"
                 } label: {
-                    Image(uiImage: hCoreUIAssets.plusIcon.image)
+                    Image(uiImage: hCoreUIAssets.plusSmall.image)
                         .foregroundColor(hGrayscaleColorNew.greyScale1000)
                         .padding(.trailing, 16)
                 }
@@ -129,12 +128,12 @@ struct MovingFlowSelectAddress: View {
     @ViewBuilder
     func accessDateField() -> some View {
         VStack {
-            hTextNew(L10n.changeAddressMovingDateLabel, style: .footnote)
+            hText(L10n.changeAddressMovingDateLabel, style: .footnote)
                 .foregroundColor(hGrayscaleColorNew.greyScale700)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
             HStack(alignment: .top) {
-                hTextNew(L10n.changeAddressSelectMovingDateLabel, style: .title3)
+                hText(L10n.changeAddressSelectMovingDateLabel, style: .title3)
                     .foregroundColor(hGrayscaleColorNew.greyScale700)
                     .padding(.leading, 16)
                 Spacer()
@@ -144,7 +143,7 @@ struct MovingFlowSelectAddress: View {
             }
         }
         .onTapGesture {
-            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+            //            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
         }
         .padding(.vertical, 11)
         .background(
@@ -153,7 +152,7 @@ struct MovingFlowSelectAddress: View {
         )
         .padding(.horizontal, 16)
         .onTapGesture {
-            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+            //            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             self.type = nil
         }
     }

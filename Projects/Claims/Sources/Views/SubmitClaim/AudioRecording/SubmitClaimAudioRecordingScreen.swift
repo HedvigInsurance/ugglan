@@ -38,7 +38,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             ) { audioRecordingStep in
                 ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
                     HStack {
-                        hTextNew(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                        hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                             .foregroundColor(hTextColorNew.primary)
                     }
                     .padding(16)
@@ -46,6 +46,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         Squircle.default()
                             .fill(hFillColorNew.opaqueOne)
                     )
+                    .padding(.vertical, 12)
                     .padding(.leading, 16)
                     .padding(.trailing, 88)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -58,7 +59,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
                         VStack(spacing: 12) {
                             TrackPlayer(audioPlayer: audioPlayer)
-                                .hWithoutFootnote
                                 .onAppear {
                                     minutes = 0
                                     seconds = 0
@@ -67,7 +67,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 onSubmit(url)
                                 store.send(.submitAudioRecording(audioURL: url))
                             } content: {
-                                hTextNew(L10n.saveAndContinueButtonLabel)
+                                hText(L10n.saveAndContinueButtonLabel)
                             }
 
                             hButton.LargeButtonText {
@@ -76,7 +76,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     audioRecorder.restart()
                                 }
                             } content: {
-                                hTextNew(L10n.embarkRecordAgain)
+                                hText(L10n.embarkRecordAgain)
                             }
                             .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                         }
@@ -100,12 +100,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
                             )
                             if !audioRecorder.isRecording {
-                                hTextNew(L10n.claimsStartRecordingLabel, style: .body)
+                                hText(L10n.claimsStartRecordingLabel, style: .body)
                                     .foregroundColor(hTextColorNew.primary)
                             } else {
                                 let minutesToString = String(format: "%02d", minutes)
                                 let secondsToString = String(format: "%02d", seconds)
-                                hTextNew("\(minutesToString):\(secondsToString)", style: .body)
+                                hText("\(minutesToString):\(secondsToString)", style: .body)
                                     .foregroundColor(hTextColorNew.primary)
                                     .onReceive(timer) { time in
                                         if ((seconds % 59) == 0) && seconds != 0 {
@@ -124,7 +124,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .environmentObject(audioRecorder)
         }
-        .hUseNewStyle
     }
 }
 

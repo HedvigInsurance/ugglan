@@ -57,6 +57,7 @@ public struct CrossSell: Codable, Equatable, Hashable {
     public var embarkStoryName: String?
     public var webActionURL: String?
     public var infos: [CrossSellInfo]
+    public var type: CrossSellType
     public var hasBeenSeen: Bool {
         didSet {
             UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: typeOfContract))
@@ -82,7 +83,8 @@ public struct CrossSell: Codable, Equatable, Hashable {
         webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
         typeOfContract: String,
-        infos: [CrossSellInfo]
+        infos: [CrossSellInfo],
+        type: CrossSellType
     ) {
         self.title = title
         self.description = description
@@ -94,6 +96,7 @@ public struct CrossSell: Codable, Equatable, Hashable {
         self.hasBeenSeen = hasBeenSeen
         self.typeOfContract = typeOfContract
         self.infos = infos
+        self.type = type
     }
 
     public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
@@ -112,8 +115,33 @@ public struct CrossSell: Codable, Equatable, Hashable {
         )
         webActionURL = data.storeUrl
         typeOfContract = data.id
-
+        type = data.type?.crossSellType ?? .unknown
         infos = data.productVariants.compactMap({ CrossSellInfo(headerImageURL: parsedImageURL, about: data.about, $0) }
         )
     }
+}
+
+extension OctopusGraphQL.CrossSellType {
+    var crossSellType: CrossSellType {
+        switch self {
+        case .car:
+            return .car
+        case .home:
+            return .home
+        case .accident:
+            return .accident
+        case .pet:
+            return .pet
+        case .__unknown:
+            return .unknown
+        }
+    }
+}
+
+public enum CrossSellType: Codable, Hashable {
+    case car
+    case home
+    case accident
+    case pet
+    case unknown
 }

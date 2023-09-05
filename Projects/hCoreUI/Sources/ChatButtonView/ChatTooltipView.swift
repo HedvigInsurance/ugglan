@@ -2,29 +2,32 @@ import Foundation
 import SwiftUI
 import hCore
 
-struct ChatTooltipView: View {
+struct TooltipView: View {
     @Binding var displayTooltip: Bool
-    let defaultsId: String
+    let type: ToolbarOptionType
     let timeInterval: TimeInterval
 
-    var userDefaultsKey: String { "tooltip_\(defaultsId)_past_date" }
+    var userDefaultsKey: String { "tooltip_\(type.tooltipId)_past_date" }
 
     func canShowTooltip() -> Bool {
-        if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-            let timeIntervalSincePast = abs(
-                pastDate.timeIntervalSince(Date())
-            )
+        if type == .chat {
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
 
-            if timeIntervalSincePast > timeInterval {
-                setDefaultsTime()
-                return true
+                if timeIntervalSincePast > timeInterval {
+                    setDefaultsTime()
+                    return true
+                }
+
+                return false
             }
 
-            return false
+            setDefaultsTime()
+            return true
         }
-
-        setDefaultsTime()
-        return true
+        return false
     }
 
     func setDefaultsTime() {

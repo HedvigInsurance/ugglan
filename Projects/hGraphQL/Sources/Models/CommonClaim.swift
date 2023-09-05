@@ -117,6 +117,10 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 self.title = title
                 self.color = color
             }
+
+            public var isAlert: Bool {
+                return GiraffeGraphQL.HedvigColor(rawValue: color) == .yellow
+            }
         }
     }
 }
