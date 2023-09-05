@@ -41,7 +41,7 @@ public struct PickMarket: View {
             .sectionContainerStyle(.transparent)
         }
         .onAppear {
-            selectedMarket = store.state.market
+            code = store.state.market.id
         }
         .hFormAttachToBottom {
             hSection {
