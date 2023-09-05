@@ -6,13 +6,12 @@ import hCore
 import hCoreUI
 
 struct AskForPushnotifications: View {
-    let onActionExecuted: (UIViewController?) -> Void
-    @StateObject var vm = VCViewModel()
+    let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     init(
         text: String,
-        onActionExecuted: @escaping (UIViewController?) -> Void
+        onActionExecuted: @escaping () -> Void
     ) {
         let store: UgglanStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
@@ -45,7 +44,7 @@ struct AskForPushnotifications: View {
                             UIApplication.shared.appDelegate
                                 .registerForPushNotifications()
                                 .onValue { status in
-                                    onActionExecuted(vm.vc)
+                                    onActionExecuted()
                                 }
                         }
                     })
@@ -56,7 +55,7 @@ struct AskForPushnotifications: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
                 hButton.SmallButtonText {
-                    onActionExecuted(vm.vc)
+                    onActionExecuted()
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
@@ -65,9 +64,6 @@ struct AskForPushnotifications: View {
                 }
             }
             .padding([.leading, .trailing], 16)
-        }
-        .introspectViewController { viewController in
-            self.vm.vc = viewController
         }
     }
 }
@@ -78,15 +74,16 @@ extension AskForPushnotifications {
             SubmitClaimStore.self,
             rootView: AskForPushnotifications(
                 text: L10n.claimsActivateNotificationsBody,
-                onActionExecuted: { vc in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                onActionExecuted: {
                     if #available(iOS 15.0, *) {
+                        let vc = UIApplication.shared.getTopViewController()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                             vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                             vc?.sheetPresentationController?.detents = [.medium()]
                         }
                     }
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                 }
             ),
             style: .detented(.large, modally: false, bgColor: nil)
