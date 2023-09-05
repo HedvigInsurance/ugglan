@@ -4,36 +4,19 @@ import hCore
 import hCoreUI
 
 public struct PickMarket: View {
-    var currentMarket: Market
     @PresentableStore var store: MarketStore
-    @State var code: String?
-
-    let onSave: ((Market) -> Void)?
-    let onCancel: (() -> Void)?
-
-    @State var selectedMarket: Market
+    @State var code: String? = ""
+    @State var selectedMarket: Market?
+    let onSave: (Market) -> Void
 
     public init(
-        currentMarket: Market,
-        onSave: ((Market) -> Void)? = nil,
-        onCancel: (() -> Void)? = nil
+        onSave: @escaping (Market) -> Void
     ) {
-        self.currentMarket = currentMarket
         self.onSave = onSave
-        self.onCancel = onCancel
-        self.code = currentMarket.id
-        self.selectedMarket = currentMarket
     }
 
     public var body: some View {
         hForm {
-            if onSave == nil {
-                hText(L10n.LanguagePickerModal.text, style: .body)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-            }
             hSection {
                 VStack(spacing: 4) {
                     ForEach(Market.activatedMarkets, id: \.title) { market in
@@ -55,22 +38,23 @@ public struct PickMarket: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .onAppear {
+            code = store.state.market.id
+        }
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    if let onSave {
-                        hButton.LargeButtonPrimary {
+                    hButton.LargeButtonPrimary {
+                        if let selectedMarket = selectedMarket {
                             onSave(selectedMarket)
-                        } content: {
-                            hText(L10n.generalSaveButton)
                         }
+                    } content: {
+                        hText(L10n.generalSaveButton)
                     }
-                    if let onCancel {
-                        hButton.LargeButtonGhost {
-                            onCancel()
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
+                    hButton.LargeButtonGhost {
+                        store.send(.dismissPicker)
+                    } content: {
+                        hText(L10n.generalCancelButton)
                     }
                 }
             }
@@ -80,9 +64,7 @@ public struct PickMarket: View {
         }
         .onChange(of: code) { newValue in
             if let marketValue = Market.allCases.first(where: { $0.id == newValue }) {
-                if let onSave = onSave {
-                    selectedMarket = marketValue
-                }
+                selectedMarket = marketValue
             }
         }
     }
@@ -98,9 +80,10 @@ extension PickMarket {
         ) { action in
             if case .selectMarket = action {
                 PopJourney()
+            } else if case .dismissPicker = action {
+                PopJourney()
             }
         }
         .configureTitle(L10n.MarketLanguageScreen.marketLabel)
-        .withDismissButton
     }
 }

@@ -15,14 +15,11 @@ extension AppJourney {
                 AppJourney.onboarding()
             } else if case .loginButtonTapped = action {
                 AppJourney.login
-            } else if case let .presentMarketPicker(currentMarket) = action {
+            } else if case .presentMarketPicker = action {
                 PickMarket(
-                    currentMarket: currentMarket,
                     onSave: { selectedMarket in
                         let store: MarketStore = globalPresentableStoreContainer.get()
                         store.send(.selectMarket(market: selectedMarket))
-                    },
-                    onCancel: {
                     }
                 )
                 .journey

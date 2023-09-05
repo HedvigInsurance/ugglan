@@ -9,7 +9,7 @@ struct MarketRow: View {
     @ViewBuilder
     public func marketRow(_ market: Market) -> some View {
         Button {
-            store.send(.presentMarketPicker(currentMarket: store.state.market))
+            store.send(.presentMarketPicker)
         } label: {
 
         }
