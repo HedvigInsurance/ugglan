@@ -22,7 +22,7 @@ struct AboutBusinessModelView: View {
 extension AboutBusinessModelView {
     var journey: some JourneyPresentation {
         HostingJourney(
-            UgglanStore.self,
+            ProfileStore.self,
             rootView: self,
             style: .detented(.scrollViewContentSize),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]

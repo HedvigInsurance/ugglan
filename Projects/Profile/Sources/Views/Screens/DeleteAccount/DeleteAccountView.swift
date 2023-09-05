@@ -12,17 +12,17 @@ struct DeleteAccountView: View {
                 title: L10n.profileDeleteAccountFailed,
                 description: L10n.profileDeleteAccountFailedLabel,
                 onDismiss: {
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissScreen)
+//                    let store: UgglanStore = globalPresentableStoreContainer.get()
+//                    store.send(.dismissScreen)
                 },
                 extraButton: (
                     text: L10n.openChat, style: .primary,
                     action: {
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissScreen)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            store.send(.openChat)
-                        }
+//                        let store: UgglanStore = globalPresentableStoreContainer.get()
+//                        store.send(.dismissScreen)
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                            store.send(.openChat)
+//                        }
                     }
                 )
             )
@@ -31,8 +31,8 @@ struct DeleteAccountView: View {
                 title: L10n.DeleteAccount.confirmationTitle,
                 description: L10n.DeleteAccount.deletedDataDescription + "\n\n" + L10n.DeleteAccount.processingFooter,
                 onDismiss: {
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissScreen)
+//                    let store: UgglanStore = globalPresentableStoreContainer.get()
+//                    store.send(.dismissScreen)
                 },
                 extraButton: (
                     text: L10n.profileDeleteAccountConfirmDeleteion,

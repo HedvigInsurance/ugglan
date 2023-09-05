@@ -52,7 +52,7 @@ struct AppInfoView: View {
     }
 
     private var profileVersion: some View {
-        let appVersion = Bundle.main.appVersion
+//        let appVersion = Bundle.main.appVersion
         return hRow {
             hText(L10n.profileAboutAppVersion)
                 .foregroundColor(hLabelColor.primary)
@@ -61,12 +61,12 @@ struct AppInfoView: View {
         .withCustomAccessory {
             HStack {
                 Spacer()
-                hText(appVersion)
+//                hText(appVersion)
                     .foregroundColor(hLabelColor.secondary)
             }
         }
         .onTap {
-            UIPasteboard.general.value = appVersion
+//            UIPasteboard.general.value = appVersion
             showToaster()
         }
     }

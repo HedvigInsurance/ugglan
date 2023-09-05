@@ -33,7 +33,7 @@ struct ProfileView: View {
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                 ApplicationState.preserveState(.marketPicker)
-                UIApplication.shared.appDelegate.logout()
+//                UIApplication.shared.appDelegate.logout()
             }
         )
     }
@@ -120,50 +120,52 @@ extension ProfileView {
             ProfileStore.self,
             rootView: ProfileView()
         ) { action in
-            if case .openProfile = action {
-                HostingJourney(rootView: MyInfoView())
-                    .configureTitle(L10n.profileMyInfoRowTitle)
-            } else if case .openPayment = action {
-                resultJourney(.openPayment)
-            } else if case .openAppInformation = action {
-                HostingJourney(rootView: AppInfoView())
-                    .configureTitle(L10n.profileAppInfo)
-            } else if case .openCharity = action {
-                AppJourney.businessModelDetailJourney
-            } else if case let .openAppSettings(animated) = action {
-                HostingJourney(
-                    UgglanStore.self,
-                    rootView: SettingsScreen(),
-                    options: animated ? [.defaults] : [.defaults, .unanimated]
-                ) { action in
-                    if case let .deleteAccount(details) = action {
-                        AppJourney.deleteAccountJourney(details: details)
-                    } else if case .deleteAccountAlreadyRequested = action {
-                        AppJourney.deleteRequestAlreadyPlacedJourney
-                    } else if case .openLangaugePicker = action {
-                        PickLanguage {
-                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                                AppJourney.main
-                            )
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.setOpenAppSettings(to: true))
-                        } onCancel: {
-                            let store: UgglanStore = globalPresentableStoreContainer.get()
-                            store.send(.closeLanguagePicker)
-
-                        }
-                        .journey
-                        .onAction(UgglanStore.self) { action in
-                            if case .closeLanguagePicker = action {
-                                DismissJourney()
-                            }
-                        }
-                    }
-                }
-                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
-            } else if case .openEuroBonus = action {
-                EuroBonusView.journey
-            }
+//            if case .openProfile = action {
+//                HostingJourney(rootView: MyInfoView())
+//                    .configureTitle(L10n.profileMyInfoRowTitle)
+//            } else if case .openPayment = action {
+//                resultJourney(.openPayment)
+//            } else if case .openAppInformation = action {
+//                HostingJourney(rootView: AppInfoView())
+//                    .configureTitle(L10n.profileAppInfo)
+//            } else if case .openCharity = action {
+////                AppJourney.businessModelDetailJourney
+//            } else if case let .openAppSettings(animated) = action {
+//                HostingJourney(
+//                    ProfileStore.self,
+//                    rootView: SettingsScreen(),
+//                    options: animated ? [.defaults] : [.defaults, .unanimated]
+//                ) { action in
+                    ContinueJourney()
+//                    if case let .deleteAccount(details) = action {
+////                        AppJourney.deleteAccountJourney(details: details)
+//                    }
+//                    else if case .deleteAccountAlreadyRequested = action {
+////                        AppJourney.deleteRequestAlreadyPlacedJourney
+//                    } else if case .openLangaugePicker = action {
+//                        PickLanguage {
+//                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+////                                AppJourney.main
+//                            )
+//                            let store: ProfileStore = globalPresentableStoreContainer.get()
+//                            store.send(.setOpenAppSettings(to: true))
+//                        } onCancel: {
+//                            let store: UgglanStore = globalPresentableStoreContainer.get()
+//                            store.send(.closeLanguagePicker)
+//
+//                        }
+//                        .journey
+//                        .onAction(ProfileStore.self) { action in
+//                            if case .closeLanguagePicker = action {
+//                                DismissJourney()
+//                            }
+//                        }
+//                    }
+//                }
+//                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
+//            } else if case .openEuroBonus = action {
+//                EuroBonusView.journey
+//            }
         }
         .configureTitle(L10n.profileTitle)
         .configureTabBarItem(

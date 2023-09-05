@@ -42,7 +42,7 @@ class DeleteAccountViewModel: ObservableObject {
     }
 
     func deleteAccount() {
-        let store: UgglanStore = globalPresentableStoreContainer.get()
-        store.send(.sendAccountDeleteRequest(details: memberDetails))
+//        let store: UgglanStore = globalPresentableStoreContainer.get()
+//        store.send(.sendAccountDeleteRequest(details: memberDetails))
     }
 }
