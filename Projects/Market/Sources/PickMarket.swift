@@ -8,15 +8,13 @@ public struct PickMarket: View {
     @State var code: String? = ""
     @State var selectedMarket: Market?
     let onSave: (Market) -> Void
-    
+
     public init(
-        onSave: @escaping (Market) -> Void,
-        selectedMarket: Market? = nil
+        onSave: @escaping (Market) -> Void
     ) {
         self.onSave = onSave
-        self.selectedMarket = selectedMarket
     }
-    
+
     public var body: some View {
         hForm {
             hSection {
