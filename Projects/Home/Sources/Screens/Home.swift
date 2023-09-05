@@ -72,6 +72,7 @@ extension HomeView {
         }
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
+        .hFormMergeBottomViewWithContentIfNeeded
         .onReceive(store.stateSignal.plain().publisher) { value in
             self.toolbarOptionTypes = value.toolbarOptionTypes
         }
