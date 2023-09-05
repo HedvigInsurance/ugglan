@@ -184,11 +184,10 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
-    @StateObject var vm = VCViewModel()
-    let onConfirmAction: ((UIViewController?) -> Void)?
+    let onConfirmAction: (() -> Void)?
 
     init(
-        onConfirmAction: ((_ vc: UIViewController?) -> Void)?
+        onConfirmAction: (() -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -206,7 +205,7 @@ struct HonestyPledge: View {
                 .padding(.bottom, 32)
 
                 SlideToConfirm(onConfirmAction: {
-                    onConfirmAction?(vm.vc)
+                    onConfirmAction?()
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
@@ -224,18 +223,9 @@ struct HonestyPledge: View {
             .padding(.horizontal, 24)
             .fixedSize(horizontal: false, vertical: true)
         }
-        .introspectViewController { viewController in
-            if vm.vc != viewController {
-                vm.vc = viewController
-            }
-        }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
         .hDisableScroll
     }
-}
-
-class VCViewModel: ObservableObject {
-    weak var vc: UIViewController?
 }
 
 extension HonestyPledge {
@@ -263,19 +253,21 @@ extension HonestyPledge {
 extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
-        HonestyPledge { vc in
+        HonestyPledge {
             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
             if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .openNotificationsPermissionScreen))
             } else {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                 if #available(iOS 15.0, *) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak vc] in
+                    let vc = UIApplication.shared.getTopViewController()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                     }
                 }
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+
             }
         }
         .hDisableScroll

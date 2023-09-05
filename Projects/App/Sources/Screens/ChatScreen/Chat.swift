@@ -74,9 +74,7 @@ enum ChatResult {
                     UgglanStore.self,
                     rootView: AskForPushnotifications(
                         text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: { _ in
-
-                        }
+                        onActionExecuted: {}
                     ),
                     style: .detented(.large)
                 ) { action in

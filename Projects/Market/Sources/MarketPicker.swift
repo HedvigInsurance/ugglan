@@ -78,21 +78,26 @@ public struct MarketPickerView: View {
             .frame(width: 150, height: 40)
         Spacer()
 
+        hButton.LargeButtonPrimary {
+            hAnalyticsEvent.buttonClickMarketingLogin().send()
+            store.send(.loginButtonTapped)
+        } content: {
+            HStack {
+                Image(uiImage: hCoreUIAssets.bankIdLogo.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 16, height: 16)
+                hText(L10n.marketingLogin)
+            }
+        }
+
         if store.state.market.showGetQuote {
-            hButton.LargeButtonPrimary {
+            hButton.LargeButtonGhost {
                 hAnalyticsEvent.buttonClickMarketingOnboard().send()
                 store.send(.onboard)
             } content: {
                 hText(L10n.marketingGetHedvig, style: .body)
             }
-            .hButtonFilledStyle(.overImage)
-        }
-
-        hButton.LargeButtonOutlined {
-            hAnalyticsEvent.buttonClickMarketingLogin().send()
-            store.send(.loginButtonTapped)
-        } content: {
-            hText(L10n.marketingLogin)
         }
     }
 

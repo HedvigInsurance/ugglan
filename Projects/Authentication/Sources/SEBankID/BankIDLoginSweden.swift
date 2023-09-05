@@ -16,13 +16,6 @@ public struct BankIDLoginSweden {
     }
 }
 
-public enum BankIDLoginSwedenResult {
-    case qrCode
-    case emailLogin
-    case loggedIn
-    case close
-}
-
 extension BankIDLoginSweden {
     enum AutoStartTokenError: Error {
         case failedToGenerate
