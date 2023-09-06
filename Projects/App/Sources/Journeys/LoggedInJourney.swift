@@ -3,6 +3,7 @@ import Contracts
 import Embark
 import Flow
 import Forever
+import Profile
 import Form
 import Foundation
 import Home
@@ -22,8 +23,8 @@ extension AppJourney {
             HomeView.journey(
                 claimsContent: claims,
                 memberId: {
-                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                    return ugglanStore.state.memberDetails?.id ?? ""
+                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
+                    return profileStrore.state.memberDetails?.id ?? ""
 
                 }
             ) { result in
@@ -132,6 +133,15 @@ extension AppJourney {
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)
+            case .openLanguagePicker:
+                ContinueJourney().onPresent {
+                    UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                        AppJourney.main
+                    )
+                }
+            case let .deleteAccount(details):
+//                AppJourney.deleteAccountJourney(details: details)
+                ContinueJourney()
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

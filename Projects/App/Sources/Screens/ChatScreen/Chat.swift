@@ -9,6 +9,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import Profile
 
 struct Chat {
     let reloadChatCallbacker = Callbacker<Void>()

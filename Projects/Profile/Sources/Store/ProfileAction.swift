@@ -1,4 +1,5 @@
 import Presentation
+import hGraphQL
 
 public enum ProfileAction: ActionProtocol {
     case fetchProfileState
@@ -19,6 +20,16 @@ public enum ProfileAction: ActionProtocol {
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case setOpenAppSettings(to: Bool)
+    
+    case openLangaugePicker
+    case closeLanguagePicker
+    case continueLanguagePickerJourney
+    
+    case setMemberDetails(details: MemberDetails?)
+    case fetchMemberDetails
+    
+    case deleteAccount(details: MemberDetails)
+    case deleteAccountAlreadyRequested
 }
 
 public enum ProfileLoadingAction: LoadingProtocol {

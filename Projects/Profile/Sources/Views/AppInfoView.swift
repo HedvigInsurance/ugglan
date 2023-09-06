@@ -4,8 +4,11 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct AppInfoView: View {
-    var body: some View {
+public struct AppInfoView: View {
+    
+    public init() {}
+    
+    public var body: some View {
         PresentableStoreLens(
             ProfileStore.self,
             getter: { state in
@@ -115,13 +118,13 @@ struct AppInfoView_Previews: PreviewProvider {
 }
 
 extension MenuChildAction {
-    static var appInformation: MenuChildAction {
+    static public var appInformation: MenuChildAction {
         MenuChildAction(identifier: "app-information")
     }
 }
 
 extension MenuChild {
-    static var appInformation: MenuChild {
+    public static var appInformation: MenuChild {
         MenuChild(
             title: L10n.aboutScreenTitle,
             style: .default,

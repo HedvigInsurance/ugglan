@@ -11,12 +11,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ProfileView: View {
+public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
-
-    init() {
+  
+    public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if store.state.openSettingsDirectly {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -58,11 +58,6 @@ struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
-
-                    //                    if hAnalyticsExperiment.showCharity {
-                    //                        ProfileRow(row: .myCharity)
-                    //                    }
-
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
@@ -110,6 +105,8 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
+    case openLanguagePicker
+    case deleteAccount(details: MemberDetails)
 }
 
 extension ProfileView {
@@ -120,52 +117,52 @@ extension ProfileView {
             ProfileStore.self,
             rootView: ProfileView()
         ) { action in
-//            if case .openProfile = action {
-//                HostingJourney(rootView: MyInfoView())
-//                    .configureTitle(L10n.profileMyInfoRowTitle)
-//            } else if case .openPayment = action {
-//                resultJourney(.openPayment)
-//            } else if case .openAppInformation = action {
-//                HostingJourney(rootView: AppInfoView())
-//                    .configureTitle(L10n.profileAppInfo)
+            if case .openProfile = action {
+                HostingJourney(rootView: MyInfoView())
+                    .configureTitle(L10n.profileMyInfoRowTitle)
+            } else if case .openPayment = action {
+                resultJourney(.openPayment)
+            }else if case .openAppInformation = action {
+                HostingJourney(rootView: AppInfoView())
+                    .configureTitle(L10n.profileAppInfo)
 //            } else if case .openCharity = action {
-////                AppJourney.businessModelDetailJourney
-//            } else if case let .openAppSettings(animated) = action {
-//                HostingJourney(
-//                    ProfileStore.self,
-//                    rootView: SettingsScreen(),
-//                    options: animated ? [.defaults] : [.defaults, .unanimated]
-//                ) { action in
-                    ContinueJourney()
-//                    if case let .deleteAccount(details) = action {
-////                        AppJourney.deleteAccountJourney(details: details)
-//                    }
+//                AppJourney.businessModelDetailJourney
+            } else if case let .openAppSettings(animated) = action {
+                HostingJourney(
+                    ProfileStore.self,
+                    rootView: SettingsScreen(),
+                    options: animated ? [.defaults] : [.defaults, .unanimated]
+                ) { action in
+                    if case let .deleteAccount(details) = action {
+//                        AppJourney.deleteAccountJourney(details: details)
+                        resultJourney(.deleteAccount(details: details))
+                    }
 //                    else if case .deleteAccountAlreadyRequested = action {
-////                        AppJourney.deleteRequestAlreadyPlacedJourney
-//                    } else if case .openLangaugePicker = action {
-//                        PickLanguage {
-//                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-////                                AppJourney.main
-//                            )
-//                            let store: ProfileStore = globalPresentableStoreContainer.get()
-//                            store.send(.setOpenAppSettings(to: true))
-//                        } onCancel: {
-//                            let store: UgglanStore = globalPresentableStoreContainer.get()
-//                            store.send(.closeLanguagePicker)
-//
-//                        }
-//                        .journey
-//                        .onAction(ProfileStore.self) { action in
-//                            if case .closeLanguagePicker = action {
-//                                DismissJourney()
-//                            }
-//                        }
+//                        AppJourney.deleteRequestAlreadyPlacedJourney
 //                    }
-//                }
-//                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
-//            } else if case .openEuroBonus = action {
-//                EuroBonusView.journey
-//            }
+                       else if case .openLangaugePicker = action {
+                        PickLanguage {
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.continueLanguagePickerJourney) /* TODO: PLACE THERSE IN ANOTHER WAY? */
+                            store.send(.setOpenAppSettings(to: true))
+                        } onCancel: {
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.closeLanguagePicker)
+                        }
+                        .journey
+                        .onAction(ProfileStore.self) { action in
+                            if case .closeLanguagePicker = action {
+                                DismissJourney()
+                            }
+                        }
+                    }
+                }
+                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
+            } else if case .openEuroBonus = action {
+                EuroBonusView.journey
+            } else if case .continueLanguagePickerJourney = action {
+                resultJourney(.openLanguagePicker)
+            }
         }
         .configureTitle(L10n.profileTitle)
         .configureTabBarItem(

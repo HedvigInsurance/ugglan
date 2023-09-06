@@ -15,6 +15,8 @@ public struct ProfileState: StateProtocol {
     var memberPhone: String?
     var partnerData: PartnerData?
     var openSettingsDirectly = true
+    public var memberDetails: MemberDetails?
+    
     public init() {}
     
     public var shouldShowNotificationCard: Bool {

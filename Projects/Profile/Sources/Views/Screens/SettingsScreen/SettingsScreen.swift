@@ -14,7 +14,7 @@ struct SettingsScreen: View {
     @Inject var giraffe: hGiraffe
 
     init() {
-//        store.send(.fetchMemberDetails)
+        store.send(.fetchMemberDetails)
     }
 
     var body: some View {
@@ -25,7 +25,7 @@ struct SettingsScreen: View {
                         value: Localization.Locale.currentLocale.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-//                            store.send(.openLangaugePicker)
+                            store.send(.openLangaugePicker)
                         }
                     )
                     PresentableStoreLens(
@@ -60,28 +60,28 @@ struct SettingsScreen: View {
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
-//            PresentableStoreLens(
-//                ProfileStore.self,
-//                getter: { state in
-//                    state.memberDetails
-//                        ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
-//                }
-//            ) { memberDetails in
-//                hButton.LargeButtonGhost {
-//                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-//                        let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-//                        if hasAlreadyRequested {
+            PresentableStoreLens(
+                ProfileStore.self,
+                getter: { state in
+                    state.memberDetails
+                        ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+                }
+            ) { memberDetails in
+                hButton.LargeButtonGhost {
+                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                        let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                        if hasAlreadyRequested {
 //                            store.send(.deleteAccountAlreadyRequested)
-//                        } else {
+                        } else {
 //                            store.send(.deleteAccount(details: memberDetails))
-//                        }
-//                    }
-//                } content: {
-//                    hText(L10n.SettingsScreen.deleteAccountButton)
-//                        .foregroundColor(hSignalColorNew.redElement)
-//                }
-//            }
-//            .padding(16)
+                        }
+                    }
+                } content: {
+                    hText(L10n.SettingsScreen.deleteAccountButton)
+                        .foregroundColor(hSignalColorNew.redElement)
+                }
+            }
+            .padding(16)
         }
     }
 }

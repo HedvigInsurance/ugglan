@@ -46,6 +46,21 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
                 return disposeBag
             }
+        case .fetchMemberDetails:
+            let query = GiraffeGraphQL.MemberDetailsQuery()
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetch(
+                        query: query,
+                        cachePolicy: .returnCacheDataElseFetch
+                    )
+                    .compactMap(on: .main) { details in
+                        let details = MemberDetails(memberData: details.member)
+                        callback(.value(.setMemberDetails(details: details)))
+                    }
+                return disposeBag
+            }
         default:
             return nil
         }
@@ -67,6 +82,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.memberPhone = phone
         case let .setOpenAppSettings(to):
             newState.openSettingsDirectly = to
+        case let .setMemberDetails(details):
+            newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
         default:
             break
         }

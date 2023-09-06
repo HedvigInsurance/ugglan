@@ -11,7 +11,7 @@ struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
     var pushNotificationStatus: Int?
     var isDemoMode: Bool = false
-    var memberDetails: MemberDetails?
+//    var memberDetails: MemberDetails?
     var pushNotificationsSnoozeDate: Date?
     init() {
         UNUserNotificationCenter.current()
@@ -50,11 +50,8 @@ enum UgglanAction: ActionProtocol {
     case setPushNotificationsTo(date: Date?)
     case setIsDemoMode(to: Bool)
     case deleteAccount(details: MemberDetails)
-    case deleteAccountAlreadyRequested
-    case setMemberDetails(details: MemberDetails?)
-    case fetchMemberDetails
-    case openLangaugePicker
-    case closeLanguagePicker
+//    case deleteAccountAlreadyRequested
+//    case setMemberDetails(details: MemberDetails?)
 }
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {
@@ -65,21 +62,21 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
         switch action {
-        case .fetchMemberDetails:
-            let query = GiraffeGraphQL.MemberDetailsQuery()
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetch(
-                        query: query,
-                        cachePolicy: .returnCacheDataElseFetch
-                    )
-                    .compactMap(on: .main) { details in
-                        let details = MemberDetails(memberData: details.member)
-                        callback(.value(.setMemberDetails(details: details)))
-                    }
-                return disposeBag
-            }
+//        case .fetchMemberDetails:
+//            let query = GiraffeGraphQL.MemberDetailsQuery()
+//            return FiniteSignal { callback in
+//                let disposeBag = DisposeBag()
+//                disposeBag += self.giraffe.client
+//                    .fetch(
+//                        query: query,
+//                        cachePolicy: .returnCacheDataElseFetch
+//                    )
+//                    .compactMap(on: .main) { details in
+//                        let details = MemberDetails(memberData: details.member)
+//                        callback(.value(.setMemberDetails(details: details)))
+//                    }
+//                return disposeBag
+//            }
         default:
             break
         }
@@ -97,8 +94,8 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             newState.pushNotificationStatus = status
         case let .setIsDemoMode(to):
             newState.isDemoMode = to
-        case let .setMemberDetails(details):
-            newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+//        case let .setMemberDetails(details):
+//            newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
         case let .setPushNotificationsTo(date):
             newState.pushNotificationsSnoozeDate = date
         default:
