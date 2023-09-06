@@ -8,9 +8,14 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import TerminateContracts
+import Combine
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
+    @PresentableStore var terminationContractStore: TerminationContractStore
+    @StateObject private var vm = ContractsInformationViewModel()
+    
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -54,6 +59,7 @@ struct ContractInformationView: View {
                     .padding(.bottom, 16)
 
                 }
+                displayTerminationButton
             }
         }
         .sectionContainerStyle(.transparent)
@@ -76,6 +82,44 @@ struct ContractInformationView: View {
                     ])
             }
             .padding(.bottom, 16)
+        }
+    }
+    
+    @ViewBuilder
+    private var displayTerminationButton: some View {
+        if hAnalyticsExperiment.terminationFlow {
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    state.contractForId(id)
+                }
+            ) { contract in
+                if (contract?.currentAgreement?.activeTo) == nil {
+                    hSection {
+                        LoadingButtonWithContent(
+                            TerminationContractStore.self,
+                            .startTermination,
+                            buttonAction: {
+                                terminationContractStore.send(
+                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                )
+                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
+                                    if case let .navigationAction(navigationAction) = action {
+                                        store.send(.startTermination(action: navigationAction))
+                                        self.vm.cancellable = nil
+                                    }
+                                }
+                            },
+                            content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTextColorNew.secondary)
+                            },
+                            buttonStyleSelect: .textButton
+                        )
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
+            }
         }
     }
 }
@@ -104,3 +148,8 @@ struct ChangePeopleView: View {
         .sectionContainerStyle(.transparent)
     }
 }
+
+private class ContractsInformationViewModel: ObservableObject {
+    var cancellable: AnyCancellable?
+}
+
