@@ -93,13 +93,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .setFocusedCrossSell(focusedCrossSell: crossSell)
             ]
             .emitEachThenEnd
-        //        case .getMoveIntent:
-        //            setLoading(for: .fetchMoveIntent)
-        //            self.send(.setMoveIntent)
-        //            return FiniteSignal { callback in
-        //                let disposeBag = DisposeBag()
-        //                return disposeBag
-        //            }
         default:
             break
         }

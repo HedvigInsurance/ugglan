@@ -65,12 +65,20 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
 public enum MoveFlowAction: ActionProtocol, Hashable {
     case getMoveIntent
     case setMoveIntent
+    case navigation(action: MoveFlowNavigationAction)
+}
+
+public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
+    case openHousingTypeScreen
+    case openAddressFillScreen
     case goToFreeTextChat
+    case dismissMovingFlow
+    case openDatePickerScreen
+    case openConfirmScreen
+    case openFailureScreen
 }
 
 public enum MoveFlowLoadingAction: LoadingProtocol {
-    case fetchContractBundles
-    case fetchContracts
     case fetchMoveIntent
 }
 

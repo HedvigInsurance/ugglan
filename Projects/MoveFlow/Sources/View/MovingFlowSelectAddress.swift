@@ -4,26 +4,31 @@ import hCoreUI
 
 struct MovingFlowSelectAddress: View {
     @PresentableStore var store: MoveFlowStore
-    @State var type: MovingFlowSelectAddressFieldType?
-    @State var address: String = ""
-    @State var postalCode: String = ""
-    @State var squareArea: String = ""
-    @State var nbOfCoInsured: String = ""
-    @State var accessDate: String = ""
-    @State var selectedField: FieldType? = nil
+    @StateObject var vm = MovingFlowViewModel()
 
     var body: some View {
-        //        LoadingViewWithContent(ContractStore.self, [.fetchMoveIntent]) {
+        //        LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
         hForm {
-            addressField()
-            postalAndSquareField()
-            numberOfCoinsuredField()
-            accessDateField()
+            hSection {
+                hRow {
+                    addressField()
+                }
+                hRow {
+                    postalAndSquareField()
+                }
+                hRow {
+                    numberOfCoinsuredField()
+                }
+                hRow {
+                    accessDateField()
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
+        //            .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
         .hFormAttachToBottom {
             hButton.LargeButtonPrimary {
-                //                store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
+                store.send(.navigation(action: .openConfirmScreen))
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
             }
@@ -31,101 +36,88 @@ struct MovingFlowSelectAddress: View {
             .padding(.bottom, 8)
         }
         //        }
-        .onChange(of: type) { newValue in
-            if newValue == nil {
-                UIApplication.dismissKeyboard()
-            } else if newValue == .accessDate {
-                UIApplication.dismissKeyboard()
-                //                store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
-            }
-        }
-        .dismissKeyboard()
+        //        .onChange(of: vm.type) { newValue in
+        //            if newValue == nil {
+        //                UIApplication.dismissKeyboard()
+        //            } else if newValue == .accessDate {
+        //                UIApplication.dismissKeyboard()
+        //                store.send(.navigation(action: .openDatePickerScreen))
+        //            }
+        //        }
+        //        .dismissKeyboard()
     }
 
-    @ViewBuilder
     func addressField() -> some View {
-        hSection {
+        hFloatingTextField(
+            masking: Masking(type: .address),
+            value: $vm.address,
+            equals: $vm.type,
+            focusValue: .address
+        )
+    }
+
+    func postalAndSquareField() -> some View {
+        HStack(spacing: 0) {
             hFloatingTextField(
-                masking: Masking(type: .address),
-                value: $address,
-                equals: $type,
-                focusValue: .address
+                masking: Masking(type: .postalCode),
+                value: $vm.postalCode,
+                equals: $vm.type,
+                focusValue: .postalCode,
+                placeholder: L10n.changeAddressNewPostalCodeLabel
+            )
+            Spacer()
+
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $vm.squareArea,
+                equals: $vm.type,
+                focusValue: .squareArea,
+                placeholder: L10n.changeAddressNewLivingSpaceLabel
             )
         }
     }
 
-    @ViewBuilder
-    func postalAndSquareField() -> some View {
-
-        hSection {
-            HStack(spacing: 0) {
-
-                hFloatingTextField(
-                    masking: Masking(type: .postalCode),
-                    value: $postalCode,
-                    equals: $type,
-                    focusValue: .postalCode,
-                    placeholder: L10n.changeAddressNewPostalCodeLabel
-                )
-
-                Spacer()
-
-                hFloatingTextField(
-                    masking: Masking(type: .digits),
-                    value: $squareArea,
-                    equals: $type,
-                    focusValue: .squareArea,
-                    placeholder: L10n.changeAddressNewLivingSpaceLabel
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
     func numberOfCoinsuredField() -> some View {
-        hSection {
-            HStack(spacing: 0) {
-                hFloatingTextField(
-                    masking: Masking(type: .digits),
-                    value: $nbOfCoInsured,
-                    equals: $type,
-                    focusValue: .squareArea,
-                    placeholder: L10n.changeAddressCoInsuredLabel
-                )
+        HStack(spacing: 0) {
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $vm.nbOfCoInsured,
+                equals: $vm.type,
+                focusValue: .squareArea,
+                placeholder: L10n.changeAddressCoInsuredLabel
+            )
 
-                Spacer()
+            Spacer()
 
-                Button {
-                    if let coinsured = Int(nbOfCoInsured), coinsured > 0 {
-                        if coinsured == 1 {
-                            nbOfCoInsured = ""
-                        } else {
-                            nbOfCoInsured = "\(coinsured - 1)"
-                        }
+            Button {
+                if let coinsured = Int(vm.nbOfCoInsured), coinsured > 0 {
+                    if coinsured == 1 {
+                        vm.nbOfCoInsured = ""
+                    } else {
+                        vm.nbOfCoInsured = "\(coinsured - 1)"
                     }
-                } label: {
-                    Image(uiImage: hCoreUIAssets.minusSmall.image)
-                        .foregroundColor(
-                            hGrayscaleColorNew.greyScale1000.opacity((Int(nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1)
-                        )
-
                 }
-                .frame(width: 30, height: 60)
+            } label: {
+                Image(uiImage: hCoreUIAssets.minusSmall.image)
+                    .foregroundColor(
+                        hGrayscaleColorNew.greyScale1000.opacity((Int(vm.nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1)
+                    )
 
-                Button {
-                    let conisured = Int(nbOfCoInsured) ?? 0
-                    nbOfCoInsured = "\(conisured + 1)"
-                } label: {
-                    Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        .foregroundColor(hGrayscaleColorNew.greyScale1000)
-                        .padding(.trailing, 16)
-                }
-                .frame(width: 30, height: 60)
             }
+            .frame(width: 30, height: 60)
+
+            Button {
+                let conisured = Int(vm.nbOfCoInsured) ?? 0
+                vm.nbOfCoInsured = "\(conisured + 1)"
+            } label: {
+                Image(uiImage: hCoreUIAssets.plusSmall.image)
+                    .foregroundColor(hGrayscaleColorNew.greyScale1000)
+                    .padding(.trailing, 16)
+            }
+            .frame(width: 30, height: 60)
         }
     }
 
-    @ViewBuilder
     func accessDateField() -> some View {
         VStack {
             hText(L10n.changeAddressMovingDateLabel, style: .footnote)
@@ -143,26 +135,16 @@ struct MovingFlowSelectAddress: View {
             }
         }
         .onTapGesture {
-            //            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+            store.send(.navigation(action: .openDatePickerScreen))
         }
         .padding(.vertical, 11)
         .background(
             Squircle.default()
                 .fill(hGrayscaleColorNew.greyScale100)
         )
-        .padding(.horizontal, 16)
         .onTapGesture {
-            //            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
-            self.type = nil
-        }
-    }
-
-    @hColorBuilder
-    func textFieldColor(text: FieldType) -> some hColor {
-        if text == selectedField {
-            hGreenColorNew.green100
-        } else {
-            hGrayscaleColorNew.greyScale100
+            store.send(.navigation(action: .openDatePickerScreen))
+            self.vm.type = nil
         }
     }
 }
@@ -206,4 +188,14 @@ enum FieldType {
     case postal
     case square
     case nbOfCoinsured
+}
+
+class MovingFlowViewModel: ObservableObject {
+    @Published var type: MovingFlowSelectAddressFieldType?
+    @Published var address: String = ""
+    @Published var postalCode: String = ""
+    @Published var squareArea: String = ""
+    @Published var nbOfCoInsured: String = ""
+    @Published var accessDate: String = ""
+    @Published var selectedField: FieldType? = nil
 }

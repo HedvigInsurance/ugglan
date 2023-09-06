@@ -22,14 +22,14 @@ struct MovingFlowFailure: View {
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButtonPrimary {
-                    store.send(.goToFreeTextChat)
+                    store.send(.navigation(action: .goToFreeTextChat))
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonText {
-                    //                    store.send(.navigationActionMovingFlow(action: .dismissMovingFlow))
+                    store.send(.navigation(action: .dismissMovingFlow))
                 } content: {
                     hText(L10n.generalCancelButton, style: .body)
                 }

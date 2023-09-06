@@ -19,26 +19,25 @@ public struct MovingFlowJourneyNew {
 
     @JourneyBuilder
     public static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
-        //        GroupJourney {
-        //            if case let .navigationActionMovingFlow(navigationAction) = action {
-        //                if case .openAddressFillScreen = navigationAction {
-        //                    MovingFlowJourneyNew.openAddressFillScreen()
-        //                } else if case .openHousingTypeScreen = navigationAction {
-        //                    MovingFlowJourneyNew.openSelectHousingScreen()
-        //                } else if case .openConfirmScreen = navigationAction {
-        //                    MovingFlowJourneyNew.openConfirmScreen()
-        //                } else if case .openFailureScreen = navigationAction {
-        //                    MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
-        //                } else if case .dismissMovingFlow = navigationAction {
-        //                    DismissJourney()
-        //                } else if case .openDatePickerScreen = navigationAction {
-        //                    MovingFlowJourneyNew.openDatePickerScreen()
-        //                }
-        //            } else if case .goToFreeTextChat = action {
-        //                DismissJourney()
-        //            }
-        //        }
-        DismissJourney()
+        GroupJourney {
+            if case let .navigation(navigationAction) = action {
+                if case .openAddressFillScreen = navigationAction {
+                    MovingFlowJourneyNew.openAddressFillScreen()
+                } else if case .openHousingTypeScreen = navigationAction {
+                    MovingFlowJourneyNew.openSelectHousingScreen()
+                } else if case .openConfirmScreen = navigationAction {
+                    MovingFlowJourneyNew.openConfirmScreen()
+                } else if case .openFailureScreen = navigationAction {
+                    MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
+                } else if case .dismissMovingFlow = navigationAction {
+                    DismissJourney()
+                } else if case .openDatePickerScreen = navigationAction {
+                    MovingFlowJourneyNew.openDatePickerScreen()
+                } else if case .goToFreeTextChat = navigationAction {
+                    DismissJourney()
+                }
+            }
+        }
     }
 
     @JourneyBuilder

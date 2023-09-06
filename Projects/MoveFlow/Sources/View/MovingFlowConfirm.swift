@@ -171,7 +171,7 @@ struct MovingFlowConfirm: View {
             .foregroundColor(hTextColorNew.secondary)
 
             hButton.SmallButtonText {
-                //                store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
+                store.send(.navigation(action: .openAddressFillScreen))
             } content: {
                 hText("Ändra", style: .body)
             }
@@ -217,7 +217,7 @@ struct MovingFlowConfirm: View {
         .padding(.bottom, 16)
 
         hButton.LargeButtonPrimary {
-            //            store.send(.navigationActionMovingFlow(action: .openFailureScreen))
+            store.send(.navigation(action: .openFailureScreen))
         } content: {
             hText(L10n.changeAddressAcceptOffer, style: .body)
         }
