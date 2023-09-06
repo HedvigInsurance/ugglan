@@ -1,4 +1,5 @@
 import Adyen
+import Profile
 import AdyenActions
 import Apollo
 import Authentication
@@ -93,7 +94,7 @@ import hGraphQL
         Future { completion in
             UNUserNotificationCenter.current()
                 .getNotificationSettings { settings in
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                         return
@@ -111,7 +112,7 @@ import hGraphQL
 
                         UNUserNotificationCenter.current()
                             .getNotificationSettings { settings in
-                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
                                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                             }
                         completion(.success)

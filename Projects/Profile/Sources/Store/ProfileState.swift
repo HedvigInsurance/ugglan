@@ -13,18 +13,32 @@ public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
     var memberEmail: String = ""
     var memberPhone: String?
-    var partnerData: PartnerData?
+    public var partnerData: PartnerData?
     var openSettingsDirectly = true
     public var memberDetails: MemberDetails?
+    var pushNotificationStatus: Int?
+    var pushNotificationsSnoozeDate: Date?
     
-    public init() {}
+    public init() {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            }
+    }
+    
+    public func pushNotificationCurrentStatus() -> UNAuthorizationStatus {
+        if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status) {
+            return status
+        }
+        return .notDetermined
+    }
     
     public var shouldShowNotificationCard: Bool {
         let requiredTimeForSnooze: Double = TimeInterval.days(numberOfDays: 30)
-//        return self.pushNotificationCurrentStatus() != .authorized
-//            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
-//                .distance(to: Date()) > requiredTimeForSnooze
-        return true /* TODO: FIX */
+        return self.pushNotificationCurrentStatus() != .authorized
+        && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
+            .distance(to: Date()) > requiredTimeForSnooze
     }
 }
 
@@ -33,12 +47,12 @@ public struct ProfileState: StateProtocol {
 
 
 public struct PartnerData: Codable, Equatable {
-    let sas: PartnerDataSas?
-
-    var shouldShowEuroBonus: Bool {
+    public let sas: PartnerDataSas?
+    
+    public var shouldShowEuroBonus: Bool {
         return sas?.eligible ?? false
     }
-
+    
     var isConnected: Bool {
         return !(sas?.eurobonusNumber ?? "").isEmpty
     }
@@ -51,7 +65,7 @@ public struct PartnerData: Codable, Equatable {
 public struct PartnerDataSas: Codable, Equatable {
     let eligible: Bool
     let eurobonusNumber: String?
-
+    
     init(with data: OctopusGraphQL.PartnerDataFragment.PartnerDatum.Sa) {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber

@@ -33,7 +33,8 @@ public struct ProfileView: View {
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                 ApplicationState.preserveState(.marketPicker)
-//                UIApplication.shared.appDelegate.logout()
+                store.send(.logout)
+
             }
         )
     }
@@ -106,7 +107,9 @@ public struct ProfileView: View {
 public enum ProfileResult {
     case openPayment
     case openLanguagePicker
-    case deleteAccount(details: MemberDetails)
+    case openChat
+    case logout
+    case registerForPushNotifications
 }
 
 extension ProfileView {
@@ -125,8 +128,6 @@ extension ProfileView {
             }else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
-//            } else if case .openCharity = action {
-//                AppJourney.businessModelDetailJourney
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,
@@ -134,16 +135,15 @@ extension ProfileView {
                     options: animated ? [.defaults] : [.defaults, .unanimated]
                 ) { action in
                     if case let .deleteAccount(details) = action {
-//                        AppJourney.deleteAccountJourney(details: details)
-                        resultJourney(.deleteAccount(details: details))
+                        DeleteAccountView.deleteAccountJourney(details: details)
                     }
-//                    else if case .deleteAccountAlreadyRequested = action {
-//                        AppJourney.deleteRequestAlreadyPlacedJourney
-//                    }
+                    else if case .deleteAccountAlreadyRequested = action {
+                        DeleteAccountView.deleteRequestAlreadyPlacedJourney
+                    }
                        else if case .openLangaugePicker = action {
                         PickLanguage {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.continueLanguagePickerJourney) /* TODO: PLACE THERSE IN ANOTHER WAY? */
+                            store.send(.continueLanguagePickerJourney)
                             store.send(.setOpenAppSettings(to: true))
                         } onCancel: {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -162,6 +162,12 @@ extension ProfileView {
                 EuroBonusView.journey
             } else if case .continueLanguagePickerJourney = action {
                 resultJourney(.openLanguagePicker)
+            } else if case .openChat = action {
+                resultJourney(.openChat)
+            } else if case .logout = action {
+                resultJourney(.logout)
+            } else if case .registerForPushNotifications = action {
+                resultJourney(.registerForPushNotifications)
             }
         }
         .configureTitle(L10n.profileTitle)

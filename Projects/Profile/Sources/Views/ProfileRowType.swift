@@ -4,15 +4,13 @@ import hCore
 import hCoreUI
 
 enum ProfileRowType {
-    case myInfo, myCharity, payment, appInfo, settings
+    case myInfo, payment, appInfo, settings
     case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
         switch self {
         case .myInfo:
             return L10n.profileMyInfoRowTitle
-        case .myCharity:
-            return L10n.businessModelProfileRow
         case .payment:
             return L10n.profilePaymentRowHeader
         case .appInfo:
@@ -28,8 +26,6 @@ enum ProfileRowType {
         switch self {
         case .myInfo:
             return hCoreUIAssets.memberCard.image
-        case .myCharity:
-            return hCoreUIAssets.heart.image
         case .payment:
             return hCoreUIAssets.payments.image
         case .appInfo:
@@ -49,8 +45,6 @@ enum ProfileRowType {
         switch self {
         case .myInfo:
             return .openProfile
-        case .myCharity:
-            return .openCharity
         case .payment:
             return .openPayment
         case .appInfo:
@@ -65,8 +59,6 @@ enum ProfileRowType {
     var imageSize: CGFloat {
         switch self {
         case .myInfo:
-            return 40
-        case .myCharity:
             return 40
         case .payment:
             return 40

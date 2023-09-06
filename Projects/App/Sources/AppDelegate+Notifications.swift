@@ -1,4 +1,5 @@
 import Apollo
+import Profile
 import Contracts
 import CoreDependencies
 import Flow
@@ -48,14 +49,14 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     }
             }
         )
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: UgglanStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

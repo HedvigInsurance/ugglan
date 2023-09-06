@@ -1,4 +1,5 @@
 import Apollo
+import Profile
 import Flow
 import Form
 import Foundation
@@ -26,7 +27,8 @@ class ChatState {
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
-    private let store: UgglanStore = globalPresentableStoreContainer.get()
+    private let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+    
     private func parseMessage(message: GiraffeGraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)
@@ -53,7 +55,7 @@ class ChatState {
             hasShownStatusMessage = true
             let innerBag = bag.innerBag()
 
-            let status = self.store.state.pushNotificationCurrentStatus()
+            let status = self.profileStore.state.pushNotificationCurrentStatus()
             if status == .notDetermined {
                 self.askForPermissionsSignal.value = true
             } else {

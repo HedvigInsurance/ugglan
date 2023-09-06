@@ -1,4 +1,5 @@
 import Claims
+import Profile
 import Combine
 import Flow
 import Foundation
@@ -254,8 +255,8 @@ extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
         HonestyPledge {
-            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-            if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .openNotificationsPermissionScreen))
             } else {

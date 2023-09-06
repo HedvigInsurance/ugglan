@@ -40,7 +40,7 @@ struct DeleteRequestLoadingView: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonText {
-//                store.send(.makeTabActive(deeplink: .home))
+                store.send(.makeTabActive(deeplink: .home))
             } content: {
                 hText(L10n.generalCloseButton, style: .body)
             }
@@ -74,7 +74,7 @@ struct DeleteRequestLoadingView: View {
             Spacer()
 
             hButton.LargeButtonOutlined {
-//                store.send(.makeTabActive(deeplink: .home))
+                store.send(.makeTabActive(deeplink: .home))
             } content: {
                 hText("Back to home", style: .body)
                     .foregroundColor(.primary)

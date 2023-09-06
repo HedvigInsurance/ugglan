@@ -18,17 +18,13 @@ struct NotificationsCardView: View {
                         .init(
                             buttonTitle: L10n.pushNotificationsAlertActionNotNow,
                             buttonAction: {
-                                /* TODO: SEND TO UGGLAN */
-//                                shouldShowNotificationCard.send(.setPushNotificationsTo(date: Date()))
+                                store.send(.setPushNotificationsTo(date: Date()))
                             }
                         ),
                         .init(
                             buttonTitle: L10n.ReferralsAllowPushNotificationSheet.Allow.button,
                             buttonAction: {
-
-//                                _ = UIApplication.shared.appDelegate
-//                                    .registerForPushNotifications()
-                                /* todo: change */
+                                store.send(.registerForPushNotifications)
                             }
                         ),
                     ])

@@ -84,6 +84,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.openSettingsDirectly = to
         case let .setMemberDetails(details):
             newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+        case let .setPushNotificationStatus(status):
+            newState.pushNotificationStatus = status
+        case let .setPushNotificationsTo(date):
+            newState.pushNotificationsSnoozeDate = date
         default:
             break
         }

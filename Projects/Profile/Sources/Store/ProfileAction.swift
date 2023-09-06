@@ -1,10 +1,11 @@
 import Presentation
+import Foundation
 import hGraphQL
+import hCore
 
 public enum ProfileAction: ActionProtocol {
     case fetchProfileState
     case openProfile
-    case openCharity
     case openPayment
     case openEuroBonus
     case openChangeEuroBonus
@@ -20,7 +21,6 @@ public enum ProfileAction: ActionProtocol {
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case setOpenAppSettings(to: Bool)
-    
     case openLangaugePicker
     case closeLanguagePicker
     case continueLanguagePickerJourney
@@ -30,6 +30,17 @@ public enum ProfileAction: ActionProtocol {
     
     case deleteAccount(details: MemberDetails)
     case deleteAccountAlreadyRequested
+    case sendAccountDeleteRequest(details: MemberDetails)
+    case makeTabActive(deeplink: DeepLink)
+    
+    case openChat
+    case dismissScreen
+    case logout
+    
+    case setPushNotificationStatus(status: Int?)
+    case setPushNotificationsTo(date: Date?)
+    
+    case registerForPushNotifications
 }
 
 public enum ProfileLoadingAction: LoadingProtocol {

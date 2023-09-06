@@ -34,22 +34,23 @@ struct SettingsScreen: View {
                             state
                         }
                     ) { _ in
-//                        hFloatingField(
-//                            value: store.state.pushNotificationCurrentStatus() == .authorized
-//                                ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
-//                            placeholder: L10n.pushNotificationsAlertTitle,
-//                            onTap: {
-//                                if store.state.pushNotificationCurrentStatus() == .authorized {
-//                                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-//                                        return
-//                                    }
-//                                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-//                                } else {
+                        hFloatingField(
+                            value: store.state.pushNotificationCurrentStatus() == .authorized
+                                ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
+                            placeholder: L10n.pushNotificationsAlertTitle,
+                            onTap: {
+                                if store.state.pushNotificationCurrentStatus() == .authorized {
+                                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                        return
+                                    }
+                                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                                } else {
+                                    store.send(.registerForPushNotifications)
 //                                    _ = UIApplication.shared.appDelegate
 //                                        .registerForPushNotifications()
-//                                }
-//                            }
-//                        )
+                                }
+                            }
+                        )
                     }
                 }
                 NotificationsCardView()
@@ -71,9 +72,9 @@ struct SettingsScreen: View {
                     if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
                         let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
                         if hasAlreadyRequested {
-//                            store.send(.deleteAccountAlreadyRequested)
+                            store.send(.deleteAccountAlreadyRequested)
                         } else {
-//                            store.send(.deleteAccount(details: memberDetails))
+                            store.send(.deleteAccount(details: memberDetails))
                         }
                     }
                 } content: {

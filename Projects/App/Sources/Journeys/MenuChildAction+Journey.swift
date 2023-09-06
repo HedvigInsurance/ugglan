@@ -7,7 +7,7 @@ extension MenuChildAction {
     var journey: some JourneyPresentation {
         GroupJourney {
             switch self {
-            case MenuChildAction.appInformation: /* TODO: MOVE TO PROFILE? */
+            case MenuChildAction.appInformation:
                 HostingJourney(
                     rootView: AppInfoView(),
                     style: .detented(.large)

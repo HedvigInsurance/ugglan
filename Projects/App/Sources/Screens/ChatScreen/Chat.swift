@@ -79,9 +79,10 @@ enum ChatResult {
                     ),
                     style: .detented(.large)
                 ) { action in
-                    if case .setPushNotificationStatus = action {
-                        PopJourney()
-                    }
+                    PopJourney()
+//                    if case .setPushNotificationStatus = action {
+//                        PopJourney()
+//                    }
                 }
                 .onDismiss {
                     onDismiss()
