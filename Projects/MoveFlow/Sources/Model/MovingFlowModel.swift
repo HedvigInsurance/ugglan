@@ -8,13 +8,6 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     let numberCoInsured: Int
     let currentHomeAddresses: MoveAddress
     let quotes: Quotes
-
-    //    init(
-    //        with data: OctopusGraphQL.FlowTerminationSuccessFragment
-    //    ) {
-    //        self.terminationDate = data.terminationDate
-    //        self.surveyUrl = data.surveyUrl
-    //    }
 }
 
 struct MoveAddress: Codable, Equatable, Hashable {
@@ -29,7 +22,7 @@ struct MoveAddress: Codable, Equatable, Hashable {
 
 struct Quotes: Codable, Equatable, Hashable {
     let address: MoveAddress
-    let premium: MonetaryAmount  //?
+    let premium: MonetaryAmount
     let numberCoInsured: Int
     let startDate: String
     let termsVersion: TermsVersion

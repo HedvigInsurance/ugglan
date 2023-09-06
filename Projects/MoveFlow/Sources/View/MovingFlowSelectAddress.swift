@@ -10,22 +10,16 @@ struct MovingFlowSelectAddress: View {
         //        LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
         hForm {
             hSection {
-                hRow {
+                VStack(spacing: 4) {
                     addressField()
-                }
-                hRow {
                     postalAndSquareField()
-                }
-                hRow {
                     numberOfCoinsuredField()
-                }
-                hRow {
                     accessDateField()
                 }
             }
             .sectionContainerStyle(.transparent)
         }
-        //            .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
+        .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
         .hFormAttachToBottom {
             hButton.LargeButtonPrimary {
                 store.send(.navigation(action: .openConfirmScreen))
@@ -57,7 +51,7 @@ struct MovingFlowSelectAddress: View {
     }
 
     func postalAndSquareField() -> some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 4) {
             hFloatingTextField(
                 masking: Masking(type: .postalCode),
                 value: $vm.postalCode,
@@ -65,7 +59,6 @@ struct MovingFlowSelectAddress: View {
                 focusValue: .postalCode,
                 placeholder: L10n.changeAddressNewPostalCodeLabel
             )
-            Spacer()
 
             hFloatingTextField(
                 masking: Masking(type: .digits),
@@ -79,24 +72,13 @@ struct MovingFlowSelectAddress: View {
 
     func numberOfCoinsuredField() -> some View {
         HStack(spacing: 0) {
-            hFloatingTextField(
-                masking: Masking(type: .digits),
-                value: $vm.nbOfCoInsured,
-                equals: $vm.type,
-                focusValue: .squareArea,
-                placeholder: L10n.changeAddressCoInsuredLabel
-            )
-
+            hFloatingField(value: vm.nbOfCoInsured, placeholder: L10n.changeAddressCoInsuredLabel) {
+                vm.increaseNumberOfCoinsured()
+            }
             Spacer()
 
             Button {
-                if let coinsured = Int(vm.nbOfCoInsured), coinsured > 0 {
-                    if coinsured == 1 {
-                        vm.nbOfCoInsured = ""
-                    } else {
-                        vm.nbOfCoInsured = "\(coinsured - 1)"
-                    }
-                }
+                vm.decreaseNumberOfCoinsured()
             } label: {
                 Image(uiImage: hCoreUIAssets.minusSmall.image)
                     .foregroundColor(
@@ -105,46 +87,32 @@ struct MovingFlowSelectAddress: View {
 
             }
             .frame(width: 30, height: 60)
+            .disabled(Int(vm.nbOfCoInsured) == 0)
 
             Button {
-                let conisured = Int(vm.nbOfCoInsured) ?? 0
-                vm.nbOfCoInsured = "\(conisured + 1)"
+                vm.increaseNumberOfCoinsured()
             } label: {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
-                    .foregroundColor(hGrayscaleColorNew.greyScale1000)
+                    .foregroundColor(
+                        hGrayscaleColorNew.greyScale1000.opacity((Int(vm.nbOfCoInsured) ?? 0) >= 5 ? 0.4 : 1)
+                    )
                     .padding(.trailing, 16)
             }
             .frame(width: 30, height: 60)
+            .disabled(Int(vm.nbOfCoInsured) ?? 0 >= 5)
+
         }
     }
 
     func accessDateField() -> some View {
-        VStack {
-            hText(L10n.changeAddressMovingDateLabel, style: .footnote)
-                .foregroundColor(hGrayscaleColorNew.greyScale700)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-            HStack(alignment: .top) {
-                hText(L10n.changeAddressSelectMovingDateLabel, style: .title3)
-                    .foregroundColor(hGrayscaleColorNew.greyScale700)
-                    .padding(.leading, 16)
-                Spacer()
-                Image(uiImage: hCoreUIAssets.chevronDown.image)
-                    .foregroundColor(hGrayscaleColorNew.greyScale1000)
-                    .padding(.trailing, 16)
-            }
-        }
-        .onTapGesture {
-            store.send(.navigation(action: .openDatePickerScreen))
-        }
-        .padding(.vertical, 11)
-        .background(
-            Squircle.default()
-                .fill(hGrayscaleColorNew.greyScale100)
-        )
-        .onTapGesture {
-            store.send(.navigation(action: .openDatePickerScreen))
-            self.vm.type = nil
+        hDatePickerField(
+            config: .init(
+                placeholder: L10n.changeAddressMovingDateLabel,
+                title: L10n.changeAddressMovingDateLabel
+            ),
+            selectedDate: vm.accessDate
+        ) { date in
+            vm.accessDate = date
         }
     }
 }
@@ -196,6 +164,26 @@ class MovingFlowViewModel: ObservableObject {
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""
     @Published var nbOfCoInsured: String = ""
-    @Published var accessDate: String = ""
+    @Published var accessDate: Date?
     @Published var selectedField: FieldType? = nil
+
+    func increaseNumberOfCoinsured() {
+        let numberOfConisured = Int(nbOfCoInsured) ?? 0
+        if numberOfConisured < 5 {
+            withAnimation {
+                nbOfCoInsured = "\(numberOfConisured + 1)"
+            }
+        }
+    }
+
+    func decreaseNumberOfCoinsured() {
+        let numberOfConisured = Int(nbOfCoInsured) ?? 0
+        withAnimation {
+            if numberOfConisured > 1 {
+                nbOfCoInsured = "\(numberOfConisured - 1)"
+            } else {
+                nbOfCoInsured = ""
+            }
+        }
+    }
 }
