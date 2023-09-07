@@ -3,12 +3,12 @@ import Contracts
 import Embark
 import Flow
 import Forever
-import Profile
 import Form
 import Foundation
 import Home
 import Payment
 import Presentation
+import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -20,51 +20,51 @@ extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         return
-        HomeView.journey(
-            claimsContent: claims,
-            memberId: {
-                let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
-                return profileStrore.state.memberDetails?.id ?? ""
-            }
-        ) { result in
-            switch result {
-            case .startMovingFlow:
-                AppJourney.movingFlow
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
-            case .openConnectPayments:
-                PaymentSetup(setupType: .initial).journeyThenDismiss
-            case .startNewClaim:
-                startClaimsJourney(from: .generic)
-            case .openTravelInsurance:
-                TravelInsuranceFlowJourney.start {
-                    AppJourney.freeTextChat()
+            HomeView.journey(
+                claimsContent: claims,
+                memberId: {
+                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
+                    return profileStrore.state.memberDetails?.id ?? ""
                 }
-            case .openCrossSells:
-                CrossSellingScreen.journey { result in
-                    if case .openCrossSellingWebUrl(let url) = result {
-                        AppJourney.webRedirect(url: url)
+            ) { result in
+                switch result {
+                case .startMovingFlow:
+                    AppJourney.movingFlow
+                case .openFreeTextChat:
+                    AppJourney.freeTextChat().withDismissButton
+                case .openConnectPayments:
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                case .startNewClaim:
+                    startClaimsJourney(from: .generic)
+                case .openTravelInsurance:
+                    TravelInsuranceFlowJourney.start {
+                        AppJourney.freeTextChat()
+                    }
+                case .openCrossSells:
+                    CrossSellingScreen.journey { result in
+                        if case .openCrossSellingWebUrl(let url) = result {
+                            AppJourney.webRedirect(url: url)
+                        }
                     }
                 }
+            } statusCard: {
+                VStack(spacing: 8) {
+                    ConnectPaymentCardView()
+                    RenewalCardView()
+                }
             }
-        } statusCard: {
-            VStack(spacing: 8) {
-                ConnectPaymentCardView()
-                RenewalCardView()
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .home
+                } else {
+                    return false
+                }
             }
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .home
-            } else {
-                return false
-            }
-        }
-        .configureClaimsNavigation
-        .configureSubmitClaimsNavigation
-        .configurePaymentNavigation
+            .configureClaimsNavigation
+            .configureSubmitClaimsNavigation
+            .configurePaymentNavigation
     }
-    
+
     fileprivate static var contractsTab: some JourneyPresentation {
         Contracts.journey { result in
             switch result {
@@ -90,7 +90,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     fileprivate static var foreverTab: some JourneyPresentation {
         ForeverView.journey()
             .makeTabSelected(UgglanStore.self) { action in
@@ -101,7 +101,7 @@ extension AppJourney {
                 }
             }
     }
-    
+
     fileprivate static var profileTab: some JourneyPresentation {
         ProfileView.journey { result in
             switch result {
@@ -133,22 +133,25 @@ extension AppJourney {
                 }
                 .configureTitle(L10n.myPaymentTitle)
             case .openLanguagePicker:
-                ContinueJourney().onPresent {
-                    UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                        AppJourney.main
-                    )
-                }
+                ContinueJourney()
+                    .onPresent {
+                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                            AppJourney.main
+                        )
+                    }
             case .openChat:
                 AppJourney.freeTextChat().withDismissButton
             case .logout:
-                ContinueJourney().onPresent {
-                    UIApplication.shared.appDelegate.logout()
-                }
+                ContinueJourney()
+                    .onPresent {
+                        UIApplication.shared.appDelegate.logout()
+                    }
             case .registerForPushNotifications:
-                ContinueJourney().onPresent {
-                    _ = UIApplication.shared.appDelegate
-                        .registerForPushNotifications()
-                }
+                ContinueJourney()
+                    .onPresent {
+                        _ = UIApplication.shared.appDelegate
+                            .registerForPushNotifications()
+                    }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -159,7 +162,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     static var loggedIn: some JourneyPresentation {
         Journey(ExperimentsLoader(), options: []) { _ in
             TabbedJourney(
@@ -213,7 +216,7 @@ extension JourneyPresentation {
             store.send(action)
         }
     }
-    
+
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
@@ -230,7 +233,7 @@ extension JourneyPresentation {
             }
         }
     }
-    
+
     public var configureSubmitClaimsNavigation: some JourneyPresentation {
         onAction(SubmitClaimStore.self) { action in
             if case .submitClaimOpenFreeTextChat = action {
@@ -249,7 +252,7 @@ extension JourneyPresentation {
             }
         )
     }
-    
+
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
             if case .connectPayments = action {

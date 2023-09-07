@@ -3,9 +3,9 @@ import Flow
 import Foundation
 import Payment
 import Presentation
+import Profile
 import hAnalytics
 import hCore
-import Profile
 
 extension AppDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) {
@@ -23,15 +23,14 @@ extension AppDelegate {
                     .journeyThenDismiss
             )
             .onValue { _ in
-                
+
             }
-        }
-        else if path == .sasEuroBonus {
+        } else if path == .sasEuroBonus {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue {[weak self] _ in
+                .onValue { [weak self] _ in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                        self?.deepLinkDisposeBag += profileStore.stateSignal.onValue {[weak self] state in
+                        self?.deepLinkDisposeBag += profileStore.stateSignal.onValue { [weak self] state in
                             if let shouldShowEuroBonus = state.partnerData?.shouldShowEuroBonus {
                                 self?.deepLinkDisposeBag.dispose()
                                 if shouldShowEuroBonus {

@@ -15,7 +15,7 @@ public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
-  
+
     public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if store.state.openSettingsDirectly {
@@ -125,7 +125,7 @@ extension ProfileView {
                     .configureTitle(L10n.profileMyInfoRowTitle)
             } else if case .openPayment = action {
                 resultJourney(.openPayment)
-            }else if case .openAppInformation = action {
+            } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
             } else if case let .openAppSettings(animated) = action {
@@ -136,11 +136,9 @@ extension ProfileView {
                 ) { action in
                     if case let .deleteAccount(details) = action {
                         DeleteAccountView.deleteAccountJourney(details: details)
-                    }
-                    else if case .deleteAccountAlreadyRequested = action {
+                    } else if case .deleteAccountAlreadyRequested = action {
                         DeleteAccountView.deleteRequestAlreadyPlacedJourney
-                    }
-                       else if case .openLangaugePicker = action {
+                    } else if case .openLangaugePicker = action {
                         PickLanguage {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.continueLanguagePickerJourney)

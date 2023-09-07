@@ -1,11 +1,11 @@
 import Apollo
-import Profile
 import Contracts
 import CoreDependencies
 import Flow
 import Foundation
 import Payment
 import Presentation
+import Profile
 import UIKit
 import hAnalytics
 import hCore

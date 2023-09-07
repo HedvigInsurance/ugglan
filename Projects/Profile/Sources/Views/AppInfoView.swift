@@ -5,9 +5,9 @@ import hCore
 import hCoreUI
 
 public struct AppInfoView: View {
-    
+
     public init() {}
-    
+
     public var body: some View {
         PresentableStoreLens(
             ProfileStore.self,
@@ -55,7 +55,7 @@ public struct AppInfoView: View {
     }
 
     private var profileVersion: some View {
-//        let appVersion = Bundle.main.appVersion
+        //        let appVersion = Bundle.main.appVersion
         return hRow {
             hText(L10n.profileAboutAppVersion)
                 .foregroundColor(hLabelColor.primary)
@@ -64,12 +64,12 @@ public struct AppInfoView: View {
         .withCustomAccessory {
             HStack {
                 Spacer()
-//                hText(appVersion)
+                    //                hText(appVersion)
                     .foregroundColor(hLabelColor.secondary)
             }
         }
         .onTap {
-//            UIPasteboard.general.value = appVersion
+            //            UIPasteboard.general.value = appVersion
             showToaster()
         }
     }

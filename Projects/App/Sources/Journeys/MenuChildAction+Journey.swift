@@ -1,7 +1,7 @@
 import Foundation
 import Presentation
-import hCore
 import Profile
+import hCore
 
 extension MenuChildAction {
     var journey: some JourneyPresentation {
