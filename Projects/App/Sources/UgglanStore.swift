@@ -10,7 +10,7 @@ import hGraphQL
 struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
     var isDemoMode: Bool = false
-    init() {
+    init() {}
 }
 
 enum UgglanAction: ActionProtocol {
