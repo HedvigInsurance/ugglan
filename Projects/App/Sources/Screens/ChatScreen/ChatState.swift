@@ -1,9 +1,9 @@
 import Apollo
-import Profile
 import Flow
 import Form
 import Foundation
 import Presentation
+import Profile
 import UIKit
 import hAnalytics
 import hCore
@@ -28,7 +28,7 @@ class ChatState {
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
     private let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-    
+
     private func parseMessage(message: GiraffeGraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)

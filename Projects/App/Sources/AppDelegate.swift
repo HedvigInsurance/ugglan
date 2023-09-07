@@ -1,5 +1,4 @@
 import Adyen
-import Profile
 import AdyenActions
 import Apollo
 import Authentication
@@ -14,6 +13,7 @@ import Foundation
 import Hero
 import Payment
 import Presentation
+import Profile
 import SwiftUI
 import UIKit
 import UserNotifications

@@ -4,12 +4,12 @@ import Flow
 import Form
 import Offer
 import Presentation
+import Profile
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Profile
 
 struct Chat {
     let reloadChatCallbacker = Callbacker<Void>()
@@ -80,9 +80,9 @@ enum ChatResult {
                     style: .detented(.large)
                 ) { action in
                     PopJourney()
-//                    if case .setPushNotificationStatus = action {
-//                        PopJourney()
-//                    }
+                    //                    if case .setPushNotificationStatus = action {
+                    //                        PopJourney()
+                    //                    }
                 }
                 .onDismiss {
                     onDismiss()

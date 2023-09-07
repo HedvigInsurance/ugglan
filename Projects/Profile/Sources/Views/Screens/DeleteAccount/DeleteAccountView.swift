@@ -1,6 +1,6 @@
-import Presentation
 import Claims
 import Contracts
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +8,7 @@ import hGraphQL
 
 struct DeleteAccountView: View {
     @ObservedObject var viewModel: DeleteAccountViewModel
-    
+
     var body: some View {
         if viewModel.hasActiveClaims || viewModel.hasActiveContracts {
             InfoView(
@@ -51,7 +51,7 @@ struct DeleteAccountView: View {
 
 struct ParagraphTextModifier<Color: hColor>: ViewModifier {
     var color: Color
-    
+
     func body(content: Content) -> some View {
         content
             .fixedSize(horizontal: false, vertical: true)
@@ -64,7 +64,7 @@ extension DeleteAccountView {
     static func deleteAccountJourney(details: MemberDetails) -> some JourneyPresentation {
         let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
         let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-        
+
         return HostingJourney(
             ProfileStore.self,
             rootView: DeleteAccountView(
@@ -84,7 +84,7 @@ extension DeleteAccountView {
             }
         }
     }
-    
+
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
@@ -96,7 +96,7 @@ extension DeleteAccountView {
             }
         }
     }
-    
+
     static var deleteRequestAlreadyPlacedJourney: some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,

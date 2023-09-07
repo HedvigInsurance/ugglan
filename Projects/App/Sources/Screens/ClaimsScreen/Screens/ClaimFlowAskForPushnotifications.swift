@@ -1,10 +1,10 @@
 import Claims
 import Presentation
+import Profile
 import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
-import Profile
 
 struct AskForPushnotifications: View {
     let onActionExecuted: () -> Void

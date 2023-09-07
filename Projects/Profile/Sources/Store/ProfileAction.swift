@@ -1,7 +1,7 @@
-import Presentation
 import Foundation
-import hGraphQL
+import Presentation
 import hCore
+import hGraphQL
 
 public enum ProfileAction: ActionProtocol {
     case fetchProfileState
@@ -24,22 +24,22 @@ public enum ProfileAction: ActionProtocol {
     case openLangaugePicker
     case closeLanguagePicker
     case continueLanguagePickerJourney
-    
+
     case setMemberDetails(details: MemberDetails?)
     case fetchMemberDetails
-    
+
     case deleteAccount(details: MemberDetails)
     case deleteAccountAlreadyRequested
     case sendAccountDeleteRequest(details: MemberDetails)
     case makeTabActive(deeplink: DeepLink)
-    
+
     case openChat
     case dismissScreen
     case logout
-    
+
     case setPushNotificationStatus(status: Int?)
     case setPushNotificationsTo(date: Date?)
-    
+
     case registerForPushNotifications
 }
 
