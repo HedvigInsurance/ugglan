@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 struct SettingsScreen: View {
-    @PresentableStore var store: UgglanStore
+    @PresentableStore var store: ProfileStore
     @Inject var giraffe: hGiraffe
 
     init() {
@@ -29,7 +29,7 @@ struct SettingsScreen: View {
                         }
                     )
                     PresentableStoreLens(
-                        UgglanStore.self,
+                        ProfileStore.self,
                         getter: { state in
                             state
                         }
@@ -45,8 +45,7 @@ struct SettingsScreen: View {
                                     }
                                     DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
                                 } else {
-                                    _ = UIApplication.shared.appDelegate
-                                        .registerForPushNotifications()
+                                    store.send(.registerForPushNotifications)
                                 }
                             }
                         )
@@ -61,7 +60,7 @@ struct SettingsScreen: View {
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             PresentableStoreLens(
-                UgglanStore.self,
+                ProfileStore.self,
                 getter: { state in
                     state.memberDetails
                         ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")

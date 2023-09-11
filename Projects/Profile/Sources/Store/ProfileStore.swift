@@ -1,40 +1,9 @@
 import Apollo
 import Flow
+import Foundation
 import Presentation
 import hCore
-import hCoreUI
 import hGraphQL
-
-public struct ProfileState: StateProtocol {
-    var memberId: String = ""
-    var memberFullName: String = ""
-    var memberEmail: String = ""
-    var memberPhone: String?
-    var partnerData: PartnerData?
-    var openSettingsDirectly = true
-    public init() {}
-}
-
-public enum ProfileAction: ActionProtocol {
-    case fetchProfileState
-    case openProfile
-    case openCharity
-    case openPayment
-    case openEuroBonus
-    case openChangeEuroBonus
-    case dismissChangeEuroBonus
-    case openSuccessChangeEuroBonus
-    case openFreeTextChat
-    case openAppInformation
-    case openAppSettings(animated: Bool)
-    case setMember(id: String, name: String, email: String, phone: String?)
-    case setMemberEmail(email: String)
-    case setMemberPhone(phone: String)
-    case setEurobonusNumber(partnerData: PartnerData?)
-    case fetchProfileStateCompleted
-    case updateEurobonusNumber(number: String)
-    case setOpenAppSettings(to: Bool)
-}
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     @Inject var giraffe: hGiraffe
@@ -77,6 +46,21 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
                 return disposeBag
             }
+        case .fetchMemberDetails:
+            let query = GiraffeGraphQL.MemberDetailsQuery()
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetch(
+                        query: query,
+                        cachePolicy: .returnCacheDataElseFetch
+                    )
+                    .compactMap(on: .main) { details in
+                        let details = MemberDetails(memberData: details.member)
+                        callback(.value(.setMemberDetails(details: details)))
+                    }
+                return disposeBag
+            }
         default:
             return nil
         }
@@ -98,36 +82,16 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.memberPhone = phone
         case let .setOpenAppSettings(to):
             newState.openSettingsDirectly = to
+        case let .setMemberDetails(details):
+            newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+        case let .setPushNotificationStatus(status):
+            newState.pushNotificationStatus = status
+        case let .setPushNotificationsTo(date):
+            newState.pushNotificationsSnoozeDate = date
         default:
             break
         }
 
         return newState
-    }
-}
-
-public struct PartnerData: Codable, Equatable {
-    let sas: PartnerDataSas?
-
-    var shouldShowEuroBonus: Bool {
-        return sas?.eligible ?? false
-    }
-
-    var isConnected: Bool {
-        return !(sas?.eurobonusNumber ?? "").isEmpty
-    }
-    init?(with data: OctopusGraphQL.PartnerDataFragment) {
-        guard let sasData = data.partnerData?.sas else { return nil }
-        self.sas = PartnerDataSas(with: sasData)
-    }
-}
-
-public struct PartnerDataSas: Codable, Equatable {
-    let eligible: Bool
-    let eurobonusNumber: String?
-
-    init(with data: OctopusGraphQL.PartnerDataFragment.PartnerDatum.Sa) {
-        self.eligible = data.eligible
-        self.eurobonusNumber = data.eurobonusNumber
     }
 }

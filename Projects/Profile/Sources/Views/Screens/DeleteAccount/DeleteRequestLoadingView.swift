@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct DeleteRequestLoadingView: View {
-    @PresentableStore var store: UgglanStore
+    @PresentableStore var store: ProfileStore
 
     enum ScreenState {
         case sendingMessage(MemberDetails)

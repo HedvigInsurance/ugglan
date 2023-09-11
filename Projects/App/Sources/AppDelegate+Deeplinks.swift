@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Payment
 import Presentation
+import Profile
 import hAnalytics
 import hCore
 
@@ -22,14 +23,14 @@ extension AppDelegate {
                     .journeyThenDismiss
             )
             .onValue { _ in
-                
+
             }
-        }else if path == .sasEuroBonus {
+        } else if path == .sasEuroBonus {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue {[weak self] _ in
+                .onValue { [weak self] _ in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                        self?.deepLinkDisposeBag += profileStore.stateSignal.onValue {[weak self] state in
+                        self?.deepLinkDisposeBag += profileStore.stateSignal.onValue { [weak self] state in
                             if let shouldShowEuroBonus = state.partnerData?.shouldShowEuroBonus {
                                 self?.deepLinkDisposeBag.dispose()
                                 if shouldShowEuroBonus {
@@ -56,26 +57,5 @@ extension AppDelegate {
                     store.send(.makeTabActive(deeplink: path))
                 }
         }
-    }
-}
-
-public enum DeepLink: String, Codable {
-    case forever
-    case directDebit = "direct-debit"
-    case profile
-    case insurances
-    case home
-    case sasEuroBonus = "eurobonus"
-}
-
-extension DeepLink {
-    var deprecatedTrackingName: String {
-        "DEEP_LINK_\(self.rawValue.uppercased())"
-    }
-}
-
-extension DeepLink {
-    var trackingName: String {
-        return "DEEP_LINK"
     }
 }

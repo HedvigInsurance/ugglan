@@ -5,6 +5,7 @@ import Flow
 import Foundation
 import Payment
 import Presentation
+import Profile
 import UIKit
 import hAnalytics
 import hCore
@@ -48,14 +49,14 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     }
             }
         )
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: UgglanStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

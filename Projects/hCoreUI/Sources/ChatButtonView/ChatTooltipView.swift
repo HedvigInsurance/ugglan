@@ -56,17 +56,17 @@ struct TooltipView: View {
             }
         }
         .onAppear {
-            //            if canShowTooltip() {
-            withAnimation(.spring().delay(1.5)) {
-                displayTooltip = true
-            }
+            if canShowTooltip() {
+                withAnimation(.spring().delay(1.5)) {
+                    displayTooltip = true
+                }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
-                withAnimation(.spring()) {
-                    displayTooltip = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
+                    withAnimation(.spring()) {
+                        displayTooltip = false
+                    }
                 }
             }
-            //            }
         }
     }
 }

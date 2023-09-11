@@ -11,12 +11,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ProfileView: View {
+public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
 
-    init() {
+    public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if store.state.openSettingsDirectly {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -33,7 +33,8 @@ struct ProfileView: View {
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                 ApplicationState.preserveState(.marketPicker)
-                UIApplication.shared.appDelegate.logout()
+                store.send(.logout)
+
             }
         )
     }
@@ -58,11 +59,6 @@ struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
-
-                    //                    if hAnalyticsExperiment.showCharity {
-                    //                        ProfileRow(row: .myCharity)
-                    //                    }
-
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
@@ -110,6 +106,10 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
+    case openLanguagePicker
+    case openChat
+    case logout
+    case registerForPushNotifications
 }
 
 extension ProfileView {
@@ -128,32 +128,27 @@ extension ProfileView {
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
-            } else if case .openCharity = action {
-                AppJourney.businessModelDetailJourney
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
-                    UgglanStore.self,
+                    ProfileStore.self,
                     rootView: SettingsScreen(),
                     options: animated ? [.defaults] : [.defaults, .unanimated]
                 ) { action in
                     if case let .deleteAccount(details) = action {
-                        AppJourney.deleteAccountJourney(details: details)
+                        DeleteAccountView.deleteAccountJourney(details: details)
                     } else if case .deleteAccountAlreadyRequested = action {
-                        AppJourney.deleteRequestAlreadyPlacedJourney
+                        DeleteAccountView.deleteRequestAlreadyPlacedJourney
                     } else if case .openLangaugePicker = action {
                         PickLanguage {
-                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                                AppJourney.main
-                            )
                             let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.continueLanguagePickerJourney)
                             store.send(.setOpenAppSettings(to: true))
                         } onCancel: {
-                            let store: UgglanStore = globalPresentableStoreContainer.get()
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.closeLanguagePicker)
-
                         }
                         .journey
-                        .onAction(UgglanStore.self) { action in
+                        .onAction(ProfileStore.self) { action in
                             if case .closeLanguagePicker = action {
                                 DismissJourney()
                             }
@@ -163,6 +158,14 @@ extension ProfileView {
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
+            } else if case .continueLanguagePickerJourney = action {
+                resultJourney(.openLanguagePicker)
+            } else if case .openChat = action {
+                resultJourney(.openChat)
+            } else if case .logout = action {
+                resultJourney(.logout)
+            } else if case .registerForPushNotifications = action {
+                resultJourney(.registerForPushNotifications)
             }
         }
         .configureTitle(L10n.profileTitle)
