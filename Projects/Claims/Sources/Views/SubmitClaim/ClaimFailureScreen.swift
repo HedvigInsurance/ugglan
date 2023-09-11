@@ -38,7 +38,9 @@ public struct ClaimFailureScreen: View {
 
                 hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.submitClaimOpenFreeTextChat)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        store.send(.submitClaimOpenFreeTextChat)
+                    }
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }
