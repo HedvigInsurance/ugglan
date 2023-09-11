@@ -4,10 +4,10 @@ import hCore
 import hCoreUI
 
 struct NotificationsCardView: View {
-    @PresentableStore var ugglanStore: UgglanStore
+    @PresentableStore var store: ProfileStore
     var body: some View {
         PresentableStoreLens(
-            UgglanStore.self,
+            ProfileStore.self,
             getter: { state in
                 state
             }
@@ -18,15 +18,13 @@ struct NotificationsCardView: View {
                         .init(
                             buttonTitle: L10n.pushNotificationsAlertActionNotNow,
                             buttonAction: {
-                                ugglanStore.send(.setPushNotificationsTo(date: Date()))
+                                store.send(.setPushNotificationsTo(date: Date()))
                             }
                         ),
                         .init(
                             buttonTitle: L10n.ReferralsAllowPushNotificationSheet.Allow.button,
                             buttonAction: {
-
-                                _ = UIApplication.shared.appDelegate
-                                    .registerForPushNotifications()
+                                store.send(.registerForPushNotifications)
                             }
                         ),
                     ])
