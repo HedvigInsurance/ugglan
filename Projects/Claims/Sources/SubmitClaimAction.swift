@@ -66,7 +66,8 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
-    case dismissInfoScreens
+    case openGlassDamageScreen
+    case openInfoScreen
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
