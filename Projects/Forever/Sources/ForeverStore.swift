@@ -34,7 +34,7 @@ public indirect enum ForeverAction: ActionProtocol {
     case setForeverData(data: ForeverData)
     case showInfoSheet(discount: String)
     case closeInfoSheet
-    case showShareSheetOnly(code: String)
+    case showShareSheetOnly(code: String, discount: String)
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
