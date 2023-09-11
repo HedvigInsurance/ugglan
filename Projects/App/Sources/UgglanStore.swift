@@ -18,6 +18,7 @@ enum UgglanAction: ActionProtocol {
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
     case openChat
+    case closeChat
     case dismissScreen
     case businessModelDetail
     case aboutBusinessModel
