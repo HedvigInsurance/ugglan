@@ -636,6 +636,29 @@ public enum hButton {
             .buttonStyle(ButtonFilledStyle(size: .medium))
         }
     }
+    
+    public struct MediumButtonSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.secondaryAlt)
+        }
+    }
 
     public struct SmallSecondaryAlt<Content: View>: View {
         var content: () -> Content
