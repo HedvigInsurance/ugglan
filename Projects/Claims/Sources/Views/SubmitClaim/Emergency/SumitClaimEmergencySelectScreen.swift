@@ -1,6 +1,6 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct SumitClaimEmergencySelectScreen: View {
     var body: some View {
@@ -11,18 +11,18 @@ struct SumitClaimEmergencySelectScreen: View {
                 VStack(spacing: 16) {
                     HStack(spacing: 8) {
                         hButton.MediumButtonPrimaryAlt {
-                            
+
                         } content: {
                             hText(L10n.General.yes)
                         }
                         hButton.MediumButtonSecondary {
-                            
+
                         } content: {
                             hText(L10n.General.no)
                         }
                     }
                     hButton.LargeButtonPrimary {
-                        
+
                     } content: {
                         hText(L10n.generalContinueButton)
                     }

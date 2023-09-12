@@ -658,7 +658,7 @@ public enum hButton {
             .hButtonConfigurationType(.primary)
         }
     }
-    
+
     public struct MediumButtonPrimaryAlt<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -679,7 +679,7 @@ public enum hButton {
             .hButtonConfigurationType(.primaryAlt)
         }
     }
-    
+
     public struct MediumButtonSecondary<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -725,7 +725,7 @@ public enum hButton {
             .hButtonConfigurationType(.secondaryAlt)
         }
     }
-    
+
     public struct MediumButtonGhost<Content: View>: View {
         var content: () -> Content
         var action: () -> Void

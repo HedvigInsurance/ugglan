@@ -13,12 +13,12 @@ struct SubmitClaimEmergencyScreen: View {
                 }
                 .padding(.top, 8)
                 ClaimEmergencyContactCard(
-                        icon: hCoreUIAssets.hedvigBigLogo,
-                        label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                        buttonText: L10n.submitClaimGlobalAssistanceCallLabel(+45584894),
-                        cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                        footnote: L10n.submitClaimGlobalAssistanceFootnote
-                    )
+                    icon: hCoreUIAssets.hedvigBigLogo,
+                    label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel(+45_584_894),
+                    cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                    footnote: L10n.submitClaimGlobalAssistanceFootnote
+                )
 
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
@@ -43,7 +43,7 @@ struct SubmitClaimEmergencyScreen: View {
                         title: L10n.submitClaimRebookTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
-                    
+
                     infoExpandableView(
                         title: L10n.changeAddressQa,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
@@ -57,7 +57,6 @@ struct SubmitClaimEmergencyScreen: View {
             }
         }
     }
-    
 
     func infoExpandableView(title: String, text: String) -> some View {
         hSection {
@@ -131,11 +130,11 @@ struct ClaimEmergencyContactCard: View {
                         hText(cardTitle)
                             .foregroundColor(hTextColorNew.negative)
                     }
-                hText(label)
-                    .foregroundColor(hTextColorNew.tertiary)
-                    .padding(.horizontal, 18)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.center)
+                    hText(label)
+                        .foregroundColor(hTextColorNew.tertiary)
+                        .padding(.horizontal, 18)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.center)
                 }
                 .padding(.bottom, 8)
                 hButton.MediumButtonSecondaryAlt {
@@ -144,7 +143,7 @@ struct ClaimEmergencyContactCard: View {
                     hText(buttonText)
                 }
                 .padding(.horizontal, 16)
-                
+
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColorNew.tertiary)
@@ -157,10 +156,8 @@ struct ClaimEmergencyContactCard: View {
     }
 }
 
-
 struct SubmitClaimEmergencyScreen_Previews: PreviewProvider {
     static var previews: some View {
         SubmitClaimEmergencyScreen()
     }
 }
-
