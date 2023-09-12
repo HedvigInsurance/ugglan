@@ -55,6 +55,8 @@ public class ClaimJourneys {
                 openGlassDamageScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimGlassDamageTitle)
             } else if case .openEmergencyScreen = navigationAction {
                 openEmergencyScreen().addDismissClaimsFlow().configureTitle(L10n.commonClaimEmergencyTitle)
+            } else if case .openPestsScreen = navigationAction {
+                openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
             }
         }
     }
@@ -114,6 +116,18 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimEmergencyScreen()
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+    
+    @JourneyBuilder
+    private static func openPestsScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimPestsScreen()
         ) {
             action in
             getScreen(for: action)

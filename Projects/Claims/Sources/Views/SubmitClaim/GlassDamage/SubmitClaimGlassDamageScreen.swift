@@ -13,14 +13,22 @@ struct SubmitClaimGlassDamageScreen: View {
                 }
                 VStack(spacing: -8) {
                     ClaimContactCard(
-                        icon: hCoreUIAssets.carGlass,
+                        icon: Image(uiImage: hCoreUIAssets.carGlass.image)
+                            .resizable()
+                            .frame(width: 150, height: 40)
+                            .foregroundColor(hTextColorNew.negative)
+                            .padding(.vertical, 16),
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
                         title: L10n.submitClaimPartnerTitle
                     )
 
                     ClaimContactCard(
-                        icon: hCoreUIAssets.rydsBilglas,
+                        icon: Image(uiImage: hCoreUIAssets.rydsBilglas.image)
+                            .resizable()
+                            .frame(width: 150, height: 40)
+                            .foregroundColor(hTextColorNew.negative)
+                            .padding(.vertical, 16),
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
                     )
@@ -95,15 +103,15 @@ struct SubmitClaimGlassDamageScreen: View {
     }
 }
 
-struct ClaimContactCard: View {
+struct ClaimContactCard<ImageContent: View>: View {
     @PresentableStore var store: SubmitClaimStore
     var title: String?
-    var icon: ImageAsset
+    var icon: ImageContent
     var label: String
     var buttonText: String
 
     init(
-        icon: ImageAsset,
+        icon: ImageContent,
         label: String,
         buttonText: String,
         title: String? = nil
@@ -117,13 +125,10 @@ struct ClaimContactCard: View {
     var body: some View {
         hSection {
             VStack(spacing: 8) {
-                Image(uiImage: icon.image)
-                    .resizable()
-                    .frame(width: 150, height: 40)
-                    .foregroundColor(hTextColorNew.negative)
-                    .padding(.vertical, 16)
+                icon
                 hText(label)
                     .foregroundColor(hTextColorNew.tertiary)
+                    .multilineTextAlignment(.center)
                     .padding(.bottom, 8)
                 hButton.MediumButtonSecondaryAlt {
 
