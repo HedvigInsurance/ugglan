@@ -45,12 +45,11 @@ struct CrossSellingItem: View {
                     .foregroundColor(hTextColorNew.secondary)
                 }
                 Spacer()
-                hButton.MediumButtonFilled {
+                hButton.MediumButtonPrimaryAlt {
                     openExternal()
                 } content: {
                     hText(L10n.crossSellGetPrice)
                 }
-                .hButtonConfigurationType(.primaryAlt)
                 .frame(width: 106)
             }
         }

@@ -638,7 +638,7 @@ public enum hButton {
         }
     }
 
-    public struct MediumButtonFilled<Content: View>: View {
+    public struct MediumButtonPrimary<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
 
@@ -655,6 +655,51 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.primary)
+        }
+    }
+    
+    public struct MediumButtonPrimaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.primaryAlt)
+        }
+    }
+    
+    public struct MediumButtonSecondary<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.secondary)
         }
     }
 
@@ -678,6 +723,29 @@ public enum hButton {
             }
             .buttonStyle(ButtonFilledStyle(size: .medium))
             .hButtonConfigurationType(.secondaryAlt)
+        }
+    }
+    
+    public struct MediumButtonGhost<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.ghost)
         }
     }
 

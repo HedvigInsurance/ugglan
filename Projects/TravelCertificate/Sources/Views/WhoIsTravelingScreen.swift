@@ -100,7 +100,7 @@ struct WhoIsTravelingScreen: View {
     }
 
     private var addPeopleButton: some View {
-        hButton.MediumButtonFilled {
+        hButton.MediumButtonPrimaryAlt {
             vm.addNewCoinsured()
         } content: {
             HStack(spacing: 8) {
@@ -108,7 +108,6 @@ struct WhoIsTravelingScreen: View {
                 hText(L10n.TravelCertificate.addPeople)
             }
         }
-        .hButtonConfigurationType(.primaryAlt)
         .frame(width: 148)
     }
 

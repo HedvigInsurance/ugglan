@@ -130,7 +130,7 @@ struct PaymentInfoView: View {
                                 )
                                 .hFieldSize(.small)
                                 .hFieldAttachToRight({
-                                    hButton.MediumButtonFilled {
+                                    hButton.MediumButtonPrimaryAlt {
                                         Task {
                                             withAnimation {
                                                 vm.isLoadingDiscount = true
@@ -150,8 +150,8 @@ struct PaymentInfoView: View {
                                         hText(L10n.paymentsAddCodeButtonLabel)
                                             .frame(height: vm.fieldHeight)
                                     }
-                                    .hButtonConfigurationType(.primaryAlt)
                                     .hButtonIsLoading(vm.isLoadingDiscount)
+                                    .frame(width: 127, height: 56)
 
                                 })
                                 .disabled(vm.isLoadingDiscount)
