@@ -35,7 +35,7 @@ extension AppJourney {
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:
-                    startClaimsJourney(from: .generic)
+                    AppJourney.startClaimsJourney(from: .generic)
                 case .openTravelInsurance:
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()

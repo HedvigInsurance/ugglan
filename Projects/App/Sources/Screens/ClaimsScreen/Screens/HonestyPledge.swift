@@ -238,14 +238,13 @@ extension HonestyPledge {
             rootView: HonestyPledge(onConfirmAction: nil),
             style: style,
             options: [
-                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+                .defaults, .blurredBackground,
             ]
         ) { action in
             if case .didAcceptHonestyPledge = action {
                 next()
             }
         }
-        .configureTitle(L10n.honestyPledgeTitle)
         .withDismissButton
     }
 }
