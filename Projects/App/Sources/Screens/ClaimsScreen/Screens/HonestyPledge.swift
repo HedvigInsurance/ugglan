@@ -219,7 +219,6 @@ struct HonestyPledge: View {
                 }
 
             }
-            .padding(.top, -32)
             .padding(.horizontal, 24)
             .fixedSize(horizontal: false, vertical: true)
         }

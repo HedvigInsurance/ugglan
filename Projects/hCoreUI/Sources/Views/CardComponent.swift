@@ -39,6 +39,13 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
                         .frame(width: 16, height: 16)
                         .foregroundColor(hTextColorNew.secondary)
                 }
+                Spacer()
+                if onSelected != nil {
+                    hCoreUIAssets.chevronRight.view
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(hTextColorNew.secondary)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
@@ -77,23 +84,24 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
     }
 }
 
-//struct CardComponent_Previews: PreviewProvider {
-//    static var previews: some View {
-//        VStack {
-//            Spacer()
-//            CardComponent(
-//                onSelected: {
-//
-//                },
-//                mainContent: Text("T"),
-//                title: "TITLE",
-//                subTitle: "SUBTITLE",
-//                bottomComponent: {
-//                    Text("BOTTOM COMPONENT")
-//                }
-//            )
-//            Spacer()
-//        }
-//        .background(Color.gray)
-//    }
-//}
+struct CardComponent_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Spacer()
+            CardComponent(
+                onSelected: {
+
+                },
+                mainContent: Text("T"),
+                title: "TITLE",
+                middleContent: EmptyView(),
+                subTitle: "SUBTITLE",
+                bottomComponent: {
+                    Text("BOTTOM COMPONENT")
+                }
+            )
+            Spacer()
+        }
+        .background(Color.gray)
+    }
+}

@@ -29,11 +29,6 @@ extension ChatTextView: Viewable {
 
         let bag = DisposeBag()
 
-        bag += chatState.currentMessageSignal.atOnce().compactMap { $0 }
-            .onValue { message in textView.keyboardTypeSignal.value = message.keyboardType
-                textView.placeholder.value = message.placeholder ?? defaultPlaceholder
-            }
-
         bag += value.onValue { _ in
             if let message = self.chatState.currentMessageSignal.value {
                 switch message.responseType {

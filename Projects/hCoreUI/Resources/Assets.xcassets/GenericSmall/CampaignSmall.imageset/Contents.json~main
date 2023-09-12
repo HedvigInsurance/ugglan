@@ -1,0 +1,16 @@
+{
+  "images" : [
+    {
+<<<<<<< HEAD:Projects/hCoreUI/Resources/Assets.xcassets/Generic/language.imageset/Contents.json
+      "filename" : "language.svg",
+=======
+      "filename" : "campaign.svg",
+>>>>>>> main:Projects/hCoreUI/Resources/Assets.xcassets/GenericSmall/CampaignSmall.imageset/Contents.json
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
