@@ -104,7 +104,7 @@ public struct hFillColorNew {
     public static var translucentThree: some hColor {
         hGrayscaleTranslucent.greyScaleTranslucent400
     }
-    
+
     public static var offBlack: some hColor {
         hGrayscaleColorNew.greyScale1000
     }

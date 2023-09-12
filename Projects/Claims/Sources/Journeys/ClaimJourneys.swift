@@ -78,7 +78,7 @@ public class ClaimJourneys {
         }
         .resetProgressToPreviousValueOnDismiss
     }
-    
+
     @JourneyBuilder
     private static func openGlassDamageScreen() -> some JourneyPresentation {
         HostingJourney(
@@ -94,14 +94,15 @@ public class ClaimJourneys {
         }
         .resetProgressToPreviousValueOnDismiss
     }
-    
+
     @JourneyBuilder
     private static func openInfoView() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: InfoView(
                 title: L10n.submitClaimPartnerTitle,
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam at tristique tellus. Suspendisse quis lorem ultrices, ultricies lorem eu, egestas ligula. Fusce venenatis ullamcorper arcu, eu vulputate neque hendrerit ultrices",
+                description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam at tristique tellus. Suspendisse quis lorem ultrices, ultricies lorem eu, egestas ligula. Fusce venenatis ullamcorper arcu, eu vulputate neque hendrerit ultrices",
                 onDismiss: {}
             ),
             style: .detented(.scrollViewContentSize),

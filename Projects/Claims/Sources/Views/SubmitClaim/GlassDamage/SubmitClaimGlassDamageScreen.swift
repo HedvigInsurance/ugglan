@@ -1,10 +1,10 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct SubmitClaimGlassDamageScreen: View {
     @State var selectedFields: [String] = []
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -18,14 +18,14 @@ struct SubmitClaimGlassDamageScreen: View {
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
                         title: L10n.submitClaimPartnerTitle
                     )
-                    
+
                     ClaimContactCard(
                         icon: hCoreUIAssets.rydsBilglas,
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
                     )
                 }
-                
+
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
@@ -35,20 +35,29 @@ struct SubmitClaimGlassDamageScreen: View {
                 }
                 .padding(.top, 8)
                 .sectionContainerStyle(.transparent)
-                
+
                 VStack(spacing: 4) {
-                    infoExpandableView(title: L10n.submitClaimWhatCostTitle, text: L10n.submitClaimGlassDamageWhatCostLabel)
-                    infoExpandableView(title: L10n.submitClaimHowBookTitle, text: L10n.submitClaimGlassDamageHowBookLabel)
-                    infoExpandableView(title: L10n.submitClaimWorkshopTitle, text: L10n.submitClaimGlassDamageWorkshopLabel)
+                    infoExpandableView(
+                        title: L10n.submitClaimWhatCostTitle,
+                        text: L10n.submitClaimGlassDamageWhatCostLabel
+                    )
+                    infoExpandableView(
+                        title: L10n.submitClaimHowBookTitle,
+                        text: L10n.submitClaimGlassDamageHowBookLabel
+                    )
+                    infoExpandableView(
+                        title: L10n.submitClaimWorkshopTitle,
+                        text: L10n.submitClaimGlassDamageWorkshopLabel
+                    )
                 }
                 .padding(.vertical, 8)
-                
+
                 SupportView()
                     .padding(.vertical, 32)
             }
         }
     }
-    
+
     func infoExpandableView(title: String, text: String) -> some View {
         hSection {
             hRow {
@@ -57,8 +66,9 @@ struct SubmitClaimGlassDamageScreen: View {
             }
             .withCustomAccessory({
                 Spacer()
-                Image(uiImage: selectedFields.contains(title) ? hCoreUIAssets.minusSmall.image :
-                        hCoreUIAssets.plusSmall.image
+                Image(
+                    uiImage: selectedFields.contains(title)
+                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
                 )
                 .transition(.opacity.animation(.easeOut))
             })
@@ -72,7 +82,7 @@ struct SubmitClaimGlassDamageScreen: View {
                 }
             }
             .hWithoutDivider
-            
+
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
@@ -91,7 +101,7 @@ struct ClaimContactCard: View {
     var icon: ImageAsset
     var label: String
     var buttonText: String
-    
+
     init(
         icon: ImageAsset,
         label: String,
@@ -103,7 +113,7 @@ struct ClaimContactCard: View {
         self.buttonText = buttonText
         self.title = title
     }
-    
+
     var body: some View {
         hSection {
             VStack(spacing: 8) {
@@ -116,7 +126,7 @@ struct ClaimContactCard: View {
                     .foregroundColor(hTextColorNew.tertiary)
                     .padding(.bottom, 8)
                 hButton.MediumButtonSecondaryAlt {
-                    
+
                 } content: {
                     hText(buttonText)
                 }
@@ -139,20 +149,20 @@ struct ClaimContactCard: View {
             }
         }
         .sectionContainerStyle(.black)
-        
+
     }
 }
 
 struct SupportView: View {
     @PresentableStore var store: SubmitClaimStore
-    
+
     var body: some View {
         VStack(spacing: 0) {
             hText(L10n.submitClaimNeedHelpTitle)
                 .foregroundColor(hTextColorNew.primaryTranslucent)
             hText(L10n.submitClaimNeedHelpLabel)
                 .foregroundColor(hTextColorNew.secondary)
-            
+
             hButton.MediumButtonFilled {
                 store.send(.dissmissNewClaimFlow)
                 store.send(.submitClaimOpenFreeTextChat)
