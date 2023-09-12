@@ -499,7 +499,7 @@ public enum hButton {
             .hButtonConfigurationType(.primary)
         }
     }
-    
+
     public struct LargeButtonPrimaryAlt<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -657,7 +657,7 @@ public enum hButton {
             .buttonStyle(ButtonFilledStyle(size: .medium))
         }
     }
-    
+
     public struct MediumButtonSecondaryAlt<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
