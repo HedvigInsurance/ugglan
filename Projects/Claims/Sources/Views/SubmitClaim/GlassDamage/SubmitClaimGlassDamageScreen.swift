@@ -120,6 +120,7 @@ struct ClaimContactCard: View {
                 } content: {
                     hText(buttonText)
                 }
+                .padding(.horizontal, 16)
             }
             .padding(.vertical, 16)
         }
@@ -158,6 +159,7 @@ struct SupportView: View {
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
+            .frame(width: 133)
             .padding(.top, 24)
         }
     }
