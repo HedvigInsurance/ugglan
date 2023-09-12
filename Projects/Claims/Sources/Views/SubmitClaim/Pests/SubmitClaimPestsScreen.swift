@@ -12,7 +12,7 @@ struct SubmitClaimPestsScreen: View {
                     InfoCard(text: L10n.submitClaimPestsInfoLabel, type: .info)
                 }
                 .padding(.top, 8)
-                
+
                 ClaimContactCard(
                     icon: Image(uiImage: hCoreUIAssets.nomor.image)
                         .resizable()
@@ -23,7 +23,7 @@ struct SubmitClaimPestsScreen: View {
                     buttonText: L10n.submitClaimPestsCustomerServiceButton,
                     title: L10n.submitClaimPartnerTitle
                 )
-                
+
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
