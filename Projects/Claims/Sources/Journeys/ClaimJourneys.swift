@@ -100,7 +100,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: InfoView(
-                title: L10n.submitClaimPartnerTitle,
+                title: title ?? "",
                 description: description ?? "",
                 onDismiss: {}
             ),
