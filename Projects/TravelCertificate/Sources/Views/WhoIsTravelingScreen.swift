@@ -109,7 +109,7 @@ struct WhoIsTravelingScreen: View {
             }
         }
         .hButtonConfigurationType(.primaryAlt)
-        .frame(width: 148)
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     @hColorBuilder

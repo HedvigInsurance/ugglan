@@ -86,8 +86,8 @@ public class ClaimJourneys {
             rootView: SubmitClaimGlassDamageScreen()
         ) {
             action in
-            if case .navigationAction(action: .openInfoScreen) = action {
-                openInfoView()
+            if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
+                openInfoView(title: title, description: description)
             } else {
                 getScreen(for: action)
             }
@@ -96,13 +96,12 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    private static func openInfoView() -> some JourneyPresentation {
+    private static func openInfoView(title: String?, description: String?) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: InfoView(
                 title: L10n.submitClaimPartnerTitle,
-                description:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam at tristique tellus. Suspendisse quis lorem ultrices, ultricies lorem eu, egestas ligula. Fusce venenatis ullamcorper arcu, eu vulputate neque hendrerit ultrices",
+                description: description ?? "",
                 onDismiss: {}
             ),
             style: .detented(.scrollViewContentSize),
