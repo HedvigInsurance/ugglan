@@ -38,7 +38,6 @@ public struct InfoCard: View {
                                     hText(config.buttonTitle, style: .standardSmall)
                                         .frame(maxWidth: .infinity)
                                 }
-                                .hButtonConfigurationType(.secondaryAlt)
                             }
                         }
                     } else {
@@ -49,7 +48,6 @@ public struct InfoCard: View {
                                 hText(config.buttonTitle, style: .standardSmall)
                                     .frame(maxWidth: .infinity)
                             }
-                            .hButtonConfigurationType(.secondaryAlt)
                         }
                     }
                 }

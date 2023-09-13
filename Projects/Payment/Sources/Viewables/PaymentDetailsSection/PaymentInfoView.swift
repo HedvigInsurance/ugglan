@@ -150,7 +150,6 @@ struct PaymentInfoView: View {
                                         hText(L10n.paymentsAddCodeButtonLabel)
                                             .frame(height: vm.fieldHeight)
                                     }
-                                    .hButtonConfigurationType(.primaryAlt)
                                     .hButtonIsLoading(vm.isLoadingDiscount)
 
                                 })
