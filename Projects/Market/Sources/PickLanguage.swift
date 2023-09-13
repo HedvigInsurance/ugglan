@@ -66,7 +66,7 @@ public struct PickLanguage: View {
             hSection {
                 VStack(spacing: 8) {
                     if let onSave {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             Localization.Locale.currentLocale = currentLocale
                             onSave()
                         } content: {
@@ -74,7 +74,7 @@ public struct PickLanguage: View {
                         }
                     }
                     if let onCancel {
-                        hButton.LargeButtonGhost {
+                        hButton.LargeButton(type: .ghost) {
                             onCancel()
                         } content: {
                             hText(L10n.generalCancelButton)

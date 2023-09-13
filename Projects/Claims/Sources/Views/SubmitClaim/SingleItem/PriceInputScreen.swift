@@ -38,13 +38,13 @@ struct PriceInputScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         UIApplication.dismissKeyboard()
                         onSave(purchasePrice)
                     } content: {
                         hText(L10n.generalSaveButton, style: .body)
                     }
-                    hButton.LargeButtonText {
+                    hButton.LargeButton(type: .ghost) {
                         UIApplication.dismissKeyboard()
                         store.send(.navigationAction(action: .dismissScreen))
                     } content: {

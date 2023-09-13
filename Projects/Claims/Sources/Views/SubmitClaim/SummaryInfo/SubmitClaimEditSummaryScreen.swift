@@ -33,7 +33,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         }
 
         .hFormAttachToBottom {
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)
             } content: {
                 hText(L10n.generalSaveButton)

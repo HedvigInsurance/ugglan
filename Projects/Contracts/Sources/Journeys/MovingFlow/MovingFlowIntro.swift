@@ -25,13 +25,13 @@ enum MovingFlowIntroState {
     @ViewBuilder func makeButton(onTap: @escaping () -> Void) -> some View {
         switch self {
         case .existing, .manual:
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
                 onTap()
             } content: {
                 hText(L10n.MovingIntro.manualHandlingButtonText)
             }
         case .normal:
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
                 onTap()
             } content: {
                 hText(L10n.MovingIntro.openFlowButtonText)

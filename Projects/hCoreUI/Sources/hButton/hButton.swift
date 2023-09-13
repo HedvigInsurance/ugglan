@@ -13,10 +13,8 @@ struct LargeButtonModifier: ViewModifier {
 struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .frame(minHeight: 32)
-
+            .frame(minHeight: 40)
+            .frame(maxWidth: .infinity)
     }
 }
 
@@ -479,18 +477,22 @@ struct _hButton<Content: View>: View {
 }
 
 public enum hButton {
-    public struct LargeButtonPrimary<Content: View>: View {
+    
+    public struct LargeButton<Content: View>: View {
+        var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
-
+        
         public init(
+            type: hButtonConfigurationType,
             action: @escaping () -> Void,
             @ViewBuilder content: @escaping () -> Content
         ) {
+            self.type = type
             self.action = action
             self.content = content
         }
-
+        
         public var body: some View {
             _hButton(action: {
                 action()
@@ -498,133 +500,21 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.primary)
+            .hButtonConfigurationType(type)
         }
     }
 
-    public struct LargeButtonPrimaryAlert<Content: View>: View {
+    public struct MediumButton<Content: View>: View {
+        var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
 
         public init(
+            type: hButtonConfigurationType,
             action: @escaping () -> Void,
             @ViewBuilder content: @escaping () -> Content
         ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.alert)
-        }
-    }
-
-    public struct LargeButtonAlt<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.primaryAlt)
-        }
-    }
-
-    public struct LargeButtonSecondary<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.secondary)
-        }
-    }
-
-    public struct LargeButtonSecondaryAlt<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.secondaryAlt)
-        }
-    }
-
-    public struct LargeButtonGhost<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .large))
-            .hButtonConfigurationType(.ghost)
-        }
-    }
-
-    public struct MediumButtonFilled<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
+            self.type = type
             self.action = action
             self.content = content
         }
@@ -634,17 +524,21 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(type)
         }
     }
 
-    public struct SmallSecondaryAlt<Content: View>: View {
+    public struct SmallButton<Content: View>: View {
+        var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
 
         public init(
+            type: hButtonConfigurationType,
             action: @escaping () -> Void,
             @ViewBuilder content: @escaping () -> Content
         ) {
+            self.type = type
             self.action = action
             self.content = content
         }
@@ -654,27 +548,7 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .small))
-            .hButtonConfigurationType(.secondaryAlt)
-        }
-    }
-
-    public struct SmallButtonFilled<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .small))
+            .hButtonConfigurationType(type)
         }
     }
 
@@ -695,66 +569,6 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonOutlinedStyle(size: .large))
-        }
-    }
-
-    public struct SmallButtonOutlined<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(ButtonOutlinedStyle(size: .small))
-        }
-    }
-
-    public struct SmallButtonText<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(SmallButtonTextStyle())
-        }
-    }
-
-    public struct LargeButtonText<Content: View>: View {
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(LargeButtonTextStyle())
         }
     }
 }

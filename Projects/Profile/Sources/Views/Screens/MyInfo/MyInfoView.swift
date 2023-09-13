@@ -38,7 +38,7 @@ struct MyInfoView: View {
         }
         .hFormAttachToBottom({
             hSection {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     Task {
                         withAnimation {
                             vm.isLoading = true
