@@ -1,21 +1,21 @@
+import Combine
 import Flow
 import Form
 import Foundation
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import TerminateContracts
-import Combine
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
-    
+
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -84,7 +84,7 @@ struct ContractInformationView: View {
             .padding(.bottom, 16)
         }
     }
-    
+
     @ViewBuilder
     private var displayTerminationButton: some View {
         if hAnalyticsExperiment.terminationFlow {
@@ -152,4 +152,3 @@ struct ChangePeopleView: View {
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 }
-

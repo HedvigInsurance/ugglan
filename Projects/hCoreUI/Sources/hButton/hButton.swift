@@ -477,12 +477,12 @@ struct _hButton<Content: View>: View {
 }
 
 public enum hButton {
-    
+
     public struct LargeButton<Content: View>: View {
         var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
-        
+
         public init(
             type: hButtonConfigurationType,
             action: @escaping () -> Void,
@@ -492,7 +492,7 @@ public enum hButton {
             self.action = action
             self.content = content
         }
-        
+
         public var body: some View {
             _hButton(action: {
                 action()
