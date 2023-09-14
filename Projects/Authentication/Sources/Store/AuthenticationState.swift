@@ -18,6 +18,7 @@ struct OTPState: StateProtocol {
 
 struct SEBankIDState: StateProtocol {
     var autoStartToken: String? = nil
+    var bankIdQRCodeString: URL? = nil
     public init() {}
 }
 

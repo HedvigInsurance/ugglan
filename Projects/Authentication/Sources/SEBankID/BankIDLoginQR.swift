@@ -1,198 +1,138 @@
-import Flow
-import Foundation
+import SwiftUI
 import Presentation
-import UIKit
 import hCore
 import hCoreUI
 
-public struct BankIDLoginQR {
-    @PresentableStore var store: AuthenticationStore
-
-    public init() {}
+class BandIDViewModel: ObservableObject {
+    @Published var showAlert: Bool = false
 }
 
-extension BankIDLoginQR: Presentable {
-    public func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
-        let viewController = UIViewController()
-        let bag = DisposeBag()
+public struct BankIDLoginQR: View {
+@PresentableStore var store: AuthenticationStore
+@State var image: UIImage?
+@StateObject var vm = BandIDViewModel()
 
-        let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
-
-        viewController.view = view
-        viewController.title = L10n.bankidMissingTitle
-        viewController.navigationItem.hidesBackButton = true
-
-        let moreBarButtonItem = UIBarButtonItem(
-            image: hCoreUIAssets.menuIcon.image,
-            style: .plain,
-            target: nil,
-            action: nil
-        )
-        moreBarButtonItem.tintColor = .brand(.primaryText())
-
-        viewController.navigationItem.rightBarButtonItem = moreBarButtonItem
-
-        let containerStackView = UIStackView()
-        containerStackView.spacing = 28
-        containerStackView.axis = .vertical
-        containerStackView.alignment = .center
-        containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 16, verticalInset: 24)
-        containerStackView.isLayoutMarginsRelativeArrangement = true
-
-        view.addSubview(containerStackView)
-
-        containerStackView.snp.makeConstraints { make in make.leading.trailing.top.equalToSuperview() }
-
-        let headerContainer = UIStackView()
-        headerContainer.axis = .vertical
-        headerContainer.spacing = 15
-
-        containerStackView.addArrangedSubview(headerContainer)
-
-        let iconContainerView = UIView()
-
-        iconContainerView.snp.makeConstraints { make in make.height.width.equalTo(128) }
-
-        let imageView = UIImageView()
-
-        iconContainerView.addSubview(imageView)
-
-        imageView.snp.makeConstraints { make in make.height.width.equalToSuperview() }
-
-        headerContainer.addArrangedSubview(iconContainerView)
-
-        let messageLabel = MultilineLabel(
-            value: L10n.bankidMissingMessageGenAuth,
-            style: .brand(.headline(color: .primary))
-        )
-        bag += containerStackView.addArranged(messageLabel)
-
-        let emailLoginButton = Button(
-            title: L10n.BankidMissingLogin.emailButton,
-            type: .standardOutline(
-                borderColor: .brand(.primaryText()),
-                textColor: .brand(.primaryText())
-            )
-        )
-        bag += containerStackView.addArranged(emailLoginButton)
-
-        func generateQRCode(_ url: URL) {
-            let data = url.absoluteString.data(using: String.Encoding.ascii)
-            guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return }
-            qrFilter.setValue(data, forKey: "inputMessage")
-            guard let qrImage = qrFilter.outputImage else { return }
-
-            let transform = CGAffineTransform(scaleX: 10, y: 10)
-            let scaledQrImage = qrImage.transformed(by: transform)
-
-            guard let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha") else { return }
-            maskToAlphaFilter.setValue(scaledQrImage, forKey: "inputImage")
-            guard let outputCIImage = maskToAlphaFilter.outputImage else { return }
-
-            let context = CIContext()
-            guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else {
-                return
-            }
-            let processedImage = UIImage(cgImage: cgImage)
-
-            imageView.tintColor = .brand(.primaryText())
-            imageView.backgroundColor = UIColor.brand(.secondaryBackground())
-            imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
-        }
-
-        bag += store.stateSignal
-            .compactMap({ state in
-                state.seBankIDState.autoStartToken
-            })
-            .onValue({ autoStartToken in
-                guard
-                    let url = URL(
-                        string:
-                            "bankid:///?autostarttoken=\(autoStartToken)"
-                    )
-                else {
-                    UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
-                        imageView.image = nil
-                    }
-                    return
-                }
-
-                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
-                    generateQRCode(url)
-                }
-            })
-
+    public init() {
         store.send(.seBankIDStateAction(action: .startSession))
+        let bankIdAppTestUrl = URL(
+            string:
+                "bankid:///"
+        )!
 
-        return (
-            viewController,
-            Signal { callback in
-                bag += store.onAction(
-                    .navigationAction(action: .authSuccess),
-                    {
-                        callback(.loggedIn)
+        if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
+            store.send(.openBankIdApp)
+        }
+    }
+
+    public var body: some View {
+        hForm {
+            VStack(spacing: 32) {
+                PresentableStoreLens(
+                    AuthenticationStore.self,
+                    getter: { state in
+                        state.seBankIDState.bankIdQRCodeString
                     }
-                )
-
-                bag += store.actionSignal.onValue { action in
-                    if case let .loginFailure(message) = action {
-                        guard viewController.navigationController?.viewControllers.count ?? 0 <= 2 else {
-                            return
+                ) { qrCode in
+                    if let qrCode = qrCode {
+                        let _ = generateQRCode(qrCode)
+                    }
+                }
+                
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 140)
+                        .foregroundColor(hTextColorNew.primary)
+                        .transition(.scale)
+                        .alert(isPresented: $vm.showAlert) {
+                            Alert(
+                                title: Text(L10n.demoModeStart),
+                                message: nil,
+                                primaryButton: .cancel(Text(L10n.demoModeCancel)),
+                                secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
+                                    store.send(.cancel)
+                                    ApplicationContext.shared.$isDemoMode.value = true
+                                    store.send(.bankIdQrResultAction(action: .loggedIn))
+                                }
+                            )
                         }
-                        let alert = Alert<Void>(
-                            title: message ?? L10n.bankidUserCancelTitle,
-                            actions: [
-                                .init(
-                                    title: L10n.generalRetry,
-                                    action: {
-                                        store.send(.seBankIDStateAction(action: .startSession))
-                                    }
-                                ),
-                                .init(
-                                    title: L10n.alertCancel,
-                                    action: {
-                                        store.send(.cancel)
-                                        callback(.close)
-                                    }
-                                ),
-                            ]
-                        )
+                        .onLongPressGesture(minimumDuration: 3.0) {
+                            vm.showAlert = true
+                        }
+                }
+                
+                VStack(spacing: 0) {
+                    hText("Väntar på BankID")
+                        .foregroundColor(hTextColorNew.primaryTranslucent)
+                    hText("Scanna QR-koden med BankID-appen på din telefon, eller logga in med din email nedan.")
+                        .foregroundColor(hTextColorNew.secondaryTranslucent)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 16)
+                
+                Image(uiImage: hCoreUIAssets.menuIcon.image)
+                    .frame(height: 6)
+            }
+            .padding(.top, UIScreen.main.bounds.size.height / 5.0)
+        }
+        .hDisableScroll
+        .hFormAttachToBottom {
+            VStack(spacing: 16) {
+                let bankIdAppTestUrl = URL(
+                    string:
+                        "bankid:///"
+                )!
 
-                        viewController.present(
-                            alert
-                        )
+                if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
+                    hButton.LargeButtonPrimary {
+                        store.send(.openBankIdApp)
+                    } content: {
+                        HStack(spacing: 8) {
+                            Image(uiImage: hCoreUIAssets.bankIdSmall.image)
+                            hText("Open BankID")
+                        }
                     }
                 }
 
-                bag += moreBarButtonItem.onValue { _ in
-                    let alert = Alert<Void>(actions: [
-                        .init(
-                            title: L10n.demoModeStart,
-                            action: {
-                                store.send(.cancel)
-                                ApplicationContext.shared.$isDemoMode.value = true
-                                callback(.loggedIn)
-                            }
-                        ), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
-                    ])
-
-                    viewController.present(
-                        alert,
-                        style: .sheet(
-                            from: moreBarButtonItem.view,
-                            rect: moreBarButtonItem.view?.frame
-                        )
-                    )
+                hButton.LargeButtonGhost {
+                    store.send(.bankIdQrResultAction(action: .emailLogin))
+                } content: {
+                    hText("Login with email")
                 }
-
-                bag += emailLoginButton.onTapSignal.onValue { _ in
-                    store.send(.cancel)
-                    callback(.emailLogin)
-                }
-
-                return bag
             }
-        )
+            .padding(.bottom, 32)
+            .padding(.horizontal, 16)
+        }
+    }
+    
+    func generateQRCode(_ url: URL) {
+        let data = url.absoluteString.data(using: String.Encoding.ascii)
+        guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return }
+        qrFilter.setValue(data, forKey: "inputMessage")
+        guard let qrImage = qrFilter.outputImage else { return }
+
+        let transform = CGAffineTransform(scaleX: 10, y: 10)
+        let scaledQrImage = qrImage.transformed(by: transform)
+
+        guard let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha") else { return }
+        maskToAlphaFilter.setValue(scaledQrImage, forKey: "inputImage")
+        guard let outputCIImage = maskToAlphaFilter.outputImage else { return }
+
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else {
+            return
+        }
+        let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
+
+        DispatchQueue.main.async {
+            image = processedImage
+        }
+    }
+}
+
+struct BankIDLoginQR_Previews: PreviewProvider {
+    static var previews: some View {
+        BankIDLoginQR()
     }
 }

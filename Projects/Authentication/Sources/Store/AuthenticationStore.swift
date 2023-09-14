@@ -45,52 +45,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             )
         )
     }()
-
-    //    func testsss() -> Signal<BankIDLoginSwedenResult> {
-    //        return Signal { callbacker in
-    //
-    //            self.stateSignal
-    //                .compactMap({ state in
-    ////                                state.statusText
-    //                            })
-    //          //            .atOnce()
-    //          //            .map { state in
-    //          //                state.seBankIDState.autoStartToken
-    //          //            }
-    //          //            .skip(first: 1)
-    //          //            .compactMap { $0 }
-    //          //            .onValue { autoStartToken in
-    //          //                let urlScheme = Bundle.main.urlScheme ?? ""
-    //          //
-    //          //                guard
-    //          //                    let url = URL(
-    //          //                        string:
-    //          //                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-    //          //                    )
-    //          //                else {
-    //          //                    return
-    //          //                }
-    //          //
-    //          //                guard viewController.navigationController?.viewControllers.count == 1 else {
-    //          //                    return
-    //          //                }
-    //          //                if !store.state.loginHasFailed {
-    //          //                    log.info("BANK ID APP started", error: nil, attributes: ["token": autoStartToken])
-    //          //                    if UIApplication.shared.canOpenURL(url) {
-    //          //                        UIApplication.shared.open(
-    //          //                            url,
-    //          //                            options: [:],
-    //          //                            completionHandler: nil
-    //          //                        )
-    //          //                    }
-    //          //                }
-    //          //            }
-    //      }
-    //
-    //            return NilDisposer()
-    //        }
-    //    }
-
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
             self.networkAuthRepository
@@ -264,6 +218,13 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             )
                         )
                         callbacker(.observeLoginStatus(url: statusUrl))
+                        
+                        let url = URL(
+                            string:
+                                "bankid:///?autostarttoken=\(bankIdProperties.autoStartToken)"
+                        )
+                        callbacker(.setQRCode(code: url))
+                        
                     } else if let result = result as? AuthAttemptResultError {
                         let error = NSError(domain: result.message, code: 1000)
                         log.error(
@@ -316,6 +277,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         .cancel,
                         .navigationAction(action: .authSuccess):
                         callbacker(.end)
+                        callbacker(.value(.bankIdQrResultAction(action: .loggedIn)))
                     default:
                         break
                     }
@@ -428,41 +390,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     }
                 return bag
             }
-        } else if case .checkLoginStatus = action {
-            return FiniteSignal { callback in
-                let bag = DisposeBag()
-                bag += self.onAction(
-                    .navigationAction(action: .authSuccess),
-                    {
-                        callback(.value(.cancel))
-                        callback(.value(.bankIdSwedenResultAction(action: .loggedIn)))
-                    }
-                )
-                bag += self.actionSignal.onValue { action in
-                    if case let .loginFailure(message) = action {
-                        let alert = Alert<Void>(
-                            title: message ?? L10n.bankidUserCancelTitle,
-                            actions: [
-                                .init(
-                                    title: L10n.generalRetry,
-                                    action: {
-                                        callback(.value(.seBankIDStateAction(action: .startSession)))
-                                        self.send(.seBankIDStateAction(action: .startSession))
-                                    }
-                                ),
-                                .init(
-                                    title: L10n.alertCancel,
-                                    action: {
-                                        callback(.value(.cancel))
-                                        callback(.value(.bankIdQrResultAction(action: .close)))
-                                    }
-                                ),
-                            ]
-                        )
-                    }
-                }
-                return bag
-            }
         }
         return nil
     }
@@ -549,6 +476,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.loginHasFailed = false
         case .loginFailure:
             newState.loginHasFailed = true
+        case let .setQRCode(code):
+            newState.seBankIDState.bankIdQRCodeString = code
         default:
             break
         }
