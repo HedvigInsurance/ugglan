@@ -13,10 +13,9 @@ struct LargeButtonModifier: ViewModifier {
 struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+            .frame(minHeight: 40)
+            .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .frame(minHeight: 32)
-
     }
 }
 
@@ -502,6 +501,29 @@ public enum hButton {
         }
     }
 
+    public struct LargeButtonPrimaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+            .hButtonConfigurationType(.primaryAlt)
+        }
+    }
+
     public struct LargeButtonPrimaryAlert<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
@@ -637,7 +659,30 @@ public enum hButton {
         }
     }
 
-    public struct SmallSecondaryAlt<Content: View>: View {
+    public struct MediumButtonSecondaryAlt<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .medium))
+            .hButtonConfigurationType(.secondaryAlt)
+        }
+    }
+
+    public struct SmallSButtonecondaryAlt<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
 

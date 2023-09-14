@@ -51,6 +51,7 @@ struct CrossSellingItem: View {
                     hText(L10n.crossSellGetPrice)
                 }
                 .hButtonConfigurationType(.primaryAlt)
+                .fixedSize(horizontal: true, vertical: false)
             }
         }
         .onTapGesture {

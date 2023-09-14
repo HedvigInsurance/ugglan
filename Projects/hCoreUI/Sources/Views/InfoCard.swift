@@ -32,7 +32,7 @@ public struct InfoCard: View {
                     if buttonsConfig.count > 1 {
                         HStack(spacing: 8) {
                             ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                                hButton.MediumButtonFilled {
+                                hButton.SmallSButtonecondaryAlt {
                                     config.buttonAction()
                                 } content: {
                                     hText(config.buttonTitle, style: .standardSmall)
@@ -43,7 +43,7 @@ public struct InfoCard: View {
                         }
                     } else {
                         ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                            hButton.MediumButtonFilled {
+                            hButton.SmallSButtonecondaryAlt {
                                 config.buttonAction()
                             } content: {
                                 hText(config.buttonTitle, style: .standardSmall)
