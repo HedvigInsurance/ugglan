@@ -1,14 +1,13 @@
+import AVKit
 import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
 
-public struct MarketPickerView: View {
+public struct NotLoggedInView: View {
     var onLoad: () -> Void
-
-    @ObservedObject var viewModel = MarketPickerViewModel()
+    @ObservedObject var viewModel = NotLoggedViewModel()
     @PresentableStore var store: MarketStore
-    @State var submitButtonLoading: Bool = false
 
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
@@ -16,16 +15,14 @@ public struct MarketPickerView: View {
     enum ViewState {
         case loading
         case marketAndLanguage
-        case onboardAndLogin
     }
-
     @State var viewState: ViewState = .loading
 
     public init(
         onLoad: @escaping () -> Void
     ) {
         self.onLoad = onLoad
-        ApplicationState.preserveState(.marketPicker)
+        ApplicationState.preserveState(.notLoggedIn)
 
         viewModel.fetchMarketingImage()
         viewModel.detectMarketFromLocation()
@@ -33,70 +30,46 @@ public struct MarketPickerView: View {
 
     @ViewBuilder
     var marketAndLanguage: some View {
-        Spacer()
-        hText(title, style: .title1)
-        Spacer()
+        ZStack {
+            Image(uiImage: hCoreUIAssets.wordmark.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 40)
+                .offset(y: -24)
+            VStack {
+                HStack {
+                    Spacer()
+                    PresentableStoreLens(
+                        MarketStore.self,
+                        getter: { state in
+                            state.market
+                        }
+                    ) { market in
+                        Button {
 
-        MarketRow()
-        Divider()
-        LanguageRow()
+                        } label: {
+                            Image(uiImage: market.icon)
+                                .padding(8)
+                        }
 
-        Spacer().frame(height: 36)
+                    }
 
-        hButton.LargeButtonPrimary {
-            hAnalyticsEvent.marketSelected(
-                locale: Localization.Locale.currentLocale.lprojCode
-            )
-            .send()
-
-            withAnimation(.default) {
-                submitButtonLoading = true
-            }
-
-            hAnalyticsExperiment.retryingLoad { _ in
-                withAnimation(.default.delay(0.5)) {
-                    submitButtonLoading = false
                 }
+                Spacer()
+                VStack {
+                    hButton.LargeButtonPrimary {
+                        store.send(.loginButtonTapped)
+                    } content: {
+                        hText(L10n.bankidLoginTitle)
+                    }
 
-                withAnimation(.easeInOut.delay(0.25)) {
-                    viewState = .onboardAndLogin
+                    hButton.LargeButtonGhost {
+                        store.send(.onboard)
+                    } content: {
+                        hText(L10n.marketingGetHedvig)
+                    }
+
                 }
-            }
-        } content: {
-            hText(buttonText, style: .body)
-        }
-        .hButtonIsLoading(submitButtonLoading)
-        .hButtonFilledStyle(.overImage)
-    }
-
-    @ViewBuilder
-    var onboardAndLogin: some View {
-        Spacer()
-        Image(uiImage: hCoreUIAssets.wordmarkWhite.image)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 150, height: 40)
-        Spacer()
-
-        hButton.LargeButtonPrimary {
-            hAnalyticsEvent.buttonClickMarketingLogin().send()
-            store.send(.loginButtonTapped)
-        } content: {
-            HStack {
-                Image(uiImage: hCoreUIAssets.bankIdLogo.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 16, height: 16)
-                hText(L10n.marketingLogin)
-            }
-        }
-
-        if store.state.market.showGetQuote {
-            hButton.LargeButtonGhost {
-                hAnalyticsEvent.buttonClickMarketingOnboard().send()
-                store.send(.onboard)
-            } content: {
-                hText(L10n.marketingGetHedvig, style: .body)
             }
         }
     }
@@ -108,30 +81,11 @@ public struct MarketPickerView: View {
                 ZStack {}
             case .marketAndLanguage:
                 marketAndLanguage
-            case .onboardAndLogin:
-                onboardAndLogin
-                    .navigationBarItems(
-                        leading: Button(action: {
-                            withAnimation(.easeInOut) {
-                                viewState = .marketAndLanguage
-                            }
-                        }) {
-                            Image(uiImage: hCoreUIAssets.arrowBack.image)
-                                .resizable()
-                                .foregroundColor(hLabelColor.primary)
-                        }
-                    )
             }
         }
-        .environment(\.colorScheme, .dark)
+        .environment(\.colorScheme, .light)
         .padding(.horizontal, 16)
         .opacity(viewState == .loading ? 0 : 1)
-        .modifier(
-            ImageWithHashFallBack(
-                imageURL: URL(string: viewModel.imageURL),
-                blurHash: viewModel.blurHash
-            )
-        )
         .onReceive(
             Localization.Locale.$currentLocale
                 .distinct()
@@ -149,5 +103,105 @@ public struct MarketPickerView: View {
                 onLoad()
             }
         }
+        .background(
+            PlayerView().ignoresSafeArea().animation(nil)
+        )
+
+    }
+
+}
+
+struct NotLoggedInView_Previews: PreviewProvider {
+    static var previews: some View {
+        NotLoggedInView {
+
+        }
+    }
+}
+struct PlayerView: UIViewRepresentable {
+
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
+    }
+
+    func makeUIView(context: Context) -> UIView {
+        return PlayerUIView(frame: .zero)
+    }
+}
+
+class PlayerUIView: UIView {
+    private let playerLayer = AVPlayerLayer()
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        // Load the resource
+        let fileUrl = Bundle.module.url(forResource: "9x16_pillow", withExtension: "mp4")!
+
+        // Setup the player
+        let player = AVPlayer(playerItem: AVPlayerItem(url: fileUrl))
+
+        playerLayer.player = player
+        playerLayer.videoGravity = .resizeAspectFill
+        layer.addSublayer(playerLayer)
+
+        // Setup looping
+        player.actionAtItemEnd = .none
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerItemDidReachEnd(notification:)),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem
+        )
+
+        // Start the movie
+        player.playImmediately(atRate: 1)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterForeground(notification:)),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+
+    }
+    var reversed = false
+
+    @objc
+    func didEnterForeground(notification: Notification) {
+        playerLayer.player?.play()
+    }
+    @objc
+    func playerItemDidReachEnd(notification: Notification) {
+        if let view = self.snapshotView(afterScreenUpdates: false) {
+            self.addSubview(view)
+            view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            UIView.animate(withDuration: 0.1, delay: 0.1) {
+                view.alpha = 0
+            } completion: { finished in
+                view.removeFromSuperview()
+            }
+            if !reversed {
+                playerLayer.player?.playImmediately(atRate: -1)
+                reversed = true
+            } else {
+                playerLayer.player?.playImmediately(atRate: 1)
+                reversed = false
+            }
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        playerLayer.frame = bounds
     }
 }

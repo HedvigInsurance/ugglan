@@ -6,7 +6,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public class MarketPickerViewModel: ObservableObject {
+public class NotLoggedViewModel: ObservableObject {
     @Inject var giraffe: hGiraffe
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
@@ -37,8 +37,6 @@ public class MarketPickerViewModel: ObservableObject {
 
     func detectMarketFromLocation() {
         let store: MarketStore = globalPresentableStoreContainer.get()
-        let innerBag = bag.innerBag()
-
         bag += giraffe.client
             .fetch(
                 query: GiraffeGraphQL.GeoQuery(),
