@@ -16,6 +16,7 @@ struct MediumButtonModifier: ViewModifier {
             .frame(minHeight: 40)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
+            .padding(.vertical, 8)
     }
 }
 
