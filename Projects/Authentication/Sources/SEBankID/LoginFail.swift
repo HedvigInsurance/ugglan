@@ -1,12 +1,12 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 public struct LoginFail: View {
     @PresentableStore var store: AuthenticationStore
-    
-    public init (){}
-    
+
+    public init() {}
+
     public var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -15,7 +15,7 @@ public struct LoginFail: View {
                 VStack(spacing: 0) {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColorNew.primaryTranslucent)
-                    hText(L10N.AuthenticationBankidLoginError)
+                    hText(L10n.authenticationBankidLoginError)
                         .foregroundColor(hTextColorNew.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                 }
