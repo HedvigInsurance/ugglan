@@ -50,7 +50,7 @@ struct CrossSellingItem: View {
                 } content: {
                     hText(L10n.crossSellGetPrice)
                 }
-                .frame(width: 106)
+                .fixedSize(horizontal: true, vertical: false)
             }
         }
         .onTapGesture {

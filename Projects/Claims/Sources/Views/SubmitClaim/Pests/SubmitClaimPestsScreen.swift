@@ -14,11 +14,7 @@ struct SubmitClaimPestsScreen: View {
                 .padding(.top, 8)
 
                 ClaimContactCard(
-                    icon: Image(uiImage: hCoreUIAssets.nomor.image)
-                        .resizable()
-                        .frame(width: 122, height: 40)
-                        .foregroundColor(hTextColorNew.negative)
-                        .padding(.vertical, 16),
+                    image: hCoreUIAssets.nomor.image,
                     label: L10n.submitClaimPestsCustomerServiceLabel,
                     buttonText: L10n.submitClaimPestsCustomerServiceButton,
                     title: L10n.submitClaimPartnerTitle

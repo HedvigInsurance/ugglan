@@ -15,7 +15,7 @@ struct SubmitClaimEmergencyScreen: View {
                 ClaimEmergencyContactCard(
                     icon: hCoreUIAssets.hedvigBigLogo,
                     label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel(+45_584_894),
+                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel("+45_584_894"),
                     cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
                     footnote: L10n.submitClaimGlobalAssistanceFootnote
                 )

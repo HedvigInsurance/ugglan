@@ -11,24 +11,16 @@ struct SubmitClaimGlassDamageScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimGlassDamageInfoLabel, type: .info)
                 }
-                VStack(spacing: -8) {
+                VStack(spacing: 8) {
                     ClaimContactCard(
-                        icon: Image(uiImage: hCoreUIAssets.carGlass.image)
-                            .resizable()
-                            .frame(width: 150, height: 40)
-                            .foregroundColor(hTextColorNew.negative)
-                            .padding(.vertical, 16),
+                        image: hCoreUIAssets.carGlass.image,
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
                         title: L10n.submitClaimPartnerTitle
                     )
 
                     ClaimContactCard(
-                        icon: Image(uiImage: hCoreUIAssets.rydsBilglas.image)
-                            .resizable()
-                            .frame(width: 150, height: 40)
-                            .foregroundColor(hTextColorNew.negative)
-                            .padding(.vertical, 16),
+                        image: hCoreUIAssets.rydsBilglas.image,
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
                     )
@@ -61,7 +53,7 @@ struct SubmitClaimGlassDamageScreen: View {
                 .padding(.vertical, 8)
 
                 SupportView()
-                    .padding(.vertical, 32)
+                    .padding(.vertical, 56)
             }
         }
     }
@@ -103,44 +95,31 @@ struct SubmitClaimGlassDamageScreen: View {
     }
 }
 
-struct ClaimContactCard<ImageContent: View>: View {
+struct ClaimContactCard: View {
     @PresentableStore var store: SubmitClaimStore
     var title: String?
-    var icon: ImageContent
+    var image: UIImage
     var label: String
     var buttonText: String
 
     init(
-        icon: ImageContent,
+        image: UIImage,
         label: String,
         buttonText: String,
         title: String? = nil
     ) {
-        self.icon = icon
+        self.image = image
         self.label = label
         self.buttonText = buttonText
         self.title = title
     }
 
     var body: some View {
-        hSection {
-            VStack(spacing: 8) {
-                icon
-                hText(label)
-                    .foregroundColor(hTextColorNew.tertiary)
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 8)
-                hButton.MediumButtonSecondaryAlt {
-
-                } content: {
-                    hText(buttonText)
-                }
-                .padding(.horizontal, 16)
+        if let title {
+            hSection {
+                sectionContent
             }
-            .padding(.vertical, 16)
-        }
-        .withHeader {
-            if let title = title {
+            .withHeader({
                 HStack {
                     hText(title)
                     Spacer()
@@ -148,12 +127,42 @@ struct ClaimContactCard<ImageContent: View>: View {
                         .foregroundColor(hTextColorNew.secondary)
                         .fixedSize()
                         .onTapGesture {
-                            store.send(.navigationAction(action: .openInfoScreen))
+                            store.send(
+                                .navigationAction(
+                                    action: .openInfoScreen(title: L10n.submitClaimPartnerTitle, description: "")
+                                )
+                            )
                         }
                 }
+            })
+            .sectionContainerStyle(.black)
+        } else {
+            hSection {
+                sectionContent
             }
+            .sectionContainerStyle(.black)
         }
-        .sectionContainerStyle(.black)
+    }
+
+    private var sectionContent: some View {
+        VStack(spacing: 8) {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 40)
+                .foregroundColor(hTextColorNew.negative)
+                .padding(.vertical, 16)
+            hText(label)
+                .foregroundColor(hTextColorNew.tertiary)
+                .padding(.bottom, 8)
+            hButton.MediumButtonSecondaryAlt {
+
+            } content: {
+                hText(buttonText)
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 16)
 
     }
 }
@@ -162,13 +171,14 @@ struct SupportView: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
-        VStack(spacing: 0) {
-            hText(L10n.submitClaimNeedHelpTitle)
-                .foregroundColor(hTextColorNew.primaryTranslucent)
-            hText(L10n.submitClaimNeedHelpLabel)
-                .foregroundColor(hTextColorNew.secondary)
-
-            hButton.LargeButtonPrimary {
+        VStack(spacing: 24) {
+            VStack(spacing: 0) {
+                hText(L10n.submitClaimNeedHelpTitle)
+                    .foregroundColor(hTextColorNew.primaryTranslucent)
+                hText(L10n.submitClaimNeedHelpLabel)
+                    .foregroundColor(hTextColorNew.secondary)
+            }
+            hButton.MediumButtonPrimary {
                 store.send(.dissmissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     store.send(.submitClaimOpenFreeTextChat)
@@ -176,8 +186,8 @@ struct SupportView: View {
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
-            .frame(width: 133)
-            .padding(.top, 24)
+            .fixedSize(horizontal: true, vertical: false)
+
         }
     }
 }

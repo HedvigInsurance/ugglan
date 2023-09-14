@@ -108,7 +108,7 @@ struct WhoIsTravelingScreen: View {
                 hText(L10n.TravelCertificate.addPeople)
             }
         }
-        .frame(width: 148)
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     @hColorBuilder
