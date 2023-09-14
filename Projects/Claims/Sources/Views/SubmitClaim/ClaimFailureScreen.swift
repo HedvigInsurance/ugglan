@@ -10,21 +10,23 @@ public struct ClaimFailureScreen: View {
 
     public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                .foregroundColor(hSignalColorNew.amberElement)
-                .padding(.top, 254)
-                .padding(.bottom, 8)
+            VStack {
+                Spacer()
+                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .foregroundColor(hSignalColorNew.amberElement)
+                    .padding(.bottom, 8)
 
-            Group {
                 hText(L10n.HomeTab.errorTitle, style: .body)
                     .foregroundColor(hTextColorNew.primary)
 
                 hText(L10n.HomeTab.errorBody, style: .body)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hTextColorNew.secondary)
+                Spacer()
             }
             .padding(.horizontal, 32)
         }
+        .hFormContentPosition(.center)
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButtonPrimary {
@@ -36,7 +38,9 @@ public struct ClaimFailureScreen: View {
 
                 hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.submitClaimOpenFreeTextChat)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        store.send(.submitClaimOpenFreeTextChat)
+                    }
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }

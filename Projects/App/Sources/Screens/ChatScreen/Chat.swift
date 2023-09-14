@@ -4,6 +4,7 @@ import Flow
 import Form
 import Offer
 import Presentation
+import Profile
 import UIKit
 import hAnalytics
 import hCore
@@ -78,9 +79,10 @@ enum ChatResult {
                     ),
                     style: .detented(.large)
                 ) { action in
-                    if case .setPushNotificationStatus = action {
-                        PopJourney()
-                    }
+                    PopJourney()
+                    //                    if case .setPushNotificationStatus = action {
+                    //                        PopJourney()
+                    //                    }
                 }
                 .onDismiss {
                     onDismiss()
