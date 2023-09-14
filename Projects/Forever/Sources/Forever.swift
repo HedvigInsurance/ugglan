@@ -66,8 +66,8 @@ extension ForeverView {
         ) { action in
             if case .showChangeCodeDetail = action {
                 ChangeCodeView.journey
-            } else if case let .showShareSheetOnly(code) = action {
-                shareSheetJourney(code: code)
+            } else if case let .showShareSheetOnly(code, discount) = action {
+                shareSheetJourney(code: code, discount: discount)
             } else if case let .showInfoSheet(discount) = action {
                 infoSheetJourney(potentialDiscount: discount)
             }
@@ -97,14 +97,13 @@ extension ForeverView {
         }
     }
 
-    static func shareSheetJourney(code: String) -> some JourneyPresentation {
-        HostingJourney(
+    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
+        let url =
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+        let message = L10n.referralSmsMessage(discount, url)
+        return HostingJourney(
             rootView: ActivityViewController(activityItems: [
-                URL(
-                    string: L10n.referralsLink(
-                        code.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                    )
-                ) ?? ""
+                message
             ]),
             style: .activityView
         )

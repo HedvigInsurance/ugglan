@@ -2,14 +2,14 @@ import SwiftUI
 import hCore
 
 public struct RetryView: View {
-    var title: String
+    var title: String?
     var subtitle: String
     var retryTitle: String
     var action: (() -> Void)?
     @Environment(\.hRetryBottomAttachedView) var bottomAttachedView
 
     public init(
-        title: String = L10n.somethingWentWrong,
+        title: String? = L10n.somethingWentWrong,
         subtitle: String,
         retryTitle: String = L10n.generalRetry,
         action: (() -> Void)? = nil
@@ -32,7 +32,9 @@ public struct RetryView: View {
                             .foregroundColor(hSignalColorNew.amberElement)
                             .frame(width: 24, height: 24)
                         VStack(spacing: 0) {
-                            hText(title)
+                            if let title {
+                                hText(title)
+                            }
                             hText(subtitle, style: .body)
                                 .foregroundColor(hTextColorNew.secondary)
                                 .multilineTextAlignment(.center)

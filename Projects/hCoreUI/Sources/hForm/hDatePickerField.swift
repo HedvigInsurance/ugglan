@@ -13,6 +13,7 @@ public struct hDatePickerField: View {
     @Binding var error: String?
     @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
+    @Environment(\.isEnabled) var isEnabled
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -68,14 +69,24 @@ public struct hDatePickerField: View {
                 self.animate = false
             }
         }
+        .disabled(!isEnabled)
     }
 
     private func getValueLabel() -> some View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
-                .foregroundColor(hTextColorNew.primary)
+                .foregroundColor(foregroundColor)
             Spacer()
+        }
+    }
+
+    @hColorBuilder
+    private var foregroundColor: some hColor {
+        if isEnabled {
+            hTextColorNew.primary
+        } else {
+            hTextColorNew.secondary
         }
     }
 
