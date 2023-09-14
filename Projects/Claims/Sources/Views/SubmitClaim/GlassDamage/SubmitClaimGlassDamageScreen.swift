@@ -3,8 +3,6 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimGlassDamageScreen: View {
-    @State var selectedFields: [String] = []
-
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -18,14 +16,14 @@ struct SubmitClaimGlassDamageScreen: View {
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
                         title: L10n.submitClaimPartnerTitle
                     )
-
+                    
                     ClaimContactCard(
                         icon: hCoreUIAssets.rydsBilglas,
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                         buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
                     )
                 }
-
+                
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
@@ -35,64 +33,28 @@ struct SubmitClaimGlassDamageScreen: View {
                 }
                 .padding(.top, 8)
                 .sectionContainerStyle(.transparent)
-
+                
                 VStack(spacing: 4) {
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
                         text: L10n.submitClaimGlassDamageWhatCostLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimHowBookTitle,
                         text: L10n.submitClaimGlassDamageHowBookLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimWorkshopTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
                 }
                 .padding(.top, 8)
-
+                
                 SupportView()
                     .padding(.vertical, 56)
             }
             .padding(.top, 8)
-
-        }
-    }
-
-    func infoExpandableView(title: String, text: String) -> some View {
-        hSection {
-            hRow {
-                hText(title)
-                    .lineLimit(1)
-            }
-            .withCustomAccessory({
-                Spacer()
-                Image(
-                    uiImage: selectedFields.contains(title)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .transition(.opacity.animation(.easeOut))
-            })
-            .onTap {
-                if !selectedFields.contains(title) {
-                    selectedFields.append(title)
-                } else {
-                    if let index = selectedFields.firstIndex(of: title) {
-                        selectedFields.remove(at: index)
-                    }
-                }
-            }
-            .hWithoutDivider
-
-            if selectedFields.contains(title) {
-                VStack(alignment: .leading) {
-                    hRow {
-                        hText(text)
-                            .foregroundColor(hTextColorNew.secondary)
-                    }
-                }
-            }
+            
         }
     }
 }
@@ -103,7 +65,7 @@ struct ClaimContactCard: View {
     var icon: ImageAsset
     var label: String
     var buttonText: String
-
+    
     init(
         icon: ImageAsset,
         label: String,
@@ -115,7 +77,7 @@ struct ClaimContactCard: View {
         self.buttonText = buttonText
         self.title = title
     }
-
+    
     var body: some View {
         if let title {
             hSection {
@@ -145,7 +107,7 @@ struct ClaimContactCard: View {
             .sectionContainerStyle(.black)
         }
     }
-
+    
     private var sectionContent: some View {
         VStack(spacing: 8) {
             Image(uiImage: icon.image)
@@ -158,20 +120,20 @@ struct ClaimContactCard: View {
                 .foregroundColor(hTextColorNew.tertiary)
                 .padding(.bottom, 8)
             hButton.MediumButtonSecondaryAlt {
-
+                
             } content: {
                 hText(buttonText)
             }
             .padding(.horizontal, 16)
         }
         .padding(.vertical, 16)
-
+        
     }
 }
 
 struct SupportView: View {
     @PresentableStore var store: SubmitClaimStore
-
+    
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 0) {
@@ -189,7 +151,7 @@ struct SupportView: View {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
             .fixedSize(horizontal: true, vertical: false)
-
+            
         }
     }
 }

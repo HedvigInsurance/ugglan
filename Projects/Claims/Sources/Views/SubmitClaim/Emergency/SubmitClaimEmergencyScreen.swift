@@ -3,8 +3,6 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimEmergencyScreen: View {
-    @State var selectedFields: [String] = []
-
     var body: some View {
         hForm {
             VStack(spacing: 8) {
@@ -18,7 +16,7 @@ struct SubmitClaimEmergencyScreen: View {
                     cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
                     footnote: L10n.submitClaimGlobalAssistanceFootnote
                 )
-
+                
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimEmergencyInsuranceCoverTitle)
@@ -28,22 +26,22 @@ struct SubmitClaimEmergencyScreen: View {
                 }
                 .padding(.top, 16)
                 .sectionContainerStyle(.transparent)
-
+                
                 VStack(spacing: 4) {
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
                         text: L10n.submitClaimGlassDamageWhatCostLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimHospitalTitle,
                         text: L10n.submitClaimGlassDamageWhatCostLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimRebookTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
-
-                    infoExpandableView(
+                    
+                    InfoExpandableView(
                         title: L10n.changeAddressQa,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
@@ -53,43 +51,6 @@ struct SubmitClaimEmergencyScreen: View {
                     .padding(.vertical, 56)
             }
             .padding(.top, 8)
-
-        }
-    }
-
-    func infoExpandableView(title: String, text: String) -> some View {
-        hSection {
-            hRow {
-                hText(title)
-                    .lineLimit(1)
-            }
-            .withCustomAccessory({
-                Spacer()
-                Image(
-                    uiImage: selectedFields.contains(title)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .transition(.opacity.animation(.easeOut))
-            })
-            .onTap {
-                if !selectedFields.contains(title) {
-                    selectedFields.append(title)
-                } else {
-                    if let index = selectedFields.firstIndex(of: title) {
-                        selectedFields.remove(at: index)
-                    }
-                }
-            }
-            .hWithoutDivider
-
-            if selectedFields.contains(title) {
-                VStack(alignment: .leading) {
-                    hRow {
-                        hText(text)
-                            .foregroundColor(hTextColorNew.secondary)
-                    }
-                }
-            }
         }
     }
 }
@@ -101,7 +62,7 @@ struct ClaimEmergencyContactCard: View {
     var icon: ImageAsset
     var label: String
     var buttonText: String
-
+    
     init(
         icon: ImageAsset,
         label: String,
@@ -115,7 +76,7 @@ struct ClaimEmergencyContactCard: View {
         self.cardTitle = cardTitle
         self.footnote = footnote
     }
-
+    
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -138,12 +99,12 @@ struct ClaimEmergencyContactCard: View {
                 }
                 .padding(.bottom, 8)
                 hButton.MediumButtonSecondaryAlt {
-
+                    
                 } content: {
                     hText(buttonText)
                 }
                 .padding(.horizontal, 16)
-
+                
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColorNew.tertiary)
@@ -152,7 +113,7 @@ struct ClaimEmergencyContactCard: View {
             .padding(.vertical, 24)
         }
         .sectionContainerStyle(.black)
-
+        
     }
 }
 
