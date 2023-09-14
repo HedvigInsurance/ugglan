@@ -11,7 +11,7 @@ struct SubmitClaimGlassDamageScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimGlassDamageInfoLabel, type: .info)
                 }
-                VStack(spacing: -8) {
+                VStack(spacing: 8) {
                     ClaimContactCard(
                         icon: hCoreUIAssets.carGlass,
                         label: L10n.submitClaimGlassDamageOnlineBookingLabel,
@@ -50,11 +50,13 @@ struct SubmitClaimGlassDamageScreen: View {
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
                 }
-                .padding(.vertical, 8)
+                .padding(.top, 8)
 
                 SupportView()
-                    .padding(.vertical, 32)
+                    .padding(.vertical, 56)
             }
+            .padding(.top, 8)
+
         }
     }
 
@@ -115,27 +117,11 @@ struct ClaimContactCard: View {
     }
 
     var body: some View {
-        hSection {
-            VStack(spacing: 8) {
-                Image(uiImage: icon.image)
-                    .resizable()
-                    .frame(width: 150, height: 40)
-                    .foregroundColor(hTextColorNew.negative)
-                    .padding(.vertical, 16)
-                hText(label)
-                    .foregroundColor(hTextColorNew.tertiary)
-                    .padding(.bottom, 8)
-                hButton.MediumButtonSecondaryAlt {
-
-                } content: {
-                    hText(buttonText)
-                }
-                .padding(.horizontal, 16)
+        if let title {
+            hSection {
+                sectionContent
             }
-            .padding(.vertical, 16)
-        }
-        .withHeader {
-            if let title = title {
+            .withHeader({
                 HStack {
                     hText(title)
                     Spacer()
@@ -143,12 +129,42 @@ struct ClaimContactCard: View {
                         .foregroundColor(hTextColorNew.secondary)
                         .fixedSize()
                         .onTapGesture {
-                            store.send(.navigationAction(action: .openInfoScreen))
+                            store.send(
+                                .navigationAction(
+                                    action: .openInfoScreen(title: L10n.submitClaimPartnerTitle, description: "")
+                                )
+                            )
                         }
                 }
+            })
+            .sectionContainerStyle(.black)
+        } else {
+            hSection {
+                sectionContent
             }
+            .sectionContainerStyle(.black)
         }
-        .sectionContainerStyle(.black)
+    }
+
+    private var sectionContent: some View {
+        VStack(spacing: 8) {
+            Image(uiImage: icon.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 40)
+                .foregroundColor(hTextColorNew.negative)
+                .padding(.vertical, 16)
+            hText(label)
+                .foregroundColor(hTextColorNew.tertiary)
+                .padding(.bottom, 8)
+            hButton.MediumButtonSecondaryAlt {
+
+            } content: {
+                hText(buttonText)
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 16)
 
     }
 }
@@ -157,13 +173,14 @@ struct SupportView: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
-        VStack(spacing: 0) {
-            hText(L10n.submitClaimNeedHelpTitle)
-                .foregroundColor(hTextColorNew.primaryTranslucent)
-            hText(L10n.submitClaimNeedHelpLabel)
-                .foregroundColor(hTextColorNew.secondary)
-
-            hButton.LargeButtonPrimary {
+        VStack(spacing: 24) {
+            VStack(spacing: 0) {
+                hText(L10n.submitClaimNeedHelpTitle)
+                    .foregroundColor(hTextColorNew.primaryTranslucent)
+                hText(L10n.submitClaimNeedHelpLabel)
+                    .foregroundColor(hTextColorNew.secondary)
+            }
+            hButton.MediumButtonPrimary {
                 store.send(.dissmissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     store.send(.submitClaimOpenFreeTextChat)
@@ -171,14 +188,15 @@ struct SupportView: View {
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
-            .frame(width: 133)
-            .padding(.top, 24)
+            .fixedSize(horizontal: true, vertical: false)
+
         }
     }
 }
 
 struct SubmitClaimGlassDamageScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimGlassDamageScreen()
+        Localization.Locale.currentLocale = .en_SE
+        return SubmitClaimGlassDamageScreen()
     }
 }

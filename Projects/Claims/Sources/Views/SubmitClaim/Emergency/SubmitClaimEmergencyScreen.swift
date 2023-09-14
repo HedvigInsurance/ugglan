@@ -11,11 +11,10 @@ struct SubmitClaimEmergencyScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimEmergencyInfoLabel, type: .attention)
                 }
-                .padding(.top, 8)
                 ClaimEmergencyContactCard(
                     icon: hCoreUIAssets.hedvigBigLogo,
                     label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel(+45_584_894),
+                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel("+45 38 48 94 61"),
                     cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
                     footnote: L10n.submitClaimGlobalAssistanceFootnote
                 )
@@ -50,11 +49,11 @@ struct SubmitClaimEmergencyScreen: View {
                     )
                 }
                 .padding(.top, 16)
-                .padding(.bottom, 8)
-
                 SupportView()
-                    .padding(.vertical, 32)
+                    .padding(.vertical, 56)
             }
+            .padding(.top, 8)
+
         }
     }
 
@@ -122,7 +121,8 @@ struct ClaimEmergencyContactCard: View {
             VStack(spacing: 16) {
                 Image(uiImage: icon.image)
                     .resizable()
-                    .frame(width: 80, height: 80)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 80)
                     .foregroundColor(hTextColorNew.negative)
                     .padding(.vertical, 8)
                 VStack(spacing: 0) {
@@ -158,6 +158,7 @@ struct ClaimEmergencyContactCard: View {
 
 struct SubmitClaimEmergencyScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimEmergencyScreen()
+        Localization.Locale.currentLocale = .en_SE
+        return SubmitClaimEmergencyScreen()
     }
 }
