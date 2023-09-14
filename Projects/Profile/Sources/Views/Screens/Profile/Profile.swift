@@ -139,7 +139,7 @@ extension ProfileView {
                     } else if case .deleteAccountAlreadyRequested = action {
                         DeleteAccountView.deleteRequestAlreadyPlacedJourney
                     } else if case .openLangaugePicker = action {
-                        PickLanguage { _ in 
+                        PickLanguage { _ in
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.continueLanguagePickerJourney)
                             store.send(.setOpenAppSettings(to: true))

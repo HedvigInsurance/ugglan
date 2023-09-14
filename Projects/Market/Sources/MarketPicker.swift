@@ -96,7 +96,7 @@ public struct MarketPickerView: View {
                 hAnalyticsEvent.buttonClickMarketingOnboard().send()
                 store.send(.onboard)
             } content: {
-                hText(L10n.marketingGetHedvig, style: .body)
+                hText(L10n.marketingGetHedvig, style: .body).foregroundColor(hLabelColor.primary)
             }
         }
     }
