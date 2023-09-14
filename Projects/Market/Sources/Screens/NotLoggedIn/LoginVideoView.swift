@@ -5,7 +5,7 @@ import UIKit
 
 struct LoginVideoView: UIViewRepresentable {
 
-    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<LoginVideoView>) {
     }
 
     func makeUIView(context: Context) -> UIView {
