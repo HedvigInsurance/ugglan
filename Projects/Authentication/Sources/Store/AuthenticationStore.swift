@@ -177,6 +177,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
+            send(.bankIdQrResultAction(action: .loggedIn))
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
 
@@ -277,7 +278,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         .cancel,
                         .navigationAction(action: .authSuccess):
                         callbacker(.end)
-                        callbacker(.value(.bankIdQrResultAction(action: .loggedIn)))
                     default:
                         break
                     }
