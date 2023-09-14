@@ -3,6 +3,7 @@ import Combine
 import Flow
 import Foundation
 import Presentation
+import Profile
 import SwiftUI
 import UIKit
 import hAnalytics
@@ -219,7 +220,6 @@ struct HonestyPledge: View {
                 }
 
             }
-            .padding(.top, -32)
             .padding(.horizontal, 24)
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -238,14 +238,13 @@ extension HonestyPledge {
             rootView: HonestyPledge(onConfirmAction: nil),
             style: style,
             options: [
-                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+                .defaults, .blurredBackground,
             ]
         ) { action in
             if case .didAcceptHonestyPledge = action {
                 next()
             }
         }
-        .configureTitle(L10n.honestyPledgeTitle)
         .withDismissButton
     }
 }
@@ -254,8 +253,8 @@ extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
         HonestyPledge {
-            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-            if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .openNotificationsPermissionScreen))
             } else {
