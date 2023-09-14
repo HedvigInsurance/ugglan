@@ -15,7 +15,7 @@ public struct LoginFail: View {
                 VStack(spacing: 0) {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColorNew.primaryTranslucent)
-                    hText("We cannot log you in via BankID right now, try again")
+                    hText(L10N.AuthenticationBankidLoginError)
                         .foregroundColor(hTextColorNew.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                 }

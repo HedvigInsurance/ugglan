@@ -63,9 +63,9 @@ public struct BankIDLoginQR: View {
                 }
                 
                 VStack(spacing: 0) {
-                    hText("Väntar på BankID")
+                    hText(L10n.authenticationBankidLoginTitle)
                         .foregroundColor(hTextColorNew.primaryTranslucent)
-                    hText("Scanna QR-koden med BankID-appen på din telefon, eller logga in med din email nedan.")
+                    hText(L10n.authenticationBankidLoginLabel)
                         .foregroundColor(hTextColorNew.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                 }
@@ -86,11 +86,12 @@ public struct BankIDLoginQR: View {
 
                 if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
                     hButton.LargeButtonPrimary {
+                        store.send(.seBankIDStateAction(action: .startSession))
                         store.send(.openBankIdApp)
                     } content: {
                         HStack(spacing: 8) {
                             Image(uiImage: hCoreUIAssets.bankIdSmall.image)
-                            hText("Open BankID")
+                            hText(L10n.authenticationBankidOpenButton)
                         }
                     }
                 }
@@ -98,7 +99,7 @@ public struct BankIDLoginQR: View {
                 hButton.LargeButtonGhost {
                     store.send(.bankIdQrResultAction(action: .emailLogin))
                 } content: {
-                    hText("Login with email")
+                    hText(L10n.BankidMissingLogin.emailButton)
                 }
             }
             .padding(.bottom, 32)
