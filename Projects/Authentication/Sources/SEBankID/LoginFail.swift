@@ -4,8 +4,10 @@ import hCoreUI
 
 public struct LoginFail: View {
     @PresentableStore var store: AuthenticationStore
-
-    public init() {}
+    let message: String?
+    public init(message: String?) {
+        self.message = message
+    }
 
     public var body: some View {
         hForm {
@@ -15,7 +17,7 @@ public struct LoginFail: View {
                 VStack(spacing: 0) {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColorNew.primaryTranslucent)
-                    hText(L10n.authenticationBankidLoginError)
+                    hText(message ?? L10n.authenticationBankidLoginError)
                         .foregroundColor(hTextColorNew.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                 }
@@ -36,6 +38,6 @@ public struct LoginFail: View {
 
 struct LofinFail_Previews: PreviewProvider {
     static var previews: some View {
-        LoginFail()
+        LoginFail(message: nil)
     }
 }

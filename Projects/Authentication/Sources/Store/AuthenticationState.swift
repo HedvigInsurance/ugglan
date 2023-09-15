@@ -18,7 +18,6 @@ struct OTPState: StateProtocol {
 
 struct SEBankIDState: StateProtocol {
     var autoStartToken: String? = nil
-    var bankIdQRCodeString: URL? = nil
     public init() {}
 }
 
@@ -34,7 +33,7 @@ struct ZignsecState: StateProtocol {
 public struct AuthenticationState: StateProtocol {
     var statusText: String? = nil
     var otpState = OTPState()
-    var seBankIDState = SEBankIDState()
+    @Transient(defaultValue: SEBankIDState()) var seBankIDState
     var zignsecState = ZignsecState()
     @Transient(defaultValue: false) var loginHasFailed: Bool
 

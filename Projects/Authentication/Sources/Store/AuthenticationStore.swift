@@ -219,13 +219,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             )
                         )
                         callbacker(.observeLoginStatus(url: statusUrl))
-                        
-                        let url = URL(
-                            string:
-                                "bankid:///?autostarttoken=\(bankIdProperties.autoStartToken)"
-                        )
-                        callbacker(.setQRCode(code: url))
-                        
                     } else if let result = result as? AuthAttemptResultError {
                         let error = NSError(domain: result.message, code: 1000)
                         log.error(
@@ -233,12 +226,14 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             error: error,
                             attributes: [:]
                         )
+                        callbacker(.loginFailure(message: nil))
                     } else if let error {
                         log.error(
                             "Got Error when signing in with BankId",
                             error: error,
                             attributes: [:]
                         )
+                        callbacker(.loginFailure(message: nil))
                     }
                 }
 
@@ -356,40 +351,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 return bag
             }
-        } else if case .openBankIdApp = action {
-            return FiniteSignal { callback in
-                let bag = DisposeBag()
-                bag += self.stateSignal
-                    .atOnce()
-                    .map { state in
-                        state.seBankIDState.autoStartToken
-                    }
-                    .skip(first: 1)
-                    .compactMap { $0 }
-                    .onValue { autoStartToken in
-                        let urlScheme = Bundle.main.urlScheme ?? ""
-
-                        guard
-                            let url = URL(
-                                string:
-                                    "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                            )
-                        else {
-                            return
-                        }
-                        if !self.state.loginHasFailed {
-                            log.info("BANK ID APP started", error: nil, attributes: ["token": autoStartToken])
-                            if UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(
-                                    url,
-                                    options: [:],
-                                    completionHandler: nil
-                                )
-                            }
-                        }
-                    }
-                return bag
-            }
         }
         return nil
     }
@@ -475,9 +436,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.zignsecState.credentialError = false
             newState.loginHasFailed = false
         case .loginFailure:
+            newState.seBankIDState = SEBankIDState()
             newState.loginHasFailed = true
-        case let .setQRCode(code):
-            newState.seBankIDState.bankIdQRCodeString = code
         default:
             break
         }

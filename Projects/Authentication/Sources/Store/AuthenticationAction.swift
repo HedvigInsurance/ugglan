@@ -67,8 +67,5 @@ public enum AuthenticationAction: ActionProtocol {
     case seBankIDStateAction(action: SEBankIDStateAction)
     case zignsecStateAction(action: ZignsecStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
-    case bankIdSwedenResultAction(action: BankIDLoginSwedenResult)
     case bankIdQrResultAction(action: BankIDLoginQRResult)
-    case openBankIdApp
-    case setQRCode(code: URL?)
 }

@@ -36,30 +36,31 @@ extension AppJourney {
 
     @JourneyBuilder
     fileprivate static var bankIDSweden: some JourneyPresentation {
-            HostingJourney(
-                AuthenticationStore.self,
-                rootView: BankIDLoginQR()
-            ) { action in
-                if case .bankIdQrResultAction(.loggedIn) = action {
-                    loginCompleted
-                } else if case .bankIdQrResultAction(action: .emailLogin) = action {
-                    otp(style: .detented(.large, modally: false))
-                } else if case .bankIdQrResultAction(action: .close) = action {
-                    DismissJourney()
-                } else if case .loginFailure = action {
-                    HostingJourney(
-                        AuthenticationStore.self,
-                        rootView: LoginFail()
-                    ) {
-                        action in
-                        if case .cancel = action {
-                            PopJourney()
-                        }
+        HostingJourney(
+            AuthenticationStore.self,
+            rootView: BankIDLoginQR(),
+            style: .modally()
+        ) { action in
+            if case .bankIdQrResultAction(.loggedIn) = action {
+                loginCompleted
+            } else if case .bankIdQrResultAction(action: .emailLogin) = action {
+                otp(style: .detented(.large, modally: false))
+            } else if case .bankIdQrResultAction(action: .close) = action {
+                DismissJourney()
+            } else if case let .loginFailure(message) = action {
+                HostingJourney(
+                    AuthenticationStore.self,
+                    rootView: LoginFail(message: message)
+                ) {
+                    action in
+                    if case .cancel = action {
+                        PopJourney()
                     }
                 }
             }
-            .withJourneyDismissButton
-            .mapJourneyDismissToCancel
+        }
+        .withJourneyDismissButton
+        .mapJourneyDismissToCancel
     }
 
     fileprivate static func otp(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {

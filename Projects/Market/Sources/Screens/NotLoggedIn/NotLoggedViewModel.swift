@@ -49,7 +49,7 @@ public class NotLoggedViewModel: ObservableObject {
         detectMarketFromLocation()
     }
 
-    func detectMarketFromLocation() {
+    private func detectMarketFromLocation() {
         let store: MarketStore = globalPresentableStoreContainer.get()
         bag += giraffe.client
             .fetch(
