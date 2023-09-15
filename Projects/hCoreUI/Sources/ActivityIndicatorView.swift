@@ -264,7 +264,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
     var loadingButton: some View {
         switch buttonStyleSelect {
         case .filledButton:
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
                 if !isLoading {
                     buttonAction()
                 }
@@ -277,7 +277,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                 }
             }
         case .textButton:
-            hButton.LargeButtonGhost {
+            hButton.LargeButton(type: .ghost) {
                 if !isLoading {
                     buttonAction()
                 }

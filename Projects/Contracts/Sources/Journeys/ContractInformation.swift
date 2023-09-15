@@ -48,7 +48,7 @@ struct ContractInformationView: View {
                     hSection {
                         VStack(spacing: 8) {
                             if contract.currentAgreement?.status != .terminated {
-                                hButton.LargeButtonSecondary {
+                                hButton.LargeButton(type: .secondary) {
                                     store.send(.contractEditInfo(id: id))
                                 } content: {
                                     hText(L10n.contractEditInfoLabel)
@@ -138,7 +138,7 @@ struct ChangePeopleView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 10)
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     store.send(.goToFreeTextChat)
                 } content: {
                     L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()

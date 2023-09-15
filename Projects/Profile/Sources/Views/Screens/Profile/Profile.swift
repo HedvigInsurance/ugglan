@@ -72,7 +72,7 @@ public struct ProfileView: View {
                 ConnectPaymentCardView()
                 RenewalCardView()
                 NotificationsCardView()
-                hButton.LargeButtonGhost {
+                hButton.LargeButton(type: .ghost) {
                     showLogoutAlert = true
                 } content: {
                     hText(L10n.logoutButton)

@@ -70,7 +70,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
 
-                            hButton.LargeButtonText {
+                            hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
                                     store.send(.resetAudioRecording)
                                     audioRecorder.restart()
