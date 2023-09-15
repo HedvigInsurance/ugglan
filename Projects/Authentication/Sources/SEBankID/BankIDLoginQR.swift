@@ -1,5 +1,5 @@
-import SwiftUI
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -8,9 +8,9 @@ class BandIDViewModel: ObservableObject {
 }
 
 public struct BankIDLoginQR: View {
-@PresentableStore var store: AuthenticationStore
-@State var image: UIImage?
-@StateObject var vm = BandIDViewModel()
+    @PresentableStore var store: AuthenticationStore
+    @State var image: UIImage?
+    @StateObject var vm = BandIDViewModel()
 
     public init() {
         store.send(.seBankIDStateAction(action: .startSession))
@@ -37,7 +37,7 @@ public struct BankIDLoginQR: View {
                         let _ = generateQRCode(qrCode)
                     }
                 }
-                
+
                 if let image {
                     Image(uiImage: image)
                         .resizable()
@@ -61,7 +61,7 @@ public struct BankIDLoginQR: View {
                             vm.showAlert = true
                         }
                 }
-                
+
                 VStack(spacing: 0) {
                     hText(L10n.authenticationBankidLoginTitle)
                         .foregroundColor(hTextColorNew.primaryTranslucent)
@@ -70,7 +70,7 @@ public struct BankIDLoginQR: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 16)
-                
+
                 Image(uiImage: hCoreUIAssets.menuIcon.image)
                     .frame(height: 6)
             }
@@ -85,7 +85,7 @@ public struct BankIDLoginQR: View {
                 )!
 
                 if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         store.send(.seBankIDStateAction(action: .startSession))
                         store.send(.openBankIdApp)
                     } content: {
@@ -96,7 +96,7 @@ public struct BankIDLoginQR: View {
                     }
                 }
 
-                hButton.LargeButtonGhost {
+                hButton.LargeButton(type: .ghost) {
                     store.send(.bankIdQrResultAction(action: .emailLogin))
                 } content: {
                     hText(L10n.BankidMissingLogin.emailButton)
@@ -106,7 +106,7 @@ public struct BankIDLoginQR: View {
             .padding(.horizontal, 16)
         }
     }
-    
+
     func generateQRCode(_ url: URL) {
         let data = url.absoluteString.data(using: String.Encoding.ascii)
         guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return }

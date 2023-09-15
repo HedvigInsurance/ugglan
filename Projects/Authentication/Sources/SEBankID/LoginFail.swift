@@ -24,7 +24,7 @@ public struct LoginFail: View {
             .padding(.top, UIScreen.main.bounds.size.height / 3.0)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonGhost {
+            hButton.LargeButton(type: .ghost) {
                 store.send(.cancel)
             } content: {
                 hText(L10n.generalCloseButton)
