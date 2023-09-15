@@ -54,7 +54,7 @@ struct EditContract: View {
                 hSection {
                     VStack(spacing: 4) {
                         if selectedType != nil {
-                            hButton.LargeButtonPrimary {
+                            hButton.LargeButton(type: .primary) {
                                 store.send(.dismissEditInfo(type: selectedType))
                                 switch selectedType {
                                 case .coInsured:
@@ -68,7 +68,7 @@ struct EditContract: View {
                                 hText(selectedType?.buttonTitle ?? "", style: .standard)
                             }
                         }
-                        hButton.LargeButtonText {
+                        hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
                             hText(L10n.generalCancelButton, style: .standard)

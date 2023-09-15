@@ -59,7 +59,7 @@ struct StartDateScreen: View {
                             }
                         }
                         hSection {
-                            hButton.LargeButtonPrimary {
+                            hButton.LargeButton(type: .primary) {
                                 Task {
                                     await vm.submit()
                                 }

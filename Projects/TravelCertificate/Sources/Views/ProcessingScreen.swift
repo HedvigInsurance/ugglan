@@ -52,7 +52,7 @@ struct ProcessingScreen: View {
                 VStack(spacing: 16) {
                     InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
                     VStack(spacing: 8) {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             Task {
                                 await vm.presentShare()
                             }
@@ -61,7 +61,7 @@ struct ProcessingScreen: View {
                         }
                         .trackLoading(TravelInsuranceStore.self, action: .downloadCertificate)
 
-                        hButton.LargeButtonGhost {
+                        hButton.LargeButton(type: .ghost) {
                             vm.store.send(.navigation(.dismissCreateTravelCertificate))
                         } content: {
                             hText(L10n.generalCloseButton)

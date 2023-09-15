@@ -44,14 +44,14 @@ public struct PickMarket: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         if let selectedMarket = selectedMarket {
                             onSave(selectedMarket)
                         }
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
-                    hButton.LargeButtonGhost {
+                    hButton.LargeButton(type: .ghost) {
                         store.send(.dismissPicker)
                     } content: {
                         hText(L10n.generalCancelButton)

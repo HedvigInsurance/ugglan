@@ -23,13 +23,13 @@ public struct GeneralDatePicker: View {
         }
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     model.onDateSelected(dateOfOccurrence)
                 } content: {
                     hText(model.buttonTitle, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
             }
         }
         .navigationTitle(model.title)

@@ -85,7 +85,7 @@ struct Debug: View {
                     SwiftUI.Button(
                         "Go to market picker",
                         action: {
-                            ApplicationState.preserveState(.marketPicker)
+                            ApplicationState.preserveState(.notLoggedIn)
                             UIApplication.shared.appDelegate.bag += UIApplication.shared
                                 .appDelegate.window.present(AppJourney.main)
                         }
@@ -95,7 +95,7 @@ struct Debug: View {
                     SwiftUI.Button(
                         "Logout",
                         action: {
-                            ApplicationState.preserveState(.marketPicker)
+                            ApplicationState.preserveState(.notLoggedIn)
                             UIApplication.shared.appDelegate.logout()
                         }
                     )

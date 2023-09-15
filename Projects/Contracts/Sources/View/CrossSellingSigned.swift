@@ -50,7 +50,7 @@ public struct CrossSellingSigned: View {
         }
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     store.send(.closeCrossSellingSigned)
                 } content: {
                     hText(L10n.toolbarDoneButton)

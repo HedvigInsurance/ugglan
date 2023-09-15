@@ -70,13 +70,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     var bottomContent: some View {
         hSection {
             VStack(spacing: 8) {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
                     hText(L10n.generalContinueButton, style: .standard)
                 }
                 if let onCancel {
-                    hButton.LargeButtonText {
+                    hButton.LargeButton(type: .ghost) {
                         onCancel()
                     } content: {
                         hText(L10n.generalCancelButton, style: .standard)

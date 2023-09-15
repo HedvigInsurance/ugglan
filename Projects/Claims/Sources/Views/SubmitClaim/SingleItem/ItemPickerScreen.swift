@@ -36,7 +36,7 @@ public struct ItemPickerScreen<T>: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonText {
+            hButton.LargeButton(type: .ghost) {
                 onCancel()
             } content: {
                 hText(L10n.generalCancelButton, style: .body)

@@ -155,7 +155,7 @@ extension HomeView {
     }
 
     private var startAClaimButton: some View {
-        hButton.LargeButtonPrimary {
+        hButton.LargeButton(type: .primary) {
             hAnalyticsEvent.beginClaim(screen: .home).send()
             store.send(.startClaim)
         } content: {
@@ -166,7 +166,7 @@ extension HomeView {
     @ViewBuilder
     private var openOtherServices: some View {
         if hAnalyticsExperiment.homeCommonClaim {
-            hButton.LargeButtonGhost {
+            hButton.LargeButton(type: .ghost) {
                 store.send(.openOtherServices)
             } content: {
                 hText(L10n.HomeTab.otherServices)
