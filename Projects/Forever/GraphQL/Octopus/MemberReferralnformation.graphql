@@ -1,0 +1,31 @@
+query MemberReferralInformation {
+    currentMember {
+        referralInformation {
+            code
+                code
+                monthlyDiscountExcludingReferrals {
+                    ...MonetaryAmountFragment
+                }
+                monthlyDiscountPerReferral {
+                    ...MonetaryAmountFragment
+                }
+                referrals {
+                    ...MemberReferralFragment
+                }
+        }
+    }
+}
+
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
+}
+
+fragment MemberReferralFragment on MemberReferral {
+    activeDiscount {
+        ...MonetaryAmountFragment
+    }
+    name
+    status
+}
+
