@@ -1,8 +1,10 @@
 import Apollo
+import Combine
 import Flow
 import Kingfisher
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -11,28 +13,40 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
+    @Published var locale: Localization.Locale = .currentLocale
+    @Published var title: String = L10n.MarketLanguageScreen.title
+    @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
+    @Published var viewState: ViewState = .loading
 
+    var onLoad: () -> Void = {}
+    var cancellables = Set<AnyCancellable>()
     let bag = DisposeBag()
 
-    func fetchMarketingImage() {
-        bag += giraffe.client
-            .fetch(
-                query: GiraffeGraphQL.MarketingImagesQuery()
-            )
-            .compactMap {
-                $0.appMarketingImages
-                    .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
+    init() {
+        ApplicationState.preserveState(.notLoggedIn)
+        Localization.Locale.$currentLocale
+            .distinct()
+            .plain()
+            .delay(by: 0.1)
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                self?.title = L10n.MarketLanguageScreen.title
+                self?.buttonText = L10n.MarketLanguageScreen.continueButtonText
             }
-            .compactMap { $0 }
-            .onValue {
-                if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
-                    self.blurHash = blurHash
-                    self.imageURL = imageURL
+            .store(in: &cancellables)
 
-                    let prefetcher = ImagePrefetcher(urls: [URL(string: imageURL)!])
-                    prefetcher.start()
+        $bootStrapped
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                if value {
+                    hAnalyticsEvent.screenView(screen: .marketPicker).send()
+                    self?.viewState = .marketAndLanguage
+                    self?.onLoad()
                 }
             }
+            .store(in: &cancellables)
+        detectMarketFromLocation()
     }
 
     func detectMarketFromLocation() {
@@ -67,5 +81,10 @@ public class NotLoggedViewModel: ObservableObject {
                 store.send(.selectMarket(market: .sweden))
                 self.bootStrapped = true
             }
+    }
+
+    enum ViewState {
+        case loading
+        case marketAndLanguage
     }
 }
