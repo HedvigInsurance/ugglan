@@ -110,31 +110,42 @@ extension ForeverData {
 }
 
 public struct ForeverDataNew: Codable, Equatable {
+    
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,
-//        monthlyDiscount: MonetaryAmount,
-//        potentialDiscountAmount: MonetaryAmount,
-//        otherDiscounts: MonetaryAmount?,
+        monthlyDiscount: MonetaryAmount,
+        referrals: [Referral],
+        monthlyDiscountExcludingReferrals: MonetaryAmount,// == otherDiscount
+        monthlyDiscountPerReferral: MonetaryAmount,
         discountCode: String
-//        invitations: [ForeverInvitation]
     ) {
         self.grossAmount = grossAmount
         self.netAmount = netAmount
-//        self.monthlyDiscount = monthlyDiscount
-//        self.otherDiscounts = otherDiscounts
+        self.monthlyDiscount = monthlyDiscount
+        self.otherDiscounts = monthlyDiscountExcludingReferrals
+        self.referrals = referrals
         self.discountCode = discountCode
-//        self.potentialDiscountAmount = potentialDiscountAmount
-//        self.invitations = invitations
     }
 
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
-//    let monthlyDiscount: MonetaryAmount
-//    let potentialDiscountAmount: MonetaryAmount
-//    let otherDiscounts: MonetaryAmount?
+    let monthlyDiscount: MonetaryAmount
+    let otherDiscounts: MonetaryAmount
+    let referrals: [Referral]
     var discountCode: String
-//    let invitations: [ForeverInvitation]
 
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
+}
+
+public struct Referral: Hashable, Codable {
+    let name: String
+    let activeDiscounts: MonetaryAmount
+    let status: State
+    
+    public enum State: String, Codable {
+        case terminated
+        case pending
+        case active
+    }
 }

@@ -13,7 +13,6 @@ query MemberReferralInformation {
         }
         referralInformation {
             code
-                code
                 monthlyDiscountExcludingReferrals {
                     ...MonetaryAmountFragment
                 }
