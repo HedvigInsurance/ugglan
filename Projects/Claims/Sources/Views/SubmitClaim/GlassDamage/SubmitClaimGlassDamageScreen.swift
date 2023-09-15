@@ -3,8 +3,6 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimGlassDamageScreen: View {
-    @State var selectedFields: [String] = []
-
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -37,60 +35,26 @@ struct SubmitClaimGlassDamageScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 VStack(spacing: 4) {
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
                         text: L10n.submitClaimGlassDamageWhatCostLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimHowBookTitle,
                         text: L10n.submitClaimGlassDamageHowBookLabel
                     )
-                    infoExpandableView(
+                    InfoExpandableView(
                         title: L10n.submitClaimWorkshopTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
                 }
-                .padding(.vertical, 8)
+                .padding(.top, 8)
 
                 SupportView()
                     .padding(.vertical, 56)
             }
-        }
-    }
+            .padding(.top, 8)
 
-    func infoExpandableView(title: String, text: String) -> some View {
-        hSection {
-            hRow {
-                hText(title)
-                    .lineLimit(1)
-            }
-            .withCustomAccessory({
-                Spacer()
-                Image(
-                    uiImage: selectedFields.contains(title)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .transition(.opacity.animation(.easeOut))
-            })
-            .onTap {
-                if !selectedFields.contains(title) {
-                    selectedFields.append(title)
-                } else {
-                    if let index = selectedFields.firstIndex(of: title) {
-                        selectedFields.remove(at: index)
-                    }
-                }
-            }
-            .hWithoutDivider
-
-            if selectedFields.contains(title) {
-                VStack(alignment: .leading) {
-                    hRow {
-                        hText(text)
-                            .foregroundColor(hTextColorNew.secondary)
-                    }
-                }
-            }
         }
     }
 }
@@ -194,6 +158,7 @@ struct SupportView: View {
 
 struct SubmitClaimGlassDamageScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimGlassDamageScreen()
+        Localization.Locale.currentLocale = .en_SE
+        return SubmitClaimGlassDamageScreen()
     }
 }
