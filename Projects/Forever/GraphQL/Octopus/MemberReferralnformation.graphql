@@ -1,5 +1,16 @@
 query MemberReferralInformation {
     currentMember {
+        insuranceCost {
+            monthlyDiscount {
+                ...MonetaryAmountFragment
+            }
+            monthlyGross {
+                ...MonetaryAmountFragment
+            }
+            monthlyNet {
+                ...MonetaryAmountFragment
+            }
+        }
         referralInformation {
             code
                 code
