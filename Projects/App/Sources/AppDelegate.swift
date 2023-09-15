@@ -227,7 +227,7 @@ import hGraphQL
             DispatchQueue.main.async {
                 launchView.removeFromSuperview()
 
-                ApplicationState.preserveState(.marketPicker)
+                ApplicationState.preserveState(.notLoggedIn)
 
                 ApplicationContext.shared.hasFinishedBootstrapping = true
                 Launch.shared.completeAnimationCallbacker.callAll()

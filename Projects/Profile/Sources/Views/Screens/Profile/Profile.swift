@@ -32,9 +32,8 @@ public struct ProfileView: View {
             message: nil,
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                ApplicationState.preserveState(.marketPicker)
+                ApplicationState.preserveState(.notLoggedIn)
                 store.send(.logout)
-
             }
         )
     }
