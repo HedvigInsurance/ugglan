@@ -5,7 +5,7 @@ import hCoreUI
 struct SumitClaimEmergencySelectScreen: View {
     @State var selectedYes: Bool = true
     @PresentableStore var store: SubmitClaimStore
-    
+
     var body: some View {
         hForm {}
             .hFormTitle(.small, .title1, L10n.submitClaimEmergencyTitle)
@@ -27,7 +27,7 @@ struct SumitClaimEmergencySelectScreen: View {
                 .padding(.bottom, 32)
             }
     }
-    
+
     func buttonView() -> some View {
         HStack(spacing: 8) {
             if selectedYes {

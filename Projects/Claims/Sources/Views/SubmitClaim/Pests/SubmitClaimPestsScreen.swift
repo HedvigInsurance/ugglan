@@ -2,32 +2,28 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimGlassDamageScreen: View {
+struct SubmitClaimPestsScreen: View {
+    @State var selectedFields: [String] = []
+
     var body: some View {
         hForm {
             VStack(spacing: 16) {
                 hSection {
-                    InfoCard(text: L10n.submitClaimGlassDamageInfoLabel, type: .info)
+                    InfoCard(text: L10n.submitClaimPestsInfoLabel, type: .info)
                 }
-                VStack(spacing: 8) {
-                    ClaimContactCard(
-                        image: hCoreUIAssets.carGlass.image,
-                        label: L10n.submitClaimGlassDamageOnlineBookingLabel,
-                        buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
-                        title: L10n.submitClaimPartnerTitle
-                    )
+                .padding(.top, 8)
 
-                    ClaimContactCard(
-                        image: hCoreUIAssets.rydsBilglas.image,
-                        label: L10n.submitClaimGlassDamageOnlineBookingLabel,
-                        buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
-                    )
-                }
+                ClaimContactCard(
+                    image: hCoreUIAssets.nomor.image,
+                    label: L10n.submitClaimPestsCustomerServiceLabel,
+                    buttonText: L10n.submitClaimPestsCustomerServiceButton,
+                    title: L10n.submitClaimPartnerTitle
+                )
 
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
-                        hText(L10n.submitClaimGlassDamageHowItWorksLabel)
+                        hText(L10n.submitClaimPestsHowItWorksLabel)
                             .foregroundColor(hTextColorNew.secondary)
                     }
                 }
@@ -48,20 +44,18 @@ struct SubmitClaimGlassDamageScreen: View {
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
                 }
-                .padding(.top, 8)
+                .padding(.vertical, 8)
 
                 SupportView()
                     .padding(.vertical, 56)
             }
-            .padding(.top, 8)
-
         }
     }
 }
 
-struct SubmitClaimGlassDamageScreen_Previews: PreviewProvider {
+struct SubmitClaimPestsScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return SubmitClaimGlassDamageScreen()
+        return SubmitClaimPestsScreen()
     }
 }

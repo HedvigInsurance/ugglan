@@ -5,7 +5,7 @@ struct InfoExpandableView: View {
     @State var selectedFields: [String] = []
     var title: String
     var text: String
-    
+
     init(
         title: String,
         text: String
@@ -13,7 +13,7 @@ struct InfoExpandableView: View {
         self.title = title
         self.text = text
     }
-    
+
     var body: some View {
         hSection {
             hRow {
@@ -24,7 +24,7 @@ struct InfoExpandableView: View {
                 Spacer()
                 Image(
                     uiImage: selectedFields.contains(title)
-                    ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
                 )
                 .transition(.opacity.animation(.easeOut))
             })
@@ -38,7 +38,7 @@ struct InfoExpandableView: View {
                 }
             }
             .hWithoutDivider
-            
+
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
