@@ -57,7 +57,7 @@ public struct OTPEmailEntry: View {
         .hFormAttachToBottom {
             ReadOTPState { state in
                 hSection {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         onSubmit()
                     } content: {
                         hText(L10n.Login.continueButton)

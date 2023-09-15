@@ -58,7 +58,7 @@ struct PayoutView: View {
         }
 
         hRow {
-            hButton.LargeButtonText {
+            hButton.LargeButton(type: .ghost) {
                 store.send(.fetchAdyenAvailableMethodsForPayout)
             } content: {
                 hText(L10n.PaymentScreen.payOutChangePayoutButton)
@@ -78,7 +78,7 @@ struct PayoutView: View {
 
         InfoCard(text: L10n.PaymentScreen.PayOut.footerPending, type: .info)
             .padding(.horizontal, 16)
-        hButton.LargeButtonGhost {
+        hButton.LargeButton(type: .ghost) {
             store.send(.fetchAdyenAvailableMethodsForPayout)
         } content: {
             hText(L10n.PaymentScreen.payOutChangePayoutButton)
@@ -93,7 +93,7 @@ struct PayoutView: View {
         hRow {
             hText(L10n.PaymentScreen.payOutFooterNotConnected)
         }
-        hButton.LargeButtonGhost {
+        hButton.LargeButton(type: .ghost) {
             store.send(.fetchAdyenAvailableMethodsForPayout)
         } content: {
             hText(L10n.PaymentScreen.payOutChangePayoutButton)

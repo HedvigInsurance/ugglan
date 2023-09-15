@@ -82,13 +82,13 @@ public struct InfoView: View {
             VStack(spacing: 8) {
                 if let button = extraButton {
                     if button.style != .alert {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             button.action()
                         } content: {
                             hText(button.text)
                         }
                     } else {
-                        hButton.LargeButtonPrimaryAlert {
+                        hButton.LargeButton(type: .alert) {
                             button.action()
                         } content: {
                             hText(button.text)
@@ -96,7 +96,7 @@ public struct InfoView: View {
 
                     }
                 }
-                hButton.LargeButtonGhost {
+                hButton.LargeButton(type: .ghost) {
                     onDismiss()
                 } content: {
                     hText(L10n.generalCloseButton)

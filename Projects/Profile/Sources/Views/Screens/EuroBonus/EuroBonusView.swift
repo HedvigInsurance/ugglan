@@ -38,7 +38,7 @@ struct EuroBonusView: View {
                             text: L10n.SasIntegration.eurobonusInfo,
                             type: .info
                         )
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             store.send(.openChangeEuroBonus)
                         } content: {
                             hText(L10n.SasIntegration.connectEurobonus)
@@ -47,7 +47,7 @@ struct EuroBonusView: View {
                     }
                 } else {
                     hSection {
-                        hButton.LargeButtonGhost {
+                        hButton.LargeButton(type: .ghost) {
                             store.send(.openChangeEuroBonus)
                         } content: {
                             hText(L10n.SasIntegration.changeEurobonusNumber)

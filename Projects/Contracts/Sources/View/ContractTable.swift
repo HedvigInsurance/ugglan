@@ -67,7 +67,7 @@ extension ContractTable: View {
                 ) { terminatedContracts in
                     if !terminatedContracts.isEmpty {
                         hSection {
-                            hButton.LargeButtonSecondary {
+                            hButton.LargeButton(type: .secondary) {
                                 store.send(.openTerminatedContracts)
                             } content: {
                                 hRow {

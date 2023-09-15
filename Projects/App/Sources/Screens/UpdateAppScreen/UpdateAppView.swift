@@ -22,7 +22,7 @@ struct UpdateAppView: View {
                     .hText(.body)
                     .foregroundColor(hLabelColor.secondary)
                     .multilineTextAlignment(.center)
-                hButton.SmallButtonOutlined {
+                hButton.SmallButton(type: .secondaryAlt) {
                     if let url = URL(string: L10n.AppUpdateNeeded.hedvigAppStoreLink) {
                         UIApplication.shared.open(url)
                     }
