@@ -26,9 +26,9 @@ query MemberReferralInformation {
     }
 }
 
-fragment MonetaryAmountFragment on MonetaryAmountV2 {
+fragment MonetaryAmountFragment on Money {
   amount
-  currency
+  currencyCode
 }
 
 fragment MemberReferralFragment on MemberReferral {

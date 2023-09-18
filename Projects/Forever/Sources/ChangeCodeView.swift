@@ -26,12 +26,12 @@ class ChangeCodeViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            var error: Error?
+            var errorMessage: String?
             await withCheckedContinuation { continuation in
                 self?.disposeBag += ForeverServiceGraphQL().changeDiscountCode(text)
                     .onValue { value in
                         if let errorFromGraphQL = value.right {
-                            error = errorFromGraphQL
+                            errorMessage = errorFromGraphQL
                         } else {
                             let store: ForeverStore = globalPresentableStoreContainer.get()
                             store.send(.fetch)
@@ -40,8 +40,9 @@ class ChangeCodeViewModel: ObservableObject {
                         continuation.resume()
                     }
             }
-            if let error {
-                throw error
+            if let errorMessage {
+//                throw Error(errorMessage)
+                // TODO throw error
             }
         }
     }

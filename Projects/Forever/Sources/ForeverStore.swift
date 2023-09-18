@@ -46,45 +46,38 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
     ) -> FiniteSignal<ForeverAction>? {
         switch action {
         case .fetch:
-            
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-//                let query = self.octopus.client
-//                    .fetch(
-//                        query: OctopusGraphQL.MemberReferralInformationQuery()
-////                        cachePolicy: .fetchIgnoringCacheData
-//                    )
                 let query = OctopusGraphQL.MemberReferralInformationQuery()
                 disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { data in
-//                query.onValue({ data in
                     let grossAmount = data.currentMember.insuranceCost.monthlyGross
                     let grossAmountMonetary = MonetaryAmount(
-                        amount: grossAmount.fragments.monetaryAmountFragment?.amount ?? "",
-                        currency: grossAmount.fragments.monetaryAmountFragment?.currency ?? ""
+                        amount: grossAmount.fragments.monetaryAmountFragment.amount.description,
+                        currency: grossAmount.fragments.monetaryAmountFragment.currencyCode.rawValue
                     )
                     
                     let netAmount = data.currentMember.insuranceCost.monthlyNet
                     let netAmountMonetary = MonetaryAmount(
-                        amount: netAmount.fragments.monetaryAmountFragment?.amount ?? "",
-                        currency: netAmount.fragments.monetaryAmountFragment?.amount ?? ""
+                        amount: netAmount.fragments.monetaryAmountFragment.amount.description,
+                        currency: netAmount.fragments.monetaryAmountFragment.currencyCode.rawValue
                     )
                     let monthlyDiscount = data.currentMember.insuranceCost.monthlyDiscount
                     let monthlyDiscountAmountMonetary = MonetaryAmount(
-                        amount: monthlyDiscount.fragments.monetaryAmountFragment?.amount ?? "",
-                        currency: monthlyDiscount.fragments.monetaryAmountFragment?.amount ?? ""
+                        amount: monthlyDiscount.fragments.monetaryAmountFragment.amount.description,
+                        currency: monthlyDiscount.fragments.monetaryAmountFragment.currencyCode.rawValue
                     )
                     
                     let discountCode = data.currentMember.referralInformation.code
                     let monthlyDiscountExcludingReferrals = data.currentMember.referralInformation.monthlyDiscountExcludingReferrals
                     let monthlyDiscountExcludingReferralsMonetary = MonetaryAmount(
-                        amount: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment?.amount ?? "",
-                        currency: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment?.amount ?? ""
+                        amount: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment.amount.description,
+                        currency: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment.currencyCode.rawValue
                     )
                     let monthlyDiscountPerReferral = data.currentMember.referralInformation.monthlyDiscountPerReferral
                     let monthlyDiscountPerReferralMonetary = MonetaryAmount(
-                        amount: monthlyDiscountPerReferral.fragments.monetaryAmountFragment?.amount ?? "",
-                        currency: monthlyDiscountPerReferral.fragments.monetaryAmountFragment?.amount ?? ""
+                        amount: monthlyDiscountPerReferral.fragments.monetaryAmountFragment.amount.description,
+                        currency: monthlyDiscountPerReferral.fragments.monetaryAmountFragment.currencyCode.rawValue
                     )
                     
                     let referrals: [Referral] = data.currentMember.referralInformation.referrals.map { referral in
@@ -92,38 +85,37 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
                         if status == .pending {
                             return Referral(
                                 name: referral.name,
-                                activeDiscounts: MonetaryAmount(
-                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
+                                activeDiscount: MonetaryAmount(
+                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment.amount.description ?? "",
+                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment.currencyCode.rawValue ?? ""),
                                 status: .pending
                             )
                         } else if status == .active {
                             return Referral(
                                 name: referral.name,
-                                activeDiscounts: MonetaryAmount(
-                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
+                                activeDiscount: MonetaryAmount(
+                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment.amount.description ?? "",
+                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment.currencyCode.rawValue ?? ""),
                                 status: .active
                             )
                         } else if status == .terminated {
                             return Referral(
                                 name: referral.name,
-                                activeDiscounts: MonetaryAmount(
-                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
+                                activeDiscount: MonetaryAmount(
+                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment.amount.description ?? "",
+                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment.currencyCode.rawValue ?? ""),
                                 status: .pending
                             )
                         } else {
                             return Referral(
                                 name: referral.name,
-                                activeDiscounts: MonetaryAmount(
-                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
+                                activeDiscount: MonetaryAmount(
+                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment.amount.description ?? "",
+                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment.currencyCode.rawValue ?? ""),
                                 status: .pending
                             )
                         }
                     }
-                    
                     callback(.value(.setForeverData(
                         data: ForeverData(
                             grossAmount: grossAmountMonetary,
@@ -137,217 +129,17 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
 
                 }
                 .onError({ error in
-                    print(error)
+                    /* TODO */
+//                    switch error {
+//                    case ResponseCodeInterceptor.ResponseCodeError.invalidResponseCode(let response, let rawData):
+//                        print(String(data: rawData!, encoding: .utf8))
+//                default:
+//                    break
+//                    }
+//                    print(error)
                 })
                 return disposeBag
             }
-            //            return giraffe.client.fetch(query: GiraffeGraphQL.ForeverQuery())
-//            return octopus.client.fetch(query: OctopusGraphQL.MemberReferralInformationQuery())
-//                .valueThenEndSignal
-//                .map { data in
-//                    //                    let grossAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
-//                    let grossAmount = data.currentMember.insuranceCost.monthlyGross
-//                    let grossAmountMonetary = MonetaryAmount(
-//                        amount: grossAmount.fragments.monetaryAmountFragment?.amount ?? "",
-//                        currency: grossAmount.fragments.monetaryAmountFragment?.currency ?? ""
-//                    )
-//
-//                    //                    let netAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyNet
-//                    //                    let netAmountMonetary = MonetaryAmount(
-//                    //                        amount: netAmount?.amount ?? "",
-//                    //                        currency: netAmount?.currency ?? ""
-//                    //                    )
-//                    let netAmount = data.currentMember.insuranceCost.monthlyNet
-//                    let netAmountMonetary = MonetaryAmount(
-//                        amount: netAmount.fragments.monetaryAmountFragment?.amount ?? "",
-//                        currency: netAmount.fragments.monetaryAmountFragment?.amount ?? ""
-//                    )
-//                    let monthlyDiscount = data.currentMember.insuranceCost.monthlyDiscount
-//                    let monthlyDiscountAmountMonetary = MonetaryAmount(
-//                        amount: monthlyDiscount.fragments.monetaryAmountFragment?.amount ?? "",
-//                        currency: monthlyDiscount.fragments.monetaryAmountFragment?.amount ?? ""
-//                    )
-//
-//                    let discountCode = data.currentMember.referralInformation.code
-//                    let monthlyDiscountExcludingReferrals = data.currentMember.referralInformation.monthlyDiscountExcludingReferrals
-//                    let monthlyDiscountExcludingReferralsMonetary = MonetaryAmount(
-//                        amount: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment?.amount ?? "",
-//                        currency: monthlyDiscountExcludingReferrals.fragments.monetaryAmountFragment?.amount ?? ""
-//                    )
-//                    let monthlyDiscountPerReferral = data.currentMember.referralInformation.monthlyDiscountPerReferral
-//                    let monthlyDiscountPerReferralMonetary = MonetaryAmount(
-//                        amount: monthlyDiscountPerReferral.fragments.monetaryAmountFragment?.amount ?? "",
-//                        currency: monthlyDiscountPerReferral.fragments.monetaryAmountFragment?.amount ?? ""
-//                    )
-//
-//                    //                    let potentialDiscountAmount = data.referralInformation.campaign.incentive?
-//                    //                        .asMonthlyCostDeduction?
-//                    //                        .amount
-//                    //                    let potentialDiscountAmountMonetary = MonetaryAmount(
-//                    //                        amount: potentialDiscountAmount?.amount ?? "",
-//                    //                        currency: potentialDiscountAmount?.currency ?? ""
-//                    //                    )
-//
-//                    //                    let discountCode = data.referralInformation.campaign.code
-//
-//                    //                    var invitations = data.currentMember.referralInformation.referrals
-//
-//                    //                    var invitations = data.referralInformation.invitations
-//                    //                        .map { invitation -> ForeverInvitation? in
-//                    //                            if let inProgress = invitation.asInProgressReferral {
-//                    //                                return .init(
-//                    //                                    name: inProgress.name ?? "",
-//                    //                                    state: .pending,
-//                    //                                    discount: nil,
-//                    //                                    invitedByOther: false
-//                    //                                )
-//                    //                            } else if let active = invitation.asActiveReferral {
-//                    //                                let discount = active.discount
-//                    //                                return .init(
-//                    //                                    name: active.name ?? "",
-//                    //                                    state: .active,
-//                    //                                    discount: MonetaryAmount(
-//                    //                                        amount: discount.amount,
-//                    //                                        currency: discount.currency
-//                    //                                    ),
-//                    //                                    invitedByOther: false
-//                    //                                )
-//                    //                            } else if let terminated = invitation.asTerminatedReferral {
-//                    //                                return .init(
-//                    //                                    name: terminated.name ?? "",
-//                    //                                    state: .terminated,
-//                    //                                    discount: nil,
-//                    //                                    invitedByOther: false
-//                    //                                )
-//                    //                            }
-//                    //
-//                    //                            return nil
-//                    //                        }
-//                    //                        .compactMap { $0 }
-//
-//                    //                    let referredBy = data.referralInformation.referredBy
-//
-//                    let referrals: [Referral] = data.currentMember.referralInformation.referrals.map { referral in
-//                        let status = data.currentMember.referralInformation.referrals.first?.status
-//                        if status == .pending {
-//                            return Referral(
-//                                name: referral.name,
-//                                activeDiscounts: MonetaryAmount(
-//                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-//                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
-//                                status: .pending
-//                            )
-//                        } else if status == .active {
-//                            return Referral(
-//                                name: referral.name,
-//                                activeDiscounts: MonetaryAmount(
-//                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-//                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
-//                                status: .active
-//                            )
-//                        } else if status == .terminated {
-//                            return Referral(
-//                                name: referral.name,
-//                                activeDiscounts: MonetaryAmount(
-//                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-//                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
-//                                status: .pending
-//                            )
-//                        } else {
-//                            return Referral(
-//                                name: referral.name,
-//                                activeDiscounts: MonetaryAmount(
-//                                    amount: referral.activeDiscount?.fragments.monetaryAmountFragment?.amount ?? "",
-//                                    currency: referral.activeDiscount?.fragments.monetaryAmountFragment?.currency ?? ""),
-//                                status: .pending
-//                            )
-//                        }
-//                    }
-                    
-                    //                    if let inProgress = referredBy?.asInProgressReferral {
-                    //                        invitations.insert(
-                    //                            .init(
-                    //                                name: inProgress.name ?? "",
-                    //                                state: .pending,
-                    //                                discount: nil,
-                    //                                invitedByOther: true
-                    //                            ),
-                    //                            at: 0
-                    //                        )
-                    //                    } else if let active = referredBy?.asActiveReferral {
-                    //                        let discount = active.discount
-                    //                        invitations.insert(
-                    //                            .init(
-                    //                                name: active.name ?? "",
-                    //                                state: .active,
-                    //                                discount: MonetaryAmount(
-                    //                                    amount: discount.amount,
-                    //                                    currency: discount.currency
-                    //                                ),
-                    //                                invitedByOther: true
-                    //                            ),
-                    //                            at: 0
-                    //                        )
-                    //                    } else if let terminated = referredBy?.asTerminatedReferral {
-                    //                        invitations.insert(
-                    //                            .init(
-                    //                                name: terminated.name ?? "",
-                    //                                state: .terminated,
-                    //                                discount: nil,
-                    //                                invitedByOther: true
-                    //                            ),
-                    //                            at: 0
-                    //                        )
-                    //                    }
-                    
-                    //                    let otherDiscounts: MonetaryAmount? = {
-                    //
-                    //                        let referalDiscounts = invitations.compactMap({ $0.discount?.floatAmount })
-                    //                            .reduce(0) { $0 + $1 }
-                    ////                        let gross = grossAmountMonetary.floatAmount
-                    //                        let gross = grossAmount.amount
-                    ////                        let net = netAmountMonetary.floatAmount
-                    //                        let net = netAmount.amount
-                    //                        if gross - referalDiscounts > net {
-                    ////                            return .init(amount: gross - net - referalDiscounts, currency: grossAmountMonetary.currency)
-                    //                            return .init(amount: gross - net - referalDiscounts, currency: grossAmount.currency)
-                    //                        }
-                    //                        return nil
-                    //                    }()
-                    
-                    //                    return .setForeverData(
-                    //                        data: .init(
-                    //                            grossAmount: grossAmountMonetary,
-                    //                            netAmount: netAmountMonetary,
-                    //                            potentialDiscountAmount: potentialDiscountAmountMonetary,
-                    //                            otherDiscounts: otherDiscounts,
-                    //                            discountCode: discountCode,
-                    //                            invitations: invitations
-                    //                        )
-                    //                    )
-//                    return .setForeverData(
-//                        data: ForeverData(
-//                            grossAmount: grossAmountMonetary,
-//                            netAmount: netAmountMonetary,
-//                            otherDiscounts: monthlyDiscountExcludingReferralsMonetary,
-//                            discountCode: discountCode,
-//                            monthlyDiscount: monthlyDiscountAmountMonetary,
-//                            referrals: referrals,
-//                            monthlyDiscountPerReferral: monthlyDiscountPerReferralMonetary
-//                        )
-//                    )
-                    //                    return .setNewForeverData(
-                    //                        data: .init(
-                    //                            grossAmount: grossAmount,
-                    //                            netAmount: netAmount,
-                    ////                            monthlyDiscount: monthlyDiscount,
-                    ////                            potentialDiscountAmount: potentialDiscountAmountMonetary,
-                    ////                            otherDiscounts: otherDiscounts,
-                    //                            discountCode: discountCode
-                    ////                            invitations: invitations
-                    //                        )
-                    //                    )
-//                }
         default:
             break
         }
