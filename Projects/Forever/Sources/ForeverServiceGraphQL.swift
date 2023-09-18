@@ -154,10 +154,13 @@ public class ForeverServiceGraphQL: ForeverService {
                 return .init(
                     grossAmount: grossAmountMonetary,
                     netAmount: netAmountMonetary,
-                    potentialDiscountAmount: potentialDiscountAmountMonetary,
+//                    potentialDiscountAmount: potentialDiscountAmountMonetary,
                     otherDiscounts: otherDiscounts,
                     discountCode: discountCode,
-                    invitations: invitations
+                    monthlyDiscount: netAmountMonetary, //ändra
+                    referrals: [], //ändra
+                    monthlyDiscountPerReferral: netAmountMonetary //ändra
+//                    invitations: invitations
                 )
             }
             .readable(initial: nil)

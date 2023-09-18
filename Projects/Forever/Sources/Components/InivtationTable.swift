@@ -57,20 +57,20 @@ struct InvitationTable: View {
             }
         ) { foreverData in
             if let foreverData {
-                if !foreverData.invitations.isEmpty {
-                    hSection {
-                        hRow {
-                            hText(L10n.foreverReferralListLabel)
-                        }
-                        ForEach(foreverData.invitations, id: \.hashValue) { row in
-                            InvitationRow(row: row)
-                        }
-                        getOtherDiscountsRow(foreverData)
-                        getTotalRow(foreverData)
-                    }
-                    .sectionContainerStyle(.transparent)
-                    .padding(.horizontal, -16)
-                }
+//                if !foreverData.invitations.isEmpty {
+//                    hSection {
+//                        hRow {
+//                            hText(L10n.foreverReferralListLabel)
+//                        }
+//                        ForEach(foreverData.invitations, id: \.hashValue) { row in
+//                            InvitationRow(row: row)
+//                        }
+//                        getOtherDiscountsRow(foreverData)
+//                        getTotalRow(foreverData)
+//                    }
+//                    .sectionContainerStyle(.transparent)
+//                    .padding(.horizontal, -16)
+//                }
             }
         }
     }
@@ -161,15 +161,18 @@ struct InvitationTable_Previews: PreviewProvider {
                         data: .init(
                             grossAmount: .sek(200),
                             netAmount: .sek(160),
-                            potentialDiscountAmount: .sek(50),
+//                            potentialDiscountAmount: .sek(50),
                             otherDiscounts: .sek(20),
                             discountCode: "CODE",
-                            invitations: [
-                                .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
-                                .init(name: "Second", state: .active, invitedByOther: false),
-                                .init(name: "Third", state: .terminated, invitedByOther: false),
-                                .init(name: "Fourth", state: .pending, invitedByOther: false),
-                            ]
+                            monthlyDiscount: .sek(20),
+                            referrals: [],
+                            monthlyDiscountPerReferral: .sek(10)
+//                            invitations: [
+//                                .init(name: "First", state: .active, discount: .sek(20), invitedByOther: true),
+//                                .init(name: "Second", state: .active, invitedByOther: false),
+//                                .init(name: "Third", state: .terminated, invitedByOther: false),
+//                                .init(name: "Fourth", state: .pending, invitedByOther: false),
+//                            ]
                         )
                     )
                 )

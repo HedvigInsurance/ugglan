@@ -40,10 +40,11 @@ public struct ForeverView: View {
                 PresentableStoreLens(
                     ForeverStore.self,
                     getter: { state in
-                        state.foreverData?.potentialDiscountAmount
+//                        state.foreverData?.potentialDiscountAmount
+                        state.foreverData?.monthlyDiscount ?? .init(amount: 10, currency: "sek")
                     }
                 ) { discountAmount in
-                    if let discountAmount = discountAmount {
+//                    if let discountAmount = discountAmount {
 
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
@@ -51,7 +52,7 @@ public struct ForeverView: View {
                             Image(uiImage: hCoreUIAssets.infoIcon.image)
                                 .foregroundColor(hTextColorNew.primary)
                         }
-                    }
+//                    }
                 }
         )
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .forever))

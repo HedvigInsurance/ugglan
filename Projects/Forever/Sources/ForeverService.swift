@@ -32,25 +32,42 @@ public struct ForeverData: Codable, Equatable {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,
-        potentialDiscountAmount: MonetaryAmount,
+//        potentialDiscountAmount: MonetaryAmount,
         otherDiscounts: MonetaryAmount?,
         discountCode: String,
-        invitations: [ForeverInvitation]
+//        invitations: [ForeverInvitation]
+        
+        monthlyDiscount: MonetaryAmount,
+        referrals: [Referral],
+//        monthlyDiscountExcludingReferrals: MonetaryAmount,// == otherDiscount
+        monthlyDiscountPerReferral: MonetaryAmount
+//        discountCode: String
+        
+        
     ) {
         self.grossAmount = grossAmount
         self.netAmount = netAmount
         self.otherDiscounts = otherDiscounts
         self.discountCode = discountCode
-        self.potentialDiscountAmount = potentialDiscountAmount
-        self.invitations = invitations
+//        self.potentialDiscountAmount = potentialDiscountAmount
+//        self.invitations = invitations
+        
+        self.monthlyDiscount = monthlyDiscount
+        self.monthlyDiscountPerReferral = monthlyDiscountPerReferral
+//        self.otherDiscounts = monthlyDiscountExcludingReferrals
+        self.referrals = referrals
+//        self.discountCode = discountCode
     }
 
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
-    let potentialDiscountAmount: MonetaryAmount
+    let monthlyDiscount: MonetaryAmount
+//    let potentialDiscountAmount: MonetaryAmount
     let otherDiscounts: MonetaryAmount?
     var discountCode: String
-    let invitations: [ForeverInvitation]
+//    let invitations: [ForeverInvitation]
+    let referrals: [Referral]
+    let monthlyDiscountPerReferral: MonetaryAmount
 
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
 }
@@ -90,53 +107,73 @@ public protocol ForeverService {
 
 extension ForeverData {
     static func mock() -> ForeverData {
+//        let foreverData = ForeverData(
+//            grossAmount: .sek(100),
+//            netAmount: .sek(60),
+//            potentialDiscountAmount: .sek(10),
+//            otherDiscounts: .sek(20),
+//            discountCode: "CODE",
+//            invitations: [
+//                .init(name: "First", state: .active, discount: .sek(10), invitedByOther: false),
+//                .init(name: "Second", state: .pending, invitedByOther: false),
+//                .init(name: "Third", state: .terminated, invitedByOther: false),
+//                .init(name: "Forth", state: .active, discount: .sek(10), invitedByOther: true),
+//                .init(name: "Fifth", state: .pending, invitedByOther: true),
+//                .init(name: "Sixth", state: .terminated, invitedByOther: true),
+//            ]
+//        )
         let foreverData = ForeverData(
             grossAmount: .sek(100),
             netAmount: .sek(60),
-            potentialDiscountAmount: .sek(10),
-            otherDiscounts: .sek(20),
+            otherDiscounts: .sek(10),
+            //            potentialDiscountAmount: .sek(10),
             discountCode: "CODE",
-            invitations: [
-                .init(name: "First", state: .active, discount: .sek(10), invitedByOther: false),
-                .init(name: "Second", state: .pending, invitedByOther: false),
-                .init(name: "Third", state: .terminated, invitedByOther: false),
-                .init(name: "Forth", state: .active, discount: .sek(10), invitedByOther: true),
-                .init(name: "Fifth", state: .pending, invitedByOther: true),
-                .init(name: "Sixth", state: .terminated, invitedByOther: true),
-            ]
+            monthlyDiscount: .sek(20),
+            referrals: [],
+            monthlyDiscountPerReferral: .sek(10)
+//            invitations: [
+//                .init(name: "First", state: .active, discount: .sek(10), invitedByOther: false),
+//                .init(name: "Second", state: .pending, invitedByOther: false),
+//                .init(name: "Third", state: .terminated, invitedByOther: false),
+//                .init(name: "Forth", state: .active, discount: .sek(10), invitedByOther: true),
+//                .init(name: "Fifth", state: .pending, invitedByOther: true),
+//                .init(name: "Sixth", state: .terminated, invitedByOther: true),
+//            ]
         )
         return foreverData
     }
 }
 
-public struct ForeverDataNew: Codable, Equatable {
-    
-    public init(
-        grossAmount: MonetaryAmount,
-        netAmount: MonetaryAmount,
-        monthlyDiscount: MonetaryAmount,
-        referrals: [Referral],
-        monthlyDiscountExcludingReferrals: MonetaryAmount,// == otherDiscount
-        monthlyDiscountPerReferral: MonetaryAmount,
-        discountCode: String
-    ) {
-        self.grossAmount = grossAmount
-        self.netAmount = netAmount
-        self.monthlyDiscount = monthlyDiscount
-        self.otherDiscounts = monthlyDiscountExcludingReferrals
-        self.referrals = referrals
-        self.discountCode = discountCode
-    }
-
-    let grossAmount: MonetaryAmount
-    let netAmount: MonetaryAmount
-    let monthlyDiscount: MonetaryAmount
-    let otherDiscounts: MonetaryAmount
-    let referrals: [Referral]
-    var discountCode: String
-
-    public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
-}
+//public struct ForeverDataNew: Codable, Equatable {
+//
+//    public init(
+//        grossAmount: MonetaryAmount,
+//        netAmount: MonetaryAmount,
+//        monthlyDiscount: MonetaryAmount,
+//        referrals: [Referral],
+//        monthlyDiscountExcludingReferrals: MonetaryAmount,// == otherDiscount
+//        monthlyDiscountPerReferral: MonetaryAmount,
+//        discountCode: String
+//    ) {
+//        self.grossAmount = grossAmount
+//        self.netAmount = netAmount
+//        self.monthlyDiscount = monthlyDiscount
+//        self.otherDiscounts = monthlyDiscountExcludingReferrals
+//        self.referrals = referrals
+//        self.discountCode = discountCode
+//        self.monthlyDiscountPerReferral = monthlyDiscountPerReferral
+//    }
+//
+//    let grossAmount: MonetaryAmount
+//    let netAmount: MonetaryAmount
+//    let monthlyDiscount: MonetaryAmount
+//    let otherDiscounts: MonetaryAmount
+//    let referrals: [Referral]
+//    let discountCode: String
+//    let monthlyDiscountPerReferral: MonetaryAmount
+//
+//    public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
+//}
 
 public struct Referral: Hashable, Codable {
     let name: String
