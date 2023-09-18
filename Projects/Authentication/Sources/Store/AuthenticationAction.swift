@@ -22,6 +22,12 @@ public enum BankIDLoginSwedenResult: ActionProtocol {
     case close
 }
 
+public enum BankIDLoginQRResult: ActionProtocol {
+    case loggedIn
+    case emailLogin
+    case close
+}
+
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
@@ -61,5 +67,5 @@ public enum AuthenticationAction: ActionProtocol {
     case seBankIDStateAction(action: SEBankIDStateAction)
     case zignsecStateAction(action: ZignsecStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
-    case bankIdSwedenResultAction(action: BankIDLoginSwedenResult)
+    case bankIdQrResultAction(action: BankIDLoginQRResult)
 }

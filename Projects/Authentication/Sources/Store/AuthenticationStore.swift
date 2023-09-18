@@ -45,7 +45,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             )
         )
     }()
-
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
             self.networkAuthRepository
@@ -178,6 +177,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
+            send(.bankIdQrResultAction(action: .loggedIn))
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
 
@@ -226,12 +226,14 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             error: error,
                             attributes: [:]
                         )
+                        callbacker(.loginFailure(message: nil))
                     } else if let error {
                         log.error(
                             "Got Error when signing in with BankId",
                             error: error,
                             attributes: [:]
                         )
+                        callbacker(.loginFailure(message: nil))
                     }
                 }
 
@@ -350,7 +352,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 return bag
             }
         }
-
         return nil
     }
 
@@ -435,6 +436,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.zignsecState.credentialError = false
             newState.loginHasFailed = false
         case .loginFailure:
+            newState.seBankIDState = SEBankIDState()
             newState.loginHasFailed = true
         default:
             break
