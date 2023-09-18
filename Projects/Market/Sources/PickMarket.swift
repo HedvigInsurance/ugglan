@@ -7,14 +7,15 @@ public struct PickMarket: View {
     @PresentableStore var store: MarketStore
     @State var code: String? = ""
     @State var selectedMarket: Market?
+    
     let onSave: (Market) -> Void
-
+    
     public init(
         onSave: @escaping (Market) -> Void
     ) {
         self.onSave = onSave
     }
-
+    
     public var body: some View {
         hForm {
             hSection {
@@ -56,9 +57,10 @@ public struct PickMarket: View {
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
+
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.top, 8)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }
@@ -84,6 +86,5 @@ extension PickMarket {
                 PopJourney()
             }
         }
-        .configureTitle(L10n.MarketLanguageScreen.marketLabel)
     }
 }

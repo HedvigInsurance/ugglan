@@ -31,7 +31,7 @@ public struct NotLoggedInView: View {
                         }
                     ) { market in
                         Button {
-
+                            store.send(.presentMarketPicker)
                         } label: {
                             Image(uiImage: market.icon)
                                 .padding(8)
