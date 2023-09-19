@@ -11,9 +11,9 @@ public struct MarketState: StateProtocol {
 
 public enum MarketAction: ActionProtocol {
     case selectMarket(market: Market)
+    case selectLanguage(language: String)
     case dismissPicker
-    case presentMarketPicker
-    case presentLanguagePicker(currentMarket: Market)
+    case presentLanguageAndMarketPicker
     case loginButtonTapped
     case onboard
 }
@@ -26,6 +26,10 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         switch action {
         case let .selectMarket(market):
             Localization.Locale.currentLocale = market.preferredLanguage
+        case let .selectLanguage(language):
+            if let language =  Localization.Locale(rawValue: language) {
+                Localization.Locale.currentLocale = language
+            }
         default:
             break
         }

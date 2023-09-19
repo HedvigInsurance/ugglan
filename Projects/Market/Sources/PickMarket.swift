@@ -57,7 +57,7 @@ public struct PickMarket: View {
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
-
+                    
                 }
             }
             .padding(.top, 8)

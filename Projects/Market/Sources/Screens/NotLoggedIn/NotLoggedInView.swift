@@ -6,13 +6,13 @@ import hCoreUI
 public struct NotLoggedInView: View {
     @ObservedObject var vm = NotLoggedViewModel()
     @PresentableStore var store: MarketStore
-
+    
     public init(
         onLoad: @escaping () -> Void
     ) {
         self.vm.onLoad = onLoad
     }
-
+    
     @ViewBuilder
     var marketAndLanguage: some View {
         ZStack {
@@ -31,14 +31,14 @@ public struct NotLoggedInView: View {
                         }
                     ) { market in
                         Button {
-                            store.send(.presentMarketPicker)
+                            store.send(.presentLanguageAndMarketPicker)
                         } label: {
                             Image(uiImage: market.icon)
                                 .padding(8)
                         }
-
+                        
                     }
-
+                    
                 }
                 Spacer()
                 VStack {
@@ -47,18 +47,18 @@ public struct NotLoggedInView: View {
                     } content: {
                         hText(L10n.bankidLoginTitle)
                     }
-
+                    
                     hButton.LargeButton(type: .ghost) {
                         store.send(.onboard)
                     } content: {
                         hText(L10n.marketingGetHedvig)
                     }
-
+                    
                 }
             }
         }
     }
-
+    
     public var body: some View {
         VStack {
             switch vm.viewState {
@@ -74,15 +74,15 @@ public struct NotLoggedInView: View {
         .background(
             LoginVideoView().ignoresSafeArea().animation(nil)
         )
-
+        
     }
-
+    
 }
 
 struct NotLoggedInView_Previews: PreviewProvider {
     static var previews: some View {
         NotLoggedInView {
-
+            
         }
     }
 }

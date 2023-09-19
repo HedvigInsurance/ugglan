@@ -2,6 +2,8 @@ import Foundation
 import Market
 import Presentation
 import hCore
+import Flow
+import SwiftUI
 
 extension AppJourney {
     static var notLoggedIn: some JourneyPresentation {
@@ -16,19 +18,10 @@ extension AppJourney {
                 AppJourney.onboarding()
             } else if case .loginButtonTapped = action {
                 AppJourney.login
-            } else if case .presentMarketPicker = action {
-                LanguageAndMarketPickerView().journey { result in
-                    ContinueJourney()
-                }
-                .configureTitle("Preferences")
-            } else if case .presentLanguagePicker = action {
-                PickLanguage(
-                    onSave: { selectedLocale in
-                        Localization.Locale.currentLocale = selectedLocale
-                    },
-                    onCancel: {}
-                )
-                .journey
+            }
+            else if case .presentLanguageAndMarketPicker = action {
+                LanguageAndMarketPickerView().journey()
+                    .configureTitle(L10n.loginMarketPickerPreferences)
             }
         }
     }

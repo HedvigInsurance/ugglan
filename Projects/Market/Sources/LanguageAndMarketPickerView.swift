@@ -12,9 +12,9 @@ enum LanguageAndMarketPicker: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .market:
-            return "Country"
+            return L10n.MarketPickerModal.title
         case .language:
-            return "Language"
+            return L10n.LanguagePickerModal.title
         }
     }
     
@@ -62,9 +62,17 @@ public struct LanguageAndMarketPickerView: View {
             onSave: { selectedMarket in
                 let store: MarketStore = globalPresentableStoreContainer.get()
                 store.send(.selectMarket(market: selectedMarket))
+                store.send(.dismissPicker)
             }
         )
-        languageView = PickLanguage(currentMarket: .sweden)
+        languageView = PickLanguage(
+            onSave: { selectedLanguage in
+                let store: MarketStore = globalPresentableStoreContainer.get()
+                store.send(.selectLanguage(language: selectedLanguage))
+            }, onCancel: {
+                let store: MarketStore = globalPresentableStoreContainer.get()
+                store.send(.dismissPicker)
+            })
         
         let font = Fonts.fontFor(style: .standardSmall)
         UISegmentedControl.appearance()
@@ -126,19 +134,16 @@ public struct LanguageAndMarketPickerView: View {
 }
 
 extension LanguageAndMarketPickerView {
-    public func journey<ResultJourney: JourneyPresentation>(
-        @JourneyBuilder resultJourney: @escaping (_ result: MarketsResult) -> ResultJourney
-    ) -> some JourneyPresentation {
+    public func journey() -> some JourneyPresentation {
         HostingJourney(
             MarketStore.self,
             rootView: self.environmentObject(TabControllerContextMarket()),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar]
         ) { action in
-                ContinueJourney()
+            if case .dismissPicker = action  {
+                PopJourney()
+            }
         }
     }
-}
-
-public enum MarketsResult {
 }
