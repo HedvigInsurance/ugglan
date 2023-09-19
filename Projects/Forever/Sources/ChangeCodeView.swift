@@ -14,6 +14,8 @@ struct ChangeCodeView: View {
 class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     let disposeBag = DisposeBag()
+    var errorMessage: String?
+    
     init() {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
@@ -41,12 +43,13 @@ class ChangeCodeViewModel: ObservableObject {
                     }
             }
             if let errorMessage {
-//                throw Error(errorMessage)
-                // TODO throw error
+                throw errorMessage
             }
         }
     }
 }
+
+extension String: Error {}
 
 extension ChangeCodeView {
     static var journey: some JourneyPresentation {
