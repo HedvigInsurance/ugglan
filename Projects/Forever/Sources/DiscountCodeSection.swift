@@ -36,8 +36,9 @@ struct DiscountCodeSectionView: View {
                                 store.send(
                                     .showShareSheetOnly(
                                         code: code,
-//                                        discount: store.state.foreverData?.potentialDiscountAmount.formattedAmount ?? ""
-                                        discount: store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount ?? ""
+                                        //                                        discount: store.state.foreverData?.potentialDiscountAmount.formattedAmount ?? ""
+                                        discount: store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
+                                            ?? ""
                                     )
                                 )
                             } content: {

@@ -17,7 +17,7 @@ class ChangeCodeViewModel: ObservableObject {
     let disposeBag = DisposeBag()
     var errorMessage: String?
     @Inject var octopus: hOctopus
-    
+
     init() {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
@@ -28,7 +28,7 @@ class ChangeCodeViewModel: ObservableObject {
                 store?.send(.dismissChangeCodeDetail)
             }
         )
-        
+
         inputVm.onSave = { [weak self] text in
             var errorMessage: String?
             await withCheckedContinuation { continuation in
@@ -37,8 +37,7 @@ class ChangeCodeViewModel: ObservableObject {
                     .onValue { value in
                         if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
                             errorMessage = errorFromGraphQL
-                        }
-                        else {
+                        } else {
                             let store: ForeverStore = globalPresentableStoreContainer.get()
                             store.send(.fetch)
                             store.send(.showChangeCodeSuccess)

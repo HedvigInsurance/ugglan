@@ -15,7 +15,7 @@ extension Referral {
             hSignalColorNew.redElement
         }
     }
-    
+
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
@@ -24,7 +24,7 @@ extension Referral {
             hTextColorNew.tertiary
         }
     }
-    
+
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.status {
         case .active, .pending:
@@ -33,7 +33,7 @@ extension Referral {
             hTextColorNew.tertiary
         }
     }
-    
+
     var discountLabelText: String {
         switch self.status {
         case .active:
@@ -48,7 +48,7 @@ extension Referral {
 
 struct InvitationTable: View {
     @PresentableStore var store: ForeverStore
-    
+
     var body: some View {
         PresentableStoreLens(
             ForeverStore.self,
@@ -75,7 +75,7 @@ struct InvitationTable: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func getOtherDiscountsRow(_ foreverData: ForeverData) -> some View {
         if let otherDiscounts = foreverData.otherDiscounts {
@@ -90,7 +90,7 @@ struct InvitationTable: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func getTotalRow(_ foreverData: ForeverData) -> some View {
         if foreverData.grossAmount.amount != foreverData.netAmount.amount {
@@ -107,7 +107,7 @@ struct InvitationTable: View {
             .hWithoutDivider
         }
     }
-    
+
     @ViewBuilder
     private func getGrossField(_ text: String) -> some View {
         if #available(iOS 15.0, *) {
@@ -118,7 +118,7 @@ struct InvitationTable: View {
             hText(text).foregroundColor(hTextColorNew.secondary)
         }
     }
-    
+
     @available(iOS 15, *)
     private func attributedString(_ text: String) -> AttributedString {
         let attributes = AttributeContainer([NSAttributedString.Key.strikethroughStyle: 1])
@@ -129,7 +129,7 @@ struct InvitationTable: View {
 
 struct InvitationRow: View {
     let row: Referral
-    
+
     var body: some View {
         hRow {
             HStack(spacing: 8) {
@@ -151,7 +151,7 @@ struct InvitationRow: View {
 
 struct InvitationTable_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
-    
+
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return InvitationTable()
@@ -167,7 +167,7 @@ struct InvitationTable_Previews: PreviewProvider {
                             referrals: [
                                 .init(name: "First", activeDiscount: .sek(10), status: .active),
                                 .init(name: "Second", activeDiscount: .sek(10), status: .pending),
-                                .init(name: "Third", activeDiscount: .sek(10), status: .terminated)
+                                .init(name: "Third", activeDiscount: .sek(10), status: .terminated),
                             ],
                             monthlyDiscountPerReferral: .sek(10)
                         )
@@ -188,21 +188,21 @@ struct InvitationRow_Previews: PreviewProvider {
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
     )
-    
+
     static var mockRow3: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .pending
     )
-    
+
     static var mockRow4: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .terminated
     )
-    
+
     static var previews: some View {
-        
+
         Localization.Locale.currentLocale = .en_SE
         return hSection {
             InvitationRow(row: mockRow)

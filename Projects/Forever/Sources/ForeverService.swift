@@ -7,7 +7,7 @@ public struct Referral: Hashable, Codable {
     let name: String
     let activeDiscount: MonetaryAmount?
     let status: State
-    
+
     public init(
         name: String,
         activeDiscount: MonetaryAmount? = nil,
@@ -17,7 +17,7 @@ public struct Referral: Hashable, Codable {
         self.activeDiscount = activeDiscount
         self.status = status
     }
-    
+
     public enum State: String, Codable {
         case terminated
         case pending
@@ -43,7 +43,7 @@ public struct ForeverData: Codable, Equatable {
         self.monthlyDiscountPerReferral = monthlyDiscountPerReferral
         self.referrals = referrals
     }
-    
+
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
     let monthlyDiscount: MonetaryAmount
@@ -51,7 +51,7 @@ public struct ForeverData: Codable, Equatable {
     var discountCode: String
     let referrals: [Referral]
     let monthlyDiscountPerReferral: MonetaryAmount
-    
+
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
 }
 
@@ -74,7 +74,7 @@ public protocol ForeverService {
 
 extension ForeverData {
     static func mock() -> ForeverData {
-        
+
         let foreverData = ForeverData(
             grossAmount: .sek(100),
             netAmount: .sek(60),
@@ -84,7 +84,7 @@ extension ForeverData {
             referrals: [
                 .init(name: "First", activeDiscount: .sek(10), status: .active),
                 .init(name: "Second", activeDiscount: .sek(10), status: .pending),
-                .init(name: "Third", activeDiscount: .sek(10), status: .terminated)
+                .init(name: "Third", activeDiscount: .sek(10), status: .terminated),
             ],
             monthlyDiscountPerReferral: .sek(10)
         )
