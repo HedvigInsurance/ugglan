@@ -1,13 +1,13 @@
+import Flow
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct MovingFlowSelectAddress: View {
-    @PresentableStore var store: MoveFlowStore
     @StateObject var vm = MovingFlowViewModel()
 
     var body: some View {
-        //        LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
         hForm {
             hSection {
                 VStack(spacing: 4) {
@@ -22,23 +22,13 @@ struct MovingFlowSelectAddress: View {
         .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
         .hFormAttachToBottom {
             hButton.LargeButton(type: .primary) {
-                store.send(.navigation(action: .openConfirmScreen))
+                vm.continuePressed()
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 8)
         }
-        //        }
-        //        .onChange(of: vm.type) { newValue in
-        //            if newValue == nil {
-        //                UIApplication.dismissKeyboard()
-        //            } else if newValue == .accessDate {
-        //                UIApplication.dismissKeyboard()
-        //                store.send(.navigation(action: .openDatePickerScreen))
-        //            }
-        //        }
-        //        .dismissKeyboard()
     }
 
     func addressField() -> some View {
@@ -165,8 +155,10 @@ class MovingFlowViewModel: ObservableObject {
     @Published var squareArea: String = ""
     @Published var nbOfCoInsured: String = ""
     @Published var accessDate: Date?
-    @Published var selectedField: FieldType? = nil
+    @Inject var octopus: hOctopus
+    @PresentableStore var store: MoveFlowStore
 
+    var disposeBag = DisposeBag()
     func increaseNumberOfCoinsured() {
         let numberOfConisured = Int(nbOfCoInsured) ?? 0
         if numberOfConisured < 5 {
@@ -185,5 +177,32 @@ class MovingFlowViewModel: ObservableObject {
                 nbOfCoInsured = ""
             }
         }
+    }
+
+    func continuePressed() {
+        let input = OctopusGraphQL.MoveIntentRequestInput(
+            moveToAddress: .init(
+                street: address,
+                postalCode: postalCode
+            ),
+            moveFromAddressId: store.state.movingFlowModel?.currentHomeAddresses.first?.id ?? "",
+            movingDate: accessDate?.localDateString ?? "",
+            numberCoInsured: Int(nbOfCoInsured) ?? 0,
+            squareMeters: Int(squareArea) ?? 0,
+            apartment: .init(subType: .own, isStudent: false)
+        )
+
+        let mutation = OctopusGraphQL.MoveIntentRequestMutation(
+            intentId: store.state.movingFlowModel?.id ?? "",
+            input: input
+        )
+        disposeBag += octopus.client.perform(mutation: mutation)
+            .onValue({ [weak self] value in
+                let ss = ""
+                self?.store.send(.navigation(action: .openConfirmScreen))
+            })
+            .onError({ error in
+                let ssss = ""
+            })
     }
 }

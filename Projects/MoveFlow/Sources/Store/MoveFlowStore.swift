@@ -13,47 +13,41 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
         _ getState: @escaping () -> MoveFlowState,
         _ action: MoveFlowAction
     ) -> FiniteSignal<MoveFlowAction>? {
-        return nil
+        switch action {
+        case .getMoveIntent:
+            self.setLoading(for: .fetchMoveIntent)
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                let mutation = OctopusGraphQL.MoveIntentCreateMutation()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .map { data in
+                        if let moveIntent = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
+                            callback(.value(.setMoveIntent(with: .init(from: moveIntent))))
+                            self.removeLoading(for: .fetchMoveIntent)
+                        } else if let userError = data.moveIntentCreate.userError?.message {
+                            callback(.end(MovingFlowError.serverError(message: userError)))
+                        }
+                    }
+                    .onError({ error in
+                        if let error = error as? MovingFlowError {
+                            self.setError(error.localizedDescription, for: .fetchMoveIntent)
+                        } else {
+                            self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
+                        }
+
+                    })
+                return disposeBag
+            }
+        default:
+            return nil
+        }
     }
 
     public override func reduce(_ state: MoveFlowState, _ action: MoveFlowAction) -> MoveFlowState {
         var newState = state
         switch action {
-        case .setMoveIntent:
-            removeLoading(for: .fetchMoveIntent)
-            newState.movingFlowModel = MovingFlowModel(
-                id: "1",
-                minMovingDate: "2023-05-13",
-                maxMovingDate: "2024-05-13",
-                numberCoInsured: 2,
-                currentHomeAddresses: MoveAddress(
-                    id: "111",
-                    street: "Tullingebergsvägen",
-                    postalCode: "14645",
-                    city: "Tullinge",
-                    bbrId: "11",
-                    apartmentNumber: "13",
-                    floor: "1"
-                ),
-                quotes: Quotes(
-                    address: MoveAddress(
-                        id: "2",
-                        street: "Nyvägen 3",
-                        postalCode: "11111",
-                        city: "Stockholm",
-                        bbrId: "3",
-                        apartmentNumber: "3",
-                        floor: "3"
-                    ),
-                    premium: MonetaryAmount(
-                        amount: 223,
-                        currency: "SEK"
-                    ),
-                    numberCoInsured: 2,
-                    startDate: "2024-05-22",
-                    termsVersion: TermsVersion(id: "")
-                )
-            )
+        case let .setMoveIntent(model):
+            newState.movingFlowModel = model
         default:
             break
         }
@@ -62,9 +56,9 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
     }
 }
 
-public enum MoveFlowAction: ActionProtocol, Hashable {
+public enum MoveFlowAction: ActionProtocol {
     case getMoveIntent
-    case setMoveIntent
+    case setMoveIntent(with: MovingFlowModel)
     case navigation(action: MoveFlowNavigationAction)
 }
 
@@ -85,31 +79,5 @@ public enum MoveFlowLoadingAction: LoadingProtocol {
 public struct MoveFlowState: StateProtocol {
 
     public init() {}
-
-    @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
-    public var contractBundles: [ActiveContractBundle] = []
-    public var contracts: [Contract] = []
-    public var focusedCrossSell: CrossSell?
-    public var signedCrossSells: [CrossSell] = []
-    public var crossSells: [CrossSell] = []
-    var currentTerminationContext: String?
-    var terminationContractId: String? = ""
-
     var movingFlowModel: MovingFlowModel?
-
-    func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap({ $0.contracts })
-            .first(where: { contract in
-                contract.id == id
-            })
-        {
-            return inBundleContract
-        }
-
-        return
-            contracts
-            .first { contract in
-                contract.id == id
-            }
-    }
 }
