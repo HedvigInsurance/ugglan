@@ -55,30 +55,16 @@ public struct ForeverData: Codable, Equatable {
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
 }
 
-//public enum ForeverChangeCodeError: Error, LocalizedError, Equatable {
-//    case nonUnique, tooLong, tooShort
-//    case exceededMaximumUpdates
-//    case unknown
-//
-//    public var errorDescription: String? {
-//        switch self {
-//        case .nonUnique: return L10n.ReferralsChange.Code.Sheet.Error.Claimed.code
-//        case .tooLong: return L10n.ReferralsChange.Code.Sheet.Error.Max.length
-//        case .tooShort: return L10n.ReferralsChange.Code.Sheet.General.error
-//        case .exceededMaximumUpdates: return "" //L10n.ReferralsChange.Code.Sheet.Error.Change.Limit.reached(amount)
-//        case .unknown: return L10n.ReferralsChange.Code.Sheet.General.error
-//        }
-//    }
-//    var localizedDescription: String {
-//        switch self {
-//        case .nonUnique: return L10n.ReferralsChange.Code.Sheet.Error.Claimed.code
-//        case .tooLong: return L10n.ReferralsChange.Code.Sheet.Error.Max.length
-//        case .tooShort: return L10n.ReferralsChange.Code.Sheet.General.error
-//        case .exceededMaximumUpdates: return "" //L10n.ReferralsChange.Code.Sheet.Error.Change.Limit.reached(amount)
-//        case .unknown: return L10n.ReferralsChange.Code.Sheet.General.error
-//        }
-//    }
-//}
+public enum ForeverChangeCodeError: Error, LocalizedError, Equatable {
+    case errorMessage(message: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case let .errorMessage(message):
+            return message
+        }
+    }
+}
 
 public protocol ForeverService {
     var dataSignal: ReadSignal<ForeverData?> { get }

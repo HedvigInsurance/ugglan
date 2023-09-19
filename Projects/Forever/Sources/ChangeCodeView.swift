@@ -3,6 +3,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ChangeCodeView: View {
     @StateObject var vm = ChangeCodeViewModel()
@@ -15,6 +16,7 @@ class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     let disposeBag = DisposeBag()
     var errorMessage: String?
+    @Inject var octopus: hOctopus
     
     init() {
         let store: ForeverStore = globalPresentableStoreContainer.get()
@@ -26,30 +28,37 @@ class ChangeCodeViewModel: ObservableObject {
                 store?.send(.dismissChangeCodeDetail)
             }
         )
-
+        
         inputVm.onSave = { [weak self] text in
             var errorMessage: String?
             await withCheckedContinuation { continuation in
-                self?.disposeBag += ForeverServiceGraphQL().changeDiscountCode(text)
+                let octopusRequest = self?.octopus.client
+                    .perform(mutation: OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: text))
                     .onValue { value in
-                        if let errorFromGraphQL = value.right {
+                        if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
                             errorMessage = errorFromGraphQL
-                        } else {
+                        }
+                        else {
                             let store: ForeverStore = globalPresentableStoreContainer.get()
                             store.send(.fetch)
                             store.send(.showChangeCodeSuccess)
                         }
                         continuation.resume()
                     }
+                    .onError { graphQLError in
+                        errorMessage = graphQLError.localizedDescription
+                        continuation.resume()
+                    }
+                if let octopusRequest {
+                    self?.disposeBag += octopusRequest
+                }
             }
             if let errorMessage {
-                throw errorMessage
+                throw ForeverChangeCodeError.errorMessage(message: errorMessage)
             }
         }
     }
 }
-
-extension String: Error {}
 
 extension ChangeCodeView {
     static var journey: some JourneyPresentation {
