@@ -23,7 +23,7 @@ public enum ProfileAction: ActionProtocol {
     case setOpenAppSettings(to: Bool)
     case openLangaugePicker
     case closeLanguagePicker
-    case continueLanguagePickerJourney
+    case languageChanged
 
     case setMemberDetails(details: MemberDetails?)
     case fetchMemberDetails

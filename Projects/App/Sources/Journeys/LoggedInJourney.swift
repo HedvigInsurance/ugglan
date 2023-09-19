@@ -132,7 +132,7 @@ extension AppJourney {
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)
-            case .openLanguagePicker:
+            case .resetAppLanguage:
                 ContinueJourney()
                     .onPresent {
                         UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(

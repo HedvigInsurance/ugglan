@@ -106,7 +106,7 @@ public struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
-    case openLanguagePicker
+    case resetAppLanguage
     case openChat
     case logout
     case registerForPushNotifications
@@ -141,7 +141,7 @@ extension ProfileView {
                     } else if case .openLangaugePicker = action {
                         PickLanguage {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.continueLanguagePickerJourney)
+                            store.send(.languageChanged)
                             store.send(.setOpenAppSettings(to: true))
                         } onCancel: {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -158,8 +158,8 @@ extension ProfileView {
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
-            } else if case .continueLanguagePickerJourney = action {
-                resultJourney(.openLanguagePicker)
+            } else if case .languageChanged = action {
+                resultJourney(.resetAppLanguage)
             } else if case .openChat = action {
                 resultJourney(.openChat)
             } else if case .logout = action {
