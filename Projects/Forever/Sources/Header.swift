@@ -9,7 +9,7 @@ import hGraphQL
 struct HeaderView: View {
     @PresentableStore var store: ForeverStore
     let didPressInfo: () -> Void
-    
+
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -32,21 +32,21 @@ struct HeaderView: View {
                     ForeverStore.self,
                     getter: { state in
                         state.foreverData
-                        ?? ForeverData.init(
-                            grossAmount: .init(amount: 0, currency: ""),
-                            netAmount: .init(amount: 0, currency: ""),
-                            otherDiscounts: .init(amount: 0, currency: ""),
-                            discountCode: "",
-                            monthlyDiscount: .init(amount: 0, currency: ""),
-                            referrals: [],
-                            monthlyDiscountPerReferral: .init(amount: 0, currency: "")
-                        )
+                            ?? ForeverData.init(
+                                grossAmount: .init(amount: 0, currency: ""),
+                                netAmount: .init(amount: 0, currency: ""),
+                                otherDiscounts: .init(amount: 0, currency: ""),
+                                discountCode: "",
+                                monthlyDiscount: .init(amount: 0, currency: ""),
+                                referrals: [],
+                                monthlyDiscountPerReferral: .init(amount: 0, currency: "")
+                            )
                     }
                 ) { data in
                     if let grossAmount = data?.grossAmount,
-                       let netAmount = data?.netAmount,
-                       //                        let potentialDiscountAmount = data?.potentialDiscountAmount
-                       let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral
+                        let netAmount = data?.netAmount,
+                        //                        let potentialDiscountAmount = data?.potentialDiscountAmount
+                        let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral
                     {
                         PieChartView(
                             state: .init(
@@ -57,7 +57,7 @@ struct HeaderView: View {
                             newPrice: netAmount.formattedAmount
                         )
                         .frame(width: 215, height: 215, alignment: .center)
-                        
+
                         if grossAmount.amount != netAmount.amount {
                             // Discount present
                             PriceSectionView(netAmount: netAmount, didPressInfo: didPressInfo)
@@ -101,7 +101,7 @@ struct HeaderView_Previews2: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return HeaderView {}
             .onAppear {
-                
+
                 let foreverData = ForeverData(
                     grossAmount: .sek(200),
                     netAmount: .sek(160),

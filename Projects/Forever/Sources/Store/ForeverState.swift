@@ -7,10 +7,10 @@ public struct ForeverState: StateProtocol {
             UserDefaults.standard.synchronize()
         }
     }
-    
+
     public init() {
         self.hasSeenFebruaryCampaign = false
     }
-    
+
     public var foreverData: ForeverData? = nil
 }
