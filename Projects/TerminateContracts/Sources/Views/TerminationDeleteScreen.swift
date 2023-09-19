@@ -65,7 +65,7 @@ struct TerminationDeleteScreen: View {
                             .foregroundColor(hLabelColor.primary)
                     }
                     .padding(.bottom, 4)
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         onSelected()
                     } content: {
                         hText(L10n.terminationContractDeletionConfirmButton, style: .body)

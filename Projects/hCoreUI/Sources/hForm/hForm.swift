@@ -210,7 +210,7 @@ struct hForm_Previews: PreviewProvider {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
 
             } content: {
                 hText("TEXT")

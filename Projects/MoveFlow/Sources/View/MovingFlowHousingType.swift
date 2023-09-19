@@ -26,7 +26,7 @@ public struct MovingFlowHousingType: View {
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         store.send(.navigation(action: .openAddressFillScreen))
                     } content: {
                         hText(L10n.generalContinueButton, style: .body)

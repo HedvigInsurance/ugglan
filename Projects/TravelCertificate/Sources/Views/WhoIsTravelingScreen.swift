@@ -85,7 +85,7 @@ struct WhoIsTravelingScreen: View {
                     InfoCard(text: L10n.TravelCertificate.whoIsTravelingInfo, type: .info)
                 }
                 hSection {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         vm.validateAndSubmit()
                     } content: {
                         hText(L10n.General.submit)
@@ -100,7 +100,7 @@ struct WhoIsTravelingScreen: View {
     }
 
     private var addPeopleButton: some View {
-        hButton.MediumButtonFilled {
+        hButton.MediumButton(type: .primaryAlt) {
             vm.addNewCoinsured()
         } content: {
             HStack(spacing: 8) {
@@ -108,7 +108,7 @@ struct WhoIsTravelingScreen: View {
                 hText(L10n.TravelCertificate.addPeople)
             }
         }
-        .hButtonConfigurationType(.primaryAlt)
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     @hColorBuilder

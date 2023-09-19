@@ -55,7 +55,7 @@ struct EmbarkRecordAction: View {
                     TrackPlayer(audioPlayer: .init(recording: recording)) {
                         tracking.onPlay.send()
                     }
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         guard let url = audioRecorder.recording?.url else {
                             return
                         }
@@ -64,7 +64,7 @@ struct EmbarkRecordAction: View {
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
-                    hButton.LargeButtonText {
+                    hButton.LargeButton(type: .ghost) {
                         tracking.onRetry.send()
                         withAnimation(.spring()) {
                             audioRecorder.restart()

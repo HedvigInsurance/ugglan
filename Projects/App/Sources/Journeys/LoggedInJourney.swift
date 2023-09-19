@@ -8,6 +8,7 @@ import Foundation
 import Home
 import Payment
 import Presentation
+import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -22,9 +23,8 @@ extension AppJourney {
             HomeView.journey(
                 claimsContent: claims,
                 memberId: {
-                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                    return ugglanStore.state.memberDetails?.id ?? ""
-
+                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
+                    return profileStrore.state.memberDetails?.id ?? ""
                 }
             ) { result in
                 switch result {
@@ -39,7 +39,7 @@ extension AppJourney {
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:
-                    startClaimsJourney(from: .generic)
+                    AppJourney.startClaimsJourney(from: .generic)
                 case .openTravelInsurance:
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()
@@ -140,6 +140,26 @@ extension AppJourney {
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)
+            case .resetAppLanguage:
+                ContinueJourney()
+                    .onPresent {
+                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                            AppJourney.main
+                        )
+                    }
+            case .openChat:
+                AppJourney.freeTextChat().withDismissButton
+            case .logout:
+                ContinueJourney()
+                    .onPresent {
+                        UIApplication.shared.appDelegate.logout()
+                    }
+            case .registerForPushNotifications:
+                ContinueJourney()
+                    .onPresent {
+                        _ = UIApplication.shared.appDelegate
+                            .registerForPushNotifications()
+                    }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -233,7 +253,7 @@ extension JourneyPresentation {
             { action, pre in
                 if case let .navigationAction(navigationAction) = action {
                     if case .openSuccessScreen = navigationAction {
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.setPushNotificationsTo(date: nil))
                     }
                 }

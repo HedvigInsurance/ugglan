@@ -34,7 +34,7 @@ struct UpcomingChangesScreen: View {
                 }
                 VStack(spacing: 8) {
                     hSection {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             store.send(.contractDetailNavigationAction(action: .dismissUpcomingChanges))
                             store.send(.goToFreeTextChat)
                         } content: {
@@ -43,7 +43,7 @@ struct UpcomingChangesScreen: View {
 
                     }
                     hSection {
-                        hButton.LargeButtonGhost {
+                        hButton.LargeButton(type: .ghost) {
                             store.send(.contractDetailNavigationAction(action: .dismissUpcomingChanges))
                         } content: {
                             hText(L10n.generalCloseButton)

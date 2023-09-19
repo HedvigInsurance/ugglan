@@ -41,7 +41,7 @@ public struct MyPaymentsView: View {
             }
         ) { paymentData in
             hSection {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     vm.openConnectCard()
                 } content: {
                     hText(

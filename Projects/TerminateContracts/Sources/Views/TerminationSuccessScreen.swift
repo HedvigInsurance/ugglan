@@ -37,8 +37,7 @@ struct TerminationSuccessScreen: View {
                 .padding(.horizontal, 16)
             }
 
-            hButton.LargeButtonPrimary {
-
+            hButton.LargeButton(type: .primary) {
                 if let surveyToURL = URL(string: termination?.surveyUrl) {
                     UIApplication.shared.open(surveyToURL)
                 }

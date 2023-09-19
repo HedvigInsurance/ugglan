@@ -36,8 +36,7 @@ struct TerminationFailScreen: View {
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonPrimary {
-                    /* TODO: EITHER ADD TO TERMINATION CONTRACT OR USE CONTRACT STORE*/
+                hButton.LargeButton(type: .primary) {
                     store.send(.goToFreeTextChat)
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)

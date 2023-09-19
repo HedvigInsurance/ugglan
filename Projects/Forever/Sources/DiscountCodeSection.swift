@@ -32,7 +32,7 @@ struct DiscountCodeSectionView: View {
                     }
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButtonPrimary {
+                            hButton.LargeButton(type: .primary) {
                                 store.send(
                                     .showShareSheetOnly(
                                         code: code,
@@ -42,8 +42,7 @@ struct DiscountCodeSectionView: View {
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
-
-                            hButton.LargeButtonGhost {
+                            hButton.LargeButton(type: .ghost) {
                                 store.send(.showChangeCodeDetail)
                             } content: {
                                 hText(L10n.ReferralsChange.changeCode)

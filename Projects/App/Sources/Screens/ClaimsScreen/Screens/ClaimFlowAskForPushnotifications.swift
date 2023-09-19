@@ -1,5 +1,6 @@
 import Claims
 import Presentation
+import Profile
 import SwiftUI
 import hAnalytics
 import hCore
@@ -13,7 +14,7 @@ struct AskForPushnotifications: View {
         text: String,
         onActionExecuted: @escaping () -> Void
     ) {
-        let store: UgglanStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
@@ -37,7 +38,7 @@ struct AskForPushnotifications: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 12) {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
@@ -54,9 +55,9 @@ struct AskForPushnotifications: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
-                hButton.SmallButtonText {
+                hButton.SmallButton(type: .ghost) {
                     onActionExecuted()
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)

@@ -44,8 +44,6 @@ enum Documents: CaseIterable {
 
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
-    @StateObject private var vm = ContractsDocumentViewModel()
     let id: String
 
     var body: some View {
@@ -83,40 +81,6 @@ struct ContractDocumentsView: View {
                             }
                         }
                     }
-                }
-            }
-        }
-        if hAnalyticsExperiment.terminationFlow {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.contractForId(id)
-                }
-            ) { contract in
-                if (contract?.currentAgreement?.activeTo) == nil {
-                    hSection {
-                        LoadingButtonWithContent(
-                            TerminationContractStore.self,
-                            .startTermination,
-                            buttonAction: {
-                                terminationContractStore.send(
-                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
-                                )
-                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
-                                    if case let .navigationAction(navigationAction) = action {
-                                        contractStore.send(.startTermination(action: navigationAction))
-                                        self.vm.cancellable = nil
-                                    }
-                                }
-                            },
-                            content: {
-                                hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTextColorNew.secondary)
-                            },
-                            buttonStyleSelect: .textButton
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
                 }
             }
         }

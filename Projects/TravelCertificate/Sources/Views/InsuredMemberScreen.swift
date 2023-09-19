@@ -27,7 +27,7 @@ struct InsuredMemberScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         vm.submit()
                     } content: {
                         if vm.policyCoinsuredPerson == nil {
@@ -37,7 +37,7 @@ struct InsuredMemberScreen: View {
                         }
                     }
 
-                    hButton.LargeButtonGhost {
+                    hButton.LargeButton(type: .ghost) {
                         vm.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)

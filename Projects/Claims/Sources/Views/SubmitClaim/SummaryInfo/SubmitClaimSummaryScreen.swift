@@ -41,7 +41,7 @@ public struct SubmitClaimSummaryScreen: View {
                         hText(L10n.embarkSubmitClaim)
                     }
 
-                    hButton.LargeButtonText {
+                    hButton.LargeButton(type: .ghost) {
                         store.send(.navigationAction(action: .dismissScreen))
                     } content: {
                         hText(L10n.embarkGoBackButton)

@@ -170,7 +170,7 @@ struct MovingFlowConfirm: View {
             .padding(.vertical, 16)
             .foregroundColor(hTextColorNew.secondary)
 
-            hButton.SmallButtonText {
+            hButton.SmallButton(type: .ghost) {
                 store.send(.navigation(action: .openAddressFillScreen))
             } content: {
                 hText("Ändra", style: .body)
@@ -216,12 +216,12 @@ struct MovingFlowConfirm: View {
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 16)
 
-        hButton.LargeButtonPrimary {
+        hButton.LargeButton(type: .primary) {
             store.send(.navigation(action: .openFailureScreen))
         } content: {
             hText(L10n.changeAddressAcceptOffer, style: .body)
         }
-        .padding([.leading, .trailing], 16)
+        .padding([.horizontal], 16)
         .padding(.bottom, 22)
 
         hText(L10n.changeAddressIncluded, style: .body)
@@ -319,7 +319,7 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     var chatComponent: some View {
         hText(L10n.changeAddressNoFind, style: .body)
-        hButton.SmallButtonFilled {
+        hButton.SmallButton(type: .primary) {
             //open chat
         } content: {
             hText(L10n.openChat, style: .body)

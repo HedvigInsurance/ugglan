@@ -29,16 +29,18 @@ public struct ClaimFailureScreen: View {
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
                 }
                 .padding(.bottom, 4)
 
-                hButton.LargeButtonText {
+                hButton.LargeButton(type: .ghost) {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.submitClaimOpenFreeTextChat)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        store.send(.submitClaimOpenFreeTextChat)
+                    }
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }

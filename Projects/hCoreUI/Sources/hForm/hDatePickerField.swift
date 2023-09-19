@@ -158,7 +158,7 @@ private struct DatePickerView: View {
         .hDisableScroll
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     continueAction.execute()
                 } content: {
                     hText(
@@ -170,7 +170,7 @@ private struct DatePickerView: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
 
-                hButton.LargeButtonGhost {
+                hButton.LargeButton(type: .ghost) {
                     cancelAction.execute()
                 } content: {
                     hText(

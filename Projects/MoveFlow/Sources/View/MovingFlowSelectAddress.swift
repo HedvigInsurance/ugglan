@@ -21,7 +21,7 @@ struct MovingFlowSelectAddress: View {
         }
         .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
         .hFormAttachToBottom {
-            hButton.LargeButtonPrimary {
+            hButton.LargeButton(type: .primary) {
                 store.send(.navigation(action: .openConfirmScreen))
             } content: {
                 hText(L10n.generalContinueButton, style: .body)

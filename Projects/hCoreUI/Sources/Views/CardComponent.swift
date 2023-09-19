@@ -105,3 +105,25 @@ struct CardComponent_Previews: PreviewProvider {
         .background(Color.gray)
     }
 }
+
+struct FCardComponent_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Spacer()
+            CardComponent(
+                onSelected: {
+
+                },
+                mainContent: Text("T"),
+                title: "TITLE",
+                middleContent: EmptyView(),
+                subTitle: "SUBTITLE",
+                bottomComponent: {
+                    Text("BOTTOM COMPONENT")
+                }
+            )
+            Spacer()
+        }
+        .background(Color.gray)
+    }
+}

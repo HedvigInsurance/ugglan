@@ -28,7 +28,7 @@ public struct TextInputView: View {
                 }
                 hSection {
                     VStack(spacing: 8) {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             Task { [weak vm] in
                                 withAnimation {
                                     vm?.isLoading = true
@@ -41,7 +41,7 @@ public struct TextInputView: View {
                         } content: {
                             hText(L10n.generalSaveButton, style: .body)
                         }
-                        hButton.LargeButtonGhost {
+                        hButton.LargeButton(type: .ghost) {
                             vm.dismiss()
                         } content: {
                             hText(L10n.generalCancelButton, style: .body)
