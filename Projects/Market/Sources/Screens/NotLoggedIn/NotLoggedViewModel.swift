@@ -10,6 +10,8 @@ import hGraphQL
 
 public class NotLoggedViewModel: ObservableObject {
     @Inject var giraffe: hGiraffe
+    @PresentableStore var store: MarketStore
+
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
@@ -17,7 +19,7 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var title: String = L10n.MarketLanguageScreen.title
     @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
-
+    @Published var loadingExperiments = false
     var onLoad: () -> Void = {}
     var cancellables = Set<AnyCancellable>()
     let bag = DisposeBag()
@@ -81,6 +83,28 @@ public class NotLoggedViewModel: ObservableObject {
                 store.send(.selectMarket(market: .sweden))
                 self.bootStrapped = true
             }
+    }
+
+    func onCountryPressed() {
+        store.send(.presentLanguageAndMarketPicker)
+    }
+
+    func onLoginPressed() {
+        withAnimation {
+            loadingExperiments = true
+        }
+        hAnalyticsExperiment.retryingLoad { [weak self] success in
+            withAnimation {
+                self?.loadingExperiments = false
+            }
+            if success {
+                self?.store.send(.loginButtonTapped)
+            }
+        }
+    }
+
+    func onOnBoardPressed() {
+        store.send(.onboard)
     }
 
     enum ViewState {

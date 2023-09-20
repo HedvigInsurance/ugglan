@@ -1,6 +1,8 @@
+import Flow
 import Foundation
 import Market
 import Presentation
+import SwiftUI
 import hCore
 
 extension AppJourney {
@@ -16,22 +18,8 @@ extension AppJourney {
                 AppJourney.onboarding()
             } else if case .loginButtonTapped = action {
                 AppJourney.login
-            } else if case .presentMarketPicker = action {
-                PickMarket(
-                    onSave: { selectedMarket in
-                        let store: MarketStore = globalPresentableStoreContainer.get()
-                        store.send(.selectMarket(market: selectedMarket))
-                    }
-                )
-                .journey
-            } else if case .presentLanguagePicker = action {
-                PickLanguage(
-                    onSave: { selectedLocale in
-                        Localization.Locale.currentLocale = selectedLocale
-                    },
-                    onCancel: {}
-                )
-                .journey
+            } else if case .presentLanguageAndMarketPicker = action {
+                Market.languageAndMarketPicker
             }
         }
     }

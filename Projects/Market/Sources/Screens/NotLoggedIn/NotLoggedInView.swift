@@ -5,7 +5,6 @@ import hCoreUI
 
 public struct NotLoggedInView: View {
     @ObservedObject var vm = NotLoggedViewModel()
-    @PresentableStore var store: MarketStore
 
     public init(
         onLoad: @escaping () -> Void
@@ -31,7 +30,7 @@ public struct NotLoggedInView: View {
                         }
                     ) { market in
                         Button {
-
+                            vm.onCountryPressed()
                         } label: {
                             Image(uiImage: market.icon)
                                 .padding(8)
@@ -43,13 +42,14 @@ public struct NotLoggedInView: View {
                 Spacer()
                 VStack {
                     hButton.LargeButton(type: .primary) {
-                        store.send(.loginButtonTapped)
+                        vm.onLoginPressed()
                     } content: {
                         hText(L10n.bankidLoginTitle)
                     }
+                    .hButtonIsLoading(vm.loadingExperiments)
 
                     hButton.LargeButton(type: .ghost) {
-                        store.send(.onboard)
+                        vm.onOnBoardPressed()
                     } content: {
                         hText(L10n.marketingGetHedvig)
                     }

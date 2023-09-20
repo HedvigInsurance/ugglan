@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct PickLanguage: View {
     let currentMarket: Market
-    let onSave: ((Localization.Locale) -> Void)?
+    let onSave: ((String) -> Void)?
     let onCancel: (() -> Void)?
     @PresentableStore var store: MarketStore
 
@@ -21,7 +21,7 @@ public struct PickLanguage: View {
     }
 
     public init(
-        onSave: @escaping (Localization.Locale) -> Void,
+        onSave: @escaping (String) -> Void,
         onCancel: @escaping () -> Void
     ) {
         let store: MarketStore = globalPresentableStoreContainer.get()
@@ -68,7 +68,7 @@ public struct PickLanguage: View {
                     if let onSave {
                         hButton.LargeButton(type: .primary) {
                             Localization.Locale.currentLocale = currentLocale
-                            onSave(currentLocale)
+                            onSave(currentLocale.code)
                             store.send(.dismissPicker)
                         } content: {
                             hText(L10n.generalSaveButton)
