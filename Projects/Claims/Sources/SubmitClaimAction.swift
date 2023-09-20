@@ -22,6 +22,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceAndLocationRequest
     case singleItemRequest(purchasePrice: Double?)
+    case emergencyConfirmRequest(isEmergency: Bool)
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
@@ -68,6 +69,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingOptionScreen
     case openGlassDamageScreen
     case openEmergencyScreen
+    case openConfirmEmergencyScreen
     case openPestsScreen
     case openInfoScreen(title: String?, description: String?)
     case dismissScreen
@@ -124,6 +126,8 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setFailedStep(model: FlowClaimFailedStepModel)
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
+    case setDeflectEmergencyStepModel(model: FlowClaimDeflectEmergencyStepModel)
+    case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
@@ -136,4 +140,5 @@ public enum ClaimsLoadingType: LoadingProtocol {
     case postSingleItemCheckout
     case postAudioRecording
     case postContractSelect
+    case postConfirmEmergency
 }

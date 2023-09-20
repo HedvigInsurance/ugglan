@@ -55,6 +55,8 @@ public class ClaimJourneys {
                 openGlassDamageScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimGlassDamageTitle)
             } else if case .openEmergencyScreen = navigationAction {
                 openEmergencyScreen().addDismissClaimsFlow().configureTitle(L10n.commonClaimEmergencyTitle)
+            } else if case .openConfirmEmergencyScreen = navigationAction {
+                openEmergencySelectScreen().addDismissClaimsFlow()
             } else if case .openPestsScreen = navigationAction {
                 openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
             }
