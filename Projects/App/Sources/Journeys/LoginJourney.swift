@@ -9,6 +9,24 @@ import hAnalytics
 import hCore
 import hCoreUI
 
+public enum AlternativeLoginMethods {
+    case email
+
+    public var value: String {
+        switch self {
+        case .email:
+            return "email"
+        }
+    }
+
+    public var displayName: String {
+        switch self {
+        case .email:
+            return L10n.emailRowTitle
+        }
+    }
+}
+
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
         AppJourney.loggedIn.onPresent {
@@ -18,56 +36,31 @@ extension AppJourney {
 
     @JourneyBuilder
     fileprivate static var bankIDSweden: some JourneyPresentation {
-        let bankIdAppTestUrl = URL(
-            string:
-                "bankid:///"
-        )!
-
-        if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
-            Journey(
-                BankIDLoginSweden(),
-                style: .detented(.medium, .large)
-            ) { result in
-                switch result {
-                case .qrCode:
-                    Journey(BankIDLoginQR()) { result in
-                        switch result {
-                        case .loggedIn:
-                            loginCompleted
-                        case .emailLogin:
-                            otp(style: .detented(.large, modally: false))
-                        case .close:
-                            DismissJourney()
-                        }
+        HostingJourney(
+            AuthenticationStore.self,
+            rootView: BankIDLoginQR(),
+            style: .modally(presentationStyle: .overFullScreen)
+        ) { action in
+            if case .bankIdQrResultAction(.loggedIn) = action {
+                loginCompleted
+            } else if case .bankIdQrResultAction(action: .emailLogin) = action {
+                otp(style: .detented(.large, modally: false))
+            } else if case .bankIdQrResultAction(action: .close) = action {
+                DismissJourney()
+            } else if case let .loginFailure(message) = action {
+                HostingJourney(
+                    AuthenticationStore.self,
+                    rootView: LoginFail(message: message)
+                ) {
+                    action in
+                    if case .cancel = action {
+                        PopJourney()
                     }
-                    .withJourneyDismissButton
-                    .mapJourneyDismissToCancel
-                case .loggedIn:
-                    loginCompleted
-                case .emailLogin:
-                    otp(style: .detented(.large, modally: false))
-                case .close:
-                    PopJourney()
                 }
             }
-            .withDismissButton
-        } else {
-            Journey(
-                BankIDLoginQR(),
-                style: .detented(.medium, .large)
-            ) { result in
-                switch result {
-                case .loggedIn:
-                    loginCompleted
-                case .emailLogin:
-                    otp(style: .detented(.large, modally: false))
-                case .close:
-                    DismissJourney()
-                }
-            }
-            .withJourneyDismissButton
-            .mapJourneyDismissToCancel
         }
+        .withJourneyDismissButton
+        .mapJourneyDismissToCancel
     }
 
     fileprivate static func otp(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {

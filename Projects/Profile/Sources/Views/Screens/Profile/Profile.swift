@@ -32,9 +32,8 @@ public struct ProfileView: View {
             message: nil,
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                ApplicationState.preserveState(.marketPicker)
+                ApplicationState.preserveState(.notLoggedIn)
                 store.send(.logout)
-
             }
         )
     }
@@ -139,7 +138,7 @@ extension ProfileView {
                     } else if case .deleteAccountAlreadyRequested = action {
                         DeleteAccountView.deleteRequestAlreadyPlacedJourney
                     } else if case .openLangaugePicker = action {
-                        PickLanguage {
+                        PickLanguage { _ in
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.languageChanged)
                             store.send(.setOpenAppSettings(to: true))
