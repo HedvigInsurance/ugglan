@@ -3,26 +3,30 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import Kingfisher
 
 struct ClaimContactCard: View {
     @PresentableStore var store: SubmitClaimStore
     var title: String?
-    var image: UIImage
+    var imageUrl: String
     var label: String
+    var url: String?
     var buttonText: String
-
+    
     init(
-        image: UIImage,
+        imageUrl: String,
         label: String,
-        buttonText: String,
-        title: String? = nil
+        url: String,
+        title: String? = nil,
+        buttonText: String
     ) {
-        self.image = image
+        self.imageUrl = imageUrl
         self.label = label
-        self.buttonText = buttonText
+        self.url = url
         self.title = title
+        self.buttonText = buttonText
     }
-
+    
     var body: some View {
         if let title {
             hSection {
@@ -52,22 +56,26 @@ struct ClaimContactCard: View {
             .sectionContainerStyle(.black)
         }
     }
-
+    
     private var sectionContent: some View {
         VStack(spacing: 8) {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 40)
-                .foregroundColor(hTextColorNew.negative)
-                .padding(.vertical, 16)
+            if let imageUrl = URL(string: imageUrl) {
+                KFImage(imageUrl)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 40)
+                    .foregroundColor(hTextColorNew.negative)
+                    .padding(.vertical, 16)
+            }
             hText(label)
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColorNew.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
             hButton.MediumButtonSecondaryAlt {
-
+                if let url = URL(string: url) {
+                    UIApplication.shared.open(url)
+                }
             } content: {
                 hText(buttonText)
                     .multilineTextAlignment(.center)
@@ -75,7 +83,7 @@ struct ClaimContactCard: View {
             .padding(.horizontal, 16)
         }
         .padding(.vertical, 16)
-
+        
     }
 }
 
@@ -83,19 +91,21 @@ struct ClaimContactCard_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
-            ClaimContactCard(image: hCoreUIAssets.carGlass.image, label: "LABEL", buttonText: "BUTTON TEXT")
+            ClaimContactCard(imageUrl: "", label: "LABEL", url: "BUTTON TEXT", buttonText: "")
             ClaimContactCard(
-                image: hCoreUIAssets.carGlass.image,
+                imageUrl: "",
                 label: "VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT",
-                buttonText: "BUTTON TEXT"
+                url: "BUTTON TEXT",
+                buttonText: ""
             )
             ClaimContactCard(
-                image: hCoreUIAssets.carGlass.image,
+                imageUrl: "",
                 label: "LABEL",
-                buttonText: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT"
+                url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
+                buttonText: ""
             )
-
+            
         }
-
+        
     }
 }

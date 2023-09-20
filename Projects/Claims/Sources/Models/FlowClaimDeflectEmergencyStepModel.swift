@@ -9,7 +9,13 @@ public struct FlowClaimDeflectEmergencyStepModel: FlowClaimStepModel {
         with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
     ) {
         self.id = data.id
-        self.partners = data.partners.map({ .init(with: $0) })
+        self.partners = data.partners.map({ partner in
+                .init(
+                    id: partner.id,
+                    imageUrl: partner.imageUrl,
+                    url: partner.url,
+                    phoneNumber: partner.phoneNumber)
+        })
     }
 }
 
@@ -20,11 +26,14 @@ public struct Partner: Codable, Equatable, Hashable {
     let phoneNumber: String?
     
     init(
-        with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment.Partner
+        id: String,
+        imageUrl: String,
+        url: String?,
+        phoneNumber: String?
     ) {
-        self.id = data.id
-        self.imageUrl = data.imageUrl
-        self.url = data.url
-        self.phoneNumber = data.phoneNumber
+        self.id = id
+        self.imageUrl = imageUrl
+        self.url = url
+        self.phoneNumber = phoneNumber
     }
 }

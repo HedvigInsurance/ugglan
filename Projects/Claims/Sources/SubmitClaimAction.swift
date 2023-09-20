@@ -128,6 +128,8 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
     case setDeflectEmergencyStepModel(model: FlowClaimDeflectEmergencyStepModel)
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
+    case setDeflectPestsStepModel(model: FlowClaimDeflectPestsStepModel)
+    case setDeflectGlassDamageStepModel(model: FlowClaimDeflectGlassDamageStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {

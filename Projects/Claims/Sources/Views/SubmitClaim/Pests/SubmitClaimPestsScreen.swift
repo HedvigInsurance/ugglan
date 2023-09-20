@@ -14,10 +14,11 @@ struct SubmitClaimPestsScreen: View {
                 .padding(.top, 8)
 
                 ClaimContactCard(
-                    image: hCoreUIAssets.nomor.image,
+                    imageUrl: "",
                     label: L10n.submitClaimPestsCustomerServiceLabel,
-                    buttonText: L10n.submitClaimPestsCustomerServiceButton,
-                    title: L10n.submitClaimPartnerTitle
+                    url: "",
+                    title: L10n.submitClaimPartnerTitle,
+                    buttonText: L10n.submitClaimPestsCustomerServiceButton
                 )
 
                 hSection {
