@@ -79,7 +79,7 @@ extension Message: Reusable {
         )
 
         let size = attributedString.boundingRect(
-            with: CGSize(width: 280, height: CGFloat(Int.max)),
+            with: CGSize(width: 267.77, height: CGFloat(Int.max)),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
@@ -93,10 +93,10 @@ extension Message: Reusable {
         }()
 
         if isRelatedToPreviousMessage {
-            return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
+            return size.height + smallerMarginTop + extraPadding + extraHeightForTimeStampLabel
         }
 
-        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel + largerMarginTop
+        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
     }
 
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
