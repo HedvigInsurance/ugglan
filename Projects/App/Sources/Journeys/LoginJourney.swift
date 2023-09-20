@@ -39,7 +39,7 @@ extension AppJourney {
         HostingJourney(
             AuthenticationStore.self,
             rootView: BankIDLoginQR(),
-            style: .modally()
+            style: .modally(presentationStyle: .overFullScreen)
         ) { action in
             if case .bankIdQrResultAction(.loggedIn) = action {
                 loginCompleted
