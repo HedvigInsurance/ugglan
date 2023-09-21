@@ -20,12 +20,13 @@ struct SubmitClaimPestsScreen: View {
                             state.pestsStep
                         }
                     ) { pests in
-                        ForEach(pests?.partners ?? [], id: \.id) { partner in
+                        let partners = pests?.partners
+                        ForEach(Array((partners ?? []).enumerated()), id: \.element) {  index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
                                 label: L10n.submitClaimPestsCustomerServiceLabel,
                                 url: partner.url ?? "",
-                                title: L10n.submitClaimPartnerTitle,
+                                title: index == 0 ? L10n.submitClaimPartnerTitle : nil,
                                 buttonText: L10n.submitClaimPestsCustomerServiceButton
                             )
                         }

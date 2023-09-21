@@ -16,12 +16,13 @@ struct SubmitClaimGlassDamageScreen: View {
                             state.glassDamageStep
                         }
                     ) { glassDamage in
-                        ForEach(glassDamage?.partners ?? [], id: \.id) { partner in
+                        let partners = glassDamage?.partners
+                        ForEach(Array((partners ?? []).enumerated()), id: \.element) { index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
                                 label: L10n.submitClaimGlassDamageOnlineBookingLabel,
                                 url: partner.url ?? "",
-                                title: L10n.submitClaimPartnerTitle,
+                                title: index == 0 ? L10n.submitClaimPartnerTitle : nil,
                                 buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
                             )
                         }
