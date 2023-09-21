@@ -10,20 +10,20 @@ import hGraphQL
 public struct CrossSellingDetail: View {
     @PresentableStore var store: ContractStore
     var crossSell: CrossSell
-
+    
     public init(
         crossSell: CrossSell
     ) {
         self.crossSell = crossSell
     }
-
+    
     public var body: some View {
         hForm {
             CrossSellingHeroImage(
                 imageURL: crossSell.imageURL,
                 blurHash: crossSell.blurHash
             )
-
+            
             hSection {
                 VStack {
                     hText(
@@ -37,7 +37,7 @@ public struct CrossSellingDetail: View {
                 )
             }
             .sectionContainerStyle(.transparent)
-
+            
             if let info = crossSell.infos.first {
                 CrossSellHightlights(info: info)
                 CrossSellAbout(info: info)
@@ -52,7 +52,6 @@ public struct CrossSellingDetail: View {
 }
 
 public enum CrossSellingDetailResult {
-    case embark(name: String)
     case chat
     case web(url: URL)
 }
@@ -69,9 +68,7 @@ extension CrossSellingDetail {
             style: style,
             options: options
         ) { action in
-            if case let .crossSellingDetailEmbark(name) = action {
-                next(.embark(name: name))
-            } else if case .openCrossSellingChat = action {
+            if case .openCrossSellingChat = action {
                 next(.chat)
             } else if case let .crossSellingCoverageDetailNavigation(action: .detail(info)) = action {
                 CrossSellingCoverageDetail(crossSell: self.crossSell, crossSellInfo: info).journey(next)

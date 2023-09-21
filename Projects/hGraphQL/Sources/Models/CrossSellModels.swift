@@ -53,8 +53,6 @@ public struct CrossSell: Codable, Equatable, Hashable {
     public var description: String
     public var imageURL: URL
     public var blurHash: String
-    public var buttonText: String
-    public var embarkStoryName: String?
     public var webActionURL: String?
     public var infos: [CrossSellInfo]
     public var type: CrossSellType
@@ -78,8 +76,6 @@ public struct CrossSell: Codable, Equatable, Hashable {
         description: String,
         imageURL: URL,
         blurHash: String,
-        buttonText: String,
-        embarkStoryName: String? = nil,
         webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
         typeOfContract: String,
@@ -90,8 +86,6 @@ public struct CrossSell: Codable, Equatable, Hashable {
         self.description = description
         self.imageURL = imageURL
         self.blurHash = blurHash
-        self.buttonText = buttonText
-        self.embarkStoryName = embarkStoryName
         self.webActionURL = webActionURL
         self.hasBeenSeen = hasBeenSeen
         self.typeOfContract = typeOfContract
@@ -107,8 +101,6 @@ public struct CrossSell: Codable, Equatable, Hashable {
             return nil
         }
         imageURL = parsedImageURL
-        buttonText = data.title
-        embarkStoryName = nil
         blurHash = data.blurHash
         hasBeenSeen = UserDefaults.standard.bool(
             forKey: Self.hasBeenSeenKey(typeOfContract: data.id)

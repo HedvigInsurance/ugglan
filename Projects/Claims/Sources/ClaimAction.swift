@@ -11,7 +11,6 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case fetchClaims
     case setClaims(claims: [Claim])
     case openFreeTextChat
-    case openHowClaimsWork
     case openClaimDetails(claim: Claim)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case closeClaimStatus

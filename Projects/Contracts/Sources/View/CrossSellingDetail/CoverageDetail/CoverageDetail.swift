@@ -87,8 +87,6 @@ extension CrossSellingCoverageDetail {
                 )
                 .setScrollEdgeNavigationBarAppearanceToStandard
                 .withDismissButton
-            } else if case let .crossSellingDetailEmbark(name) = action {
-                next(.embark(name: name))
             }
         }
         .configureTitle(L10n.CrossSell.Info.fullCoverageRow)

@@ -45,11 +45,9 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToMovingFlow
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
-    case openCrossSellingEmbark(name: String)
     case openCrossSellingWebUrl(url: URL)
     case openCrossSellingChat
 
-    case crossSellingDetailEmbark(name: String)
     case crossSellWebAction(url: URL)
     case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
     case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
