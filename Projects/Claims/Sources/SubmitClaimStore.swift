@@ -6,10 +6,10 @@ import hCore
 import hGraphQL
 
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
-
+    
     @Inject var octopus: hOctopus
     @Inject var fileUploaderClient: FileUploaderClient
-
+    
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
@@ -33,7 +33,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             if let dateOfOccurrenceStep = state.dateOfOccurenceStep, let locationStep = state.locationStep {
                 let location = locationStep.getSelectedOption()?.value
                 let date = dateOfOccurrenceStep.dateOfOccurence
-
+                
                 let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
                     dateOfOccurrence: date,
                     location: location
@@ -75,7 +75,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                             context: newClaimContext
                         )
                         disposeBag +=
-                            mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
+                        mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
                             .onValue({ action in
                                 callback(.value(action))
                             })
@@ -94,12 +94,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                                     context: newClaimContext
                                 )
                                 disposeBag +=
-                                    mutation.execute(
-                                        \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
-                                    )
-                                    .onValue({ action in
-                                        callback(.value(action))
-                                    })
+                                mutation.execute(
+                                    \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
+                                )
+                                .onValue({ action in
+                                    callback(.value(action))
+                                })
                             })
                             .onError({ [weak self] error in
                                 self?.setError(L10n.General.errorBody, for: .postAudioRecording)
@@ -109,7 +109,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 } catch _ {
                     self.setError(L10n.General.errorBody, for: .postAudioRecording)
                 }
-
+                
                 return disposeBag
             }
         case let .submitDamage(damages):
@@ -117,7 +117,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 callback(.value(.setSingleItemDamage(damages: damages)))
                 return NilDisposer()
             }
-
+            
         case let .singleItemRequest(purchasePrice):
             let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
@@ -159,7 +159,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag +=
-                    self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+                self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { data in
                         let model = data.entrypointGroups.map { data in
                             ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
@@ -183,7 +183,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             return nil
         }
     }
-
+    
     public override func reduce(_ state: SubmitClaimsState, _ action: SubmitClaimsAction) -> SubmitClaimsState {
         var newState = state
         switch action {
@@ -260,15 +260,20 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setConfirmDeflectEmergencyStepModel(model):
                 newState.emergencyConfirm = model
                 self.send(.navigationAction(action: .openConfirmEmergencyScreen))
-            case let .setDeflectEmergencyStepModel(model):
-                newState.emergencyStep = model
-                self.send(.navigationAction(action: .openEmergencyScreen))
-            case let .setDeflectPestsStepModel(model):
-                newState.pestsStep = model
-                self.send(.navigationAction(action: .openPestsScreen))
-            case let .setDeflectGlassDamageStepModel(model):
-                newState.glassDamageStep = model
-                self.send(.navigationAction(action: .openGlassDamageScreen))
+            case let .setDeflectModel(model):
+                switch model.id {
+                case "FlowClaimDeflectGlassDamageStep":
+                    newState.glassDamageStep = model
+                    self.send(.navigationAction(action: .openGlassDamageScreen))
+                case "FlowClaimDeflectPestsStep":
+                    newState.pestsStep = model
+                    self.send(.navigationAction(action: .openPestsScreen))
+                case "FlowClaimDeflectEmergencyStep":
+                    newState.emergencyStep = model
+                    self.send(.navigationAction(action: .openEmergencyScreen))
+                default:
+                    break
+                }
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)

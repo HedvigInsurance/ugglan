@@ -1,15 +1,16 @@
 import Foundation
 import hGraphQL
 
-public struct FlowClaimDeflectEmergencyStepModel: FlowClaimStepModel {
+public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     let id: String
     let partners: [Partner]
     
     init(
-        with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
+        id: String,
+        partners: [Partner]
     ) {
-        self.id = data.id
-        self.partners = data.partners.map({ partner in
+        self.id = id
+        self.partners = partners.map({ partner in
                 .init(
                     id: partner.id,
                     imageUrl: partner.imageUrl,

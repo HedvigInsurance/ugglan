@@ -63,13 +63,19 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
         } else if let step = self.fragments.flowClaimContractSelectStepFragment {
             return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimDeflectEmergencyStepFragment {
-            return .stepModelAction(action: .setDeflectEmergencyStepModel(model: .init(with: step)))
+            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
+                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
+            }))))
         } else if let step = self.fragments.flowClaimConfirmEmergencyStepFragment {
             return .stepModelAction(action: .setConfirmDeflectEmergencyStepModel(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimDeflectPestsStepFragment {
-            return .stepModelAction(action: .setDeflectPestsStepModel(model: .init(with: step)))
+            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
+                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
+            }))))
         } else if let step = self.fragments.flowClaimDeflectGlassDamageStepFragment {
-            return .stepModelAction(action: .setDeflectGlassDamageStepModel(model: .init(with: step)))
+            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
+                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
+            }))))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
@@ -79,8 +85,8 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 extension GraphQLMutation {
     func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<SubmitClaimsAction>
     where
-        ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
-        Self.Data: ClaimStepProgress
+    ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
+    Self.Data: ClaimStepProgress
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
@@ -94,7 +100,7 @@ extension GraphQLMutation {
                     }
                     callback(.value(.setNewClaimContext(context: data.getContext())))
                     if let clearedSteps = data.getProgress().clearedSteps,
-                        let totalSteps = data.getProgress().totalSteps
+                       let totalSteps = data.getProgress().totalSteps
                     {
                         if clearedSteps != 0 {
                             let progressValue = Float(Float(clearedSteps) / Float(totalSteps)) * 0.7 + 0.3
@@ -130,14 +136,14 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
     func getContext() -> String {
         return self.flowClaimStart.context
     }
-
+    
     func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimStart.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimStart.progress?.totalSteps ?? 0
         )
     }
-
+    
     func getStepId() -> String {
         return self.flowClaimStart.id
     }
