@@ -1,9 +1,9 @@
 import Combine
 import Foundation
+import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
-import Kingfisher
 
 struct ClaimContactCard: View {
     @PresentableStore var store: SubmitClaimStore
@@ -12,7 +12,7 @@ struct ClaimContactCard: View {
     var label: String
     var url: String?
     var buttonText: String
-    
+
     init(
         imageUrl: String,
         label: String,
@@ -26,7 +26,7 @@ struct ClaimContactCard: View {
         self.title = title
         self.buttonText = buttonText
     }
-    
+
     var body: some View {
         if let title {
             hSection {
@@ -56,18 +56,19 @@ struct ClaimContactCard: View {
             .sectionContainerStyle(.black)
         }
     }
-    
+
     private var sectionContent: some View {
         VStack(spacing: 8) {
             if let imageUrl = URL(string: imageUrl) {
-                ImageView(imageUrl: imageUrl)
-                //                    .resizable()
+                KFImage(imageUrl)
+                    .setProcessor(SVGImageProcessor())
+                    .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
                     .foregroundColor(hTextColorNew.negative)
                     .padding(.vertical, 16)
             }
-            
+
             hText(label)
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColorNew.tertiary)
@@ -84,19 +85,6 @@ struct ClaimContactCard: View {
             .padding(.horizontal, 16)
         }
         .padding(.vertical, 16)
-    }
-}
-
-struct ImageView: UIViewRepresentable {
-    var imageUrl: URL
-    
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-    }
-    
-    func makeUIView(context: Context) -> some UIView {
-        let imageView = UIImageView()
-        imageView.kf.setImage(with: imageUrl, options: [.processor(SVGImageProcessor())])
-        return imageView
     }
 }
 
@@ -117,8 +105,8 @@ struct ClaimContactCard_Previews: PreviewProvider {
                 url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
                 buttonText: ""
             )
-            
+
         }
-        
+
     }
 }
