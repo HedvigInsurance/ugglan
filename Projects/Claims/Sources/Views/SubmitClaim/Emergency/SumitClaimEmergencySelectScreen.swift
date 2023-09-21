@@ -6,10 +6,16 @@ struct SumitClaimEmergencySelectScreen: View {
     @State var selectedValue: Bool = true
     @PresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
+    let title: ()->String
     
+    init(
+        title: @escaping ()->String
+    ) {
+        self.title = title
+    }
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .title1, L10n.submitClaimEmergencyTitle) /* TODO CHANGE TO TEXT */
+            .hFormTitle(.small, .title1, title())
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     buttonView()
@@ -66,6 +72,8 @@ struct SumitClaimEmergencySelectScreen: View {
 
 struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SumitClaimEmergencySelectScreen()
+        SumitClaimEmergencySelectScreen {
+            return L10n.submitClaimEmergencyTitle
+        }
     }
 }

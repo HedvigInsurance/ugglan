@@ -60,13 +60,14 @@ struct ClaimContactCard: View {
     private var sectionContent: some View {
         VStack(spacing: 8) {
             if let imageUrl = URL(string: imageUrl) {
-                KFImage(imageUrl)
-                    .resizable()
+                ImageView(imageUrl: imageUrl)
+                //                    .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
                     .foregroundColor(hTextColorNew.negative)
                     .padding(.vertical, 16)
             }
+            
             hText(label)
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColorNew.tertiary)
@@ -83,7 +84,19 @@ struct ClaimContactCard: View {
             .padding(.horizontal, 16)
         }
         .padding(.vertical, 16)
-        
+    }
+}
+
+struct ImageView: UIViewRepresentable {
+    var imageUrl: URL
+    
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+    }
+    
+    func makeUIView(context: Context) -> some UIView {
+        let imageView = UIImageView()
+        imageView.kf.setImage(with: imageUrl, options: [.processor(SVGImageProcessor())])
+        return imageView
     }
 }
 
