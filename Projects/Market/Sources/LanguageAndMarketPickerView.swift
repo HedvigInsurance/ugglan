@@ -140,11 +140,11 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     @Published var selectedMarket: Market
     @Published var selectedMarketCode: String?
 
-    @Published var trigger = LanguageAndMarketPicker.market
-    @Published var previous = LanguageAndMarketPicker.market
+    @Published var trigger = LanguageAndMarketPicker.language
+    @Published var previous = LanguageAndMarketPicker.language
 
-    var insertion: AnyTransition = .move(edge: .leading)
-    var removal: AnyTransition = .move(edge: .trailing)
+    @Published var insertion: AnyTransition = .move(edge: .leading)
+    @Published var removal: AnyTransition = .move(edge: .trailing)
     var cancellables = Set<AnyCancellable>()
 
     @Published var selected: LanguageAndMarketPicker = .market {
