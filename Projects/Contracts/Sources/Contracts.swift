@@ -18,7 +18,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return false
         }
     }
-    
+
     var displaysTerminatedContracts: Bool {
         switch self {
         case .terminated: return true
@@ -26,7 +26,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return false
         }
     }
-    
+
     var emptyFilter: ContractFilter {
         switch self {
         case let .terminated(ifEmpty): return ifEmpty
@@ -34,7 +34,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return .none
         }
     }
-    
+
     case terminated(ifEmpty: ContractFilter)
     case active(ifEmpty: ContractFilter)
     case none
@@ -45,13 +45,13 @@ extension ContractFilter {
         switch self {
         case .active:
             let activeContracts =
-            state
+                state
                 .contractBundles
                 .flatMap { $0.contracts }
             return activeContracts.isEmpty ? self.emptyFilter : self
         case .terminated:
             let terminatedContracts =
-            state.contracts
+                state.contracts
                 .filter { contract in
                     contract.currentAgreement?.status == .terminated
                 }
@@ -78,7 +78,7 @@ extension Contracts: View {
         store.send(.fetchContracts)
         store.send(.fetchContractBundles)
     }
-    
+
     public var body: some View {
         hForm {
             ContractTable(filter: filter)
@@ -103,7 +103,7 @@ extension Contracts: View {
                 endOn: .fetchContractBundlesDone,
                 .fetchContractsDone
             )
-            
+
         }
         .hFormAttachToBottom {
             if self.filter.displaysTerminatedContracts {
@@ -178,7 +178,7 @@ extension Contracts {
         }
         .configureTitle(
             filter.displaysActiveContracts
-            ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle
+                ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle
         )
         .configureContractsTabBarItem
     }
