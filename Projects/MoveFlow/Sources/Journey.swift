@@ -16,35 +16,35 @@ public struct MovingFlowJourneyNew {
             getMovingFlowScreen(for: action).showsBackButton
         }
     }
-
     @JourneyBuilder
     public static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
-        GroupJourney {
-            if case let .navigation(navigationAction) = action {
-                if case .openAddressFillScreen = navigationAction {
-                    MovingFlowJourneyNew.openAddressFillScreen()
-                } else if case .openHousingTypeScreen = navigationAction {
-                    MovingFlowJourneyNew.openSelectHousingScreen()
-                } else if case .openConfirmScreen = navigationAction {
-                    MovingFlowJourneyNew.openConfirmScreen()
-                } else if case .openFailureScreen = navigationAction {
-                    MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
-                } else if case .dismissMovingFlow = navigationAction {
-                    DismissJourney()
-                } else if case .openDatePickerScreen = navigationAction {
-                    MovingFlowJourneyNew.openDatePickerScreen()
-                } else if case .goToFreeTextChat = navigationAction {
-                    DismissJourney()
-                }
+        if case let .navigation(navigationAction) = action {
+            if case .openAddressFillScreen = navigationAction {
+                MovingFlowJourneyNew.openApartmentFillScreen()
+            } else if case .openHouseFillScreen = navigationAction {
+                MovingFlowJourneyNew.openApartmentFillScreen()
+            } else if case .openHousingTypeScreen = navigationAction {
+                MovingFlowJourneyNew.openSelectHousingScreen()
+            } else if case .openConfirmScreen = navigationAction {
+                MovingFlowJourneyNew.openConfirmScreen()
+            } else if case .openFailureScreen = navigationAction {
+                MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
+            } else if case .openProcessingView = navigationAction {
+                MovingFlowJourneyNew.openProcessingView()
+            } else if case .dismissMovingFlow = navigationAction {
+                DismissJourney()
+            } else if case .goToFreeTextChat = navigationAction {
+                DismissJourney()
+            } else if case .goBack = navigationAction {
+                PopJourney()
             }
         }
     }
 
-    @JourneyBuilder
     public static func openSelectHousingScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowHousingType(),
+            rootView: MovingFlowHousingTypeView(),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
@@ -56,11 +56,10 @@ public struct MovingFlowJourneyNew {
         .withJourneyDismissButton
     }
 
-    @JourneyBuilder
-    static func openAddressFillScreen() -> some JourneyPresentation {
+    static func openApartmentFillScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowSelectAddress()
+            rootView: MovingFlowApartmentView()
         ) {
             action in
             getMovingFlowScreenForAction(for: action)
@@ -68,56 +67,35 @@ public struct MovingFlowJourneyNew {
         .withJourneyDismissButton
     }
 
-    @JourneyBuilder
     static func openConfirmScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
             rootView: MovingFlowConfirm()
         ) {
             action in
-            //            if case .navigationActionMovingFlow(.openAddressFillScreen) = action {
-            //                PopJourney()
-            //            } else {
-            getMovingFlowScreenForAction(for: action)
-            //            }
+            getMovingFlowScreen(for: action).hidesBackButton
         }
+        .configureTitle(L10n.changeAddressSummaryTitle)
         .withJourneyDismissButton
     }
 
-    @JourneyBuilder
-    static func openDatePickerScreen() -> some JourneyPresentation {
+    static func openProcessingView() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: GeneralDatePicker(
-                GeneralDatePickerViewModel(
-                    title: "title",
-                    buttonTitle: "button title",
-                    onDateSelected: { movingDate in
-                        //                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        //                        store.send(.setMovingDate(movingDate: movingDate))
-                    }
-                )
-            ),
-            style: .detented(.scrollViewContentSize)
+            rootView: MovingFlowProcessingView()
         ) {
             action in
-            //            if case .setMovingDate = action {
-            PopJourney()
-            //            } else {
-            //                getMovingFlowScreenForAction(for: action)
-            //            }
+            getMovingFlowScreenForAction(for: action)
         }
-        .withJourneyDismissButton
     }
 
-    @JourneyBuilder
     static func openFailureScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
             rootView: MovingFlowFailure()
         ) {
             action in
-            getMovingFlowScreenForAction(for: action)
+            getMovingFlowScreenForAction(for: action, withHidesBack: true)
         }
         .withJourneyDismissButton
     }

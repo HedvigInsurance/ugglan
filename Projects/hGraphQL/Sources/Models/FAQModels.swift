@@ -4,7 +4,7 @@ public struct FAQ: Codable, Equatable, Hashable {
     public var title: String
     public var description: String?
 
-    init?(
+    public init?(
         _ data: OctopusGraphQL.ProductVariantFragment.Faq
     ) {
         guard let description = data.body else { return nil }

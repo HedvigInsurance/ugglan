@@ -31,7 +31,7 @@ public struct CheckBoxComponent: View {
     @ViewBuilder
     func displayContent(displayName: String) -> some View {
         HStack(spacing: 12) {
-            Image(uiImage: hCoreUIAssets.pillowHome.image)
+            Image(uiImage: hCoreUIAssets.bigPillowHome.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 48, height: 48)

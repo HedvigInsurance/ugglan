@@ -59,31 +59,33 @@ public struct hForm<Content: View>: View {
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .opacity(0)
             } else {
-                BackgroundBlurView()
-                    .frame(
-                        height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
-                        alignment: .bottom
-                    )
-                    .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
-                    .ignoresSafeArea(.all)
-                bottomAttachedView
-                    .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onReceive(Just(geo.size.height)) { height in
-                                    if bottomAttachedViewHeight == 0 {
-                                        self.bottomAttachedViewHeight = height
-                                    } else {
-                                        withAnimation {
+                if bottomAttachedView != nil {
+                    BackgroundBlurView()
+                        .frame(
+                            height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
+                            alignment: .bottom
+                        )
+                        .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
+                        .ignoresSafeArea(.all)
+                    bottomAttachedView
+                        .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onReceive(Just(geo.size.height)) { height in
+                                        if bottomAttachedViewHeight == 0 {
                                             self.bottomAttachedViewHeight = height
-                                            recalculateHeight()
+                                        } else {
+                                            withAnimation {
+                                                self.bottomAttachedViewHeight = height
+                                                recalculateHeight()
+                                            }
                                         }
                                     }
-                                }
-                        }
-                    )
-                    .frame(maxHeight: .infinity, alignment: .bottom)
+                            }
+                        )
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
             }
         }
         .background(
@@ -96,7 +98,6 @@ public struct hForm<Content: View>: View {
             Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
-
                     if let hFormTitle {
                         hText(hFormTitle.2, style: hFormTitle.1)
                             .multilineTextAlignment(.center)
@@ -133,6 +134,7 @@ public struct hForm<Content: View>: View {
             Color.clear
                 .frame(height: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
         }
+
         .modifier(
             ForceScrollViewIndicatorInset(insetBottom: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
         )
@@ -190,6 +192,7 @@ public struct hForm<Content: View>: View {
             additionalSpaceFromTop = 0
         }
         if mergeBottomWithContentIfNeeded {
+            print("VALUE IS \(scrollViewHeight) - \(contentHeight) - \(bottomAttachedViewHeight)")
             let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight - 16 < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge

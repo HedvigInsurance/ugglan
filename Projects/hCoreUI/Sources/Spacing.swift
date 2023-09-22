@@ -1,6 +1,7 @@
 import Flow
 import Form
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 
@@ -24,5 +25,12 @@ extension Spacing: Viewable {
         bag += isHiddenSignal.bindTo(view, \.isHidden)
 
         return (view, bag)
+    }
+}
+
+extension Spacing: View {
+
+    public var body: some View {
+        Color.clear.frame(height: CGFloat(height))
     }
 }

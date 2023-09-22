@@ -20,6 +20,16 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         })
         quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
     }
+
+    var total: MonetaryAmount {
+        let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount })
+        return MonetaryAmount(amount: amount, currency: quotes.first?.premium.currency ?? "")
+    }
+
+    var movingDate: String {
+        return quotes.first?.startDate ?? ""
+    }
+
 }
 
 enum MovingFlowError: Error {
@@ -51,15 +61,50 @@ struct MoveAddress: Codable, Equatable, Hashable {
 }
 
 struct Quote: Codable, Equatable, Hashable {
+    typealias KeyValue = (key: String, value: String)
     let address: MoveAddress
     let premium: MonetaryAmount
     let numberCoInsured: Int
     let startDate: String
-
+    let displayName: String
+    let highlights: [Highlight]
+    let faqs: [FAQ]
+    let insurableLimits: [InsurableLimits]
+    let perils: [Perils]
+    let documents: [InsuranceDocument]
+    let contractType: Contract.TypeOfContract?
+    let id: String
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
+        id = UUID().uuidString
         address = .init(from: data.address.fragments.moveAddressFragment)
         premium = .init(fragment: data.premium.fragments.moneyFragment)
         numberCoInsured = data.numberCoInsured
-        startDate = data.startDate
+        startDate = data.startDate.localDateToDate?.displayDateDotFormat ?? data.startDate
+        let productVariantFragment = data.productVariant.fragments.productVariantFragment
+        displayName = productVariantFragment.displayName
+        highlights = productVariantFragment.highlights.compactMap({ .init($0) })
+        faqs = productVariantFragment.faq.compactMap({ .init($0) })
+        insurableLimits = productVariantFragment.insurableLimits.compactMap({ .init($0) })
+        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
+        documents = productVariantFragment.documents.compactMap({ .init($0) })
+        contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
+    }
+
+    var detailsInfo: [KeyValue] {
+        var list: [KeyValue] = []
+        list.append((L10n.changeAddressNewAddressLabel, address.street))
+        list.append((L10n.changeAddressNewPostalCodeLabel, address.postalCode))
+        list.append((L10n.changeAddressCoInsuredLabel, "\(numberCoInsured)"))
+        return list
+    }
+}
+
+struct InsuranceDocument: Codable, Equatable, Hashable {
+    let displayName: String
+    let url: String
+
+    init(_ data: OctopusGraphQL.ProductVariantFragment.Document) {
+        self.displayName = data.displayName
+        self.url = data.url
     }
 }
