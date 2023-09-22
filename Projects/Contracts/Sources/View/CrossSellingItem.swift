@@ -9,7 +9,7 @@ import hGraphQL
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
-    
+
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             store.send(.openCrossSellingWebUrl(url: url))
@@ -17,7 +17,7 @@ struct CrossSellingItem: View {
             store.send(.goToFreeTextChat)
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 16) {
             Image(uiImage: crossSell.image)

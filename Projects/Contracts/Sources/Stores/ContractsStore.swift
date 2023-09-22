@@ -8,7 +8,7 @@ import hGraphQL
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
-    
+
     public override func effects(
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction
@@ -82,13 +82,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .fetchContracts,
                 .fetchContractBundles,
             ]
-                .emitEachThenEnd
+            .emitEachThenEnd
         default:
             break
         }
         return nil
     }
-    
+
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
@@ -115,7 +115,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         default:
             break
         }
-        
+
         return newState
     }
 }

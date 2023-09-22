@@ -12,7 +12,7 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
-    
+
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -25,7 +25,7 @@ extension AppJourney {
         .configureTitle(L10n.claimsYourClaim)
         .hidesBottomBarWhenPushed
     }
-    
+
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
@@ -51,7 +51,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -125,7 +125,7 @@ extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
             let store: S = self.presentable.get()
-            
+
             store.send(action)
         }
     }
