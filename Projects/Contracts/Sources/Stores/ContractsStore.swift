@@ -83,11 +83,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .fetchContractBundles,
             ]
                 .emitEachThenEnd
-            //        case .didSignFocusedCrossSell:
-            //            return [
-            //                .fetch
-            //            ]
-            //            .emitEachThenEnd
         default:
             break
         }
