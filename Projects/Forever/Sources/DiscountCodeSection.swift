@@ -42,6 +42,7 @@ struct DiscountCodeSectionView: View {
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
+
                             hButton.LargeButton(type: .ghost) {
                                 store.send(.showChangeCodeDetail)
                             } content: {

@@ -235,6 +235,7 @@ extension DefaultStyling {
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
         setNavigationBarAppearance()
         setTabBarAppearance()
+        setSegmentedControllAppearance()
 
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
             .primaryTintColor
@@ -376,6 +377,28 @@ extension DefaultStyling {
             .shadowImage = UIColor.brandNew(.primaryText())
                 .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
         }
+    }
+
+    private static func setSegmentedControllAppearance() {
+        let font = Fonts.fontFor(style: .standardSmall)
+
+        UISegmentedControl.appearance()
+            .setTitleTextAttributes(
+                [
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.secondaryText),
+                    NSAttributedString.Key.font: font,
+                ],
+                for: .normal
+            )
+
+        UISegmentedControl.appearance()
+            .setTitleTextAttributes(
+                [
+                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText(false)),
+                    NSAttributedString.Key.font: font,
+                ],
+                for: .selected
+            )
     }
 
     private func setTabBarItemBadgeAppearance(_ itemAppearance: UITabBarItemAppearance) {

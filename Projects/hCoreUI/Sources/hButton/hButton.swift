@@ -479,6 +479,7 @@ struct _hButton<Content: View>: View {
 }
 
 public enum hButton {
+
     public struct LargeButton<Content: View>: View {
         var type: hButtonConfigurationType
         var content: () -> Content

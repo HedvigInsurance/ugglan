@@ -59,50 +59,5 @@ query ActiveContractBundles($locale: Locale!) {
     angelStories {
       addressChangeV2
     }
-    potentialCrossSells {
-      contractType
-      type
-      title
-      description
-      imageUrl
-      blurHash
-      callToAction
-      info(locale: $locale) {
-        displayName
-        aboutSection
-        contractPerils {
-            ...PerilFragment
-        }
-        insurableLimits {
-            ...InsurableLimitFragment
-        }
-        insuranceTerms {
-          displayName
-          url
-          type
-        }
-        highlights {
-            title
-            description
-        }
-        faq {
-            headline
-            body
-        }
-      }
-      action {
-        ... on CrossSellChat {
-          _
-        }
-        ... on CrossSellEmbark {
-          embarkStoryV2 {
-            name
-          }
-        }
-        ... on CrossSellWeb {
-          url
-        }
-      }
-    }
   }
 }
