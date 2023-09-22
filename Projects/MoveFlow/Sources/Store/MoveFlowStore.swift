@@ -21,10 +21,12 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                 let mutation = OctopusGraphQL.MoveIntentCreateMutation()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .map { data in
-                        self.removeLoading(for: .fetchMoveIntent)
                         if let moveIntent = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
+                            self.removeLoading(for: .fetchMoveIntent)
                             callback(.value(.setMoveIntent(with: .init(from: moveIntent))))
+                            callback(.end)
                         } else if let userError = data.moveIntentCreate.userError?.message {
+                            self.setError(userError, for: .fetchMoveIntent)
                             callback(.end(MovingFlowError.serverError(message: userError)))
                         }
                     }
@@ -44,26 +46,22 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                 let disposeBag = DisposeBag()
                 let intentId = self.state.movingFlowModel?.id ?? ""
                 let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
-                //                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
+                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
                 let minimumTime = Signal(after: 1.5).future
-                //                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
-                //                    .onValue { [weak self] mutation, minimumTime in
-                //                        if let data = mutation.value {
-                //                            if let userError = data.moveIntentCommit.userError?.message {
-                //                                self?.setError(userError, for: .confirmMoveIntent)
-                //                                callback(.end(MovingFlowError.serverError(message: userError)))
-                //                            } else {
-                //                                self?.removeLoading(for: .confirmMoveIntent)
-                //                                callback(.end)
-                //                            }
-                //                        } else if let _ = mutation.error {
-                //                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
-                //                        }
-                //                    }
-                disposeBag += minimumTime.onValue({ [weak self] _ in
-                    self?.removeLoading(for: .confirmMoveIntent)
-                    callback(.end)
-                })
+                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
+                    .onValue { [weak self] mutation, minimumTime in
+                        if let data = mutation.value {
+                            if let userError = data.moveIntentCommit.userError?.message {
+                                self?.setError(userError, for: .confirmMoveIntent)
+                                callback(.end(MovingFlowError.serverError(message: userError)))
+                            } else {
+                                self?.removeLoading(for: .confirmMoveIntent)
+                                callback(.end)
+                            }
+                        } else if let _ = mutation.error {
+                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
+                        }
+                    }
                 return disposeBag
             }
         default:
@@ -92,14 +90,13 @@ public enum MoveFlowAction: ActionProtocol {
 }
 
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
-    case openHousingTypeScreen
     case openAddressFillScreen
     case openHouseFillScreen
-    case goToFreeTextChat
-    case dismissMovingFlow
     case openConfirmScreen
     case openProcessingView
-    case openFailureScreen
+    case openFailureScreen(error: String)
+    case goToFreeTextChat
+    case dismissMovingFlow
     case goBack
 }
 

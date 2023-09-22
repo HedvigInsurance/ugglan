@@ -7,7 +7,11 @@ public struct MovingFlowHousingTypeView: View {
     @ObservedObject var vm = MovingFlowHousingTypeViewModel()
 
     public var body: some View {
-        LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
+
+        LoadingViewWithState(
+            MoveFlowStore.self,
+            .fetchMoveIntent
+        ) {
             hForm {}
                 .hFormTitle(.standard, .title3, L10n.changeAddressSelectHousingTypeTitle)
                 .hFormAttachToBottom {
@@ -35,6 +39,10 @@ public struct MovingFlowHousingTypeView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
+        } onLoading: {
+            DotsActivityIndicator(.standard).useDarkColor
+        } onError: { error in
+            MovingFlowFailure(error: error)
         }
     }
 }

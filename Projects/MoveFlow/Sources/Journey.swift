@@ -2,11 +2,16 @@ import Foundation
 import Presentation
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct MovingFlowJourneyNew {
 
+    public static func startMovingFlow() -> some JourneyPresentation {
+        openSelectHousingScreen()
+    }
+
     @JourneyBuilder
-    public static func getMovingFlowScreenForAction(
+    static func getMovingFlowScreenForAction(
         for action: MoveFlowAction,
         withHidesBack: Bool = false
     ) -> some JourneyPresentation {
@@ -17,23 +22,20 @@ public struct MovingFlowJourneyNew {
         }
     }
     @JourneyBuilder
-    public static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
+    static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
         if case let .navigation(navigationAction) = action {
             if case .openAddressFillScreen = navigationAction {
                 MovingFlowJourneyNew.openApartmentFillScreen()
             } else if case .openHouseFillScreen = navigationAction {
                 MovingFlowJourneyNew.openApartmentFillScreen()
-            } else if case .openHousingTypeScreen = navigationAction {
-                MovingFlowJourneyNew.openSelectHousingScreen()
             } else if case .openConfirmScreen = navigationAction {
                 MovingFlowJourneyNew.openConfirmScreen()
-            } else if case .openFailureScreen = navigationAction {
-                MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
+            } else if case let .openFailureScreen(error) = navigationAction {
+                MovingFlowJourneyNew.openFailureScreen(with: error)
+                    .configureTitle(L10n.InsuranceDetails.changeAddressButton)
             } else if case .openProcessingView = navigationAction {
                 MovingFlowJourneyNew.openProcessingView()
             } else if case .dismissMovingFlow = navigationAction {
-                DismissJourney()
-            } else if case .goToFreeTextChat = navigationAction {
                 DismissJourney()
             } else if case .goBack = navigationAction {
                 PopJourney()
@@ -41,7 +43,7 @@ public struct MovingFlowJourneyNew {
         }
     }
 
-    public static func openSelectHousingScreen() -> some JourneyPresentation {
+    static func openSelectHousingScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
             rootView: MovingFlowHousingTypeView(),
@@ -89,10 +91,10 @@ public struct MovingFlowJourneyNew {
         }
     }
 
-    static func openFailureScreen() -> some JourneyPresentation {
+    static func openFailureScreen(with error: String) -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowFailure()
+            rootView: MovingFlowFailure(error: error)
         ) {
             action in
             getMovingFlowScreenForAction(for: action, withHidesBack: true)

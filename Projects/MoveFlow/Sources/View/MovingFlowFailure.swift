@@ -4,25 +4,20 @@ import hCoreUI
 
 struct MovingFlowFailure: View {
     @PresentableStore var store: MoveFlowStore
+    let error: String
     var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                .resizable()
-                .frame(width: 22, height: 22)
-                .foregroundColor(hAmberColorNew.amber600)
-                .padding(.top, 270)
-
-            hText(
-                L10n.changeAddressErrorMessage,
-                style: .body
-            )
-            .multilineTextAlignment(.center)
-            .padding([.leading, .trailing], 16)
+            RetryView(title: nil, subtitle: error)
         }
+        .hDisableScroll
+        .hFormContentPosition(.center)
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.navigation(action: .goToFreeTextChat))
+                    store.send(.navigation(action: .dismissMovingFlow))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        store.send(.navigation(action: .goToFreeTextChat))
+                    }
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }
@@ -41,6 +36,6 @@ struct MovingFlowFailure: View {
 
 struct MovingFlowFailure_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowFailure()
+        MovingFlowFailure(error: "error")
     }
 }

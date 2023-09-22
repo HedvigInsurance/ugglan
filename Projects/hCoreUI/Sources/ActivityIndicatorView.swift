@@ -51,6 +51,21 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
                     self.error = nil
                 }
             }
+            .onAppear {
+                if let state = store.loadingSignal.value[action] {
+                    switch state {
+                    case .loading:
+                        showOnLoading = true
+                        self.error = nil
+                    case let .error(error):
+                        showOnLoading = false
+                        self.error = error
+                    }
+                } else {
+                    showOnLoading = false
+                    self.error = nil
+                }
+            }
     }
 
     @ViewBuilder

@@ -6,6 +6,7 @@ import Forever
 import Form
 import Foundation
 import Home
+import MoveFlow
 import Payment
 import Presentation
 import Profile
@@ -67,6 +68,7 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
+            .configureMoveFlowNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -259,6 +261,16 @@ extension JourneyPresentation {
                 }
             }
         )
+    }
+
+    public var configureMoveFlowNavigation: some JourneyPresentation {
+        onAction(MoveFlowStore.self) { action in
+            if case let .navigation(navigationAction) = action {
+                if case .goToFreeTextChat = navigationAction {
+                    AppJourney.freeTextChat().withDismissButton
+                }
+            }
+        }
     }
 
     public var configurePaymentNavigation: some JourneyPresentation {
