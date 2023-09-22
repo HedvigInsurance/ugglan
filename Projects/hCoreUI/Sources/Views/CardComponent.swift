@@ -2,11 +2,10 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct CardComponent<MainContent, BottomContent, MiddleContent>: View
-where MainContent: View, BottomContent: View, MiddleContent: View {
+public struct CardComponent<MainContent, BottomContent>: View
+where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
-    let middleContent: MiddleContent?
     let title: String?
     let subTitle: String?
     let bottomComponent: () -> BottomContent
@@ -15,14 +14,12 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
         onSelected: (() -> Void)? = nil,
         mainContent: MainContent? = nil,
         title: String? = nil,
-        middleContent: MiddleContent? = nil,
         subTitle: String? = nil,
         bottomComponent: @escaping () -> BottomContent
     ) {
         self.onSelected = onSelected
         self.mainContent = mainContent
         self.title = title
-        self.middleContent = middleContent
         self.subTitle = subTitle
         self.bottomComponent = bottomComponent
     }
@@ -31,14 +28,6 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center) {
                 mainContent
-                middleContent
-                Spacer()
-                if onSelected != nil {
-                    hCoreUIAssets.chevronRight.view
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColorNew.secondary)
-                }
                 Spacer()
                 if onSelected != nil {
                     hCoreUIAssets.chevronRight.view
@@ -94,7 +83,6 @@ struct CardComponent_Previews: PreviewProvider {
                 },
                 mainContent: Text("T"),
                 title: "TITLE",
-                middleContent: EmptyView(),
                 subTitle: "SUBTITLE",
                 bottomComponent: {
                     Text("BOTTOM COMPONENT")
@@ -116,7 +104,6 @@ struct FCardComponent_Previews: PreviewProvider {
                 },
                 mainContent: Text("T"),
                 title: "TITLE",
-                middleContent: EmptyView(),
                 subTitle: "SUBTITLE",
                 bottomComponent: {
                     Text("BOTTOM COMPONENT")

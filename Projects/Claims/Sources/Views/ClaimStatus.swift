@@ -27,7 +27,6 @@ struct ClaimStatus: View {
             },
             mainContent: ClaimPills(claim: claim),
             title: claim.title,
-            middleContent: EmptyView(),
             subTitle: claim.subtitle,
             bottomComponent: {
                 HStack(spacing: 6) {

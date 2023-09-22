@@ -14,7 +14,6 @@ struct ClaimDetailHeader: View {
             CardComponent(
                 mainContent: ClaimPills(claim: claim),
                 title: claim.title,
-                middleContent: EmptyView(),
                 subTitle: claim.subtitle,
                 bottomComponent: {
                     bottomView

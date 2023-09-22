@@ -185,7 +185,6 @@ struct MovingFlowConfirm: View {
             mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image)
                 .resizable()
                 .frame(width: 49, height: 49),
-            middleContent: returnMiddleComponent(insuranceName: insuranceName),
             bottomComponent: {
                 returnBottomComponent(
                     insuranceName: insuranceName,
