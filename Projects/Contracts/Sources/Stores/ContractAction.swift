@@ -7,7 +7,6 @@ import hCore
 import hGraphQL
 
 public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol, Hashable {
-    case detail(info: CrossSellInfo)
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case insuranceTerm(insuranceTerm: InsuranceTerm)
@@ -45,7 +44,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToMovingFlow
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
-    case openCrossSellingEmbark(name: String)
     case openCrossSellingWebUrl(url: URL)
     case openCrossSellingChat
 
@@ -53,7 +51,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case crossSellWebAction(url: URL)
     case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
     case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
-    case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contractId: String, title: String)
