@@ -36,15 +36,14 @@ struct DiscountCodeSectionView: View {
                                 store.send(
                                     .showShareSheetOnly(
                                         code: code,
-                                        //                                        discount: store.state.foreverData?.potentialDiscountAmount.formattedAmount ?? ""
                                         discount: store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
-                                            ?? ""
+                                        ?? ""
                                     )
                                 )
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
-
+                            
                             hButton.LargeButton(type: .ghost) {
                                 store.send(.showChangeCodeDetail)
                             } content: {

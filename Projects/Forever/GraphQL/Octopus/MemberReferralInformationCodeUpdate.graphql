@@ -1,24 +1,5 @@
 mutation MemberReferralInformationCodeUpdate($code: String!) {
   memberReferralInformationCodeUpdate(code: $code) {
-    referralInformation {
-      code
-      monthlyDiscountExcludingReferrals {
-        amount
-        currencyCode
-      }
-      monthlyDiscountPerReferral {
-        amount
-        currencyCode
-      }
-      referrals {
-        name
-        status
-        activeDiscount {
-          amount
-          currencyCode
-        }
-      }
-    }
     userError {
       message
     }

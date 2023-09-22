@@ -2,22 +2,22 @@ query MemberReferralInformation {
     currentMember {
         insuranceCost {
             monthlyDiscount {
-                ...MonetaryAmountFragment
+                ...MoneyFragment
             }
             monthlyGross {
-                ...MonetaryAmountFragment
+                ...MoneyFragment
             }
             monthlyNet {
-                ...MonetaryAmountFragment
+                ...MoneyFragment
             }
         }
         referralInformation {
             code
                 monthlyDiscountExcludingReferrals {
-                    ...MonetaryAmountFragment
+                    ...MoneyFragment
                 }
                 monthlyDiscountPerReferral {
-                    ...MonetaryAmountFragment
+                    ...MoneyFragment
                 }
                 referrals {
                     ...MemberReferralFragment
@@ -26,14 +26,9 @@ query MemberReferralInformation {
     }
 }
 
-fragment MonetaryAmountFragment on Money {
-  amount
-  currencyCode
-}
-
 fragment MemberReferralFragment on MemberReferral {
     activeDiscount {
-        ...MonetaryAmountFragment
+        ...MoneyFragment
     }
     name
     status

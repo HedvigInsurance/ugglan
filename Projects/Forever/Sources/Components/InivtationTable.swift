@@ -62,6 +62,7 @@ struct InvitationTable: View {
                         hRow {
                             hText(L10n.foreverReferralListLabel)
                         }
+                        .noHorizontalPadding()
                         ForEach(foreverData.referrals, id: \.hashValue) { row in
                             InvitationRow(row: row)
                         }
@@ -70,8 +71,6 @@ struct InvitationTable: View {
                     getTotalRow(foreverData)
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.horizontal, -16)
-                //                }
             }
         }
     }
