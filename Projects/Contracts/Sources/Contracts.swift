@@ -117,7 +117,6 @@ extension Contracts: View {
 public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
-    case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingWebUrl(url: URL)
     case startNewTermination(type: TerminationNavigationAction)
 }
@@ -140,8 +139,6 @@ extension Contracts {
                     resultJourney: resultJourney,
                     openDetails: false
                 )
-            } else if case let .openCrossSellingDetail(crossSell) = action {
-                resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingWebUrl(url) = action {
                 resultJourney(.openCrossSellingWebUrl(url: url))
             } else if case .goToFreeTextChat = action {
@@ -179,10 +176,6 @@ extension Contracts {
                 .configureTitle(L10n.contractChangeInformationTitle)
             }
         }
-        .onPresent({
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            store.send(.resetSignedCrossSells)
-        })
         .configureTitle(
             filter.displaysActiveContracts
             ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle

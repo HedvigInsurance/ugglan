@@ -72,8 +72,6 @@ extension AppJourney {
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
-            case let .openCrossSellingDetail(crossSell):
-                AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):

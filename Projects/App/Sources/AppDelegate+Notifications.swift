@@ -20,9 +20,9 @@ extension AppDelegate {
         bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
             .onValue { _ in
                 let giraffe: hGiraffe = Dependencies.shared.resolve()
-
+                
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-
+                
                 giraffe.client
                     .perform(
                         mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
@@ -36,11 +36,11 @@ extension AppDelegate {
                     }
             }
     }
-
+    
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         log.info("Failed to register for remote notifications with error: \(error))")
     }
-
+    
     func observeNotificationsSettings() {
         NotificationCenter.default.addObserver(
             forName: UIApplication.didBecomeActiveNotification,
@@ -69,10 +69,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 work()
             }
     }
-
+    
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
         hAnalyticsEvent.notificationOpened(type: notificationType).send()
-
+        
         if notificationType == "NEW_MESSAGE" {
             performPostLoggedIn {
                 let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -93,7 +93,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         .journeyThenDismiss
                     )
                     .onValue({ _ in
-
+                        
                     })
             }
         } else if notificationType == "PAYMENT_FAILED" {
@@ -106,7 +106,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         .journeyThenDismiss
                     )
                     .onValue({ _ in
-
+                        
                     })
             }
         } else if notificationType == "OPEN_FOREVER_TAB" {
@@ -123,23 +123,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                 ugglanStore.send(.makeTabActive(deeplink: .insurances))
-
-                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-
-                guard let crossSellType = userInfo["CROSS_SELL_ID"] as? String else { return }
-
-                self.bag += contractsStore.stateSignal
-                    .map { $0.crossSells }
-                    .compactMap {
-                        $0.first(where: { crossSell in crossSell.typeOfContract == crossSellType })
-                    }
-                    .onFirstValue { crossSell in
-                        contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
-                    }
             }
         }
     }
-
+    
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -147,14 +134,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         let userInfo = response.notification.request.content.userInfo
         guard let notificationType = userInfo["TYPE"] as? String else { return }
-
+        
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
-
+        
         completionHandler()
     }
-
+    
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -165,14 +152,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             body: notification.request.content.title,
             subtitle: notification.request.content.body
         )
-
+        
         self.bag += toast.onTap.onValue {
             let userInfo = notification.request.content.userInfo
             guard let notificationType = userInfo["TYPE"] as? String else { return }
-
+            
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
-
+        
         if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
     }
 }

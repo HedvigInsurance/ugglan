@@ -9,9 +9,7 @@ struct CrossSellingStack: View {
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
-                state.crossSells.filter { crossSell in
-                    !state.signedCrossSells.contains(crossSell)
-                }
+                state.crossSells
             }
         ) { crossSells in
             if !crossSells.isEmpty {

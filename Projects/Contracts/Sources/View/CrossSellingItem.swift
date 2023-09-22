@@ -14,7 +14,7 @@ struct CrossSellingItem: View {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             store.send(.openCrossSellingWebUrl(url: url))
         } else {
-            store.send(.openCrossSellingChat)
+            store.send(.goToFreeTextChat)
         }
     }
     

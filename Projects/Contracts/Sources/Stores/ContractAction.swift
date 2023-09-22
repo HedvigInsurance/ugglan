@@ -6,25 +6,12 @@ import TerminateContracts
 import hCore
 import hGraphQL
 
-public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol, Hashable {
-    case detail(info: CrossSellInfo)
-    case peril(peril: Perils)
-    case insurableLimit(insurableLimit: InsurableLimits)
-    case insuranceTerm(insuranceTerm: InsuranceTerm)
-}
-
 public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case document(url: URL, title: String)
     case openInsuranceUpdate(contract: Contract)
     case dismissUpcomingChanges
-}
-
-public enum CrossSellingFAQListNavigationAction: ActionProtocol, Hashable {
-    case list
-    case detail(faq: FAQ)
-    case chat
 }
 
 public enum ContractAction: ActionProtocol, Hashable {
@@ -44,20 +31,12 @@ public enum ContractAction: ActionProtocol, Hashable {
     case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
-    case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingWebUrl(url: URL)
-    case openCrossSellingChat
 
-    case crossSellWebAction(url: URL)
-    case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
-    case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
-    case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
-    case didSignFocusedCrossSell
-    case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
     case dismisscontractDetailNavigation
