@@ -15,46 +15,47 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        ScrollViewReader { value in
-            hForm {
-                VStack(spacing: 16) {
-                    HeaderView { scrollTo = 2 }.id(0)
-                    DiscountCodeSectionView().id(1)
-                    InvitationTable().id(2)
+        LoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
+            ScrollViewReader { value in
+                hForm {
+                    VStack(spacing: 16) {
+                        HeaderView { scrollTo = 2 }.id(0)
+                        DiscountCodeSectionView().id(1)
+                        InvitationTable().id(2)
+                    }
+                }
+                .onChange(of: scrollTo) { newValue in
+                    if newValue != 0 {
+                        withAnimation {
+                            value.scrollTo(newValue, anchor: .top)
+                        }
+                        scrollTo = 0
+                    }
                 }
             }
-            .onChange(of: scrollTo) { newValue in
-                if newValue != 0 {
-                    withAnimation {
-                        value.scrollTo(newValue, anchor: .top)
-                    }
-                    scrollTo = 0
-                }
+            .onAppear {
+                store.send(.fetch)
             }
-        }
-        .onAppear {
-            store.send(.fetch)
-        }
-        .navigationBarItems(
-            trailing:
-                PresentableStoreLens(
-                    ForeverStore.self,
-                    getter: { state in
-                        state.foreverData?.potentialDiscountAmount
-                    }
-                ) { discountAmount in
-                    if let discountAmount = discountAmount {
-
+            .navigationBarItems(
+                trailing:
+                    PresentableStoreLens(
+                        ForeverStore.self,
+                        getter: { state in
+                            state.foreverData?.monthlyDiscountPerReferral
+                        }
+                    ) { discountAmount in
                         Button(action: {
-                            store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
+                            if let discountAmount {
+                                store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
+                            }
                         }) {
                             Image(uiImage: hCoreUIAssets.infoIcon.image)
                                 .foregroundColor(hTextColorNew.primary)
                         }
                     }
-                }
-        )
-        .trackOnAppear(hAnalyticsEvent.screenView(screen: .forever))
+            )
+            .trackOnAppear(hAnalyticsEvent.screenView(screen: .forever))
+        }
     }
 }
 
