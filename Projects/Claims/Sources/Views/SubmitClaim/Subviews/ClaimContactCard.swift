@@ -70,6 +70,7 @@ struct ClaimContactCard: View {
             }
 
             hText(label)
+                .fixedSize()
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColorNew.tertiary)
                 .padding(.bottom, 8)
