@@ -39,10 +39,12 @@ public struct RetryView: View {
                                 .foregroundColor(hTextColorNew.secondary)
                                 .multilineTextAlignment(.center)
                         }
-                        hButton.SmallButton(type: .primary) {
-                            action?()
-                        } content: {
-                            hText(retryTitle)
+                        if let action {
+                            hButton.SmallButton(type: .primary) {
+                                action()
+                            } content: {
+                                hText(retryTitle)
+                            }
                         }
                     }
                     .padding(8)

@@ -34,7 +34,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func movingFlow() -> some JourneyPresentation {
-        MovingFlowJourneyNew.openSelectHousingScreen()
+        MovingFlowJourneyNew.startMovingFlow()
     }
 
     static var movingFlowEmbark: some JourneyPresentation {
