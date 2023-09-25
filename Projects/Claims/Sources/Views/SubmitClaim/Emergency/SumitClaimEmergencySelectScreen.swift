@@ -3,55 +3,71 @@ import hCore
 import hCoreUI
 
 struct SumitClaimEmergencySelectScreen: View {
-    @State var selectedYes: Bool = true
+    @State var selectedValue: Bool = true
     @PresentableStore var store: SubmitClaimStore
-
+    @State var isLoading: Bool = false
+    let title: ()->String
+    
+    init(
+        title: @escaping ()->String
+    ) {
+        self.title = title
+    }
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .title1, L10n.submitClaimEmergencyTitle)
-            .hDisableScroll
+            .hFormTitle(.small, .title1, title())
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     buttonView()
                     hButton.LargeButtonPrimary {
-                        if selectedYes {
-                            store.send(.navigationAction(action: .openEmergencyScreen))
-                        } else {
-                            /** TODO: SEND MUTATION **/
-                        }
+                        store.send(.emergencyConfirmRequest(isEmergency: selectedValue))
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
+                    .hButtonIsLoading(isLoading)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
             }
-    }
-
-    func buttonView() -> some View {
-        HStack(spacing: 8) {
-            if selectedYes {
-                hButton.MediumButtonPrimaryAlt {
-                } content: {
-                    hText(L10n.General.yes)
-                }
-            } else {
-                hButton.MediumButtonSecondary {
-                    selectedYes = true
-                } content: {
-                    hText(L10n.General.yes)
+            .hDisableScroll
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                withAnimation {
+                    isLoading = value[.postConfirmEmergency] == .loading
                 }
             }
-            if selectedYes {
-                hButton.MediumButtonSecondary {
-                    selectedYes = false
-                } content: {
-                    hText(L10n.General.no)
-                }
-            } else {
-                hButton.MediumButtonPrimaryAlt {
-                } content: {
-                    hText(L10n.General.no)
+    }
+    
+    func buttonView() -> some View {
+        
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.emergencyConfirm
+            }
+        ) { confirmEmergency in
+            HStack(spacing: 8) {
+                ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
+                    if option.value == selectedValue {
+                        hButton.MediumButtonPrimaryAlt {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
+                        } content: {
+                            withAnimation(.spring()) {
+                                hText(option.displayName)
+                            }
+                        }
+                    } else {
+                        hButton.MediumButtonSecondary {
+                            selectedValue = option.value
+                        } content: {
+                            hText(option.displayName)
+                        }
+                    }
                 }
             }
         }
@@ -60,6 +76,8 @@ struct SumitClaimEmergencySelectScreen: View {
 
 struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SumitClaimEmergencySelectScreen()
+        SumitClaimEmergencySelectScreen {
+            return L10n.submitClaimEmergencyTitle
+        }
     }
 }

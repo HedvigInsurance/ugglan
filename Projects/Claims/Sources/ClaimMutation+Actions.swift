@@ -62,6 +62,14 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimContractSelectStepFragment {
             return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimDeflectEmergencyStepFragment {
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimConfirmEmergencyStepFragment {
+            return .stepModelAction(action: .setConfirmDeflectEmergencyStepModel(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimDeflectPestsStepFragment {
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimDeflectGlassDamageStepFragment {
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
@@ -71,8 +79,8 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 extension GraphQLMutation {
     func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<SubmitClaimsAction>
     where
-        ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
-        Self.Data: ClaimStepProgress
+    ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
+    Self.Data: ClaimStepProgress
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
@@ -86,7 +94,7 @@ extension GraphQLMutation {
                     }
                     callback(.value(.setNewClaimContext(context: data.getContext())))
                     if let clearedSteps = data.getProgress().clearedSteps,
-                        let totalSteps = data.getProgress().totalSteps
+                       let totalSteps = data.getProgress().totalSteps
                     {
                         if clearedSteps != 0 {
                             let progressValue = Float(Float(clearedSteps) / Float(totalSteps)) * 0.7 + 0.3
@@ -122,14 +130,14 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
     func getContext() -> String {
         return self.flowClaimStart.context
     }
-
+    
     func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimStart.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimStart.progress?.totalSteps ?? 0
         )
     }
-
+    
     func getStepId() -> String {
         return self.flowClaimStart.id
     }
@@ -144,6 +152,12 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data:
 extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepContext {
     func getContext() -> String {
         return self.flowClaimContractSelectNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimConfirmEmergencyNext.context
     }
 }
 
@@ -203,6 +217,15 @@ extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepProg
         return (
             clearedSteps: self.flowClaimContractSelectNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimContractSelectNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimConfirmEmergencyNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimConfirmEmergencyNext.progress?.totalSteps ?? 0
         )
     }
 }
@@ -302,6 +325,12 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: Clai
 extension OctopusGraphQL.FlowClaimContractSelectNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
         return .postContractSelect
+    }
+}
+
+extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation: ClaimStepLoadingType {
+    func getLoadingType() -> ClaimsLoadingType {
+        return .postConfirmEmergency
     }
 }
 

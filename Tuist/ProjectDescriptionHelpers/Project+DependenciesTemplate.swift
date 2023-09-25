@@ -21,6 +21,7 @@ public enum ExternalDependencies: CaseIterable {
     case authlib
     case tagkit
     case introspect
+    case svgkit
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -100,6 +101,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
             ]
+        case .svgkit:
+            return [
+                .package(url: "https://github.com/SVGKit/SVGKit", .upToNextMajor(from: "3.0.0"))
+            ]
         }
     }
 
@@ -166,6 +171,8 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .introspect:
             return [.package(product: "Introspect")]
+        case .svgkit:
+            return [.package(product: "SVGKit")]
         }
     }
 }

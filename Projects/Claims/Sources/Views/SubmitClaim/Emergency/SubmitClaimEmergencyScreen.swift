@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Kingfisher
 
 struct SubmitClaimEmergencyScreen: View {
     var body: some View {
@@ -9,14 +10,24 @@ struct SubmitClaimEmergencyScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimEmergencyInfoLabel, type: .attention)
                 }
-                ClaimEmergencyContactCard(
-                    icon: hCoreUIAssets.hedvigBigLogo,
-                    label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                    buttonText: L10n.submitClaimGlobalAssistanceCallLabel("+45 38 48 94 61"),
-                    cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                    footnote: L10n.submitClaimGlobalAssistanceFootnote
-                )
-
+                
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.emergencyStep
+                    }
+                ) { emergency in
+                    ForEach(emergency?.partners ?? [], id: \.id) { partner in
+                        ClaimEmergencyContactCard(
+                            imageUrl: partner.imageUrl,
+                            label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                            phoneNumber: partner.phoneNumber,
+                            cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                            footnote: L10n.submitClaimGlobalAssistanceFootnote
+                        )
+                    }
+                }
+                
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimEmergencyInsuranceCoverTitle)
@@ -26,7 +37,7 @@ struct SubmitClaimEmergencyScreen: View {
                 }
                 .padding(.top, 16)
                 .sectionContainerStyle(.transparent)
-
+                
                 VStack(spacing: 4) {
                     InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
@@ -40,7 +51,7 @@ struct SubmitClaimEmergencyScreen: View {
                         title: L10n.submitClaimRebookTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
-
+                    
                     InfoExpandableView(
                         title: L10n.changeAddressQa,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
@@ -59,33 +70,36 @@ struct ClaimEmergencyContactCard: View {
     @PresentableStore var store: SubmitClaimStore
     var cardTitle: String?
     var footnote: String?
-    var icon: ImageAsset
+    var imageUrl: String
     var label: String
-    var buttonText: String
-
+    var phoneNumber: String?
+    
     init(
-        icon: ImageAsset,
+        imageUrl: String,
         label: String,
-        buttonText: String,
+        phoneNumber: String? = nil,
         cardTitle: String? = nil,
         footnote: String? = nil
     ) {
-        self.icon = icon
+        self.imageUrl = imageUrl
         self.label = label
-        self.buttonText = buttonText
+        self.phoneNumber = phoneNumber
         self.cardTitle = cardTitle
         self.footnote = footnote
     }
-
+    
+    
     var body: some View {
         hSection {
             VStack(spacing: 16) {
-                Image(uiImage: icon.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 80)
-                    .foregroundColor(hTextColorNew.negative)
-                    .padding(.vertical, 8)
+                if let imageUrl = URL(string: imageUrl) {
+                    KFImage(imageUrl)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 80)
+                        .foregroundColor(hTextColorNew.negative)
+                        .padding(.vertical, 8)
+                }
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
@@ -99,12 +113,18 @@ struct ClaimEmergencyContactCard: View {
                 }
                 .padding(.bottom, 8)
                 hButton.MediumButtonSecondaryAlt {
-
+                    if let phoneNumber {
+                        let tel = "tel://"
+                        let formattedString = tel + phoneNumber
+                        if let url = URL(string: formattedString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
                 } content: {
-                    hText(buttonText)
+                    hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
                 }
                 .padding(.horizontal, 16)
-
+                
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColorNew.tertiary)
@@ -113,7 +133,7 @@ struct ClaimEmergencyContactCard: View {
             .padding(.vertical, 24)
         }
         .sectionContainerStyle(.black)
-
+        
     }
 }
 

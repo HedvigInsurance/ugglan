@@ -23,6 +23,10 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimSuccessStepFragment
     ...FlowClaimSummaryStepFragment
     ...FlowClaimContractSelectStepFragment
+    ...FlowClaimDeflectEmergencyStepFragment
+    ...FlowClaimConfirmEmergencyStepFragment
+    ...FlowClaimDeflectGlassDamageStepFragment
+    ...FlowClaimDeflectPestsStepFragment
   }
 }
 
@@ -57,8 +61,37 @@ fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
 fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
     id
     options {
-        displayName
-        id
+        ...FlowClaimContractOptionFragment
+    }
+}
+
+fragment FlowClaimDeflectEmergencyStepFragment on FlowClaimDeflectEmergencyStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimConfirmEmergencyStepFragment on FlowClaimConfirmEmergencyStep {
+    id
+    text
+    confirmEmergency
+    options {
+        ...FlowClaimConfirmEmergencyOptionFragment
+    }
+}
+
+fragment FlowClaimDeflectGlassDamageStepFragment on FlowClaimDeflectGlassDamageStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
     }
 }
 
@@ -158,4 +191,21 @@ fragment FlowClaimAudioContentFragment on FlowClaimAudioContent {
 fragment ProgressFragment on FlowProgress {
     clearedSteps
     totalSteps
+}
+
+fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
+    id
+    imageUrl
+    url
+    phoneNumber
+}
+
+fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
+    displayName
+    id
+}
+
+fragment FlowClaimConfirmEmergencyOptionFragment on FlowClaimConfirmEmergencyOption {
+    displayName
+    displayValue: value
 }

@@ -5,27 +5,28 @@ import hCore
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case submitClaimOpenFreeTextChat
-
+    
     case fetchEntrypointGroups
     case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
-
+    
     case submitAudioRecording(audioURL: URL)
     case resetAudioRecording
     case submitDamage(damage: [String])
-
+    
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
-
+    
     case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceAndLocationRequest
     case singleItemRequest(purchasePrice: Double?)
+    case emergencyConfirmRequest(isEmergency: Bool)
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
-
+    
     case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
     case setPurchasePrice(priceOfPurchase: Double?)
@@ -36,7 +37,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
-
+    
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
@@ -68,21 +69,22 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingOptionScreen
     case openGlassDamageScreen
     case openEmergencyScreen
+    case openConfirmEmergencyScreen
     case openPestsScreen
     case openInfoScreen(title: String?, description: String?)
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
-
+    
     public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         public let rawValue: UInt
-
+        
         public init(rawValue: UInt) {
             self.rawValue = rawValue
         }
-
+        
         static let location = SubmitClaimOption(rawValue: 1 << 0)
         static let date = SubmitClaimOption(rawValue: 1 << 1)
-
+        
         var title: String {
             let hasLocation = self.contains(.location)
             let hasDate = self.contains(.date)
@@ -99,20 +101,20 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsStepModelAction: ActionProtocol, Hashable {
-
+    
     public struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
     }
-
+    
     public struct SummaryStepModels: ActionProtocol, Hashable {
         let summaryStep: FlowClaimSummaryStepModel?
         let singleItemStepModel: FlowClamSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
     }
-
+    
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
     case setDateOfOccurrencePlusLocation(model: DateOfOccurrencePlusLocationStepModels)
     case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)
@@ -124,6 +126,8 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setFailedStep(model: FlowClaimFailedStepModel)
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
+    case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
+    case setDeflectModel(model: FlowClaimDeflectStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
@@ -136,4 +140,5 @@ public enum ClaimsLoadingType: LoadingProtocol {
     case postSingleItemCheckout
     case postAudioRecording
     case postContractSelect
+    case postConfirmEmergency
 }

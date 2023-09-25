@@ -38,6 +38,7 @@ struct InfoExpandableView: View {
                 }
             }
             .hWithoutDivider
+            .contentShape(Rectangle())
 
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
