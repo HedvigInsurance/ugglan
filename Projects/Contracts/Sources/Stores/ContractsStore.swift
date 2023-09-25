@@ -83,11 +83,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .fetchContractBundles,
             ]
             .emitEachThenEnd
-        case .didSignFocusedCrossSell:
-            return [
-                .fetch
-            ]
-            .emitEachThenEnd
         default:
             break
         }
@@ -117,14 +112,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
-        case let .setFocusedCrossSell(focusedCrossSell):
-            newState.focusedCrossSell = focusedCrossSell
-        case .didSignFocusedCrossSell:
-            newState.focusedCrossSell = nil
-            newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }]
-                .flatMap { $0 }
-        case .resetSignedCrossSells:
-            newState.signedCrossSells = []
         default:
             break
         }

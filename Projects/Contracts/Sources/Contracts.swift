@@ -176,10 +176,6 @@ extension Contracts {
                 .configureTitle(L10n.contractChangeInformationTitle)
             }
         }
-        .onPresent({
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            store.send(.resetSignedCrossSells)
-        })
         .configureTitle(
             filter.displaysActiveContracts
                 ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle

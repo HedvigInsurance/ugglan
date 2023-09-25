@@ -26,15 +26,6 @@ extension AppJourney {
         .hidesBottomBarWhenPushed
     }
 
-    static func claimsInfoJourney() -> some JourneyPresentation {
-        Journey(ClaimsInfoPager())
-            .onAction(ClaimsStore.self) { action in
-                if case .submitNewClaim = action {
-                    DismissJourney()
-                }
-            }
-    }
-
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
