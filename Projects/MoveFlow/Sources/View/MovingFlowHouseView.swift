@@ -4,8 +4,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowNewAddressView: View {
-    @StateObject var vm = MovingFlowNewAddressViewModel()
+struct MovingFlowHouseView: View {
+    @StateObject var vm = MovingFlowHouseViewModel()
 
     var body: some View {
         hForm {
@@ -106,19 +106,19 @@ struct MovingFlowNewAddressView: View {
     }
 }
 
-struct SelectAddress_Previews: PreviewProvider {
+struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return MovingFlowNewAddressView()
+        return MovingFlowHouseView()
     }
 }
 
-enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant {
-    static var last: MovingFlowNewAddressViewFieldType {
-        return MovingFlowNewAddressViewFieldType.accessDate
+enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
+    static var last: MovingFlowHouseFieldType {
+        return MovingFlowHouseFieldType.accessDate
     }
 
-    var next: MovingFlowNewAddressViewFieldType? {
+    var next: MovingFlowHouseFieldType? {
         switch self {
         case .address:
             return .postalCode
@@ -141,8 +141,8 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant {
 
 }
 
-class MovingFlowNewAddressViewModel: ObservableObject {
-    @Published var type: MovingFlowNewAddressViewFieldType?
+class MovingFlowHouseViewModel: ObservableObject {
+    @Published var type: MovingFlowHouseFieldType?
     @Published var address: String = ""
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""
@@ -161,7 +161,37 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     var disposeBag = DisposeBag()
     func continuePressed() {
         if isInputValid() {
-            store.send(.setNewAddress(with: self.toNewAddressModel()))
+            store.setLoading(for: .requestMoveIntent)
+            let input = OctopusGraphQL.MoveIntentRequestInput(
+                moveToAddress: .init(
+                    street: address,
+                    postalCode: postalCode
+                ),
+                moveFromAddressId: store.state.movingFlowModel?.currentHomeAddresses.first?.id ?? "",
+                movingDate: accessDate?.localDateString ?? "",
+                numberCoInsured: Int(nbOfCoInsured) ?? 0,
+                squareMeters: Int(squareArea) ?? 0,
+                apartment: .init(subType: .own, isStudent: false)
+            )
+
+            let mutation = OctopusGraphQL.MoveIntentRequestMutation(
+                intentId: store.state.movingFlowModel?.id ?? "",
+                input: input
+            )
+            disposeBag += octopus.client.perform(mutation: mutation)
+                .onValue({ [weak self] value in
+                    if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
+                        let model = MovingFlowModel(from: fragment)
+                        self?.store.send(.setMoveIntent(with: model))
+                        self?.store.send(.navigation(action: .openConfirmScreen))
+                        self?.store.removeLoading(for: .requestMoveIntent)
+                    } else if let error = value.moveIntentRequest.userError?.message {
+                        self?.store.setError(error, for: .requestMoveIntent)
+                    }
+                })
+                .onError({ [weak self] error in
+                    self?.store.setError(L10n.generalError, for: .requestMoveIntent)
+                })
         }
     }
 
@@ -178,17 +208,5 @@ class MovingFlowNewAddressViewModel: ObservableObject {
             }
         }
         return validate()
-    }
-}
-
-extension MovingFlowNewAddressViewModel {
-    func toNewAddressModel() -> NewAddressModel {
-        NewAddressModel(
-            address: self.address,
-            postalCode: self.postalCode,
-            movingDate: accessDate?.localDateString ?? "",
-            numberOfCoinsured: Int(nbOfCoInsured) ?? 0,
-            squareMeters: Int(squareArea) ?? 0
-        )
     }
 }

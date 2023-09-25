@@ -121,7 +121,7 @@ struct MovingFlowConfirm: View {
         hSection {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.postMoveIntent)
+                    store.send(.confirmMoveIntent)
                     store.send(.navigation(action: .openProcessingView))
                 } content: {
                     hText(L10n.changeAddressAcceptOffer, style: .body)

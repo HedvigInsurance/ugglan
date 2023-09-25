@@ -27,7 +27,7 @@ public struct MovingFlowJourneyNew {
             if case .openAddressFillScreen = navigationAction {
                 MovingFlowJourneyNew.openApartmentFillScreen()
             } else if case .openHouseFillScreen = navigationAction {
-                MovingFlowJourneyNew.openApartmentFillScreen()
+                MovingFlowJourneyNew.openHouseFillScreen()
             } else if case .openConfirmScreen = navigationAction {
                 MovingFlowJourneyNew.openConfirmScreen()
             } else if case let .openFailureScreen(error) = navigationAction {
@@ -61,7 +61,18 @@ public struct MovingFlowJourneyNew {
     static func openApartmentFillScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowApartmentView()
+            rootView: MovingFlowNewAddressView()
+        ) {
+            action in
+            getMovingFlowScreenForAction(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    static func openHouseFillScreen() -> some JourneyPresentation {
+        HostingJourney(
+            MoveFlowStore.self,
+            rootView: MovingFlowHouseView()
         ) {
             action in
             getMovingFlowScreenForAction(for: action)

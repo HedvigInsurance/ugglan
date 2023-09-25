@@ -2,6 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct MovingFlowHousingTypeView: View {
     @ObservedObject var vm = MovingFlowHousingTypeViewModel()
@@ -62,11 +63,12 @@ class MovingFlowHousingTypeViewModel: ObservableObject {
     }
 
     func continuePressed() {
+        store.send(.setHousingType(with: HousingType(rawValue: selectedHousingType ?? "") ?? .apartmant))
         store.send(.navigation(action: .openAddressFillScreen))
     }
 }
 
-enum HousingType: String, CaseIterable {
+public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
     case apartmant
     case rental
     case house
@@ -79,6 +81,17 @@ enum HousingType: String, CaseIterable {
             return L10n.changeAddressApartmentRentLabel
         case .house:
             return L10n.changeAddressVillaLabel
+        }
+    }
+
+    var asMoveApartmentSubType: OctopusGraphQL.MoveApartmentSubType {
+        switch self {
+        case .apartmant:
+            return .own
+        case .rental:
+            return .rent
+        case .house:
+            return .own
         }
     }
 }
