@@ -7,13 +7,13 @@ public struct Referral: Hashable, Codable {
     let name: String
     let activeDiscount: MonetaryAmount?
     let status: State
-    
+
     public init(
         from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.Referral
     ) {
         self.name = data.name
         if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-            self.activeDiscount = MonetaryAmount(fragment:activeDiscount )
+            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
         } else {
             activeDiscount = MonetaryAmount(amount: "", currency: "")
         }
@@ -27,7 +27,7 @@ public struct Referral: Hashable, Codable {
             self.status = .pending
         }
     }
-    
+
     public init(
         name: String,
         activeDiscount: MonetaryAmount? = nil,
@@ -37,7 +37,7 @@ public struct Referral: Hashable, Codable {
         self.activeDiscount = activeDiscount
         self.status = status
     }
-    
+
     public enum State: String, Codable {
         case terminated
         case pending
@@ -63,7 +63,7 @@ public struct ForeverData: Codable, Equatable {
         self.monthlyDiscountPerReferral = monthlyDiscountPerReferral
         self.referrals = referrals
     }
-    
+
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
     let monthlyDiscount: MonetaryAmount
@@ -71,13 +71,13 @@ public struct ForeverData: Codable, Equatable {
     var discountCode: String
     let referrals: [Referral]
     let monthlyDiscountPerReferral: MonetaryAmount
-    
+
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
 }
 
 public enum ForeverChangeCodeError: Error, LocalizedError, Equatable {
     case errorMessage(message: String)
-    
+
     public var errorDescription: String? {
         switch self {
         case let .errorMessage(message):
@@ -94,7 +94,7 @@ public protocol ForeverService {
 
 extension ForeverData {
     static func mock() -> ForeverData {
-        
+
         let foreverData = ForeverData(
             grossAmount: .sek(100),
             netAmount: .sek(60),

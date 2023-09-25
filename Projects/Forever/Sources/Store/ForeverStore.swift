@@ -8,7 +8,7 @@ import hGraphQL
 
 public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, ForeverLoadingType> {
     @Inject var octopus: hOctopus
-    
+
     public override func effects(
         _ getState: @escaping () -> ForeverState,
         _ action: ForeverAction
@@ -22,26 +22,32 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
                     .onValue { data in
                         let grossAmount = data.currentMember.insuranceCost.monthlyGross
                         let grossAmountMonetary = MonetaryAmount(fragment: grossAmount.fragments.moneyFragment)
-                        
+
                         let netAmount = data.currentMember.insuranceCost.monthlyNet
                         let netAmountMonetary = MonetaryAmount(fragment: netAmount.fragments.moneyFragment)
-                        
+
                         let monthlyDiscount = data.currentMember.insuranceCost.monthlyDiscount
-                        let monthlyDiscountAmountMonetary = MonetaryAmount(fragment: monthlyDiscount.fragments.moneyFragment)
-                        
+                        let monthlyDiscountAmountMonetary = MonetaryAmount(
+                            fragment: monthlyDiscount.fragments.moneyFragment
+                        )
+
                         let discountCode = data.currentMember.referralInformation.code
                         let monthlyDiscountExcludingReferrals = data.currentMember.referralInformation
                             .monthlyDiscountExcludingReferrals
-                        let monthlyDiscountExcludingReferralsMonetary = MonetaryAmount(fragment: monthlyDiscountExcludingReferrals.fragments.moneyFragment)
-                        
+                        let monthlyDiscountExcludingReferralsMonetary = MonetaryAmount(
+                            fragment: monthlyDiscountExcludingReferrals.fragments.moneyFragment
+                        )
+
                         let monthlyDiscountPerReferral = data.currentMember.referralInformation
                             .monthlyDiscountPerReferral
-                        let monthlyDiscountPerReferralMonetary = MonetaryAmount(fragment: monthlyDiscountPerReferral.fragments.moneyFragment)
-                        
+                        let monthlyDiscountPerReferralMonetary = MonetaryAmount(
+                            fragment: monthlyDiscountPerReferral.fragments.moneyFragment
+                        )
+
                         let referrals: [Referral] = data.currentMember.referralInformation.referrals.map { referral in
                             Referral(from: referral)
                         }
-                        
+
                         callback(
                             .value(
                                 .setForeverData(
@@ -57,7 +63,7 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
                                 )
                             )
                         )
-                        
+
                     }
                     .onError({ error in
                         self.setError(L10n.General.errorBody, for: .fetchForeverData)
@@ -69,10 +75,10 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         }
         return nil
     }
-    
+
     public override func reduce(_ state: ForeverState, _ action: ForeverAction) -> ForeverState {
         var newState = state
-        
+
         switch action {
         case let .hasSeenFebruaryCampaign(hasSeenFebruaryCampaign):
             newState.hasSeenFebruaryCampaign = hasSeenFebruaryCampaign
@@ -81,7 +87,7 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         default:
             break
         }
-        
+
         return newState
     }
 }

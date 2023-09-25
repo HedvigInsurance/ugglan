@@ -11,9 +11,9 @@ import hGraphQL
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
     @State var scrollTo: Int = -1
-    
+
     public init() {}
-    
+
     public var body: some View {
         LoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
             ScrollViewReader { value in
@@ -77,7 +77,7 @@ extension ForeverView {
         .configureForeverTabBarItem
         .configureTabBarBorder
     }
-    
+
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
         HostingJourney(
             rootView: InfoView(
@@ -97,10 +97,10 @@ extension ForeverView {
             }
         }
     }
-    
+
     static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
         let url =
-        "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
         let message = L10n.referralSmsMessage(discount, url)
         return HostingJourney(
             rootView: ActivityViewController(activityItems: [
