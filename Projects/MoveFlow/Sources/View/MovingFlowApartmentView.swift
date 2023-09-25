@@ -65,7 +65,7 @@ struct MovingFlowApartmentView: View {
                 equals: $vm.type,
                 focusValue: .squareArea,
                 placeholder: L10n.changeAddressNewLivingSpaceLabel,
-                suffix: L10n.HousingInfoList.sizeValue(""),
+                suffix: L10n.changeAddressSizeSuffix,
                 error: $vm.squareAreaError
             )
         }
