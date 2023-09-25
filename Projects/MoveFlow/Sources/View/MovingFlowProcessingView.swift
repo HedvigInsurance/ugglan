@@ -37,6 +37,8 @@ struct MovingFlowProcessingView: View {
                 Spacer()
                 VStack(spacing: 16) {
                     Image(uiImage: hCoreUIAssets.tick.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColorNew.greenElement)
                     VStack(spacing: 0) {
                         hText(L10n.changeAddressSuccessTitle)

@@ -9,7 +9,7 @@ public struct MovingFlowHousingTypeView: View {
     public var body: some View {
         LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
             hForm {}
-                .hFormTitle(.standard, .title3, L10n.changeAddressSelectHousingTypeTitle)
+                .hFormTitle(.standard, .title1, L10n.changeAddressSelectHousingTypeTitle)
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 16) {

@@ -8,32 +8,34 @@ struct MovingFlowApartmentView: View {
     @StateObject var vm = MovingFlowViewModel()
 
     var body: some View {
-        hForm {}
-            .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
-            .sectionContainerStyle(.transparent)
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 16) {
-                        VStack(spacing: 4) {
-                            addressField().trackLoading(MoveFlowStore.self, action: .submitMoveIntent)
-                            postalAndSquareField().trackLoading(MoveFlowStore.self, action: .submitMoveIntent)
-                            numberOfCoinsuredField().trackLoading(MoveFlowStore.self, action: .submitMoveIntent)
-                            accessDateField().trackLoading(MoveFlowStore.self, action: .submitMoveIntent)
-                        }
-                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                        LoadingButtonWithContent(
-                            MoveFlowStore.self,
-                            .submitMoveIntent
-                        ) {
-                            vm.continuePressed()
-                        } content: {
-                            hText(L10n.General.submit, style: .body)
-                        }
+        hForm {
+            hSection {
+                VStack(spacing: 16) {
+                    VStack(spacing: 4) {
+                        addressField()
+                        postalAndSquareField()
+                        numberOfCoinsuredField()
+                        accessDateField()
+                    }
+                    .trackLoading(MoveFlowStore.self, action: .submitMoveIntent)
+                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    LoadingButtonWithContent(
+                        MoveFlowStore.self,
+                        .submitMoveIntent
+                    ) {
+                        vm.continuePressed()
+                    } content: {
+                        hText(L10n.General.submit, style: .body)
                     }
                 }
-                .padding(.bottom, 8)
-                .padding(.top, 16)
             }
+            .padding(.bottom, 8)
+            .padding(.top, 16)
+
+        }
+        .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
+        .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.bottom)
     }
 
     func addressField() -> some View {
@@ -63,6 +65,7 @@ struct MovingFlowApartmentView: View {
                 equals: $vm.type,
                 focusValue: .squareArea,
                 placeholder: L10n.changeAddressNewLivingSpaceLabel,
+                suffix: L10n.HousingInfoList.sizeValue(""),
                 error: $vm.squareAreaError
             )
         }
@@ -147,10 +150,10 @@ enum FieldType {
 
 class MovingFlowViewModel: ObservableObject {
     @Published var type: MovingFlowSelectAddressFieldType?
-    @Published var address: String = "Address"
-    @Published var postalCode: String = "12333"
-    @Published var squareArea: String = "45"
-    @Published var nbOfCoInsured: String = "2"
+    @Published var address: String = ""
+    @Published var postalCode: String = ""
+    @Published var squareArea: String = ""
+    @Published var nbOfCoInsured: String = ""
     @Published var accessDate: Date?
 
     @Published var addressError: String?
