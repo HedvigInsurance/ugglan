@@ -1,327 +1,285 @@
+import Flow
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct MovingFlowConfirm: View {
+    private let whatIsCoveredId = "whatIsCoveredId"
     @PresentableStore var store: MoveFlowStore
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
-
+    @State var selectedFaq: [String] = [""]
+    @State var showCoverage = false
     var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                if isMultipleOffer {
-                    showCardComponent(
-                        insuranceName: "Hemförsäkring",
-                        price: "179 kr/mån"
-                    )
-                    showCardComponent(
-                        insuranceName: "Olycksfallsförsäkring",
-                        price: "99 kr/mån"
-                    )
-                    noticeComponent
-                } else {
-                    showCardComponent(
-                        insuranceName: "Hemförsäkring",
-                        price: "179 kr/mån"
-                    )
+        ScrollViewReader { proxy in
+            hForm {
+                PresentableStoreLens(
+                    MoveFlowStore.self,
+                    getter: { state in
+                        state.movingFlowModel
+                    }
+                ) { movingFlowModel in
+                    if let movingFlowModel {
+                        VStack(spacing: 16) {
+                            ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                contractInfoView(for: quote)
+                            }
+                            noticeComponent
+                            totalAmountComponent
+                            buttonComponent(proxy: proxy)
+                                .padding(.top, 126)
+                                .padding(.bottom, 48)
+                            if showCoverage {
+                                ZStack {
+                                    VStack(spacing: 32) {
+                                        ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                            whatIsCovered(for: quote)
+                                        }
+                                    }
+                                }
+                                .padding(.top, 8)
+                                .id(whatIsCoveredId)
+                                chatComponent
+                            }
+
+                        }
+                    }
                 }
-                overviewComponent
-                if isMultipleOffer {
-                    whatIsCovered(
-                        insuranceName: "Hemförsäkring",
-                        fields: [
-                            FieldInfo(
-                                name: "Försäkrat belopp",
-                                price: "1 000 000 kr"
-                            ),
-                            FieldInfo(
-                                name: "Självrisk",
-                                price: "1 500 kr"
-                            ),
-                            FieldInfo(
-                                name: "Reseskydd",
-                                price: "45 dagar"
-                            ),
-                        ]
-                    )
-
-                    whatIsCovered(
-                        insuranceName: "Olycksfallsförsäkring",
-                        fields: [
-                            FieldInfo(
-                                name: "Försäkrat belopp",
-                                price: "1 000 000 kr"
-                            ),
-                            FieldInfo(
-                                name: "Självrisk",
-                                price: "1 500 kr"
-                            ),
-                        ]
-                    )
-                } else {
-                    whatIsCovered(
-                        insuranceName: "Hemförsäkring",
-                        fields: [
-                            FieldInfo(
-                                name: "Försäkrat belopp",
-                                price: "1 000 000 kr"
-                            ),
-                            FieldInfo(
-                                name: "Självrisk",
-                                price: "1 500 kr"
-                            ),
-                            FieldInfo(
-                                name: "Reseskydd",
-                                price: "45 dagar"
-                            ),
-                        ]
-                    )
-                }
-                questionAnswerComponent
-                chatComponent
             }
-        }
-        .hFormTitle(.standard, .title3, L10n.changeAddressAcceptOffer)
-    }
-
-    @ViewBuilder
-    func returnMainContent(coverageName: String) -> some View {
-        HStack {
-            Image(uiImage: hCoreUIAssets.plusSmall.image)
-            hText(coverageName, style: .title3)
-            Spacer()
-            Image(uiImage: hCoreUIAssets.plusSmall.image)
         }
     }
 
-    func returnMiddleComponent(insuranceName: String) -> some View {
-        VStack(alignment: .leading, spacing: 1) {
-            hText(insuranceName, style: .body)
-                .foregroundColor(hTextColorNew.primary)
-            HStack {
-                hText(L10n.changeAddressActivationDate("02.12.24"), style: .body)
-                Image(uiImage: hCoreUIAssets.infoSmall.image)
-                    .resizable()
-                    .frame(width: 14, height: 14)
-            }
-            .foregroundColor(hTextColorNew.secondary)
-        }
-    }
-
-    @ViewBuilder
-    func returnBottomComponent(insuranceName: String, price: String) -> some View {
-        HStack {
-            hText(L10n.changeAddressDetails, style: .body)
-            Image(uiImage: hCoreUIAssets.chevronDown.image)
-                .foregroundColor(hTextColorNew.tertiary)
-            Spacer()
-            hText(price, style: .body)
-        }
-        .onTapGesture {
-            if selectedInsurances.contains(insuranceName) {
-                let index = selectedInsurances.firstIndex(of: insuranceName)
-                selectedInsurances.remove(at: index ?? 10)
-            } else {
-                selectedInsurances.append(insuranceName)
-            }
-        }
-
-        if selectedInsurances.contains(insuranceName) {
-            VStack(alignment: .leading) {
+    private func contractInfoView(for quote: Quote) -> some View {
+        hSection {
+            VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    hText("Bostadstyp", style: .body)
+                    Image(uiImage: quote.contractType?.pillowType.bgImage ?? hCoreUIAssets.bigPillowCar.image)
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                    VStack(alignment: .leading) {
+                        hText(quote.displayName)
+                        hText(L10n.changeAddressActivationDate(quote.startDate))
+                            .foregroundColor(hTextColorNew.secondary)
+                    }
                     Spacer()
-                    hText("Bostadsrätt", style: .body)
                 }
-
-                HStack {
-                    hText("Adress", style: .body)
+                Divider()
+                let index = selectedInsurances.firstIndex(of: quote.displayName)
+                let isExpanded = index != nil
+                HStack(spacing: 8) {
+                    hText(L10n.changeAddressDetails, style: .body)
+                    Image(uiImage: hCoreUIAssets.chevronDown.image)
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(hTextColorNew.tertiary)
+                        .rotationEffect(isExpanded ? Angle(degrees: -180) : Angle(degrees: 0))
                     Spacer()
-                    hText("Bellmansgatan 19A", style: .body)
+                    hText("\(quote.premium.formattedAmountWithoutDecimal)\(L10n.perMonth)")
                 }
-
-                HStack {
-                    hText("Postkod", style: .body)
-                    Spacer()
-                    hText("11847", style: .body)
+                if isExpanded {
+                    VStack(alignment: .leading) {
+                        ForEach(quote.detailsInfo, id: \.key) { keyValue in
+                            HStack {
+                                hText(keyValue.key, style: .body)
+                                Spacer()
+                                hText(keyValue.value, style: .body)
+                            }
+                        }
+                    }
+                    .foregroundColor(hTextColorNew.secondary)
                 }
-
-                HStack {
-                    hText("Postkod", style: .body)
-                    Spacer()
-                    hText("11847", style: .body)
-                }
-
-                HStack {
-                    hText("Postkod", style: .body)
-                    Spacer()
-                    hText("11847", style: .body)
-                }
-
-                hText("Dokument", style: .body)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding(.vertical, 16)
-
-                hText("Försäkringsvillkor", style: .body)
-                hText("Försäkringsinformation", style: .body)
-                hText("Produktfaktablad", style: .body)
             }
-            .padding(.vertical, 16)
-            .foregroundColor(hTextColorNew.secondary)
-
-            hButton.SmallButton(type: .ghost) {
-                store.send(.navigation(action: .openAddressFillScreen))
-            } content: {
-                hText("Ändra", style: .body)
+            .padding(16)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation {
+                    let index = selectedInsurances.firstIndex(of: quote.displayName)
+                    if let index {
+                        selectedInsurances.remove(at: index)
+                    } else {
+                        selectedInsurances.append(quote.displayName)
+                    }
+                }
             }
-
         }
     }
 
-    @ViewBuilder
-    func showCardComponent(insuranceName: String, price: String) -> some View {
-        CardComponent(
-            mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image)
-                .resizable()
-                .frame(width: 49, height: 49),
-            bottomComponent: {
-                returnBottomComponent(
-                    insuranceName: insuranceName,
-                    price: price
-                )
-            }
-        )
-        .padding(.horizontal, 16)
+    private var noticeComponent: some View {
+        hSection {
+            InfoCard(
+                text:
+                    L10n.changeAddressAccidentNotice,
+                type: .info
+            )
+        }
+        .sectionContainerStyle(.transparent)
     }
 
-    @ViewBuilder
-    var noticeComponent: some View {
-        InfoCard(
-            text:
-                L10n.changeAddressAccidentNotice,
-            type: .info
-        )
-        .padding(.bottom, 16)
-    }
+    private func buttonComponent(proxy: ScrollViewProxy) -> some View {
+        hSection {
+            VStack(spacing: 8) {
+                hButton.LargeButton(type: .primary) {
+                    store.send(.postMoveIntent)
+                    store.send(.navigation(action: .openProcessingView))
+                } content: {
+                    hText(L10n.changeAddressAcceptOffer, style: .body)
+                }
 
-    @ViewBuilder
-    var overviewComponent: some View {
-        HStack {
-            hText(L10n.changeAddressTotal, style: .body)
-            Spacer()
-            hText("278 kr/mån", style: .body)
-        }
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 16)
+                hButton.LargeButton(type: .ghost) {
 
-        hButton.LargeButton(type: .primary) {
-            store.send(.navigation(action: .openFailureScreen))
-        } content: {
-            hText(L10n.changeAddressAcceptOffer, style: .body)
-        }
-        .padding([.horizontal], 16)
-        .padding(.bottom, 22)
-
-        hText(L10n.changeAddressIncluded, style: .body)
-            .padding(.bottom, 98)
-    }
-
-    @ViewBuilder
-    func whatIsCovered(insuranceName: String, fields: [FieldInfo]) -> some View {
-        VStack {
-            hText(insuranceName, style: .footnote)
-                .padding([.top, .bottom], 4)
-                .padding([.leading, .trailing], 8)
-
-        }
-        .background(
-            Squircle.default()
-                .fill(hBlueColorNew.blue100)
-        )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding([.leading, .trailing], 16)
-
-        hSection(fields, id: \.self) { field in
-            hRow {
-                hText(field.name, style: .body)
-                Spacer()
-                hText(field.price, style: .body)
-                Image(uiImage: hCoreUIAssets.infoSmall.image)
-                    .resizable()
-                    .frame(width: 14, height: 14)
-                    .foregroundColor(hGrayscaleColorNew.greyScale700)
+                    withAnimation {
+                        showCoverage = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation {
+                            proxy.scrollTo(whatIsCoveredId, anchor: .top)
+                        }
+                    }
+                } content: {
+                    hText(L10n.changeAddressViewCoverage, style: .body)
+                }
             }
         }
         .sectionContainerStyle(.transparent)
-
-        VStack {
-            hText(L10n.changeAddressCovered, style: .footnote)
-                .padding([.top, .bottom], 4)
-                .padding([.leading, .trailing], 8)
-
+    }
+    private var totalAmountComponent: some View {
+        PresentableStoreLens(
+            MoveFlowStore.self,
+            getter: { state in
+                state.movingFlowModel
+            }
+        ) { movingFlowModel in
+            hSection {
+                HStack {
+                    hText(L10n.changeAddressTotal, style: .body)
+                    Spacer()
+                    hText("\(movingFlowModel?.total.formattedAmountWithoutDecimal ?? "")\(L10n.perMonth)", style: .body)
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .background(
-            Squircle.default()
-                .fill(hBlueColorNew.blue100)
-        )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding([.leading, .trailing], 16)
-
-        VStack {
-            TextBoxComponent(
-                onSelected: {
-                    // open info about
-                },
-                mainContent: returnMainContent(coverageName: "Eldsvåda")
-            )
-
-            TextBoxComponent(
-                onSelected: {
-                    // open info about
-                },
-                mainContent: returnMainContent(coverageName: "Vattenskada")
-            )
-
-            TextBoxComponent(
-                onSelected: {
-                    // open info about
-                },
-                mainContent: returnMainContent(coverageName: "Oväder")
-            )
-        }
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 80)
     }
 
     @ViewBuilder
-    var questionAnswerComponent: some View {
-        hText(L10n.changeAddressQa, style: .title3)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 16)
-        TextBoxComponent(
-            mainContent: answerMainComponent
-        )
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 80)
+    func whatIsCovered(for quote: Quote) -> some View {
+        VStack(spacing: 0) {
+            hSection {
+                VStack {
+                    hText(quote.displayName, style: .standard)
+                        .padding([.top, .bottom], 4)
+                        .padding([.leading, .trailing], 8)
+
+                }
+                .background(
+                    Squircle.default()
+                        .fill(hBlueColorNew.blue100)
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .sectionContainerStyle(.transparent)
+            Spacing(height: 16)
+            hSection(quote.insurableLimits, id: \.label) { field in
+                hRow {
+                    hText(field.label, style: .body)
+                    Spacer()
+                    hText(field.limit, style: .body)
+                    Image(uiImage: hCoreUIAssets.infoSmall.image)
+                        .resizable()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(hGrayscaleColorNew.greyScale700)
+                }
+                .noHorizontalPadding()
+            }
+            .sectionContainerStyle(.transparent)
+            Spacing(height: 32)
+            hSection(quote.documents, id: \.displayName) { document in
+                hRow {
+                    HStack(spacing: 1) {
+                        hText(document.displayName)
+                        if #available(iOS 16.0, *) {
+                            hText(L10n.documentPdfLabel, style: .footnote)
+                                .baselineOffset(6.0)
+                        }
+                    }
+                }
+                .withCustomAccessory {
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                }
+            }
+            Spacing(height: 40)
+            faqsComponent(for: quote)
+        }
     }
 
     @ViewBuilder
-    var answerMainComponent: some View {
-        HStack {
-            hText("Vad ingår i en hemförsäkring?", style: .body)
-            Spacer()
-            Image(uiImage: hCoreUIAssets.plusSmall.image)
+    func faqsComponent(for quote: Quote) -> some View {
+        if !quote.faqs.isEmpty {
+            hSection {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.changeAddressQa)
+                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColorNew.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .sectionContainerStyle(.transparent)
+            Spacing(height: 24)
+            VStack(spacing: 4) {
+                ForEach(quote.faqs, id: \.title) { faq in
+                    let id = "\(quote.id) \(faq.title)"
+                    let index = selectedFaq.firstIndex(of: id)
+                    let expanded = index != nil
+                    hSection {
+                        VStack(spacing: 0) {
+                            hRow {
+                                hText(faq.title)
+                                Spacer()
+                            }
+                            .withCustomAccessory {
+                                Image(
+                                    uiImage: expanded ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                                )
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                            }
+                            .verticalPadding(12)
+                            if expanded, let description = faq.description {
+                                hRow {
+                                    hText(description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                                }
+                                .verticalPadding(12)
+                            }
+                        }
+                    }
+                    .onTapGesture {
+                        let index = selectedFaq.firstIndex(of: id)
+                        withAnimation {
+                            if let index {
+                                selectedFaq.remove(at: index)
+                            } else {
+                                selectedFaq.append(id)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
     @ViewBuilder
     var chatComponent: some View {
-        hText(L10n.changeAddressNoFind, style: .body)
-        hButton.SmallButton(type: .primary) {
-            //open chat
-        } content: {
-            hText(L10n.openChat, style: .body)
+        VStack(spacing: 0) {
+            Spacing(height: 64)
+            hText(L10n.changeAddressNoFind, style: .body)
+            Spacing(height: 16)
+            hButton.SmallButton(type: .primary) {
+                //open chat
+            } content: {
+                hText(L10n.openChat, style: .body)
+            }
+            Spacing(height: 103)
         }
     }
 }
@@ -341,6 +299,77 @@ public struct FieldInfo: Hashable, Equatable, Codable {
 
 struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowConfirm()
+        Localization.Locale.currentLocale = .en_SE
+        return MovingFlowConfirm()
+            .onAppear {
+                let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                let quote = OctopusGraphQL.MoveIntentFragment.Quote.init(
+                    premium: .init(amount: 22, currencyCode: .sek),
+                    startDate: "",
+                    address: .init(id: "id", street: "street", postalCode: "postal code"),
+                    numberCoInsured: 2,
+                    productVariant: .init(
+                        perils: [],
+                        typeOfContract: "SE_HOUSE",
+                        documents: [
+                            .init(
+                                displayName: "termsAndConditions",
+                                type: .termsAndConditions,
+                                url: "https://www.hedvig.com"
+                            )
+                        ],
+                        displayName: "display name",
+                        insurableLimits: [
+                            .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
+                            .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
+                        ],
+                        highlights: [],
+                        faq: [
+                            .init(headline: "Headline", body: "Body"),
+                            .init(headline: "Headline 2", body: "Body 2"),
+                            .init(headline: "Headline 3", body: "Body 3"),
+                        ]
+                    )
+                )
+                let quote2 = OctopusGraphQL.MoveIntentFragment.Quote.init(
+                    premium: .init(amount: 33, currencyCode: .sek),
+                    startDate: "",
+                    address: .init(id: "id2", street: "street 22", postalCode: "postal code 22"),
+                    numberCoInsured: 2,
+                    productVariant: .init(
+                        perils: [],
+                        typeOfContract: "SE_CAT_BASIC",
+                        documents: [
+                            .init(
+                                displayName: "termsAndConditions",
+                                type: .termsAndConditions,
+                                url: "https://www.hedvig.com"
+                            )
+                        ],
+                        displayName: "display name 2",
+                        insurableLimits: [
+                            .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
+                            .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
+                        ],
+                        highlights: [],
+                        faq: [
+                            .init(headline: "Headline", body: "Body"),
+                            .init(headline: "Headline 2", body: "Body 2"),
+                            .init(headline: "Headline 3", body: "Body 3"),
+                        ]
+                    )
+                )
+                let fragment = OctopusGraphQL.MoveIntentFragment.init(
+                    currentHomeAddresses: [],
+                    extraBuildingTypes: [],
+                    id: "id",
+                    maxMovingDate: "10.10.2023.",
+                    minMovingDate: "10.10.2023.",
+                    suggestedNumberCoInsured: 2,
+                    quotes: [quote, quote2]
+                )
+                let MovingFlowModel = MovingFlowModel(from: fragment)
+                store.send(.setMoveIntent(with: MovingFlowModel))
+            }
     }
 }

@@ -3,54 +3,74 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct MovingFlowHousingType: View {
-    @PresentableStore var store: MoveFlowStore
-    let housingTypes = ["Bostadsrätt", "Hyresrätt", "Villa"]
-    @State var isSelected: String = ""
-
-    public init() {
-        store.send(.getMoveIntent)
-    }
+public struct MovingFlowHousingTypeView: View {
+    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
 
     public var body: some View {
-
         LoadingViewWithContent(MoveFlowStore.self, [.fetchMoveIntent], [.getMoveIntent]) {
-            hForm {
-                VStack {
-                    ForEach(housingTypes, id: \.self) { type in
-                        setCheckBoxComponent(text: type)
+            hForm {}
+                .hFormTitle(.standard, .title1, L10n.changeAddressSelectHousingTypeTitle)
+                .hFormAttachToBottom {
+                    hSection {
+                        VStack(spacing: 16) {
+                            VStack(spacing: 4) {
+                                ForEach(HousingType.allCases, id: \.self) { type in
+                                    hRadioField(
+                                        id: type.rawValue,
+                                        content: {
+                                            hText(type.title, style: .standardLarge)
+                                        },
+                                        selected: $vm.selectedHousingType
+                                    )
+                                }
+                            }
+                            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                            hButton.LargeButton(type: .primary) {
+                                vm.continuePressed()
+                            } content: {
+                                hText(L10n.generalContinueButton, style: .body)
+                            }
+                            .padding(.bottom, 16)
+                        }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
-            }
-            .hFormTitle(.standard, .title3, L10n.changeAddressSelectHousingTypeTitle)
-            .hFormAttachToBottom {
-                VStack(spacing: 8) {
-                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                    hButton.LargeButton(type: .primary) {
-                        store.send(.navigation(action: .openAddressFillScreen))
-                    } content: {
-                        hText(L10n.generalContinueButton, style: .body)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                }
-            }
         }
-    }
-
-    @ViewBuilder
-    func setCheckBoxComponent(text: String) -> some View {
-        CheckBoxComponent(
-            title: text,
-            selectedValue: { val in
-                isSelected = val
-            }
-        )
     }
 }
 
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowHousingType()
+        MovingFlowHousingTypeView()
+    }
+}
+
+class MovingFlowHousingTypeViewModel: ObservableObject {
+    @PresentableStore var store: MoveFlowStore
+    @Published var selectedHousingType: String? = HousingType.apartmant.rawValue
+
+    init() {
+        store.send(.getMoveIntent)
+    }
+
+    func continuePressed() {
+        store.send(.navigation(action: .openAddressFillScreen))
+    }
+}
+
+enum HousingType: String, CaseIterable {
+    case apartmant
+    case rental
+    case house
+
+    var title: String {
+        switch self {
+        case .apartmant:
+            return L10n.changeAddressApartmentOwnLabel
+        case .rental:
+            return L10n.changeAddressApartmentRentLabel
+        case .house:
+            return L10n.changeAddressVillaLabel
+        }
     }
 }

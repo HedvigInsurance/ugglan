@@ -590,7 +590,7 @@ public struct InsurableLimits: Codable, Hashable {
         description = fragment.description
     }
 
-    init(
+    public init(
         _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
     ) {
         label = data.label

@@ -7,6 +7,8 @@ public struct hDatePickerField: View {
     private let config: HDatePickerFieldConfig
     private let onUpdate: (_ date: Date) -> Void
     private let onContinue: (_ date: Date) -> Void
+    private let onShowDatePicker: (() -> Void)?
+
     @State private var animate = false
     @State private var date: Date = Date()
     private var selectedDate: Date?
@@ -27,14 +29,16 @@ public struct hDatePickerField: View {
         selectedDate: Date?,
         placehodlerText: String? = "",
         error: Binding<String?>? = nil,
-        onContinue: @escaping (_ date: Date) -> Void = { _ in }
+        onContinue: @escaping (_ date: Date) -> Void = { _ in },
+        onShowDatePicker: (() -> Void)? = nil
     ) {
         self.config = config
         self.onUpdate = { _ in }
         self.onContinue = onContinue
+        self.onShowDatePicker = onShowDatePicker
         self.selectedDate = selectedDate
         self._error = error ?? Binding.constant(nil)
-        self.date = date
+        self.date = config.minDate ?? Date()
         self.placeholderText = placehodlerText
     }
 
@@ -55,6 +59,7 @@ public struct hDatePickerField: View {
             .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
             .onChange(of: selectedDate) { date in
                 if let date {
+                    error = nil
                     onUpdate(date)
                 }
             }
@@ -63,7 +68,14 @@ public struct hDatePickerField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
-            showDatePicker()
+            if let onShowDatePicker {
+                onShowDatePicker()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    showDatePicker()
+                }
+            } else {
+                showDatePicker()
+            }
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.animate = false

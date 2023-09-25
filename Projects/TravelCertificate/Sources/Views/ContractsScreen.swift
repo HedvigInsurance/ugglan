@@ -51,7 +51,7 @@ struct ContractsScreen: View {
         hSection {
             hRow {
                 HStack {
-                    hCoreUIAssets.pillowHome.view.resizable().frame(width: 48, height: 48)
+                    hCoreUIAssets.bigPillowHome.view.resizable().frame(width: 48, height: 48)
                     hText(item.street)
                 }
             }
