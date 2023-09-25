@@ -1,7 +1,7 @@
+import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
-import Kingfisher
 
 struct SubmitClaimEmergencyScreen: View {
     var body: some View {
@@ -10,7 +10,7 @@ struct SubmitClaimEmergencyScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimEmergencyInfoLabel, type: .attention)
                 }
-                
+
                 PresentableStoreLens(
                     SubmitClaimStore.self,
                     getter: { state in
@@ -27,7 +27,7 @@ struct SubmitClaimEmergencyScreen: View {
                         )
                     }
                 }
-                
+
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimEmergencyInsuranceCoverTitle)
@@ -37,7 +37,7 @@ struct SubmitClaimEmergencyScreen: View {
                 }
                 .padding(.top, 16)
                 .sectionContainerStyle(.transparent)
-                
+
                 VStack(spacing: 4) {
                     InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
@@ -51,7 +51,7 @@ struct SubmitClaimEmergencyScreen: View {
                         title: L10n.submitClaimRebookTitle,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
-                    
+
                     InfoExpandableView(
                         title: L10n.changeAddressQa,
                         text: L10n.submitClaimGlassDamageWorkshopLabel
@@ -73,7 +73,7 @@ struct ClaimEmergencyContactCard: View {
     var imageUrl: String
     var label: String
     var phoneNumber: String?
-    
+
     init(
         imageUrl: String,
         label: String,
@@ -87,8 +87,7 @@ struct ClaimEmergencyContactCard: View {
         self.cardTitle = cardTitle
         self.footnote = footnote
     }
-    
-    
+
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -125,7 +124,7 @@ struct ClaimEmergencyContactCard: View {
                     hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
                 }
                 .padding(.horizontal, 16)
-                
+
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColorNew.tertiary)
@@ -134,7 +133,7 @@ struct ClaimEmergencyContactCard: View {
             .padding(.vertical, 24)
         }
         .sectionContainerStyle(.black)
-        
+
     }
 }
 

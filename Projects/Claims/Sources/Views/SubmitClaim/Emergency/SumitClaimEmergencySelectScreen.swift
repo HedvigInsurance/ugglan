@@ -6,10 +6,10 @@ struct SumitClaimEmergencySelectScreen: View {
     @State var selectedValue: Bool = true
     @PresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
-    let title: ()->String
-    
+    let title: () -> String
+
     init(
-        title: @escaping ()->String
+        title: @escaping () -> String
     ) {
         self.title = title
     }
@@ -40,9 +40,9 @@ struct SumitClaimEmergencySelectScreen: View {
                 }
             }
     }
-    
+
     func buttonView() -> some View {
-        
+
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
