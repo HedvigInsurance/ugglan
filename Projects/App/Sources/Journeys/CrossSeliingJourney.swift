@@ -26,18 +26,4 @@ extension AppJourney {
             }
         }
     }
-
-    static func crossSellingJourney(crossSell: CrossSell) -> some JourneyPresentation {
-        CrossSellingDetail(crossSell: crossSell)
-            .journey { result in
-                switch result {
-                case let .embark(name):
-                    AppJourney.crossSellingEmbarkJourney(name: name, style: .default)
-                case .chat:
-                    AppJourney.freeTextChat().withDismissButton
-                case let .web(url):
-                    AppJourney.webRedirect(url: url)
-                }
-            }
-    }
 }

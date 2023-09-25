@@ -134,7 +134,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         $0.first(where: { crossSell in crossSell.typeOfContract == crossSellType })
                     }
                     .onFirstValue { crossSell in
-                        contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
+                        if let stringUrl = crossSell.webActionURL, let url = URL(string: stringUrl) {
+                            contractsStore.send(.openCrossSellingWebUrl(url: url))
+                        }
                     }
             }
         }

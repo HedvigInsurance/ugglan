@@ -11,15 +11,7 @@ struct CrossSellingItem: View {
     let crossSell: hGraphQL.CrossSell
 
     func openExternal() {
-        if let embarkStoryName = crossSell.embarkStoryName {
-            store.send(.openCrossSellingEmbark(name: embarkStoryName))
-            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-            hAnalyticsEvent.cardClickCrossSellEmbark(
-                id: crossSell.typeOfContract,
-                storyName: embarkStoryName
-            )
-            .send()
-        } else if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
+        if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             store.send(.openCrossSellingWebUrl(url: url))
         } else {
             store.send(.openCrossSellingChat)
@@ -73,7 +65,6 @@ struct CrossSellingItemPreviews: PreviewProvider {
             buttonText: "Calculate price",
             embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            infos: [],
             type: .accident
         )
     )
