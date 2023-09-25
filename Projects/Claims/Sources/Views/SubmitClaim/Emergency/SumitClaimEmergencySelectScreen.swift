@@ -53,9 +53,13 @@ struct SumitClaimEmergencySelectScreen: View {
                 ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
                     if option.value == selectedValue {
                         hButton.MediumButtonPrimaryAlt {
-                            selectedValue = option.value
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
                         } content: {
-                            hText(option.displayName)
+                            withAnimation(.spring()) {
+                                hText(option.displayName)
+                            }
                         }
                     } else {
                         hButton.MediumButtonSecondary {

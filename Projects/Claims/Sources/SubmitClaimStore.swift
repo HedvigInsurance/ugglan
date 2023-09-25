@@ -262,17 +262,17 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 self.send(.navigationAction(action: .openConfirmEmergencyScreen))
             case let .setDeflectModel(model):
                 switch model.id {
-                case "FlowClaimDeflectGlassDamageStep":
+                case .FlowClaimDeflectGlassDamageStep:
                     newState.glassDamageStep = model
                     self.send(.navigationAction(action: .openGlassDamageScreen))
-                case "FlowClaimDeflectPestsStep":
+                case .FlowClaimDeflectPestsStep:
                     newState.pestsStep = model
                     self.send(.navigationAction(action: .openPestsScreen))
-                case "FlowClaimDeflectEmergencyStep":
+                case .FlowClaimDeflectEmergencyStep:
                     newState.emergencyStep = model
                     self.send(.navigationAction(action: .openEmergencyScreen))
                 default:
-                    break
+                    self.send(.navigationAction(action: .openUpdateAppScreen))
                 }
             }
         case .startClaimRequest:

@@ -63,19 +63,13 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
         } else if let step = self.fragments.flowClaimContractSelectStepFragment {
             return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimDeflectEmergencyStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
-                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
-            }))))
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimConfirmEmergencyStepFragment {
             return .stepModelAction(action: .setConfirmDeflectEmergencyStepModel(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimDeflectPestsStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
-                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
-            }))))
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimDeflectGlassDamageStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(id: step.id, partners: step.partners.map({ partner in
-                    .init(id: partner.id, imageUrl: partner.imageUrl, url: partner.imageUrl, phoneNumber: partner.phoneNumber)
-            }))))
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
