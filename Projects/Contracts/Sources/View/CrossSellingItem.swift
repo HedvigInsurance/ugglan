@@ -63,7 +63,6 @@ struct CrossSellingItemPreviews: PreviewProvider {
             )!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             typeOfContract: "SE_ACCIDENT",
-            infos: [],
             type: .accident
         )
     )

@@ -60,20 +60,20 @@ public struct NotLoggedInView: View {
     }
 
     public var body: some View {
-        VStack {
-            switch vm.viewState {
-            case .loading:
-                ZStack {}
-            case .marketAndLanguage:
-                marketAndLanguage
+        ZStack {
+            LoginVideoView().ignoresSafeArea()
+            VStack {
+                switch vm.viewState {
+                case .loading:
+                    ZStack {}
+                case .marketAndLanguage:
+                    marketAndLanguage
+                }
             }
+            .environment(\.colorScheme, .light)
+            .padding(.horizontal, 16)
+            .opacity(vm.viewState == .loading ? 0 : 1)
         }
-        .environment(\.colorScheme, .light)
-        .padding(.horizontal, 16)
-        .opacity(vm.viewState == .loading ? 0 : 1)
-        .background(
-            LoginVideoView().ignoresSafeArea().animation(nil)
-        )
 
     }
 
