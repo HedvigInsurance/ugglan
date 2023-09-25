@@ -4,7 +4,7 @@ import hCoreUI
 
 struct SubmitClaimPestsScreen: View {
     @State var selectedFields: [String] = []
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -12,7 +12,7 @@ struct SubmitClaimPestsScreen: View {
                     InfoCard(text: L10n.submitClaimPestsInfoLabel, type: .info)
                 }
                 .padding(.top, 8)
-                
+
                 VStack(spacing: 8) {
                     PresentableStoreLens(
                         SubmitClaimStore.self,
@@ -21,7 +21,7 @@ struct SubmitClaimPestsScreen: View {
                         }
                     ) { pests in
                         let partners = pests?.partners
-                        ForEach(Array((partners ?? []).enumerated()), id: \.element) {  index, partner in
+                        ForEach(Array((partners ?? []).enumerated()), id: \.element) { index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
                                 label: L10n.submitClaimPestsCustomerServiceLabel,
@@ -31,7 +31,7 @@ struct SubmitClaimPestsScreen: View {
                             )
                         }
                     }
-                    
+
                     hSection {
                         VStack(alignment: .leading, spacing: 8) {
                             hText(L10n.submitClaimHowItWorksTitle)
@@ -41,7 +41,7 @@ struct SubmitClaimPestsScreen: View {
                     }
                     .padding(.top, 8)
                     .sectionContainerStyle(.transparent)
-                    
+
                     VStack(spacing: 4) {
                         InfoExpandableView(
                             title: L10n.submitClaimWhatCostTitle,
@@ -57,7 +57,7 @@ struct SubmitClaimPestsScreen: View {
                         )
                     }
                     .padding(.vertical, 8)
-                    
+
                     SupportView()
                         .padding(.vertical, 56)
                 }

@@ -11,28 +11,28 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     let id: FlowClaimDeflectStepType
     let partners: [Partner]
-    
+
     init(
         with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
     }
-    
+
     init(
         with data: OctopusGraphQL.FlowClaimDeflectPestsStepFragment
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
     }
-    
+
     init(
         with data: OctopusGraphQL.FlowClaimDeflectGlassDamageStepFragment
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
     }
-    
+
     private static func setDeflectType(idIn: String) -> FlowClaimDeflectStepType {
         switch idIn {
         case "FlowClaimDeflectGlassDamageStep":
@@ -52,7 +52,7 @@ public struct Partner: Codable, Equatable, Hashable {
     let imageUrl: String
     let url: String?
     let phoneNumber: String?
-    
+
     init(
         with data: OctopusGraphQL.FlowClaimDeflectPartnerFragment
     ) {
@@ -61,7 +61,7 @@ public struct Partner: Codable, Equatable, Hashable {
         self.url = data.url
         self.phoneNumber = data.phoneNumber
     }
-    
+
     init(
         id: String,
         imageUrl: String,

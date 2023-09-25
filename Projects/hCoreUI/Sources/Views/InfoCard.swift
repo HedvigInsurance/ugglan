@@ -5,7 +5,7 @@ public struct InfoCard: View {
     let text: String
     let type: InfoCardType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
-    
+
     public init(
         text: String,
         type: InfoCardType
@@ -13,7 +13,7 @@ public struct InfoCard: View {
         self.text = text
         self.type = type
     }
-    
+
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -69,7 +69,7 @@ public struct InfoCard: View {
         )
         .fixedSize(horizontal: false, vertical: true)
     }
-    
+
     @hColorBuilder
     var getTextColor: some hColor {
         switch type {
@@ -83,7 +83,7 @@ public struct InfoCard: View {
             hSignalColorNew.greenText
         }
     }
-    
+
     @hColorBuilder
     var getBackgroundColor: some hColor {
         switch type {
@@ -97,7 +97,7 @@ public struct InfoCard: View {
             hSignalColorNew.greenFill
         }
     }
-    
+
     @hColorBuilder
     var imageColor: some hColor {
         switch type {
@@ -121,29 +121,29 @@ struct InfoCard_Previews: PreviewProvider {
                     .init(
                         buttonTitle: "Title",
                         buttonAction: {
-                            
+
                         }
                     ),
                     .init(
                         buttonTitle: "Title 2",
                         buttonAction: {
-                            
+
                         }
                     ),
                 ])
-            
+
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 .buttons([
                     .init(
                         buttonTitle: "Title",
                         buttonAction: {
-                            
+
                         }
                     )
                 ])
-            
+
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
-            
+
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
         }
@@ -155,7 +155,7 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
-    
+
     var image: UIImage {
         switch self {
         case .info:
@@ -166,7 +166,7 @@ public enum InfoCardType {
             return hCoreUIAssets.warningTriangleFilled.image
         case .campaign:
             return hCoreUIAssets.campaignSmall.image
-            
+
         }
     }
 }
@@ -191,7 +191,7 @@ extension InfoCard {
 public struct InfoCardButtonConfig {
     let buttonTitle: String
     let buttonAction: () -> Void
-    
+
     public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
         self.buttonTitle = buttonTitle
         self.buttonAction = buttonAction

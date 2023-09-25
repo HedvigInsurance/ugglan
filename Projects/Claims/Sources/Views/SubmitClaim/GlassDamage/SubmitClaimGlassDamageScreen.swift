@@ -28,7 +28,7 @@ struct SubmitClaimGlassDamageScreen: View {
                         }
                     }
                 }
-                
+
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
@@ -38,7 +38,7 @@ struct SubmitClaimGlassDamageScreen: View {
                 }
                 .padding(.top, 8)
                 .sectionContainerStyle(.transparent)
-                
+
                 VStack(spacing: 4) {
                     InfoExpandableView(
                         title: L10n.submitClaimWhatCostTitle,
@@ -54,12 +54,12 @@ struct SubmitClaimGlassDamageScreen: View {
                     )
                 }
                 .padding(.top, 8)
-                
+
                 SupportView()
                     .padding(.vertical, 56)
             }
             .padding(.top, 8)
-            
+
         }
     }
 }
