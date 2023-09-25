@@ -28,7 +28,7 @@ struct ContractsScreen: View {
                         }
                     }
                     .hFormAttachToBottom {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
                             store.send(.navigation(.openStartDateScreen))
                         } content: {
                             hText(L10n.generalContinueButton)

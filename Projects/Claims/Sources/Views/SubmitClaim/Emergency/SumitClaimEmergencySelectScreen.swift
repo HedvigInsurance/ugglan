@@ -19,7 +19,7 @@ struct SumitClaimEmergencySelectScreen: View {
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     buttonView()
-                    hButton.LargeButtonPrimary {
+                    hButton.LargeButton(type: .primary) {
                         store.send(.emergencyConfirmRequest(isEmergency: selectedValue))
                     } content: {
                         hText(L10n.generalContinueButton)
@@ -52,21 +52,23 @@ struct SumitClaimEmergencySelectScreen: View {
             HStack(spacing: 8) {
                 ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
                     if option.value == selectedValue {
-                        hButton.MediumButtonPrimaryAlt {
+                        hButton.MediumButton(type: .primaryAlt) {
                             withAnimation(.spring()) {
                                 selectedValue = option.value
                             }
                         } content: {
-                            withAnimation(.spring()) {
-                                hText(option.displayName)
-                            }
+                            hText(option.displayName)
                         }
+                        .fixedSize(horizontal: false, vertical: true)
                     } else {
-                        hButton.MediumButtonSecondary {
-                            selectedValue = option.value
+                        hButton.MediumButton(type: .secondary) {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
                         } content: {
                             hText(option.displayName)
                         }
+                        .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }

@@ -19,7 +19,7 @@ extension AppJourney {
             } else {
                 switch ApplicationState.currentState {
                 case .onboardingChat, .onboarding, .offer:
-                    AppJourney.marketPicker
+                    AppJourney.notLoggedIn
                 case .loggedIn:
                     AppJourney.loggedIn.onPresent {
                         Launch.shared.completeAnimationCallbacker.callAll()
@@ -31,7 +31,7 @@ extension AppJourney {
                         Launch.shared.completeAnimationCallbacker.callAll()
                     }
                 default:
-                    AppJourney.marketPicker
+                    AppJourney.notLoggedIn
                 }
             }
         }

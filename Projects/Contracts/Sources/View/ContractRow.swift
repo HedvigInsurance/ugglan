@@ -17,8 +17,8 @@ private struct StatusPill: View {
         VStack {
             hText(text, style: .standardSmall)
         }
-        .padding([.top, .bottom], 4)
-        .padding([.leading, .trailing], 10)
+        .padding(.vertical, 4)
+        .padding(.horizontal, 10)
         .background(hTextColorNew.tertiaryTranslucent)
         .cornerRadius(8)
     }

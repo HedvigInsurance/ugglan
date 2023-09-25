@@ -49,7 +49,7 @@ struct OtherService: View {
             .hDisableScroll
             .hFormAttachToBottom {
                 hSection {
-                    hButton.LargeButtonGhost {
+                    hButton.LargeButton(type: .ghost) {
                         store.send(.dismissOtherServices)
                     } content: {
                         hText(L10n.generalCloseButton)

@@ -30,14 +30,14 @@ public struct UpdateAppScreen: View {
         }
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {
                     hText(L10n.embarkUpdateAppButton, style: .body)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonText {
+                hButton.LargeButton(type: .ghost) {
                     onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)

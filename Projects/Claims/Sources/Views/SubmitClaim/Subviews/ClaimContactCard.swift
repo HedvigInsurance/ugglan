@@ -75,7 +75,7 @@ struct ClaimContactCard: View {
                 .foregroundColor(hTextColorNew.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
-            hButton.MediumButtonSecondaryAlt {
+            hButton.MediumButton(type: .secondaryAlt) {
                 if let url = URL(string: url) {
                     UIApplication.shared.open(url)
                 }

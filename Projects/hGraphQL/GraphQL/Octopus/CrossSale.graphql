@@ -47,9 +47,6 @@ fragment CrossSellFragment on Member {
       imageUrl
       blurHash
       storeUrl
-      productVariants {
-        ...ProductVariantFragment
-      }
       type
     }
 }

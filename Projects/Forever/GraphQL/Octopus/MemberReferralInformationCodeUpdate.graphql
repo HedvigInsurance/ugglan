@@ -1,0 +1,7 @@
+mutation MemberReferralInformationCodeUpdate($code: String!) {
+  memberReferralInformationCodeUpdate(code: $code) {
+    userError {
+      message
+    }
+  }
+}

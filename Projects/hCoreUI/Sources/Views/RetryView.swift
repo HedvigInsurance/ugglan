@@ -39,7 +39,7 @@ public struct RetryView: View {
                                 .foregroundColor(hTextColorNew.secondary)
                                 .multilineTextAlignment(.center)
                         }
-                        hButton.SmallButtonFilled {
+                        hButton.SmallButton(type: .primary) {
                             action?()
                         } content: {
                             hText(retryTitle)
@@ -69,8 +69,7 @@ struct RetryView_Previews: PreviewProvider {
         )
         .hRetryAttachToBottom {
             hSection {
-                hButton.LargeButtonPrimary {
-
+                hButton.LargeButton(type: .primary) {
                 } content: {
                     hText("Test button")
                 }

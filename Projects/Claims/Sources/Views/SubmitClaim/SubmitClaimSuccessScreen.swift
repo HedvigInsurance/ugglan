@@ -21,7 +21,7 @@ public struct SubmitClaimSuccessScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     store.send(.dissmissNewClaimFlow)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         store.send(.submitClaimOpenFreeTextChat)
@@ -30,7 +30,7 @@ public struct SubmitClaimSuccessScreen: View {
                     hText(L10n.openChat, style: .body)
                 }
 
-                hButton.LargeButtonText {
+                hButton.LargeButton(type: .ghost) {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)

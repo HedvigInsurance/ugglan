@@ -4,15 +4,16 @@ import Presentation
 import hCore
 
 public struct MarketState: StateProtocol {
-    var market: Market = .sweden
+    public var market: Market = .sweden
 
     public init() {}
 }
 
 public enum MarketAction: ActionProtocol {
     case selectMarket(market: Market)
-    case presentMarketPicker(currentMarket: Market)
-    case presentLanguagePicker(currentMarket: Market)
+    case selectLanguage(language: String)
+    case dismissPicker
+    case presentLanguageAndMarketPicker
     case loginButtonTapped
     case onboard
 }
@@ -25,6 +26,10 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         switch action {
         case let .selectMarket(market):
             Localization.Locale.currentLocale = market.preferredLanguage
+        case let .selectLanguage(language):
+            if let language = Localization.Locale(rawValue: language) {
+                Localization.Locale.currentLocale = language
+            }
         default:
             break
         }

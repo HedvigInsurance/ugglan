@@ -14,7 +14,7 @@ struct SupportView: View {
                 hText(L10n.submitClaimNeedHelpLabel)
                     .foregroundColor(hTextColorNew.secondary)
             }
-            hButton.MediumButtonPrimary {
+            hButton.MediumButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     store.send(.submitClaimOpenFreeTextChat)

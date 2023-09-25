@@ -39,7 +39,7 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 32)
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonText {
+            hButton.LargeButton(type: .ghost) {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
                 hText(L10n.generalCloseButton, style: .body)

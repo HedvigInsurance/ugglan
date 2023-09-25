@@ -32,18 +32,19 @@ struct DiscountCodeSectionView: View {
                     }
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButtonPrimary {
+                            hButton.LargeButton(type: .primary) {
                                 store.send(
                                     .showShareSheetOnly(
                                         code: code,
-                                        discount: store.state.foreverData?.potentialDiscountAmount.formattedAmount ?? ""
+                                        discount: store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
+                                            ?? ""
                                     )
                                 )
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
 
-                            hButton.LargeButtonGhost {
+                            hButton.LargeButton(type: .ghost) {
                                 store.send(.showChangeCodeDetail)
                             } content: {
                                 hText(L10n.ReferralsChange.changeCode)

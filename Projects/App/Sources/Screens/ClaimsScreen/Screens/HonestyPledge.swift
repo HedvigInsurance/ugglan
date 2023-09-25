@@ -211,7 +211,7 @@ struct HonestyPledge: View {
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                hButton.LargeButtonText {
+                hButton.LargeButton(type: .ghost) {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
                 } content: {

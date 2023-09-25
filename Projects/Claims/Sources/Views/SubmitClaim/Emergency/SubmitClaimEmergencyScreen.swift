@@ -94,6 +94,7 @@ struct ClaimEmergencyContactCard: View {
             VStack(spacing: 16) {
                 if let imageUrl = URL(string: imageUrl) {
                     KFImage(imageUrl)
+                        .setProcessor(SVGImageProcessor())
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 80)
@@ -112,7 +113,7 @@ struct ClaimEmergencyContactCard: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.bottom, 8)
-                hButton.MediumButtonSecondaryAlt {
+                hButton.MediumButton(type: .secondaryAlt) {
                     if let phoneNumber {
                         let tel = "tel://"
                         let formattedString = tel + phoneNumber

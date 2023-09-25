@@ -38,7 +38,7 @@ struct AskForPushnotifications: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 12) {
-                hButton.LargeButtonPrimary {
+                hButton.LargeButton(type: .primary) {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
@@ -55,7 +55,7 @@ struct AskForPushnotifications: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
-                hButton.SmallButtonText {
+                hButton.SmallButton(type: .ghost) {
                     onActionExecuted()
                     let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))

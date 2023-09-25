@@ -52,6 +52,13 @@ import hGraphQL
             .onValue { _ in
                 ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
+                UIView.transition(
+                    with: self.window,
+                    duration: 0.3,
+                    options: .transitionCrossDissolve,
+                    animations: {},
+                    completion: { _ in }
+                )
             }
     }
 
@@ -227,7 +234,7 @@ import hGraphQL
             DispatchQueue.main.async {
                 launchView.removeFromSuperview()
 
-                ApplicationState.preserveState(.marketPicker)
+                ApplicationState.preserveState(.notLoggedIn)
 
                 ApplicationContext.shared.hasFinishedBootstrapping = true
                 Launch.shared.completeAnimationCallbacker.callAll()

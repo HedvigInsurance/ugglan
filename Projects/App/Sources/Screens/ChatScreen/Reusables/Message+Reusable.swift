@@ -79,7 +79,7 @@ extension Message: Reusable {
         )
 
         let size = attributedString.boundingRect(
-            with: CGSize(width: 280, height: CGFloat(Int.max)),
+            with: CGSize(width: 267.77, height: CGFloat(Int.max)),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
