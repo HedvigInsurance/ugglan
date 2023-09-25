@@ -135,7 +135,6 @@ struct InvitationRow: View {
                 Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
                     hText(row.name).foregroundColor(hTextColorNew.primary)
-                    // TODO
                     hText(L10n.ReferallsInviteeStates.invitedYou, style: .subheadline)
                         .foregroundColor(row.invitedByOtherLabelColor)
                 }
