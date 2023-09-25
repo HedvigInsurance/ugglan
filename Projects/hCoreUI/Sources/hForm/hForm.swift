@@ -95,7 +95,9 @@ public struct hForm<Content: View>: View {
 
     func getScrollView() -> some View {
         ScrollView {
-            Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
+            if contentPosition != .bottom {
+                Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
+            }
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
                     if let hFormTitle {
@@ -104,6 +106,9 @@ public struct hForm<Content: View>: View {
                             .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.topMargin)
                             .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.bottomMargin)
                             .padding([.leading, .trailing], 16)
+                    }
+                    if contentPosition == .bottom {
+                        Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
                     }
                     content.padding(.vertical, -8)
                 }
@@ -185,7 +190,7 @@ public struct hForm<Content: View>: View {
                 switch contentPosition {
                 case .top: return 0
                 case .center: return (maxContentHeight - contentHeight) / 2
-                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
+                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight - 16
                 }
             }()
         } else {
@@ -197,7 +202,9 @@ public struct hForm<Content: View>: View {
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
-        shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
+        if contentPosition != .bottom {
+            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
+        }
     }
 }
 
