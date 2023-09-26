@@ -9,6 +9,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     let numberCoInsured: Int
     let currentHomeAddresses: [MoveAddress]
     let quotes: [Quote]
+    let extraBuildingTypes: [ExtraBuildingType]
 
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
@@ -19,6 +20,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
         quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
+        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
     }
 
     var total: MonetaryAmount {
@@ -29,7 +31,6 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     var movingDate: String {
         return quotes.first?.startDate ?? ""
     }
-
 }
 
 enum MovingFlowError: Error {

@@ -6,6 +6,7 @@ public struct hRadioField<Content: View>: View {
     private let content: Content
     private let id: String
     private var useAnimation: Bool
+    @Environment(\.hFieldSize) var size
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
@@ -25,7 +26,7 @@ public struct hRadioField<Content: View>: View {
     }
 
     public var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             content
             Spacer()
             Circle()
@@ -36,8 +37,8 @@ public struct hRadioField<Content: View>: View {
                 .background(Circle().foregroundColor(retColor(isSelected: id == selected)))
                 .frame(width: 24, height: 24)
         }
-        .padding(.vertical, 11)
-        .frame(minHeight: 72)
+        .padding(.vertical, size == .large ? 11 : 8)
+        .frame(minHeight: size == .large ? 72 : 40)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -69,6 +70,24 @@ public struct hRadioField<Content: View>: View {
             hTextColorNew.primary
         } else {
             hBorderColorNew.opaqueTwo
+        }
+    }
+}
+
+struct hRadioField_Previews: PreviewProvider {
+    @State static var value: String?
+    @State static var error: String?
+    static var previews: some View {
+        VStack {
+            hRadioField(
+                id: "id",
+                content: {
+                    hText("id")
+                },
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
         }
     }
 }

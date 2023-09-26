@@ -44,32 +44,21 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             self.setLoading(for: .requestMoveIntent)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                if let intentId = self.state.movingFlowModel?.id,
-                    let fromAddressId = self.state.movingFromAddressModel?.id
-                {
-                    let newAddressModel = self.state.newAddressModel.toGraphQLInput(
-                        from: fromAddressId,
-                        with: self.state.selectedHousingType
-                    )
-                    let mutation = OctopusGraphQL.MoveIntentRequestMutation(
-                        intentId: intentId,
-                        input: newAddressModel
-                    )
-                    disposeBag += self.octopus.client.perform(mutation: mutation)
-                        .onValue({ [weak self] value in
-                            if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-                                let model = MovingFlowModel(from: fragment)
-                                self?.send(.setMoveIntent(with: model))
-                                self?.send(.navigation(action: .openConfirmScreen))
-                                self?.removeLoading(for: .requestMoveIntent)
-                            } else if let error = value.moveIntentRequest.userError?.message {
-                                self?.setError(error, for: .requestMoveIntent)
-                            }
-                        })
-                        .onError({ [weak self] error in
-                            self?.setError(L10n.generalError, for: .requestMoveIntent)
-                        })
-                }
+                let mutation = self.state.moveIntentRequestMutation()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .onValue({ [weak self] value in
+                        if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
+                            let model = MovingFlowModel(from: fragment)
+                            self?.send(.setMoveIntent(with: model))
+                            self?.send(.navigation(action: .openConfirmScreen))
+                            self?.removeLoading(for: .requestMoveIntent)
+                        } else if let error = value.moveIntentRequest.userError?.message {
+                            self?.setError(error, for: .requestMoveIntent)
+                        }
+                    })
+                    .onError({ [weak self] error in
+                        self?.setError(L10n.generalError, for: .requestMoveIntent)
+                    })
                 return disposeBag
             }
         case .confirmMoveIntent:
@@ -104,6 +93,9 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
     public override func reduce(_ state: MoveFlowState, _ action: MoveFlowAction) -> MoveFlowState {
         var newState = state
         switch action {
+        case .getMoveIntent:
+            newState.newAddressModel = NewAddressModel()
+            newState.houseInformationModel = HouseInformationModel()
         case let .setMoveIntent(model):
             newState.movingFromAddressModel = MovingFromAddressModel(id: model.currentHomeAddresses.first?.id ?? "")
             newState.movingFlowModel = model
@@ -119,6 +111,13 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             }
         case let .setHousingType(housingType):
             newState.selectedHousingType = housingType
+        case let .setHouseInformation(model):
+            newState.houseInformationModel = model
+            send(.requestMoveIntent)
+        case let .addExtraBuilding(model):
+            newState.houseInformationModel.extraBuildings.append(model)
+        case let .removeExtraBuilding(model):
+            newState.houseInformationModel.removeExtraBuilding(model)
         default:
             break
         }
@@ -130,10 +129,14 @@ public enum MoveFlowAction: ActionProtocol {
     case getMoveIntent
     case setMoveIntent(with: MovingFlowModel)
     case setHousingType(with: HousingType)
+    case addExtraBuilding(with: HouseInformationModel.ExtraBuilding)
+    case removeExtraBuilding(with: HouseInformationModel.ExtraBuilding)
+    case setExtraBuildingType(with: ExtraBuildingType)
     case requestMoveIntent
 
     case setMovingFromAddress(with: MovingFromAddressModel)
     case setNewAddress(with: NewAddressModel)
+    case setHouseInformation(with: HouseInformationModel)
 
     case confirmMoveIntent
     case navigation(action: MoveFlowNavigationAction)
@@ -142,9 +145,12 @@ public enum MoveFlowAction: ActionProtocol {
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
     case openAddressFillScreen
     case openHouseFillScreen
+    case openAddBuilding
     case openConfirmScreen
     case openProcessingView
     case openFailureScreen(error: String)
+    case openTypeOfBuilding(for: ExtraBuildingType?)
+    case dismissTypeOfBuilding
     case goToFreeTextChat
     case dismissMovingFlow
     case goBack
@@ -163,4 +169,63 @@ public struct MoveFlowState: StateProtocol {
     @OptionalTransient var movingFlowModel: MovingFlowModel?
     @OptionalTransient var movingFromAddressModel: MovingFromAddressModel?
     @Transient(defaultValue: NewAddressModel()) var newAddressModel: NewAddressModel
+    @Transient(defaultValue: HouseInformationModel()) var houseInformationModel: HouseInformationModel
+
+}
+
+extension MoveFlowState {
+    func moveIntentRequestMutation() -> OctopusGraphQL.MoveIntentRequestMutation {
+        OctopusGraphQL.MoveIntentRequestMutation(
+            intentId: movingFlowModel?.id ?? "",
+            input: moveIntentRequestInput()
+        )
+    }
+
+    private func moveIntentRequestInput() -> OctopusGraphQL.MoveIntentRequestInput {
+        OctopusGraphQL.MoveIntentRequestInput(
+            moveToAddress: .init(
+                street: newAddressModel.address,
+                postalCode: newAddressModel.postalCode
+            ),
+            moveFromAddressId: movingFromAddressModel?.id ?? "",
+            movingDate: newAddressModel.movingDate,
+            numberCoInsured: newAddressModel.numberOfCoinsured,
+            squareMeters: newAddressModel.numberOfCoinsured,
+            apartment: apartmentInput(),
+            house: houseInput()
+        )
+    }
+
+    private func apartmentInput() -> OctopusGraphQL.MoveToApartmentInput? {
+        switch selectedHousingType {
+        case .apartmant, .rental:
+            return OctopusGraphQL.MoveToApartmentInput(
+                subType: selectedHousingType.asMoveApartmentSubType,
+                isStudent: false
+            )
+        case .house:
+            return nil
+        }
+    }
+
+    private func houseInput() -> OctopusGraphQL.MoveToHouseInput? {
+        switch selectedHousingType {
+        case .apartmant, .rental:
+            return nil
+        case .house:
+            return OctopusGraphQL.MoveToHouseInput(
+                ancillaryArea: houseInformationModel.ancillaryArea,
+                yearOfConstruction: houseInformationModel.yearOfConstruction,
+                numberOfBathrooms: houseInformationModel.numberOfBathrooms,
+                isSubleted: false,
+                extraBuildings: houseInformationModel.extraBuildings.map({
+                    OctopusGraphQL.MoveExtraBuildingInput(
+                        area: $0.livingArea,
+                        type: OctopusGraphQL.MoveExtraBuildingType(rawValue: $0.type) ?? .garage,
+                        hasWaterConnected: $0.connectedToWater
+                    )
+                })
+            )
+        }
+    }
 }

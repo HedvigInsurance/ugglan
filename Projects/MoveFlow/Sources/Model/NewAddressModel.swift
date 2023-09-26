@@ -29,15 +29,4 @@ public struct NewAddressModel: Codable, Equatable, Hashable {
         numberOfCoinsured = 0
         squareMeters = 0
     }
-
-    func toGraphQLInput(from addressId: String, with type: HousingType) -> OctopusGraphQL.MoveIntentRequestInput {
-        return OctopusGraphQL.MoveIntentRequestInput(
-            moveToAddress: .init(street: address, postalCode: postalCode),
-            moveFromAddressId: addressId,
-            movingDate: movingDate,
-            numberCoInsured: numberOfCoinsured,
-            squareMeters: squareMeters,
-            apartment: .init(subType: type.asMoveApartmentSubType, isStudent: false)
-        )
-    }
 }

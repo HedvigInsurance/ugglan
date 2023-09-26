@@ -9,23 +9,27 @@ struct MovingFlowHouseView: View {
 
     var body: some View {
         hForm {
-            hSection {
+            VStack {
                 VStack(spacing: 16) {
-                    VStack(spacing: 4) {
-                        addressField()
-                        postalAndSquareField()
-                        numberOfCoinsuredField()
-                        accessDateField()
+                    VStack(spacing: 8) {
+                        yearOfConstructionField
+                        ancillaryAreaField
+                        bathroomsField
+                        extraBuildingTypes
                     }
                     .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
-                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                    LoadingButtonWithContent(
-                        MoveFlowStore.self,
-                        .requestMoveIntent
-                    ) {
-                        vm.continuePressed()
-                    } content: {
-                        hText(L10n.General.submit, style: .body)
+                    hSection {
+                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    }
+                    hSection {
+                        LoadingButtonWithContent(
+                            MoveFlowStore.self,
+                            .requestMoveIntent
+                        ) {
+                            vm.continuePressed()
+                        } content: {
+                            hText(L10n.General.submit, style: .body)
+                        }
                     }
                 }
             }
@@ -33,76 +37,107 @@ struct MovingFlowHouseView: View {
             .padding(.top, 16)
 
         }
-        .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
+        .hFormTitle(.standard, .title1, L10n.changeAddressInformationAboutYourHouse)
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.bottom)
     }
 
-    func addressField() -> some View {
-        hFloatingTextField(
-            masking: Masking(type: .address),
-            value: $vm.address,
-            equals: $vm.type,
-            focusValue: .address,
-            error: $vm.addressError
-        )
-    }
-
-    func postalAndSquareField() -> some View {
-        HStack(alignment: .top, spacing: 4) {
-            hFloatingTextField(
-                masking: Masking(type: .postalCode),
-                value: $vm.postalCode,
-                equals: $vm.type,
-                focusValue: .postalCode,
-                placeholder: L10n.changeAddressNewPostalCodeLabel,
-                error: $vm.postalCodeError
-            )
-
+    private var yearOfConstructionField: some View {
+        hSection {
             hFloatingTextField(
                 masking: Masking(type: .digits),
-                value: $vm.squareArea,
+                value: $vm.yearOfConstruction,
                 equals: $vm.type,
-                focusValue: .squareArea,
-                placeholder: L10n.changeAddressNewLivingSpaceLabel,
-                suffix: L10n.changeAddressSizeSuffix,
-                error: $vm.squareAreaError
+                focusValue: .yearOfConstruction,
+                placeholder: L10n.changeAddressYearOfConstructionLabel,
+                error: $vm.yearOfConstructionError
             )
         }
     }
 
-    func numberOfCoinsuredField() -> some View {
-        hFloatingTextField(
-            masking: Masking(type: .digits),
-            value: $vm.nbOfCoInsured,
-            equals: $vm.type,
-            focusValue: .nbOfCoInsured,
-            placeholder: L10n.changeAddressCoInsuredLabel,
-            error: $vm.nbOfCoInsuredError
-        )
+    private var ancillaryAreaField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $vm.ancillaryArea,
+                equals: $vm.type,
+                focusValue: .ancillaryArea,
+                placeholder: L10n.changeAddressAncillaryAreaLabel,
+                suffix: L10n.changeAddressSizeSuffix,
+                error: $vm.ancillaryAreaError
+            )
+        }
     }
 
-    func accessDateField() -> some View {
-        let minStartDate = vm.store.state.movingFlowModel?.minMovingDate.localDateToDate
-        let maxStartDate = vm.store.state.movingFlowModel?.maxMovingDate.localDateToDate
+    private var bathroomsField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $vm.bathrooms,
+                equals: $vm.type,
+                focusValue: .bathrooms,
+                placeholder: L10n.changeAddressBathroomsLabel,
+                error: $vm.bathroomsError
+            )
+        }
+    }
 
-        return hDatePickerField(
-            config: .init(
-                minDate: minStartDate,
-                maxDate: maxStartDate,
-                placeholder: L10n.changeAddressMovingDateLabel,
-                title: L10n.changeAddressMovingDateLabel
-            ),
-            selectedDate: vm.accessDate,
-            error: $vm.accessDateError,
-            onContinue: { date in
-                vm.accessDate = date
-                vm.type = nil
-            },
-            onShowDatePicker: {
-                vm.type = .accessDate
+    private var extraBuildingTypes: some View {
+        PresentableStoreLens(
+            MoveFlowStore.self,
+            getter: { state in
+                state.houseInformationModel.extraBuildings
             }
-        )
+        ) { extraBuildings in
+            hSection {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
+
+                    ForEach(Array(extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText(extraBuilding.type.translatedValue, style: .standard)
+                                HStack(spacing: 0) {
+                                    hText(extraBuilding.descriptionText, style: .standardSmall)
+                                        .foregroundColor(hTextColorNew.secondary)
+                                }
+                            }
+                            Spacer()
+                            Button {
+                                vm.remove(extraBuilding: extraBuilding)
+                            } label: {
+                                Image(uiImage: hCoreUIAssets.closeSmall.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(hTextColorNew.primary)
+                            }
+                        }
+                        .padding(.vertical, 13)
+                        if offset + 1 < extraBuildings.count {
+                            Divider()
+                        }
+                    }
+                    hButton.MediumButton(type: .primaryAlt) {
+                        vm.addExtraBuilding()
+                    } content: {
+                        HStack {
+                            Image(uiImage: hCoreUIAssets.plusSmall.image)
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                            hText(L10n.changeAddressAddBuilding)
+                        }
+                    }
+                    .padding(.top, 8)
+
+                }
+                .padding(.top, 12)
+                .padding(.bottom, 16)
+                .padding(.horizontal, 16)
+            }
+            .sectionContainerStyle(.opaque)
+            .padding(.top, 6)
+
+        }
     }
 }
 
@@ -115,98 +150,81 @@ struct MovingFlowHouseView_Previews: PreviewProvider {
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
     static var last: MovingFlowHouseFieldType {
-        return MovingFlowHouseFieldType.accessDate
+        return MovingFlowHouseFieldType.bathrooms
     }
 
     var next: MovingFlowHouseFieldType? {
         switch self {
-        case .address:
-            return .postalCode
-        case .postalCode:
-            return .squareArea
-        case .squareArea:
-            return .nbOfCoInsured
-        case .nbOfCoInsured:
-            return .accessDate
-        case .accessDate:
+        case .yearOfConstruction:
+            return .ancillaryArea
+        case .ancillaryArea:
+            return .bathrooms
+        case .bathrooms:
             return nil
         }
     }
 
-    case address
-    case postalCode
-    case squareArea
-    case nbOfCoInsured
-    case accessDate
+    case yearOfConstruction
+    case ancillaryArea
+    case bathrooms
 
 }
 
 class MovingFlowHouseViewModel: ObservableObject {
     @Published var type: MovingFlowHouseFieldType?
-    @Published var address: String = ""
-    @Published var postalCode: String = ""
-    @Published var squareArea: String = ""
-    @Published var nbOfCoInsured: String = ""
-    @Published var accessDate: Date?
+    @Published var yearOfConstruction: String = ""
+    @Published var ancillaryArea: String = ""
+    @Published var bathrooms: String = ""
 
-    @Published var addressError: String?
-    @Published var postalCodeError: String?
-    @Published var squareAreaError: String?
-    @Published var nbOfCoInsuredError: String?
-    @Published var accessDateError: String?
+    @Published var yearOfConstructionError: String?
+    @Published var ancillaryAreaError: String?
+    @Published var bathroomsError: String?
 
-    @Inject var octopus: hOctopus
     @PresentableStore var store: MoveFlowStore
+
+    init() {}
 
     var disposeBag = DisposeBag()
     func continuePressed() {
         if isInputValid() {
-            store.setLoading(for: .requestMoveIntent)
-            let input = OctopusGraphQL.MoveIntentRequestInput(
-                moveToAddress: .init(
-                    street: address,
-                    postalCode: postalCode
-                ),
-                moveFromAddressId: store.state.movingFlowModel?.currentHomeAddresses.first?.id ?? "",
-                movingDate: accessDate?.localDateString ?? "",
-                numberCoInsured: Int(nbOfCoInsured) ?? 0,
-                squareMeters: Int(squareArea) ?? 0,
-                apartment: .init(subType: .own, isStudent: false)
-            )
-
-            let mutation = OctopusGraphQL.MoveIntentRequestMutation(
-                intentId: store.state.movingFlowModel?.id ?? "",
-                input: input
-            )
-            disposeBag += octopus.client.perform(mutation: mutation)
-                .onValue({ [weak self] value in
-                    if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-                        let model = MovingFlowModel(from: fragment)
-                        self?.store.send(.setMoveIntent(with: model))
-                        self?.store.send(.navigation(action: .openConfirmScreen))
-                        self?.store.removeLoading(for: .requestMoveIntent)
-                    } else if let error = value.moveIntentRequest.userError?.message {
-                        self?.store.setError(error, for: .requestMoveIntent)
-                    }
-                })
-                .onError({ [weak self] error in
-                    self?.store.setError(L10n.generalError, for: .requestMoveIntent)
-                })
+            store.send(.setHouseInformation(with: self.toHouseInformationModel()))
         }
     }
 
     private func isInputValid() -> Bool {
         func validate() -> Bool {
             withAnimation {
-                addressError = !address.isEmpty ? nil : L10n.genericErrorInputRequired
-                postalCodeError = !postalCode.isEmpty ? nil : L10n.genericErrorInputRequired
-                squareAreaError = !squareArea.isEmpty ? nil : L10n.genericErrorInputRequired
-                nbOfCoInsuredError = !nbOfCoInsured.isEmpty ? nil : L10n.genericErrorInputRequired
-                accessDateError = accessDate?.localDateString != nil ? nil : L10n.genericErrorInputRequired
-                return addressError == nil && postalCodeError == nil && squareAreaError == nil
-                    && nbOfCoInsuredError == nil && accessDateError == nil
+                yearOfConstructionError = !yearOfConstruction.isEmpty ? nil : L10n.changeAddressYearOfConstructionError
+                ancillaryAreaError = !ancillaryArea.isEmpty ? nil : L10n.changeAddressAncillaryAreaError
+                bathroomsError = !bathrooms.isEmpty ? nil : L10n.changeAddressBathroomsError
+                return yearOfConstructionError == nil && ancillaryAreaError == nil && bathroomsError == nil
             }
         }
         return validate()
+    }
+
+    func addExtraBuilding() {
+        UIApplication.dismissKeyboard()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            self?.store.send(.navigation(action: .openAddBuilding))
+        }
+    }
+
+    func remove(extraBuilding: HouseInformationModel.ExtraBuilding) {
+        UIApplication.dismissKeyboard()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            self?.store.send(.removeExtraBuilding(with: extraBuilding))
+        }
+    }
+}
+
+extension MovingFlowHouseViewModel {
+    func toHouseInformationModel() -> HouseInformationModel {
+        HouseInformationModel(
+            yearOfConstruction: Int(self.yearOfConstruction) ?? 0,
+            ancillaryArea: Int(self.ancillaryArea) ?? 0,
+            numberOfBathrooms: Int(self.bathrooms) ?? 0,
+            extraBuildings: []
+        )
     }
 }

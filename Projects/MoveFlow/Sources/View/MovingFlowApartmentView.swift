@@ -155,7 +155,6 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     @Published var nbOfCoInsuredError: String?
     @Published var accessDateError: String?
 
-    @Inject var octopus: hOctopus
     @PresentableStore var store: MoveFlowStore
 
     var disposeBag = DisposeBag()
