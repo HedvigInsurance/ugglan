@@ -21,7 +21,7 @@ extension AppDelegate {
         }
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
-    
+
     func setupHAnalyticsExperiments() {
         hAnalyticsExperiment.retryingLoad { success in
             DefaultStyling.installCustom()
