@@ -7,19 +7,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct EmbarkRecorderTracking {
-
-    init(
-        storyName: String,
-        store: [String: String?]
-    ) {
-    }
-}
-
 struct EmbarkRecordAction: View {
     let data:
         GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
-    var tracking: EmbarkRecorderTracking
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
 

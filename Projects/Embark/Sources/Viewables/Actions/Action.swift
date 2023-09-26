@@ -224,10 +224,6 @@ extension Action: Viewable {
 
                             let recordActionView = EmbarkRecordAction(
                                 data: recordAction,
-                                tracking: .init(
-                                    storyName: self.state.storySignal.value?.name ?? "",
-                                    store: self.state.store.getAllValues()
-                                ),
                                 audioRecorder: audioRecorder
                             ) { url in
                                 self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
