@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkRecorderTracking {
-    
+
     init(
         storyName: String,
         store: [String: String?]

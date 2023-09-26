@@ -301,7 +301,7 @@ extension Chat: Presentable {
                 }
             }
         })
-        
+
         return (
             viewController,
             Signal { callback in
