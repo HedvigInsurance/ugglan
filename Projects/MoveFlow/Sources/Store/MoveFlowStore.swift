@@ -201,7 +201,7 @@ extension MoveFlowState {
         case .apartmant, .rental:
             return OctopusGraphQL.MoveToApartmentInput(
                 subType: selectedHousingType.asMoveApartmentSubType,
-                isStudent: false
+                isStudent: newAddressModel.isStudent
             )
         case .house:
             return nil
@@ -217,7 +217,7 @@ extension MoveFlowState {
                 ancillaryArea: houseInformationModel.ancillaryArea,
                 yearOfConstruction: houseInformationModel.yearOfConstruction,
                 numberOfBathrooms: houseInformationModel.numberOfBathrooms,
-                isSubleted: false,
+                isSubleted: houseInformationModel.isSubleted,
                 extraBuildings: houseInformationModel.extraBuildings.map({
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: $0.livingArea,

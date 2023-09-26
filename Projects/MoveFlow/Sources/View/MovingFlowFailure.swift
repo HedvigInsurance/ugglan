@@ -36,6 +36,7 @@ struct MovingFlowFailure: View {
 
 struct MovingFlowFailure_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowFailure(error: "error")
+        Localization.Locale.currentLocale = .sv_SE
+        return MovingFlowFailure(error: "error")
     }
 }

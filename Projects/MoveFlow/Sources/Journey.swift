@@ -30,8 +30,6 @@ public struct MovingFlowJourneyNew {
                 MovingFlowJourneyNew.openHouseFillScreen()
             } else if case .openAddBuilding = navigationAction {
                 MovingFlowJourneyNew.openAddExtraBuilding()
-            } else if case let .openTypeOfBuilding(type) = navigationAction {
-                MovingFlowJourneyNew.openTypeOfBuildingPicker(for: type)
             } else if case .openConfirmScreen = navigationAction {
                 MovingFlowJourneyNew.openConfirmScreen()
             } else if case let .openFailureScreen(error) = navigationAction {
@@ -65,7 +63,7 @@ public struct MovingFlowJourneyNew {
     static func openApartmentFillScreen() -> some JourneyPresentation {
         HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowHouseView()  //MovingFlowNewAddressView()
+            rootView: MovingFlowNewAddressView()
         ) {
             action in
             getMovingFlowScreenForAction(for: action)
@@ -93,6 +91,8 @@ public struct MovingFlowJourneyNew {
         ) { action in
             if case .addExtraBuilding = action {
                 PopJourney()
+            } else if case let .navigation(.openTypeOfBuilding(type)) = action {
+                MovingFlowJourneyNew.openTypeOfBuildingPicker(for: type)
             } else {
                 getMovingFlowScreenForAction(for: action)
             }
@@ -138,6 +138,7 @@ public struct MovingFlowJourneyNew {
                 getMovingFlowScreenForAction(for: action)
             }
         }
+        .configureTitle(L10n.changeAddressExtraBuildingContainerTitle)
     }
 
     static func openConfirmScreen() -> some JourneyPresentation {

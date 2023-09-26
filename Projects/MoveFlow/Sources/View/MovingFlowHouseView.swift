@@ -15,6 +15,7 @@ struct MovingFlowHouseView: View {
                         yearOfConstructionField
                         ancillaryAreaField
                         bathroomsField
+                        isSubleted
                         extraBuildingTypes
                     }
                     .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
@@ -139,11 +140,25 @@ struct MovingFlowHouseView: View {
 
         }
     }
+
+    private var isSubleted: some View {
+        hSection {
+            Toggle(isOn: $vm.isSubleted.animation(.default)) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.changeAddressSubletLabel, style: .standardLarge)
+                }
+            }
+            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+            .padding(.vertical, 21)
+            .padding(.horizontal, 16)
+        }
+        .sectionContainerStyle(.opaque)
+    }
 }
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale = .nb_NO
         return MovingFlowHouseView()
     }
 }
@@ -175,7 +190,7 @@ class MovingFlowHouseViewModel: ObservableObject {
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""
     @Published var bathrooms: String = ""
-
+    @Published var isSubleted = false
     @Published var yearOfConstructionError: String?
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
@@ -224,6 +239,7 @@ extension MovingFlowHouseViewModel {
             yearOfConstruction: Int(self.yearOfConstruction) ?? 0,
             ancillaryArea: Int(self.ancillaryArea) ?? 0,
             numberOfBathrooms: Int(self.bathrooms) ?? 0,
+            isSubleted: isSubleted,
             extraBuildings: []
         )
     }

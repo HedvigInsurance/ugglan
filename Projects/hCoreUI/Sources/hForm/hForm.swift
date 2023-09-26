@@ -197,13 +197,12 @@ public struct hForm<Content: View>: View {
             additionalSpaceFromTop = 0
         }
         if mergeBottomWithContentIfNeeded {
-            print("VALUE IS \(scrollViewHeight) - \(contentHeight) - \(bottomAttachedViewHeight)")
             let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight - 16 < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
         if contentPosition != .bottom {
-            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
+            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
         }
     }
 }

@@ -100,7 +100,8 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowProcessingView()
+        Localization.Locale.currentLocale = .sv_SE
+        return MovingFlowProcessingView()
     }
 }
 struct BackgroundView: UIViewRepresentable {

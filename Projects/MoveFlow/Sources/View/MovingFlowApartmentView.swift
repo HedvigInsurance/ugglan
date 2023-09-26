@@ -9,16 +9,32 @@ struct MovingFlowNewAddressView: View {
 
     var body: some View {
         hForm {
-            hSection {
-                VStack(spacing: 16) {
-                    VStack(spacing: 4) {
+            VStack(spacing: 16) {
+                VStack(spacing: 4) {
+                    hSection {
                         addressField()
+                    }
+                    hSection {
                         postalAndSquareField()
+                    }
+                    hSection {
                         numberOfCoinsuredField()
+                    }
+                    hSection {
                         accessDateField()
                     }
-                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                    if vm.store.state.selectedHousingType.isStudentEnabled {
+                        hSection {
+                            isStudentField()
+                        }
+                        .sectionContainerStyle(.opaque)
+                    }
+                }
+                .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                }
+                hSection {
                     LoadingButtonWithContent(
                         MoveFlowStore.self,
                         .requestMoveIntent
@@ -104,11 +120,21 @@ struct MovingFlowNewAddressView: View {
             }
         )
     }
+    func isStudentField() -> some View {
+        Toggle(isOn: $vm.isStudent.animation(.default)) {
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.changeAddressStudentLabel, style: .standardLarge)
+            }
+        }
+        .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+        .padding(.vertical, 16)
+        .padding(.horizontal, 16)
+    }
 }
 
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale = .sv_SE
         return MovingFlowNewAddressView()
     }
 }
@@ -148,6 +174,7 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     @Published var squareArea: String = ""
     @Published var nbOfCoInsured: String = ""
     @Published var accessDate: Date?
+    @Published var isStudent = false
 
     @Published var addressError: String?
     @Published var postalCodeError: String?
@@ -167,11 +194,11 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     private func isInputValid() -> Bool {
         func validate() -> Bool {
             withAnimation {
-                addressError = !address.isEmpty ? nil : L10n.genericErrorInputRequired
-                postalCodeError = !postalCode.isEmpty ? nil : L10n.genericErrorInputRequired
-                squareAreaError = !squareArea.isEmpty ? nil : L10n.genericErrorInputRequired
-                nbOfCoInsuredError = !nbOfCoInsured.isEmpty ? nil : L10n.genericErrorInputRequired
-                accessDateError = accessDate?.localDateString != nil ? nil : L10n.genericErrorInputRequired
+                addressError = !address.isEmpty ? nil : L10n.changeAddressStreetError
+                postalCodeError = !postalCode.isEmpty ? nil : L10n.changeAddressPostalCodeError
+                squareAreaError = !squareArea.isEmpty ? nil : L10n.changeAddressLivingSpaceError
+                nbOfCoInsuredError = !nbOfCoInsured.isEmpty ? nil : L10n.changeAddressCoInsuredError
+                accessDateError = accessDate?.localDateString != nil ? nil : L10n.changeAddressMovingDateError
                 return addressError == nil && postalCodeError == nil && squareAreaError == nil
                     && nbOfCoInsuredError == nil && accessDateError == nil
             }
@@ -187,7 +214,8 @@ extension MovingFlowNewAddressViewModel {
             postalCode: self.postalCode,
             movingDate: accessDate?.localDateString ?? "",
             numberOfCoinsured: Int(nbOfCoInsured) ?? 0,
-            squareMeters: Int(squareArea) ?? 0
+            squareMeters: Int(squareArea) ?? 0,
+            isStudent: isStudent
         )
     }
 }

@@ -6,11 +6,19 @@ public struct HouseInformationModel: Codable, Equatable, Hashable {
     let yearOfConstruction: Int
     let ancillaryArea: Int
     let numberOfBathrooms: Int
+    let isSubleted: Bool
     var extraBuildings: [ExtraBuilding]
-    init(yearOfConstruction: Int, ancillaryArea: Int, numberOfBathrooms: Int, extraBuildings: [ExtraBuilding]) {
+    init(
+        yearOfConstruction: Int,
+        ancillaryArea: Int,
+        numberOfBathrooms: Int,
+        isSubleted: Bool,
+        extraBuildings: [ExtraBuilding]
+    ) {
         self.yearOfConstruction = yearOfConstruction
         self.ancillaryArea = ancillaryArea
         self.numberOfBathrooms = numberOfBathrooms
+        self.isSubleted = isSubleted
         self.extraBuildings = extraBuildings
     }
 
@@ -18,6 +26,7 @@ public struct HouseInformationModel: Codable, Equatable, Hashable {
         yearOfConstruction = 0
         ancillaryArea = 0
         numberOfBathrooms = 0
+        isSubleted = false
         extraBuildings = []
     }
 

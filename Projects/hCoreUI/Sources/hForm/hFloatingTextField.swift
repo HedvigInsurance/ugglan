@@ -105,6 +105,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .onChange(of: equals) { equals in
             if equals == focusValue {
                 self.vm.textField?.becomeFirstResponder()
+            } else if self.vm.textField?.isEditing == true {
+                self.vm.textField?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in

@@ -40,7 +40,10 @@ struct MovingFlowAddExtraBuildingView: View {
     }
     @ViewBuilder
     private var typeOfBuilding: some View {
-        hFloatingField(value: vm.buildingType ?? "", placeholder: L10n.changeAddressExtraBuildingContainerTitle) {
+        hFloatingField(
+            value: vm.buildingType?.translatedValue ?? "",
+            placeholder: L10n.changeAddressExtraBuildingContainerTitle
+        ) {
             vm.showTypeOfBuilding()
         }
     }
@@ -51,7 +54,7 @@ struct MovingFlowAddExtraBuildingView: View {
             value: $vm.livingArea,
             equals: $vm.type,
             focusValue: .livingArea,
-            placeholder: L10n.changeAddressNewLivingSpaceLabel,
+            placeholder: L10n.changeAddressExtraBuildingSizeLabel,
             suffix: L10n.changeAddressSizeSuffix,
             error: $vm.livingAreaError
         )
@@ -87,7 +90,7 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     @PresentableStore var store: MoveFlowStore
     @Published var type: AddExtraBuildingType?
 
-    @Published var buildingType: String?
+    @Published var buildingType: ExtraBuildingType?
     @Published var livingArea: String = ""
     @Published var connectedToWater = false
 
@@ -107,6 +110,7 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     var disposeBag = DisposeBag()
     func addExtraBuilding() {
         store.send(.addExtraBuilding(with: self.asExtraBuilding()))
+        L10n.changeAddressExtraBuildingSizeLabel
     }
 
     func showTypeOfBuilding() {

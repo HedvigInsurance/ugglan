@@ -50,7 +50,8 @@ public struct MovingFlowHousingTypeView: View {
 
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
-        MovingFlowHousingTypeView()
+        Localization.Locale.currentLocale = .nb_NO
+        return MovingFlowHousingTypeView()
     }
 }
 
@@ -92,6 +93,17 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
             return .rent
         case .house:
             return .own
+        }
+    }
+
+    var isStudentEnabled: Bool {
+        switch self {
+        case .apartmant:
+            return true
+        case .rental:
+            return true
+        case .house:
+            return false
         }
     }
 }
