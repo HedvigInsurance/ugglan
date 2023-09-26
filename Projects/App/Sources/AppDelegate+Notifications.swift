@@ -71,8 +71,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
-        hAnalyticsEvent.notificationOpened(type: notificationType).send()
-
         if notificationType == "NEW_MESSAGE" {
             performPostLoggedIn {
                 let store: UgglanStore = globalPresentableStoreContainer.get()

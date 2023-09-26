@@ -302,7 +302,6 @@ extension Chat: Presentable {
             }
         })
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
         return (
             viewController,
             Signal { callback in

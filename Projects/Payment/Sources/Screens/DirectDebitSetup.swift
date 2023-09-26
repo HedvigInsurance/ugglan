@@ -136,8 +136,6 @@ extension DirectDebitSetup: Presentable {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
-            webView.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentTrustly))
-
             bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
                 .onValue({ data in
                     if let url = URL(string: data.startDirectDebitRegistration) {

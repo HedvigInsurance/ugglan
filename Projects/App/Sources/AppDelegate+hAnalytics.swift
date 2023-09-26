@@ -22,22 +22,6 @@ extension AppDelegate {
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
 
-    func trackNotificationPermission() {
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                switch settings.authorizationStatus {
-                case .authorized:
-                    hAnalyticsEvent.notificationPermission(granted: true).send()
-                case .denied:
-                    hAnalyticsEvent.notificationPermission(granted: false).send()
-                case .notDetermined, .ephemeral, .provisional:
-                    hAnalyticsEvent.notificationPermission(granted: nil).send()
-                @unknown default:
-                    hAnalyticsEvent.notificationPermission(granted: nil).send()
-                }
-            }
-    }
-
     func setupHAnalyticsExperiments() {
         hAnalyticsExperiment.retryingLoad { success in
             DefaultStyling.installCustom()

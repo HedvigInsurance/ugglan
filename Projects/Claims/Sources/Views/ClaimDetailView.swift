@@ -66,18 +66,11 @@ public struct ClaimDetailView: View {
                         audioPlayer.objectWillChange
                             .filter { $0.playbackState == .finished },
                         perform: { player in
-                            hAnalyticsEvent.claimsDetailRecordingPlayed(
-                                claimId: self.claim.id
-                            )
-                            .send()
                         }
                     )
                 }
             }
         }
-        .trackOnAppear(
-            hAnalyticsEvent.screenView(screen: .claimsStatusDetail)
-        )
     }
 
 }

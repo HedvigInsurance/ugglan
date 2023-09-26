@@ -15,8 +15,6 @@ extension AppDelegate {
         guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
         guard let rootViewController = window.rootViewController else { return }
 
-        hAnalyticsEvent.deepLinkOpened(type: path.rawValue).send()
-
         if path == .directDebit {
             rootViewController.present(
                 PaymentSetup(setupType: .initial)
