@@ -119,8 +119,6 @@ import hGraphQL
                                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                             }
                         completion(.success)
-
-                        self.trackNotificationPermission()
                     }
                 )
 
@@ -282,7 +280,6 @@ import hGraphQL
 
         ApolloClient.migrateOldTokenIfNeeded()
             .onValue { _ in
-                self.trackNotificationPermission()
                 self.setupHAnalyticsExperiments()
 
                 self.bag += ApplicationContext.shared.$hasLoadedExperiments
