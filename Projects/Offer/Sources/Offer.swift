@@ -103,8 +103,6 @@ extension Offer: Presentable {
                 }
             }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .offer))
-
         let optionsOrCloseButton = UIBarButtonItem(
             image: hCoreUIAssets.menuIcon.image,
             style: .plain,

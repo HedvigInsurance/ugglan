@@ -8,36 +8,11 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkRecorderTracking {
-    var onPlay: hAnalyticsParcel
-    var onRetry: hAnalyticsParcel
-    var onSubmit: hAnalyticsParcel
-    var onStop: hAnalyticsParcel
-    var onStart: hAnalyticsParcel
-
+    
     init(
         storyName: String,
         store: [String: String?]
     ) {
-        self.onPlay = hAnalyticsEvent.embarkAudioRecordingPlayback(
-            storyName: storyName,
-            store: store
-        )
-        self.onRetry = hAnalyticsEvent.embarkAudioRecordingRetry(
-            storyName: storyName,
-            store: store
-        )
-        self.onSubmit = hAnalyticsEvent.embarkAudioRecordingSubmitted(
-            storyName: storyName,
-            store: store
-        )
-        self.onStop = hAnalyticsEvent.embarkAudioRecordingStopped(
-            storyName: storyName,
-            store: store
-        )
-        self.onStart = hAnalyticsEvent.embarkAudioRecordingBegin(
-            storyName: storyName,
-            store: store
-        )
     }
 }
 
@@ -53,19 +28,16 @@ struct EmbarkRecordAction: View {
             if let recording = audioRecorder.recording {
                 VStack(spacing: 12) {
                     TrackPlayer(audioPlayer: .init(recording: recording)) {
-                        tracking.onPlay.send()
                     }
                     hButton.LargeButton(type: .primary) {
                         guard let url = audioRecorder.recording?.url else {
                             return
                         }
-                        tracking.onSubmit.send()
                         onSubmit(url)
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
                     hButton.LargeButton(type: .ghost) {
-                        tracking.onRetry.send()
                         withAnimation(.spring()) {
                             audioRecorder.restart()
                         }
@@ -77,9 +49,7 @@ struct EmbarkRecordAction: View {
             } else {
                 RecordButton(isRecording: audioRecorder.isRecording) {
                     if audioRecorder.isRecording {
-                        tracking.onStop.send()
                     } else {
-                        tracking.onStart.send()
                     }
 
                     withAnimation(.spring()) {

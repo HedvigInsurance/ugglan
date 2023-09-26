@@ -172,7 +172,6 @@ extension EmbarkPlans: Presentable {
                 bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
                     .compactMap { _, story in story }
                     .onValue { story in
-                        hAnalyticsEvent.onboardingChooseEmbarkFlow(embarkStoryId: story.name).send()
                         callback(.value(.story(value: story)))
                     }
 

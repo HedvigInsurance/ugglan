@@ -66,7 +66,6 @@ extension HomeView {
             fetch()
             self.toolbarOptionTypes = store.state.toolbarOptionTypes
         }
-        .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
         .hFormAttachToBottom {
             bottomContent
         }
@@ -156,7 +155,6 @@ extension HomeView {
 
     private var startAClaimButton: some View {
         hButton.LargeButton(type: .primary) {
-            hAnalyticsEvent.beginClaim(screen: .home).send()
             store.send(.startClaim)
         } content: {
             hText(L10n.HomeTab.claimButtonText)

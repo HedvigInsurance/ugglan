@@ -63,7 +63,6 @@ import hGraphQL
     }
 
     func logout() {
-        hAnalyticsEvent.loggedOut().send()
         bag.dispose()
 
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
@@ -74,17 +73,14 @@ import hGraphQL
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        hAnalyticsEvent.appShutdown().send()
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         Thread.sleep(forTimeInterval: 3)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        hAnalyticsEvent.appBackground().send()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        hAnalyticsEvent.appResumed().send()
     }
 
     func application(
@@ -222,9 +218,6 @@ import hGraphQL
         log.info("Starting app")
 
         UIApplication.shared.registerForRemoteNotifications()
-
-        hAnalyticsEvent.identify()
-        hAnalyticsEvent.appStarted().send()
 
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)

@@ -54,7 +54,6 @@ public struct ForeverView: View {
                         }
                     }
             )
-            .trackOnAppear(hAnalyticsEvent.screenView(screen: .forever))
         }
     }
 }

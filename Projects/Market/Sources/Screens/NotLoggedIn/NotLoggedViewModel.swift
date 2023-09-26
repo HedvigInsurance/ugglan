@@ -42,7 +42,6 @@ public class NotLoggedViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 if value {
-                    hAnalyticsEvent.screenView(screen: .marketPicker).send()
                     self?.viewState = .marketAndLanguage
                     self?.onLoad()
                 }

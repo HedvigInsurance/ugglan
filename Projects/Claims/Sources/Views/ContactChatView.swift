@@ -33,12 +33,6 @@ struct ContactChatView: View {
 
             }
             .buttonStyle(ChatButtonStyle())
-            .trackOnTap(
-                hAnalyticsEvent.claimDetailClickOpenChat(
-                    claimId: id,
-                    claimStatus: status
-                )
-            )
         }
     }
 }

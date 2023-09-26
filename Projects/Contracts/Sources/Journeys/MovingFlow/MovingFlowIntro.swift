@@ -165,8 +165,6 @@ extension MovingFlowIntro: Presentable {
                 }
             }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .movingFlowIntro))
-
         return (
             viewController,
             FiniteSignal { callbacker in

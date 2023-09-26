@@ -18,7 +18,6 @@ extension AppJourney {
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
             .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
-        hAnalyticsEvent.redirectedToWebOnboarding().send()
 
         return AppJourney.webRedirect(url: webUrl)
     }

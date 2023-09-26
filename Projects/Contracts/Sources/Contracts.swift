@@ -90,7 +90,6 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
-        .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
         .introspectScrollView { scrollView in
             let refreshControl = UIRefreshControl()
             disposeBag.dispose()
