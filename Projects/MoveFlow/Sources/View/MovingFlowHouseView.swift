@@ -1,4 +1,5 @@
 import Flow
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -78,6 +79,7 @@ struct MovingFlowHouseView: View {
                 minValue: 0,
                 maxValue: 10
             ) { value in
+                vm.type = nil
                 if value == 0 {
                     return nil
                 } else {
@@ -159,6 +161,7 @@ struct MovingFlowHouseView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
+                    vm.type = nil
                     vm.isSubleted.toggle()
                 }
             }
@@ -209,12 +212,27 @@ class MovingFlowHouseViewModel: ObservableObject {
     @Published var bathroomsError: String?
 
     @PresentableStore var store: MoveFlowStore
+    var disposeBag = DisposeBag()
 
     init() {
-
+        setupInitValues()
     }
 
-    var disposeBag = DisposeBag()
+    private func setupInitValues() {
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        let houseInfoModel = store.state.houseInformationModel
+        let yearOfConstruction = houseInfoModel.yearOfConstruction
+        if yearOfConstruction > 0 {
+            self.yearOfConstruction = String(yearOfConstruction)
+        }
+        let ancillaryArea = houseInfoModel.ancillaryArea
+        if ancillaryArea > 0 {
+            self.ancillaryArea = String(ancillaryArea)
+        }
+        bathrooms = houseInfoModel.numberOfBathrooms
+        isSubleted = houseInfoModel.isSubleted
+    }
+
     func continuePressed() {
         if isInputValid() {
             store.send(.setHouseInformation(with: self.toHouseInformationModel()))

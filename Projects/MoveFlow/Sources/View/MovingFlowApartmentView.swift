@@ -193,8 +193,23 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     @PresentableStore var store: MoveFlowStore
 
     init() {
+        setupInitValues()
+    }
+
+    private func setupInitValues() {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        self.nbOfCoInsured = store.state.movingFlowModel?.numberCoInsured ?? 1
+        self.address = store.state.newAddressModel.address
+        self.postalCode = store.state.newAddressModel.postalCode
+        let size = store.state.newAddressModel.squareMeters
+        if size > 0 {
+            self.squareArea = String(size)
+        }
+        self.nbOfCoInsured = max(
+            store.state.newAddressModel.numberOfCoinsured,
+            store.state.movingFlowModel?.numberCoInsured ?? 1
+        )
+        self.accessDate = store.state.newAddressModel.movingDate.localDateToDate
+        self.isStudent = store.state.newAddressModel.isStudent
     }
 
     var disposeBag = DisposeBag()

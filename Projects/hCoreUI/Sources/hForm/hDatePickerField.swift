@@ -38,7 +38,7 @@ public struct hDatePickerField: View {
         self.onShowDatePicker = onShowDatePicker
         self.selectedDate = selectedDate
         self._error = error ?? Binding.constant(nil)
-        self.date = config.minDate ?? Date()
+        self.date = selectedDate ?? config.minDate ?? Date()
         self.placeholderText = placehodlerText
     }
 
@@ -68,6 +68,7 @@ public struct hDatePickerField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
+            self.date = selectedDate ?? config.minDate ?? Date()
             if let onShowDatePicker {
                 onShowDatePicker()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
