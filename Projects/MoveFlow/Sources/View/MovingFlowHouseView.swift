@@ -18,7 +18,7 @@ struct MovingFlowHouseView: View {
                         isSubleted
                         extraBuildingTypes
                     }
-                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
@@ -149,6 +149,12 @@ struct MovingFlowHouseView: View {
                 }
             }
             .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation {
+                    vm.isSubleted.toggle()
+                }
+            }
             .padding(.vertical, 21)
             .padding(.horizontal, 16)
         }
@@ -203,6 +209,7 @@ class MovingFlowHouseViewModel: ObservableObject {
     func continuePressed() {
         if isInputValid() {
             store.send(.setHouseInformation(with: self.toHouseInformationModel()))
+            store.send(.requestMoveIntent)
         }
     }
 
@@ -240,7 +247,7 @@ extension MovingFlowHouseViewModel {
             ancillaryArea: Int(self.ancillaryArea) ?? 0,
             numberOfBathrooms: Int(self.bathrooms) ?? 0,
             isSubleted: isSubleted,
-            extraBuildings: []
+            extraBuildings: store.state.houseInformationModel.extraBuildings
         )
     }
 }

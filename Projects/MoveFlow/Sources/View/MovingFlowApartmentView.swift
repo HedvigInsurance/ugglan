@@ -1,4 +1,5 @@
 import Flow
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -12,37 +13,34 @@ struct MovingFlowNewAddressView: View {
             VStack(spacing: 16) {
                 VStack(spacing: 4) {
                     hSection {
-                        addressField()
+                        addressField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     }
                     hSection {
-                        postalAndSquareField()
+                        postalAndSquareField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     }
                     hSection {
-                        numberOfCoinsuredField()
+                        numberOfCoinsuredField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     }
                     hSection {
-                        accessDateField()
+                        accessDateField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     }
                     if vm.store.state.selectedHousingType.isStudentEnabled {
                         hSection {
-                            isStudentField()
+                            isStudentField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
                         }
                         .sectionContainerStyle(.opaque)
                     }
                 }
-                .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 }
                 hSection {
-                    LoadingButtonWithContent(
-                        MoveFlowStore.self,
-                        .requestMoveIntent
-                    ) {
+                    hButton.LargeButton(type: .primary) {
                         vm.continuePressed()
                     } content: {
                         hText(L10n.General.submit, style: .body)
                     }
+                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
             }
             .padding(.bottom, 8)
@@ -127,6 +125,12 @@ struct MovingFlowNewAddressView: View {
             }
         }
         .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation {
+                vm.isStudent.toggle()
+            }
+        }
         .padding(.vertical, 16)
         .padding(.horizontal, 16)
     }
@@ -184,10 +188,21 @@ class MovingFlowNewAddressViewModel: ObservableObject {
 
     @PresentableStore var store: MoveFlowStore
 
+    init() {
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        self.nbOfCoInsured = String(store.state.movingFlowModel?.numberCoInsured ?? 0)
+    }
+
     var disposeBag = DisposeBag()
     func continuePressed() {
         if isInputValid() {
             store.send(.setNewAddress(with: self.toNewAddressModel()))
+            switch store.state.selectedHousingType {
+            case .apartmant, .rental:
+                store.send(.requestMoveIntent)
+            case .house:
+                store.send(.navigation(action: .openHouseFillScreen))
+            }
         }
     }
 

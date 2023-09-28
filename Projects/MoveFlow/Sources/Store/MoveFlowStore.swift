@@ -103,17 +103,11 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             newState.movingFromAddressModel = model
         case let .setNewAddress(model):
             newState.newAddressModel = model
-            switch newState.selectedHousingType {
-            case .apartmant, .rental:
-                send(.requestMoveIntent)
-            case .house:
-                send(.navigation(action: .openHouseFillScreen))
-            }
         case let .setHousingType(housingType):
             newState.selectedHousingType = housingType
         case let .setHouseInformation(model):
             newState.houseInformationModel = model
-            send(.requestMoveIntent)
+
         case let .addExtraBuilding(model):
             newState.houseInformationModel.extraBuildings.append(model)
         case let .removeExtraBuilding(model):
