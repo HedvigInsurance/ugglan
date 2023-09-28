@@ -63,7 +63,6 @@ import hGraphQL
     }
 
     func logout() {
-        hAnalyticsEvent.loggedOut().send()
         bag.dispose()
 
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
@@ -74,17 +73,14 @@ import hGraphQL
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        hAnalyticsEvent.appShutdown().send()
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         Thread.sleep(forTimeInterval: 3)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        hAnalyticsEvent.appBackground().send()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        hAnalyticsEvent.appResumed().send()
     }
 
     func application(
@@ -123,8 +119,6 @@ import hGraphQL
                                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                             }
                         completion(.success)
-
-                        self.trackNotificationPermission()
                     }
                 )
 
@@ -223,9 +217,6 @@ import hGraphQL
 
         UIApplication.shared.registerForRemoteNotifications()
 
-        hAnalyticsEvent.identify()
-        hAnalyticsEvent.appStarted().send()
-
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
@@ -289,7 +280,6 @@ import hGraphQL
 
         ApolloClient.migrateOldTokenIfNeeded()
             .onValue { _ in
-                self.trackNotificationPermission()
                 self.setupHAnalyticsExperiments()
 
                 self.bag += ApplicationContext.shared.$hasLoadedExperiments

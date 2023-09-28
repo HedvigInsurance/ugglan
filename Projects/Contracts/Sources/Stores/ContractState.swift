@@ -13,8 +13,6 @@ public struct ContractState: StateProtocol {
     @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
-    public var focusedCrossSell: CrossSell?
-    public var signedCrossSells: [CrossSell] = []
     public var crossSells: [CrossSell] = []
     var currentTerminationContext: String?
     var terminationContractId: String? = ""

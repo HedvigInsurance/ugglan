@@ -44,17 +44,6 @@ enum DirectDebitResultType {
         case .failure: return L10n.PayInError.retryButton
         }
     }
-
-    var analyticsEvents: [hAnalyticsParcel] {
-        switch self {
-        case .success:
-            return [
-                hAnalyticsEvent.screenView(screen: .connectPaymentSuccess),
-                hAnalyticsEvent.paymentConnected(),
-            ]
-        case .failure: return [hAnalyticsEvent.screenView(screen: .connectPaymentFailed)]
-        }
-    }
 }
 
 struct DirectDebitResult {
@@ -120,10 +109,6 @@ extension DirectDebitResult: Viewable {
             }
 
         bag += events.removeAfter.set { _ in 1 }
-
-        type.analyticsEvents.forEach { parcel in
-            containerView.trackOnAppear(parcel)
-        }
 
         return (
             containerView,

@@ -80,9 +80,6 @@ enum ChatResult {
                     style: .detented(.large)
                 ) { action in
                     PopJourney()
-                    //                    if case .setPushNotificationStatus = action {
-                    //                        PopJourney()
-                    //                    }
                 }
                 .onDismiss {
                     onDismiss()
@@ -305,7 +302,6 @@ extension Chat: Presentable {
             }
         })
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
         return (
             viewController,
             Signal { callback in

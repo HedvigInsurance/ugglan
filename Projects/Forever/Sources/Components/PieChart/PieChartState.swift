@@ -17,10 +17,10 @@ public struct PieChartState {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,
-        potentialDiscountAmount: MonetaryAmount
+        monthlyDiscountPerReferral: MonetaryAmount
     ) {
-        let totalNeededSlices = grossAmount.value / potentialDiscountAmount.value
-        slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
+        let totalNeededSlices = grossAmount.value / monthlyDiscountPerReferral.value
+        slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(monthlyDiscountPerReferral.value))
         if grossAmount == netAmount {
             percentagePerSlice = 0.1
         } else {
