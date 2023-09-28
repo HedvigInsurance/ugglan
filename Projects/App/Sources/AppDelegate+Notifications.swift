@@ -71,8 +71,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
-        hAnalyticsEvent.notificationOpened(type: notificationType).send()
-
         if notificationType == "NEW_MESSAGE" {
             performPostLoggedIn {
                 let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -123,19 +121,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                 ugglanStore.send(.makeTabActive(deeplink: .insurances))
-
-                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-
-                guard let crossSellType = userInfo["CROSS_SELL_ID"] as? String else { return }
-
-                self.bag += contractsStore.stateSignal
-                    .map { $0.crossSells }
-                    .compactMap {
-                        $0.first(where: { crossSell in crossSell.typeOfContract == crossSellType })
-                    }
-                    .onFirstValue { crossSell in
-                        contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
-                    }
             }
         }
     }

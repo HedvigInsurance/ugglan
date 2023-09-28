@@ -87,7 +87,6 @@ public struct ProfileView: View {
         .onAppear {
             store.send(.fetchProfileState)
         }
-        .trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
         .introspectScrollView { scrollView in
             let refreshControl = UIRefreshControl()
             scrollView.refreshControl = refreshControl

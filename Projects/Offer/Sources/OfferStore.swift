@@ -180,10 +180,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         switch action {
         case let .sign(event):
             if event == .done {
-                hAnalyticsEvent.quotesSigned(
-                    quoteIds: getState().selectedIds
-                )
-                .send()
                 self.cancelEffect(.startSign)
             } else if event == .cancelled {
                 self.cancelEffect(.startSign)
@@ -245,14 +241,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     variant.bundle.quotes
                 })
                 .compactMap { quote in quote.id }
-
-            if let allQuoteIds = allQuoteIds {
-                hAnalyticsEvent.receivedQuotes(
-                    quoteIds: allQuoteIds
-                )
-                .send()
-            }
-
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
         case .startCheckout:
             return Signal(after: 0.1).map { .openCheckout }
@@ -393,13 +381,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     .flatMap({ variant in
                         variant.bundle.quotes
                     })
-
-                if let allQuotes = allQuotes {
-                    hAnalyticsEvent.receivedQuotes(
-                        quoteIds: allQuotes.compactMap { quote in quote.id }
-                    )
-                    .send()
-                }
 
                 let selectedIds = allQuotes?
                     .filter({ quote in

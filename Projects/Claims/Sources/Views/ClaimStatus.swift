@@ -13,10 +13,6 @@ struct ClaimStatus: View {
     var tapAction: (Claim) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
-            _ = hAnalyticsEvent.claimCardClick(
-                claimId: self.claim.id,
-                claimStatus: self.claim.claimDetailData.status.rawValue
-            )
         }
     }
 
@@ -35,12 +31,6 @@ struct ClaimStatus: View {
                     }
                 }
             }
-        )
-        .trackOnAppear(
-            hAnalyticsEvent.claimCardVisible(
-                claimId: self.claim.id,
-                claimStatus: self.claim.claimDetailData.status.rawValue
-            )
         )
     }
 }

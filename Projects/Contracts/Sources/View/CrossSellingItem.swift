@@ -11,18 +11,10 @@ struct CrossSellingItem: View {
     let crossSell: hGraphQL.CrossSell
 
     func openExternal() {
-        if let embarkStoryName = crossSell.embarkStoryName {
-            store.send(.openCrossSellingEmbark(name: embarkStoryName))
-            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-            hAnalyticsEvent.cardClickCrossSellEmbark(
-                id: crossSell.typeOfContract,
-                storyName: embarkStoryName
-            )
-            .send()
-        } else if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
+        if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             store.send(.openCrossSellingWebUrl(url: url))
         } else {
-            store.send(.openCrossSellingChat)
+            store.send(.goToFreeTextChat)
         }
     }
 
@@ -70,10 +62,7 @@ struct CrossSellingItemPreviews: PreviewProvider {
                     "https://images.unsplash.com/photo-1599501887769-a945a7e4fece?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8"
             )!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
-            buttonText: "Calculate price",
-            embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            infos: [],
             type: .accident
         )
     )

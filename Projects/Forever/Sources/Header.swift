@@ -35,22 +35,23 @@ struct HeaderView: View {
                             ?? ForeverData.init(
                                 grossAmount: .init(amount: 0, currency: ""),
                                 netAmount: .init(amount: 0, currency: ""),
-                                potentialDiscountAmount: .init(amount: 0, currency: ""),
                                 otherDiscounts: .init(amount: 0, currency: ""),
                                 discountCode: "",
-                                invitations: []
+                                monthlyDiscount: .init(amount: 0, currency: ""),
+                                referrals: [],
+                                monthlyDiscountPerReferral: .init(amount: 0, currency: "")
                             )
                     }
                 ) { data in
                     if let grossAmount = data?.grossAmount,
                         let netAmount = data?.netAmount,
-                        let potentialDiscountAmount = data?.potentialDiscountAmount
+                        let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral
                     {
                         PieChartView(
                             state: .init(
                                 grossAmount: grossAmount,
                                 netAmount: netAmount,
-                                potentialDiscountAmount: potentialDiscountAmount
+                                monthlyDiscountPerReferral: monthlyDiscountPerReferral
                             ),
                             newPrice: netAmount.formattedAmount
                         )
@@ -65,8 +66,8 @@ struct HeaderView: View {
                             // No discount present
                             hText(
                                 L10n.ReferralsEmpty.body(
-                                    potentialDiscountAmount.formattedAmount,
-                                    MonetaryAmount(amount: 0, currency: potentialDiscountAmount.currency)
+                                    monthlyDiscountPerReferral.formattedAmount,
+                                    MonetaryAmount(amount: 0, currency: monthlyDiscountPerReferral.currency)
                                         .formattedAmount
                                 )
                             )
@@ -103,10 +104,11 @@ struct HeaderView_Previews2: PreviewProvider {
                 let foreverData = ForeverData(
                     grossAmount: .sek(200),
                     netAmount: .sek(160),
-                    potentialDiscountAmount: .sek(60),
                     otherDiscounts: .sek(40),
                     discountCode: "CODE2",
-                    invitations: []
+                    monthlyDiscount: .sek(10),
+                    referrals: [],
+                    monthlyDiscountPerReferral: .sek(10)
                 )
                 store.send(.setForeverData(data: foreverData))
             }

@@ -28,7 +28,6 @@ public class EmbarkState {
 
     public init() {
         defer {
-            startTracking()
             startAPIPassageHandling()
         }
     }
@@ -65,18 +64,6 @@ public class EmbarkState {
         store.createRevision()
     }
 
-    func startTracking() {
-        bag += currentPassageSignal.atOnce().readOnly().compactMap { $0?.tracks }
-            .onValue(on: .background) { tracks in
-                tracks.forEach { track in
-                    track.send(
-                        storyName: self.storySignal.value?.name ?? "",
-                        storeValues: self.store.getAllValues()
-                    )
-                }
-            }
-    }
-
     func startAPIPassageHandling() {
         bag += currentPassageSignal.compactMap { $0 }
             .mapLatestToFuture { passage -> Future<GiraffeGraphQL.EmbarkLinkFragment?> in
@@ -96,7 +83,6 @@ public class EmbarkState {
     }
 
     func goBack() {
-        trackGoBack()
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passageHistorySignal.value.last
         var history = passageHistorySignal.value
@@ -119,7 +105,6 @@ public class EmbarkState {
             }
 
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                hAnalyticsEvent.embarkExternalRedirect(location: externalRedirect.rawValue).send()
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
@@ -140,7 +125,6 @@ public class EmbarkState {
                 let ids = offerRedirectKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
-                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: ids, selectedIds: ids).send()
                 externalRedirectSignal.value = .offer(
                     allIds: ids,
                     selectedIds: ids
@@ -156,7 +140,6 @@ public class EmbarkState {
                     store.getValues(key: key) ?? []
                 }
 
-                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: {
                 store.passes(expression: $0.data.expression.fragments.expressionFragment)

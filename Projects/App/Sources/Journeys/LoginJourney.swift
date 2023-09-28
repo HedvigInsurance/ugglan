@@ -29,9 +29,7 @@ public enum AlternativeLoginMethods {
 
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
-        AppJourney.loggedIn.onPresent {
-            hAnalyticsEvent.loggedIn().send()
-        }
+        AppJourney.loggedIn
     }
 
     @JourneyBuilder

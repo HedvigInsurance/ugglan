@@ -3,6 +3,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ChangeCodeView: View {
     @StateObject var vm = ChangeCodeViewModel()
@@ -14,6 +15,9 @@ struct ChangeCodeView: View {
 class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     let disposeBag = DisposeBag()
+    var errorMessage: String?
+    @Inject var octopus: hOctopus
+
     init() {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
@@ -26,12 +30,13 @@ class ChangeCodeViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            var error: Error?
+            var errorMessage: String?
             await withCheckedContinuation { continuation in
-                self?.disposeBag += ForeverServiceGraphQL().changeDiscountCode(text)
+                let octopusRequest = self?.octopus.client
+                    .perform(mutation: OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: text))
                     .onValue { value in
-                        if let errorFromGraphQL = value.right {
-                            error = errorFromGraphQL
+                        if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
+                            errorMessage = errorFromGraphQL
                         } else {
                             let store: ForeverStore = globalPresentableStoreContainer.get()
                             store.send(.fetch)
@@ -39,9 +44,16 @@ class ChangeCodeViewModel: ObservableObject {
                         }
                         continuation.resume()
                     }
+                    .onError { graphQLError in
+                        errorMessage = graphQLError.localizedDescription
+                        continuation.resume()
+                    }
+                if let octopusRequest {
+                    self?.disposeBag += octopusRequest
+                }
             }
-            if let error {
-                throw error
+            if let errorMessage {
+                throw ForeverChangeCodeError.errorMessage(message: errorMessage)
             }
         }
     }

@@ -64,7 +64,6 @@ extension CommonClaimDetail: Presentable {
 
             let store: HomeStore = self.get()
             bag += claimButton.onTapSignal.onValue { [weak store] in
-                hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
                 if claim.id == "30" || claim.id == "31" || claim.id == "32" {
                     if let url = URL(
@@ -75,9 +74,7 @@ extension CommonClaimDetail: Presentable {
                 } else if claim.id == CommonClaim.travelInsurance.id {
                     store?.send(.openTravelInsurance)
                 } else {
-                    //                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
                     store?.send(.startClaim)
-                    //TODO: FIX START CLAIM WITH ID
                 }
             }
 
@@ -88,8 +85,6 @@ extension CommonClaimDetail: Presentable {
         }
 
         bag += viewController.install(view)
-
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .commonClaimDetail))
 
         return (viewController, bag)
     }
