@@ -12,16 +12,20 @@ struct MovingFlowAddExtraBuildingView: View {
                 hSection {
                     typeOfBuilding
                 }
+                .sectionContainerStyle(.transparent)
                 hSection {
                     livingArea
                 }
+                .sectionContainerStyle(.transparent)
                 hSection {
                     connectedToWater
                 }
                 hSection {
                     VStack {
                         hButton.LargeButton(type: .primary) {
-                            vm.addExtraBuilding()
+                            withAnimation {
+                                vm.addExtraBuilding()
+                            }
                         } content: {
                             hText(L10n.generalSaveButton)
                         }
@@ -109,8 +113,14 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     }
     var disposeBag = DisposeBag()
     func addExtraBuilding() {
-        store.send(.addExtraBuilding(with: self.asExtraBuilding()))
-        L10n.changeAddressExtraBuildingSizeLabel
+        if isValid() {
+            store.send(.addExtraBuilding(with: self.asExtraBuilding()))
+        }
+    }
+
+    private func isValid() -> Bool {
+        livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
+        return livingAreaError == nil
     }
 
     func showTypeOfBuilding() {

@@ -139,6 +139,7 @@ struct MovingFlowHouseView: View {
             .padding(.top, 6)
 
         }
+        .presentableStoreLensAnimation(.default)
     }
 
     private var isSubleted: some View {
