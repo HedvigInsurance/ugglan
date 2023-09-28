@@ -45,6 +45,7 @@ struct MovingFlowConfirm: View {
                             }
 
                         }
+                        .padding(.top, 16)
                     }
                 }
             }

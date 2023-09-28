@@ -86,14 +86,19 @@ struct MovingFlowNewAddressView: View {
     }
 
     func numberOfCoinsuredField() -> some View {
-        hFloatingTextField(
-            masking: Masking(type: .digits),
+        hCounterField(
             value: $vm.nbOfCoInsured,
-            equals: $vm.type,
-            focusValue: .nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
-            error: $vm.nbOfCoInsuredError
-        )
+            minValue: 1,
+            maxValue: 6
+        ) { value in
+            vm.type = .nbOfCoInsured
+            if value > 1 {
+                return L10n.changeAddressYouPlus(value - 1)
+            } else {
+                return L10n.changeAddressOnlyYou
+            }
+        }
     }
 
     func accessDateField() -> some View {
@@ -138,8 +143,8 @@ struct MovingFlowNewAddressView: View {
 
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
-        return MovingFlowNewAddressView()
+        Localization.Locale.currentLocale = .en_SE
+        return VStack { MovingFlowNewAddressView() }
     }
 }
 
@@ -176,21 +181,20 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     @Published var address: String = ""
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""
-    @Published var nbOfCoInsured: String = ""
+    @Published var nbOfCoInsured: Int = 1
     @Published var accessDate: Date?
     @Published var isStudent = false
 
     @Published var addressError: String?
     @Published var postalCodeError: String?
     @Published var squareAreaError: String?
-    @Published var nbOfCoInsuredError: String?
     @Published var accessDateError: String?
 
     @PresentableStore var store: MoveFlowStore
 
     init() {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        self.nbOfCoInsured = String(store.state.movingFlowModel?.numberCoInsured ?? 0)
+        self.nbOfCoInsured = store.state.movingFlowModel?.numberCoInsured ?? 1
     }
 
     var disposeBag = DisposeBag()
@@ -212,10 +216,8 @@ class MovingFlowNewAddressViewModel: ObservableObject {
                 addressError = !address.isEmpty ? nil : L10n.changeAddressStreetError
                 postalCodeError = !postalCode.isEmpty ? nil : L10n.changeAddressPostalCodeError
                 squareAreaError = !squareArea.isEmpty ? nil : L10n.changeAddressLivingSpaceError
-                nbOfCoInsuredError = !nbOfCoInsured.isEmpty ? nil : L10n.changeAddressCoInsuredError
                 accessDateError = accessDate?.localDateString != nil ? nil : L10n.changeAddressMovingDateError
-                return addressError == nil && postalCodeError == nil && squareAreaError == nil
-                    && nbOfCoInsuredError == nil && accessDateError == nil
+                return addressError == nil && postalCodeError == nil && squareAreaError == nil && accessDateError == nil
             }
         }
         return validate()
@@ -228,7 +230,7 @@ extension MovingFlowNewAddressViewModel {
             address: self.address,
             postalCode: self.postalCode,
             movingDate: accessDate?.localDateString ?? "",
-            numberOfCoinsured: Int(nbOfCoInsured) ?? 0,
+            numberOfCoinsured: nbOfCoInsured,
             squareMeters: Int(squareArea) ?? 0,
             isStudent: isStudent
         )

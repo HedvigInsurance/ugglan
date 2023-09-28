@@ -47,21 +47,18 @@ public struct hCounterField: View {
                         getTextLabel
                     }
                 }
-                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyle.title3.fontSize)
+                .padding(.vertical, textToShow.isEmpty ? 3 : 9.5)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             SwiftUI.Button {
                 if let minValue, minValue < value {
                     decrease()
-                } else {
-                    decrease()
                 }
             } label: {
                 Image(uiImage: hCoreUIAssets.minusSmall.image)
                     .foregroundColor(
-                        hTextColorNew.primary.opacity(value == 0 ? 0.4 : 1)
-
+                        hTextColorNew.primary.opacity(value == minValue ? 0.4 : 1)
                     )
                     .frame(width: 35, height: 35)
             }
@@ -69,12 +66,10 @@ public struct hCounterField: View {
             SwiftUI.Button {
                 if let maxValue, maxValue > value {
                     increase()
-                } else {
-                    increase()
                 }
             } label: {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColorNew.primary.opacity(value == maxValue ? 0.4 : 1))
                     .frame(width: 35, height: 35)
             }
         }
@@ -123,14 +118,17 @@ public struct hCounterField: View {
 }
 
 struct hCounterField_Previews: PreviewProvider {
-    @State static var value: Int = 0
+    @State static var value: Int = 1
     static var previews: some View {
-        hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
-            if value == 0 {
-                return nil
-            } else {
-                return "VALUE \(value)"
+        VStack {
+            hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
+                if value == 0 {
+                    return nil
+                } else {
+                    return "VALUE \(value)"
+                }
             }
         }
+        .background(Color.blue)
     }
 }

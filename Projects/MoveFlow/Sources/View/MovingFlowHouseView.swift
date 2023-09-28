@@ -72,15 +72,21 @@ struct MovingFlowHouseView: View {
 
     private var bathroomsField: some View {
         hSection {
-            hFloatingTextField(
-                masking: Masking(type: .digits),
+            hCounterField(
                 value: $vm.bathrooms,
-                equals: $vm.type,
-                focusValue: .bathrooms,
-                placeholder: L10n.changeAddressBathroomsLabel,
-                error: $vm.bathroomsError
-            )
+                placeholder: L10n.changeAddressCoInsuredLabel,
+                minValue: 0,
+                maxValue: 10
+            ) { value in
+                if value == 0 {
+                    return nil
+                } else {
+                    return "\(value)"
+                }
+            }
         }
+        .sectionContainerStyle(.transparent)
+
     }
 
     private var extraBuildingTypes: some View {
@@ -196,7 +202,7 @@ class MovingFlowHouseViewModel: ObservableObject {
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""
-    @Published var bathrooms: String = ""
+    @Published var bathrooms: Int = 0
     @Published var isSubleted = false
     @Published var yearOfConstructionError: String?
     @Published var ancillaryAreaError: String?
@@ -219,7 +225,7 @@ class MovingFlowHouseViewModel: ObservableObject {
             withAnimation {
                 yearOfConstructionError = !yearOfConstruction.isEmpty ? nil : L10n.changeAddressYearOfConstructionError
                 ancillaryAreaError = !ancillaryArea.isEmpty ? nil : L10n.changeAddressAncillaryAreaError
-                bathroomsError = !bathrooms.isEmpty ? nil : L10n.changeAddressBathroomsError
+                bathroomsError = bathrooms == 0 ? L10n.changeAddressBathroomsError : nil
                 return yearOfConstructionError == nil && ancillaryAreaError == nil && bathroomsError == nil
             }
         }
