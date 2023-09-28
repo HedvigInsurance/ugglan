@@ -74,7 +74,7 @@ struct MovingFlowHouseView: View {
         hSection {
             hCounterField(
                 value: $vm.bathrooms,
-                placeholder: L10n.changeAddressCoInsuredLabel,
+                placeholder: L10n.changeAddressBathroomsLabel,
                 minValue: 0,
                 maxValue: 10
             ) { value in
@@ -210,7 +210,9 @@ class MovingFlowHouseViewModel: ObservableObject {
 
     @PresentableStore var store: MoveFlowStore
 
-    init() {}
+    init() {
+
+    }
 
     var disposeBag = DisposeBag()
     func continuePressed() {
