@@ -1,4 +1,7 @@
 import Foundation
+import hCoreUI
+import hGraphQL
+import hCore
 
 public struct ActiveContractBundle: Codable, Equatable, Hashable {
     public var contracts: [Contract]
@@ -11,18 +14,6 @@ public struct ActiveContractBundle: Codable, Equatable, Hashable {
         contracts = bundle.contracts.map { .init(contract: $0) }
         movingFlowEmbarkId = bundle.angelStories.addressChangeV2
         id = bundle.id
-    }
-}
-
-public struct IconEnvelope: Codable, Equatable, Hashable {
-    public let dark: String
-    public let light: String
-    public init?(
-        fragment: GiraffeGraphQL.IconFragment?
-    ) {
-        guard let fragment = fragment else { return nil }
-        dark = fragment.variants.dark.pdfUrl
-        light = fragment.variants.light.pdfUrl
     }
 }
 
@@ -168,21 +159,6 @@ public struct Contract: Codable, Hashable, Equatable {
         terminationDate = nil
     }
 
-    public enum PillowType: Codable {
-        case accident
-        case car
-        case cat
-        case dog
-        case home
-        case homeOwner
-        case pet
-        case rental
-        case student
-        case travel
-        case villa
-        case unknown
-    }
-
     public enum TypeOfContract: String, Codable {
         case seHouse = "SE_HOUSE"
         case seApartmentBrf = "SE_APARTMENT_BRF"
@@ -259,7 +235,7 @@ public struct Contract: Codable, Hashable, Equatable {
 }
 
 extension Contract.TypeOfContract {
-    public var pillowType: Contract.PillowType {
+    public var pillowType: PillowType {
         switch self {
         case .seHouse:
             return .villa
@@ -478,127 +454,6 @@ public struct AngelStories: Codable {
     public let addressChange: String
 }
 
-public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
-    public init(
-        sections: [DetailAgreementsTable.Section],
-        title: String
-    ) {
-        self.sections = sections
-        self.title = title
-    }
-
-    public var id: String {
-        return title
-    }
-    public let sections: [Section]
-    public let title: String
-    public init(
-        fragment: GiraffeGraphQL.DetailsTableFragment
-    ) {
-        sections = fragment.sections.map { .init(section: $0) }
-        title = fragment.title
-    }
-
-    public struct Section: Codable, Hashable, Identifiable {
-        public init(
-            title: String,
-            rows: [DetailAgreementsTable.Row]
-        ) {
-            self.title = title
-            self.rows = rows
-        }
-
-        public var id: String {
-            return title
-        }
-        public let title: String
-        public let rows: [Row]
-
-        init(
-            section: GiraffeGraphQL.DetailsTableFragment.Section
-        ) {
-            title = section.title
-            rows = section.rows.map { .init(row: $0) }
-        }
-    }
-
-    public struct Row: Codable, Hashable {
-        public init(
-            title: String,
-            subtitle: String?,
-            value: String
-        ) {
-            self.title = title
-            self.subtitle = subtitle
-            self.value = value
-        }
-
-        public let title: String
-        public let subtitle: String?
-        public let value: String
-        init(
-            row: GiraffeGraphQL.DetailsTableFragment.Section.Row
-        ) {
-            title = row.title
-            subtitle = row.subtitle
-            value = row.value
-        }
-    }
-}
-
-public struct Perils: Codable, Equatable, Hashable {
-    public let title: String
-    public let description: String
-    public let icon: IconEnvelope?
-    public let color: String?
-    public let covered: [String]
-    public let exceptions: [String]
-
-    public init(
-        fragment: GiraffeGraphQL.PerilFragment
-    ) {
-        title = fragment.title
-        description = fragment.description
-        icon = .init(fragment: fragment.icon.fragments.iconFragment)
-        covered = fragment.covered
-        exceptions = fragment.exceptions
-        color = nil
-    }
-
-    public init(
-        fragment: OctopusGraphQL.ProductVariantFragment.Peril
-    ) {
-        title = fragment.title
-        description = fragment.description
-        icon = nil
-        covered = fragment.covered
-        exceptions = fragment.exceptions
-        color = fragment.colorCode
-    }
-}
-
-public struct InsurableLimits: Codable, Hashable {
-    public let label: String
-    public let limit: String
-    public let description: String
-
-    public init(
-        fragment: GiraffeGraphQL.InsurableLimitFragment
-    ) {
-        label = fragment.label
-        limit = fragment.limit
-        description = fragment.description
-    }
-
-    init(
-        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
-    ) {
-        label = data.label
-        limit = data.limit
-        description = data.description
-    }
-}
-
 public struct CurrentAgreement: Codable, Hashable {
     public init(
         certificateUrl: String?,
@@ -654,47 +509,4 @@ public enum ContractStatus: String, Codable {
     case activeInFuture = "ACTIVE_IN_FUTURE"
     case terminated = "TERMINATED"
     case pending = "PENDING"
-}
-
-public struct MonetaryAmount: Equatable, Hashable, Codable {
-    public init(
-        amount: String,
-        currency: String
-    ) {
-        self.amount = amount
-        self.currency = currency
-    }
-
-    public init(
-        amount: Float,
-        currency: String
-    ) {
-        self.amount = String(amount)
-        self.currency = currency
-    }
-
-    public init(
-        fragment: GiraffeGraphQL.MonetaryAmountFragment
-    ) {
-        amount = fragment.amount
-        currency = fragment.currency
-    }
-
-    public init?(
-        optionalFragment: GiraffeGraphQL.MonetaryAmountFragment?
-    ) {
-        guard let optionalFragment else { return nil }
-        amount = optionalFragment.amount
-        currency = optionalFragment.currency
-    }
-
-    public init(
-        fragment: OctopusGraphQL.MoneyFragment
-    ) {
-        amount = String(fragment.amount)
-        currency = fragment.currencyCode.rawValue
-    }
-
-    public var amount: String
-    public var currency: String
 }

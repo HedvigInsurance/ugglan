@@ -1,6 +1,7 @@
 import Apollo
 import Flow
 import Foundation
+import hGraphQL
 
 extension ApolloClient {
     public func fetchActiveContractBundles(locale: GiraffeGraphQL.Locale) -> Future<[ActiveContractBundle]> {

@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 typealias ClaimStatusCard = GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
 

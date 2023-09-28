@@ -5,6 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hGraphQL
+import Contracts
 
 public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
@@ -256,7 +257,7 @@ extension PayoutMethodStatus: Codable {
 
 public struct PaymentData: Codable, Equatable {
     let nextPayment: NextPayment?
-    let contracts: [Contract]?
+    let contracts: [ContractInfo]?
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
@@ -286,16 +287,16 @@ public struct PaymentData: Codable, Equatable {
         }
     }
 
-    struct Contract: Codable, Equatable {
+    struct ContractInfo: Codable, Equatable {
         let id: String
-        let type: hGraphQL.Contract.TypeOfContract
+        let type: Contract.TypeOfContract
         let name: String
         let amount: MonetaryAmount?
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ActiveContractBundle.Contract) {
             self.id = data.id
             self.name = data.displayName
-            self.type = hGraphQL.Contract.TypeOfContract(rawValue: data.typeOfContract.rawValue) ?? .unknown
+            self.type = Contract.TypeOfContract(rawValue: data.typeOfContract.rawValue) ?? .unknown
             self.amount = nil
         }
     }

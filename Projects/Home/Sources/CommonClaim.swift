@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct CommonClaim: Codable, Equatable, Hashable {
     public let id: String
