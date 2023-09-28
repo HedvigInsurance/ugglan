@@ -44,6 +44,7 @@ struct InfoExpandableView: View {
                 VStack(alignment: .leading) {
                     hRow {
                         hText(text)
+                            .fixedSize(horizontal: false, vertical: true)
                             .foregroundColor(hTextColorNew.secondary)
                     }
                 }
