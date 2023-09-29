@@ -4,7 +4,7 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatusBar: View {
-    let status: Claim.ClaimStatusProgressSegment
+    let status: ClaimModel.ClaimStatusProgressSegment
 
     @hColorBuilder var barColor: some hColor {
         switch status.type {

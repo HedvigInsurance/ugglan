@@ -9,9 +9,9 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
-    case setClaims(claims: [Claim])
+    case setClaims(claims: [ClaimModel])
     case openFreeTextChat
-    case openClaimDetails(claim: Claim)
+    case openClaimDetails(claim: ClaimModel)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case closeClaimStatus
 }

@@ -4,9 +4,9 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimDetailHeader: View {
-    private let claim: Claim
+    private let claim: ClaimModel
 
-    init(claim: Claim) {
+    init(claim: ClaimModel) {
         self.claim = claim
     }
     var body: some View {

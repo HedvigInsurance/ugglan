@@ -13,7 +13,7 @@ import hGraphQL
 
 extension AppJourney {
 
-    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+    static func claimDetailJourney(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: ClaimDetailView(claim: claim)

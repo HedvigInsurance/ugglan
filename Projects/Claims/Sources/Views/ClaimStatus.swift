@@ -5,12 +5,12 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatus: View {
-    var claim: Claim
+    var claim: ClaimModel
 
     @PresentableStore
     var store: ClaimsStore
 
-    var tapAction: (Claim) -> Void {
+    var tapAction: (ClaimModel) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }
@@ -36,7 +36,7 @@ struct ClaimStatus: View {
 }
 
 struct ClaimPills: View {
-    var claim: Claim
+    var claim: ClaimModel
 
     var body: some View {
         HStack {
@@ -50,7 +50,7 @@ struct ClaimPills: View {
         }
     }
 }
-extension Claim.ClaimPill.ClaimPillType {
+extension ClaimModel.ClaimPill.ClaimPillType {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
