@@ -39,7 +39,7 @@ extension ApolloClient {
     public static func headers() -> [String: String] {
         if let token = ApolloClient.retreiveToken() {
             return [
-                "Authorization": token.accessToken,
+                "Authorization": "Bearer " + token.accessToken,
                 "Accept-Language": acceptLanguageHeader,
                 "User-Agent": userAgent,
             ]
