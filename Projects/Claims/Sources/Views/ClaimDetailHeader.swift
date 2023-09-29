@@ -31,13 +31,13 @@ struct ClaimDetailHeader: View {
                 VStack(alignment: .leading) {
                     hText(L10n.ClaimStatusDetail.submitted)
                     hText(submittedAt.localDateToIso8601Date?.localDateStringWithTime ?? "--")
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
                 .frame(maxWidth: .infinity)
                 VStack(alignment: .leading) {
                     hText(L10n.ClaimStatusDetail.closed)
                     hText(closedAt.localDateToIso8601Date?.localDateStringWithTime ?? "--")
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
                 .frame(maxWidth: .infinity)
             }

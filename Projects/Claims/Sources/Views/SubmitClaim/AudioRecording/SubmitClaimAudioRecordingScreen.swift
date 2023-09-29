@@ -39,12 +39,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
                     HStack {
                         hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                            .foregroundColor(hTextColorNew.primary)
+                            .foregroundColor(hTextColor.primary)
                     }
                     .padding(16)
                     .background(
                         Squircle.default()
-                            .fill(hFillColorNew.opaqueOne)
+                            .fill(hFillColor.opaqueOne)
                     )
                     .padding(.vertical, 12)
                     .padding(.leading, 16)
@@ -101,12 +101,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             )
                             if !audioRecorder.isRecording {
                                 hText(L10n.claimsStartRecordingLabel, style: .body)
-                                    .foregroundColor(hTextColorNew.primary)
+                                    .foregroundColor(hTextColor.primary)
                             } else {
                                 let minutesToString = String(format: "%02d", minutes)
                                 let secondsToString = String(format: "%02d", seconds)
                                 hText("\(minutesToString):\(secondsToString)", style: .body)
-                                    .foregroundColor(hTextColorNew.primary)
+                                    .foregroundColor(hTextColor.primary)
                                     .onReceive(timer) { time in
                                         if ((seconds % 59) == 0) && seconds != 0 {
                                             minutes += 1

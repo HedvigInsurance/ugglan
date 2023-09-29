@@ -19,7 +19,7 @@ private struct StatusPill: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .background(hTextColorNew.tertiaryTranslucent)
+        .background(hTextColor.tertiaryTranslucent)
         .cornerRadius(8)
     }
 }
@@ -52,7 +52,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     )
             }
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 
@@ -93,9 +93,9 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .clipShape(Squircle.default())
         .overlay(
             Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
+                .stroke(hSeparatorColorOld.separator, lineWidth: .hairlineWidth)
         )
-        .foregroundColor(hTextColorNew.negative)
+        .foregroundColor(hTextColor.negative)
         .contentShape(Rectangle())
     }
 }

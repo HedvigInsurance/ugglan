@@ -13,7 +13,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         hForm {
             hSection(
                 header: hText(L10n.Claims.Incident.Screen.header, style: .subheadline)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
             ) {
 
                 displayDateOfIncidentField()
@@ -23,7 +23,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
             hSection(
                 header: hText(L10n.Claims.Item.Screen.title, style: .subheadline)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
             ) {
                 displayPlaceOfIncidentField()
                 displayModelInfoField()
@@ -52,7 +52,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         ) { dateOfOccurenceStep in
             hRow {
                 hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
 
             }
             .withCustomAccessory {
@@ -61,11 +61,11 @@ public struct SubmitClaimEditSummaryScreen: View {
 
                 HStack(spacing: 0) {
                     hText(dateOfOccurenceStep?.dateOfOccurence ?? "")
-                        .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                        .foregroundColor(hTextColor.primary).colorScheme(.light)
                         .padding([.top, .bottom], 11)
                         .padding([.trailing, .leading], 12)
                 }
-                .background(hGrayscaleColor.one)
+                .background(hGrayscaleColorOld.one)
                 .cornerRadius(.defaultCornerRadius)
             }
         }
@@ -81,11 +81,11 @@ public struct SubmitClaimEditSummaryScreen: View {
             hRow {
                 HStack {
                     hText(L10n.Claims.Location.Screen.title)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                     Spacer()
 
                     hText(locationStep?.getSelectedOption()?.displayName ?? "")
-                        .foregroundColor(hLabelColor.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
             .onTap {
@@ -104,12 +104,12 @@ public struct SubmitClaimEditSummaryScreen: View {
             hRow {
                 HStack {
                     hText(L10n.Claims.Item.Screen.Model.button)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                     Spacer()
 
                     if let getBrandOrModelName = singleItemStep?.getBrandOrModelName() {
                         hText(getBrandOrModelName)
-                            .foregroundColor(hLabelColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
             }
@@ -124,7 +124,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
         hRow {
             hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColor.primary)
         }
         .withCustomAccessory {
             PresentableStoreLens(
@@ -138,12 +138,12 @@ public struct SubmitClaimEditSummaryScreen: View {
                 HStack(spacing: 0) {
                     if let date = singleItemStep?.purchaseDate {
                         hText(date)
-                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                            .foregroundColor(hTextColor.primary).colorScheme(.light)
                             .padding([.top, .bottom], 11)
                             .padding([.trailing, .leading], 12)
                     }
                 }
-                .background(hGrayscaleColor.one)
+                .background(hGrayscaleColorOld.one)
                 .cornerRadius(.defaultCornerRadius)
             }
         }
@@ -154,7 +154,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         hRow {
             HStack {
                 hText(L10n.Claims.Item.Screen.Damage.button)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
 
                 Spacer()
             }
@@ -167,10 +167,10 @@ public struct SubmitClaimEditSummaryScreen: View {
                 }
             ) { singleItemStep in
                 if let text = singleItemStep?.getChoosenDamagesAsText() {
-                    hText(text).foregroundColor(hLabelColor.primary)
+                    hText(text).foregroundColor(hTextColor.primary)
                 } else {
                     hText(L10n.Claim.Location.choose)
-                        .foregroundColor(hLabelColor.placeholder)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
         }

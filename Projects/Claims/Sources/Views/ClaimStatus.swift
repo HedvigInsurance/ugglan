@@ -54,22 +54,22 @@ extension ClaimModel.ClaimPill.ClaimPillType {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
-        case .none: hTextColorNew.primary
-        case .open: hTextColorNew.primary
-        case .reopened: hSignalColorNew.amberText
-        case .closed: hTextColorNew.negative
-        case .payment: hSignalColorNew.blueText
+        case .none: hTextColor.primary
+        case .open: hTextColor.primary
+        case .reopened: hSignalColor.amberText
+        case .closed: hTextColor.negative
+        case .payment: hSignalColor.blueText
         }
     }
 
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
-        case .none: hFillColorNew.opaqueTwo
-        case .open: hFillColorNew.opaqueTwo
-        case .reopened: hSignalColorNew.amberHighLight
-        case .closed: hTextColorNew.primary
-        case .payment: hSignalColorNew.blueHighLight
+        case .none: hFillColor.opaqueTwo
+        case .open: hFillColor.opaqueTwo
+        case .reopened: hSignalColor.amberHighLight
+        case .closed: hTextColor.primary
+        case .payment: hSignalColor.blueHighLight
         }
     }
 }

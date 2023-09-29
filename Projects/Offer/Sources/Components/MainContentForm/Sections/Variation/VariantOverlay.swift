@@ -9,9 +9,9 @@ struct VariantOverlay: View {
 
     @hColorBuilder func borderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hLabelColor.primary
+            hTextColor.primary
         } else {
-            hSeparatorColor.separator
+            hSeparatorColorOld.separator
         }
     }
 

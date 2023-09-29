@@ -9,9 +9,9 @@ struct VariantCircle: View {
 
     @hColorBuilder func backgroundColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hLabelColor.primary
+            hTextColor.primary
         } else {
-            hTintColor.clear
+            hTintColorOld.clear
         }
     }
 

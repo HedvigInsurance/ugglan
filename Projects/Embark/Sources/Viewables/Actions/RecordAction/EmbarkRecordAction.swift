@@ -57,8 +57,8 @@ struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
 
     private let backgroundColorScheme: some hColor = hColorScheme.init(
-        light: hGrayscaleColor.one,
-        dark: hGrayscaleColor.two
+        light: hGrayscaleColorOld.one,
+        dark: hGrayscaleColorOld.two
     )
 
     var body: some View {
@@ -101,9 +101,9 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder var innerCircleColor: some hColor {
         if isRecording {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hSignalColorNew.redText
+            hSignalColor.redText
         }
     }
 
@@ -113,7 +113,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
                 .cornerRadius(isRecording ? 1 : 18)
                 .padding(36)
         }
-        .background(Circle().fill(hBackgroundColorNew.primary))
+        .background(Circle().fill(hBackgroundColor.primary))
         .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }

@@ -25,7 +25,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
         if configuration.isPressed {
             hOverlayColorOld.pressed.opacity(0.5)
         } else {
-            hBackgroundColorNew.primary
+            hBackgroundColor.primary
         }
     }
 
@@ -57,7 +57,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
-                                .foregroundColor(hTextColorNew.tertiary)
+                                .foregroundColor(hTextColor.tertiary)
                             hText(item, style: .footnote)
                         }
                     }

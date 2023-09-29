@@ -23,7 +23,7 @@ struct FrequentlyAskedQuestionDetail: View {
                         frequentlyAskedQuestion.body ?? "",
                         style: .body
                     )
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }

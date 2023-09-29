@@ -16,7 +16,7 @@ struct OTPCodeLoadingOverlay: View {
                     WordmarkActivityIndicator(.standard)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(hBackgroundColorNew.primary.opacity(0.7))
+                .background(hBackgroundColor.primary.opacity(0.7))
                 .cornerRadius(.defaultCornerRadius)
                 .edgesIgnoringSafeArea(.top)
             }

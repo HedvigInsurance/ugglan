@@ -84,9 +84,9 @@ public struct hDatePickerField: View {
     @hColorBuilder
     private var foregroundColor: some hColor {
         if isEnabled {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 
@@ -165,7 +165,7 @@ private struct DatePickerView: View {
                         L10n.generalSaveButton,
                         style: .body
                     )
-                    .foregroundColor(hTextColorNew.negative)
+                    .foregroundColor(hTextColor.negative)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
@@ -177,7 +177,7 @@ private struct DatePickerView: View {
                         L10n.generalCancelButton,
                         style: .body
                     )
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
@@ -188,7 +188,7 @@ private struct DatePickerView: View {
                 VStack {
                     hText(config.title)
                     if let subtitle = date.displayDateDotFormat {
-                        hText(subtitle).foregroundColor(hTextColorNew.secondary)
+                        hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
             }

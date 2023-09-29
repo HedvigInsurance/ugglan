@@ -8,29 +8,29 @@ extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {
         case .active:
-            hSignalColorNew.greenElement
+            hSignalColor.greenElement
         case .pending:
-            hSignalColorNew.amberElement
+            hSignalColor.amberElement
         case .terminated:
-            hSignalColorNew.redElement
+            hSignalColor.redElement
         }
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
-            hTextColorNew.primary
+            hTextColor.primary
         case .pending, .terminated:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         }
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.status {
         case .active, .pending:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         case .terminated:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         }
     }
 
@@ -111,10 +111,10 @@ struct InvitationTable: View {
     private func getGrossField(_ text: String) -> some View {
         if #available(iOS 15.0, *) {
             Text(attributedString(text))
-                .foregroundColor(hTextColorNew.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .modifier(hFontModifier(style: .standard))
         } else {
-            hText(text).foregroundColor(hTextColorNew.secondary)
+            hText(text).foregroundColor(hTextColor.secondary)
         }
     }
 
@@ -134,7 +134,7 @@ struct InvitationRow: View {
             HStack(spacing: 8) {
                 Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
-                    hText(row.name).foregroundColor(hTextColorNew.primary)
+                    hText(row.name).foregroundColor(hTextColor.primary)
                     hText(L10n.ReferallsInviteeStates.invitedYou, style: .subheadline)
                         .foregroundColor(row.invitedByOtherLabelColor)
                 }

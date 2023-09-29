@@ -16,6 +16,6 @@ public struct hFormBottomAttachedBackground<Content: View>: View {
                 .edgesIgnoringSafeArea(.horizontal)
             content().padding(16)
         }
-        .background(hBackgroundColorNew.primary.edgesIgnoringSafeArea([.bottom, .horizontal]))
+        .background(hBackgroundColor.primary.edgesIgnoringSafeArea([.bottom, .horizontal]))
     }
 }

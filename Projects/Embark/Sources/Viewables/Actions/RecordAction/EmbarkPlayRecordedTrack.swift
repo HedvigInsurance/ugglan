@@ -21,10 +21,10 @@ struct TrackPlayer: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            image.tint(hTextColorNew.primary)
+            image.tint(hTextColor.primary)
             let waveform = WaveformView(
                 maxStripeHeight: 70,
-                stripeColor: hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two),
+                stripeColor: hColorScheme.init(light: hGrayscaleColorOld.one, dark: hGrayscaleColorOld.two),
                 sampleHeights: audioPlayer.audioSampleHeights
             )
             .frame(height: 100)
@@ -40,7 +40,7 @@ struct TrackPlayer: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(hBackgroundColorNew.primary)
+                .fill(hBackgroundColor.primary)
                 .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
         .onTapGesture {
@@ -56,7 +56,7 @@ struct TrackPlayer: View {
 struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
-    let staplesMaskColor: some hColor = hColorScheme.init(light: hTextColorNew.primary, dark: hTintColorOld.lavenderOne)
+    let staplesMaskColor: some hColor = hColorScheme.init(light: hTextColor.primary, dark: hTintColorOld.lavenderOne)
 
     var body: some View {
         GeometryReader { geometry in

@@ -42,7 +42,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
             }
             bodyText
                 .hText(.subheadline)
-                .foregroundColor(hTextColorNew.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .padding(10)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

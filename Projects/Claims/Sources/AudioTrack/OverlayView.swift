@@ -5,13 +5,13 @@ struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
     let staplesMaskColorOld: some hColor = hColorScheme(
-        light: hLabelColor.link.inverted,
-        dark: hLabelColor.primary
+        light: hTintColorOld.link,
+        dark: hTextColor.primary
     )
     var body: some View {
         GeometryReader { geometry in
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(hTextColorNew.tertiary)
+                .fill(hTextColor.tertiary)
                 .frame(width: geometry.size.width * audioPlayer.progress)
         }
     }

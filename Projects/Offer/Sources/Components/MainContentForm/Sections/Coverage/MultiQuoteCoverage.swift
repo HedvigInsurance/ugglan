@@ -28,11 +28,11 @@ extension MultiQuoteCoverage: View {
             VStack(spacing: 10) {
                 L10n.contractCoverageMoreInfo
                     .hText(.title3)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 L10n.OfferScreenMULTIPLEINSURANCES.coverageParagraph
                     .hText(.body)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
             }

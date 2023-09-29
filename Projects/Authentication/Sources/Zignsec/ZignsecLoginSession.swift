@@ -27,7 +27,7 @@ public struct ZignsecLoginSession: View {
                     VStack {
                         VectorPreservedImage(
                             image: hCoreUIAssets.circularCross.image,
-                            tint: hSignalColorNew.redText
+                            tint: hSignalColor.redText
                         )
                         .frame(width: 80, height: 80)
                         .padding(.bottom, 25)
@@ -49,13 +49,13 @@ public struct ZignsecLoginSession: View {
 
                                 ActivityIndicator(
                                     style: .large,
-                                    color: hTextColorNew.primary
+                                    color: hTextColor.primary
                                 )
                             }
                         } else {
                             VectorPreservedImage(
                                 image: hCoreUIAssets.refresh.image,
-                                tint: hTextColorNew.primary
+                                tint: hTextColor.primary
                             )
                             .frame(width: 80, height: 80)
                             .padding(.bottom, 25)
@@ -65,7 +65,7 @@ public struct ZignsecLoginSession: View {
 
                                 ActivityIndicator(
                                     style: .large,
-                                    color: hTextColorNew.primary
+                                    color: hTextColor.primary
                                 )
                             }
                         }
@@ -81,7 +81,7 @@ public struct ZignsecLoginSession: View {
             hasOpenedBrowser = true
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(hBackgroundColorNew.primary.ignoresSafeArea(.all))
+        .background(hBackgroundColor.primary.ignoresSafeArea(.all))
     }
 }
 

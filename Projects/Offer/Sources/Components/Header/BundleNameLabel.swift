@@ -14,7 +14,7 @@ struct BundleNameLabel: View {
         ) { bundleName in
             if let bundleName = bundleName {
                 hText(bundleName, style: .subheadline)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .padding(.horizontal, 10)
                     .multilineTextAlignment(.center)
             }

@@ -6,13 +6,13 @@ struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
     let playbackTint: some hColor = hColorScheme(
-        light: hTintColor.lavenderOne,
-        dark: hLabelColor.tertiary
+        light: hTintColorOld.lavenderOne,
+        dark: hTextColor.tertiary
     )
 
     let backgroundColorOld: some hColor = hColorScheme(
-        light: hTintColor.lavenderTwo,
-        dark: hTintColor.lavenderOne
+        light: hTintColorOld.lavenderTwo,
+        dark: hTintColorOld.lavenderOne
     )
 
     @ViewBuilder var image: some View {
@@ -21,10 +21,10 @@ struct TrackPlayer: View {
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundColor(hTextColorNew.primary)
+                .foregroundColor(hTextColor.primary)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
-                .foregroundColor(hTextColorNew.primary)
+                .foregroundColor(hTextColor.primary)
         }
     }
 
@@ -34,14 +34,14 @@ struct TrackPlayer: View {
                 if audioPlayer.playbackState == .loading {
                     ActivityIndicator(
                         style: .large,
-                        color: hLabelColor.primary
+                        color: hTextColor.primary
                     )
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .transition(.opacity.animation(.easeOut))
                 } else {
                     image
                     let waveform = WaveformView(
-                        stripeColor: hTextColorNew.primary,
+                        stripeColor: hTextColor.primary,
                         sampleHeights: audioPlayer.sampleHeights
                     )
                     .frame(maxWidth: .infinity)
@@ -60,7 +60,7 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(hFillColorNew.opaqueOne)
+                    .fill(hFillColor.opaqueOne)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()

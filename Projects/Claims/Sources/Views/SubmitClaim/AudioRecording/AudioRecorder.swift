@@ -100,8 +100,8 @@ struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
 
     private let backgroundColorScheme: some hColor = hColorScheme.init(
-        light: hGrayscaleColor.one,
-        dark: hGrayscaleColor.two
+        light: hGrayscaleColorOld.one,
+        dark: hGrayscaleColorOld.two
     )
 
     var body: some View {

@@ -32,15 +32,15 @@ struct VariantSelector: View {
                                 .fixedSize(horizontal: false, vertical: true)
                             if let tag = variant.tag {
                                 hText(tag, style: .footnote)
-                                    .foregroundColor(hLabelColor.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             }
                         }
                         Spacer()
-                        hText(price).foregroundColor(hLabelColor.secondary)
+                        hText(price).foregroundColor(hTextColor.secondary)
                     }
                     if let description = variant.description {
                         hText(description, style: .callout)
-                            .foregroundColor(hLabelColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
@@ -53,7 +53,7 @@ struct VariantSelector: View {
         .overlay(
             VariantOverlay(variant: variant)
         )
-        .background(hBackgroundColor.tertiary)
+        .background(hBackgroundColor.primary)
         .cornerRadius(.defaultCornerRadius)
         .clipped()
         .hShadow()

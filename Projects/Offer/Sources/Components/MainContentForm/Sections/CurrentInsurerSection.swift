@@ -22,7 +22,7 @@ struct InceptionRow: View {
             titleIcon: hCoreUIAssets.restart.image,
             title: L10n.switcherAutoCardTitle,
             bodyText: L10n.switcherAutoCardDescription,
-            backgroundColor: hTintColor.lavenderTwo
+            backgroundColor: hTintColorOld.lavenderTwo
         ) { EmptyView() }
     }
 
@@ -31,7 +31,7 @@ struct InceptionRow: View {
             titleIcon: hCoreUIAssets.warningTriangle.image,
             title: L10n.switcherManualCardTitle,
             bodyText: L10n.switcherManualCardDescription,
-            backgroundColor: hTintColor.lavenderTwo
+            backgroundColor: hTintColorOld.lavenderTwo
         ) { EmptyView() }
     }
 
@@ -40,12 +40,12 @@ struct InceptionRow: View {
             VStack(spacing: 8) {
                 displayName?
                     .hText(.title3)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 insurer
                     .hText(.body)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if switchable {

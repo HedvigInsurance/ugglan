@@ -38,13 +38,13 @@ struct ResendOTPCode: View {
                         hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
                     }
                 }
-                .tint(hTextColorNew.primary)
+                .tint(hTextColor.primary)
             } else {
                 hText(
                     canResendAtText,
                     style: .subheadline
                 )
-                .foregroundColor(hTextColorNew.tertiary)
+                .foregroundColor(hTextColor.tertiary)
                 .onReceive(timer) { _ in
                     updateText(timeUntil: abs(timeUntil(state: state)))
                 }

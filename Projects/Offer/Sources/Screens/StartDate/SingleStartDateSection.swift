@@ -48,14 +48,14 @@ struct SingleStartDateSection {
     @ViewBuilder var footer: some View {
         if switchingActivated {
             hText(L10n.offerSwitcherExplanationFooter)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColor.secondary)
         }
     }
 
     @ViewBuilder private var header: some View {
         if let title = title {
             hText(title, style: .headline)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColor.secondary)
         }
     }
 }
@@ -82,7 +82,7 @@ extension SingleStartDateSection: View {
             .withCustomAccessory {
                 Spacer()
                 hText(date?.localDateStringWithToday ?? "")
-                    .foregroundColor(hLabelColor.link)
+                    .foregroundColor(hTintColorOld.link)
             }
             .onTap(if: date != nil) {
                 withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
@@ -98,7 +98,7 @@ extension SingleStartDateSection: View {
                         in: dateRange,
                         displayedComponents: .date
                     )
-                    .tint(hTintColor.lavenderOne)
+                    .tint(hTintColorOld.lavenderOne)
                     .modifier(DatePickerStyleModifier())
                     .padding(.horizontal, 15)
                 }

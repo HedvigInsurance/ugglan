@@ -20,7 +20,7 @@ extension EmbarkTooltips: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     hText(tooltip.description, style: .body)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
                 .padding(.bottom, 15)
             }

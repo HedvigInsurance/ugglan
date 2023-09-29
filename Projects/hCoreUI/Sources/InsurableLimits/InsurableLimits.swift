@@ -29,10 +29,10 @@ public struct InsurableLimitsSectionView: View {
                 HStack(alignment: .center) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                         .frame(width: 16, height: 16)
                         .onTapGesture {
                             didTap(limit)

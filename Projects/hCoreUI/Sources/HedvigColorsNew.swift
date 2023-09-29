@@ -78,10 +78,10 @@ extension UIColor {
             case let .messageBackground(my):
                 return UIColor(dynamic: { trait -> UIColor in
                     if my {
-                        return hSignalColorNew.blueFill
+                        return hSignalColor.blueFill
                             .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
                     } else {
-                        return hFillColorNew.opaqueOne
+                        return hFillColor.opaqueOne
                             .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
                     }
                 })
@@ -91,33 +91,33 @@ extension UIColor {
                 })
             case .chatTimeStamp:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hTextColorNew.tertiary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hTextColor.tertiary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .chatMessage:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hTextColorNew.primary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hTextColor.primary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterBackground:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.greenFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColor.greenFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterBorder:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hBorderColorNew.translucentOne.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hBorderColor.translucentOne.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()
                 })
             case .toasterTitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColor.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterSubtitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColorNew.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                    hSignalColor.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             }

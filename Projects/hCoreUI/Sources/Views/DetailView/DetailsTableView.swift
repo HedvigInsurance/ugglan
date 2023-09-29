@@ -26,11 +26,11 @@ public struct DetailAgreementsTableView: View {
                         hRow {
                             VStack(alignment: .leading) {
                                 hText(row.title, style: .body)
-                                    .foregroundColor(hTextColorNew.primary)
+                                    .foregroundColor(hTextColor.primary)
 
                                 if let subtitle = row.subtitle {
                                     hText(subtitle, style: .subheadline)
-                                        .foregroundColor(hTextColorNew.secondary)
+                                        .foregroundColor(hTextColor.secondary)
                                 }
                             }
                         }
@@ -38,7 +38,7 @@ public struct DetailAgreementsTableView: View {
                             Spacer()
                             VStack {
                                 hText(row.value, style: .body)
-                                    .foregroundColor(hTextColorNew.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             }
                         }
                         .noHorizontalPadding()
@@ -49,7 +49,7 @@ public struct DetailAgreementsTableView: View {
                                 section.title,
                                 style: .headline
                             )
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                         } else {
                             hText(section.title)
                                 .padding(.bottom, -8)
