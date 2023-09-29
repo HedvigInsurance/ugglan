@@ -201,9 +201,16 @@ public struct hForm<Content: View>: View {
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
-        if contentPosition != .bottom {
-            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
-        }
+
+        //        print("VALUE IS: \(scrollViewHeight) - \(maxContentHeight) - \(contentHeight)")
+        //        if let hFormTitle, contentPosition != .bottom  {
+        //            let diff = scrollViewHeight - bottomAttachedViewHeight - contentHeight
+        //            if shouldIgnoreTitleMargins && diff > hFormTitle.0.topMargin + hFormTitle.0.bottomMargin + 50 {
+        //                shouldIgnoreTitleMargins = false
+        //            } else if !shouldIgnoreTitleMargins && diff < 20 {
+        //                shouldIgnoreTitleMargins = true
+        //            }
+        //        }
     }
 }
 

@@ -42,6 +42,7 @@ struct MovingFlowNewAddressView: View {
                     }
                     .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
+
             }
             .padding(.bottom, 8)
             .padding(.top, 16)
@@ -49,7 +50,7 @@ struct MovingFlowNewAddressView: View {
         }
         .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
         .sectionContainerStyle(.transparent)
-        .hFormContentPosition(.bottom)
+        //        .hFormContentPosition(.bottom)
     }
 
     func addressField() -> some View {

@@ -24,15 +24,14 @@ struct MovingFlowHouseView: View {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
                     hSection {
-                        LoadingButtonWithContent(
-                            MoveFlowStore.self,
-                            .requestMoveIntent
-                        ) {
+                        hButton.LargeButton(type: .primary) {
                             vm.continuePressed()
                         } content: {
                             hText(L10n.General.submit, style: .body)
                         }
+                        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
+
                 }
             }
             .padding(.bottom, 8)
@@ -41,7 +40,7 @@ struct MovingFlowHouseView: View {
         }
         .hFormTitle(.standard, .title1, L10n.changeAddressInformationAboutYourHouse)
         .sectionContainerStyle(.transparent)
-        .hFormContentPosition(.bottom)
+        //        .hFormContentPosition(.bottom)
     }
 
     private var yearOfConstructionField: some View {
@@ -272,7 +271,7 @@ extension MovingFlowHouseViewModel {
         HouseInformationModel(
             yearOfConstruction: Int(self.yearOfConstruction) ?? 0,
             ancillaryArea: Int(self.ancillaryArea) ?? 0,
-            numberOfBathrooms: Int(self.bathrooms) ?? 0,
+            numberOfBathrooms: self.bathrooms,
             isSubleted: isSubleted,
             extraBuildings: store.state.houseInformationModel.extraBuildings
         )
