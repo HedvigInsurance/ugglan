@@ -42,21 +42,21 @@ struct SubmitClaimPestsScreen: View {
                     .padding(.top, 8)
                     .sectionContainerStyle(.transparent)
 
-//                    VStack(spacing: 4) {
-//                        InfoExpandableView(
-//                            title: L10n.submitClaimWhatCostTitle,
-//                            text: L10n.submitClaimGlassDamageWhatCostLabel
-//                        )
-//                        InfoExpandableView(
-//                            title: L10n.submitClaimHowBookTitle,
-//                            text: L10n.submitClaimGlassDamageHowBookLabel
-//                        )
-//                        InfoExpandableView(
-//                            title: L10n.submitClaimWorkshopTitle,
-//                            text: L10n.submitClaimGlassDamageWorkshopLabel
-//                        )
-//                    }
-//                    .padding(.vertical, 8)
+                    //                    VStack(spacing: 4) {
+                    //                        InfoExpandableView(
+                    //                            title: L10n.submitClaimWhatCostTitle,
+                    //                            text: L10n.submitClaimGlassDamageWhatCostLabel
+                    //                        )
+                    //                        InfoExpandableView(
+                    //                            title: L10n.submitClaimHowBookTitle,
+                    //                            text: L10n.submitClaimGlassDamageHowBookLabel
+                    //                        )
+                    //                        InfoExpandableView(
+                    //                            title: L10n.submitClaimWorkshopTitle,
+                    //                            text: L10n.submitClaimGlassDamageWorkshopLabel
+                    //                        )
+                    //                    }
+                    //                    .padding(.vertical, 8)
 
                     SupportView()
                         .padding(.vertical, 56)
