@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct MemberDetails: Codable, Equatable, Identifiable {
     public var id: String

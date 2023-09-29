@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct InsuranceTerm: Codable, Equatable, Hashable {
     public var displayName: String
