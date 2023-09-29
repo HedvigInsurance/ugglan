@@ -172,7 +172,13 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     .disposable
                 return disposeBag
             }
-
+        case let .emergencyConfirmRequest(isEmergency):
+            let confirmEmergencyInput = OctopusGraphQL.FlowClaimConfirmEmergencyInput(confirmEmergency: isEmergency)
+            let mutation = OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation(
+                input: confirmEmergencyInput,
+                context: newClaimContext
+            )
+            return mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
         default:
             return nil
         }
@@ -251,6 +257,23 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setContractSelectStep(model):
                 newState.contractStep = model
                 self.send(.navigationAction(action: .openSelectContractScreen))
+            case let .setConfirmDeflectEmergencyStepModel(model):
+                newState.emergencyConfirm = model
+                self.send(.navigationAction(action: .openConfirmEmergencyScreen))
+            case let .setDeflectModel(model):
+                switch model.id {
+                case .FlowClaimDeflectGlassDamageStep:
+                    newState.glassDamageStep = model
+                    self.send(.navigationAction(action: .openGlassDamageScreen))
+                case .FlowClaimDeflectPestsStep:
+                    newState.pestsStep = model
+                    self.send(.navigationAction(action: .openPestsScreen))
+                case .FlowClaimDeflectEmergencyStep:
+                    newState.emergencyStep = model
+                    self.send(.navigationAction(action: .openEmergencyScreen))
+                default:
+                    self.send(.navigationAction(action: .openUpdateAppScreen))
+                }
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -282,6 +305,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .singleItemCheckoutRequest:
             setLoading(for: .postSingleItemCheckout)
             newState.progress = nil
+        case .emergencyConfirmRequest:
+            setLoading(for: .postConfirmEmergency)
         case .fetchEntrypointGroups:
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
                 self?.setLoading(for: .fetchClaimEntrypointGroups)
