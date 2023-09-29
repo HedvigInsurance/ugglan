@@ -944,3 +944,58 @@ public struct hTealColorNew {
         )
     }
 }
+
+public struct hTintColorOld {
+    public static var lavenderOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "C9ABF5"),
+            dark: Color(hexString: "BE9BF3")
+        )
+    }
+    
+    public static var lavenderTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "E7D6FF"),
+            dark: Color(hexString: "2B203B")
+        )
+    }
+    
+    public static var yellowOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "F2C852"),
+            dark: Color(hexString: "CCA42E")
+        )
+    }
+    
+    public static var yellowTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FAE098"),
+            dark: Color(hexString: "E3B945")
+        )
+    }
+}
+
+public struct hSeparatorColorOld {
+    public static var separator: some hColor {
+        hColorScheme(
+            light: Color(hexString: "3C3C43").opacity(0.29),
+            dark: Color(hexString: "545458").opacity(0.65)
+        )
+    }
+}
+
+public struct hOverlayColorOld {
+    public static var pressed: some hColor {
+        hColorScheme(
+            light: Color(hexString: "121212").opacity(0.25),
+            dark: Color(hexString: "FAFAFA").opacity(0.08)
+        )
+    }
+
+    public static var pressedLavender: some hColor {
+        hColorScheme(
+            light: Color(hexString: "C9ABF5"),
+            dark: Color(hexString: "2B203B").opacity(0.25)
+        )
+    }
+}

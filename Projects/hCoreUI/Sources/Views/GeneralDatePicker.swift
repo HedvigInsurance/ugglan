@@ -27,7 +27,7 @@ public struct GeneralDatePicker: View {
                     model.onDateSelected(dateOfOccurrence)
                 } content: {
                     hText(model.buttonTitle, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                        .foregroundColor(hTextColorNew.primary.inverted)
                 }
                 .padding(.horizontal, 16)
             }

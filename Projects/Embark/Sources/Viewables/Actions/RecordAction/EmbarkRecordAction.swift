@@ -101,9 +101,9 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder var innerCircleColor: some hColor {
         if isRecording {
-            hLabelColor.primary
+            hTextColorNew.primary
         } else {
-            hTintColor.red
+            hSignalColorNew.redText
         }
     }
 
@@ -113,7 +113,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
                 .cornerRadius(isRecording ? 1 : 18)
                 .padding(36)
         }
-        .background(Circle().fill(hBackgroundColor.secondary))
+        .background(Circle().fill(hBackgroundColorNew.primary))
         .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }

@@ -42,7 +42,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
             }
             bodyText
                 .hText(.subheadline)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColorNew.secondary)
                 .padding(10)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -57,7 +57,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
         .overlay(
             Squircle.default(lineWidth: .hairlineWidth)
                 .stroke(lineWidth: .hairlineWidth)
-                .foregroundColor(hSeparatorColor.separator)
+                .foregroundColor(hSeparatorColorOld.separator)
         )
     }
 }

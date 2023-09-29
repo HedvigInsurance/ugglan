@@ -62,14 +62,14 @@ struct TerminationDeleteScreen: View {
                         store.send(.dismissTerminationFlow)
                     } content: {
                         hText(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hLabelColor.primary)
+                            .foregroundColor(hTextColorNew.primary)
                     }
                     .padding(.bottom, 4)
                     hButton.LargeButton(type: .primary) {
                         onSelected()
                     } content: {
                         hText(L10n.terminationContractDeletionConfirmButton, style: .body)
-                            .foregroundColor(hLabelColor.primary.inverted)
+                            .foregroundColor(hTextColorNew.primary.inverted)
                     }
                     .padding(.bottom, 2)
                 }

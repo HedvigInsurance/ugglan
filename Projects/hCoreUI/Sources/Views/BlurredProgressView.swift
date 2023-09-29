@@ -18,9 +18,9 @@ public struct BlurredProgressOverlay<Content: View>: View {
     @hColorBuilder
     var largeCircleColor: some hColor {
         if colorScheme == .dark {
-            hTintColor.yellowOne.opacity(0.25)
+            hTintColorOld.yellowOne.opacity(0.25)
         } else {
-            hTintColor.yellowTwo
+            hTintColorOld.yellowTwo
         }
     }
 
@@ -33,9 +33,9 @@ public struct BlurredProgressOverlay<Content: View>: View {
     @hColorBuilder
     var smallCircleColor: some hColor {
         if colorScheme == .dark {
-            hTintColor.lavenderOne.opacity(0.25)
+            hTintColorOld.lavenderOne.opacity(0.25)
         } else {
-            hTintColor.lavenderTwo
+            hTintColorOld.lavenderTwo
         }
     }
 

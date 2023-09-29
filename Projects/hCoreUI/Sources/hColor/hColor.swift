@@ -260,202 +260,202 @@ public struct hColorBase: hColor, View {
     }
 }
 
-public struct hBackgroundColor {
-    public static var primary: some hColor {
-        let baseColor = hColorScheme(
-            light: Color(hexString: "F6F6F6"),
-            dark: Color(hexString: "000000")
-        )
+//public struct hBackgroundColor {
+//    public static var primary: some hColor {
+//        let baseColor = hColorScheme(
+//            light: Color(hexString: "F6F6F6"),
+//            dark: Color(hexString: "000000")
+//        )
+//
+//        let elevatedColor = hColorScheme(
+//            light: Color(hexString: "FFFFFF"),
+//            dark: Color(hexString: "1B1B1B")
+//        )
+//
+//        return hColorLevel(base: baseColor, elevated: elevatedColor)
+//    }
+//
+//    public static var secondary: some hColor {
+//        let baseColor = hColorScheme(
+//            light: Color(hexString: "FAFAFA"),
+//            dark: Color(hexString: "1B1B1B")
+//        )
+//
+//        let elevatedColor = hColorScheme(
+//            light: Color(hexString: "F6F6F6"),
+//            dark: Color(hexString: "2A2A2A")
+//        )
+//
+//        return hColorLevel(base: baseColor, elevated: elevatedColor)
+//    }
+//
+//    public static var tertiary: some hColor {
+//        let baseColor = hColorScheme(
+//            light: Color(hexString: "FFFFFF"),
+//            dark: Color(hexString: "2A2A2A")
+//        )
+//
+//        let elevatedColor = hColorScheme(
+//            light: Color(hexString: "FFFFFF"),
+//            dark: Color(hexString: "505050")
+//        )
+//
+//        return hColorLevel(base: baseColor, elevated: elevatedColor)
+//    }
+//}
 
-        let elevatedColor = hColorScheme(
-            light: Color(hexString: "FFFFFF"),
-            dark: Color(hexString: "1B1B1B")
-        )
+//public struct hGrayscaleColor {
+//    public static var one: some hColor {
+//        hColorScheme(
+//            Color(hexString: "EAEAEA")
+//        )
+//    }
+//
+//    public static var two: some hColor {
+//        hColorScheme(
+//            Color(hexString: "AAAAAA")
+//        )
+//    }
+//
+//    public static var three: some hColor {
+//        hColorScheme(
+//            Color(hexString: "777777")
+//        )
+//    }
+//
+//    public static var four: some hColor {
+//        hColorScheme(
+//            Color(hexString: "505050")
+//        )
+//    }
+//
+//    public static var five: some hColor {
+//        hColorScheme(
+//            Color(hexString: "252525")
+//        )
+//    }
+//}
 
-        return hColorLevel(base: baseColor, elevated: elevatedColor)
-    }
+//public struct hOverlayColor {
+//    public static var pressed: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "121212").opacity(0.25),
+//            dark: Color(hexString: "FAFAFA").opacity(0.08)
+//        )
+//    }
+//
+//    public static var pressedLavender: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "C9ABF5"),
+//            dark: Color(hexString: "2B203B").opacity(0.25)
+//        )
+//    }
+//}
 
-    public static var secondary: some hColor {
-        let baseColor = hColorScheme(
-            light: Color(hexString: "FAFAFA"),
-            dark: Color(hexString: "1B1B1B")
-        )
+//public struct hLabelColor {
+//    public static var primary: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "121212"),
+//            dark: Color(hexString: "FAFAFA")
+//        )
+//    }
+//
+//    public static var secondary: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "121212").opacity(0.67),
+//            dark: Color(hexString: "FAFAFA").opacity(0.56)
+//        )
+//    }
+//
+//    public static var placeholder: some hColor {
+//        primary.opacity(0.5)
+//    }
+//
+//    public static var tertiary: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "121212").opacity(0.34),
+//            dark: Color(hexString: "FAFAFA").opacity(0.40)
+//        )
+//    }
+//
+//    public static var quarternary: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "FAFAFA"),
+//            dark: Color(hexString: "FAFAFA").opacity(0.18)
+//        )
+//    }
+//
+//    public static var link: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "875EC5"),
+//            dark: Color(hexString: "875EC5")
+//        )
+//    }
+//}
 
-        let elevatedColor = hColorScheme(
-            light: Color(hexString: "F6F6F6"),
-            dark: Color(hexString: "2A2A2A")
-        )
+//public struct hTintColor {
+//    public static var lavenderOne: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "C9ABF5"),
+//            dark: Color(hexString: "BE9BF3")
+//        )
+//    }
+//
+//    public static var lavenderTwo: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "E7D6FF"),
+//            dark: Color(hexString: "2B203B")
+//        )
+//    }
+//
+//    public static var yellowOne: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "F2C852"),
+//            dark: Color(hexString: "CCA42E")
+//        )
+//    }
+//
+//    public static var yellowTwo: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "FAE098"),
+//            dark: Color(hexString: "E3B945")
+//        )
+//    }
+//
+//    public static var red: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "DD2727"),
+//            dark: Color(hexString: "E24646")
+//        )
+//    }
+//
+//    public static var orangeOne: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "FE9650"),
+//            dark: Color(hexString: "FE9650")
+//        )
+//    }
+//
+//    public static var orangeTwo: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "FCBA8D"),
+//            dark: Color(hexString: "FCBA8D")
+//        )
+//    }
+//
+//    public static var clear: some hColor {
+//        hColorScheme(
+//            light: Color.clear,
+//            dark: Color.clear
+//        )
+//    }
+//}
 
-        return hColorLevel(base: baseColor, elevated: elevatedColor)
-    }
-
-    public static var tertiary: some hColor {
-        let baseColor = hColorScheme(
-            light: Color(hexString: "FFFFFF"),
-            dark: Color(hexString: "2A2A2A")
-        )
-
-        let elevatedColor = hColorScheme(
-            light: Color(hexString: "FFFFFF"),
-            dark: Color(hexString: "505050")
-        )
-
-        return hColorLevel(base: baseColor, elevated: elevatedColor)
-    }
-}
-
-public struct hGrayscaleColor {
-    public static var one: some hColor {
-        hColorScheme(
-            Color(hexString: "EAEAEA")
-        )
-    }
-
-    public static var two: some hColor {
-        hColorScheme(
-            Color(hexString: "AAAAAA")
-        )
-    }
-
-    public static var three: some hColor {
-        hColorScheme(
-            Color(hexString: "777777")
-        )
-    }
-
-    public static var four: some hColor {
-        hColorScheme(
-            Color(hexString: "505050")
-        )
-    }
-
-    public static var five: some hColor {
-        hColorScheme(
-            Color(hexString: "252525")
-        )
-    }
-}
-
-public struct hOverlayColor {
-    public static var pressed: some hColor {
-        hColorScheme(
-            light: Color(hexString: "121212").opacity(0.25),
-            dark: Color(hexString: "FAFAFA").opacity(0.08)
-        )
-    }
-
-    public static var pressedLavender: some hColor {
-        hColorScheme(
-            light: Color(hexString: "C9ABF5"),
-            dark: Color(hexString: "2B203B").opacity(0.25)
-        )
-    }
-}
-
-public struct hLabelColor {
-    public static var primary: some hColor {
-        hColorScheme(
-            light: Color(hexString: "121212"),
-            dark: Color(hexString: "FAFAFA")
-        )
-    }
-
-    public static var secondary: some hColor {
-        hColorScheme(
-            light: Color(hexString: "121212").opacity(0.67),
-            dark: Color(hexString: "FAFAFA").opacity(0.56)
-        )
-    }
-
-    public static var placeholder: some hColor {
-        primary.opacity(0.5)
-    }
-
-    public static var tertiary: some hColor {
-        hColorScheme(
-            light: Color(hexString: "121212").opacity(0.34),
-            dark: Color(hexString: "FAFAFA").opacity(0.40)
-        )
-    }
-
-    public static var quarternary: some hColor {
-        hColorScheme(
-            light: Color(hexString: "FAFAFA"),
-            dark: Color(hexString: "FAFAFA").opacity(0.18)
-        )
-    }
-
-    public static var link: some hColor {
-        hColorScheme(
-            light: Color(hexString: "875EC5"),
-            dark: Color(hexString: "875EC5")
-        )
-    }
-}
-
-public struct hTintColor {
-    public static var lavenderOne: some hColor {
-        hColorScheme(
-            light: Color(hexString: "C9ABF5"),
-            dark: Color(hexString: "BE9BF3")
-        )
-    }
-
-    public static var lavenderTwo: some hColor {
-        hColorScheme(
-            light: Color(hexString: "E7D6FF"),
-            dark: Color(hexString: "2B203B")
-        )
-    }
-
-    public static var yellowOne: some hColor {
-        hColorScheme(
-            light: Color(hexString: "F2C852"),
-            dark: Color(hexString: "CCA42E")
-        )
-    }
-
-    public static var yellowTwo: some hColor {
-        hColorScheme(
-            light: Color(hexString: "FAE098"),
-            dark: Color(hexString: "E3B945")
-        )
-    }
-
-    public static var red: some hColor {
-        hColorScheme(
-            light: Color(hexString: "DD2727"),
-            dark: Color(hexString: "E24646")
-        )
-    }
-
-    public static var orangeOne: some hColor {
-        hColorScheme(
-            light: Color(hexString: "FE9650"),
-            dark: Color(hexString: "FE9650")
-        )
-    }
-
-    public static var orangeTwo: some hColor {
-        hColorScheme(
-            light: Color(hexString: "FCBA8D"),
-            dark: Color(hexString: "FCBA8D")
-        )
-    }
-
-    public static var clear: some hColor {
-        hColorScheme(
-            light: Color.clear,
-            dark: Color.clear
-        )
-    }
-}
-
-public struct hSeparatorColor {
-    public static var separator: some hColor {
-        hColorScheme(
-            light: Color(hexString: "3C3C43").opacity(0.29),
-            dark: Color(hexString: "545458").opacity(0.65)
-        )
-    }
-}
+//public struct hSeparatorColor {
+//    public static var separator: some hColor {
+//        hColorScheme(
+//            light: Color(hexString: "3C3C43").opacity(0.29),
+//            dark: Color(hexString: "545458").opacity(0.65)
+//        )
+//    }
+//}

@@ -71,7 +71,7 @@ public struct WordmarkActivityIndicator: View {
         ZStack {
             Circle()
                 .stroke(lineWidth: 2.0)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColorNew.primary)
 
             hText("H", style: .title1).minimumScaleFactor(0.1).padding(1.5)
                 .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: -360))

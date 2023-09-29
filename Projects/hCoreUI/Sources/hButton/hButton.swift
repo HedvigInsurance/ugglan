@@ -324,9 +324,9 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hLabelColor.primary) {
+            LoaderOrContent(color: hTextColorNew.primary) {
                 configuration.label
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColorNew.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -348,12 +348,12 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             if colorScheme == .light {
                 content.overlay(
                     Squircle.default(lineWidth: configuration.isPressed ? 0 : 1)
-                        .stroke(hLabelColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
+                        .stroke(hTextColorNew.primary, lineWidth: configuration.isPressed ? 0 : 1)
                 )
             } else {
                 content.overlay(
                     Squircle.default(lineWidth: 1)
-                        .stroke(hLabelColor.primary, lineWidth: 1)
+                        .stroke(hTextColorNew.primary, lineWidth: 1)
                 )
             }
         }
@@ -365,7 +365,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(Color.clear)
-        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
+//        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .clipShape(Squircle.default())
         .modifier(OverlayModifier(configuration: configuration))
         .modifier(OpacityModifier())

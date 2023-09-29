@@ -54,7 +54,7 @@ struct hFieldErrorModifier: ViewModifier {
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
                         .foregroundColor(hSignalColorNew.amberElement)
                     hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColorNew.primary)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)

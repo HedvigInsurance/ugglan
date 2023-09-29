@@ -165,7 +165,7 @@ private struct DatePickerView: View {
                         L10n.generalSaveButton,
                         style: .body
                     )
-                    .foregroundColor(hLabelColor.primary.inverted)
+                    .foregroundColor(hTextColorNew.negative)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)

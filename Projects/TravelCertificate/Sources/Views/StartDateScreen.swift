@@ -77,7 +77,7 @@ struct StartDateScreen: View {
                     title: L10n.TravelCertificate.Info.title,
                     description: L10n.TravelCertificate.Info.subtitle
                 )
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColorNew.primary)
             }
         }
     }
