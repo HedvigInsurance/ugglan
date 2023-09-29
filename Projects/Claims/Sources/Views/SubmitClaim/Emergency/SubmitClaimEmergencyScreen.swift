@@ -37,27 +37,28 @@ struct SubmitClaimEmergencyScreen: View {
                 }
                 .padding(.top, 16)
                 .sectionContainerStyle(.transparent)
-
-                VStack(spacing: 4) {
-                    InfoExpandableView(
-                        title: L10n.submitClaimWhatCostTitle,
-                        text: L10n.submitClaimGlassDamageWhatCostLabel
-                    )
-                    InfoExpandableView(
-                        title: L10n.submitClaimHospitalTitle,
-                        text: L10n.submitClaimGlassDamageWhatCostLabel
-                    )
-                    InfoExpandableView(
-                        title: L10n.submitClaimRebookTitle,
-                        text: L10n.submitClaimGlassDamageWorkshopLabel
-                    )
-
-                    InfoExpandableView(
-                        title: L10n.changeAddressQa,
-                        text: L10n.submitClaimGlassDamageWorkshopLabel
-                    )
-                }
-                .padding(.top, 16)
+                
+//                VStack(spacing: 4) {
+//                    InfoExpandableView(
+//                        title: L10n.submitClaimWhatCostTitle,
+//                        text: L10n.submitClaimGlassDamageWhatCostLabel
+//                    )
+//                    InfoExpandableView(
+//                        title: L10n.submitClaimHospitalTitle,
+//                        text: L10n.submitClaimGlassDamageWhatCostLabel
+//                    )
+//                    InfoExpandableView(
+//                        title: L10n.submitClaimRebookTitle,
+//                        text: L10n.submitClaimGlassDamageWorkshopLabel
+//                    )
+//
+//                    InfoExpandableView(
+//                        title: L10n.changeAddressQa,
+//                        text: L10n.submitClaimGlassDamageWorkshopLabel
+//                    )
+//                }
+//                .padding(.top, 16)
+                
                 SupportView()
                     .padding(.vertical, 56)
             }
