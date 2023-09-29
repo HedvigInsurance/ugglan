@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct FAQ: Codable, Equatable, Hashable {
     public var title: String

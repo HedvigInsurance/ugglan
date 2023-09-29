@@ -4,40 +4,6 @@ query CrossSells {
   }
 }
 
-
-fragment ProductVariantFragment on ProductVariant {
-    perils {
-        colorCode
-        covered
-        description
-        exceptions
-        id
-        info
-        title
-    }
-    typeOfContract
-    documents {
-        displayName
-        type
-        url
-    }
-    displayName
-    insurableLimits {
-        label
-        limit
-        description
-        type
-    }
-    highlights {
-        title
-        description
-    }
-    faq {
-        headline
-        body
-    }
-}
-
 fragment CrossSellFragment on Member {
     crossSells {
       id

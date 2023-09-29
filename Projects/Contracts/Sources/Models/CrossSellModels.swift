@@ -1,4 +1,7 @@
 import Foundation
+import hCoreUI
+import hGraphQL
+import SwiftUI
 
 public struct CrossSell: Codable, Equatable, Hashable {
     public var typeOfContract: String
@@ -58,6 +61,18 @@ public struct CrossSell: Codable, Equatable, Hashable {
         webActionURL = data.storeUrl
         typeOfContract = data.id
         type = data.type.crossSellType
+    }
+}
+
+extension CrossSell {
+    public var image: UIImage {
+        switch type {
+        case .home: return HCoreUIAsset.bigPillowHome.image
+        case .car: return HCoreUIAsset.bigPillowCar.image
+        case .accident: return HCoreUIAsset.bigPillowAccident.image
+        case .pet: return HCoreUIAsset.bigPillowPet.image
+        case .unknown: return HCoreUIAsset.bigPillowHome.image
+        }
     }
 }
 

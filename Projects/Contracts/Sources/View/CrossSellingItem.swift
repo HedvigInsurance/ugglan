@@ -8,7 +8,7 @@ import hGraphQL
 
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
-    let crossSell: hGraphQL.CrossSell
+    let crossSell: CrossSell
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
