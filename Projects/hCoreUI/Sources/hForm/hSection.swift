@@ -116,6 +116,7 @@ public enum hSectionContainerStyle {
     case opaque
     case caution
     case alert
+    case black
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -150,6 +151,11 @@ extension hSectionContainerStyle: ViewModifier {
         case .alert:
             content.background(
                 hSignalColor.amberFill
+            )
+            .clipShape(Squircle.default())
+        case .black:
+            content.background(
+                hFillColor.offBlack
             )
             .clipShape(Squircle.default())
         }

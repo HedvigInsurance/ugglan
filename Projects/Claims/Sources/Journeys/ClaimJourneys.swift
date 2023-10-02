@@ -51,6 +51,14 @@ public class ClaimJourneys {
                 showClaimEntrypointOption().addDismissClaimsFlow()
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
+            } else if case .openGlassDamageScreen = navigationAction {
+                openGlassDamageScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimGlassDamageTitle)
+            } else if case .openEmergencyScreen = navigationAction {
+                openEmergencyScreen().addDismissClaimsFlow().configureTitle(L10n.commonClaimEmergencyTitle)
+            } else if case .openConfirmEmergencyScreen = navigationAction {
+                openEmergencySelectScreen().addDismissClaimsFlow()
+            } else if case .openPestsScreen = navigationAction {
+                openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
             }
         }
     }
@@ -73,6 +81,83 @@ public class ClaimJourneys {
         ) {
             action in
             getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openGlassDamageScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimGlassDamageScreen()
+        ) {
+            action in
+            if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
+                openInfoView(title: title, description: description)
+            } else {
+                getScreen(for: action)
+            }
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openEmergencySelectScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SumitClaimEmergencySelectScreen(title: {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                return store.state.emergencyConfirm?.text ?? ""
+            })
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openEmergencyScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimEmergencyScreen()
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openPestsScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimPestsScreen()
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .resetProgressToPreviousValueOnDismiss
+    }
+
+    @JourneyBuilder
+    private static func openInfoView(title: String?, description: String?) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: InfoView(
+                title: title ?? "",
+                description: description ?? "",
+                onDismiss: {}
+            ),
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
+        ) {
+            action in
+            if case .navigationAction(action: .dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
         .resetProgressToPreviousValueOnDismiss
     }

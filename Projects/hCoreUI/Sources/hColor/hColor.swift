@@ -358,6 +358,10 @@ public struct hFillColor {
     public static var translucentThree: some hColor {
         hGrayscaleTranslucent.greyScaleTranslucent400
     }
+    
+    public static var offBlack: some hColor {
+        hGrayscaleColor.greyScale1000
+    }
 }
 
 public struct hHighlightColor {
