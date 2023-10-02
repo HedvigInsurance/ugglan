@@ -3,6 +3,7 @@ import Flow
 import Presentation
 import SwiftUI
 import TerminateContracts
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -69,11 +70,20 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     }
 
     public static func getTypes(for contract: Contract) -> [EditType] {
-        var editTypes: [EditType] = [.changeAddress]
+        var editTypes: [EditType] = []
 
+        if hAnalyticsExperiment.movingFlow && contract.showsMovingFlowButton {
+            editTypes.append(.changeAddress)
+        }
         if contract.canChangeCoInsured {
             editTypes.append(.coInsured)
         }
         return editTypes
+    }
+}
+
+extension Contract {
+    public var showEditButton: Bool {
+        return !EditType.getTypes(for: self).isEmpty && self.currentAgreement?.status != .terminated
     }
 }
