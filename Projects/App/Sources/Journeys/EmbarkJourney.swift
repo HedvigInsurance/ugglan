@@ -13,11 +13,11 @@ extension AppJourney {
         var offerOptions: Set<OfferOption> = [
             .menuToTrailing
         ]
-
+        
         if storeOffer {
             offerOptions.insert(.shouldPreserveState)
         }
-
+        
         return Journey(embark, style: style) { externalRedirect in
             switch externalRedirect {
             case .mailingList:
@@ -31,34 +31,8 @@ extension AppJourney {
                     .withDismissButton
             case .close:
                 DismissJourney()
-            case let .offer(allIds, selectedIds):
-                Journey(
-                    Offer(
-                        menu: embark.menu,
-                        options: offerOptions
-                    )
-                    .setIds(allIds, selectedIds: selectedIds)
-                ) { offerResult in
-                    offerResultJourney(offerResult)
-                }
-                .onDismiss {
-                    embark.goBack()
-                }
             case let .menu(action):
                 action.journey
-            case let .quoteCartOffer(id, types):
-                Journey(
-                    Offer(
-                        menu: embark.menu,
-                        options: offerOptions
-                    )
-                    .setQuoteCart(id, selectedInsuranceTypes: types)
-                ) { offerResult in
-                    offerResultJourney(offerResult)
-                }
-                .onDismiss {
-                    embark.goBack()
-                }
             }
         }
     }

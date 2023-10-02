@@ -43,10 +43,6 @@ extension AppJourney {
                     ContinueJourney()
                 case .mailingList:
                     DismissJourney()
-                case .offer:
-                    DismissJourney()
-                case .quoteCartOffer:
-                    DismissJourney()
                 }
             }
         }

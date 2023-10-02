@@ -65,7 +65,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                         .padding([.top, .bottom], 11)
                         .padding([.trailing, .leading], 12)
                 }
-                .background(hGrayscaleColorOld.one)
                 .cornerRadius(.defaultCornerRadius)
             }
         }
@@ -143,7 +142,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                             .padding([.trailing, .leading], 12)
                     }
                 }
-                .background(hGrayscaleColorOld.one)
                 .cornerRadius(.defaultCornerRadius)
             }
         }

@@ -24,7 +24,7 @@ struct TrackPlayer: View {
             image.tint(hTextColor.primary)
             let waveform = WaveformView(
                 maxStripeHeight: 70,
-                stripeColor: hColorScheme.init(light: hGrayscaleColorOld.one, dark: hGrayscaleColorOld.two),
+                stripeColor: hColorScheme.init(light: hBorderColor.opaqueOne, dark: hTextColor.tertiary),
                 sampleHeights: audioPlayer.audioSampleHeights
             )
             .frame(height: 100)

@@ -1199,9 +1199,6 @@ public struct hTealColor {
     }
 }
 
-
-
-
 public struct hTintColorOld {
     public static var lavenderOne: some hColor {
         hColorScheme(
@@ -1235,58 +1232,6 @@ public struct hTintColorOld {
         hColorScheme(
             light: Color.clear,
             dark: Color.clear
-        )
-    }
-    
-        public static var link: some hColor {
-            hColorScheme(
-                light: Color(hexString: "875EC5"),
-                dark: Color(hexString: "875EC5")
-            )
-        }
-}
-
-public struct hSeparatorColorOld {
-    public static var separator: some hColor {
-        hColorScheme(
-            light: Color(hexString: "3C3C43").opacity(0.29),
-            dark: Color(hexString: "545458").opacity(0.65)
-        )
-    }
-}
-
-public struct hOverlayColorOld {
-    public static var pressed: some hColor {
-        hColorScheme(
-            light: Color(hexString: "121212").opacity(0.25),
-            dark: Color(hexString: "FAFAFA").opacity(0.08)
-        )
-    }
-
-    public static var pressedLavender: some hColor {
-        hColorScheme(
-            light: Color(hexString: "C9ABF5"),
-            dark: Color(hexString: "2B203B").opacity(0.25)
-        )
-    }
-}
-
-public struct hGrayscaleColorOld {
-    public static var one: some hColor {
-        hColorScheme(
-            Color(hexString: "EAEAEA")
-        )
-    }
-
-    public static var two: some hColor {
-        hColorScheme(
-            Color(hexString: "AAAAAA")
-        )
-    }
-    
-    public static var five: some hColor {
-        hColorScheme(
-            Color(hexString: "252525")
         )
     }
 }

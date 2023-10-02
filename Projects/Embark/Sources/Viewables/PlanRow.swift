@@ -29,8 +29,8 @@ struct PlanRowContent: View {
     @ViewBuilder var discountBackground: some View {
         if !selected {
             hColorScheme(
-                light: hGrayscaleColorOld.five,
-                dark: hGrayscaleColorOld.one
+                light: hButtonColor.primaryHover,
+                dark: hBorderColor.opaqueOne
             )
         } else {
             hBackgroundColor.primary

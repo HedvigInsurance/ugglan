@@ -28,44 +28,13 @@ enum NavigationEvent {
 }
 
 enum ChatResult {
-    case offer(ids: [String])
     case loggedIn
     case login
     case notifications(dismissed: () -> Void)
-
+    
     var journey: some JourneyPresentation {
         GroupJourney {
             switch self {
-            case let .offer(ids):
-                Journey(
-                    Offer(
-                        menu: Menu(
-                            title: nil,
-                            children: [
-                                MenuChild.appInformation,
-                                MenuChild.login,
-                            ]
-                        ),
-                        options: [.shouldPreserveState]
-                    )
-                    .setIds(ids)
-                ) { offerResult in
-                    switch offerResult {
-                    case .chat:
-                        AppJourney
-                            .freeTextChat()
-                            .withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .signed:
-                        ContinueJourney()
-                    case let .menu(action):
-                        action.journey
-                    case .signedQuoteCart:
-                        DismissJourney()
-                    }
-                }
-                .hidesBackButton
             case .loggedIn:
                 AppJourney.loggedIn
             case .login:

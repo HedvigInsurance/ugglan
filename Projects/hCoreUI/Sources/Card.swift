@@ -57,7 +57,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
         .overlay(
             Squircle.default(lineWidth: .hairlineWidth)
                 .stroke(lineWidth: .hairlineWidth)
-                .foregroundColor(hSeparatorColorOld.separator)
+                .foregroundColor(hBorderColor.opaqueFour)
         )
     }
 }

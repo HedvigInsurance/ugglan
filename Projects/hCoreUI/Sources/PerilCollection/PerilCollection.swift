@@ -23,7 +23,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder func background(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
-            hOverlayColorOld.pressed.opacity(0.5)
+            hTextColor.tertiaryTranslucent
         } else {
             hBackgroundColor.primary
         }

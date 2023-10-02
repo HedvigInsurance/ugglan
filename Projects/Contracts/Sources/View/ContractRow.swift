@@ -91,10 +91,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .clipShape(Squircle.default())
-        .overlay(
-            Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColorOld.separator, lineWidth: .hairlineWidth)
-        )
+        .hShadow()
         .foregroundColor(hTextColor.negative)
         .contentShape(Rectangle())
     }

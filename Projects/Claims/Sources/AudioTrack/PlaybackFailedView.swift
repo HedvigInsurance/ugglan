@@ -38,6 +38,6 @@ struct PlaybackFailedView: View {
         .padding(.horizontal, 24)
         .background(hTintColorOld.yellowTwo)
         .cornerRadius(.defaultCornerRadius)
-        .border(hSeparatorColorOld.separator, width: 0.5)
+        .border(hBorderColor.opaqueFour, width: 0.5)
     }
 }
