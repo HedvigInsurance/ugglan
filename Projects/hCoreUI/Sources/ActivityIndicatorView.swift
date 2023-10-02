@@ -37,33 +37,37 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
                     .plain()
                     .publisher
             ) { value in
-                if let state = value[action] {
-                    switch state {
-                    case .loading:
-                        showOnLoading = true
-                        self.error = nil
-                    case let .error(error):
+                withAnimation {
+                    if let state = value[action] {
+                        switch state {
+                        case .loading:
+                            showOnLoading = true
+                            self.error = nil
+                        case let .error(error):
+                            showOnLoading = false
+                            self.error = error
+                        }
+                    } else {
                         showOnLoading = false
-                        self.error = error
+                        self.error = nil
                     }
-                } else {
-                    showOnLoading = false
-                    self.error = nil
                 }
             }
             .onAppear {
-                if let state = store.loadingSignal.value[action] {
-                    switch state {
-                    case .loading:
-                        showOnLoading = true
-                        self.error = nil
-                    case let .error(error):
+                withAnimation {
+                    if let state = store.loadingSignal.value[action] {
+                        switch state {
+                        case .loading:
+                            showOnLoading = true
+                            self.error = nil
+                        case let .error(error):
+                            showOnLoading = false
+                            self.error = error
+                        }
+                    } else {
                         showOnLoading = false
-                        self.error = error
+                        self.error = nil
                     }
-                } else {
-                    showOnLoading = false
-                    self.error = nil
                 }
             }
     }
@@ -376,5 +380,65 @@ extension View {
         action: StoreType.Loading
     ) -> some View {
         modifier(TrackLoadingButtonModifier(type, action))
+    }
+}
+
+extension View {
+    public func retryView<StoreType: StoreLoading & Store>(
+        _ type: StoreType.Type,
+        forAction action: StoreType.Loading,
+        binding: Binding<String?>
+    ) -> some View {
+        modifier(RetryViewWithError(type, action, binding))
+    }
+}
+
+struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
+    @PresentableStore var store: StoreType
+    let action: StoreType.Loading
+    @Binding private var error: String?
+    @Environment(\.presentableStoreLensAnimation) var animation
+
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading,
+        _ binding: Binding<String?>
+    ) {
+        self.action = action
+        _error = binding
+    }
+    func body(content: Content) -> some View {
+        ZStack {
+            if let error {
+                RetryView(subtitle: error) {
+                    self.error = nil
+                }
+            } else {
+                content
+            }
+        }
+        .onReceive(
+            store.loadingSignal
+                .plain()
+                .publisher
+        ) { value in
+            handle(allActions: value)
+        }
+        .onAppear {
+            handle(allActions: store.loadingSignal.value)
+        }
+    }
+
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        if let state = allActions[action] {
+            switch state {
+            case .loading:
+                self.error = nil
+            case let .error(error):
+                self.error = error
+            }
+        } else {
+            self.error = nil
+        }
     }
 }

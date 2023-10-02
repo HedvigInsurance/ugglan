@@ -95,15 +95,4 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
             return .own
         }
     }
-
-    var isStudentEnabled: Bool {
-        switch self {
-        case .apartmant:
-            return true
-        case .rental:
-            return true
-        case .house:
-            return false
-        }
-    }
 }

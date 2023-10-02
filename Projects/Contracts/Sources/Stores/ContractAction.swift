@@ -70,6 +70,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = [.changeAddress]
+
         if contract.canChangeCoInsured {
             editTypes.append(.coInsured)
         }

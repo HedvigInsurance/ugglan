@@ -11,7 +11,6 @@ struct MovingFlowConfirm: View {
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
     @State var selectedFaq: [String] = [""]
-    @State var showCoverage = false
     var body: some View {
         ScrollViewReader { proxy in
             hForm {
@@ -31,18 +30,16 @@ struct MovingFlowConfirm: View {
                             buttonComponent(proxy: proxy)
                                 .padding(.top, 126)
                                 .padding(.bottom, 48)
-                            if showCoverage {
-                                ZStack {
-                                    VStack(spacing: 32) {
-                                        ForEach(movingFlowModel.quotes, id: \.address) { quote in
-                                            whatIsCovered(for: quote)
-                                        }
-                                    }
+                            VStack(spacing: 32) {
+                                ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                    whatIsCovered(for: quote)
                                 }
-                                .padding(.top, 8)
-                                .id(whatIsCoveredId)
-                                chatComponent
                             }
+
+                            .padding(.top, 8)
+                            .id(whatIsCoveredId)
+                            faqsComponent(for: movingFlowModel.faqs)
+                            chatComponent
 
                         }
                         .padding(.top, 16)
@@ -86,6 +83,7 @@ struct MovingFlowConfirm: View {
                                 hText(keyValue.key, style: .body)
                                 Spacer()
                                 hText(keyValue.value, style: .body)
+                                    .multilineTextAlignment(.trailing)
                             }
                         }
                     }
@@ -129,14 +127,8 @@ struct MovingFlowConfirm: View {
                 }
 
                 hButton.LargeButton(type: .ghost) {
-
                     withAnimation {
-                        showCoverage = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        withAnimation {
-                            proxy.scrollTo(whatIsCoveredId, anchor: .top)
-                        }
+                        proxy.scrollTo(whatIsCoveredId, anchor: .top)
                     }
                 } content: {
                     hText(L10n.changeAddressViewCoverage, style: .body)
@@ -184,12 +176,8 @@ struct MovingFlowConfirm: View {
             hSection(quote.insurableLimits, id: \.label) { field in
                 hRow {
                     hText(field.label, style: .body)
-                    Spacer()
+                    Spacer(minLength: 8)
                     hText(field.limit, style: .body)
-                    Image(uiImage: hCoreUIAssets.infoSmall.image)
-                        .resizable()
-                        .frame(width: 14, height: 14)
-                        .foregroundColor(hGrayscaleColorNew.greyScale700)
                 }
                 .noHorizontalPadding()
             }
@@ -209,15 +197,19 @@ struct MovingFlowConfirm: View {
                     Spacer()
                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                 }
+                .onTap {
+                    if let url = URL(string: document.url) {
+                        store.send(.navigation(action: .document(url: url, title: document.displayName)))
+                    }
+                }
             }
             Spacing(height: 40)
-            faqsComponent(for: quote)
         }
     }
 
     @ViewBuilder
-    func faqsComponent(for quote: Quote) -> some View {
-        if !quote.faqs.isEmpty {
+    func faqsComponent(for faqs: [FAQ]) -> some View {
+        if !faqs.isEmpty {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.changeAddressQa)
@@ -226,10 +218,9 @@ struct MovingFlowConfirm: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .sectionContainerStyle(.transparent)
-            Spacing(height: 24)
             VStack(spacing: 4) {
-                ForEach(quote.faqs, id: \.title) { faq in
-                    let id = "\(quote.id) \(faq.title)"
+                ForEach(faqs, id: \.title) { faq in
+                    let id = "\(faq.title)"
                     let index = selectedFaq.firstIndex(of: id)
                     let expanded = index != nil
                     hSection {
@@ -276,7 +267,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                //open chat
+                store.send(.navigation(action: .goToFreeTextChat))
             } content: {
                 hText(L10n.openChat, style: .body)
             }

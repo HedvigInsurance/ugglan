@@ -80,10 +80,10 @@ struct InvitationTable: View {
         if let otherDiscounts = foreverData.otherDiscounts, otherDiscounts.floatAmount > 0 {
             hRow {
                 hText(L10n.Referrals.yourOtherDiscounts)
+                Spacer()
             }
             .withCustomAccessory {
                 HStack {
-                    Spacer()
                     hText("\(otherDiscounts.negative.formattedAmount)")
                 }
             }
@@ -135,8 +135,6 @@ struct InvitationRow: View {
                 Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
                     hText(row.name).foregroundColor(hTextColorNew.primary)
-                    hText(L10n.ReferallsInviteeStates.invitedYou, style: .subheadline)
-                        .foregroundColor(row.invitedByOtherLabelColor)
                 }
             }
         }

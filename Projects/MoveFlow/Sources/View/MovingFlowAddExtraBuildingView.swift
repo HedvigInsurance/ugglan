@@ -30,7 +30,7 @@ struct MovingFlowAddExtraBuildingView: View {
                             hText(L10n.generalSaveButton)
                         }
                         hButton.LargeButton(type: .ghost) {
-
+                            vm.dissmisAddExtraBuilding()
                         } content: {
                             hText(L10n.generalCancelButton)
                         }
@@ -46,7 +46,8 @@ struct MovingFlowAddExtraBuildingView: View {
     private var typeOfBuilding: some View {
         hFloatingField(
             value: vm.buildingType?.translatedValue ?? "",
-            placeholder: L10n.changeAddressExtraBuildingContainerTitle
+            placeholder: L10n.changeAddressExtraBuildingContainerTitle,
+            error: $vm.buildingTypeError
         ) {
             vm.showTypeOfBuilding()
         }
@@ -72,6 +73,12 @@ struct MovingFlowAddExtraBuildingView: View {
                 }
             }
             .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation {
+                    vm.connectedToWater.toggle()
+                }
+            }
             .padding(.vertical, 21)
         }
     }
@@ -99,6 +106,7 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     @Published var connectedToWater = false
 
     @Published var livingAreaError: String?
+    @Published var buildingTypeError: String?
 
     init() {
         trackBuildingTypeAction()
@@ -114,30 +122,32 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     var disposeBag = DisposeBag()
     func addExtraBuilding() {
         if isValid() {
-            store.send(.addExtraBuilding(with: self.asExtraBuilding()))
+            store.houseInformationInputModel.extraBuildings.append(
+                ExtraBuilding(
+                    id: UUID().uuidString,
+                    type: buildingType!,
+                    livingArea: Int(livingArea) ?? 0,
+                    connectedToWater: connectedToWater
+                )
+            )
+            store.send(.navigation(action: .dismissAddBuilding))
         }
+    }
+
+    func dissmisAddExtraBuilding() {
+        store.send(.navigation(action: .dismissAddBuilding))
     }
 
     private func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
-        return livingAreaError == nil
+        buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
+        return livingAreaError == nil && buildingTypeError == nil
     }
 
     func showTypeOfBuilding() {
         store.send(.navigation(action: .openTypeOfBuilding(for: buildingType)))
     }
 
-}
-
-extension MovingFlowAddExtraBuildingViewModel {
-    func asExtraBuilding() -> HouseInformationModel.ExtraBuilding {
-        HouseInformationModel.ExtraBuilding(
-            id: UUID().uuidString,
-            type: buildingType ?? "",
-            livingArea: Int(livingArea) ?? 0,
-            connectedToWater: connectedToWater
-        )
-    }
 }
 
 struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {

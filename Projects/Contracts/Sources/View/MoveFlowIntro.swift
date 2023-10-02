@@ -151,7 +151,9 @@ extension MovingFlowIntro: Presentable {
                 {
                     $section.value = .existing(upcomingAgreementTable)
                 } else {
-                    if let bundle = state.contractBundles
+                    if !hAnalyticsExperiment.movingFlow {
+                        $section.value = .manual
+                    } else if let bundle = state.contractBundles
                         .first(where: { bundle in
                             bundle.movingFlowEmbarkId != nil
                         })

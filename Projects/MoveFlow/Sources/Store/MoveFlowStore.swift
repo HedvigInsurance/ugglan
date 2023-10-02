@@ -8,7 +8,8 @@ import hGraphQL
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
-
+    var addressInputModel = AddressInputModel()
+    var houseInformationInputModel = HouseInformationInputModel()
     public override func effects(
         _ getState: @escaping () -> MoveFlowState,
         _ action: MoveFlowAction
@@ -24,6 +25,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                         if let moveIntent = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
                             self.removeLoading(for: .fetchMoveIntent)
                             callback(.value(.setMoveIntent(with: .init(from: moveIntent))))
+                            self.addressInputModel.nbOfCoInsured = moveIntent.suggestedNumberCoInsured
                             callback(.end)
                         } else if let userError = data.moveIntentCreate.userError?.message {
                             self.setError(userError, for: .fetchMoveIntent)
@@ -44,7 +46,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             self.setLoading(for: .requestMoveIntent)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                let mutation = self.state.moveIntentRequestMutation()
+                let mutation = self.moveIntentRequestMutation()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue({ [weak self] value in
                         if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
@@ -65,25 +67,30 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             self.setLoading(for: .confirmMoveIntent)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                let intentId = self.state.movingFlowModel?.id ?? ""
-                let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
-                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
+                //                let intentId = self.state.movingFlowModel?.id ?? ""
+                //                let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
+                //                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
                 let minimumTime = Signal(after: 1.5).future
-                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
-                    .onValue { [weak self] mutation, minimumTime in
-                        if let data = mutation.value {
-                            if let userError = data.moveIntentCommit.userError?.message {
-                                self?.setError(userError, for: .confirmMoveIntent)
-                                callback(.end(MovingFlowError.serverError(message: userError)))
-                            } else {
-                                self?.removeLoading(for: .confirmMoveIntent)
-                                callback(.end)
-                            }
-                        } else if let _ = mutation.error {
-                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
-                        }
-                    }
+                disposeBag += minimumTime.onValue({ [weak self] _ in
+                    self?.removeLoading(for: .confirmMoveIntent)
+                    callback(.end)
+                })
+                //                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
+                //                    .onValue { [weak self] mutation, minimumTime in
+                //                        if let data = mutation.value {
+                //                            if let userError = data.moveIntentCommit.userError?.message {
+                //                                self?.setError(userError, for: .confirmMoveIntent)
+                //                                callback(.end(MovingFlowError.serverError(message: userError)))
+                //                            } else {
+                //                                self?.removeLoading(for: .confirmMoveIntent)
+                //                                callback(.end)
+                //                            }
+                //                        } else if let _ = mutation.error {
+                //                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
+                //                        }
+                //                    }
                 return disposeBag
+
             }
         default:
             return nil
@@ -94,24 +101,15 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
         var newState = state
         switch action {
         case .getMoveIntent:
-            newState.newAddressModel = NewAddressModel()
-            newState.houseInformationModel = HouseInformationModel()
+            self.addressInputModel = AddressInputModel()
+            self.houseInformationInputModel = HouseInformationInputModel()
         case let .setMoveIntent(model):
             newState.movingFromAddressModel = MovingFromAddressModel(id: model.currentHomeAddresses.first?.id ?? "")
             newState.movingFlowModel = model
         case let .setMovingFromAddress(model):
             newState.movingFromAddressModel = model
-        case let .setNewAddress(model):
-            newState.newAddressModel = model
         case let .setHousingType(housingType):
             newState.selectedHousingType = housingType
-        case let .setHouseInformation(model):
-            newState.houseInformationModel = model
-
-        case let .addExtraBuilding(model):
-            newState.houseInformationModel.extraBuildings.append(model)
-        case let .removeExtraBuilding(model):
-            newState.houseInformationModel.removeExtraBuilding(model)
         default:
             break
         }
@@ -123,14 +121,10 @@ public enum MoveFlowAction: ActionProtocol {
     case getMoveIntent
     case setMoveIntent(with: MovingFlowModel)
     case setHousingType(with: HousingType)
-    case addExtraBuilding(with: HouseInformationModel.ExtraBuilding)
-    case removeExtraBuilding(with: HouseInformationModel.ExtraBuilding)
     case setExtraBuildingType(with: ExtraBuildingType)
     case requestMoveIntent
 
     case setMovingFromAddress(with: MovingFromAddressModel)
-    case setNewAddress(with: NewAddressModel)
-    case setHouseInformation(with: HouseInformationModel)
 
     case confirmMoveIntent
     case navigation(action: MoveFlowNavigationAction)
@@ -140,6 +134,7 @@ public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
     case openAddressFillScreen
     case openHouseFillScreen
     case openAddBuilding
+    case dismissAddBuilding
     case openConfirmScreen
     case openProcessingView
     case openFailureScreen(error: String)
@@ -147,6 +142,7 @@ public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
     case dismissTypeOfBuilding
     case goToFreeTextChat
     case dismissMovingFlow
+    case document(url: URL, title: String)
     case goBack
 }
 
@@ -162,15 +158,12 @@ public struct MoveFlowState: StateProtocol {
     @Transient(defaultValue: .apartmant) var selectedHousingType: HousingType
     @OptionalTransient var movingFlowModel: MovingFlowModel?
     @OptionalTransient var movingFromAddressModel: MovingFromAddressModel?
-    @Transient(defaultValue: NewAddressModel()) var newAddressModel: NewAddressModel
-    @Transient(defaultValue: HouseInformationModel()) var houseInformationModel: HouseInformationModel
-
 }
 
-extension MoveFlowState {
+extension MoveFlowStore {
     func moveIntentRequestMutation() -> OctopusGraphQL.MoveIntentRequestMutation {
         OctopusGraphQL.MoveIntentRequestMutation(
-            intentId: movingFlowModel?.id ?? "",
+            intentId: state.movingFlowModel?.id ?? "",
             input: moveIntentRequestInput()
         )
     }
@@ -178,24 +171,24 @@ extension MoveFlowState {
     private func moveIntentRequestInput() -> OctopusGraphQL.MoveIntentRequestInput {
         OctopusGraphQL.MoveIntentRequestInput(
             moveToAddress: .init(
-                street: newAddressModel.address,
-                postalCode: newAddressModel.postalCode
+                street: addressInputModel.address,
+                postalCode: addressInputModel.postalCode
             ),
-            moveFromAddressId: movingFromAddressModel?.id ?? "",
-            movingDate: newAddressModel.movingDate,
-            numberCoInsured: newAddressModel.numberOfCoinsured,
-            squareMeters: newAddressModel.numberOfCoinsured,
+            moveFromAddressId: state.movingFromAddressModel?.id ?? "",
+            movingDate: addressInputModel.accessDate?.localDateString ?? "",
+            numberCoInsured: addressInputModel.nbOfCoInsured,
+            squareMeters: Int(addressInputModel.squareArea) ?? 0,
             apartment: apartmentInput(),
             house: houseInput()
         )
     }
 
     private func apartmentInput() -> OctopusGraphQL.MoveToApartmentInput? {
-        switch selectedHousingType {
+        switch state.selectedHousingType {
         case .apartmant, .rental:
             return OctopusGraphQL.MoveToApartmentInput(
-                subType: selectedHousingType.asMoveApartmentSubType,
-                isStudent: newAddressModel.isStudent
+                subType: state.selectedHousingType.asMoveApartmentSubType,
+                isStudent: addressInputModel.isStudent
             )
         case .house:
             return nil
@@ -203,16 +196,16 @@ extension MoveFlowState {
     }
 
     private func houseInput() -> OctopusGraphQL.MoveToHouseInput? {
-        switch selectedHousingType {
+        switch state.selectedHousingType {
         case .apartmant, .rental:
             return nil
         case .house:
             return OctopusGraphQL.MoveToHouseInput(
-                ancillaryArea: houseInformationModel.ancillaryArea,
-                yearOfConstruction: houseInformationModel.yearOfConstruction,
-                numberOfBathrooms: houseInformationModel.numberOfBathrooms,
-                isSubleted: houseInformationModel.isSubleted,
-                extraBuildings: houseInformationModel.extraBuildings.map({
+                ancillaryArea: Int(houseInformationInputModel.ancillaryArea) ?? 0,
+                yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
+                numberOfBathrooms: houseInformationInputModel.bathrooms,
+                isSubleted: houseInformationInputModel.isSubleted,
+                extraBuildings: houseInformationInputModel.extraBuildings.map({
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: $0.livingArea,
                         type: OctopusGraphQL.MoveExtraBuildingType(rawValue: $0.type) ?? .garage,

@@ -184,32 +184,27 @@ public struct hForm<Content: View>: View {
 
     func recalculateHeight() {
         let maxContentHeight =
-            scrollViewHeight - bottomAttachedViewHeight - (UIApplication.shared.safeArea?.bottom ?? 0)
+            scrollViewHeight - bottomAttachedViewHeight
         if contentHeight <= maxContentHeight {
             self.additionalSpaceFromTop = {
                 switch contentPosition {
                 case .top: return 0
                 case .center: return (maxContentHeight - contentHeight) / 2
-                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight - 16
+                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
                 }
             }()
         } else {
             additionalSpaceFromTop = 0
         }
+
         if mergeBottomWithContentIfNeeded {
             let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight - 16 < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
 
-        //        print("VALUE IS: \(scrollViewHeight) - \(maxContentHeight) - \(contentHeight)")
-        //        if let hFormTitle, contentPosition != .bottom  {
-        //            let diff = scrollViewHeight - bottomAttachedViewHeight - contentHeight
-        //            if shouldIgnoreTitleMargins && diff > hFormTitle.0.topMargin + hFormTitle.0.bottomMargin + 50 {
-        //                shouldIgnoreTitleMargins = false
-        //            } else if !shouldIgnoreTitleMargins && diff < 20 {
-        //                shouldIgnoreTitleMargins = true
-        //            }
+        //        if contentPosition != .bottom {
+        //            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
         //        }
     }
 }

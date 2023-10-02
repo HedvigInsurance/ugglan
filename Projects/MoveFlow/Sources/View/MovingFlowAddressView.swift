@@ -5,32 +5,33 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowNewAddressView: View {
-    @StateObject var vm = MovingFlowNewAddressViewModel()
+struct MovingFlowAddressView: View {
+    @StateObject var vm: AddressInputModel
 
     var body: some View {
         hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 4) {
                     hSection {
-                        addressField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                        addressField()
                     }
                     hSection {
-                        postalAndSquareField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                        postalAndSquareField()
                     }
                     hSection {
-                        numberOfCoinsuredField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                        numberOfCoinsuredField()
                     }
                     hSection {
-                        accessDateField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                        accessDateField()
                     }
-                    if vm.store.state.selectedHousingType.isStudentEnabled {
+                    if vm.isStudentEnabled {
                         hSection {
-                            isStudentField().disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                            isStudentField()
                         }
                         .sectionContainerStyle(.opaque)
                     }
                 }
+                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                 hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 }
@@ -38,7 +39,7 @@ struct MovingFlowNewAddressView: View {
                     hButton.LargeButton(type: .primary) {
                         vm.continuePressed()
                     } content: {
-                        hText(L10n.General.submit, style: .body)
+                        hText(vm.continueButtonTitle, style: .body)
                     }
                     .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
@@ -50,7 +51,11 @@ struct MovingFlowNewAddressView: View {
         }
         .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
         .sectionContainerStyle(.transparent)
-        //        .hFormContentPosition(.bottom)
+        .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+        .presentableStoreLensAnimation(.default)
+        .onDisappear {
+            vm.clearErrors()
+        }
     }
 
     func addressField() -> some View {
@@ -90,12 +95,13 @@ struct MovingFlowNewAddressView: View {
         hCounterField(
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
-            minValue: 1,
-            maxValue: 6
+            minValue: 0,
+            maxValue: (vm.store.state.movingFlowModel?.maxNumberOfConsuredFor(vm.store.state.selectedHousingType) ?? 5)
+                + 1
         ) { value in
             vm.type = .nbOfCoInsured
-            if value > 1 {
-                return L10n.changeAddressYouPlus(value - 1)
+            if value > 0 {
+                return L10n.changeAddressYouPlus(value)
             } else {
                 return L10n.changeAddressOnlyYou
             }
@@ -145,11 +151,11 @@ struct MovingFlowNewAddressView: View {
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return VStack { MovingFlowNewAddressView() }
+        return VStack { MovingFlowAddressView(vm: AddressInputModel()) }
     }
 }
 
-enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant {
+enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     static var last: MovingFlowNewAddressViewFieldType {
         return MovingFlowNewAddressViewFieldType.accessDate
     }
@@ -177,12 +183,11 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant {
 
 }
 
-class MovingFlowNewAddressViewModel: ObservableObject {
-    @Published var type: MovingFlowNewAddressViewFieldType?
+class AddressInputModel: ObservableObject {
     @Published var address: String = ""
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""
-    @Published var nbOfCoInsured: Int = 1
+    @Published var nbOfCoInsured: Int = 0
     @Published var accessDate: Date?
     @Published var isStudent = false
 
@@ -191,32 +196,16 @@ class MovingFlowNewAddressViewModel: ObservableObject {
     @Published var squareAreaError: String?
     @Published var accessDateError: String?
 
+    @Published var type: MovingFlowNewAddressViewFieldType?
+
     @PresentableStore var store: MoveFlowStore
 
-    init() {
-        setupInitValues()
-    }
-
-    private func setupInitValues() {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        self.address = store.state.newAddressModel.address
-        self.postalCode = store.state.newAddressModel.postalCode
-        let size = store.state.newAddressModel.squareMeters
-        if size > 0 {
-            self.squareArea = String(size)
-        }
-        self.nbOfCoInsured = max(
-            store.state.newAddressModel.numberOfCoinsured,
-            store.state.movingFlowModel?.numberCoInsured ?? 1
-        )
-        self.accessDate = store.state.newAddressModel.movingDate.localDateToDate
-        self.isStudent = store.state.newAddressModel.isStudent
-    }
-
+    @Published var error: String?
     var disposeBag = DisposeBag()
+    init() {}
+
     func continuePressed() {
         if isInputValid() {
-            store.send(.setNewAddress(with: self.toNewAddressModel()))
             switch store.state.selectedHousingType {
             case .apartmant, .rental:
                 store.send(.requestMoveIntent)
@@ -231,24 +220,54 @@ class MovingFlowNewAddressViewModel: ObservableObject {
             withAnimation {
                 addressError = !address.isEmpty ? nil : L10n.changeAddressStreetError
                 postalCodeError = !postalCode.isEmpty ? nil : L10n.changeAddressPostalCodeError
-                squareAreaError = !squareArea.isEmpty ? nil : L10n.changeAddressLivingSpaceError
+                validateSquareArea()
                 accessDateError = accessDate?.localDateString != nil ? nil : L10n.changeAddressMovingDateError
                 return addressError == nil && postalCodeError == nil && squareAreaError == nil && accessDateError == nil
             }
         }
         return validate()
     }
-}
 
-extension MovingFlowNewAddressViewModel {
-    func toNewAddressModel() -> NewAddressModel {
-        NewAddressModel(
-            address: self.address,
-            postalCode: self.postalCode,
-            movingDate: accessDate?.localDateString ?? "",
-            numberOfCoinsured: nbOfCoInsured,
-            squareMeters: Int(squareArea) ?? 0,
-            isStudent: isStudent
-        )
+    private func validateSquareArea() {
+        squareAreaError = !squareArea.isEmpty ? nil : L10n.changeAddressLivingSpaceError
+        if let size = Int(squareArea) {
+            let sizeToCompare: Int? = {
+                switch store.state.selectedHousingType {
+                case .apartmant, .rental:
+                    return store.state.movingFlowModel?.maxApartmentSquareMeters
+                case .house:
+                    return store.state.movingFlowModel?.maxHouseSquareMeters
+                }
+            }()
+            if let sizeToCompare {
+                squareAreaError = size < sizeToCompare ? nil : "Too much living space"
+            }
+        }
+    }
+
+    func clearErrors() {
+        error = nil
+        addressError = nil
+        postalCodeError = nil
+        squareAreaError = nil
+        accessDateError = nil
+    }
+
+    var isStudentEnabled: Bool {
+        switch store.state.selectedHousingType {
+        case .apartmant, .rental:
+            return store.state.movingFlowModel?.isApartmentAvailableforStudent ?? false
+        case .house:
+            return false
+        }
+    }
+
+    var continueButtonTitle: String {
+        switch store.state.selectedHousingType {
+        case .apartmant, .rental:
+            return L10n.General.submit
+        case .house:
+            return L10n.generalContinueButton
+        }
     }
 }

@@ -30,11 +30,7 @@ extension AppJourney {
             ) { result in
                 switch result {
                 case .startMovingFlow:
-                    if hAnalyticsExperiment.movingFlowClient {
-                        AppJourney.movingFlow()
-                    } else {
-                        AppJourney.movingFlowEmbark
-                    }
+                    AppJourney.movingFlow()
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
@@ -68,18 +64,13 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .configureMoveFlowNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
         Contracts.journey { result in
             switch result {
             case .movingFlow:
-                if hAnalyticsExperiment.movingFlowClient {
-                    AppJourney.movingFlow()
-                } else {
-                    AppJourney.movingFlowEmbark
-                }
+                AppJourney.movingFlow()
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
@@ -257,16 +248,6 @@ extension JourneyPresentation {
                 }
             }
         )
-    }
-
-    public var configureMoveFlowNavigation: some JourneyPresentation {
-        onAction(MoveFlowStore.self) { action in
-            if case let .navigation(navigationAction) = action {
-                if case .goToFreeTextChat = navigationAction {
-                    AppJourney.freeTextChat().withDismissButton
-                }
-            }
-        }
     }
 
     public var configurePaymentNavigation: some JourneyPresentation {

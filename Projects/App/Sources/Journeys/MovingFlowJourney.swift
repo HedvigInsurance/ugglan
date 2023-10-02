@@ -34,7 +34,12 @@ extension AppJourney {
 
     @JourneyBuilder
     static func movingFlow() -> some JourneyPresentation {
-        MovingFlowJourneyNew.startMovingFlow()
+        MovingFlowJourneyNew.startMovingFlow { redirectType in
+            switch redirectType {
+            case .chat:
+                AppJourney.freeTextChat().withDismissButton
+            }
+        }
     }
 
     static var movingFlowEmbark: some JourneyPresentation {

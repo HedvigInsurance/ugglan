@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowHouseView: View {
-    @StateObject var vm = MovingFlowHouseViewModel()
+    @StateObject var vm: HouseInformationInputModel
 
     var body: some View {
         hForm {
@@ -40,7 +40,11 @@ struct MovingFlowHouseView: View {
         }
         .hFormTitle(.standard, .title1, L10n.changeAddressInformationAboutYourHouse)
         .sectionContainerStyle(.transparent)
-        //        .hFormContentPosition(.bottom)
+        .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+        .presentableStoreLensAnimation(.default)
+        .onDisappear {
+            vm.clearErrors()
+        }
     }
 
     private var yearOfConstructionField: some View {
@@ -75,8 +79,9 @@ struct MovingFlowHouseView: View {
             hCounterField(
                 value: $vm.bathrooms,
                 placeholder: L10n.changeAddressBathroomsLabel,
-                minValue: 0,
-                maxValue: 10
+                minValue: 1,
+                maxValue: 10,
+                error: $vm.bathroomsError
             ) { value in
                 vm.type = nil
                 if value == 0 {
@@ -91,62 +96,55 @@ struct MovingFlowHouseView: View {
     }
 
     private var extraBuildingTypes: some View {
-        PresentableStoreLens(
-            MoveFlowStore.self,
-            getter: { state in
-                state.houseInformationModel.extraBuildings
-            }
-        ) { extraBuildings in
-            hSection {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
+        hSection {
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
 
-                    ForEach(Array(extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 0) {
-                                hText(extraBuilding.type.translatedValue, style: .standard)
-                                HStack(spacing: 0) {
-                                    hText(extraBuilding.descriptionText, style: .standardSmall)
-                                        .foregroundColor(hTextColorNew.secondary)
-                                }
+                ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 0) {
+                            hText(extraBuilding.type.translatedValue, style: .standard)
+                            HStack(spacing: 0) {
+                                hText(extraBuilding.descriptionText, style: .standardSmall)
+                                    .foregroundColor(hTextColorNew.secondary)
                             }
-                            Spacer()
-                            Button {
+                        }
+                        Spacer()
+                        Button {
+                            withAnimation {
                                 vm.remove(extraBuilding: extraBuilding)
-                            } label: {
-                                Image(uiImage: hCoreUIAssets.closeSmall.image)
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColorNew.primary)
                             }
-                        }
-                        .padding(.vertical, 13)
-                        if offset + 1 < extraBuildings.count {
-                            Divider()
-                        }
-                    }
-                    hButton.MediumButton(type: .primaryAlt) {
-                        vm.addExtraBuilding()
-                    } content: {
-                        HStack {
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.closeSmall.image)
                                 .resizable()
                                 .frame(width: 16, height: 16)
-                            hText(L10n.changeAddressAddBuilding)
+                                .foregroundColor(hTextColorNew.primary)
                         }
                     }
-                    .padding(.top, 8)
-
+                    .padding(.vertical, 13)
+                    if offset + 1 < vm.extraBuildings.count {
+                        Divider()
+                    }
                 }
-                .padding(.top, 12)
-                .padding(.bottom, 16)
-                .padding(.horizontal, 16)
-            }
-            .sectionContainerStyle(.opaque)
-            .padding(.top, 6)
+                hButton.MediumButton(type: .primaryAlt) {
+                    vm.addExtraBuilding()
+                } content: {
+                    HStack {
+                        Image(uiImage: hCoreUIAssets.plusSmall.image)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                        hText(L10n.changeAddressAddBuilding)
+                    }
+                }
+                .padding(.top, 8)
 
+            }
+            .padding(.top, 12)
+            .padding(.bottom, 16)
+            .padding(.horizontal, 16)
         }
-        .presentableStoreLensAnimation(.default)
+        .sectionContainerStyle(.opaque)
+        .padding(.top, 6)
     }
 
     private var isSubleted: some View {
@@ -174,7 +172,7 @@ struct MovingFlowHouseView: View {
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .nb_NO
-        return MovingFlowHouseView()
+        return MovingFlowHouseView(vm: HouseInformationInputModel())
     }
 }
 
@@ -200,41 +198,24 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 
 }
 
-class MovingFlowHouseViewModel: ObservableObject {
+public typealias ExtraBuildingType = String
+class HouseInformationInputModel: ObservableObject {
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""
-    @Published var bathrooms: Int = 0
+    @Published var bathrooms: Int = 1
     @Published var isSubleted = false
     @Published var yearOfConstructionError: String?
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
+    @Published var extraBuildings: [ExtraBuilding] = []
 
     @PresentableStore var store: MoveFlowStore
-    var disposeBag = DisposeBag()
-
-    init() {
-        setupInitValues()
-    }
-
-    private func setupInitValues() {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        let houseInfoModel = store.state.houseInformationModel
-        let yearOfConstruction = houseInfoModel.yearOfConstruction
-        if yearOfConstruction > 0 {
-            self.yearOfConstruction = String(yearOfConstruction)
-        }
-        let ancillaryArea = houseInfoModel.ancillaryArea
-        if ancillaryArea > 0 {
-            self.ancillaryArea = String(ancillaryArea)
-        }
-        bathrooms = houseInfoModel.numberOfBathrooms
-        isSubleted = houseInfoModel.isSubleted
-    }
+    @Published var error: String?
+    init() {}
 
     func continuePressed() {
         if isInputValid() {
-            store.send(.setHouseInformation(with: self.toHouseInformationModel()))
             store.send(.requestMoveIntent)
         }
     }
@@ -258,22 +239,39 @@ class MovingFlowHouseViewModel: ObservableObject {
         }
     }
 
-    func remove(extraBuilding: HouseInformationModel.ExtraBuilding) {
+    func remove(extraBuilding: ExtraBuilding) {
         UIApplication.dismissKeyboard()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            self?.store.send(.removeExtraBuilding(with: extraBuilding))
-        }
+        extraBuildings.removeAll(where: { $0.id == extraBuilding.id })
+    }
+
+    func clearErrors() {
+        error = nil
+        yearOfConstructionError = nil
+        ancillaryAreaError = nil
+        bathroomsError = nil
     }
 }
 
-extension MovingFlowHouseViewModel {
-    func toHouseInformationModel() -> HouseInformationModel {
-        HouseInformationModel(
-            yearOfConstruction: Int(self.yearOfConstruction) ?? 0,
-            ancillaryArea: Int(self.ancillaryArea) ?? 0,
-            numberOfBathrooms: self.bathrooms,
-            isSubleted: isSubleted,
-            extraBuildings: store.state.houseInformationModel.extraBuildings
-        )
+struct ExtraBuilding: Identifiable {
+    let id: String
+    let type: ExtraBuildingType
+    let livingArea: Int
+    let connectedToWater: Bool
+
+    var descriptionText: String {
+        var elements: [String] = []
+        elements.append("\(self.livingArea) \(L10n.changeAddressSizeSuffix)")
+        if connectedToWater {
+            elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
+        }
+        return elements.joined(separator: " ∙ ")
+    }
+}
+
+extension ExtraBuildingType {
+    var translatedValue: String {
+        let key = "FIELD_EXTRA_BUIDLINGS_\(self.uppercased())_LABEL"
+        let translatedValue = L10nDerivation.init(table: "", key: key, args: []).render()
+        return key == translatedValue ? self : translatedValue
     }
 }
