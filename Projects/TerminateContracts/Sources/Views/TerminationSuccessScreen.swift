@@ -46,7 +46,6 @@ struct TerminationSuccessScreen: View {
 
             } content: {
                 hText(L10n.terminationOpenSurveyLabel, style: .body)
-                    .foregroundColor(hTextColor.primary.inverted)
             }
             .frame(maxWidth: .infinity, alignment: .bottom)
             .padding([.leading, .trailing], 16)

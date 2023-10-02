@@ -39,7 +39,7 @@ struct PlanRowContent: View {
 
     @hColorBuilder var discountForegroundColor: some hColor {
         if !selected {
-            hTextColor.primary.inverted
+            hTextColor.negative
         } else {
             hTextColor.primary
         }

@@ -40,7 +40,6 @@ struct TerminationFailScreen: View {
                     store.send(.goToFreeTextChat)
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)
-                        .foregroundColor(hTextColor.primary.inverted)
                 }
                 .padding(.bottom, 2)
             }

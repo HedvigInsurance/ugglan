@@ -69,7 +69,6 @@ struct TerminationDeleteScreen: View {
                         onSelected()
                     } content: {
                         hText(L10n.terminationContractDeletionConfirmButton, style: .body)
-                            .foregroundColor(hTextColor.primary.inverted)
                     }
                     .padding(.bottom, 2)
                 }

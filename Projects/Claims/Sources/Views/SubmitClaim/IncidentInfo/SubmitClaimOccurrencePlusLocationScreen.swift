@@ -83,7 +83,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)
-                .foregroundColor(hTextColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
         .padding([.leading, .trailing], 16)

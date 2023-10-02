@@ -51,7 +51,6 @@ struct AskForPushnotifications: View {
                     })
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
-                        .foregroundColor(hTextColor.primary.inverted)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
 

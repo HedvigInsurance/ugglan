@@ -44,7 +44,6 @@ public struct UpdateAppScreenOld: View {
                     onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hTextColor.primary.inverted)
                 }
                 .padding(.bottom, 2)
             }
