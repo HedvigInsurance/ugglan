@@ -1,7 +1,7 @@
 import Foundation
+import SwiftUI
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 public struct CrossSell: Codable, Equatable, Hashable {
     public var typeOfContract: String

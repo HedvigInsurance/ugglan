@@ -23,27 +23,27 @@ public class EmbarkState {
     let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
     var quoteCartId: String = ""
-    
+
     public init() {
         defer {
             startAPIPassageHandling()
         }
     }
-    
+
     enum AnimationDirection {
         case forwards
         case backwards
     }
-    
+
     let animationDirectionSignal = ReadWriteSignal<AnimationDirection>(.forwards)
     var canGoBackSignal: ReadSignal<Bool> { passageHistorySignal.map { !$0.isEmpty } }
-    
+
     var passageNameSignal: ReadSignal<String?> { currentPassageSignal.map { $0?.name } }
-    
+
     var passageTooltipsSignal: ReadSignal<[Tooltip]> { currentPassageSignal.map { $0?.tooltips ?? [] } }
-    
+
     var isApiLoadingSignal = ReadWriteSignal(false)
-    
+
     func restart() {
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
@@ -52,7 +52,7 @@ public class EmbarkState {
         passageHistorySignal.value = []
         store = EmbarkStore()
         store.computedValues =
-        storySignal.value?.computedStoreValues?
+            storySignal.value?.computedStoreValues?
             .reduce([:]) { (prev, computedValue) -> [String: String] in
                 var computedValues: [String: String] = prev
                 computedValues[computedValue.key] = computedValue.value
@@ -61,16 +61,16 @@ public class EmbarkState {
         store.setValue(key: "quoteCartId", value: quoteCartId)
         store.createRevision()
     }
-    
+
     func startAPIPassageHandling() {
         bag += currentPassageSignal.compactMap { $0 }
             .mapLatestToFuture { passage -> Future<GiraffeGraphQL.EmbarkLinkFragment?> in
                 guard let apiFragment = passage.api?.fragments.apiFragment else {
                     return Future(error: ApiError.noApi)
                 }
-                
+
                 self.isApiLoadingSignal.value = true
-                
+
                 return self.handleApi(apiFragment: apiFragment)
             }
             .providedSignal.plain().readable(initial: nil).delay(by: 0.5)
@@ -79,7 +79,7 @@ public class EmbarkState {
                 self.goTo(passageName: link.name, pushHistoryEntry: false)
             })
     }
-    
+
     func goBack() {
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passageHistorySignal.value.last
@@ -89,19 +89,19 @@ public class EmbarkState {
         store.removeLastRevision()
         self.isApiLoadingSignal.value = false
     }
-    
+
     func goTo(passageName: String, pushHistoryEntry: Bool = true) {
         animationDirectionSignal.value = .forwards
         store.createRevision()
-        
+
         if let newPassage = passagesSignal.value.first(where: { passage -> Bool in passage.name == passageName }
         ) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
-            
+
             if let resultingPassage = currentPassageSignal.value, pushHistoryEntry {
                 passageHistorySignal.value.append(resultingPassage)
             }
-            
+
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
@@ -122,7 +122,7 @@ public class EmbarkState {
             }
         }
     }
-    
+
     private func handleRedirects(
         passage: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
     ) -> GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
@@ -133,7 +133,7 @@ public class EmbarkState {
         else {
             return nil
         }
-        
+
         if let binary = passingRedirect.asEmbarkRedirectBinaryExpression {
             store.setValue(key: binary.passedExpressionKey, value: binary.passedExpressionValue)
         } else if let unary = passingRedirect.asEmbarkRedirectUnaryExpression {
@@ -141,64 +141,64 @@ public class EmbarkState {
         } else if let multiple = passingRedirect.asEmbarkRedirectMultipleExpressions {
             store.setValue(key: multiple.passedExpressionKey, value: multiple.passedExpressionValue)
         }
-        
+
         return passagesSignal.value.first(where: { passage -> Bool in
             passage.name == store.shouldRedirectTo(redirect: passingRedirect)
         })
     }
-    
+
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)
-    
+
     var progressSignal: ReadSignal<Float> {
         func findMaxDepth(passageName: String, previousDepth: Int = 0, visitedPassages: [String] = []) -> Int {
             if visitedPassages.contains(passageName) {
                 return previousDepth
             }
-            
+
             guard let passage = passagesSignal.value.first(where: { $0.name == passageName }) else {
                 return previousDepth
             }
-            
+
             let links = passage.allLinks
                 .filter { !$0.hidden }
                 .map { $0.name }
-            
+
             if links.isEmpty { return previousDepth }
-            
+
             let depth =
-            links.map { linkPassageName in
-                findMaxDepth(
-                    passageName: linkPassageName,
-                    previousDepth: previousDepth + 1,
-                    visitedPassages: [visitedPassages, [passageName]].flatMap { $0 }
-                )
-            }
-            .reduce(0) { result, current in max(result, current) }
-            
+                links.map { linkPassageName in
+                    findMaxDepth(
+                        passageName: linkPassageName,
+                        previousDepth: previousDepth + 1,
+                        visitedPassages: [visitedPassages, [passageName]].flatMap { $0 }
+                    )
+                }
+                .reduce(0) { result, current in max(result, current) }
+
             return depth
         }
-        
+
         return
-        currentPassageSignal.map { currentPassage in
-            guard let currentPassage = currentPassage else { return 0 }
-            
-            let passagesLeft = currentPassage.allLinks.map { findMaxDepth(passageName: $0.name) }
-                .reduce(0) { result, current in max(result, current) }
-            
-            if self.totalStepsSignal.value == nil { self.totalStepsSignal.value = passagesLeft }
-            
-            guard let totalSteps = self.totalStepsSignal.value else { return 0 }
-            
-            if totalSteps == 0 || self.passageHistorySignal.value.isEmpty {
-                return 0
+            currentPassageSignal.map { currentPassage in
+                guard let currentPassage = currentPassage else { return 0 }
+
+                let passagesLeft = currentPassage.allLinks.map { findMaxDepth(passageName: $0.name) }
+                    .reduce(0) { result, current in max(result, current) }
+
+                if self.totalStepsSignal.value == nil { self.totalStepsSignal.value = passagesLeft }
+
+                guard let totalSteps = self.totalStepsSignal.value else { return 0 }
+
+                if totalSteps == 0 || self.passageHistorySignal.value.isEmpty {
+                    return 0
+                }
+
+                return (Float(totalSteps - passagesLeft) / Float(totalSteps))
             }
-            
-            return (Float(totalSteps - passagesLeft) / Float(totalSteps))
-        }
-        .latestTwo()
-        .delay { lhs, rhs -> TimeInterval? in if lhs > rhs { return 0 }
-            return 0.25
-        }
-        .map { _, rhs in rhs }.readable(initial: 0)
+            .latestTwo()
+            .delay { lhs, rhs -> TimeInterval? in if lhs > rhs { return 0 }
+                return 0.25
+            }
+            .map { _, rhs in rhs }.readable(initial: 0)
     }
 }

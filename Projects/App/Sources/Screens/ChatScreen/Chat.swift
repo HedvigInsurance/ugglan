@@ -31,7 +31,7 @@ enum ChatResult {
     case loggedIn
     case login
     case notifications(dismissed: () -> Void)
-    
+
     var journey: some JourneyPresentation {
         GroupJourney {
             switch self {
