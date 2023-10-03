@@ -1,0 +1,86 @@
+query Contract($contractId: UUID!) {
+  contract(id: $contractId) {
+    id
+    variant {
+      termsVersion
+      typeOfContract
+      partner
+      perils {
+        id
+        title
+        description
+        info
+        shortDescription
+        covered
+        exceptions
+        colorCode
+      }
+      insurableLimits {
+        label
+        limit
+        description
+        type
+      }
+      documents {
+        displayName
+        url
+        type
+      }
+      highlights {
+        title
+        description
+      }
+      faq {
+        headline
+        body
+      }
+      displayName
+    }
+    externalInsuranceCancellation {
+      id
+      externalInsurer {
+        id
+        displayName
+        insurelyId
+      }
+      status
+      type
+      bankSignering {
+        approveByDate
+        url
+      }
+    }
+    masterInceptionDate
+    terminationDate
+    exposureDisplayName
+    currentAgreement {
+      activeFrom
+      activeTo
+      premium {
+        amount
+        currencyCode
+      }
+      certificateUrl
+      productVariant {
+        termsVersion
+        typeOfContract
+        partner
+        displayName
+      }
+      displayItems {
+        displayTitle
+        displayValue
+      }
+    }
+    upcomingChangedAgreement {
+      activeFrom
+      activeTo
+      certificateUrl
+    }
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
+    }
+    supportsAddressChange
+  }
+}
