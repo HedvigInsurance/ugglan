@@ -48,3 +48,17 @@ public struct InsurableLimitsSectionView: View {
         .sectionContainerStyle(.transparent)
     }
 }
+
+public struct InsurableLimits: Codable, Hashable {
+    public let label: String
+    public let limit: String
+    public let description: String
+
+    public init(
+        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
+    ) {
+        label = data.label
+        limit = data.limit
+        description = data.description
+    }
+}

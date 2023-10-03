@@ -2,6 +2,7 @@ import CoreGraphics
 import Flow
 import UIKit
 import hGraphQL
+import hCore
 
 extension GradientView {
     public struct GradientOption: Equatable {
@@ -16,7 +17,7 @@ extension GradientView {
         }
 
         public init(
-            gradientOption: Contract.PillowType,
+            gradientOption: PillowType,
             shouldShimmer: Bool = true,
             shouldAnimate: Bool = true
         ) {
@@ -130,7 +131,7 @@ extension GradientView {
     }
 }
 
-extension Contract.PillowType {
+extension PillowType {
     public var preset: GradientView.Preset {
         switch self {
         case .accident:

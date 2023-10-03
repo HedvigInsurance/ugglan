@@ -94,14 +94,14 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if (contract?.currentAgreement?.activeTo) == nil {
+                if (contract?.terminationDate) != nil {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,
                             .startTermination,
                             buttonAction: {
                                 terminationContractStore.send(
-                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                    .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
                                 )
                                 vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
                                     if case let .navigationAction(navigationAction) = action {

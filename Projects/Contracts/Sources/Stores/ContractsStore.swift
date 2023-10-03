@@ -56,8 +56,10 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+//                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
+//                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    .fetchContracts(contractId: "")
                     .onValue { contracts in
                         if getState().contracts != contracts {
                             callback(.value(.setContracts(contracts: contracts)))

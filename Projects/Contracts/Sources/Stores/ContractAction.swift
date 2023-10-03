@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import TerminateContracts
 import hCore
+import hCoreUI
 import hGraphQL
 
 public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
@@ -70,9 +71,9 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = [.changeAddress]
-        if contract.canChangeCoInsured {
-            editTypes.append(.coInsured)
-        }
+//        if contract.canChangeCoInsured {
+//            editTypes.append(.coInsured)
+//        }
         return editTypes
     }
 }

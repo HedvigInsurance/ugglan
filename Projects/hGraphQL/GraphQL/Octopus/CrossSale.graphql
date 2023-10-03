@@ -4,18 +4,20 @@ query CrossSells {
   }
 }
 
-
 fragment ProductVariantFragment on ProductVariant {
     perils {
-        colorCode
-        covered
-        description
-        exceptions
         id
-        info
         title
+        description
+        info
+        shortDescription
+        covered
+        exceptions
+        colorCode
     }
     typeOfContract
+    termsVersion
+    partner
     documents {
         displayName
         type

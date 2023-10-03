@@ -34,7 +34,7 @@ enum Documents: CaseIterable {
     func url(from contract: Contract) -> URL? {
         switch self {
         case .certificate:
-            return URL(string: contract.currentAgreement?.certificateUrl)
+            return URL(string: contract.currentAgreement.certificateUrl)
         case .terms:
             return URL(string: contract.termsAndConditions.url)
         }

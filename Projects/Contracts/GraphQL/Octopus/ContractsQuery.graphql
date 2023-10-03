@@ -1,86 +1,57 @@
 query Contract($contractId: UUID!) {
   contract(id: $contractId) {
-    id
-    variant {
-      termsVersion
-      typeOfContract
-      partner
-      perils {
-        id
-        title
-        description
-        info
-        shortDescription
-        covered
-        exceptions
-        colorCode
-      }
-      insurableLimits {
-        label
-        limit
-        description
-        type
-      }
-      documents {
-        displayName
-        url
-        type
-      }
-      highlights {
-        title
-        description
-      }
-      faq {
-        headline
-        body
-      }
-      displayName
+    currentAgreement {
+        ...AgreementFragment
     }
+    exposureDisplayName
     externalInsuranceCancellation {
-      id
-      externalInsurer {
-        id
-        displayName
-        insurelyId
-      }
-      status
-      type
-      bankSignering {
+        ...ContractExternalInsuranceCancellationFragment
+    }
+    id
+    masterInceptionDate
+    supportsAddressChange
+    terminationDate
+    upcomingChangedAgreement {
+        ...AgreementFragment
+    }
+    upcomingRenewal {
+      draftCertificateUrl
+      renewalDate
+    }
+  }
+}
+
+fragment AgreementFragment on Agreement {
+    activeFrom
+    activeTo
+    certificateUrl
+    displayItems {
+        ...AgreementDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+    displayTitle
+    displayValue
+}
+
+fragment ContractExternalInsuranceCancellationFragment on ContractExternalInsuranceCancellation {
+    bankSignering {
         approveByDate
         url
       }
-    }
-    masterInceptionDate
-    terminationDate
-    exposureDisplayName
-    currentAgreement {
-      activeFrom
-      activeTo
-      premium {
-        amount
-        currencyCode
-      }
-      certificateUrl
-      productVariant {
-        termsVersion
-        typeOfContract
-        partner
+    externalInsurer {
         displayName
+        id
+        insurelyId
       }
-      displayItems {
-        displayTitle
-        displayValue
-      }
-    }
-    upcomingChangedAgreement {
-      activeFrom
-      activeTo
-      certificateUrl
-    }
-    upcomingRenewal {
-      renewalDate
-      draftCertificateUrl
-    }
-    supportsAddressChange
-  }
+    id
+    status
+    type
 }
