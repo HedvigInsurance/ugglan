@@ -1,7 +1,7 @@
 import Foundation
+import hCore
 import hCoreUI
 import hGraphQL
-import hCore
 
 public struct ActiveContractBundle: Codable, Equatable, Hashable {
     public var contracts: [Contract]

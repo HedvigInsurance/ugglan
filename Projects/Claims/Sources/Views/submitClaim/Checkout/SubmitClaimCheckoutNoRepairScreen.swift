@@ -169,7 +169,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .padding(.bottom, 4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-//                .background(hBackgroundColor.tertiary)
+                //                .background(hBackgroundColor.tertiary)
                 .cornerRadius(.defaultCornerRadius)
                 .padding(.bottom, 8)
             }

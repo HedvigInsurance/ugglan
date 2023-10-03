@@ -1,4 +1,5 @@
 import hGraphQL
+
 public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
     public init(
         sections: [DetailAgreementsTable.Section],

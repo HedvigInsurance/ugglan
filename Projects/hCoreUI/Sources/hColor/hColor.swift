@@ -264,7 +264,7 @@ public struct hBackgroundColor {
     public static var primary: some hColor {
         hGrayscaleColor.greyScale25
     }
-    
+
     public static var clear: some hColor {
         hColorScheme(
             light: Color.clear,
@@ -365,7 +365,7 @@ public struct hFillColor {
     public static var translucentThree: some hColor {
         hGrayscaleTranslucent.greyScaleTranslucent400
     }
-    
+
     public static var offBlack: some hColor {
         hGrayscaleColor.greyScale1000
     }
@@ -1216,7 +1216,7 @@ public struct hBlurColor {
             Color(hexString: "C3CBD6")
         )
     }
-    
+
     public static var blurTwo: some hColor {
         hColorScheme(
             Color(hexString: "EDCDAB")

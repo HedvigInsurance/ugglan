@@ -1,11 +1,11 @@
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import Presentation
 import UIKit
 import hCore
 import hGraphQL
-import Contracts
 
 public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
