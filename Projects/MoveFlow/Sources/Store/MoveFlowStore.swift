@@ -67,28 +67,24 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             self.setLoading(for: .confirmMoveIntent)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                //                let intentId = self.state.movingFlowModel?.id ?? ""
-                //                let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
-                //                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
+                let intentId = self.state.movingFlowModel?.id ?? ""
+                let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
+                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
                 let minimumTime = Signal(after: 1.5).future
-                disposeBag += minimumTime.onValue({ [weak self] _ in
-                    self?.removeLoading(for: .confirmMoveIntent)
-                    callback(.end)
-                })
-                //                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
-                //                    .onValue { [weak self] mutation, minimumTime in
-                //                        if let data = mutation.value {
-                //                            if let userError = data.moveIntentCommit.userError?.message {
-                //                                self?.setError(userError, for: .confirmMoveIntent)
-                //                                callback(.end(MovingFlowError.serverError(message: userError)))
-                //                            } else {
-                //                                self?.removeLoading(for: .confirmMoveIntent)
-                //                                callback(.end)
-                //                            }
-                //                        } else if let _ = mutation.error {
-                //                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
-                //                        }
-                //                    }
+                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
+                    .onValue { [weak self] mutation, minimumTime in
+                        if let data = mutation.value {
+                            if let userError = data.moveIntentCommit.userError?.message {
+                                self?.setError(userError, for: .confirmMoveIntent)
+                                callback(.end(MovingFlowError.serverError(message: userError)))
+                            } else {
+                                self?.removeLoading(for: .confirmMoveIntent)
+                                callback(.end)
+                            }
+                        } else if let _ = mutation.error {
+                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
+                        }
+                    }
                 return disposeBag
 
             }

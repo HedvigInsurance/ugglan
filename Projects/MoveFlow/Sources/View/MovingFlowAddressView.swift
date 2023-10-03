@@ -9,6 +9,17 @@ struct MovingFlowAddressView: View {
     @StateObject var vm: AddressInputModel
 
     var body: some View {
+        switch vm.store.state.selectedHousingType {
+        case .apartmant, .rental:
+            form
+                .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+
+        case .house:
+            form
+        }
+    }
+
+    var form: some View {
         hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 4) {
@@ -51,7 +62,6 @@ struct MovingFlowAddressView: View {
         }
         .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
         .sectionContainerStyle(.transparent)
-        .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
         .presentableStoreLensAnimation(.default)
         .onDisappear {
             vm.clearErrors()
@@ -265,9 +275,9 @@ class AddressInputModel: ObservableObject {
     var continueButtonTitle: String {
         switch store.state.selectedHousingType {
         case .apartmant, .rental:
-            return L10n.General.submit
+            return L10n.saveAndContinueButtonLabel
         case .house:
-            return L10n.generalContinueButton
+            return L10n.saveAndContinueButtonLabel
         }
     }
 }

@@ -27,7 +27,7 @@ struct MovingFlowHouseView: View {
                         hButton.LargeButton(type: .primary) {
                             vm.continuePressed()
                         } content: {
-                            hText(L10n.General.submit, style: .body)
+                            hText(L10n.saveAndContinueButtonLabel, style: .body)
                         }
                         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
@@ -98,8 +98,10 @@ struct MovingFlowHouseView: View {
     private var extraBuildingTypes: some View {
         hSection {
             VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
-
+                HStack {
+                    hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
+                    Spacer()
+                }
                 ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
                     HStack {
                         VStack(alignment: .leading, spacing: 0) {
@@ -136,6 +138,7 @@ struct MovingFlowHouseView: View {
                         hText(L10n.changeAddressAddBuilding)
                     }
                 }
+                .fixedSize(horizontal: true, vertical: false)
                 .padding(.top, 8)
 
             }

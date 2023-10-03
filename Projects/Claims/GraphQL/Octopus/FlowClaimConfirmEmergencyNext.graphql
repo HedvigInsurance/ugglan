@@ -1,0 +1,10 @@
+mutation FlowClaimConfirmEmergencyNext($input: FlowClaimConfirmEmergencyInput!, $context: FlowContext) {
+  flowClaimConfirmEmergencyNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    progress {
+    ...ProgressFragment
+    }
+    context
+  }
+}
