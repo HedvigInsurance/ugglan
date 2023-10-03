@@ -56,7 +56,7 @@ struct TrackPlayer: View {
 struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
-    let staplesMaskColor: some hColor = hColorScheme.init(light: hTextColor.primary, dark: hTintColorOld.lavenderOne)
+    let staplesMaskColor: some hColor = hColorScheme.init(light: hTextColor.primary, dark: hHighlightColor.purpleFillThree)
 
     var body: some View {
         GeometryReader { geometry in

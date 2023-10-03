@@ -5,16 +5,6 @@ import hCoreUI
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
-    let playbackTint: some hColor = hColorScheme(
-        light: hTintColorOld.lavenderOne,
-        dark: hTextColor.tertiary
-    )
-
-    let backgroundColorOld: some hColor = hColorScheme(
-        light: hTintColorOld.lavenderTwo,
-        dark: hTintColorOld.lavenderOne
-    )
-
     @ViewBuilder var image: some View {
         switch audioPlayer.playbackState {
         case let .playing(paused):

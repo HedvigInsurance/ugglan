@@ -17,11 +17,7 @@ public struct BlurredProgressOverlay<Content: View>: View {
 
     @hColorBuilder
     var largeCircleColor: some hColor {
-        if colorScheme == .dark {
-            hTintColorOld.yellowOne.opacity(0.25)
-        } else {
-            hTintColorOld.yellowTwo
-        }
+        hBlurColor.blurTwo
     }
 
     var largeCircle: some View {
@@ -32,11 +28,7 @@ public struct BlurredProgressOverlay<Content: View>: View {
 
     @hColorBuilder
     var smallCircleColor: some hColor {
-        if colorScheme == .dark {
-            hTintColorOld.lavenderOne.opacity(0.25)
-        } else {
-            hTintColorOld.lavenderTwo
-        }
+        hBlurColor.blurOne
     }
 
     var smallCircle: some View {
@@ -57,7 +49,7 @@ public struct BlurredProgressOverlay<Content: View>: View {
                     largeCircle
                         .offset(x: -109, y: isAnimating ? 0 : geo.size.height - largeCircleDiameter)
                         .rotationEffect(Angle(degrees: isAnimating ? -25 : 25), anchor: .top)
-                        .blur(radius: 100)
+                        .blur(radius: 50)
                 }
                 .animation(isAnimating ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .none)
                 .id(colorScheme)

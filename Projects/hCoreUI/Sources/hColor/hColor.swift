@@ -264,6 +264,13 @@ public struct hBackgroundColor {
     public static var primary: some hColor {
         hGrayscaleColor.greyScale25
     }
+    
+    public static var clear: some hColor {
+        hColorScheme(
+            light: Color.clear,
+            dark: Color.clear
+        )
+    }
 }
 
 public struct hTextColor {
@@ -1203,39 +1210,16 @@ public struct hTealColor {
     }
 }
 
-public struct hTintColorOld {
-    public static var lavenderOne: some hColor {
+public struct hBlurColor {
+    public static var blurOne: some hColor {
         hColorScheme(
-            light: Color(hexString: "C9ABF5"),
-            dark: Color(hexString: "BE9BF3")
+            Color(hexString: "C3CBD6")
         )
     }
     
-    public static var lavenderTwo: some hColor {
+    public static var blurTwo: some hColor {
         hColorScheme(
-            light: Color(hexString: "E7D6FF"),
-            dark: Color(hexString: "2B203B")
-        )
-    }
-    
-    public static var yellowOne: some hColor {
-        hColorScheme(
-            light: Color(hexString: "F2C852"),
-            dark: Color(hexString: "CCA42E")
-        )
-    }
-    
-    public static var yellowTwo: some hColor {
-        hColorScheme(
-            light: Color(hexString: "FAE098"),
-            dark: Color(hexString: "E3B945")
-        )
-    }
-    
-    public static var clear: some hColor {
-        hColorScheme(
-            light: Color.clear,
-            dark: Color.clear
+            Color(hexString: "EDCDAB")
         )
     }
 }

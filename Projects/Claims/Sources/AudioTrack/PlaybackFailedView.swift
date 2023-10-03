@@ -31,12 +31,12 @@ struct PlaybackFailedView: View {
             }
             .frame(height: 36)
             .cornerRadius(6)
-            .background(hTintColorOld.yellowOne)
+            .background(hHighlightColor.yellowFillThree)
             .padding(.bottom, 16)
 
         }
         .padding(.horizontal, 24)
-        .background(hTintColorOld.yellowTwo)
+        .background(hBlurColor.blurTwo)
         .cornerRadius(.defaultCornerRadius)
         .border(hBorderColor.opaqueFour, width: 0.5)
     }
