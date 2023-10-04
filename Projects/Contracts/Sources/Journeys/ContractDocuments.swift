@@ -36,7 +36,7 @@ enum Documents: CaseIterable {
         case .certificate:
             return URL(string: contract.currentAgreement.certificateUrl)
         case .terms:
-            return URL(string: contract.termsAndConditions.url)
+            return URL(string: contract.currentAgreement.productVariant.termsVersion)
         }
     }
 }

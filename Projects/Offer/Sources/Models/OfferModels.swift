@@ -258,7 +258,7 @@ public struct QuoteBundle: Codable, Equatable {
             displayName = quote.displayName
             detailsTable = .init(fragment: quote.detailsTable.fragments.detailsTableFragment)
             perils = quote.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
-            insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
+            insurableLimits = quote.insurableLimits.map { .init($0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
             dataCollectionID = quote.dataCollectionId
             typeOfContract = quote.typeOfContract.rawValue

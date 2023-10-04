@@ -12,7 +12,7 @@ import hGraphQL
 
 private struct StatusPill: View {
     var text: String
-
+    
     var body: some View {
         VStack {
             hText(text, style: .standardSmall)
@@ -26,7 +26,7 @@ private struct StatusPill: View {
 
 private struct ContractRowChevron: View {
     @SwiftUI.Environment(\.isEnabled) var isEnabled
-
+    
     var body: some View {
         if isEnabled {
             Image(uiImage: hCoreUIAssets.arrowForward.image)
@@ -55,34 +55,36 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             hTextColorNew.secondary
         }
     }
-
+    
     @ViewBuilder var logo: some View {
-        if let logo = contract.logo {
-            RemoteVectorIconView(icon: logo, backgroundFetch: true)
-                .frame(width: 36, height: 36)
-        } else {
-            // Fallback to Hedvig logo if no logo
-            Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
-                .resizable()
-                .frame(width: 24, height: 24)
-        }
+        Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
+            .resizable()
+            .frame(width: 24, height: 24)
     }
-
+    
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                ForEach(contract.statusPills, id: \.self) { pill in
-                    StatusPill(text: pill).padding(.trailing, 4)
+                if let terminationDate = contract.terminationDate {
+                    if (terminationDate == Date().localDateString) {
+                        StatusPill(text: L10n.contractStatusTerminatedToday).padding(.trailing, 4)
+                    } else {
+                        StatusPill(text: L10n.contractStatusToBeTerminated(terminationDate)).padding(.trailing, 4)
+                    }
+                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
+                    StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
+                } else if let inceptionDate = contract.masterInceptionDate.localDateToDate, (daysBetween(start: Date(), end: inceptionDate)>0) {
+                    StatusPill(text: L10n.contractStatusActiveInFuture(inceptionDate.localDateString)).padding(.trailing, 4)
                 }
                 Spacer()
                 logo
             }
             Spacer()
             HStack {
-                hText(contract.displayName)
+                hText(contract.currentAgreement.productVariant.displayName)
                 Spacer()
             }
-            hText(contract.getDetails())
+            hText(contract.exposureDisplayName)
                 .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700.inverted)
         }
         .padding(16)
@@ -98,12 +100,16 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .foregroundColor(hTextColorNew.negative)
         .contentShape(Rectangle())
     }
+    
+    func daysBetween(start: Date, end: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: start, to: end).day!
+    }
 }
 
 struct ContractRow: View {
     @PresentableStore var store: ContractStore
     @State var frameWidth: CGFloat = 0
-
+    
     var id: String
     var allowDetailNavigation = true
     var body: some View {
@@ -115,7 +121,7 @@ struct ContractRow: View {
         ) { contract in
             if let contract = contract {
                 SwiftUI.Button {
-                    store.send(.openDetail(contractId: contract.id, title: contract.displayName))
+                    store.send(.openDetail(contractId: contract.id, title: contract.exposureDisplayName))
                 } label: {
                     EmptyView()
                 }
@@ -135,47 +141,71 @@ struct ContractRow: View {
     }
 }
 
-struct ContractRow_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            Spacer()
-            ContractRow(id: "2").frame(height: 200)
-            Spacer()
-        }
-        .onAppear {
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            let contract = Contract(
-                id: "2",
-                typeOfContract: .noHomeContentOwn,
-                upcomingAgreementsTable: DetailAgreementsTable(
-                    sections: [
-                        DetailAgreementsTable.Section(
-                            title: "TITLE Details",
-                            rows: [.init(title: "Title 1", subtitle: "Subtitle 1", value: "Value 1")]
-                        )
-                    ],
-                    title: "Section title"
-                ),
-                currentAgreementsTable: nil,
-                logo: nil,
-                displayName: "Car Insurance",
-                switchedFromInsuranceProvider: "Provider",
-                upcomingRenewal: nil,
-                contractPerils: [],
-                insurableLimits: [],
-                termsAndConditions: TermsAndConditions(displayName: "Terms", url: "URL"),
-                currentAgreement: CurrentAgreement.init(
-                    certificateUrl: "URL",
-                    activeFrom: "Active from",
-                    activeTo: "Active to",
-                    premium: .sek(10),
-                    status: .terminated
-                ),
-                statusPills: ["Activates 20.03.2024."],
-                detailPills: ["BELLMAN 19A", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
-            )
-            let contracts = [contract]
-            store.send(.setContracts(contracts: contracts))
-        }
-    }
-}
+//struct ContractRow_Previews: PreviewProvider {
+//    static var previews: some View {
+//        VStack {
+//            Spacer()
+//            ContractRow(id: "2").frame(height: 200)
+//            Spacer()
+//        }
+//        .onAppear {
+//            let store: ContractStore = globalPresentableStoreContainer.get()
+//            let contract = Contract(
+//                id: "",
+//                currentAgreement:
+//                    Agreement(
+//                        certificateUrl: "",
+//                        activeFrom: "",
+//                        activeTo: "",
+//                        premium:
+//                            MonetaryAmount(
+//                                amount: 0,
+//                                currency: ""),
+//                        displayItems: [],
+//                        productVariant:
+//                            ProductVariant(
+//                                termsVersion: "",
+//                                typeOfContract: "",
+//                                partner: "",
+//                                perils: [],
+//                                insurableLimits: [],
+//                                documents: [],
+//                                highlights: [],
+//                                FAQ: [],
+//                                displayName: "")),
+//                exposureDisplayName: "",
+//                externalInsuranceCancellation: nil,
+//                masterInceptionDate: "Date",
+//                terminationDate: "Date",
+//                supportsAddressChange: true,
+//                upcomingChangedAgreement:
+//                    Agreement(
+//                        certificateUrl: "",
+//                        activeFrom: "",
+//                        activeTo: "",
+//                        premium:
+//                            MonetaryAmount(
+//                                amount: 0,
+//                                currency: ""),
+//                        displayItems: [],
+//                        productVariant:
+//                            ProductVariant(
+//                                termsVersion: "",
+//                                typeOfContract: "",
+//                                partner: "",
+//                                perils: [],
+//                                insurableLimits: [],
+//                                documents: [],
+//                                highlights: [],
+//                                FAQ: [],
+//                                displayName: ""),
+//                        upcomingRenewal:
+//                            ContractRenewal(
+//                                renewalDate: "",
+//                                draftCertificateUrl: ""),
+//                        typeOfContract: .dkHouse))
+//                let contracts = [contract]
+//                store.send(.setActiveContracts(contracts: contracts))
+//                }
+//                }
+//                }

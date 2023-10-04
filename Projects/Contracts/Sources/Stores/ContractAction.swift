@@ -27,9 +27,11 @@ public enum ContractAction: ActionProtocol, Hashable {
     case fetchContracts
     case fetchContractsDone
 
-    case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setActiveContracts (contracts: [Contract])
+    case setTerminatedContracts (contracts: [Contract])
+    case setPendingContracts (contracts: [PendingContract])
+    
     case setCrossSells(crossSells: [CrossSell])
-    case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
@@ -71,9 +73,9 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = [.changeAddress]
-//        if contract.canChangeCoInsured {
-//            editTypes.append(.coInsured)
-//        }
+        if contract.canChangeCoInsured {
+            editTypes.append(.coInsured)
+        }
         return editTypes
     }
 }

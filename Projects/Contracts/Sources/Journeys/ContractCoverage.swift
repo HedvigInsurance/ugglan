@@ -22,12 +22,12 @@ struct ContractCoverageView: View {
             if let contract = contract {
                 VStack(spacing: 4) {
                     InsurableLimitsSectionView(
-                        limits: contract.insurableLimits
+                        limits: contract.currentAgreement.productVariant.insurableLimits
                     ) { limit in
                         store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
                     }
                     Spacer()
-                    PerilCollection(perils: contract.contractPerils) { peril in
+                    PerilCollection(perils: contract.currentAgreement.productVariant.perils) { peril in
                     }
                 }
             }

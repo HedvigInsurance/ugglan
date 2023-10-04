@@ -30,42 +30,27 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                     })
                 return disposeBag
             }
-        case .fetchContractBundles:
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                    .onValue { activeContractBundles in
-                        callback(
-                            .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
-                        )
-                        callback(.value(.fetchContractBundlesDone))
-                    }
-                    .onError { [unowned self] error in
-                        if ApplicationContext.shared.isDemoMode {
-                            self.removeLoading(for: .fetchContractBundles)
-                        } else {
-                            if !self.state.hasLoadedContractBundlesOnce {
-                                self.setError(L10n.General.errorBody, for: .fetchContractBundles)
-                            }
-                        }
-                        callback(.value(.fetchContractBundlesDone))
-                    }
-                return disposeBag
-            }
         case .fetchContracts:
             return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-//                disposeBag += self.giraffe.client
-                disposeBag += self.octopus.client
-//                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                    .fetchContracts(contractId: "")
+                let query = OctopusGraphQL.ContractBundleQuery()
+                disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { contracts in
-                        if getState().contracts != contracts {
-                            callback(.value(.setContracts(contracts: contracts)))
-                        } else {
-                            self.removeLoading(for: .fetchContracts)
+                        let activeContracts = contracts.currentMember.activeContracts.map { contract in
+                            Contract(contract: contract.fragments.contractFragment)
+                            
                         }
+                        callback(.value(.setActiveContracts(contracts: activeContracts)))
+                        
+                        let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
+                            Contract(contract: contract.fragments.contractFragment)
+                        }
+                        callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
+
+                        let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
+                            PendingContract(data: contract)
+                        }
+                        callback(.value(.setPendingContracts(contracts: pendingContracts)))
                         callback(.value(.fetchContractsDone))
                     }
                     .onError { error in
@@ -98,14 +83,23 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             setLoading(for: .fetchContractBundles)
         case .fetchContracts:
             setLoading(for: .fetchContracts)
-        case .setContractBundles(let activeContractBundles):
-            newState.hasLoadedContractBundlesOnce = true
-            removeLoading(for: .fetchContractBundles)
-            guard activeContractBundles != state.contractBundles else { return newState }
-            newState.contractBundles = activeContractBundles
-        case let .setContracts(contracts):
+//        case .setContractBundles(let activeContractBundles):
+//            newState.hasLoadedContractBundlesOnce = true
+//            removeLoading(for: .fetchContractBundles)
+//            guard activeContractBundles != state.contractBundles else { return newState }
+//            newState.contractBundles = activeContractBundles
+//        case let .setContracts(contracts):
+//            removeLoading(for: .fetchContracts)
+//            newState.contracts = contracts
+        case let .setActiveContracts(contracts):
+//            removeLoading(for: .fetchContracts)
+            newState.activeContracts = contracts
+        case let .setTerminatedContracts(contracts):
+//            removeLoading(for: .fetchContracts)
+            newState.terminatedContracts = contracts
+        case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
-            newState.contracts = contracts
+            newState.pendingContracts = contracts
         case .setCrossSells(let crossSells):
             newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):

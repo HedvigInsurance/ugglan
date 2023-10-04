@@ -19,9 +19,7 @@ fragment ProductVariantFragment on ProductVariant {
     termsVersion
     partner
     documents {
-        displayName
-        type
-        url
+        ...InsuranceDocumentFragment
     }
     displayName
     insurableLimits {
@@ -51,4 +49,10 @@ fragment CrossSellFragment on Member {
       storeUrl
       type
     }
+}
+
+fragment InsuranceDocumentFragment on InsuranceDocument {
+    displayName
+    type
+    url
 }

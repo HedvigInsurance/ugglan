@@ -141,29 +141,31 @@ extension MovingFlowIntro: Presentable {
             return innerBag
         }
 
-        bag += store.stateSignal.atOnce()
-            .onValue { state in
-                if let upcomingAgreementTable = state.contractBundles.flatMap({ $0.contracts })
-                    .first(where: {
-                        !$0.upcomingAgreementsTable.sections.isEmpty
-                    })?
-                    .upcomingAgreementsTable
-                {
-                    $section.value = .existing(upcomingAgreementTable)
-                } else {
-                    if let bundle = state.contractBundles
-                        .first(where: { bundle in
-                            bundle.movingFlowEmbarkId != nil
-                        })
-                    {
-                        $section.value = .normal(
-                            bundle.movingFlowEmbarkId ?? ""
-                        )
-                    } else {
-                        $section.value = .manual
-                    }
-                }
-            }
+        /* TODO: CHECK WHAT THIS IS */
+//        bag += store.stateSignal.atOnce()
+//            .onValue { state in
+//                if let upcomingAgreementTable = state.activeContracts.compactMap({ $0 })
+//                    .first(where: {
+//                        !($0.upcomingChangedAgreement?.dis.isEmpty ?? false)
+////                        !$0.upcomingAgreementsTable.sections.isEmpty
+//                    })?
+//                    .upcomingChangedAgreement
+//                {
+//                    $section.value = .existing(upcomingAgreementTable)
+//                } else {
+//                    if let bundle = state.contractBundles
+//                        .first(where: { bundle in
+//                            bundle.movingFlowEmbarkId != nil
+//                        })
+//                    {
+//                        $section.value = .normal(
+//                            bundle.movingFlowEmbarkId ?? ""
+//                        )
+//                    } else {
+//                        $section.value = .manual
+//                    }
+//                }
+//            }
 
         return (
             viewController,

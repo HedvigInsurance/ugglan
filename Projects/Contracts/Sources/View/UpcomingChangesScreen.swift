@@ -72,8 +72,8 @@ extension UpcomingChangesScreen {
         return HostingJourney(
             ContractStore.self,
             rootView: UpcomingChangesScreen(
-                updateDate: contract.upcomingAgreementDate?.displayDateDotFormat ?? "",
-                upcomingAgreementsTable: contract.upcomingAgreementsTable
+                updateDate: contract.upcomingChangedAgreement?.activeFrom ?? "",
+                upcomingAgreementsTable: DetailAgreementsTable(sections: [], title: "")
             ),
             style: .detented(.large),
             options: [.largeNavigationBar]

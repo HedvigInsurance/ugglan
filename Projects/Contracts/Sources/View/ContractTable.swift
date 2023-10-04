@@ -11,20 +11,10 @@ import hGraphQL
 struct ContractTable {
     let filter: ContractFilter
     @PresentableStore var store: ContractStore
-
-    func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
-        switch filter {
-        case .active:
-            return state
-                .contractBundles
-                .flatMap { $0.contracts }
-        case .terminated:
-            return state.contracts
-                .filter { contract in
-                    contract.currentAgreement?.status == .terminated
-                }
-        case .none: return []
-        }
+    
+    func getContractsToShow(for state: ContractState) -> [Contract] {
+        return state.activeContracts.compactMap { $0 }
+        /* TODO ADD PENDING CONTRACTS*/
     }
 }
 
@@ -36,7 +26,8 @@ extension ContractTable: View {
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
+                        getContractsToShow(for: state)
+                        
                     }
                 ) { contracts in
                     ForEach(contracts, id: \.id) { contract in
@@ -50,40 +41,31 @@ extension ContractTable: View {
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
+        CrossSellingStack(withHeader: true)
+            .padding(.top, 24)
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
-                return self.filter.nonemptyFilter(state: state).displaysActiveContracts
+                state.terminatedContracts
             }
-        ) { displaysActiveContracts in
-            if self.filter.displaysActiveContracts {
-                CrossSellingStack(withHeader: true)
-                    .padding(.top, 24)
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        getContractsToShow(for: state, filter: .terminated(ifEmpty: .none))
-                    }
-                ) { terminatedContracts in
-                    if !terminatedContracts.isEmpty {
-                        hSection {
-                            hButton.LargeButton(type: .secondary) {
-                                store.send(.openTerminatedContracts)
-                            } content: {
-                                hRow {
-                                    hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
-                                        .foregroundColor(hTextColorNew.primary)
-                                }
-                                .withChevronAccessory
-                                .foregroundColor(hTextColorNew.secondary)
-                            }
+        ) { terminatedContracts in
+            if !terminatedContracts.isEmpty {
+                hSection {
+                    hButton.LargeButton(type: .secondary) {
+                        store.send(.openTerminatedContracts)
+                    } content: {
+                        hRow {
+                            hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
+                                .foregroundColor(hTextColorNew.primary)
                         }
-                        .transition(.slide)
+                        .withChevronAccessory
+                        .foregroundColor(hTextColorNew.secondary)
                     }
                 }
-                .presentableStoreLensAnimation(.spring())
+                .transition(.slide)
             }
         }
+        .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
         .padding(.bottom, 24)
     }

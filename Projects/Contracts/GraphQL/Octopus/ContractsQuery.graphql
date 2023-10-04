@@ -1,24 +1,50 @@
-query Contract($contractId: UUID!) {
-  contract(id: $contractId) {
-    currentAgreement {
-        ...AgreementFragment
+query ContractBundle {
+  currentMember {
+    activeContracts {
+        ...ContractFragment
     }
-    exposureDisplayName
-    externalInsuranceCancellation {
-        ...ContractExternalInsuranceCancellationFragment
+    pendingContracts {
+      displayItems {
+        ...AgreementDisplayItemFragment
+      }
+      exposureDisplayName
+      id
+      premium {
+        ...MoneyFragment
+      }
+      productVariant {
+        ...ProductVariantFragment
+      }
     }
-    id
-    masterInceptionDate
-    supportsAddressChange
-    terminationDate
-    upcomingChangedAgreement {
-        ...AgreementFragment
-    }
-    upcomingRenewal {
-      draftCertificateUrl
-      renewalDate
+    terminatedContracts {
+        ...ContractFragment
     }
   }
+}
+
+fragment ContractFragment on Contract {
+      currentAgreement {
+        ...AgreementFragment
+      }
+      exposureDisplayName
+      externalInsuranceCancellation {
+        ...ContractExternalInsuranceCancellationFragment
+      }
+      id
+      masterInceptionDate
+      supportsAddressChange
+      terminationDate
+      upcomingChangedAgreement {
+         ...AgreementFragment
+      }
+      upcomingRenewal {
+        ...ContractRenewalFragment
+      }
+}
+
+fragment ContractRenewalFragment on ContractRenewal {
+    draftCertificateUrl
+    renewalDate
 }
 
 fragment AgreementFragment on Agreement {
