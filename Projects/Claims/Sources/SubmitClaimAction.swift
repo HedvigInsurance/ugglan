@@ -12,6 +12,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
+    case submitTextInput(text: String)
     case resetAudioRecording
     case submitDamage(damage: [String])
 

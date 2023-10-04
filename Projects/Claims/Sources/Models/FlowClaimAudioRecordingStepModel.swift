@@ -5,6 +5,9 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let id: String
     let questions: [String]
     var audioContent: AudioContentModel?
+    let textQuestions: [String]
+    let inputTextContent: String?
+    let optionalAudio: Bool
 
     init(
         with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment
@@ -12,6 +15,11 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
         self.id = data.id
         self.questions = data.questions
         self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
+        self.textQuestions = [
+            "question text", "question text text text text text text 232 323 2 2 23 ", "question text",
+        ]
+        self.inputTextContent = nil
+        self.optionalAudio = true
     }
 
     func getUrl() -> URL? {
