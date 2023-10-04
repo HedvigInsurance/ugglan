@@ -49,7 +49,7 @@ public struct MovingFlowJourneyNew {
         HostingJourney(
             MoveFlowStore.self,
             rootView: MovingFlowHousingTypeView(),
-            style: .detented(.large),
+            style: .modally(presentationStyle: .fullScreen),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
             ]

@@ -11,9 +11,10 @@ struct MovingFlowAddressView: View {
     var body: some View {
         switch vm.store.state.selectedHousingType {
         case .apartmant, .rental:
-            form
-                .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
-
+            form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+                .onDisappear {
+                    vm.clearErrors()
+                }
         case .house:
             form
         }
@@ -63,9 +64,6 @@ struct MovingFlowAddressView: View {
         .hFormTitle(.standard, .title1, L10n.changeAddressEnterNewAddressTitle)
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
-        .onDisappear {
-            vm.clearErrors()
-        }
     }
 
     func addressField() -> some View {

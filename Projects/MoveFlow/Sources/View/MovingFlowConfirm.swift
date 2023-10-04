@@ -11,7 +11,10 @@ struct MovingFlowConfirm: View {
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
     @State var selectedFaq: [String] = [""]
+    @State var spacingFaq: CGFloat = 0
+    @State var totalHeight: CGFloat = 0
     var body: some View {
+
         ScrollViewReader { proxy in
             hForm {
                 PresentableStoreLens(
@@ -22,31 +25,55 @@ struct MovingFlowConfirm: View {
                 ) { movingFlowModel in
                     if let movingFlowModel {
                         VStack(spacing: 16) {
-                            ForEach(movingFlowModel.quotes, id: \.address) { quote in
-                                contractInfoView(for: quote)
+                            VStack(spacing: 16) {
+                                ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                    contractInfoView(for: quote)
+                                }
+                                noticeComponent
+                                totalAmountComponent
                             }
-                            noticeComponent
-                            totalAmountComponent
-                            buttonComponent(proxy: proxy)
-                                .padding(.top, 126)
-                                .padding(.bottom, 48)
+                            .background(
+                                GeometryReader { proxy in
+                                    Color.clear
+                                        .onAppear {
+                                            spacingFaq = max(totalHeight - proxy.size.height, 0)
+                                        }
+                                        .onChange(of: proxy.size) { size in
+                                            spacingFaq = max(totalHeight - size.height, 0)
+                                        }
+                                }
+                            )
+                            .padding(.bottom, spacingFaq)
                             VStack(spacing: 32) {
                                 ForEach(movingFlowModel.quotes, id: \.address) { quote in
                                     whatIsCovered(for: quote)
                                 }
                             }
 
-                            .padding(.top, 8)
+                            .padding(.top, 16)
                             .id(whatIsCoveredId)
                             faqsComponent(for: movingFlowModel.faqs)
                             chatComponent
 
                         }
-                        .padding(.top, 16)
                     }
                 }
             }
+            .hFormAttachToBottom {
+                buttonComponent(proxy: proxy)
+            }
         }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        totalHeight = proxy.size.height
+                    }
+                    .onChange(of: proxy.size) { size in
+                        totalHeight = size.height
+                    }
+            }
+        )
     }
 
     private func contractInfoView(for quote: Quote) -> some View {
@@ -240,6 +267,7 @@ struct MovingFlowConfirm: View {
                             if expanded, let description = faq.description {
                                 hRow {
                                     hText(description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+
                                 }
                                 .verticalPadding(12)
                             }
