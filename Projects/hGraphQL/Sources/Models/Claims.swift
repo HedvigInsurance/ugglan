@@ -49,7 +49,8 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
             outcome: Claim.ClaimDetailData.ClaimOutcome,
             submittedAt: String?,
             closedAt: String?,
-            signedAudioURL: String,
+            signedAudioURL: String?,
+            inputText: String?,
             progressSegments: [Claim.ClaimStatusProgressSegment],
             statusParagraph: String,
             type: String,
@@ -61,6 +62,7 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
             self.submittedAt = submittedAt
             self.closedAt = closedAt
             self.signedAudioURL = signedAudioURL
+            self.inputText = inputText
             self.progressSegments = progressSegments
             self.statusParagraph = statusParagraph
             self.type = type
@@ -76,6 +78,7 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
             self.submittedAt = claim.submittedAt
             self.closedAt = claim.closedAt
             self.signedAudioURL = claim.signedAudioUrl ?? ""
+            self.inputText = nil
             self.progressSegments = claim.progressSegments.map {
                 .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
             }
@@ -89,7 +92,8 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
         public let outcome: ClaimOutcome
         public let submittedAt: String?
         public let closedAt: String?
-        public let signedAudioURL: String
+        public let signedAudioURL: String?
+        public let inputText: String?
         public let progressSegments: [ClaimStatusProgressSegment]
         public let statusParagraph: String
         public let type: String

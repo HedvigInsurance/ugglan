@@ -68,6 +68,18 @@ public struct ClaimDetailView: View {
                         perform: { player in
                         }
                     )
+                } else if let inputText = claim.claimDetailData.inputText {
+                    hSection {
+                        hRow {
+                            hText(inputText)
+                        }
+                    }
+                    .withHeader {
+                        hText("Submitted message")
+                            .padding(.leading, 2)
+                    }
+                    .padding(.top, 16)
+
                 }
             }
         }
@@ -83,7 +95,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
             outcome: .paid,
             submittedAt: "2019-07-03T19:07:38.494081Z",
             closedAt: "2019-07-03T20:10:38.494081Z",
-            signedAudioURL: "https://www.hedvig.com",
+            signedAudioURL: "",
+            inputText: "InputText from the user which is very nice to have!!!",
             progressSegments: [.init(text: "1", type: .futureInactive)],
             statusParagraph:
                 "Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH ",
