@@ -438,7 +438,7 @@ extension Message: Reusable {
 
                         //button
                         let button = UIButton(type: .custom)
-                        button.setTitle("Get price")
+                        button.setTitle(L10n.crossSellGetPrice)
                         button.backgroundColor = UIColor(hexString: "#EAFFCC")
                         button.tintColor = UIColor.black
                         button.setTitleColor(UIColor.black, for: .normal)
