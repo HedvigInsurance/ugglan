@@ -161,7 +161,6 @@ extension Chat: Presentable {
 
             return 0
         }
-
         tableKit.view.contentInsetAdjustmentBehavior = .never
         tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
 
@@ -188,6 +187,19 @@ extension Chat: Presentable {
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         }
+        bag += tableKit.delegate.didSelect.onValue({ index in
+            let item = tableKit.table[index]
+            if let message = item.left {
+                switch message.type {
+                case let .crossSell(url):
+                    if let url = url {
+                        UIApplication.shared.open(url)
+                    }
+                default:
+                    break
+                }
+            }
+        })
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)

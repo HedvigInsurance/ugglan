@@ -73,6 +73,22 @@ extension Message: Reusable {
 
             return constantHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
+        if case let .crossSell(url) = type {
+            let data = WebMetaDataProvider.shared.data(for: url!)?.title ?? ""
+            let attributedString = NSAttributedString(
+                styledText: StyledText(text: data, style: UIColor.brandNewStyle(.chatMessage))
+            )
+            let size = attributedString.boundingRect(
+                with: CGSize(width: 267.77, height: CGFloat(Int.max)),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+            if isRelatedToPreviousMessage {
+                return 350 + size.height + smallerMarginTop + extraHeightForTimeStampLabel
+            }
+
+            return 350 + size.height + largerMarginTop + extraHeightForTimeStampLabel
+        }
 
         let attributedString = NSAttributedString(
             styledText: StyledText(text: body, style: UIColor.brandNewStyle(.chatMessage))
@@ -209,6 +225,11 @@ extension Message: Reusable {
                     func applySpacing() {
                         if message.type.isVideoOrImageType {
                             contentContainer.layoutMargins = UIEdgeInsets.zero
+                        } else if message.type.isCrossSell {
+                            contentContainer.layoutMargins = UIEdgeInsets(
+                                horizontalInset: 16,
+                                verticalInset: 0
+                            )
                         } else {
                             contentContainer.layoutMargins = UIEdgeInsets(
                                 horizontalInset: 16,
@@ -368,6 +389,107 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
+                    case let .crossSell(url):
+                        let crossSaleMainContainer = UIView()
+                        let crossSaleContainer = UIView()
+                        let loadingIndicator = UIActivityIndicatorView(style: .medium)
+                        loadingIndicator.hidesWhenStopped = true
+                        crossSaleMainContainer.addSubview(crossSaleContainer)
+                        crossSaleContainer.snp.makeConstraints { make in
+                            make.leading.trailing.top.bottom.equalToSuperview()
+                        }
+                        crossSaleMainContainer.addSubview(loadingIndicator)
+                        loadingIndicator.snp.makeConstraints { make in
+                            make.centerX.centerY.equalToSuperview()
+                        }
+                        crossSaleContainer.isUserInteractionEnabled = true
+                        let imageView = UIImageView()
+                        crossSaleContainer.addSubview(imageView)
+                        imageView.snp.makeConstraints { make in
+                            make.leading.equalToSuperview()
+                            make.trailing.equalToSuperview()
+                            make.top.equalToSuperview().offset(message.shouldShowTimeStamp ? 12 : 12)
+                            make.width.equalTo(imageView.snp.height)
+                        }
+
+                        imageView.layer.cornerRadius = 20
+                        imageView.clipsToBounds = true
+                        //title //subtitle
+                        let textStyle = UIColor.brandNewStyle(.chatMessage)
+                            .colored(messageTextColor)
+
+                        let text = L10n.chatFileDownload
+
+                        let styledText = StyledText(text: text, style: textStyle)
+
+                        let titleLabel = UILabel(styledText: styledText)
+                        titleLabel.font = Fonts.fontFor(style: .standard)
+                        titleLabel.text = ""
+                        titleLabel.numberOfLines = 2
+                        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+                        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
+                        crossSaleContainer.addSubview(titleLabel)
+                        titleLabel.snp.makeConstraints { make in
+                            make.top.equalTo(imageView.snp.bottom).offset(10)
+                            make.leading.equalToSuperview()
+                            make.trailing.equalToSuperview()
+                        }
+
+                        //button
+                        let button = UIButton(type: .custom)
+                        button.setTitle("Get price")
+                        button.backgroundColor = UIColor(hexString: "#EAFFCC")
+                        button.tintColor = UIColor.black
+                        button.setTitleColor(UIColor.black, for: .normal)
+                        button.titleLabel?.textColor = UIColor.black
+                        button.titleLabel?.font = Fonts.fontFor(style: .standardSmall)
+
+                        button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
+                        button.layer.cornerRadius = 12
+
+                        bag += button.signal(for: .touchUpInside)
+                            .onValue { _ in
+                                if let url {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        crossSaleContainer.addSubview(button)
+                        button.snp.makeConstraints { make in
+                            make.leading.equalToSuperview()
+                            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+                        }
+                        contentContainer.addArrangedSubview(crossSaleMainContainer)
+                        crossSaleContainer.snp.makeConstraints { make in
+                            make.width.equalTo(300)
+                        }
+
+                        crossSaleContainer.alpha = 0
+
+                        if let data = WebMetaDataProvider.shared.data(for: url!) {
+                            crossSaleContainer.alpha = 1
+                            titleLabel.text = data.title
+                            imageView.image = data.image
+                        } else {
+                            loadingIndicator.startAnimating()
+                            WebMetaDataProvider.shared.data(for: url!) { data in
+                                if let data {
+                                    UIView.animate(withDuration: 0.4) {
+                                        crossSaleContainer.alpha = 1
+                                        titleLabel.text = data.title
+                                        imageView.image = data.image
+                                    }
+                                    let superview = containerView.superview?.superview?.superview
+                                    if let superviewCell = superview as? UITableViewCell,
+                                        let table = superviewCell.superview as? UITableView
+                                    {
+                                        table.beginUpdates()
+                                        table.endUpdates()
+                                    }
+                                    loadingIndicator.stopAnimating()
+                                }
+                            }
+                        }
                     case let .file(url):
                         let textStyle = UIColor.brandNewStyle(.chatMessage)
                             .colored(messageTextColor)

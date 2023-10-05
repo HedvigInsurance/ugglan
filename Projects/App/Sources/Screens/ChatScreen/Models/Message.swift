@@ -57,6 +57,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             case .video: return true
             case .gif: return true
             case .file: return true
+            case .crossSell: return true
             }
         }
 
@@ -81,6 +82,13 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             }
         }
 
+        var isCrossSell: Bool {
+            switch self {
+            case .crossSell: return true
+            default: return false
+            }
+        }
+
         var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
 
         case text
@@ -88,6 +96,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         case video(url: URL?)
         case file(url: URL?)
         case gif(url: URL?)
+        case crossSell(url: URL?)
     }
 
     var hasTypingIndicatorNext: Bool {
@@ -283,7 +292,13 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             placeholder = text.placeholder
             keyboardType = UIKeyboardType.from(text.keyboard)
             textContentType = UITextContentType.from(text.textContentType)
-            if text.text.isGIFURL { type = .gif(url: URL(string: text.text)) } else { type = .text }
+            if text.text.isGIFURL {
+                type = .gif(url: URL(string: text.text))
+            } else if text.text.isCrossSell {
+                type = .crossSell(url: URL(string: text.text))
+            } else {
+                type = .text
+            }
         } else if let number = message.body.asMessageBodyNumber {
             body = number.text
             responseType = .text

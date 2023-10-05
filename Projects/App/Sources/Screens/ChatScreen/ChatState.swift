@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import LinkPresentation
 import Presentation
 import Profile
 import UIKit
@@ -351,4 +352,58 @@ extension ChatError: LocalizedError {
         case .mutationFailed: return L10n.General.errorBody
         }
     }
+}
+
+class WebMetaDataProvider {
+    static let shared = WebMetaDataProvider()
+    private init() {}
+    private var cache: [URL: WebMetaDataProviderData] = [:]
+
+    func data(for url: URL) -> WebMetaDataProviderData? {
+        return cache[url]
+    }
+
+    func data(for url: URL, closure: @escaping (WebMetaDataProviderData?) -> Void) {
+        if let data = cache[url] {
+            closure(data)
+        } else {
+            let metadataProvider = LPMetadataProvider()
+            metadataProvider.startFetchingMetadata(for: url) { metadata, error in
+                if let metadata {
+                    if #available(iOS 16.0, *) {
+                        _ = metadata.imageProvider?
+                            .loadDataRepresentation(
+                                for: .png,
+                                completionHandler: { [weak self] data, error in
+                                    if let data, let image = UIImage(data: data) {
+                                        self?.cache[url] = WebMetaDataProviderData(
+                                            title: metadata.title ?? "",
+                                            image: image
+                                        )
+                                    }
+                                    DispatchQueue.main.async { [weak self] in
+                                        closure(self?.cache[url])
+                                    }
+                                }
+                            )
+                    } else {
+                        closure(nil)
+                    }
+                } else {
+                    closure(nil)
+                }
+            }
+        }
+    }
+}
+
+struct WebMetaDataProviderData {
+    let title: String
+    let image: UIImage
+
+    init(title: String, image: UIImage) {
+        self.title = title
+        self.image = image
+    }
+
 }
