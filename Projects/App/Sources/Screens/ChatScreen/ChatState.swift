@@ -380,6 +380,11 @@ class WebMetaDataProvider {
                                             title: metadata.title ?? "",
                                             image: image
                                         )
+                                    } else {
+                                        self?.cache[url] = WebMetaDataProviderData(
+                                            title: metadata.title ?? "",
+                                            image: nil
+                                        )
                                     }
                                     DispatchQueue.main.async { [weak self] in
                                         closure(self?.cache[url])
@@ -399,9 +404,9 @@ class WebMetaDataProvider {
 
 struct WebMetaDataProviderData {
     let title: String
-    let image: UIImage
+    let image: UIImage?
 
-    init(title: String, image: UIImage) {
+    init(title: String, image: UIImage?) {
         self.title = title
         self.image = image
     }

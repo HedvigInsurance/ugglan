@@ -477,7 +477,7 @@ extension Message: Reusable {
                                     UIView.animate(withDuration: 0.4) {
                                         crossSaleContainer.alpha = 1
                                         titleLabel.text = data.title
-                                        imageView.image = data.image
+                                        imageView.image = data.image ?? hCoreUIAssets.hedvigBigLogo.image
                                     }
                                     let superview = containerView.superview?.superview?.superview
                                     if let superviewCell = superview as? UITableViewCell,
