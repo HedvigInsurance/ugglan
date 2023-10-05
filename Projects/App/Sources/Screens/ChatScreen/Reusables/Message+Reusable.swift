@@ -443,7 +443,7 @@ extension Message: Reusable {
                         button.tintColor = UIColor.black
                         button.setTitleColor(UIColor.black, for: .normal)
                         button.titleLabel?.textColor = UIColor.black
-                        button.titleLabel?.font = Fonts.fontFor(style: .standardSmall)
+                        button.titleLabel?.font = Fonts.fontFor(style: .standard)
 
                         button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
                         button.layer.cornerRadius = 12
@@ -458,6 +458,7 @@ extension Message: Reusable {
                         button.snp.makeConstraints { make in
                             make.leading.equalToSuperview()
                             make.top.equalTo(titleLabel.snp.bottom).offset(10)
+                            make.width.equalToSuperview().dividedBy(2)
                         }
                         contentContainer.addArrangedSubview(crossSaleMainContainer)
                         crossSaleContainer.snp.makeConstraints { make in
