@@ -53,6 +53,7 @@ public struct InfoCard: View {
                 }
             }
             .padding(.leading, 8)
+            .hUseLightMode
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)

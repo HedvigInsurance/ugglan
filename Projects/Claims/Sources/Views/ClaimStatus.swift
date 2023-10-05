@@ -55,7 +55,7 @@ extension Claim.ClaimPill.ClaimPillType {
     var textColor: some hColor {
         switch self {
         case .none: hTextColorNew.primary
-        case .open: hTextColorNew.primary
+        case .open: hTextColorNew.negative
         case .reopened: hSignalColorNew.amberText
         case .closed: hTextColorNew.negative
         case .payment: hSignalColorNew.blueText
@@ -66,7 +66,7 @@ extension Claim.ClaimPill.ClaimPillType {
     var backgroundColor: some hColor {
         switch self {
         case .none: hFillColorNew.opaqueTwo
-        case .open: hFillColorNew.opaqueTwo
+        case .open: hTextColorNew.primary
         case .reopened: hSignalColorNew.amberHighLight
         case .closed: hTextColorNew.primary
         case .payment: hSignalColorNew.blueHighLight

@@ -101,7 +101,7 @@ struct AudioPulseBackground: View {
 
     private let backgroundColorScheme: some hColor = hColorScheme.init(
         light: hGrayscaleColor.one,
-        dark: hGrayscaleColor.two
+        dark: hGrayscaleColorNew.greyScale900
     )
 
     var body: some View {

@@ -731,16 +731,16 @@ extension PresentationStyle {
 @available(iOS 16.0, *)
 class BlurredSheetPresenationController: UISheetPresentationController {
 
-    let effectView: PassThroughEffectView?
+    var effectView: PassThroughEffectView?
 
     init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
         useBlur: Bool
     ) {
-        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .regular)) : nil
-        effectView?.clipsToBounds = true
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: getBlurEffectStyle)) : nil
+        effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
 
@@ -749,7 +749,14 @@ class BlurredSheetPresenationController: UISheetPresentationController {
                 return 0
             })
         ]
-
+    }
+    
+    var getBlurEffectStyle: UIBlurEffect.Style {
+        if self.traitCollection.userInterfaceStyle == .dark {
+            return .light
+        } else {
+            return .regular
+        }
     }
 
     override func presentationTransitionWillBegin() {

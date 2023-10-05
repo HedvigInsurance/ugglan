@@ -4,7 +4,7 @@ import hCoreUI
 struct RecordButton: View {
     var isRecording: Bool
     var onTap: () -> Void
-
+    
     @ViewBuilder var pulseBackground: some View {
         if isRecording {
             AudioPulseBackground()
@@ -12,14 +12,14 @@ struct RecordButton: View {
             Color.clear
         }
     }
-
+    
     var body: some View {
         ZStack {
             pulseBackground
             SwiftUI.Button {
                 onTap()
             } label: {
-
+                
             }
             .buttonStyle(RecordButtonStyle(isRecording: isRecording))
         }
@@ -28,24 +28,41 @@ struct RecordButton: View {
 
 struct RecordButtonStyle: SwiftUI.ButtonStyle {
     var isRecording: Bool
-
-    @hColorBuilder var innerCircleColorOld: some hColor {
-        if isRecording {
-            hLabelColor.primary
-        } else {
-            hTintColor.red
-        }
-    }
-
+    
     @hColorBuilder
     var getInnerCircleColor: some hColor {
         if isRecording {
-            hLabelColor.primary
+            innerRectangleRecordingColorScheme
         } else {
-            hSignalColorNew.redElement
+            innerCircleRecordingColorScheme
         }
     }
-
+    
+    private let innerRectangleRecordingColorScheme: some hColor = hColorScheme.init(
+        light: hTextColorNew.primary,
+        dark: hTextColorNew.negative
+    )
+    
+    private let innerCircleRecordingColorScheme: some hColor = hColorScheme.init(
+        light: hSignalColorNew.redElement,
+        dark: hSignalColorNew.audioRecordingDark
+    )
+    
+    @hColorBuilder
+    private var outerCircleRecordingColorScheme: some hColor {
+        if isRecording {
+            hColorScheme.init(
+                light: hTextColorNew.negative,
+                dark: hTextColorNew.primary
+            )
+        } else {
+            hColorScheme.init(
+                light: hTextColorNew.negative,
+                dark: hGrayscaleColorNew.greyScale900
+            )
+        }
+    }
+    
     @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
         VStack {
@@ -54,7 +71,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
                 .cornerRadius(isRecording ? 1 : 18)
                 .padding(isRecording ? 22 : 18)
         }
-        .background(Circle().fill(hBackgroundColorNew.primary))
+        .background(Circle().fill(outerCircleRecordingColorScheme))
         .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }

@@ -41,8 +41,9 @@ struct CrossSellingItem: View {
                     openExternal()
                 } content: {
                     hText(L10n.crossSellGetPrice)
+                        .foregroundColor(hTextColorNew.primary).colorScheme(.light)
                 }
-                .fixedSize(horizontal: true, vertical: false)
+                .fixedSize(horizontal: true, vertical: true)
             }
         }
         .onTapGesture {

@@ -27,7 +27,7 @@ public struct PieChartView: View {
                         percentagePerSlice: state.percentagePerSlice,
                         slices: state.slices + 1
                     )
-                    .fill(hTextColorNew.tertiaryTranslucent)
+                    .fill(hTextColorNew.tertiaryTranslucent).colorScheme(.light)
                     .onAppear {
                         withAnimation(self.animation.delay(state.slices == 0 ? 0 : 1.2).repeatForever()) {
                             self.nextSlicePercentage = 1.0

@@ -71,6 +71,7 @@ struct SumitClaimEmergencySelectScreen: View {
                         .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                .hUseLightMode
             }
         }
     }

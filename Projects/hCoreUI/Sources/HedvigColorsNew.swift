@@ -42,12 +42,12 @@ extension UIColor {
             case let .primaryBackground(negative):
                 if negative {
                     return UIColor(dynamic: { trait -> UIColor in
-                        BrandColorBaseNew.grayScale25
+                        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale25 : BrandColorBaseNew.grayScale1000
                     })
                 }
 
                 return UIColor(dynamic: { trait -> UIColor in
-                    BrandColorBaseNew.grayScale25
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale1000 : BrandColorBaseNew.grayScale25
                 })
             case let .secondaryBackground(negative):
                 if negative {

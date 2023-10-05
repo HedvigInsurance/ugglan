@@ -163,6 +163,23 @@ extension EnvironmentValues {
     }
 }
 
+private struct EnvironmentHUseLightMode: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUseLightMode: Bool {
+        get { self[EnvironmentHUseLightMode.self] }
+        set { self[EnvironmentHUseLightMode.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUseLightMode: some View {
+        self.environment(\.hUseLightMode, true)
+    }
+}
+
 extension View {
     /// set filled button style
     public func hButtonFilledStyle(_ style: hButtonFilledStyle) -> some View {
@@ -248,6 +265,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+        @Environment(\.hUseLightMode) var hUseLightMode
 
         var configuration: Configuration
 
@@ -276,11 +294,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     hTextColorNew.disabled
                 }
             case .secondary, .ghost, .secondaryAlt:
-                if isEnabled {
-                    hTextColorNew.primary
-                } else {
-                    hTextColorNew.disabled
-                }
+                    if isEnabled {
+                        hTextColorNew.primary
+                    } else {
+                        hTextColorNew.disabled
+                    }
             case .alert:
                 hTextColorNew.negative
             }
@@ -288,10 +306,17 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
 
         var body: some View {
             LoaderOrContent(color: foregroundColor) {
-                configuration.label
-                    .foregroundColor(
-                        foregroundColor
-                    )
+                if hUseLightMode {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        ).colorScheme(.light)
+                } else {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        )
+                }
             }
         }
     }
@@ -534,6 +559,7 @@ public enum hButton {
         var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
+        @Environment(\.hUseLightMode) var useLightMode
 
         public init(
             type: hButtonConfigurationType,

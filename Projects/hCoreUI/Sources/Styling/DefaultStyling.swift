@@ -300,7 +300,11 @@ extension DefaultStyling {
 
     private static func setTabBarAppearance() {
         let standard = UITabBarAppearance()
+        let scrollEdgeAppearance = UITabBarAppearance()
+        scrollEdgeAppearance.configureWithOpaqueBackground()
+        scrollEdgeAppearance.backgroundColor = UIColor.brandNew(.primaryBackground())
         standard.configureWithOpaqueBackground()
+        standard.backgroundColor = UIColor.brandNew(.primaryBackground())
 
         func configureTabBar(appearance: UITabBarItemStateAppearance) {
             appearance.badgeBackgroundColor = .clear
@@ -315,10 +319,10 @@ extension DefaultStyling {
         configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
         configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
         configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
-
+        
         UITabBar.appearance().standardAppearance = standard
         if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = standard
+            UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
         }
         UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
         UITabBar.appearance().tintColor = .brandNew(.primaryText())
