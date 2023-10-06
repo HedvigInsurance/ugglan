@@ -274,7 +274,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
         CustomTextViewRepresentable(placeholder: "Start writing...", text: $inputText)
             .cornerRadius(12)
             .frame(height: 128)
-            .addFieldBackground(animate: $animateField, error: $inputTextError)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 8)
+            //            .addFieldBackground(animate: $animateField, error: $inputTextError)
             .addFieldError(animate: $animateField, error: $inputTextError)
     }
 
@@ -298,7 +300,13 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
         SubmitClaimAudioRecordingScreen(url: nil)
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(id: "id", questions: ["question 1"])
+                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
+                    id: "id",
+                    questions: ["question 1"],
+                    freeText: nil,
+                    freeTextQuestions: [],
+                    freeTextAvailable: true
+                )
                 let model = FlowClaimAudioRecordingStepModel(with: graphQL)
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))
             }
@@ -324,7 +332,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         self.placeholder = placeholder
         self._inputText = inputText
         super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(horizontalInset: 16, verticalInset: 16)
+        self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
         self.font = Fonts.fontFor(style: .standard)
         if inputText.wrappedValue.isEmpty {

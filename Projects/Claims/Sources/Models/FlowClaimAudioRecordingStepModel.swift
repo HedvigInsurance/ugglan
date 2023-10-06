@@ -15,11 +15,9 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
         self.id = data.id
         self.questions = data.questions
         self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
-        self.textQuestions = [
-            "question text", "question text text text text text text 232 323 2 2 23 ", "question text",
-        ]
+        self.textQuestions = data.freeTextQuestions
         self.inputTextContent = nil
-        self.optionalAudio = true
+        self.optionalAudio = data.freeTextAvailable
     }
 
     func getUrl() -> URL? {

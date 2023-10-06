@@ -8,6 +8,7 @@ query UpdatedClaims {
       associatedTypeOfContract
       closedAt
       audioUrl
+      memberFreeText
     }
   }
 }

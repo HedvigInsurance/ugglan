@@ -114,7 +114,7 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
             self.submittedAt = claim.submittedAt
             self.closedAt = claim.closedAt
             self.signedAudioURL = claim.signedAudioUrl ?? ""
-            self.inputText = nil
+            self.inputText = octopusClaim.memberFreeText
             self.progressSegments = claim.progressSegments.map {
                 .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
             }
