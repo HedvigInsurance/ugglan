@@ -110,6 +110,7 @@ extension Message: Reusable {
         containerView.axis = .horizontal
         containerView.alignment = .fill
         containerView.spacing = 15
+        containerView.backgroundColor = UIColor.brandNew(.primaryBackground())
 
         let spacingContainer = UIStackView()
         spacingContainer.axis = .vertical
@@ -505,7 +506,7 @@ extension Message: Reusable {
 
                     bag += bubble.didLayoutSignal.onValue { _ in applyRounding() }
 
-                    applySpacing()
+//                    applySpacing()
                 }
 
                 return bag

@@ -109,7 +109,7 @@ public enum ButtonType {
         case .transparent:
             return .clear
         case .transparentLarge:
-            return .brand(.primaryBackground())
+            return .brandNew(.primaryBackground())
         }
     }
 

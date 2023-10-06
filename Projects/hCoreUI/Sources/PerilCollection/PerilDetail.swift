@@ -110,9 +110,9 @@ extension PerilDetail: Presentable {
         bag += swipeHintBackgroundView.traitCollectionSignal.atOnce()
             .onValue { _ in
                 gradient.colors = [
-                    UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
-                    UIColor.brand(.secondaryBackground()).cgColor,
-                    UIColor.brand(.secondaryBackground()).cgColor,
+                    UIColor.brandNew(.secondaryBackground()).withAlphaComponent(0).cgColor,
+                    UIColor.brandNew(.secondaryBackground()).cgColor,
+                    UIColor.brandNew(.secondaryBackground()).cgColor,
                 ]
             }
 

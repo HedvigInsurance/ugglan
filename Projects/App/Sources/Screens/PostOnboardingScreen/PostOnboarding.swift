@@ -54,7 +54,7 @@ struct PostOnboarding {
 
         let pushNotificationsSkipButton = Button(
             title: L10n.onboardingActivateNotificationsDismiss,
-            type: .transparent(textColor: .brand(.primaryText()))
+            type: .transparent(textColor: .brandNew(.primaryText()))
         )
 
         bag += pushNotificationsDoButton.onTapSignal.onValue { _ in onAction(.push) }
@@ -103,7 +103,7 @@ extension PostOnboarding: Presentable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.isScrollEnabled = false
         collectionKit.view.contentInsetAdjustmentBehavior = .never
-        collectionKit.view.backgroundColor = .brand(.secondaryBackground())
+        collectionKit.view.backgroundColor = .brandNew(.secondaryBackground())
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in collectionKit.view.bounds.size }
 

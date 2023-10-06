@@ -21,8 +21,8 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
         formComponent.textField.text.font = Fonts.fontFor(style: .body)
         formComponent.textField.tintColor = .brand(.primaryTintColor)
         formComponent.textField.errorColor = .brand(.destructive)
-        formComponent.backgroundColor = .brand(.secondaryBackground())
-        formComponent.textField.backgroundColor = .brand(.secondaryBackground())
+        formComponent.backgroundColor = .brandNew(.secondaryBackground())
+        formComponent.textField.backgroundColor = .brandNew(.secondaryBackground())
         formComponent.hintLabel.font = Fonts.fontFor(style: .footnote)
         return formComponent
     }

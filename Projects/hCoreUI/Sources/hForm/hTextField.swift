@@ -88,6 +88,7 @@ public struct hTextField: View {
                     .modifier(hFontModifier(style: .body))
                     .modifier(masking)
                     .tint(hLabelColor.primary)
+                    .colorScheme(.light)
                     .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                         if shouldUpdate {
                             value = masking.maskValue(text: innerValue, previousText: previousInnerValue)

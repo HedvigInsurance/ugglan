@@ -39,13 +39,13 @@ extension OnboardingChat: Presentable {
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = hCoreUIAssets.menuIcon.image
-        settingsButton.tintColor = .brand(.primaryText())
+        settingsButton.tintColor = .brandNew(.primaryText())
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
         let restartButton = UIBarButtonItem()
         restartButton.image = HCoreUIAsset.restart.image
-        restartButton.tintColor = .brand(.primaryText())
+        restartButton.tintColor = .brandNew(.primaryText())
 
         bag += restartButton.onValue { _ in
             let alert = Alert(

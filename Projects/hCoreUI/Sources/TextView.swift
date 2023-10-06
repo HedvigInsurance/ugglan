@@ -55,12 +55,12 @@ extension TextView: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = UIColor.brandNew(.primaryBackground())
+        view.backgroundColor = UIColor.brandNew(.chatTextView)
         view.isUserInteractionEnabled = true
         view.layer.cornerRadius = 8
         view.layer.borderWidth = 0.5
 
-        bag += view.applyBorderColor { _ in UIColor.BrandColorNew.primaryBorderColor.color }
+        bag += view.applyBorderColor { _ in UIColor.BrandColorNew.secondaryBorderColor.color }
 
         let paddingView = UIStackView()
         paddingView.isUserInteractionEnabled = true

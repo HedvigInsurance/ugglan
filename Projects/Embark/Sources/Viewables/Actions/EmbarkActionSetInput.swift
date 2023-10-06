@@ -81,7 +81,7 @@ extension EmbarkActionSetInputData: Viewable {
         boxStack.edgeInsets = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
 
         let containerView = UIView()
-        containerView.backgroundColor = .brand(.secondaryBackground())
+        containerView.backgroundColor = .brandNew(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
         func getMasking(_ action: Action) -> Masking? {
@@ -124,7 +124,7 @@ extension EmbarkActionSetInputData: Viewable {
                 boxStack.addArrangedSubview(stack)
 
                 if !isLastAction, endIndex > 0 {
-                    let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
+                    let divider = Divider(backgroundColor: .brandNew(.primaryBorderColor))
                     bag += boxStack.addArranged(divider)
                 }
 

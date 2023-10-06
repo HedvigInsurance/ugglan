@@ -18,7 +18,7 @@ extension MultiActionDropDownRow: Viewable {
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
             case .dark: containerView.backgroundColor = .grayscale(.grayFive)
-            default: containerView.backgroundColor = .brand(.primaryBackground())
+            default: containerView.backgroundColor = .brandNew(.primaryBackground())
             }
         }
 
@@ -55,7 +55,7 @@ extension MultiActionDropDownRow: Viewable {
 
         let buttonIcon = UIImageView()
         buttonIcon.image = hCoreUIAssets.chevronUp.image
-        buttonIcon.tintColor = .brand(.primaryText())
+        buttonIcon.tintColor = .brandNew(.primaryText())
 
         buttonStack.addArrangedSubview(buttonTitle)
         buttonStack.addArrangedSubview(buttonIcon)

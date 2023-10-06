@@ -26,7 +26,7 @@ extension AudioPlayer: Viewable {
 
         let shaderView = UIView()
         contentView.addSubview(shaderView)
-        shaderView.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
+        shaderView.backgroundColor = UIColor.brandNew(.secondaryBackground()).darkened(amount: 0.1)
 
         shaderView.snp.makeConstraints { make in make.width.equalTo(0)
             make.leading.equalToSuperview()

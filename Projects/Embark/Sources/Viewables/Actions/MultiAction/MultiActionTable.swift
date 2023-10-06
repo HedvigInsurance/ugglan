@@ -28,7 +28,7 @@ extension MultiActionTable: Presentable {
         bag += form.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
             case .dark: form.backgroundColor = .grayscale(.grayFive)
-            default: form.backgroundColor = .brand(.primaryBackground())
+            default: form.backgroundColor = .brandNew(.primaryBackground())
             }
         }
 
@@ -41,7 +41,7 @@ extension MultiActionTable: Presentable {
             if !isLastComponent {
                 let color =
                     form.traitCollection.userInterfaceStyle == .light
-                    ? UIColor.brand(.primaryBorderColor) : .brand(.primaryBorderColor)
+                    ? UIColor.brandNew(.primaryBorderColor) : .brandNew(.primaryBorderColor)
                 let divider = Divider(backgroundColor: color)
                 bag += section.append(divider)
             }

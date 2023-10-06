@@ -37,7 +37,7 @@ extension MessageBubble: Viewable {
         let label = UILabel(value: "", style: .brand(.body(color: .primary(state: .positive))))
         let backgroundView = UIView()
         backgroundView.layer.borderWidth = 1.0
-        backgroundView.layer.borderColor = UIColor.brand(.primaryBorderColor).cgColor
+        backgroundView.layer.borderColor = UIColor.brandNew(.primaryBorderColor).cgColor
         backgroundView.layer.cornerRadius = 6
         backgroundView.addSubview(label)
         label.snp.makeConstraints { make in make.edges.equalToSuperview().inset(10) }

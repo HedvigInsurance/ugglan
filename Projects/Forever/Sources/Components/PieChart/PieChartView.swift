@@ -20,6 +20,10 @@ public struct PieChartView: View {
             ZStack {
                 Circle()
                     .foregroundColor(hSignalColorNew.greenElement)
+                    .overlay(
+                        Circle()
+                            .stroke(hTextColorNew.negative, lineWidth: 1)
+                    )
                 if !state.percentagePerSlice.isNaN && state.percentagePerSlice != 0 {
                     Slice(
                         startSlices: state.slices,
@@ -34,7 +38,7 @@ public struct PieChartView: View {
                         }
                     }
                     Slice(percentage: percentage, percentagePerSlice: state.percentagePerSlice, slices: state.slices)
-                        .fill(.white)
+                        .fill(hTextColorNew.negative)
                         .onAppear {
                             withAnimation(self.animation) {
                                 self.percentage = 1.0

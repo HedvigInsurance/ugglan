@@ -34,6 +34,7 @@ public struct hRadioField<Content: View>: View {
                     lineWidth: id == selected ? 0 : 1.5
                 )
                 .background(Circle().foregroundColor(retColor(isSelected: id == selected)))
+                .colorScheme(.light)
                 .frame(width: 24, height: 24)
         }
         .padding(.vertical, 11)

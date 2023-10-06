@@ -81,7 +81,7 @@ extension StartDateSection: Presentable {
             separatorType: .none,
             border: .init(
                 width: 1,
-                color: .brand(.primaryBorderColor),
+                color: .brandNew(.primaryBorderColor),
                 cornerRadius: .defaultCornerRadius,
                 borderEdges: .all
             ),

@@ -44,7 +44,7 @@ extension Pager: Presentable {
         viewController.navigationItem.rightBarButtonItem = item
 
         let view = UIView()
-        view.backgroundColor = .brand(.secondaryBackground())
+        view.backgroundColor = .brandNew(.secondaryBackground())
 
         let containerView = UIStackView()
         containerView.axis = .vertical

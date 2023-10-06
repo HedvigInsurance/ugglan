@@ -26,7 +26,7 @@ extension ExpandableContent: Presentable {
         let outerContainer = UIView()
 
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .brand(.primaryBackground())
+        scrollView.backgroundColor = .brandNew(.primaryBackground())
 
         let buttonIsHiddenSignal = ReadWriteSignal(false)
 
@@ -117,9 +117,9 @@ extension ExpandableContent: Presentable {
 
         func setGradientColors() {
             gradient.colors = [
-                UIColor.brand(.primaryBackground()).withAlphaComponent(0).cgColor,
-                UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-                UIColor.brand(.primaryBackground()).cgColor,
+                UIColor.brandNew(.primaryBackground()).withAlphaComponent(0).cgColor,
+                UIColor.brandNew(.primaryBackground()).withAlphaComponent(0.2).cgColor,
+                UIColor.brandNew(.primaryBackground()).cgColor,
             ]
         }
 

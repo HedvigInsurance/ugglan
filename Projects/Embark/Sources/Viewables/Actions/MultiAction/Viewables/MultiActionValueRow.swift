@@ -61,7 +61,7 @@ extension MultiActionValueRow: Reusable {
 
         let button = UIButton()
         button.setImage(hCoreUIAssets.close.image, for: .normal)
-        button.tintColor = .brand(.secondaryText)
+        button.tintColor = .brandNew(.secondaryText)
         button.isUserInteractionEnabled = true
 
         view.addSubview(button)

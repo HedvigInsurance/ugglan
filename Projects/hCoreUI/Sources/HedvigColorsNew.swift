@@ -12,10 +12,14 @@ extension UIColor {
         static let grayScale200 = UIColor(hexString: "EAEAEA")
         static let grayScale300 = UIColor(hexString: "E0E0E0")
         static let grayScale400 = UIColor(hexString: "CFCFCF")
+        static let grayScale500 = UIColor(hexString: "B4B4B4")
         static let grayScale700 = UIColor(hexString: "707070")
+        static let grayScale800 = UIColor(hexString: "505050")
+        static let grayScale900 = UIColor(hexString: "303030")
         static let grayScale1000 = UIColor(hexString: "121212")
         static let white = UIColor.white
         static let black = UIColor.black
+        static let red = UIColor.red
 
         static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
             BrandColorBaseNew.grayScale1000.withAlphaComponent(0.07)
@@ -26,6 +30,7 @@ extension UIColor {
         case primaryBackground(_ negative: Bool = false)
         case secondaryBackground(_ negative: Bool = false)
         case primaryBorderColor
+        case secondaryBorderColor
         case primaryText(_ negative: Bool = false)
         case secondaryText
         case messageBackground(_ my: Bool = false)
@@ -36,6 +41,7 @@ extension UIColor {
         case toasterBorder
         case toasterTitle
         case toasterSubtitle
+        case chatTextView
 
         public var color: UIColor {
             switch self {
@@ -61,15 +67,19 @@ extension UIColor {
                 })
             case .primaryBorderColor:
                 return BrandColorBaseNew.primaryBorder
+            case .secondaryBorderColor:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale800 : BrandColorBaseNew.grayScale1000.withAlphaComponent(0.07)
+                })
             case let .primaryText(negative):
                 if negative {
                     return UIColor(dynamic: { trait -> UIColor in
-                        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.black : BrandColorBaseNew.white
+                        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale25 : BrandColorBaseNew.grayScale1000
                     })
                 }
 
                 return UIColor(dynamic: { trait -> UIColor in
-                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.black
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale25 : BrandColorBaseNew.grayScale1000
                 })
             case .secondaryText:
                 return UIColor(dynamic: { trait -> UIColor in
@@ -81,8 +91,9 @@ extension UIColor {
                         return hSignalColorNew.blueFill
                             .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
                     } else {
-                        return hFillColorNew.opaqueOne
-                            .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
+                        return UIColor(dynamic: { trait -> UIColor in
+                            trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale100 : BrandColorBaseNew.grayScale100
+                        })
                     }
                 })
             case .navigationButton:
@@ -96,8 +107,7 @@ extension UIColor {
                 })
             case .chatMessage:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hTextColorNew.primary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
-                        .uiColor()
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale1000 : BrandColorBaseNew.grayScale1000
                 })
             case .toasterBackground:
                 return UIColor(dynamic: { trait -> UIColor in
@@ -120,6 +130,10 @@ extension UIColor {
                     hSignalColorNew.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
+            case .chatTextView:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.grayScale900 : BrandColorBaseNew.grayScale1000.withAlphaComponent(0.045)
+                })
             }
         }
         var textStyle: TextStyle {
@@ -135,6 +149,7 @@ extension UIColor {
             case .primaryBackground: return Fonts.fontFor(style: .title1)
             case .secondaryBackground: return Fonts.fontFor(style: .title1)
             case .primaryBorderColor: return Fonts.fontFor(style: .title1)
+            case .secondaryBorderColor: return Fonts.fontFor(style: .title1)
             case .primaryText: return Fonts.fontFor(style: .title2)
             case .secondaryText: return Fonts.fontFor(style: .title3)
             case .messageBackground: return Fonts.fontFor(style: .headline)
@@ -145,6 +160,7 @@ extension UIColor {
             case .toasterBorder: return Fonts.fontFor(style: .body)
             case .toasterTitle: return Fonts.fontFor(style: .standardSmall)
             case .toasterSubtitle: return Fonts.fontFor(style: .standardExtraSmall)
+            case .chatTextView: return Fonts.fontFor(style: .standard)
             }
         }
     }

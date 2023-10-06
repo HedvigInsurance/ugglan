@@ -30,12 +30,12 @@ extension EmbarkDatePickerAction: Viewable {
         view.edgeInsets = .init(top: 20, left: 16, bottom: 20, right: 0)
 
         let box = UIView()
-        box.backgroundColor = .brand(.secondaryBackground())
+        box.backgroundColor = .brandNew(.secondaryBackground())
         box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
         let containerView = UIView()
-        containerView.backgroundColor = .brand(.secondaryBackground())
+        containerView.backgroundColor = .brandNew(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
         let stackView = UIStackView()
@@ -68,7 +68,7 @@ extension EmbarkDatePickerAction: Viewable {
             }
 
         let divider = UIView()
-        divider.backgroundColor = .brand(.primaryBorderColor)
+        divider.backgroundColor = .brandNew(.primaryBorderColor)
         divider.snp.makeConstraints { make in make.height.equalTo(1) }
 
         view.addArrangedSubview(stackView)

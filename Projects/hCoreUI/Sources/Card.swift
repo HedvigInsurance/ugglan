@@ -111,7 +111,7 @@ extension Card: Viewable {
         view.accessibilityIdentifier = "Card"
         view.layer.cornerRadius = .defaultCornerRadius
         view.layer.borderWidth = .hairlineWidth
-        bag += view.applyBorderColor { _ -> UIColor in .brand(.primaryBorderColor) }
+        bag += view.applyBorderColor { _ -> UIColor in .brandNew(.primaryBorderColor) }
 
         view.backgroundColor = backgroundColor
 

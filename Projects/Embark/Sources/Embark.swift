@@ -44,7 +44,7 @@ extension Embark: Presentable {
         state.edgePanGestureRecognizer = edgePanGestureRecognizer
 
         let scrollView = FormScrollView()
-        scrollView.backgroundColor = .brand(.primaryBackground())
+        scrollView.backgroundColor = .brandNew(.primaryBackground())
         let form = FormView()
 
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
@@ -143,7 +143,7 @@ extension Embark: Presentable {
             .onValue { link in self.state.goTo(passageName: link.name) }
 
         let progressView = UIProgressView()
-        progressView.tintColor = .brand(.primaryText())
+        progressView.tintColor = .brandNew(.primaryText())
         progressView.progressViewStyle = .bar
         scrollView.addSubview(progressView)
 

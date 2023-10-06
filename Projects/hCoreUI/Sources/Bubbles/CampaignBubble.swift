@@ -20,7 +20,7 @@ extension CampaignBubble: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let containerView = UIView()
-        containerView.backgroundColor = .brand(.primaryBackground())
+        containerView.backgroundColor = .brandNew(.primaryBackground())
 
         containerView.snp.makeConstraints { make in make.width.height.equalTo(100) }
 

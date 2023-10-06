@@ -110,7 +110,7 @@ extension PlanRow: Reusable {
             { `self` in
                 let bag = DisposeBag()
 
-                bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
+                bag += contentView.applyBorderColor { _ in .brandNew(.primaryBorderColor) }
 
                 bag += contentView.signal(for: .touchUpInside).map { true }.bindTo(self.isSelected)
 

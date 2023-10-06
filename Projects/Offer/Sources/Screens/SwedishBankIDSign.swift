@@ -98,7 +98,7 @@ extension SwedishBankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .brand(.secondaryBackground())
+        view.backgroundColor = .brandNew(.secondaryBackground())
         viewController.view = view
 
         let containerStackView = UIStackView()
@@ -128,7 +128,7 @@ extension SwedishBankIdSign: Presentable {
 
         let imageView = UIImageView()
         imageView.image = hCoreUIAssets.bankIdLogo.image
-        imageView.tintColor = .brand(.primaryText())
+        imageView.tintColor = .brandNew(.primaryText())
 
         iconContainerView.addSubview(imageView)
 

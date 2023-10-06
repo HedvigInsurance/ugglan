@@ -21,7 +21,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .brand(.primaryBackground())
+        cardContainer.backgroundColor = .brandNew(.primaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         let fillView = UIView()

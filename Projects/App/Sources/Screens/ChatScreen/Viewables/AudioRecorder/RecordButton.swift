@@ -16,7 +16,7 @@ extension RecordButton: Viewable {
         control.layer.cornerRadius = size / 2
         control.layer.borderWidth = 3
 
-        bag += control.applyBorderColor { _ -> UIColor in UIColor.brand(.primaryBorderColor) }
+        bag += control.applyBorderColor { _ -> UIColor in UIColor.brandNew(.primaryBorderColor) }
 
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false

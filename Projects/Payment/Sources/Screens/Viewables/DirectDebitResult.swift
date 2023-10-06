@@ -153,8 +153,8 @@ extension DirectDebitResult: Viewable {
                     let skipButton = Button(
                         title: L10n.PayInError.postponeButton,
                         type: .standardOutline(
-                            borderColor: .brand(.primaryText()),
-                            textColor: .brand(.primaryText())
+                            borderColor: .brandNew(.primaryText()),
+                            textColor: .brandNew(.primaryText())
                         )
                     )
 

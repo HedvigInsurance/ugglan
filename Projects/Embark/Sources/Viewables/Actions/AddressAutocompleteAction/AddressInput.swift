@@ -32,7 +32,7 @@ extension AddressInput: Viewable {
         let bag = DisposeBag()
 
         let box = UIView()
-        box.backgroundColor = .brand(.secondaryBackground())
+        box.backgroundColor = .brandNew(.secondaryBackground())
         box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
 

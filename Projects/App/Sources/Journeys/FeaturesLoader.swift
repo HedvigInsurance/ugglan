@@ -59,7 +59,7 @@ struct NotificationLoader: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        viewController.view.backgroundColor = .brand(.primaryBackground())
+        viewController.view.backgroundColor = .brandNew(.primaryBackground())
 
         let activityIndicatorView = UIActivityIndicatorView(style: .large)
         viewController.view.addSubview(activityIndicatorView)

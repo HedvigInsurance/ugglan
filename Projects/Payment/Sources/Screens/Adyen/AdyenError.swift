@@ -20,7 +20,7 @@ extension AdyenError: Presentable {
 
         let cancelButton = Button(
             title: L10n.PayInError.postponeButton,
-            type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
+            type: .standardOutline(borderColor: .brandNew(.primaryText()), textColor: .brandNew(.primaryText()))
         )
 
         let didFailAction = ImageTextAction<Bool>(

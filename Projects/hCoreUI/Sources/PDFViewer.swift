@@ -33,7 +33,7 @@ extension PDFViewer: Viewable {
         bag += dataFetchSignal.bindTo(dataReadWriteSignal)
 
         let pdfView = PDFView()
-        pdfView.backgroundColor = .brand(.primaryBackground())
+        pdfView.backgroundColor = .brandNew(.primaryBackground())
         pdfView.maxScaleFactor = 3
         pdfView.autoScales = true
 
@@ -46,7 +46,7 @@ extension PDFViewer: Viewable {
 
         let loadingView = UIView()
         loadingView.alpha = 1
-        loadingView.backgroundColor = .brand(.primaryBackground())
+        loadingView.backgroundColor = .brandNew(.primaryBackground())
         if let downloadButtonTitle {
 
             let downloadButton = Button(

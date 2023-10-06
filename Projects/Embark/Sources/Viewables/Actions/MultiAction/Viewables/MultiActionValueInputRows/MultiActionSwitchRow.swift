@@ -15,7 +15,7 @@ extension MultiActionSwitchRow: Viewable {
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
             case .dark: containerView.backgroundColor = .grayscale(.grayFive)
-            default: containerView.backgroundColor = .brand(.primaryBackground())
+            default: containerView.backgroundColor = .brandNew(.primaryBackground())
             }
         }
 

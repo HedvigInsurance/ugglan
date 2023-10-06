@@ -203,7 +203,10 @@ public struct hSignalColorNew {
     }
 
     public static var greenElement: some hColor {
-        hGreenColorNew.green600
+        hColorScheme(
+            light: hGreenColorNew.green600,
+            dark: hGreenColorNew.greenDarkElement
+        )
     }
 
     public static var greenText: some hColor {
@@ -222,7 +225,10 @@ public struct hSignalColorNew {
     }
 
     public static var amberElement: some hColor {
-        hAmberColorNew.amber600
+        hColorScheme(
+            light: hAmberColorNew.amber600,
+            dark: hAmberColorNew.amberDarkElement
+        )
     }
 
     public static var amberText: some hColor {
@@ -240,16 +246,10 @@ public struct hSignalColorNew {
     public static var redElement: some hColor {
         hColorScheme(
             light: hRedColorNew.red600,
-            dark: redHighlight
+            dark: hRedColorNew.redDark
         )
     }
     
-    public static var audioRecordingDark: some hColor {
-        hColorScheme(
-            Color(hexString: "#FF391F")
-        )
-    }
-
     public static var redText: some hColor {
         hRedColorNew.red800
     }
@@ -266,7 +266,10 @@ public struct hSignalColorNew {
     }
 
     public static var blueElement: some hColor {
-        hBlueColorNew.blue600
+        hColorScheme(
+            light: hBlueColorNew.blue600,
+            dark: hBlueColorNew.blueElementDark
+        )
     }
 
     public static var blueText: some hColor {
@@ -556,6 +559,12 @@ public struct hGreenColorNew {
             Color(hexString: "33432B")
         )
     }
+    
+    public static var greenDarkElement: some hColor {
+        hColorScheme(
+            Color(hexString: "20B652")
+        )
+    }
 }
 
 public struct hYellowColorNew {
@@ -680,6 +689,12 @@ public struct hAmberColorNew {
             Color(hexString: "6B3806")
         )
     }
+    
+    public static var amberDarkElement: some hColor {
+        hColorScheme(
+            Color(hexString: "E5AC00")
+        )
+    }
 }
 
 public struct hRedColorNew {
@@ -740,6 +755,12 @@ public struct hRedColorNew {
     public static var red900: some hColor {
         hColorScheme(
             Color(hexString: "6E180C")
+        )
+    }
+    
+    public static var redDark: some hColor {
+        hColorScheme(
+            Color(hexString: "FF391F")
         )
     }
 }
@@ -926,6 +947,12 @@ public struct hBlueColorNew {
     public static var blue900: some hColor {
         hColorScheme(
             Color(hexString: "1F3D5C")
+        )
+    }
+    
+    public static var blueElementDark: some hColor {
+        hColorScheme(
+            Color(hexString: "3EB5F9")
         )
     }
 }

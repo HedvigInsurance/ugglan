@@ -54,7 +54,7 @@ extension EmbarkPlans: Presentable {
         let tableKit = TableKit<String, PlanRow>(style: style, holdIn: bag)
 
         let containerView = UIView()
-        containerView.backgroundColor = .brand(.primaryBackground())
+        containerView.backgroundColor = .brandNew(.primaryBackground())
         viewController.view = containerView
 
         containerView.addSubview(tableKit.view)

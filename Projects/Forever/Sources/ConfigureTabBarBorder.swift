@@ -17,7 +17,7 @@ extension JourneyPresentation {
 
             presenter.bag += presenter.viewController.view.didMoveFromWindowSignal.onValue({ _ in
                 if let tabBarController = presenter.viewController.tabBarController {
-                    tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+                    tabBarController.tabBar.shadowImage = UIColor.brandNew(.primaryBorderColor).asImage()
                 }
             })
 

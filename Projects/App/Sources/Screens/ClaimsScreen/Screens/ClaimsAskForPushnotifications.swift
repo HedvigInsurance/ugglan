@@ -19,7 +19,7 @@ struct ClaimsAskForPushnotifications: Presentable {
 
         let pushNotificationsSkipButton = Button(
             title: L10n.claimsActivateNotificationsDismiss,
-            type: .transparent(textColor: .brand(.primaryText()))
+            type: .transparent(textColor: .brandNew(.primaryText()))
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(

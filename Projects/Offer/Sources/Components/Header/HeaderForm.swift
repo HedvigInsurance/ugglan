@@ -15,7 +15,7 @@ extension HeaderForm: Presentable {
         let backgroundView = UIView()
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = .defaultCornerRadius
-        backgroundView.backgroundColor = .brand(.secondaryBackground())
+        backgroundView.backgroundColor = .brandNew(.secondaryBackground())
 
         let form = FormView()
         form.dynamicStyle = DynamicFormStyle { _ in

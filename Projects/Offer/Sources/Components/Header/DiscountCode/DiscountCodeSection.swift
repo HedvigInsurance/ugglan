@@ -31,7 +31,7 @@ extension DiscountCodeSection: Presentable {
         let button = Button(
             title: L10n.Offer.addDiscountButton,
             type: .iconTransparent(
-                textColor: .brand(.primaryText()),
+                textColor: .brandNew(.primaryText()),
                 icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
             )
         )

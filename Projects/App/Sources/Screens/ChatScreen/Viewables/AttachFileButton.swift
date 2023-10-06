@@ -10,11 +10,11 @@ extension AttachFileButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .brand(.primaryBackground())
+        control.backgroundColor = UIColor.brandNew(.chatTextView)
         control.layer.cornerRadius = 8
         control.layer.borderWidth = 0.5
 
-        bag += control.applyBorderColor { _ in UIColor.BrandColorNew.primaryBorderColor.color }
+        bag += control.applyBorderColor { _ in UIColor.BrandColorNew.secondaryBorderColor.color }
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
         let icon = Icon(icon: hCoreUIAssets.plusSmall.image, iconWidth: 20)
@@ -36,12 +36,12 @@ extension AttachFileButton: Viewable {
 
         bag += control.signal(for: .touchDown)
             .animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                control.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
+                control.backgroundColor = UIColor.brandNew(.secondaryBackground()).darkened(amount: 0.1)
             }
 
         bag += merge(touchUpInside, control.signal(for: .touchCancel), control.signal(for: .touchUpOutside))
             .animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                control.backgroundColor = UIColor.brand(.primaryBackground())
+                control.backgroundColor = UIColor.brandNew(.primaryBackground())
             }
 
         return (

@@ -30,11 +30,11 @@ extension EmbarkAddressAutocomplete: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
+        view.backgroundColor = .brandNew(.primaryBackground())
         viewController.view = view
 
         let headerBackground = UIView()
-        headerBackground.backgroundColor = .brand(.secondaryBackground())
+        headerBackground.backgroundColor = .brandNew(.secondaryBackground())
         let headerView = UIStackView()
         headerView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 12, right: 20)
         headerView.isLayoutMarginsRelativeArrangement = true
@@ -48,7 +48,7 @@ extension EmbarkAddressAutocomplete: Presentable {
         }
 
         let headerBorder = UIView()
-        headerBorder.backgroundColor = .brand(.primaryBorderColor)
+        headerBorder.backgroundColor = .brandNew(.primaryBorderColor)
         headerBackground.addSubview(headerBorder)
         headerBorder.snp.makeConstraints { make in
             make.width.equalToSuperview()
@@ -83,7 +83,7 @@ extension EmbarkAddressAutocomplete: Presentable {
         }
 
         view.addSubview(tableKit.view)
-        tableKit.view.backgroundColor = .brand(.primaryBackground())
+        tableKit.view.backgroundColor = .brandNew(.primaryBackground())
         tableKit.view.snp.makeConstraints { make in
             make.top.equalTo(headerBackground.snp.bottom)
             make.bottom.trailing.leading.equalToSuperview()

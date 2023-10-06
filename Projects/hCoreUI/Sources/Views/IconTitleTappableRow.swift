@@ -29,7 +29,7 @@ extension IconTitleTappableRow: Viewable {
             }
         )
 
-        row.backgroundColor = .brand(.secondaryBackground())
+        row.backgroundColor = .brandNew(.secondaryBackground())
         row.layer.cornerRadius = 8
 
         let imageView = UIImageView()

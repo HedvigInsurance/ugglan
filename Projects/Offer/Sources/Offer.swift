@@ -120,7 +120,7 @@ extension Offer: Presentable {
             frame: .zero,
             appliesGradient: false
         )
-        scrollView.backgroundColor = .brand(.primaryBackground())
+        scrollView.backgroundColor = .brandNew(.primaryBackground())
 
         let form = FormView()
         form.allowTouchesOfViewsOutsideBounds = true
@@ -142,7 +142,7 @@ extension Offer: Presentable {
         }
 
         let navigationBarBackgroundView = UIView()
-        navigationBarBackgroundView.backgroundColor = .brand(.secondaryBackground())
+        navigationBarBackgroundView.backgroundColor = .brandNew(.secondaryBackground())
         navigationBarBackgroundView.alpha = 0
         scrollView.addSubview(navigationBarBackgroundView)
 
@@ -153,7 +153,7 @@ extension Offer: Presentable {
         }
 
         let navigationBarBorderView = UIView()
-        navigationBarBorderView.backgroundColor = .brand(.primaryBorderColor)
+        navigationBarBorderView.backgroundColor = .brandNew(.primaryBorderColor)
         navigationBarBackgroundView.addSubview(navigationBarBorderView)
 
         navigationBarBorderView.snp.makeConstraints { make in

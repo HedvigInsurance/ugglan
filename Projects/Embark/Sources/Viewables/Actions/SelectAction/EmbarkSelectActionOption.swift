@@ -17,7 +17,7 @@ extension EmbarkSelectActionOption: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .brand(.secondaryBackground())
+        control.backgroundColor = .brandNew(.secondaryBackground())
         control.layer.cornerRadius = 8
         bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
