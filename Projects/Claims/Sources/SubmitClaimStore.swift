@@ -112,6 +112,22 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
 
                 return disposeBag
             }
+        case let .submitTextInput(text):
+            //            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+            //                audioUrl: responseModel.audioUrl
+            //            )
+            //            let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
+            //                input: audioInput,
+            //                context: newClaimContext
+            //            )
+            //            disposeBag +=
+            //                mutation.execute(
+            //                    \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
+            //                )
+            //                .onValue({ action in
+            //                    callback(.value(action))
+            //                })
+            return nil
         case let .submitDamage(damages):
             return FiniteSignal { callback in
                 callback(.value(.setSingleItemDamage(damages: damages)))
@@ -212,6 +228,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
         case .submitAudioRecording:
+            setLoading(for: .postAudioRecording)
+        case .submitTextInput:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
             newState.audioRecordingStep?.audioContent = nil

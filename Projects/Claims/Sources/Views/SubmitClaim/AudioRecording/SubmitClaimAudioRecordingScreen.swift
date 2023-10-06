@@ -14,7 +14,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @ObservedObject var audioRecorder: AudioRecorder
     @State var minutes: Int = 0
     @State var seconds: Int = 0
-    @State var isAudioInput = false
+    @State var isAudioInput = true
     @State var inputText: String = ""
     @State var inputTextError: String?
     @State var animateField: Bool = false
@@ -250,6 +250,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         VStack(spacing: 16) {
             textField
             hButton.LargeButton(type: .primary) {
+                UIApplication.dismissKeyboard()
                 if validate() {
                     store.send(.submitTextInput(text: inputText))
                 }
@@ -280,12 +281,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
     private func validate() -> Bool {
         withAnimation {
             let minCharacters = 50
+            print(self.inputText.count)
             if self.inputText.count < minCharacters {
                 inputTextError = L10n.claimsTextInputMinCharactersError(minCharacters)
             } else {
                 inputTextError = nil
             }
         }
+        print(inputTextError)
         return inputTextError == nil
     }
 }

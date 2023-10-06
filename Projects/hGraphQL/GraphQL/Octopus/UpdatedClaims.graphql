@@ -1,0 +1,13 @@
+query UpdatedClaims {
+  currentMember {
+    claims {
+      id
+      outcome
+      status
+      submittedAt
+      associatedTypeOfContract
+      closedAt
+      audioUrl
+    }
+  }
+}

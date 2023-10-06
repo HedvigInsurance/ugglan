@@ -35,6 +35,23 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
         self.claimDetailData = ClaimDetailData(claim: cardData.claim)
     }
 
+    internal init(
+        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard,
+        octopusData: OctopusGraphQL.UpdatedClaimsQuery.Data.CurrentMember.Claim
+    ) {
+        self.id = cardData.id
+        self.pills = cardData.pills.map {
+            .init(text: $0.text, type: .init(rawValue: $0.type.rawValue.lowercased()) ?? .none)
+        }
+        self.segments = cardData.progressSegments.map {
+            .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
+        }
+        self.title = cardData.title
+        self.subtitle = cardData.subtitle
+
+        self.claimDetailData = ClaimDetailData(claim: cardData.claim, octopusClaim: octopusData)
+    }
+
     public let id: String
     public let pills: [ClaimPill]
     public let segments: [ClaimStatusProgressSegment]
@@ -71,6 +88,25 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
 
         internal init(
             claim: ClaimStatusCard.Claim
+        ) {
+            self.id = claim.id
+            self.status = Claim.ClaimDetailData.ClaimStatus(rawValue: claim.status.rawValue) ?? .none
+            self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
+            self.submittedAt = claim.submittedAt
+            self.closedAt = claim.closedAt
+            self.signedAudioURL = claim.signedAudioUrl ?? ""
+            self.inputText = nil
+            self.progressSegments = claim.progressSegments.map {
+                .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
+            }
+            self.statusParagraph = claim.statusParagraph
+            self.type = claim.type ?? ""
+            self.payout = .init(amount: claim.payout?.amount ?? "", currency: claim.payout?.currency ?? "")
+        }
+
+        internal init(
+            claim: ClaimStatusCard.Claim,
+            octopusClaim: OctopusGraphQL.UpdatedClaimsQuery.Data.CurrentMember.Claim
         ) {
             self.id = claim.id
             self.status = Claim.ClaimDetailData.ClaimStatus(rawValue: claim.status.rawValue) ?? .none
@@ -202,5 +238,15 @@ public struct ClaimData {
         cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data
     ) {
         claims = cardData.claimsStatusCards.map { .init(cardData: $0) }
+    }
+
+    public init(
+        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data,
+        octopusData: OctopusGraphQL.UpdatedClaimsQuery.Data
+    ) {
+        claims = cardData.claimsStatusCards.map { claim in
+            let octopus = octopusData.currentMember.claims.first(where: { $0.id == claim.id })!
+            return .init(cardData: claim, octopusData: octopus)
+        }
     }
 }

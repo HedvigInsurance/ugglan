@@ -9,6 +9,7 @@ import hGraphQL
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
 
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
@@ -20,26 +21,54 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .fetchClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                let octopusFetch = self.octopus.client.fetch(
+                    query: OctopusGraphQL.UpdatedClaimsQuery(),
+                    cachePolicy: .fetchIgnoringCacheData
+                )
+                let giraffeFetch = self.giraffe.client
                     .fetch(
                         query: GiraffeGraphQL.ClaimStatusCardsQuery(
                             locale: Localization.Locale.currentLocale.asGraphQLLocale()
                         ),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                    .onValue { claimData in
-                        let claimData = ClaimData(cardData: claimData)
-                        callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
-                    }
-                    .onError { error in
-                        if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
+                disposeBag += combineLatest(octopusFetch.resultSignal, giraffeFetch.resultSignal)
+                    .onValue { octopusResult, giraffeResult in
+                        if let octopusResults = octopusResult.value, let giraffeResults = giraffeResult.value {
+                            let claimData = ClaimData(cardData: giraffeResults, octopusData: octopusResults)
+                            callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
                         } else {
-                            callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-                            )
+                            if ApplicationContext.shared.isDemoMode {
+                                callback(.value(.setLoadingState(action: action, state: nil)))
+                            } else {
+                                callback(
+                                    .value(
+                                        .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
+                                    )
+                                )
+                            }
                         }
                     }
+                //                disposeBag += self.giraffe.client
+                //                    .fetch(
+                //                        query: GiraffeGraphQL.ClaimStatusCardsQuery(
+                //                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                //                        ),
+                //                        cachePolicy: .fetchIgnoringCacheData
+                //                    )
+                //                    .onValue { claimData in
+                //                        let claimData = ClaimData(cardData: claimData)
+                //                        callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
+                //                    }
+                //                    .onError { error in
+                //                        if ApplicationContext.shared.isDemoMode {
+                //                            callback(.value(.setLoadingState(action: action, state: nil)))
+                //                        } else {
+                //                            callback(
+                //                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                //                            )
+                //                        }
+                //                    }
                 return disposeBag
             }
         default:
