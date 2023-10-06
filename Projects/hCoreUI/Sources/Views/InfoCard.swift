@@ -89,13 +89,13 @@ public struct InfoCard: View {
     var getBackgroundColor: some hColor {
         switch type {
         case .info:
-            hSignalColorNew.blueFill
+            hColorScheme(light: hSignalColorNew.blueFill, dark: hSignalColorNew.blueHighLight)
         case .attention:
-            hSignalColorNew.amberFill
+            hColorScheme(light: hSignalColorNew.amberFill, dark: hSignalColorNew.amberHighLight)
         case .error:
-            hSignalColorNew.redFill
+            hColorScheme(light: hSignalColorNew.redFill, dark: hSignalColorNew.redHighlight)
         case .campaign:
-            hSignalColorNew.greenFill
+            hColorScheme(light: hSignalColorNew.greenFill, dark: hSignalColorNew.greenHighlight)
         }
     }
 
