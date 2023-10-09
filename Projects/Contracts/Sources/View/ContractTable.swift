@@ -9,12 +9,18 @@ import hCoreUI
 import hGraphQL
 
 struct ContractTable {
-    let filter: ContractFilter
     @PresentableStore var store: ContractStore
+    let showTerminated: Bool
     
     func getContractsToShow(for state: ContractState) -> [Contract] {
-        return state.activeContracts.compactMap { $0 }
-        /* TODO ADD PENDING CONTRACTS*/
+        
+        if showTerminated {
+            return state.terminatedContracts.compactMap { $0 }
+        } else {
+            let activeContractsToShow = state.activeContracts.compactMap { $0 }
+            let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
+            return activeContractsToShow + pendingContractsToShow
+        }
     }
 }
 
@@ -41,32 +47,36 @@ extension ContractTable: View {
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
-        CrossSellingStack(withHeader: true)
-            .padding(.top, 24)
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                state.terminatedContracts
-            }
-        ) { terminatedContracts in
-            if !terminatedContracts.isEmpty {
-                hSection {
-                    hButton.LargeButton(type: .secondary) {
-                        store.send(.openTerminatedContracts)
-                    } content: {
-                        hRow {
-                            hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
-                                .foregroundColor(hTextColorNew.primary)
+        if !showTerminated {
+            VStack(spacing: 16) {
+                CrossSellingStack(withHeader: true)
+                    .padding(.top, 24)
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        state.terminatedContracts
+                    }
+                ) { terminatedContracts in
+                    if !terminatedContracts.isEmpty {
+                        hSection {
+                            hButton.LargeButton(type: .secondary) {
+                                store.send(.openTerminatedContracts)
+                            } content: {
+                                hRow {
+                                    hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
+                                        .foregroundColor(hTextColorNew.primary)
+                                }
+                                .withChevronAccessory
+                                .foregroundColor(hTextColorNew.secondary)
+                            }
                         }
-                        .withChevronAccessory
-                        .foregroundColor(hTextColorNew.secondary)
+                        .transition(.slide)
                     }
                 }
-                .transition(.slide)
+                .presentableStoreLensAnimation(.spring())
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, 24)
             }
         }
-        .presentableStoreLensAnimation(.spring())
-        .sectionContainerStyle(.transparent)
-        .padding(.bottom, 24)
     }
 }

@@ -5,6 +5,7 @@ public struct Perils: Codable, Equatable, Hashable {
     public let color: String?
     public let covered: [String]
     public let exceptions: [String]
+    public let info: String
 
     public init(
         fragment: OctopusGraphQL.ProductVariantFragment.Peril
@@ -12,6 +13,7 @@ public struct Perils: Codable, Equatable, Hashable {
         title = fragment.title
         description = fragment.description
         icon = nil
+        info = fragment.info
         covered = fragment.covered
         exceptions = fragment.exceptions
         color = fragment.colorCode
@@ -26,5 +28,6 @@ public struct Perils: Codable, Equatable, Hashable {
         covered = fragment.covered
         exceptions = fragment.exceptions
         color = ""
+        info = ""
     }
 }

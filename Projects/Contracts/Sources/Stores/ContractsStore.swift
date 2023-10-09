@@ -48,7 +48,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                         callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
 
                         let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
-                            PendingContract(data: contract)
+                            Contract(pendingContract: contract)
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))
                         callback(.value(.fetchContractsDone))
@@ -83,19 +83,9 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             setLoading(for: .fetchContractBundles)
         case .fetchContracts:
             setLoading(for: .fetchContracts)
-//        case .setContractBundles(let activeContractBundles):
-//            newState.hasLoadedContractBundlesOnce = true
-//            removeLoading(for: .fetchContractBundles)
-//            guard activeContractBundles != state.contractBundles else { return newState }
-//            newState.contractBundles = activeContractBundles
-//        case let .setContracts(contracts):
-//            removeLoading(for: .fetchContracts)
-//            newState.contracts = contracts
         case let .setActiveContracts(contracts):
-//            removeLoading(for: .fetchContracts)
             newState.activeContracts = contracts
         case let .setTerminatedContracts(contracts):
-//            removeLoading(for: .fetchContracts)
             newState.terminatedContracts = contracts
         case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)

@@ -61,24 +61,6 @@ public struct ProductVariant: Codable, Hashable {
     
 }
 
-public struct PendingContract: Codable, Hashable, Equatable {
-    public let exposureDisplayName: String
-    public let id: String
-    public let premium: MonetaryAmount
-    public let displayItems: [AgreementDisplayItem]
-    public let productVariant: ProductVariant
-    
-    public init(
-        data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
-    ) {
-        self.exposureDisplayName = data.exposureDisplayName
-        self.id = data.id
-        self.premium = .init(fragment: data.premium.fragments.moneyFragment)
-        self.displayItems = data.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
-        self.productVariant = .init(data: data.productVariant.fragments.productVariantFragment)
-    }
-}
-
 public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
@@ -108,11 +90,11 @@ public struct Contract: Codable, Hashable, Equatable {
     public let currentAgreement: Agreement
     public let exposureDisplayName: String
     public let externalInsuranceCancellation: ContractExternalInsuranceCancellation?
-    public let masterInceptionDate: String
+    public let masterInceptionDate: String?
     public let terminationDate: String?
     public let supportsAddressChange: Bool
     public let upcomingChangedAgreement: Agreement?
-    public let upcomingRenewal: ContractRenewal
+    public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
     public var pillowType: PillowType? {
         if (self.terminationDate != nil) {
@@ -122,13 +104,30 @@ public struct Contract: Codable, Hashable, Equatable {
     }
     
     init(
+        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
+    ) {
+        exposureDisplayName = pendingContract.exposureDisplayName
+        id = pendingContract.id
+        currentAgreement = .init(
+            premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
+            displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
+        )
+        externalInsuranceCancellation = nil
+        masterInceptionDate = nil
+        terminationDate = nil
+        supportsAddressChange = false
+        upcomingChangedAgreement = nil
+        upcomingRenewal = nil
+        typeOfContract = .unknown
+    }
+    
+    init(
         contract: OctopusGraphQL.ContractFragment
     ) {
         id = contract.id
-        
         currentAgreement = .init(agreement: contract.currentAgreement.fragments.agreementFragment)
         ?? Agreement(certificateUrl: "", activeFrom: "", activeTo: "", premium: MonetaryAmount(amount: 0, currency: ""), displayItems: [], productVariant: ProductVariant(termsVersion: "", typeOfContract: "", partner: nil, perils: [], insurableLimits: [], documents: [], highlights: [], FAQ: [], displayName: ""))
-        
         exposureDisplayName = contract.exposureDisplayName
         if let cancellation = contract.externalInsuranceCancellation {
             externalInsuranceCancellation = .init(data: cancellation.fragments.contractExternalInsuranceCancellationFragment)
@@ -414,7 +413,7 @@ extension Contract {
 public struct ContractRenewal: Codable, Hashable {
     public let renewalDate: String
     public let draftCertificateUrl: String?
-
+    
     init(
         renewalDate: String,
         draftCertificateUrl: String
@@ -422,7 +421,7 @@ public struct ContractRenewal: Codable, Hashable {
         self.renewalDate = renewalDate
         self.draftCertificateUrl = draftCertificateUrl
     }
-
+    
     init(
         upcomingRenewal: OctopusGraphQL.ContractRenewalFragment
     ) {
@@ -447,14 +446,27 @@ public struct Agreement: Codable, Hashable {
         self.displayItems = displayItems
         self.productVariant = productVariant
     }
-
+    
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
-
+    
+    init(
+        premium: MonetaryAmount,
+        displayItems: [AgreementDisplayItem],
+        productVariant: ProductVariant
+    ) {
+        self.premium = premium
+        self.displayItems = displayItems
+        self.productVariant = productVariant
+        self.certificateUrl = nil
+        self.activeFrom = nil
+        self.activeTo = nil
+    }
+    
     init?(
         agreement: OctopusGraphQL.AgreementFragment?
     ) {
@@ -468,7 +480,7 @@ public struct Agreement: Codable, Hashable {
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
     }
-
+    
 }
 
 public struct AgreementDisplayItem: Codable, Hashable {
@@ -580,11 +592,11 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
         self.displayName = displayName
         self.url = url
     }
-
+    
     public var id: String {
         displayName + url
     }
-
+    
     public let displayName: String
     public let url: String
 }

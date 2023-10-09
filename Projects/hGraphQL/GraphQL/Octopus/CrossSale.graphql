@@ -10,7 +10,6 @@ fragment ProductVariantFragment on ProductVariant {
         title
         description
         info
-        shortDescription
         covered
         exceptions
         colorCode

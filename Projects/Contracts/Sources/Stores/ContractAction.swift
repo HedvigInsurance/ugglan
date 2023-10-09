@@ -29,7 +29,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     case setActiveContracts (contracts: [Contract])
     case setTerminatedContracts (contracts: [Contract])
-    case setPendingContracts (contracts: [PendingContract])
+    case setPendingContracts (contracts: [Contract])
     
     case setCrossSells(crossSells: [CrossSell])
     case goToMovingFlow

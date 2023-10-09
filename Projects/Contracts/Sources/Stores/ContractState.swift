@@ -13,26 +13,26 @@ public struct ContractState: StateProtocol {
     @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
-    public var pendingContracts: [PendingContract] = []
+    public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
     
     func contractForId(_ id: String) -> Contract? {
-        /** TODO ADD PENDING CONTRACTS */
-        if let inBundleContract = activeContracts.compactMap({ $0 })
+        let activeContracts = activeContracts.compactMap({ $0 })
+        let terminatedContracts = terminatedContracts.compactMap({ $0 })
+        let pendingContracts = pendingContracts.compactMap({ $0 })
+        let allContracts = activeContracts + terminatedContracts + pendingContracts
+        
+        if let inBundleContract = allContracts
             .first(where: { contract in
                 contract.id == id
             })
         {
             return inBundleContract
         }
-
-        return
-        activeContracts
-            .first { contract in
-                contract.id == id
-            }
+        
+        return nil
     }
 }
 

@@ -73,7 +73,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     }
                 } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
                     StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
-                } else if let inceptionDate = contract.masterInceptionDate.localDateToDate, (daysBetween(start: Date(), end: inceptionDate)>0) {
+                } else if let inceptionDate = contract.masterInceptionDate?.localDateToDate, (daysBetween(start: Date(), end: inceptionDate)>0) {
                     StatusPill(text: L10n.contractStatusActiveInFuture(inceptionDate.localDateString)).padding(.trailing, 4)
                 }
                 Spacer()

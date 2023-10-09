@@ -88,7 +88,7 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if (contract?.terminationDate) != nil {
+                if ((contract?.terminationDate) == nil) {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,
