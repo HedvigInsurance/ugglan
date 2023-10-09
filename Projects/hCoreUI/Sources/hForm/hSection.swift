@@ -157,7 +157,8 @@ extension hSectionContainerStyle: ViewModifier {
             content.background(
                 hColorScheme(
                     light: hFillColorNew.offBlack,
-                    dark: hButtonColorNew.primaryHover)
+                    dark: hButtonColorNew.primaryHover
+                )
             )
             .clipShape(Squircle.default())
         }
