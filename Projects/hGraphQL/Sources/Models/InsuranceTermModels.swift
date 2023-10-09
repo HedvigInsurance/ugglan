@@ -4,7 +4,7 @@ public struct InsuranceTerm: Codable, Equatable, Hashable {
     public var displayName: String
     public var url: String
     public var type: InsuranceDocumentType
-    
+
     public init(
         _ data: OctopusGraphQL.ProductVariantFragment.Document
     ) {
@@ -21,12 +21,12 @@ public enum InsuranceDocumentType: String, Codable {
     case generalTerms = "GENERAL_TERMS"
     case privacyPolicy = "PRIVACY_POLICY"
     case unknown = "UNKNOWN"
-    
+
     static func resolve(for insuranceDocumentType: OctopusGraphQL.InsuranceDocumentType) -> Self {
         if let concreteTypeOfContract = Self(rawValue: insuranceDocumentType.rawValue) {
             return concreteTypeOfContract
         }
-        
+
         log.warn(
             "Got an unknown type of document \(insuranceDocumentType.rawValue) that couldn't be resolved.",
             error: nil,

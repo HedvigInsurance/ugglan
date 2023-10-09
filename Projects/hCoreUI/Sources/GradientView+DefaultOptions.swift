@@ -1,8 +1,8 @@
 import CoreGraphics
 import Flow
 import UIKit
-import hGraphQL
 import hCore
+import hGraphQL
 
 extension GradientView {
     public struct GradientOption: Equatable {

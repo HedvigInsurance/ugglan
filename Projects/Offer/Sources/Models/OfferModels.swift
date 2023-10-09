@@ -1,9 +1,9 @@
-import Flow
 import Contracts
+import Flow
+import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
-import Foundation
 
 public typealias OfferData = GiraffeGraphQL.QuoteBundleQuery.Data
 
