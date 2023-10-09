@@ -141,29 +141,29 @@ extension MovingFlowIntro: Presentable {
             return innerBag
         }
 
-//        bag += store.stateSignal.atOnce()
-//            .onValue { state in
-//                if let upcomingAgreementTable = state.activeContracts.compactMap({ $0 })
-//                    .first(where: {
-//                        !($0.upcomingChangedAgreement?.displayItems.isEmpty ?? false)
-//                    })?
-//                    .upcomingChangedAgreement
-//                {
-//                    $section.value = .existing(upcomingAgreementTable)
-//                } else {
-//                    if let bundle = state.activeContracts
-//                        .first(where: { bundle in
-//                            bundle != nil
-//                        })
-//                    {
-//                        $section.value = .normal(
-//                            bundle.movingFlowEmbarkId ?? ""
-//                        )
-//                    } else {
-//                        $section.value = .manual
-//                    }
-//                }
-//            }
+        //        bag += store.stateSignal.atOnce()
+        //            .onValue { state in
+        //                if let upcomingAgreementTable = state.activeContracts.compactMap({ $0 })
+        //                    .first(where: {
+        //                        !($0.upcomingChangedAgreement?.displayItems.isEmpty ?? false)
+        //                    })?
+        //                    .upcomingChangedAgreement
+        //                {
+        //                    $section.value = .existing(upcomingAgreementTable)
+        //                } else {
+        //                    if let bundle = state.activeContracts
+        //                        .first(where: { bundle in
+        //                            bundle != nil
+        //                        })
+        //                    {
+        //                        $section.value = .normal(
+        //                            bundle.movingFlowEmbarkId ?? ""
+        //                        )
+        //                    } else {
+        //                        $section.value = .manual
+        //                    }
+        //                }
+        //            }
 
         return (
             viewController,
