@@ -141,71 +141,74 @@ struct ContractRow: View {
     }
 }
 
-//struct ContractRow_Previews: PreviewProvider {
-//    static var previews: some View {
-//        VStack {
-//            Spacer()
-//            ContractRow(id: "2").frame(height: 200)
-//            Spacer()
-//        }
-//        .onAppear {
-//            let store: ContractStore = globalPresentableStoreContainer.get()
-//            let contract = Contract(
-//                id: "",
-//                currentAgreement:
-//                    Agreement(
-//                        certificateUrl: "",
-//                        activeFrom: "",
-//                        activeTo: "",
-//                        premium:
-//                            MonetaryAmount(
-//                                amount: 0,
-//                                currency: ""),
-//                        displayItems: [],
-//                        productVariant:
-//                            ProductVariant(
-//                                termsVersion: "",
-//                                typeOfContract: "",
-//                                partner: "",
-//                                perils: [],
-//                                insurableLimits: [],
-//                                documents: [],
-//                                highlights: [],
-//                                FAQ: [],
-//                                displayName: "")),
-//                exposureDisplayName: "",
-//                externalInsuranceCancellation: nil,
-//                masterInceptionDate: "Date",
-//                terminationDate: "Date",
-//                supportsAddressChange: true,
-//                upcomingChangedAgreement:
-//                    Agreement(
-//                        certificateUrl: "",
-//                        activeFrom: "",
-//                        activeTo: "",
-//                        premium:
-//                            MonetaryAmount(
-//                                amount: 0,
-//                                currency: ""),
-//                        displayItems: [],
-//                        productVariant:
-//                            ProductVariant(
-//                                termsVersion: "",
-//                                typeOfContract: "",
-//                                partner: "",
-//                                perils: [],
-//                                insurableLimits: [],
-//                                documents: [],
-//                                highlights: [],
-//                                FAQ: [],
-//                                displayName: ""),
-//                        upcomingRenewal:
-//                            ContractRenewal(
-//                                renewalDate: "",
-//                                draftCertificateUrl: ""),
-//                        typeOfContract: .dkHouse))
-//                let contracts = [contract]
-//                store.send(.setActiveContracts(contracts: contracts))
-//                }
-//                }
-//                }
+struct ContractRow_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Spacer()
+            ContractRow(id: "2").frame(height: 200)
+            Spacer()
+        }
+        .onAppear {
+            let store: ContractStore = globalPresentableStoreContainer.get()
+            let contract = Contract(
+                id: "1",
+                currentAgreement:
+                    Agreement(
+                        premium: MonetaryAmount(amount: 0, currency: ""),
+                        displayItems: [],
+                        productVariant:
+                            ProductVariant(
+                                termsVersion: "",
+                                typeOfContract: "",
+                                partner: nil,
+                                perils: [],
+                                insurableLimits: [],
+                                documents: [],
+                                highlights: [],
+                                FAQ: nil,
+                                displayName: "")
+                    ),
+                exposureDisplayName: "",
+                externalInsuranceCancellation: ContractExternalInsuranceCancellation(
+                    id: "",
+                    bankSignering:
+                        ContractExternalInsuranceCancellation.BankSignering(
+                            approvedByDate: "",
+                            url: ""),
+                    externalInsurer: ContractExternalInsuranceCancellation.ExternalInsurer(
+                        id: "",
+                        displayName: "",
+                        insurelyId: ""),
+                    status: .completed,
+                    type: .bankSigned
+                ),
+                masterInceptionDate: "",
+                terminationDate: "",
+                supportsAddressChange: true,
+                upcomingChangedAgreement:
+                    Agreement(
+                        premium: MonetaryAmount(amount: 0, currency: ""),
+                        displayItems: [],
+                        productVariant:
+                            ProductVariant(
+                                termsVersion: "",
+                                typeOfContract: "",
+                                partner: nil,
+                                perils: [],
+                                insurableLimits: [],
+                                documents: [],
+                                highlights: [],
+                                FAQ: nil,
+                                displayName: "")
+                    ),
+                upcomingRenewal:
+                    ContractRenewal(
+                        renewalDate: "",
+                        draftCertificateUrl: ""
+                    ),
+                typeOfContract: .seHouse)
+            let contracts = [contract]
+            store.send(.setActiveContracts(contracts: contracts))
+        }
+    }
+}

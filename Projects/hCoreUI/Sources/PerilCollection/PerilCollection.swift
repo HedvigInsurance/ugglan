@@ -120,9 +120,9 @@ struct PerilCollection_Previews: PreviewProvider {
                         title: "title",
                         description: "DESC",
                         info: "info",
-                        colorCode: "ffffff",
+                        covered: [],
                         exceptions: [],
-                        covered: []
+                        colorCode: ""
                     )
                 )
             ]

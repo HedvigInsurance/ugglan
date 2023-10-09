@@ -141,21 +141,19 @@ extension MovingFlowIntro: Presentable {
             return innerBag
         }
 
-        /* TODO: CHECK WHAT THIS IS */
 //        bag += store.stateSignal.atOnce()
 //            .onValue { state in
 //                if let upcomingAgreementTable = state.activeContracts.compactMap({ $0 })
 //                    .first(where: {
-//                        !($0.upcomingChangedAgreement?.dis.isEmpty ?? false)
-////                        !$0.upcomingAgreementsTable.sections.isEmpty
+//                        !($0.upcomingChangedAgreement?.displayItems.isEmpty ?? false)
 //                    })?
 //                    .upcomingChangedAgreement
 //                {
 //                    $section.value = .existing(upcomingAgreementTable)
 //                } else {
-//                    if let bundle = state.contractBundles
+//                    if let bundle = state.activeContracts
 //                        .first(where: { bundle in
-//                            bundle.movingFlowEmbarkId != nil
+//                            bundle != nil
 //                        })
 //                    {
 //                        $section.value = .normal(

@@ -504,26 +504,40 @@ public struct AgreementDisplayItem: Codable, Hashable {
 
 public struct ContractExternalInsuranceCancellation: Codable, Hashable {
     let id: String
-    let bankSigning: BankSigning?
+    let bankSignering: BankSignering?
     let externalInsurer: ExternalInsurer
     let status: ContractExternalInsuranceCancellationStatus
     let type: ContractExternalInsuranceCancellationType
     
     public init(
+        id: String,
+        bankSignering: BankSignering?,
+        externalInsurer: ExternalInsurer,
+        status: ContractExternalInsuranceCancellationStatus,
+        type: ContractExternalInsuranceCancellationType
+    ) {
+        self.id = id
+        self.bankSignering = bankSignering
+        self.externalInsurer = externalInsurer
+        self.status = status
+        self.type = type
+    }
+    
+    public init(
         data: OctopusGraphQL.ContractExternalInsuranceCancellationFragment
     ) {
         self.id = data.id
-        if let bankSigning = data.bankSignering {
-            self.bankSigning = BankSigning(approvedByDate: bankSigning.approveByDate, url: bankSigning.url)
+        if let bankSignering = data.bankSignering {
+            self.bankSignering = BankSignering(approvedByDate: bankSignering.approveByDate, url: bankSignering.url)
         } else {
-            bankSigning = nil
+            bankSignering = nil
         }
         self.externalInsurer = ExternalInsurer(id: data.externalInsurer.id, displayName: data.externalInsurer.displayName, insurelyId: data.externalInsurer.insurelyId)
         self.status = ContractExternalInsuranceCancellationStatus.resolve(for: data.status)
         self.type = ContractExternalInsuranceCancellationType.resolve(for: data.type)
     }
     
-    struct BankSigning: Codable, Hashable {
+    public struct BankSignering: Codable, Hashable {
         let approvedByDate: String
         let url: String?
         
@@ -536,7 +550,7 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
         }
     }
     
-    struct ExternalInsurer: Codable, Hashable {
+    public struct ExternalInsurer: Codable, Hashable {
         let id: String
         let displayName: String
         let insurelyId: String?
