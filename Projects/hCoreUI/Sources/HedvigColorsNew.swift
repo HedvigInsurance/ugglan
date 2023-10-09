@@ -19,7 +19,6 @@ extension UIColor {
         static let grayScale1000 = UIColor(hexString: "121212")
         static let white = UIColor.white
         static let black = UIColor.black
-        static let red = UIColor.red
 
         static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
             BrandColorBaseNew.grayScale1000.withAlphaComponent(0.07)

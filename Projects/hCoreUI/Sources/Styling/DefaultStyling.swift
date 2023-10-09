@@ -231,17 +231,15 @@ extension DefaultStyling {
             view.appearance().backgroundColor = .brandNew(.primaryBackground())
 
             view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor =
-                .brandNew(.secondaryBackground())
+                .brandNew(.primaryBackground())
         }
 
-        UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
+        UIRefreshControl.appearance().tintColor = .brandNew(.primaryText())
         setNavigationBarAppearance()
         setTabBarAppearance()
         setSegmentedControllAppearance()
 
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
-            .primaryTintColor
-        )
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brandNew(.primaryText())
 
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(

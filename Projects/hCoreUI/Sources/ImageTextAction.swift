@@ -98,7 +98,7 @@ extension ImageTextAction: Viewable {
         let headerImageView = UIImageView()
         headerImageView.image = image.image
         headerImageView.contentMode = .scaleAspectFit
-        headerImageView.tintColor = .brand(.primaryTintColor)
+        headerImageView.tintColor = .brandNew(.primaryText())
 
         headerImageContainer.addArrangedSubview(headerImageView)
 

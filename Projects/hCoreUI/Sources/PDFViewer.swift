@@ -80,7 +80,7 @@ extension PDFViewer: Viewable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
-        activityIndicator.tintColor = .brand(.primaryTintColor)
+        activityIndicator.tintColor = .brandNew(.primaryText())
 
         loadingView.addSubview(activityIndicator)
 

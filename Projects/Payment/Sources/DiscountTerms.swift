@@ -27,7 +27,7 @@ extension DiscountTerms: Viewable {
 
         let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString)
             .attributedStringWithVariableStyles(
-                [termsAndConditionsString: textStyle.colored(.brand(.primaryTintColor))],
+                [termsAndConditionsString: textStyle.colored(.brandNew(.primaryText()))],
                 fallbackStyle: textStyle
             )
 

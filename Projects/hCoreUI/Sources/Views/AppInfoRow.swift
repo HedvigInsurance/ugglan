@@ -46,7 +46,7 @@ extension AppInfoRow: Viewable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.color = .brandNew(.primaryText())
         activityIndicator.startAnimating()
 
         row.append(activityIndicator)

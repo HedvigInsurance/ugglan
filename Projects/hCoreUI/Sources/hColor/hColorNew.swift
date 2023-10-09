@@ -61,7 +61,10 @@ public struct hBorderColorNew {
     }
 
     public static var opaqueTwo: some hColor {
-        hGrayscaleColorNew.greyScale300
+        hColorScheme(
+            light: hGrayscaleColorNew.greyScale300,
+            dark: hGrayscaleColorNew.greyScale700
+        )
     }
 
     public static var opaqueThree: some hColor {
@@ -195,7 +198,10 @@ public struct hHighlightColorNew {
 
 public struct hSignalColorNew {
     public static var greenFill: some hColor {
-        hGreenColorNew.green100
+        hColorScheme(
+            light: hGreenColorNew.green100,
+            dark: greenHighlight
+        )
     }
 
     public static var greenHighlight: some hColor {

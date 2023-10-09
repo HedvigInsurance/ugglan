@@ -9,7 +9,7 @@ public struct hRadioField<Content: View>: View {
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
-
+    
     public init(
         id: String,
         content: @escaping () -> Content,
@@ -23,7 +23,7 @@ public struct hRadioField<Content: View>: View {
         self._error = error ?? Binding.constant(nil)
         self.useAnimation = useAnimation
     }
-
+    
     public var body: some View {
         HStack {
             content
@@ -34,7 +34,6 @@ public struct hRadioField<Content: View>: View {
                     lineWidth: id == selected ? 0 : 1.5
                 )
                 .background(Circle().foregroundColor(retColor(isSelected: id == selected)))
-                .colorScheme(.light)
                 .frame(width: 24, height: 24)
         }
         .padding(.vertical, 11)
@@ -54,16 +53,16 @@ public struct hRadioField<Content: View>: View {
             }
         }
     }
-
+    
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
             hTextColorNew.primary
         } else {
-            hFillColorNew.opaqueOne
+            hTintColor.clear
         }
     }
-
+    
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {

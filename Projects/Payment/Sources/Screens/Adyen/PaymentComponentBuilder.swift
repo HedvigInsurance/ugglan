@@ -19,7 +19,7 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
         formComponent.mainButtonItem.button.cornerRounding = .fixed(6)
         formComponent.textField.title.font = Fonts.fontFor(style: .caption1)
         formComponent.textField.text.font = Fonts.fontFor(style: .body)
-        formComponent.textField.tintColor = .brand(.primaryTintColor)
+        formComponent.textField.tintColor = .brandNew(.primaryText())
         formComponent.textField.errorColor = .brand(.destructive)
         formComponent.backgroundColor = .brandNew(.secondaryBackground())
         formComponent.textField.backgroundColor = .brandNew(.secondaryBackground())

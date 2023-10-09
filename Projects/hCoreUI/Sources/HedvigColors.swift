@@ -45,7 +45,6 @@ private enum Grayscale {
 }
 
 public enum BrandColor {
-    case primaryTintColor
     case link
     case primaryButtonBackgroundColor
     case secondaryButtonBackgroundColor
@@ -59,10 +58,6 @@ public enum BrandColor {
 
     var color: UIColor {
         switch self {
-        case .primaryTintColor:
-            return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
-            })
         case .primaryButtonBackgroundColor: return BrandColorBase.lavender
         case .primaryButtonTextColor: return BrandColorBase.black
         case .secondaryButtonBackgroundColor:
