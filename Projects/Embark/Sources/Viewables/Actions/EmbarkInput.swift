@@ -55,13 +55,13 @@ extension FieldStyle {
     static let embarkInputLarge = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
         style.autocorrection = .no
-        style.cursorColor = .brand(.primaryTintColor)
+        style.cursorColor = .brandNew(.primaryBackground())
     }
 
     static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
         style.autocorrection = .no
-        style.cursorColor = .brand(.primaryTintColor)
+        style.cursorColor = .brandNew(.primaryBackground())
     }
 }
 

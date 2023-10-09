@@ -35,17 +35,6 @@ struct ClaimContactCard: View {
             .withHeader({
                 HStack {
                     hText(title)
-                    Spacer()
-                    Image(uiImage: hCoreUIAssets.infoSmall.image)
-                        .foregroundColor(hTextColorNew.secondary)
-                        .fixedSize()
-                        .onTapGesture {
-                            store.send(
-                                .navigationAction(
-                                    action: .openInfoScreen(title: L10n.submitClaimPartnerTitle, description: "")
-                                )
-                            )
-                        }
                 }
             })
             .sectionContainerStyle(.black)
@@ -82,6 +71,8 @@ struct ClaimContactCard: View {
             } content: {
                 hText(buttonText)
                     .multilineTextAlignment(.center)
+                    .foregroundColor(hTextColorNew.primary)
+                    .colorScheme(.light)
             }
             .padding(.horizontal, 16)
         }

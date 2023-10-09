@@ -104,7 +104,7 @@ struct ClaimEmergencyContactCard: View {
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
-                            .foregroundColor(hTextColorNew.negative)
+                            .foregroundColor(hColorScheme(light: hTextColorNew.negative, dark: hTextColorNew.primary))
                     }
                     hText(label)
                         .foregroundColor(hTextColorNew.tertiary)
@@ -123,6 +123,8 @@ struct ClaimEmergencyContactCard: View {
                     }
                 } content: {
                     hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
+                        .foregroundColor(hTextColorNew.primary)
+                        .colorScheme(.light)
                 }
                 .padding(.horizontal, 16)
 

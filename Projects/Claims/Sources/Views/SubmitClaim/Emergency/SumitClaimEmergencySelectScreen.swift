@@ -58,6 +58,7 @@ struct SumitClaimEmergencySelectScreen: View {
                             }
                         } content: {
                             hText(option.displayName)
+                                .foregroundColor(hColorScheme(light: hTextColorNew.primary, dark: hTextColorNew.negative))
                         }
                         .fixedSize(horizontal: false, vertical: true)
                     } else {
@@ -71,7 +72,6 @@ struct SumitClaimEmergencySelectScreen: View {
                         .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .hUseLightMode
             }
         }
     }
