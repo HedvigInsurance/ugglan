@@ -169,7 +169,8 @@ struct ContractRow_Previews: PreviewProvider {
                                 documents: [],
                                 highlights: [],
                                 FAQ: nil,
-                                displayName: "")
+                                displayName: ""
+                            )
                     ),
                 exposureDisplayName: "",
                 externalInsuranceCancellation: ContractExternalInsuranceCancellation(
@@ -177,11 +178,13 @@ struct ContractRow_Previews: PreviewProvider {
                     bankSignering:
                         ContractExternalInsuranceCancellation.BankSignering(
                             approvedByDate: "",
-                            url: ""),
+                            url: ""
+                        ),
                     externalInsurer: ContractExternalInsuranceCancellation.ExternalInsurer(
                         id: "",
                         displayName: "",
-                        insurelyId: ""),
+                        insurelyId: ""
+                    ),
                     status: .completed,
                     type: .bankSigned
                 ),
@@ -202,14 +205,16 @@ struct ContractRow_Previews: PreviewProvider {
                                 documents: [],
                                 highlights: [],
                                 FAQ: nil,
-                                displayName: "")
+                                displayName: ""
+                            )
                     ),
                 upcomingRenewal:
                     ContractRenewal(
                         renewalDate: "",
                         draftCertificateUrl: ""
                     ),
-                typeOfContract: .seHouse)
+                typeOfContract: .seHouse
+            )
             let contracts = [contract]
             store.send(.setActiveContracts(contracts: contracts))
         }

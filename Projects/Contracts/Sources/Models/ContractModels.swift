@@ -1,7 +1,7 @@
 import Foundation
-import hGraphQL
-import hCoreUI
 import hCore
+import hCoreUI
+import hGraphQL
 
 extension String {
     // converts a YYYY-MM-DD date-string to a Date
@@ -22,7 +22,7 @@ public struct ProductVariant: Codable, Hashable {
     let highlights: [Highlight]
     let FAQ: [FAQ]?
     let displayName: String
-    
+
     init(
         termsVersion: String,
         typeOfContract: String,
@@ -44,7 +44,7 @@ public struct ProductVariant: Codable, Hashable {
         self.FAQ = FAQ
         self.displayName = displayName
     }
-    
+
     init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
@@ -52,13 +52,13 @@ public struct ProductVariant: Codable, Hashable {
         self.termsVersion = data.termsVersion
         self.typeOfContract = data.typeOfContract
         self.partner = data.partner ?? ""
-        self.perils = data.perils.map({  .init(fragment: $0) })
+        self.perils = data.perils.map({ .init(fragment: $0) })
         self.insurableLimits = data.insurableLimits.map({ .init($0) })
         self.documents = data.documents.map({ .init($0) })
-        self.highlights = data.highlights.map({  .init($0) })
-        self.FAQ = data.faq.map({  .init($0) })
+        self.highlights = data.highlights.map({ .init($0) })
+        self.FAQ = data.faq.map({ .init($0) })
     }
-    
+
 }
 
 public struct Contract: Codable, Hashable, Equatable {
@@ -85,7 +85,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.upcomingRenewal = upcomingRenewal
         self.typeOfContract = typeOfContract
     }
-    
+
     public let id: String
     public let currentAgreement: Agreement
     public let exposureDisplayName: String
@@ -98,14 +98,14 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
     public var pillowType: PillowType? {
         if let terminationDate {
-            let daysBetween = daysBetween(start: Date() , end: terminationDate.localDateToDate ?? Date())
+            let daysBetween = daysBetween(start: Date(), end: terminationDate.localDateToDate ?? Date())
             if daysBetween <= 0 {
                 return nil
             }
         }
         return self.typeOfContract.pillowType
     }
-    
+
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
     ) {
@@ -124,16 +124,36 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingRenewal = nil
         typeOfContract = .unknown
     }
-    
+
     init(
         contract: OctopusGraphQL.ContractFragment
     ) {
         id = contract.id
-        currentAgreement = .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-        ?? Agreement(certificateUrl: "", activeFrom: "", activeTo: "", premium: MonetaryAmount(amount: 0, currency: ""), displayItems: [], productVariant: ProductVariant(termsVersion: "", typeOfContract: "", partner: nil, perils: [], insurableLimits: [], documents: [], highlights: [], FAQ: [], displayName: ""))
+        currentAgreement =
+            .init(agreement: contract.currentAgreement.fragments.agreementFragment)
+            ?? Agreement(
+                certificateUrl: "",
+                activeFrom: "",
+                activeTo: "",
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    highlights: [],
+                    FAQ: [],
+                    displayName: ""
+                )
+            )
         exposureDisplayName = contract.exposureDisplayName
         if let cancellation = contract.externalInsuranceCancellation {
-            externalInsuranceCancellation = .init(data: cancellation.fragments.contractExternalInsuranceCancellationFragment)
+            externalInsuranceCancellation = .init(
+                data: cancellation.fragments.contractExternalInsuranceCancellationFragment
+            )
         } else {
             externalInsuranceCancellation = nil
         }
@@ -144,7 +164,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingRenewal = .init(upcomingRenewal: contract.upcomingRenewal.fragments.contractRenewalFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
     }
-    
+
     public enum TypeOfContract: String, Codable {
         case seHouse = "SE_HOUSE"
         case seApartmentBrf = "SE_APARTMENT_BRF"
@@ -187,12 +207,12 @@ public struct Contract: Codable, Hashable, Equatable {
         case dkTravel = "DK_TRAVEL"
         case dkTravelStudent = "DK_TRAVEL_STUDENT"
         case unknown = "UNKNOWN"
-        
+
         static func resolve(for typeOfContract: String) -> Self {
             if let concreteTypeOfContract = Self(rawValue: typeOfContract) {
                 return concreteTypeOfContract
             }
-            
+
             log.warn(
                 "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
                 error: nil,
@@ -208,13 +228,13 @@ public struct Contract: Codable, Hashable, Equatable {
             .seApartmentStudentRent,
         ]
     }
-    
+
     public var hasTravelInsurance: Bool {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let isNotInTerminationProcess = terminationDate == nil
         return suitableType && isNotInTerminationProcess
     }
-    
+
     public func daysBetween(start: Date, end: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: end).day!
     }
@@ -416,11 +436,10 @@ extension Contract {
     }
 }
 
-
 public struct ContractRenewal: Codable, Hashable {
     public let renewalDate: String
     public let draftCertificateUrl: String?
-    
+
     init(
         renewalDate: String,
         draftCertificateUrl: String
@@ -428,7 +447,7 @@ public struct ContractRenewal: Codable, Hashable {
         self.renewalDate = renewalDate
         self.draftCertificateUrl = draftCertificateUrl
     }
-    
+
     init(
         upcomingRenewal: OctopusGraphQL.ContractRenewalFragment
     ) {
@@ -453,14 +472,14 @@ public struct Agreement: Codable, Hashable {
         self.displayItems = displayItems
         self.productVariant = productVariant
     }
-    
+
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
-    
+
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
@@ -473,7 +492,7 @@ public struct Agreement: Codable, Hashable {
         self.activeFrom = nil
         self.activeTo = nil
     }
-    
+
     init?(
         agreement: OctopusGraphQL.AgreementFragment?
     ) {
@@ -487,13 +506,13 @@ public struct Agreement: Codable, Hashable {
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
     }
-    
+
 }
 
 public struct AgreementDisplayItem: Codable, Hashable {
     let displayTitle: String
     let displayValue: String
-    
+
     public init(
         data: OctopusGraphQL.AgreementDisplayItemFragment
     ) {
@@ -508,7 +527,7 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
     let externalInsurer: ExternalInsurer
     let status: ContractExternalInsuranceCancellationStatus
     let type: ContractExternalInsuranceCancellationType
-    
+
     public init(
         id: String,
         bankSignering: BankSignering?,
@@ -522,7 +541,7 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
         self.status = status
         self.type = type
     }
-    
+
     public init(
         data: OctopusGraphQL.ContractExternalInsuranceCancellationFragment
     ) {
@@ -532,15 +551,19 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
         } else {
             bankSignering = nil
         }
-        self.externalInsurer = ExternalInsurer(id: data.externalInsurer.id, displayName: data.externalInsurer.displayName, insurelyId: data.externalInsurer.insurelyId)
+        self.externalInsurer = ExternalInsurer(
+            id: data.externalInsurer.id,
+            displayName: data.externalInsurer.displayName,
+            insurelyId: data.externalInsurer.insurelyId
+        )
         self.status = ContractExternalInsuranceCancellationStatus.resolve(for: data.status)
         self.type = ContractExternalInsuranceCancellationType.resolve(for: data.type)
     }
-    
+
     public struct BankSignering: Codable, Hashable {
         let approvedByDate: String
         let url: String?
-        
+
         init(
             approvedByDate: String,
             url: String?
@@ -549,12 +572,12 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
             self.url = url
         }
     }
-    
+
     public struct ExternalInsurer: Codable, Hashable {
         let id: String
         let displayName: String
         let insurelyId: String?
-        
+
         init(
             id: String,
             displayName: String,
@@ -565,18 +588,18 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
             self.insurelyId = insurelyId
         }
     }
-    
+
     public enum ContractExternalInsuranceCancellationStatus: String, Codable {
         case notInitiated = "NOT_INITIATED"
         case initiated = "INITIATED"
         case completed = "COMPLETED"
         case unknown = "UNKNOWN"
-        
+
         static func resolve(for status: OctopusGraphQL.ContractExternalInsuranceCancellationStatus) -> Self {
             if let concreteStatus = Self(rawValue: status.rawValue) {
                 return concreteStatus
             }
-            
+
             log.warn(
                 "Got an unknown type of status \(status.rawValue) that couldn't be resolved.",
                 error: nil,
@@ -585,16 +608,16 @@ public struct ContractExternalInsuranceCancellation: Codable, Hashable {
             return .unknown
         }
     }
-    
+
     public enum ContractExternalInsuranceCancellationType: String, Codable {
         case bankSigned = "BANKSIGNERING"
         case unknown = "UNKNOWN"
-        
+
         static func resolve(for type: OctopusGraphQL.ContractExternalInsuranceCancellationType) -> Self {
             if let concreteType = Self(rawValue: type.rawValue) {
                 return concreteType
             }
-            
+
             log.warn(
                 "Got an unknown type of status \(type.rawValue) that couldn't be resolved.",
                 error: nil,
@@ -613,11 +636,11 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
         self.displayName = displayName
         self.url = url
     }
-    
+
     public var id: String {
         displayName + url
     }
-    
+
     public let displayName: String
     public let url: String
 }
