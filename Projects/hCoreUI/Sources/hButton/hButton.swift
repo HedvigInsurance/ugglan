@@ -294,11 +294,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     hTextColorNew.disabled
                 }
             case .secondary, .ghost, .secondaryAlt:
-                    if isEnabled {
-                        hTextColorNew.primary
-                    } else {
-                        hTextColorNew.disabled
-                    }
+                if isEnabled {
+                    hTextColorNew.primary
+                } else {
+                    hTextColorNew.disabled
+                }
             case .alert:
                 hTextColorNew.negative
             }
@@ -310,7 +310,8 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     configuration.label
                         .foregroundColor(
                             foregroundColor
-                        ).colorScheme(.light)
+                        )
+                        .colorScheme(.light)
                 } else {
                     configuration.label
                         .foregroundColor(

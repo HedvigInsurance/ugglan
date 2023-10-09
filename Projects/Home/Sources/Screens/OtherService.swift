@@ -68,7 +68,7 @@ struct OtherService: View {
             }
         }
     }
-    
+
     @hColorBuilder
     func getTextColor(claim: CommonClaim) -> some hColor {
         if claim.layout.emergency?.isAlert ?? false {
