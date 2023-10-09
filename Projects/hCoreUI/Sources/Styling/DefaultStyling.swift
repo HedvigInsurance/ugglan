@@ -161,7 +161,7 @@ extension DefaultStyling {
     public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-//        appearance.backgroundColor = UIColor.clear
+        //        appearance.backgroundColor = UIColor.clear
         appearance.backgroundColor = UIColor.brandNew(.primaryBackground())
         appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundImage = nil
@@ -319,7 +319,7 @@ extension DefaultStyling {
         configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
         configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
         configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
-        
+
         UITabBar.appearance().standardAppearance = standard
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance

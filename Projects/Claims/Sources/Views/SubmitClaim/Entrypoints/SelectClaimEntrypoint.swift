@@ -304,13 +304,13 @@ struct ShowTagList: View {
                 .foregroundColor(hGrayscaleColorNew.greyScale100)
         }
     }
-    
+
     @ViewBuilder
     func getPillText(claimId: String) -> some View {
         if selection == claimId {
             hText(claimId, style: .body)
-            .foregroundColor(hTextColorNew.primary)
-            .colorScheme(.light)
+                .foregroundColor(hTextColorNew.primary)
+                .colorScheme(.light)
         } else {
             hText(claimId, style: .body)
         }

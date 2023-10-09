@@ -51,7 +51,7 @@ extension ChatInput: Viewable {
             make.height.equalTo(1)
         }
         containerView.snp.makeConstraints { make in make.leading.trailing.top.bottom.equalToSuperview() }
-        
+
         containerView.backgroundColor = .brandNew(.primaryBackground())
 
         let contentView = UIStackView()

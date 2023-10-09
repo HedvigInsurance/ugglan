@@ -4,7 +4,7 @@ import hCoreUI
 struct RecordButton: View {
     var isRecording: Bool
     var onTap: () -> Void
-    
+
     @ViewBuilder var pulseBackground: some View {
         if isRecording {
             AudioPulseBackground()
@@ -12,14 +12,14 @@ struct RecordButton: View {
             Color.clear
         }
     }
-    
+
     var body: some View {
         ZStack {
             pulseBackground
             SwiftUI.Button {
                 onTap()
             } label: {
-                
+
             }
             .buttonStyle(RecordButtonStyle(isRecording: isRecording))
         }
@@ -28,7 +28,7 @@ struct RecordButton: View {
 
 struct RecordButtonStyle: SwiftUI.ButtonStyle {
     var isRecording: Bool
-    
+
     @hColorBuilder
     var getInnerCircleColor: some hColor {
         if isRecording {
@@ -37,17 +37,17 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
             hSignalColorNew.redElement
         }
     }
-    
+
     private let innerRectangleRecordingColorScheme: some hColor = hColorScheme.init(
         light: hTextColorNew.primary,
         dark: hTextColorNew.negative
     )
-    
-//    private let innerCircleRecordingColorScheme: some hColor = hColorScheme.init(
-//        light: hSignalColorNew.redElement,
-//        dark: hSignalColorNew.redElementDark
-//    )
-    
+
+    //    private let innerCircleRecordingColorScheme: some hColor = hColorScheme.init(
+    //        light: hSignalColorNew.redElement,
+    //        dark: hSignalColorNew.redElementDark
+    //    )
+
     @hColorBuilder
     private var outerCircleRecordingColorScheme: some hColor {
         if isRecording {
@@ -62,7 +62,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
             )
         }
     }
-    
+
     @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
         VStack {

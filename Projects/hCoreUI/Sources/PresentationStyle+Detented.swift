@@ -750,7 +750,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
             })
         ]
     }
-    
+
     var getBlurEffectStyle: UIBlurEffect.Style {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .light
