@@ -29,7 +29,9 @@ struct MovingFlowConfirm: View {
                                 ForEach(movingFlowModel.quotes, id: \.address) { quote in
                                     contractInfoView(for: quote)
                                 }
-                                noticeComponent
+                                if movingFlowModel.quotes.count > 1 {
+                                    noticeComponent
+                                }
                                 totalAmountComponent
                             }
                             .background(
@@ -136,7 +138,7 @@ struct MovingFlowConfirm: View {
         hSection {
             InfoCard(
                 text:
-                    L10n.changeAddressAccidentNotice,
+                    L10n.changeAddressOtherInsurancesInfoText,
                 type: .info
             )
         }
@@ -150,7 +152,7 @@ struct MovingFlowConfirm: View {
                     store.send(.confirmMoveIntent)
                     store.send(.navigation(action: .openProcessingView))
                 } content: {
-                    hText(L10n.changeAddressAcceptOffer, style: .body)
+                    hText(L10n.changeAddressAcceptOffer, style: .standard)
                 }
 
                 hButton.LargeButton(type: .ghost) {
@@ -158,7 +160,7 @@ struct MovingFlowConfirm: View {
                         proxy.scrollTo(whatIsCoveredId, anchor: .top)
                     }
                 } content: {
-                    hText(L10n.changeAddressViewCoverage, style: .body)
+                    hText(L10n.changeAddressViewCoverage, style: .standard)
                 }
             }
         }

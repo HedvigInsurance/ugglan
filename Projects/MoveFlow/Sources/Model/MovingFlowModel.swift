@@ -144,12 +144,23 @@ struct Quote: Codable, Equatable, Hashable {
         list.append((L10n.changeAddressNewAddressLabel, address.street))
         list.append((L10n.changeAddressNewPostalCodeLabel, address.postalCode))
         if let squareMeters {
-            list.append((L10n.changeAddressNewLivingSpaceLabel, "\(squareMeters)"))
+            list.append((L10n.changeAddressNewLivingSpaceLabel, "\(squareMeters) \(L10n.changeAddressSizeSuffix)"))
         }
         if let ancilliaryArea {
-            list.append((L10n.changeAddressAncillaryAreaLabel, "\(ancilliaryArea)"))
+            list.append((L10n.changeAddressAncillaryAreaLabel, "\(ancilliaryArea) \(L10n.changeAddressSizeSuffix)"))
         }
-        list.append((L10n.changeAddressCoInsuredLabel, "\((numberCoInsured ?? 0) + 1)"))
+
+        if let yearOfConstruction {
+            list.append((L10n.changeAddressYearOfConstructionLabel, "\(yearOfConstruction)"))
+        }
+        if let numberCoInsured {
+            let totalNumber = numberCoInsured + 1
+            if totalNumber == 1 {
+                list.append((L10n.changeAddressCoInsuredLabel, L10n.changeAddressOnePerson))
+            } else {
+                list.append((L10n.changeAddressCoInsuredLabel, L10n.changeAddressTotalPersons(totalNumber)))
+            }
+        }
 
         return list
     }

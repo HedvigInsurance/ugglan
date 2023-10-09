@@ -28,21 +28,19 @@ struct ContractInformationView: View {
                 changeAddressInfo(contract)
                 VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
-                        ForEach(table.sections) { section in
-                            hSection(section.rows, id: \.title) { row in
-                                hRow {
-                                    hText(row.title)
-                                }
-                                .noSpacing()
-                                .withCustomAccessory({
-                                    Spacer()
-                                    hText(row.value)
-                                        .foregroundColor(hTextColorNew.secondary)
-                                })
+                        hSection(table.mergedSections, id: \.title) { row in
+                            hRow {
+                                hText(row.title)
                             }
-                            .withoutHorizontalPadding
-                            .padding(.bottom, 16)
+                            .noSpacing()
+                            .withCustomAccessory({
+                                Spacer()
+                                hText(row.value)
+                                    .foregroundColor(hTextColorNew.secondary)
+                            })
                         }
+                        .withoutHorizontalPadding
+                        .padding(.bottom, 16)
                     }
 
                     hSection {

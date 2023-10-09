@@ -1,4 +1,5 @@
 import Combine
+import Flow
 import Foundation
 import Introspect
 import SwiftUI
@@ -20,13 +21,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var shouldMoveLabel: Bool = false
     @State private var observer: TextFieldObserver = TextFieldObserver()
     @StateObject private var vm = TextFieldVM()
-
     @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
     let focusValue: Value
     let onReturn: () -> Void
-
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -78,12 +77,44 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             if focusValue == Value.last {
                 textField?.returnKeyType = .done
             }
+
+            func dismissKeyboard() {
+                textField?.resignFirstResponder()
+            }
             observer.onBeginEditing = {
                 withAnimation {
                     self.error = nil
                 }
                 updateMoveLabel(true)
                 equals = focusValue
+
+                if masking.keyboardType == .numberPad {
+                    let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+                    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                    if let next = equals?.next {
+                        let button = UIButton(type: .custom)
+                        button.setTitle(L10n.generalNextButton)
+                        button.backgroundColor = .clear
+
+                        let color = UIColor.BrandColorNew.primaryText().color
+                        button.setTitleColor(color, for: .normal)
+                        let nextButton = UIBarButtonItem(button: button)
+
+                        vm.disposeBag += button.signal(for: .touchUpInside)
+                            .onValue { _ in
+                                equals = equals?.next
+                            }
+                        toolbar.setItems([space, nextButton], animated: false)
+                    } else {
+                        let doneButton = UIBarButtonItem(
+                            barButtonSystemItem: .done,
+                            target: self,
+                            action: #selector(textField?.dismissKeyboad)
+                        )
+                        toolbar.setItems([space, doneButton], animated: false)
+                    }
+                    textField?.inputAccessoryView = toolbar
+                }
             }
             observer.onDidEndEditing = {
                 updateMoveLabel(true)
@@ -148,6 +179,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
     }
 
+    private func dismiss() {
+
+    }
+
     private func updateMoveLabel(_ animation: Bool) {
         if ((vm.textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
             if animation {
@@ -170,7 +205,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        let height = getHeight()
         return HStack {
             SwiftUI.TextField("", text: $innerValue)
                 .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
@@ -223,6 +257,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
 class TextFieldVM: ObservableObject {
     @Published var textField: UITextField?
+    let disposeBag = DisposeBag()
+
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {

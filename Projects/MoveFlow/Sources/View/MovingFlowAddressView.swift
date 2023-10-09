@@ -28,7 +28,10 @@ struct MovingFlowAddressView: View {
                         addressField()
                     }
                     hSection {
-                        postalAndSquareField()
+                        postalField()
+                    }
+                    hSection {
+                        squareField()
                     }
                     hSection {
                         numberOfCoinsuredField()
@@ -76,29 +79,27 @@ struct MovingFlowAddressView: View {
         )
     }
 
-    func postalAndSquareField() -> some View {
-        HStack(alignment: .top, spacing: 4) {
-            hFloatingTextField(
-                masking: Masking(type: .postalCode),
-                value: $vm.postalCode,
-                equals: $vm.type,
-                focusValue: .postalCode,
-                placeholder: L10n.changeAddressNewPostalCodeLabel,
-                error: $vm.postalCodeError
-            )
-
-            hFloatingTextField(
-                masking: Masking(type: .digits),
-                value: $vm.squareArea,
-                equals: $vm.type,
-                focusValue: .squareArea,
-                placeholder: L10n.changeAddressNewLivingSpaceLabel,
-                suffix: L10n.changeAddressSizeSuffix,
-                error: $vm.squareAreaError
-            )
-        }
+    func postalField() -> some View {
+        hFloatingTextField(
+            masking: Masking(type: .postalCode),
+            value: $vm.postalCode,
+            equals: $vm.type,
+            focusValue: .postalCode,
+            placeholder: L10n.changeAddressNewPostalCodeLabel,
+            error: $vm.postalCodeError
+        )
     }
 
+    func squareField() -> some View {
+        hFloatingTextField(
+            masking: Masking(type: .digits),
+            value: $vm.squareArea,
+            equals: $vm.type,
+            focusValue: .squareArea,
+            placeholder: L10n.changeAddressNewLivingSpaceLabel,
+            error: $vm.squareAreaError
+        )
+    }
     func numberOfCoinsuredField() -> some View {
         hCounterField(
             value: $vm.nbOfCoInsured,
@@ -107,7 +108,7 @@ struct MovingFlowAddressView: View {
             maxValue: (vm.store.state.movingFlowModel?.maxNumberOfConsuredFor(vm.store.state.selectedHousingType) ?? 5)
                 + 1
         ) { value in
-            vm.type = .nbOfCoInsured
+            vm.type = nil
             if value > 0 {
                 return L10n.changeAddressYouPlus(value)
             } else {
@@ -134,7 +135,7 @@ struct MovingFlowAddressView: View {
                 vm.type = nil
             },
             onShowDatePicker: {
-                vm.type = .accessDate
+                vm.type = nil
             }
         )
     }
@@ -165,7 +166,7 @@ struct SelectAddress_Previews: PreviewProvider {
 
 enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     static var last: MovingFlowNewAddressViewFieldType {
-        return MovingFlowNewAddressViewFieldType.accessDate
+        return MovingFlowNewAddressViewFieldType.squareArea
     }
 
     var next: MovingFlowNewAddressViewFieldType? {
@@ -175,10 +176,6 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
         case .postalCode:
             return .squareArea
         case .squareArea:
-            return .nbOfCoInsured
-        case .nbOfCoInsured:
-            return .accessDate
-        case .accessDate:
             return nil
         }
     }
@@ -186,8 +183,6 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     case address
     case postalCode
     case squareArea
-    case nbOfCoInsured
-    case accessDate
 
 }
 
@@ -248,7 +243,7 @@ class AddressInputModel: ObservableObject {
                 }
             }()
             if let sizeToCompare {
-                squareAreaError = size < sizeToCompare ? nil : "Too much living space"
+                squareAreaError = size < sizeToCompare ? nil : L10n.changeAddressLivingSpaceOverLimitError
             }
         }
     }

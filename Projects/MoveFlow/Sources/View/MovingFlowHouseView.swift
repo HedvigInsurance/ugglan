@@ -68,7 +68,6 @@ struct MovingFlowHouseView: View {
                 equals: $vm.type,
                 focusValue: .ancillaryArea,
                 placeholder: L10n.changeAddressAncillaryAreaLabel,
-                suffix: L10n.changeAddressSizeSuffix,
                 error: $vm.ancillaryAreaError
             )
         }
@@ -181,7 +180,7 @@ struct MovingFlowHouseView_Previews: PreviewProvider {
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
     static var last: MovingFlowHouseFieldType {
-        return MovingFlowHouseFieldType.bathrooms
+        return MovingFlowHouseFieldType.ancillaryArea
     }
 
     var next: MovingFlowHouseFieldType? {
@@ -189,16 +188,12 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
         case .yearOfConstruction:
             return .ancillaryArea
         case .ancillaryArea:
-            return .bathrooms
-        case .bathrooms:
             return nil
         }
     }
 
     case yearOfConstruction
     case ancillaryArea
-    case bathrooms
-
 }
 
 public typealias ExtraBuildingType = String

@@ -41,6 +41,7 @@ struct MovingFlowAddExtraBuildingView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
+        .hDisableScroll
     }
     @ViewBuilder
     private var typeOfBuilding: some View {
@@ -60,7 +61,6 @@ struct MovingFlowAddExtraBuildingView: View {
             equals: $vm.type,
             focusValue: .livingArea,
             placeholder: L10n.changeAddressExtraBuildingSizeLabel,
-            suffix: L10n.changeAddressSizeSuffix,
             error: $vm.livingAreaError
         )
     }

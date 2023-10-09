@@ -491,6 +491,9 @@ public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
         return title
     }
     public let sections: [Section]
+    public var mergedSections: [Row] {
+        sections.flatMap({ $0.rows })
+    }
     public let title: String
     public init(
         fragment: GiraffeGraphQL.DetailsTableFragment

@@ -14,10 +14,10 @@ struct MovingFlowFailure: View {
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.navigation(action: .dismissMovingFlow))
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        store.send(.navigation(action: .goToFreeTextChat))
-                    }
+                    //                    store.send(.navigation(action: .dismissMovingFlow))
+                    //                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    store.send(.navigation(action: .goToFreeTextChat))
+                    //                    }
                 } content: {
                     hText(L10n.openChat, style: .body)
                 }

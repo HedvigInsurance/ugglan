@@ -9,6 +9,7 @@ public struct hCounterField: View {
     let maxValue: Int?
     @State var textToShow: String = ""
     private let textForValue: (_ value: Int) -> String?
+    @Environment(\.isEnabled) var isEnabled
 
     var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -85,19 +86,15 @@ public struct hCounterField: View {
     }
 
     private func increase() {
-        withAnimation {
-            value += 1
-            startAnimation()
-            self.textToShow = textForValue(value) ?? ""
-        }
+        value += 1
+        startAnimation()
+        self.textToShow = textForValue(value) ?? ""
     }
 
     private func decrease() {
-        withAnimation {
-            value -= 1
-            startAnimation()
-            self.textToShow = textForValue(value) ?? ""
-        }
+        value -= 1
+        startAnimation()
+        self.textToShow = textForValue(value) ?? ""
     }
 
     private var getTextLabel: some View {

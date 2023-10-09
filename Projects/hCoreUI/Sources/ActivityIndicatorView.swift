@@ -433,12 +433,18 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
         if let state = allActions[action] {
             switch state {
             case .loading:
-                self.error = nil
+                withAnimation {
+                    self.error = nil
+                }
             case let .error(error):
-                self.error = error
+                withAnimation {
+                    self.error = error
+                }
             }
         } else {
-            self.error = nil
+            withAnimation {
+                self.error = nil
+            }
         }
     }
 }

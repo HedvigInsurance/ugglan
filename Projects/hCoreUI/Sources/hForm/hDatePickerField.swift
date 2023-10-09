@@ -89,17 +89,8 @@ public struct hDatePickerField: View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
-                .foregroundColor(foregroundColor)
+                .foregroundColor(hTextColorNew.primary)
             Spacer()
-        }
-    }
-
-    @hColorBuilder
-    private var foregroundColor: some hColor {
-        if isEnabled {
-            hTextColorNew.primary
-        } else {
-            hTextColorNew.secondary
         }
     }
 
@@ -171,29 +162,32 @@ private struct DatePickerView: View {
         .hDisableScroll
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButton(type: .primary) {
-                    continueAction.execute()
-                } content: {
-                    hText(
-                        L10n.generalSaveButton,
-                        style: .body
-                    )
-                    .foregroundColor(hLabelColor.primary.inverted)
-                }
-                .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
+                hSection {
+                    VStack {
+                        hButton.LargeButton(type: .primary) {
+                            continueAction.execute()
+                        } content: {
+                            hText(
+                                L10n.generalSaveButton,
+                                style: .body
+                            )
+                            .foregroundColor(hLabelColor.primary.inverted)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .bottom)
 
-                hButton.LargeButton(type: .ghost) {
-                    cancelAction.execute()
-                } content: {
-                    hText(
-                        L10n.generalCancelButton,
-                        style: .body
-                    )
-                    .foregroundColor(hTextColorNew.primary)
+                        hButton.LargeButton(type: .ghost) {
+                            cancelAction.execute()
+                        } content: {
+                            hText(
+                                L10n.generalCancelButton,
+                                style: .body
+                            )
+                            .foregroundColor(hTextColorNew.primary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .bottom)
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
+                .sectionContainerStyle(.transparent)
             }
         }
         .toolbar {
@@ -208,33 +202,32 @@ private struct DatePickerView: View {
         }
     }
 
-    @ViewBuilder
     private var datePicker: some View {
         let minDate = config.minDate
         let maxDate = config.maxDate
         if let minDate, let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
         } else if let minDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...,
                 displayedComponents: [.date]
             )
         } else if let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
         } else {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 displayedComponents: [.date]
