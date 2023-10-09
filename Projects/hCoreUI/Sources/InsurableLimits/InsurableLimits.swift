@@ -61,7 +61,7 @@ public struct InsurableLimits: Codable, Hashable {
         limit = data.limit
         description = data.description
     }
-    
+
     public init(
         _ data: GiraffeGraphQL.InsurableLimitFragment
     ) {

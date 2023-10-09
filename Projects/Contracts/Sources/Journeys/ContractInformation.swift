@@ -15,7 +15,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
-    
+
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -58,7 +58,7 @@ struct ContractInformationView: View {
         }
         .sectionContainerStyle(.transparent)
     }
-    
+
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
         if let date = contract.upcomingChangedAgreement?.activeFrom {
@@ -78,7 +78,7 @@ struct ContractInformationView: View {
             .padding(.bottom, 16)
         }
     }
-    
+
     @ViewBuilder
     private var displayTerminationButton: some View {
         if hAnalyticsExperiment.terminationFlow {
@@ -88,7 +88,7 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if ((contract?.terminationDate) == nil) {
+                if (contract?.terminationDate) == nil {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,
@@ -120,7 +120,7 @@ struct ContractInformationView: View {
 
 struct ChangePeopleView: View {
     @PresentableStore var store: ContractStore
-    
+
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {

@@ -18,7 +18,7 @@ public struct Perils: Codable, Equatable, Hashable {
         exceptions = fragment.exceptions
         color = fragment.colorCode
     }
-    
+
     public init(
         fragment: GiraffeGraphQL.PerilFragment
     ) {

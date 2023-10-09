@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
-import hGraphQL
 import hCore
+import hGraphQL
 
 extension PillowType {
     public var bgImage: UIImage {
