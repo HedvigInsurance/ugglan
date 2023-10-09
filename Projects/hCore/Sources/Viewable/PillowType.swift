@@ -12,4 +12,3 @@ public enum PillowType: Codable {
     case villa
     case unknown
 }
-

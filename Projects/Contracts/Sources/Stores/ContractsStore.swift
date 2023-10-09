@@ -38,10 +38,10 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                     .onValue { contracts in
                         let activeContracts = contracts.currentMember.activeContracts.map { contract in
                             Contract(contract: contract.fragments.contractFragment)
-                            
+
                         }
                         callback(.value(.setActiveContracts(contracts: activeContracts)))
-                        
+
                         let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
                             Contract(contract: contract.fragments.contractFragment)
                         }

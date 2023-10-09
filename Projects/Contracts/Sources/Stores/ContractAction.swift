@@ -27,10 +27,10 @@ public enum ContractAction: ActionProtocol, Hashable {
     case fetchContracts
     case fetchContractsDone
 
-    case setActiveContracts (contracts: [Contract])
-    case setTerminatedContracts (contracts: [Contract])
-    case setPendingContracts (contracts: [Contract])
-    
+    case setActiveContracts(contracts: [Contract])
+    case setTerminatedContracts(contracts: [Contract])
+    case setPendingContracts(contracts: [Contract])
+
     case setCrossSells(crossSells: [CrossSell])
     case goToMovingFlow
     case goToFreeTextChat

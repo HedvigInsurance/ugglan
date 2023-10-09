@@ -1,11 +1,11 @@
 import Apollo
-import hCoreUI
 import Flow
 import Foundation
 import Presentation
 import StoreKit
 import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct OfferState: StateProtocol {
