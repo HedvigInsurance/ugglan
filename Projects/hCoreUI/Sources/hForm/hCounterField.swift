@@ -59,7 +59,8 @@ public struct hCounterField: View {
             } label: {
                 Image(uiImage: hCoreUIAssets.minusSmall.image)
                     .foregroundColor(
-                        hTextColorNew.primary.opacity(value == minValue ? 0.4 : 1)
+                        hTextColor.primary.opacity(value == 0 ? 0.4 : 1)
+
                     )
                     .frame(width: 35, height: 35)
             }
@@ -70,7 +71,7 @@ public struct hCounterField: View {
                 }
             } label: {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
-                    .foregroundColor(hTextColorNew.primary.opacity(value == maxValue ? 0.4 : 1))
+                    .foregroundColor(hTextColor.primary)
                     .frame(width: 35, height: 35)
             }
         }
@@ -99,7 +100,7 @@ public struct hCounterField: View {
 
     private var getTextLabel: some View {
         hText(textToShow, style: .title3)
-            .foregroundColor(hTextColorNew.primary)
+            .foregroundColor(hTextColor.primary)
     }
 
     private func startAnimation() {

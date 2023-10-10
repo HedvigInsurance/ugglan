@@ -6,11 +6,11 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
-    @State var claim: Claim
+    @State var claim: ClaimModel
     @PresentableStore var store: ClaimsStore
 
     public init(
-        claim: Claim
+        claim: ClaimModel
     ) {
         self.claim = claim
     }
@@ -77,7 +77,7 @@ public struct ClaimDetailView: View {
 
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let claimDetails = Claim.ClaimDetailData.init(
+        let claimDetails = ClaimModel.ClaimDetailData.init(
             id: "id",
             status: .closed,
             outcome: .paid,
@@ -90,7 +90,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
             type: "TYPE",
             payout: .sek(20)
         )
-        let claim = Claim(
+        let claim = ClaimModel(
             id: "id",
             pills: [.init(text: "1", type: .closed)],
             segments: [.init(text: "a", type: .pastInactive)],

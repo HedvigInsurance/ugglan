@@ -28,7 +28,6 @@ enum NavigationEvent {
 }
 
 enum ChatResult {
-    case offer(ids: [String])
     case loggedIn
     case login
     case notifications(dismissed: () -> Void)
@@ -36,36 +35,6 @@ enum ChatResult {
     var journey: some JourneyPresentation {
         GroupJourney {
             switch self {
-            case let .offer(ids):
-                Journey(
-                    Offer(
-                        menu: Menu(
-                            title: nil,
-                            children: [
-                                MenuChild.appInformation,
-                                MenuChild.login,
-                            ]
-                        ),
-                        options: [.shouldPreserveState]
-                    )
-                    .setIds(ids)
-                ) { offerResult in
-                    switch offerResult {
-                    case .chat:
-                        AppJourney
-                            .freeTextChat()
-                            .withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .signed:
-                        ContinueJourney()
-                    case let .menu(action):
-                        action.journey
-                    case .signedQuoteCart:
-                        DismissJourney()
-                    }
-                }
-                .hidesBackButton
             case .loggedIn:
                 AppJourney.loggedIn
             case .login:
@@ -105,7 +74,6 @@ extension Chat: Presentable {
             chatState: chatState,
             navigateCallbacker: navigateCallbacker
         )
-
         let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.navigationItem.largeTitleDisplayMode = .never
 
@@ -208,6 +176,7 @@ extension Chat: Presentable {
                         right: 0
                     )
                     let headerView = UIView()
+                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
@@ -226,6 +195,7 @@ extension Chat: Presentable {
             width: 0,
             height: hNavigationControllerWithLargerNavBar.navigationBarHeight
         )
+        footerView.backgroundColor = .brand(.primaryBackground())
         tableKit.view.tableFooterView = footerView
 
         bag += chatState.tableSignal.atOnce().delay(by: 0.5)

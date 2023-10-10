@@ -28,16 +28,16 @@ struct SlideTrack: View {
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
-        .background(hFillColorNew.opaqueTwo)
+        .background(hFillColor.opaqueTwo)
         .cornerRadius(29)
     }
 
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
-            hTextColorNew.disabled
+            hTextColor.disabled
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 }
@@ -78,9 +78,10 @@ struct SlideDragger: View {
                                     .transition(.asymmetric(insertion: .scale, removal: .opacity))
                             }
                         }
-                        .foregroundColor(hTextColorNew.negative)
+                        .foregroundColor(hTextColor.negative)
                         .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                         .background(getIconBackgroundColor)
+                        .colorScheme(.light)
                         .clipShape(Circle())
                     }
                     .animation(.interpolatingSpring(stiffness: 300, damping: 20))
@@ -100,9 +101,9 @@ struct SlideDragger: View {
     @hColorBuilder
     private var getIconBackgroundColor: some hColor {
         if didFinished {
-            hSignalColorNew.greenElement
+            hSignalColor.greenElement
         } else {
-            hTextColorNew.primary
+            hTextColor.primary
         }
     }
 }
@@ -197,11 +198,11 @@ struct HonestyPledge: View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
                 L10n.honestyPledgeTitle.hText(.body)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                     .padding(.bottom, 8)
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
-                        .foregroundColor(hLabelColor.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
                 .padding(.bottom, 32)
 
@@ -216,7 +217,7 @@ struct HonestyPledge: View {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
                     L10n.generalCancelButton.hText(.body)
-                        .foregroundColor(hTextColorNew.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
 
             }

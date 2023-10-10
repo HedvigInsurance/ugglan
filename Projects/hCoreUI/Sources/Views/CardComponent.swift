@@ -33,7 +33,7 @@ where MainContent: View, BottomContent: View {
                     hCoreUIAssets.chevronRight.view
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
             .padding(.horizontal, 16)
@@ -43,7 +43,7 @@ where MainContent: View, BottomContent: View {
                     hText(title)
                 }
                 hText(subTitle ?? " ", style: .standardSmall)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
 
             }
             .padding([.leading, .trailing], 16)
@@ -57,7 +57,7 @@ where MainContent: View, BottomContent: View {
         .padding(.vertical, 16)
         .background(
             Squircle.default()
-                .fill(hFillColorNew.opaqueOne)
+                .fill(hFillColor.opaqueOne)
         )
         .onTapGesture {
             if let onSelected = onSelected {
@@ -69,7 +69,7 @@ where MainContent: View, BottomContent: View {
     @ViewBuilder
     var getBackground: some View {
         Squircle.default()
-            .fill(hFillColorNew.opaqueOne)
+            .fill(hFillColor.opaqueOne)
     }
 }
 

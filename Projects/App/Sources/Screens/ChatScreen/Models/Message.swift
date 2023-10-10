@@ -35,7 +35,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption])
-        case text, audio, none
+        case text, none
     }
 
     enum MessageType: Equatable {
@@ -290,13 +290,6 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             placeholder = number.placeholder
             keyboardType = UIKeyboardType.from(number.keyboard)
             textContentType = UITextContentType.from(number.textContentType)
-            type = .text
-        } else if let audio = message.body.asMessageBodyAudio {
-            body = audio.text
-            responseType = .audio
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
             type = .text
         } else if let bankIdCollect = message.body.asMessageBodyBankIdCollect {
             body = bankIdCollect.text

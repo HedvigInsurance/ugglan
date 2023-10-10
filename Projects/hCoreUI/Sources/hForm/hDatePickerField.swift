@@ -89,8 +89,17 @@ public struct hDatePickerField: View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
-                .foregroundColor(hTextColorNew.primary)
+                .foregroundColor(hTextColor.primary)
             Spacer()
+        }
+    }
+
+    @hColorBuilder
+    private var foregroundColor: some hColor {
+        if isEnabled {
+            hTextColor.primary
+        } else {
+            hTextColor.secondary
         }
     }
 
@@ -162,30 +171,26 @@ private struct DatePickerView: View {
         .hDisableScroll
         .hFormAttachToBottom {
             VStack {
-                hSection {
-                    VStack {
-                        hButton.LargeButton(type: .primary) {
-                            continueAction.execute()
-                        } content: {
-                            hText(
-                                L10n.generalSaveButton,
-                                style: .body
-                            )
-                            .foregroundColor(hLabelColor.primary.inverted)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .bottom)
+                hButton.LargeButton(type: .primary) {
+                    continueAction.execute()
+                } content: {
+                    hText(
+                        L10n.generalSaveButton,
+                        style: .body
+                    )
+                    .foregroundColor(hTextColor.negative)
+                }
+                .frame(maxWidth: .infinity, alignment: .bottom)
+                .padding([.leading, .trailing], 16)
 
-                        hButton.LargeButton(type: .ghost) {
-                            cancelAction.execute()
-                        } content: {
-                            hText(
-                                L10n.generalCancelButton,
-                                style: .body
-                            )
-                            .foregroundColor(hTextColorNew.primary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .bottom)
-                    }
+                hButton.LargeButton(type: .ghost) {
+                    cancelAction.execute()
+                } content: {
+                    hText(
+                        L10n.generalCancelButton,
+                        style: .body
+                    )
+                    .foregroundColor(hTextColor.primary)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -195,7 +200,7 @@ private struct DatePickerView: View {
                 VStack {
                     hText(config.title)
                     if let subtitle = date.displayDateDotFormat {
-                        hText(subtitle).foregroundColor(hTextColorNew.secondary)
+                        hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
             }

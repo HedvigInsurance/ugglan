@@ -11,9 +11,9 @@ public struct SubmitClaimSuccessScreen: View {
         hForm {
             VStack(spacing: 16) {
                 hText(L10n.claimsSuccessTitle, style: .title1)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                 hText(L10n.claimsSuccessLabel, style: .body)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)

@@ -19,7 +19,8 @@ private struct StatusPill: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .background(hTextColorNew.tertiaryTranslucent)
+        .foregroundColor(hTextColor.primary).colorScheme(.dark)
+        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
         .cornerRadius(8)
     }
 }
@@ -52,7 +53,10 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     )
             }
         } else {
-            hTextColorNew.secondary
+            hColorScheme(
+                light: hTextColor.secondary,
+                dark: hGrayscaleColor.greyScale900
+            )
         }
     }
 
@@ -65,6 +69,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                 .resizable()
                 .frame(width: 24, height: 24)
+                .foregroundColor(hTextColor.primary).colorScheme(.dark)
         }
     }
 
@@ -80,10 +85,11 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Spacer()
             HStack {
                 hText(contract.displayName)
+                    .foregroundColor(hTextColor.primary).colorScheme(.dark)
                 Spacer()
             }
             hText(contract.getDetails())
-                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700.inverted)
+                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700).colorScheme(.dark)
         }
         .padding(16)
         .frame(minHeight: 200)
@@ -91,11 +97,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .clipShape(Squircle.default())
-        .overlay(
-            Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
-        )
-        .foregroundColor(hTextColorNew.negative)
+        .hShadow()
+        .foregroundColor(hTextColor.negative)
         .contentShape(Rectangle())
     }
 }

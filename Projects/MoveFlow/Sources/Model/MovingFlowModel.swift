@@ -1,5 +1,7 @@
+import Contracts
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct MovingFlowModel: Codable, Equatable, Hashable {
@@ -126,7 +128,9 @@ struct Quote: Codable, Equatable, Hashable {
         displayName = productVariantFragment.displayName
         exposureName = data.exposureName
         highlights = productVariantFragment.highlights.compactMap({ .init($0) })
-        insurableLimits = productVariantFragment.insurableLimits.compactMap({ .init($0) })
+        insurableLimits = productVariantFragment.insurableLimits.compactMap({
+            .init(label: $0.label, limit: $0.limit, description: $0.description)
+        })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)

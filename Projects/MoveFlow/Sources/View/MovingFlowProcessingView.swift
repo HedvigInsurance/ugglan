@@ -39,11 +39,11 @@ struct MovingFlowProcessingView: View {
                     Image(uiImage: hCoreUIAssets.tick.image)
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .foregroundColor(hSignalColorNew.greenElement)
+                        .foregroundColor(hSignalColor.greenElement)
                     VStack(spacing: 0) {
                         hText(L10n.changeAddressSuccessTitle)
                         hText(L10n.changeAddressSuccessSubtitle(vm.store.state.movingFlowModel?.movingDate ?? ""))
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.horizontal, 16)
@@ -83,7 +83,7 @@ struct MovingFlowProcessingView: View {
             Spacer()
             hText(L10n.changeAddressMakingChanges)
             ProgressView(value: vm.progress)
-                .tint(hTextColorNew.primary)
+                .tint(hTextColor.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
             Spacer()
             Spacer()
@@ -107,7 +107,7 @@ struct SuccessScreen_Previews: PreviewProvider {
 struct BackgroundView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brandNew(.primaryBackground())
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {

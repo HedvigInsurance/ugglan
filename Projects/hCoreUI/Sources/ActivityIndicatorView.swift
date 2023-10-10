@@ -175,7 +175,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             DotsActivityIndicator(.standard)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(hBackgroundColorNew.primary.opacity(0.01))
+        .background(hBackgroundColor.primary.opacity(0.01))
         .edgesIgnoringSafeArea(.top)
         .useDarkColor
     }

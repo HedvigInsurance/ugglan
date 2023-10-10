@@ -47,16 +47,16 @@ extension EmbarkDatePickerAction: Viewable {
         datePicker.minimumDate = Date()
         datePicker.calendar = Calendar.current
         datePicker.datePickerMode = .date
-        datePicker.tintColor = .brand(.link)
+        datePicker.tintColor = .brand(.primaryText())
         datePicker.preferredDatePickerStyle = .inline
         datePicker.date = Date()
 
         let titleLabel = UILabel()
-        titleLabel.style = .brand(.body(color: .primary))
+        titleLabel.style = UIColor.brandStyle(.primaryText())
         titleLabel.text = data.label
 
         let placeHolderLabel = UILabel()
-        placeHolderLabel.style = .brand(.body(color: .link))
+        placeHolderLabel.style = UIColor.brandStyle(.primaryText())
         placeHolderLabel.textAlignment = .right
 
         stackView.addArrangedSubview(titleLabel)
@@ -84,8 +84,8 @@ extension EmbarkDatePickerAction: Viewable {
         let button = Button(
             title: L10n.generalContinueButton,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 

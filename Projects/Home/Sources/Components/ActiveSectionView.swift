@@ -21,7 +21,7 @@ struct ActiveSectionView<Claims: View>: View {
         ) { memberStateData in
             hSection {
                 if let name = memberStateData.name {
-                    hText(L10n.HomeTab.welcomeTitle(name), style: .title1)
+                    hText(L10n.HomeTab.welcomeTitleWithoutName, style: .title1)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }

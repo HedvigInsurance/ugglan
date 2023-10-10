@@ -29,10 +29,10 @@ public struct InsurableLimitsSectionView: View {
                 HStack(alignment: .center) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                         .frame(width: 16, height: 16)
                         .onTapGesture {
                             didTap(limit)
@@ -46,5 +46,37 @@ public struct InsurableLimitsSectionView: View {
         }
         .withoutHorizontalPadding
         .sectionContainerStyle(.transparent)
+    }
+}
+
+public struct InsurableLimits: Codable, Hashable {
+    public let label: String
+    public let limit: String
+    public let description: String
+
+    public init(
+        label: String,
+        limit: String,
+        description: String
+    ) {
+        self.label = label
+        self.limit = limit
+        self.description = description
+    }
+
+    public init(
+        fragment: GiraffeGraphQL.InsurableLimitFragment
+    ) {
+        label = fragment.label
+        limit = fragment.limit
+        description = fragment.description
+    }
+
+    init(
+        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
+    ) {
+        label = data.label
+        limit = data.limit
+        description = data.description
     }
 }

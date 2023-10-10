@@ -33,7 +33,7 @@ struct SubmitClaimGlassDamageScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimHowItWorksTitle)
                         hText(L10n.submitClaimGlassDamageHowItWorksLabel)
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
                 .padding(.top, 8)

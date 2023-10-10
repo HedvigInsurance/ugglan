@@ -88,7 +88,8 @@ public struct hTextField: View {
                 SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
                     .modifier(masking)
-                    .tint(hLabelColor.primary)
+                    .tint(hTextColor.primary)
+                    .colorScheme(.light)
                     .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                         if shouldUpdate {
                             value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -106,7 +107,7 @@ public struct hTextField: View {
                     hText(errorMessage, style: .footnote)
                         .padding(.top, 7)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hTintColor.red)
+                        .foregroundColor(hSignalColor.redText)
                 }
             }
         }

@@ -67,7 +67,7 @@ struct ContractDocumentsView: View {
                                         }
                                     }
                                     hText(document.subTitle)
-                                        .foregroundColor(hTextColorNew.secondary)
+                                        .foregroundColor(hTextColor.secondary)
                                 }
                             }
                             .withCustomAccessory {

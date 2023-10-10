@@ -5,12 +5,12 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatus: View {
-    var claim: Claim
+    var claim: ClaimModel
 
     @PresentableStore
     var store: ClaimsStore
 
-    var tapAction: (Claim) -> Void {
+    var tapAction: (ClaimModel) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }
@@ -36,7 +36,7 @@ struct ClaimStatus: View {
 }
 
 struct ClaimPills: View {
-    var claim: Claim
+    var claim: ClaimModel
 
     var body: some View {
         HStack {
@@ -50,26 +50,26 @@ struct ClaimPills: View {
         }
     }
 }
-extension Claim.ClaimPill.ClaimPillType {
+extension ClaimModel.ClaimPill.ClaimPillType {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
-        case .none: hTextColorNew.primary
-        case .open: hTextColorNew.primary
-        case .reopened: hSignalColorNew.amberText
-        case .closed: hTextColorNew.negative
-        case .payment: hSignalColorNew.blueText
+        case .none: hTextColor.primary
+        case .open: hTextColor.negative
+        case .reopened: hSignalColor.amberText
+        case .closed: hTextColor.negative
+        case .payment: hSignalColor.blueText
         }
     }
 
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
-        case .none: hFillColorNew.opaqueTwo
-        case .open: hFillColorNew.opaqueTwo
-        case .reopened: hSignalColorNew.amberHighLight
-        case .closed: hTextColorNew.primary
-        case .payment: hSignalColorNew.blueHighLight
+        case .none: hFillColor.opaqueTwo
+        case .open: hTextColor.primary
+        case .reopened: hSignalColor.amberHighLight
+        case .closed: hTextColor.primary
+        case .payment: hSignalColor.blueHighLight
         }
     }
 }

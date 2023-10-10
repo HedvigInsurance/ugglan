@@ -36,7 +36,7 @@ struct ContractInformationView: View {
                             .withCustomAccessory({
                                 Spacer()
                                 hText(row.value)
-                                    .foregroundColor(hTextColorNew.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             })
                         }
                         .withoutHorizontalPadding
@@ -110,7 +110,7 @@ struct ContractInformationView: View {
                             },
                             content: {
                                 hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTextColorNew.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             },
                             buttonStyleSelect: .textButton
                         )
@@ -132,7 +132,7 @@ struct ChangePeopleView: View {
                     .hText(.title2)
                 L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
                     .hText(.subheadline)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 10)

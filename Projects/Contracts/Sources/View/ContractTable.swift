@@ -72,10 +72,10 @@ extension ContractTable: View {
                             } content: {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
-                                        .foregroundColor(hTextColorNew.primary)
+                                        .foregroundColor(hTextColor.primary)
                                 }
                                 .withChevronAccessory
-                                .foregroundColor(hTextColorNew.secondary)
+                                .foregroundColor(hTextColor.secondary)
                             }
                         }
                         .transition(.slide)

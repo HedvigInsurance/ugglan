@@ -14,7 +14,7 @@ struct PlaybackFailedView: View {
             .padding(.vertical, 18)
 
             hText(L10n.ClaimStatusDetail.InfoError.body, style: .subheadline)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
 
@@ -25,19 +25,19 @@ struct PlaybackFailedView: View {
                 buttonAction()
             } label: {
                 hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
             }
             .frame(height: 36)
             .cornerRadius(6)
-            .background(hTintColor.yellowOne)
+            .background(hHighlightColor.yellowFillThree)
             .padding(.bottom, 16)
 
         }
         .padding(.horizontal, 24)
-        .background(hTintColor.yellowTwo)
+        .background(hBlurColor.blurTwo)
         .cornerRadius(.defaultCornerRadius)
-        .border(hSeparatorColor.separator, width: 0.5)
+        .border(hBorderColor.opaqueFour, width: 0.5)
     }
 }

@@ -1,3 +1,4 @@
+import Contracts
 import Flow
 import Presentation
 import SwiftUI
@@ -88,7 +89,7 @@ struct MovingFlowConfirm: View {
                     VStack(alignment: .leading) {
                         hText(quote.exposureName ?? quote.displayName)
                         hText(L10n.changeAddressActivationDate(quote.startDate))
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                     Spacer()
                 }
@@ -100,7 +101,7 @@ struct MovingFlowConfirm: View {
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColorNew.tertiary)
+                        .foregroundColor(hTextColor.tertiary)
                         .rotationEffect(isExpanded ? Angle(degrees: -180) : Angle(degrees: 0))
                     Spacer()
                     hText("\(quote.premium.formattedAmountWithoutDecimal)\(L10n.perMonth)")
@@ -116,7 +117,7 @@ struct MovingFlowConfirm: View {
                             }
                         }
                     }
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                 }
             }
             .padding(16)
@@ -196,7 +197,7 @@ struct MovingFlowConfirm: View {
                 }
                 .background(
                     Squircle.default()
-                        .fill(hBlueColorNew.blue100)
+                        .fill(hBlueColor.blue100)
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -242,7 +243,7 @@ struct MovingFlowConfirm: View {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.changeAddressQa)
-                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColorNew.secondary)
+                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColor.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -268,7 +269,7 @@ struct MovingFlowConfirm: View {
                             .verticalPadding(12)
                             if expanded, let description = faq.description {
                                 hRow {
-                                    hText(description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                                    hText(description, style: .standardSmall).foregroundColor(hTextColor.secondary)
 
                                 }
                                 .verticalPadding(12)
