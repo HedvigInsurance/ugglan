@@ -288,7 +288,7 @@ extension DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brand(.primaryText())
 
-        UIDatePicker.appearance().tintColor = .brand(.primaryText())  //.brand(.primaryT)
+        UIDatePicker.appearance().tintColor = .brand(.primaryText())
         UIImageView.appearance().tintColor = .brand(.primaryText())
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()

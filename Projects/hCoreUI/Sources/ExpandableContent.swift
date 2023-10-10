@@ -149,9 +149,9 @@ extension ExpandableContent: Presentable {
 
         bag += buttonContainer.addArranged(expandButton) { buttonView in
             bag += buttonIsHiddenSignal.atOnce()
-            //                .onValue { isHidden in
-            //                    buttonView.isHidden = isHidden
-            //                }
+                .onValue { isHidden in
+                    buttonView.isHidden = isHidden
+                }
 
             bag += isExpanded.atOnce()
                 .onValue { value in
