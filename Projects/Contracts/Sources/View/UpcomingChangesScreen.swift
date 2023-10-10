@@ -8,7 +8,7 @@ struct UpcomingChangesScreen: View {
     let updateDate: String
     let upcomingAgreement: Agreement?
     @PresentableStore var store: ContractStore
-    
+
     fileprivate init(
         updateDate: String,
         upcomingAgreement: Agreement?
@@ -45,7 +45,7 @@ struct UpcomingChangesScreen: View {
                         } content: {
                             hText(L10n.openChat)
                         }
-                        
+
                     }
                     hSection {
                         hButton.LargeButton(type: .ghost) {
