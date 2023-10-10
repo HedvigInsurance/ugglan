@@ -45,7 +45,7 @@ struct InfoExpandableView: View {
                     hRow {
                         hText(text)
                             .fixedSize(horizontal: false, vertical: true)
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
             }

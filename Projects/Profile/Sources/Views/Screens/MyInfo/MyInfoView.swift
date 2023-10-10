@@ -76,14 +76,14 @@ struct MyInfoView: View {
                 Button(L10n.myInfoCancelButton) {
                     vm.cancel()
                 }
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColor.primary)
                 .opacity(vm.inEditMode ? 1 : 0)
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
                 .disabled(!vm.inEditMode)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if vm.isLoading {
-                    ProgressView().foregroundColor(hLabelColor.primary)
+                    ProgressView().foregroundColor(hTextColor.primary)
                         .transition(.opacity.animation(.easeInOut(duration: 0.2)))
 
                 } else {
@@ -99,7 +99,7 @@ struct MyInfoView: View {
                             }
                         }
                     }
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .opacity(vm.inEditMode ? 1 : 0)
                     .transition(.opacity.animation(.easeInOut(duration: 0.2)))
                     .disabled(!vm.inEditMode)

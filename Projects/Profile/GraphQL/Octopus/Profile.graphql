@@ -1,0 +1,10 @@
+query Profile {
+  currentMember {
+  id
+  email
+  phoneNumber
+  firstName
+  lastName
+    ...PartnerDataFragment
+  }
+}

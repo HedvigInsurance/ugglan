@@ -13,6 +13,7 @@ let project = Project.framework(
     projects: [
         "hCore",
         "hCoreUI",
+        "Contracts",
     ],
     sdks: [],
     includesGraphQL: true

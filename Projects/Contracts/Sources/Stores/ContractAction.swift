@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import TerminateContracts
 import hCore
+import hCoreUI
 import hGraphQL
 
 public enum ContractDetailNavigationAction: ActionProtocol, Hashable {

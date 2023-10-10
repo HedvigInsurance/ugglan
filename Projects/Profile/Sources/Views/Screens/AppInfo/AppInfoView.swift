@@ -38,13 +38,13 @@ public struct AppInfoView: View {
         ) { state in
             let memberId = state.memberId
             hRow {
-                hText(L10n.profileAboutAppMemberId).foregroundColor(hLabelColor.primary)
+                hText(L10n.profileAboutAppMemberId).foregroundColor(hTextColor.primary)
             }
             .noSpacing()
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    hText(memberId).foregroundColor(hLabelColor.secondary)
+                    hText(memberId).foregroundColor(hTextColor.secondary)
                 }
             }
             .onTap {
@@ -58,14 +58,14 @@ public struct AppInfoView: View {
         let appVersion = Bundle.main.appVersion
         return hRow {
             hText(L10n.profileAboutAppVersion)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColor.primary)
         }
         .noSpacing()
         .withCustomAccessory {
             HStack {
                 Spacer()
                 hText(appVersion)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
             }
         }
         .onTap {
@@ -78,7 +78,7 @@ public struct AppInfoView: View {
         let deviceId = ApolloClient.getDeviceIdentifier()
         return hRow {
             hText(L10n.AppInfo.deviceIdLabel)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColor.primary)
         }
         .noSpacing()
         .withCustomAccessory {
@@ -87,7 +87,7 @@ public struct AppInfoView: View {
                 hText(deviceId, style: .standardSmall)
                     .minimumScaleFactor(0.2)
                     .lineLimit(1)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
 
             }
         }

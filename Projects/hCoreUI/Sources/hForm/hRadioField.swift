@@ -57,18 +57,18 @@ public struct hRadioField<Content: View>: View {
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTintColor.clear
+            hBackgroundColor.clear
         }
     }
 
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hBorderColorNew.opaqueTwo
+            hBorderColor.opaqueTwo
         }
     }
 }

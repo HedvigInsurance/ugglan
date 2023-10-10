@@ -107,7 +107,7 @@ public struct StandaloneChevronAccessory: View {
 
     public var body: some View {
         Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
-            .foregroundColor(hTextColorNew.secondary)
+            .foregroundColor(hTextColor.secondary)
     }
 }
 

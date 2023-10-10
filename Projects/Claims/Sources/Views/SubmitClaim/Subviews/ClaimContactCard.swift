@@ -54,14 +54,14 @@ struct ClaimContactCard: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
-                    .foregroundColor(hTextColorNew.negative)
+                    .foregroundColor(hTextColor.negative)
                     .padding(.vertical, 16)
             }
 
             hText(label)
                 .fixedSize()
                 .multilineTextAlignment(.center)
-                .foregroundColor(hTextColorNew.tertiary)
+                .foregroundColor(hTextColor.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
             hButton.MediumButton(type: .secondaryAlt) {
@@ -71,7 +71,7 @@ struct ClaimContactCard: View {
             } content: {
                 hText(buttonText)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                     .colorScheme(.light)
             }
             .padding(.horizontal, 16)

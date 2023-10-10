@@ -72,7 +72,7 @@ extension Toast: Viewable {
             view.image = icon
             let symbolColor = UIColor(dynamic: { trait -> UIColor in
                 UIColor(
-                    hSignalColorNew.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColor.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                 )
             })

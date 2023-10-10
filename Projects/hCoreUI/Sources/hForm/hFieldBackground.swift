@@ -3,7 +3,7 @@ import SwiftUI
 struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-
+    
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if #available(iOS 15.0, *) {
@@ -12,7 +12,7 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
-
+                
             } else {
                 content
                     .padding(.horizontal, 16)
@@ -22,17 +22,17 @@ struct hFieldBackgroundModifier: ViewModifier {
             }
         }
     }
-
+    
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hColorScheme(light: hSignalColorNew.amberFill, dark: hAmberColorNew.amber300)
+                hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
             } else {
-                hColorScheme(light: hSignalColorNew.amberFill, dark: hGrayscaleColorNew.greyScale800)
+                hColorScheme(light: hSignalColor.amberFill, dark: hGrayscaleColor.greyScale800)
             }
         } else {
-            hFillColorNew.opaqueOne
+            hFillColor.opaqueOne
         }
     }
 }
@@ -45,34 +45,34 @@ extension View {
 struct hFieldErrorModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-
+    
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             content
             if let errorMessage = error {
                 HStack {
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColorNew.amberElement)
+                        .foregroundColor(hSignalColor.amberElement)
                     hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
-                .foregroundColor(hSignalColorNew.amberFill)
+                .foregroundColor(hSignalColor.amberFill)
             }
         }
     }
-
+    
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hSignalColorNew.amberFill
+                hSignalColor.amberFill
             } else {
-                hSignalColorNew.greenFill
+                hSignalColor.greenFill
             }
         } else {
-            hFillColorNew.opaqueOne
+            hFillColor.opaqueOne
         }
     }
 }
@@ -88,7 +88,7 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
-
+    
     var body: some View {
         let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
@@ -100,17 +100,17 @@ struct hFieldLabel: View {
             .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
             .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }
-
+    
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hSignalColorNew.amberText
+            hSignalColor.amberText
         } else if animate {
-            hColorScheme(light: hSignalColorNew.greenText, dark: hGrayscaleColorNew.greyScale500)
+            hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled {
-            hTextColorNew.secondary
+            hTextColor.secondary
         } else {
-            hTextColorNew.disabled
+            hTextColor.disabled
         }
     }
 }

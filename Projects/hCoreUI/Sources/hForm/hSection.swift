@@ -138,26 +138,26 @@ extension hSectionContainerStyle: ViewModifier {
             content
         case .opaque:
             content.background(
-                hFillColorNew.opaqueOne
+                hFillColor.opaqueOne
             )
             .clipShape(Squircle.default())
         case .caution:
             content.background(
-                hSignalColorNew.amberElement
+                hSignalColor.amberElement
             )
             .border(
                 Color(UIColor.brandNew(.primaryBorderColor))
             )
         case .alert:
             content.background(
-                hSignalColorNew.amberFill
+                hSignalColor.amberFill
             )
             .clipShape(Squircle.default())
         case .black:
             content.background(
                 hColorScheme(
-                    light: hFillColorNew.offBlack,
-                    dark: hButtonColorNew.primaryHover
+                    light: hFillColor.offBlack,
+                    dark: hButtonColor.primaryHover
                 )
             )
             .clipShape(Squircle.default())
@@ -246,7 +246,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                     header
                         .environment(\.defaultHTextStyle, .standard)
                 }
-                .foregroundColor(hTextColorNew.primary)
+                .foregroundColor(hTextColor.primary)
                 .padding(.bottom, 16)
             }
             hSectionContainer {
@@ -257,7 +257,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                     footer
                         .environment(\.defaultHTextStyle, .footnote)
                 }
-                .foregroundColor(hTextColorNew.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .padding([.leading, .trailing], 15)
                 .padding(.top, 10)
             }

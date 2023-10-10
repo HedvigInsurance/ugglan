@@ -72,9 +72,9 @@ struct OtherService: View {
     @hColorBuilder
     func getTextColor(claim: CommonClaim) -> some hColor {
         if claim.layout.emergency?.isAlert ?? false {
-            hTextColorNew.negative
+            hTextColor.negative
         } else {
-            hTextColorNew.primary
+            hTextColor.primary
         }
     }
 }

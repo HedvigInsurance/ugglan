@@ -51,7 +51,6 @@ struct AskForPushnotifications: View {
                     })
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
@@ -61,7 +60,7 @@ struct AskForPushnotifications: View {
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
             }
             .padding([.leading, .trailing], 16)

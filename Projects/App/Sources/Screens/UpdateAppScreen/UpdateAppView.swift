@@ -20,7 +20,7 @@ struct UpdateAppView: View {
                 L10n.AppUpdateNeeded.title.hText(.title2)
                 L10n.AppUpdateNeeded.body
                     .hText(.body)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .multilineTextAlignment(.center)
                 hButton.SmallButton(type: .secondaryAlt) {
                     if let url = URL(string: L10n.AppUpdateNeeded.hedvigAppStoreLink) {
@@ -30,7 +30,7 @@ struct UpdateAppView: View {
                     HStack {
                         L10n.AppUpdateNeeded.appStoreButton.hText()
                         Image(uiImage: hCoreUIAssets.neArrowSmall.image)
-                            .foregroundColor(hTextColorNew.negative)
+                            .foregroundColor(hTextColor.negative)
                     }
                 }
             }
