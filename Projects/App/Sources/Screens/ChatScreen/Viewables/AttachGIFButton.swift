@@ -14,7 +14,7 @@ extension AttachGIFButton: Viewable {
         control.layer.cornerRadius = 8
         control.layer.borderWidth = 0.5
 
-        bag += control.applyBorderColor { _ in UIColor.brand(.secondaryBorderColor)}
+        bag += control.applyBorderColor { _ in UIColor.brand(.secondaryBorderColor) }
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
         let icon = Icon(icon: hCoreUIAssets.gif.image, iconWidth: 20)
