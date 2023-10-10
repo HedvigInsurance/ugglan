@@ -146,7 +146,7 @@ extension hSectionContainerStyle: ViewModifier {
                 hSignalColor.amberElement
             )
             .border(
-                Color(UIColor.brandNew(.primaryBorderColor))
+                Color(UIColor.brand(.primaryBorderColor))
             )
         case .alert:
             content.background(
@@ -155,7 +155,10 @@ extension hSectionContainerStyle: ViewModifier {
             .clipShape(Squircle.default())
         case .black:
             content.background(
-                hFillColor.offBlack
+                hColorScheme(
+                    light: hFillColor.offBlack,
+                    dark: hButtonColor.primaryHover
+                )
             )
             .clipShape(Squircle.default())
         }

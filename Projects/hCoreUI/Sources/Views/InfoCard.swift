@@ -53,6 +53,7 @@ public struct InfoCard: View {
                 }
             }
             .padding(.leading, 8)
+            .hUseLightMode
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)
@@ -88,13 +89,13 @@ public struct InfoCard: View {
     var getBackgroundColor: some hColor {
         switch type {
         case .info:
-            hSignalColor.blueFill
+            hColorScheme(light: hSignalColor.blueFill, dark: hSignalColor.blueHighLight)
         case .attention:
-            hSignalColor.amberFill
+            hColorScheme(light: hSignalColor.amberFill, dark: hSignalColor.amberHighLight)
         case .error:
-            hSignalColor.redFill
+            hColorScheme(light: hSignalColor.redFill, dark: hSignalColor.redHighlight)
         case .campaign:
-            hSignalColor.greenFill
+            hColorScheme(light: hSignalColor.greenFill, dark: hSignalColor.greenHighlight)
         }
     }
 

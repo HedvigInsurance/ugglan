@@ -20,12 +20,12 @@ struct DirectDebitSetup {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandNewStyle(.navigationButton)
+                style: UIColor.brandStyle(.navigationButton)
             )
         default:
             return UIBarButtonItem(
                 title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandNewStyle(.navigationButton)
+                style: UIColor.brandStyle(.navigationButton)
             )
         }
     }
@@ -92,7 +92,7 @@ extension DirectDebitSetup: Presentable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
-        activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.color = .brand(.primaryText())
 
         webView.addSubview(activityIndicator)
 

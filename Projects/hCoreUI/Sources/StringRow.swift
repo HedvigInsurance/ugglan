@@ -9,7 +9,7 @@ public struct StringRow {
 
     public init(
         value: String,
-        style: TextStyle = .brand(.body(color: .primary))
+        style: TextStyle = UIColor.brandStyle(.primaryText())
     ) {
         self.value = value
         self.style = style

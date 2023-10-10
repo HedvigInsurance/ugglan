@@ -12,9 +12,9 @@ struct IconRow {
     let iconWidth: CGFloat
     let iconTint: UIColor?
     let title: ReadWriteSignal<DisplayableString>
-    let titleTextStyle = ReadWriteSignal(TextStyle.brand(.headline(color: .primary)))
+    let titleTextStyle = ReadWriteSignal(UIColor.brandStyle(.primaryText()))
     let subtitle: ReadWriteSignal<DisplayableString>
-    let subtitleTextStyle = ReadWriteSignal(TextStyle.brand(.subHeadline(color: .secondary)))
+    let subtitleTextStyle = ReadWriteSignal(UIColor.brandStyle(.secondaryText))
 
     let options: ReadWriteSignal<[IconRow.Options]>
 

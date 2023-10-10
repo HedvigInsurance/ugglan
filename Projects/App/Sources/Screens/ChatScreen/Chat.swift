@@ -74,7 +74,6 @@ extension Chat: Presentable {
             chatState: chatState,
             navigateCallbacker: navigateCallbacker
         )
-
         let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.navigationItem.largeTitleDisplayMode = .never
 
@@ -177,6 +176,7 @@ extension Chat: Presentable {
                         right: 0
                     )
                     let headerView = UIView()
+                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
@@ -195,6 +195,7 @@ extension Chat: Presentable {
             width: 0,
             height: hNavigationControllerWithLargerNavBar.navigationBarHeight
         )
+        footerView.backgroundColor = .brand(.primaryBackground())
         tableKit.view.tableFooterView = footerView
 
         bag += chatState.tableSignal.atOnce().delay(by: 0.5)

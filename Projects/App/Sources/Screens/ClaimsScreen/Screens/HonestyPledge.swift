@@ -81,6 +81,7 @@ struct SlideDragger: View {
                         .foregroundColor(hTextColor.negative)
                         .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                         .background(getIconBackgroundColor)
+                        .colorScheme(.light)
                         .clipShape(Circle())
                     }
                     .animation(.interpolatingSpring(stiffness: 300, damping: 20))

@@ -17,7 +17,7 @@ extension MultiActionDropDownRow: Viewable {
         let containerView = UIView()
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: containerView.backgroundColor = .grayscale(.grayFive)
+            case .dark: containerView.backgroundColor = .brand(.secondaryBackground())
             default: containerView.backgroundColor = .brand(.primaryBackground())
             }
         }
@@ -37,7 +37,7 @@ extension MultiActionDropDownRow: Viewable {
         topStack.snp.makeConstraints { make in make.height.equalTo(50) }
 
         let titleLabel = UILabel()
-        titleLabel.style = .brand(.body(color: .primary))
+        titleLabel.style = UIColor.brandStyle(.primaryText())
         titleLabel.text = data.label
 
         let options = data.options.map { $0.text }
@@ -49,7 +49,7 @@ extension MultiActionDropDownRow: Viewable {
         buttonStack.isUserInteractionEnabled = false
 
         let buttonTitle = UILabel()
-        buttonTitle.style = .brand(.body(color: .tertiary))
+        buttonTitle.style = UIColor.brandStyle(.secondaryText)
         buttonTitle.setContentHuggingPriority(.required, for: .vertical)
         buttonTitle.text = L10n.generalSelectButton
 
@@ -68,7 +68,7 @@ extension MultiActionDropDownRow: Viewable {
         topStack.addArrangedSubview(button)
 
         mainStack.addArrangedSubview(topStack)
-        bag += mainStack.add(Divider(backgroundColor: .brand(.primaryShadowColor)))
+        bag += mainStack.add(Divider(backgroundColor: .brand(.primaryBorderColor)))
 
         bag += button.signal(for: .touchUpInside).withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
             .bindTo(isExpanded)
@@ -91,7 +91,7 @@ extension MultiActionDropDownRow: Viewable {
                             }
                     }
                     .map { option in data.options.first(where: { $0.text == option }) }
-                    .onValue { selectedOption in buttonTitle.style = .brand(.body(color: .primary))
+                    .onValue { selectedOption in buttonTitle.style = UIColor.brandStyle(.primaryText())
                         guard let selectedOption = selectedOption else { return }
                         buttonTitle.value = selectedOption.text
 

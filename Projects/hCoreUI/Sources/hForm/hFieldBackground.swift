@@ -27,9 +27,9 @@ struct hFieldBackgroundModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hSignalColor.amberFill
+                hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
             } else {
-                hSignalColor.greenFill
+                hColorScheme(light: hSignalColor.amberFill, dark: hGrayscaleColor.greyScale800)
             }
         } else {
             hFillColor.opaqueOne
@@ -106,7 +106,7 @@ struct hFieldLabel: View {
         if error != nil {
             hSignalColor.amberText
         } else if animate {
-            hSignalColor.greenText
+            hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled {
             hTextColor.secondary
         } else {

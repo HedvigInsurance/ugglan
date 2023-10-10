@@ -48,9 +48,11 @@ struct TooltipView: View {
                     hText(L10n.HomeTab.chatHintText)
                         .padding(.horizontal)
                         .padding(.vertical, 10)
+                        .foregroundColor(hSignalColor.blueText)
                         .background(hSignalColor.blueFill)
                         .cornerRadius(8)
                         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 1)
+                        .colorScheme(.light)
                 }
                 .transition(.scale(scale: 0, anchor: UnitPoint(x: 1, y: 0)).combined(with: .opacity))
             }

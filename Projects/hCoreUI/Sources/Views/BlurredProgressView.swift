@@ -79,7 +79,6 @@ public struct BlurredProgressOverlay<Content: View>: View {
             }
         }
     }
-
 }
 
 struct BlurredProgressOverlayPreviews: PreviewProvider {

@@ -262,7 +262,10 @@ public struct hColorBase: hColor, View {
 
 public struct hBackgroundColor {
     public static var primary: some hColor {
-        hGrayscaleColor.greyScale25
+        hColorScheme(
+            light: hGrayscaleColor.greyScale25,
+            dark: hGrayscaleColor.greyScale1000
+        )
     }
 
     public static var clear: some hColor {
@@ -275,15 +278,21 @@ public struct hBackgroundColor {
 
 public struct hTextColor {
     public static var primary: some hColor {
-        hGrayscaleColor.greyScale1000
+        hColorScheme(
+            light: hGrayscaleColor.greyScale1000,
+            dark: hGrayscaleColor.greyScale25
+        )
     }
 
     public static var negative: some hColor {
-        hGrayscaleColor.greyScale25
+        hTextColor.primary.inverted
     }
 
     public static var secondary: some hColor {
-        return hGrayscaleColor.greyScale700
+        hColorScheme(
+            light: hGrayscaleColor.greyScale700,
+            dark: hGrayscaleColor.greyScale500
+        )
     }
 
     public static var tertiary: some hColor {
@@ -313,7 +322,10 @@ public struct hBorderColor {
     }
 
     public static var opaqueTwo: some hColor {
-        hGrayscaleColor.greyScale300
+        hColorScheme(
+            light: hGrayscaleColor.greyScale300,
+            dark: hGrayscaleColor.greyScale700
+        )
     }
 
     public static var opaqueThree: some hColor {
@@ -343,11 +355,17 @@ public struct hBorderColor {
 
 public struct hFillColor {
     public static var opaqueOne: some hColor {
-        hGrayscaleColor.greyScale100
+        hColorScheme(
+            light: hGrayscaleColor.greyScale100,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var opaqueTwo: some hColor {
-        hGrayscaleColor.greyScale300
+        hColorScheme(
+            light: hGrayscaleColor.greyScale300,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var opaqueThree: some hColor {
@@ -355,7 +373,10 @@ public struct hFillColor {
     }
 
     public static var translucentOne: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent100
+        hColorScheme(
+            light: hGrayscaleTranslucent.greyScaleTranslucent100,
+            dark: hGrayscaleColor.greyScale800
+        )
     }
 
     public static var translucentTwo: some hColor {
@@ -367,7 +388,10 @@ public struct hFillColor {
     }
 
     public static var offBlack: some hColor {
-        hGrayscaleColor.greyScale1000
+        hColorScheme(
+            light: hGrayscaleColor.greyScale1000,
+            dark: hGrayscaleColor.greyScale25
+        )
     }
 }
 
@@ -435,7 +459,10 @@ public struct hHighlightColor {
 
 public struct hSignalColor {
     public static var greenFill: some hColor {
-        hGreenColor.green100
+        hColorScheme(
+            light: hGreenColor.green100,
+            dark: greenHighlight
+        )
     }
 
     public static var greenHighlight: some hColor {
@@ -443,7 +470,10 @@ public struct hSignalColor {
     }
 
     public static var greenElement: some hColor {
-        hGreenColor.green600
+        hColorScheme(
+            light: hGreenColor.green600,
+            dark: hGreenColor.greenDarkElement
+        )
     }
 
     public static var greenText: some hColor {
@@ -451,7 +481,10 @@ public struct hSignalColor {
     }
 
     public static var amberFill: some hColor {
-        hAmberColor.amber100
+        hColorScheme(
+            light: hAmberColor.amber100,
+            dark: amberHighLight
+        )
     }
 
     public static var amberHighLight: some hColor {
@@ -459,7 +492,10 @@ public struct hSignalColor {
     }
 
     public static var amberElement: some hColor {
-        hAmberColor.amber600
+        hColorScheme(
+            light: hAmberColor.amber600,
+            dark: hAmberColor.amberDarkElement
+        )
     }
 
     public static var amberText: some hColor {
@@ -475,7 +511,10 @@ public struct hSignalColor {
     }
 
     public static var redElement: some hColor {
-        hRedColor.red600
+        hColorScheme(
+            light: hRedColor.red600,
+            dark: hRedColor.redDark
+        )
     }
 
     public static var redText: some hColor {
@@ -483,7 +522,10 @@ public struct hSignalColor {
     }
 
     public static var blueFill: some hColor {
-        hBlueColor.blue100
+        hColorScheme(
+            light: hBlueColor.blue100,
+            dark: blueHighLight
+        )
     }
 
     public static var blueHighLight: some hColor {
@@ -491,7 +533,10 @@ public struct hSignalColor {
     }
 
     public static var blueElement: some hColor {
-        hBlueColor.blue600
+        hColorScheme(
+            light: hBlueColor.blue600,
+            dark: hBlueColor.blueElementDark
+        )
     }
 
     public static var blueText: some hColor {
@@ -501,7 +546,10 @@ public struct hSignalColor {
 
 public struct hButtonColor {
     public static var primaryDefault: some hColor {
-        hGrayscaleColor.greyScale1000
+        hColorScheme(
+            light: hGrayscaleColor.greyScale1000,
+            dark: hGrayscaleColor.greyScale25
+        )
     }
 
     public static var primaryHover: some hColor {
@@ -513,7 +561,10 @@ public struct hButtonColor {
     }
 
     public static var primaryAltDefault: some hColor {
-        hGreenColor.green50
+        hColorScheme(
+            light: hGreenColor.green50,
+            dark: hGreenColor.green200
+        )
     }
 
     public static var primaryAltHover: some hColor {
@@ -564,7 +615,8 @@ public struct hGrayscaleColor {
 
     public static var greyScale100: some hColor {
         hColorScheme(
-            Color(hexString: "F0F0F0")
+            light: Color(hexString: "F0F0F0"),
+            dark: Color(hexString: "303030")
         )
     }
 
@@ -774,6 +826,12 @@ public struct hGreenColor {
             Color(hexString: "33432B")
         )
     }
+
+    public static var greenDarkElement: some hColor {
+        hColorScheme(
+            Color(hexString: "20B652")
+        )
+    }
 }
 
 public struct hYellowColor {
@@ -898,6 +956,12 @@ public struct hAmberColor {
             Color(hexString: "6B3806")
         )
     }
+
+    public static var amberDarkElement: some hColor {
+        hColorScheme(
+            Color(hexString: "E5AC00")
+        )
+    }
 }
 
 public struct hRedColor {
@@ -958,6 +1022,12 @@ public struct hRedColor {
     public static var red900: some hColor {
         hColorScheme(
             Color(hexString: "6E180C")
+        )
+    }
+
+    public static var redDark: some hColor {
+        hColorScheme(
+            Color(hexString: "FF391F")
         )
     }
 }
@@ -1144,6 +1214,12 @@ public struct hBlueColor {
     public static var blue900: some hColor {
         hColorScheme(
             Color(hexString: "1F3D5C")
+        )
+    }
+
+    public static var blueElementDark: some hColor {
+        hColorScheme(
+            Color(hexString: "3EB5F9")
         )
     }
 }

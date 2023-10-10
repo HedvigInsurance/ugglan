@@ -32,9 +32,29 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var getInnerCircleColor: some hColor {
         if isRecording {
-            hTextColor.primary
+            innerRectangleRecordingColorScheme
         } else {
             hSignalColor.redElement
+        }
+    }
+
+    private let innerRectangleRecordingColorScheme: some hColor = hColorScheme.init(
+        light: hTextColor.primary,
+        dark: hTextColor.negative
+    )
+
+    @hColorBuilder
+    private var outerCircleRecordingColorScheme: some hColor {
+        if isRecording {
+            hColorScheme.init(
+                light: hTextColor.negative,
+                dark: hTextColor.primary
+            )
+        } else {
+            hColorScheme.init(
+                light: hTextColor.negative,
+                dark: hGrayscaleColor.greyScale900
+            )
         }
     }
 
@@ -46,7 +66,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
                 .cornerRadius(isRecording ? 1 : 18)
                 .padding(isRecording ? 22 : 18)
         }
-        .background(Circle().fill(hBackgroundColor.primary))
+        .background(Circle().fill(outerCircleRecordingColorScheme))
         .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }

@@ -59,7 +59,7 @@ public struct hRadioField<Content: View>: View {
         if isSelected {
             hTextColor.primary
         } else {
-            hFillColor.opaqueOne
+            hBackgroundColor.clear
         }
     }
 

@@ -33,7 +33,7 @@ extension ButtonSection: Viewable {
 
         let buttonRow = ButtonRow(
             text: "",
-            style: style == .normal ? .brand(.body(color: .link)) : .brand(.body(color: .destructive))
+            style: style == .normal ? UIColor.brandStyle(.primaryText()) : UIColor.brandStyle(.caution)
         )
 
         bag += text.atOnce().bindTo(buttonRow.text)
