@@ -33,7 +33,7 @@ extension PDFViewer: Viewable {
         bag += dataFetchSignal.bindTo(dataReadWriteSignal)
 
         let pdfView = PDFView()
-        pdfView.backgroundColor = .brandNew(.primaryBackground())
+        pdfView.backgroundColor = .brand(.primaryBackground())
         pdfView.maxScaleFactor = 3
         pdfView.autoScales = true
 
@@ -46,14 +46,14 @@ extension PDFViewer: Viewable {
 
         let loadingView = UIView()
         loadingView.alpha = 1
-        loadingView.backgroundColor = .brandNew(.primaryBackground())
+        loadingView.backgroundColor = .brand(.primaryBackground())
         if let downloadButtonTitle {
 
             let downloadButton = Button(
                 title: downloadButtonTitle,
                 type: .standard(
-                    backgroundColor: .brandNew(.primaryBackground()),
-                    textColor: .brandNew(.primaryText())
+                    backgroundColor: .brand(.primaryBackground()),
+                    textColor: .brand(.primaryText())
                 )
             )
             bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -80,7 +80,7 @@ extension PDFViewer: Viewable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
-        activityIndicator.tintColor = .brandNew(.primaryText())
+        activityIndicator.tintColor = .brand(.primaryText())
 
         loadingView.addSubview(activityIndicator)
 

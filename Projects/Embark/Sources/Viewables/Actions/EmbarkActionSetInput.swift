@@ -81,7 +81,7 @@ extension EmbarkActionSetInputData: Viewable {
         boxStack.edgeInsets = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
 
         let containerView = UIView()
-        containerView.backgroundColor = .brandNew(.secondaryBackground())
+        containerView.backgroundColor = .brand(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
         func getMasking(_ action: Action) -> Masking? {
@@ -113,7 +113,7 @@ extension EmbarkActionSetInputData: Viewable {
                     textFieldAlignment: .right
                 )
 
-                let label = UILabel(value: action.title ?? "", style: .brand(.body(color: .primary)))
+                let label = UILabel(value: action.title ?? "", style: UIColor.brandStyle(.primaryText()))
 
                 let stack = UIStackView()
                 stack.axis = .horizontal
@@ -124,7 +124,7 @@ extension EmbarkActionSetInputData: Viewable {
                 boxStack.addArrangedSubview(stack)
 
                 if !isLastAction, endIndex > 0 {
-                    let divider = Divider(backgroundColor: .brandNew(.primaryBorderColor))
+                    let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
                     bag += boxStack.addArranged(divider)
                 }
 
@@ -156,8 +156,8 @@ extension EmbarkActionSetInputData: Viewable {
                 let button = Button(
                     title: link.label,
                     type: .standard(
-                        backgroundColor: .brandNew(.secondaryBackground(true)),
-                        textColor: .brandNew(.primaryText())
+                        backgroundColor: .brand(.secondaryBackground(true)),
+                        textColor: .brand(.primaryText())
                     ),
                     isEnabled: false
                 )

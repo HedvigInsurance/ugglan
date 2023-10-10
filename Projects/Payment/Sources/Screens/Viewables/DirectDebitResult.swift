@@ -76,14 +76,14 @@ extension DirectDebitResult: Viewable {
         let icon = Icon(frame: .zero, icon: type.icon.image, iconWidth: 40)
         stackView.addArrangedSubview(icon)
 
-        let heading = MultilineLabel(value: type.headingText, style: .brand(.title2(color: .primary)))
+        let heading = MultilineLabel(value: type.headingText, style: UIColor.brandStyle(.primaryBackground()))
 
         bag += stackView.addArranged(heading)
 
         if let messageText = type.messageText {
             let body = MultilineLabel(
                 value: messageText,
-                style: UIColor.brandNewStyle(.secondaryText).centerAligned
+                style: UIColor.brandStyle(.secondaryText).centerAligned
             )
 
             bag += stackView.addArranged(body)
@@ -117,8 +117,8 @@ extension DirectDebitResult: Viewable {
                     let continueButton = Button(
                         title: self.type.mainButtonText,
                         type: .standard(
-                            backgroundColor: .brandNew(.secondaryBackground(true)),
-                            textColor: .brandNew(.primaryText())
+                            backgroundColor: .brand(.secondaryBackground(true)),
+                            textColor: .brand(.primaryText())
                         )
                     )
 
@@ -129,8 +129,8 @@ extension DirectDebitResult: Viewable {
                     let retryButton = Button(
                         title: self.type.mainButtonText,
                         type: .standard(
-                            backgroundColor: .brandNew(.secondaryBackground(true)),
-                            textColor: .brandNew(.primaryText())
+                            backgroundColor: .brand(.secondaryBackground(true)),
+                            textColor: .brand(.primaryText())
                         )
                     )
 
@@ -153,8 +153,8 @@ extension DirectDebitResult: Viewable {
                     let skipButton = Button(
                         title: L10n.PayInError.postponeButton,
                         type: .standardOutline(
-                            borderColor: .brandNew(.primaryText()),
-                            textColor: .brandNew(.primaryText())
+                            borderColor: .brand(.primaryText()),
+                            textColor: .brand(.primaryText())
                         )
                     )
 

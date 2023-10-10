@@ -30,9 +30,9 @@ extension Bullet: Viewable {
 
         largeCircle.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
-        bag += control.applyBorderColor { _ in .brandNew(.primaryBorderColor) }
+        bag += control.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
-        bag += largeCircle.applyBorderColor { _ in .brandNew(.primaryBackground(true)) }
+        bag += largeCircle.applyBorderColor { _ in .brand(.primaryBackground(true)) }
 
         bag += control.didLayoutSignal.onValue {
             control.layer.cornerRadius = control.bounds.width / 2

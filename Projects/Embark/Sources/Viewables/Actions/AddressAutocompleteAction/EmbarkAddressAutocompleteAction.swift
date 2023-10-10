@@ -92,8 +92,8 @@ extension EmbarkAddressAutocompleteAction: Viewable {
         let button = Button(
             title: data.addressAutocompleteActionData.link.fragments.embarkLinkFragment.label,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
         bag += view.addArranged(button)

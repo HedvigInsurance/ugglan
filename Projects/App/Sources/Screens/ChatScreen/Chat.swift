@@ -176,7 +176,7 @@ extension Chat: Presentable {
                         right: 0
                     )
                     let headerView = UIView()
-                    headerView.backgroundColor = .brandNew(.primaryBackground())
+                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
@@ -195,7 +195,7 @@ extension Chat: Presentable {
             width: 0,
             height: hNavigationControllerWithLargerNavBar.navigationBarHeight
         )
-        footerView.backgroundColor = .brandNew(.primaryBackground())
+        footerView.backgroundColor = .brand(.primaryBackground())
         tableKit.view.tableFooterView = footerView
 
         bag += chatState.tableSignal.atOnce().delay(by: 0.5)

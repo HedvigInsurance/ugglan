@@ -111,7 +111,7 @@ extension Card: Viewable {
         view.accessibilityIdentifier = "Card"
         view.layer.cornerRadius = .defaultCornerRadius
         view.layer.borderWidth = .hairlineWidth
-        bag += view.applyBorderColor { _ -> UIColor in .brandNew(.primaryBorderColor) }
+        bag += view.applyBorderColor { _ -> UIColor in .brand(.primaryBorderColor) }
 
         view.backgroundColor = backgroundColor
 
@@ -139,7 +139,7 @@ extension Card: Viewable {
                 let imageView = UIImageView()
                 imageView.image = titleIcon
                 imageView.contentMode = .scaleAspectFit
-                imageView.tintColor = .typographyColor(.primary(state: .matching(backgroundColor)))
+                imageView.tintColor = .brand(.primaryBackground())
                 imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
                 bag += $titleIcon.bindTo(imageView, \.image)
@@ -152,7 +152,7 @@ extension Card: Viewable {
 
         let titleLabel = UILabel(
             value: title,
-            style: TextStyle.brand(.headline(color: .primary(state: .matching(backgroundColor))))
+            style: UIColor.brandStyle(.primaryText())
                 .centerAligned
         )
         bag += $title.bindTo(titleLabel, \.value)
@@ -161,7 +161,7 @@ extension Card: Viewable {
 
         let bodyLabel = MultilineLabel(
             value: body,
-            style: UIColor.brandNewStyle(.secondaryText)
+            style: UIColor.brandStyle(.secondaryText)
                 .centerAligned
         )
         bag += $body.bindTo(bodyLabel.$value)

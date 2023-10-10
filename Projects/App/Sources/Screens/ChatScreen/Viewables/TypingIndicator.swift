@@ -85,7 +85,7 @@ extension TypingIndicator: Viewable {
             let dot = UIView()
             dot.snp.makeConstraints { make in make.width.height.equalTo(5) }
             dot.layer.cornerRadius = 2.5
-            dot.backgroundColor = .brandNew(.primaryText())
+            dot.backgroundColor = .brand(.primaryText())
             return dot
         }
 

@@ -12,14 +12,14 @@ struct ClaimsAskForPushnotifications: Presentable {
         let pushNotificationsDoButton = Button(
             title: L10n.claimsActivateNotificationsCta,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText(true))
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText(true))
             )
         )
 
         let pushNotificationsSkipButton = Button(
             title: L10n.claimsActivateNotificationsDismiss,
-            type: .transparent(textColor: .brandNew(.primaryText()))
+            type: .transparent(textColor: .brand(.primaryText()))
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(

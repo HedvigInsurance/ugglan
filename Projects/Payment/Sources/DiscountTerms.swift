@@ -23,11 +23,11 @@ extension DiscountTerms: Viewable {
         containerStackView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
         let termsAndConditionsString = L10n.referralAddcouponTcLink
-        let textStyle = UIColor.brandNewStyle(.secondaryText).centerAligned
+        let textStyle = UIColor.brandStyle(.secondaryText).centerAligned
 
         let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString)
             .attributedStringWithVariableStyles(
-                [termsAndConditionsString: UIColor.brandNewStyle(.secondaryText)],
+                [termsAndConditionsString: UIColor.brandStyle(.secondaryText)],
                 fallbackStyle: textStyle
             )
 

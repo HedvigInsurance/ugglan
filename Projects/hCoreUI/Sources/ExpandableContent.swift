@@ -26,7 +26,7 @@ extension ExpandableContent: Presentable {
         let outerContainer = UIView()
 
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .brandNew(.primaryBackground())
+        scrollView.backgroundColor = .brand(.primaryBackground())
 
         let buttonIsHiddenSignal = ReadWriteSignal(false)
 
@@ -45,8 +45,8 @@ extension ExpandableContent: Presentable {
         let expandButton = Button(
             title: "",
             type: .outlineIcon(
-                borderColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.secondaryBackground(true)),
+                borderColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.secondaryBackground(true)),
                 icon: .left(image: hCoreUIAssets.chevronDown.image, width: 10)
             )
         )
@@ -117,9 +117,9 @@ extension ExpandableContent: Presentable {
 
         func setGradientColors() {
             gradient.colors = [
-                UIColor.brandNew(.primaryBackground()).withAlphaComponent(0).cgColor,
-                UIColor.brandNew(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-                UIColor.brandNew(.primaryBackground()).cgColor,
+                UIColor.brand(.primaryBackground()).withAlphaComponent(0).cgColor,
+                UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
+                UIColor.brand(.primaryBackground()).cgColor,
             ]
         }
 
@@ -165,8 +165,8 @@ extension ExpandableContent: Presentable {
                                 ? L10n.expandableContentCollapse
                                 : L10n.expandableContentExpand
                             expandButton.type.value = .outlineIcon(
-                                borderColor: .brandNew(.secondaryBackground(true)),
-                                textColor: .brandNew(.secondaryBackground(true)),
+                                borderColor: .brand(.secondaryBackground(true)),
+                                textColor: .brand(.secondaryBackground(true)),
                                 icon: .left(
                                     image: value
                                         ? hCoreUIAssets.chevronUp.image

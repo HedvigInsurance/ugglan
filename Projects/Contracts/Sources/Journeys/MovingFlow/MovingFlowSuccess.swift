@@ -26,8 +26,8 @@ extension MovingFlowSuccess: Presentable {
         let button = Button(
             title: L10n.MovingConfirmation.Success.buttonText,
             type: .standardOutline(
-                borderColor: .brandNew(.primaryText()),
-                textColor: .brandNew(.primaryText())
+                borderColor: .brand(.primaryText()),
+                textColor: .brand(.primaryText())
             )
         )
 

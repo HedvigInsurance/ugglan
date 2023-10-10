@@ -20,12 +20,12 @@ struct DirectDebitSetup {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandNewStyle(.navigationButton)
+                style: UIColor.brandStyle(.navigationButton)
             )
         default:
             return UIBarButtonItem(
                 title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandNewStyle(.navigationButton)
+                style: UIColor.brandStyle(.navigationButton)
             )
         }
     }
@@ -56,7 +56,7 @@ extension DirectDebitSetup: Presentable {
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        webView.backgroundColor = .brandNew(.secondaryBackground())
+        webView.backgroundColor = .brand(.secondaryBackground())
         webView.isOpaque = false
 
         bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
@@ -92,7 +92,7 @@ extension DirectDebitSetup: Presentable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
-        activityIndicator.color = .brandNew(.primaryText())
+        activityIndicator.color = .brand(.primaryText())
 
         webView.addSubview(activityIndicator)
 
@@ -248,7 +248,7 @@ extension DirectDebitSetup: Presentable {
                     viewController.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
                     let containerView = UIView()
-                    containerView.backgroundColor = .brandNew(.secondaryBackground())
+                    containerView.backgroundColor = .brand(.secondaryBackground())
 
                     let directDebitResult = DirectDebitResult(type: type)
 

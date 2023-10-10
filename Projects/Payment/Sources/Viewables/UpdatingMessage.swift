@@ -15,7 +15,7 @@ extension UpdatingMessage: Viewable {
         let label = MultilineLabel(
             styledText: StyledText(
                 text: L10n.myPaymentUpdatingMessage,
-                style: .brand(.body(color: .primary))
+                style: UIColor.brandStyle(.primaryText())
             )
         )
         bag += row.addArranged(label)

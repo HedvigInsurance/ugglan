@@ -98,7 +98,7 @@ extension ImageTextAction: Viewable {
         let headerImageView = UIImageView()
         headerImageView.image = image.image
         headerImageView.contentMode = .scaleAspectFit
-        headerImageView.tintColor = .brandNew(.primaryText())
+        headerImageView.tintColor = .brand(.primaryText())
 
         headerImageContainer.addArrangedSubview(headerImageView)
 
@@ -118,14 +118,14 @@ extension ImageTextAction: Viewable {
 
         var titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.brand(.title2(color: .primary)).aligned(to: alignment)
+            style: UIColor.brandStyle(.primaryText()).aligned(to: alignment)
         )
         bag += view.addArranged(titleLabel)
         bag += $title.onValue { value in titleLabel.value = value }
 
         var bodyLabel = MultilineLabel(
             value: body,
-            style: UIColor.brandNewStyle(.secondaryText).aligned(to: alignment)
+            style: UIColor.brandStyle(.secondaryText).aligned(to: alignment)
         )
         bag += view.addArranged(bodyLabel)
         bag += $body.onValue { value in bodyLabel.value = value }

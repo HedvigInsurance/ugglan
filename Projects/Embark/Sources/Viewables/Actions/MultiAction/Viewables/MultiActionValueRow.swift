@@ -29,21 +29,21 @@ extension MultiActionValueRow: Reusable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 blurRadius: 3,
-                color: .brandNew(.primaryBorderColor),
+                color: .brand(.primaryBorderColor),
                 path: nil,
                 radius: 8
             )
         }
         stylingView.layer.cornerRadius = 8
         stylingView.alpha = 0
-        stylingView.backgroundColor = .brandNew(.secondaryBackground())
+        stylingView.backgroundColor = .brand(.secondaryBackground())
 
         view.addSubview(stylingView)
         stylingView.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        let title = UILabel(value: "", style: .brand(.body(color: .primary)))
+        let title = UILabel(value: "", style: UIColor.brandStyle(.primaryText()))
         title.textAlignment = .center
 
-        let values = UILabel(value: "", style: UIColor.brandNewStyle(.secondaryText))
+        let values = UILabel(value: "", style: UIColor.brandStyle(.secondaryText))
         values.textAlignment = .center
         values.numberOfLines = 0
         values.lineBreakMode = .byWordWrapping
@@ -61,7 +61,7 @@ extension MultiActionValueRow: Reusable {
 
         let button = UIButton()
         button.setImage(hCoreUIAssets.close.image, for: .normal)
-        button.tintColor = .brandNew(.secondaryText)
+        button.tintColor = .brand(.secondaryText)
         button.isUserInteractionEnabled = true
 
         view.addSubview(button)

@@ -32,7 +32,7 @@ extension PerilDetail: Presentable {
         form.append(stackView)
 
         bag += stackView.addArranged(
-            MultilineLabel(value: peril.title, style: .brand(.title1(color: .primary)).centerAligned)
+            MultilineLabel(value: peril.title, style: UIColor.brandStyle(.primaryText()).centerAligned)
         )
 
         bag += stackView.addArranged(Spacing(height: 15))
@@ -40,7 +40,7 @@ extension PerilDetail: Presentable {
         bag += stackView.addArranged(
             MultilineLabel(
                 value: peril.description,
-                style: UIColor.brandNewStyle(.secondaryText).centerAligned
+                style: UIColor.brandStyle(.secondaryText).centerAligned
             )
         )
 
@@ -62,7 +62,7 @@ extension PerilDetail: Presentable {
                 row.prepend(checkmarkImageView)
 
                 bag += row.append(
-                    MultilineLabel(value: covered, style: .brand(.headline(color: .primary)))
+                    MultilineLabel(value: covered, style: UIColor.brandStyle(.primaryText()))
                 )
 
                 coveredSection.append(row)
@@ -87,7 +87,7 @@ extension PerilDetail: Presentable {
                 row.prepend(crossImageView)
 
                 bag += row.append(
-                    MultilineLabel(value: exception, style: .brand(.headline(color: .primary)))
+                    MultilineLabel(value: exception, style: UIColor.brandStyle(.primaryText()))
                 )
 
                 exceptionsSection.append(row)
@@ -110,9 +110,9 @@ extension PerilDetail: Presentable {
         bag += swipeHintBackgroundView.traitCollectionSignal.atOnce()
             .onValue { _ in
                 gradient.colors = [
-                    UIColor.brandNew(.secondaryBackground()).withAlphaComponent(0).cgColor,
-                    UIColor.brandNew(.secondaryBackground()).cgColor,
-                    UIColor.brandNew(.secondaryBackground()).cgColor,
+                    UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
+                    UIColor.brand(.secondaryBackground()).cgColor,
+                    UIColor.brand(.secondaryBackground()).cgColor,
                 ]
             }
 
@@ -175,7 +175,7 @@ extension PerilDetail: Presentable {
 
         let swipeHintLabel = UILabel(
             value: L10n.PerilDetail.moreInfo,
-            style: TextStyle.brand(.footnote(color: .primary)).centerAligned
+            style: UIColor.brandStyle(.primaryText()).centerAligned
         )
         swipeHintContainer.addArrangedSubview(swipeHintLabel)
 

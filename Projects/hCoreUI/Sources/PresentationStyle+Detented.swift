@@ -710,7 +710,7 @@ extension PresentationStyle {
     public static func detented(
         _ detents: Detent...,
         modally: Bool = true,
-        bgColor: UIColor? = .brandNew(.primaryBackground())
+        bgColor: UIColor? = .brand(.primaryBackground())
     ) -> PresentationStyle {
         PresentationStyle(
             name: "detented",

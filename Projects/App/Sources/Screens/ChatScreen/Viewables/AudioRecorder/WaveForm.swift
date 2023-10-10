@@ -12,7 +12,7 @@ extension WaveForm: Viewable {
         let view = UIView()
         let bag = DisposeBag()
 
-        view.backgroundColor = .brandNew(.alert)
+        view.backgroundColor = .brand(.alert)
 
         let viewHeight = 50
 
@@ -39,7 +39,7 @@ extension WaveForm: Viewable {
 
         let timeStampLabel = UILabel(
             value: "00:00",
-            style: TextStyle.brand(.footnote(color: .primary)).colored(.white).centerAligned
+            style: UIColor.brandStyle(.primaryText()).centerAligned
         )
         view.addSubview(timeStampLabel)
 

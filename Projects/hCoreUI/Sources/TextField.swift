@@ -48,12 +48,12 @@ extension TextField: Viewable {
         switch style {
         case .border:
             view.layer.borderWidth = UIScreen.main.hairlineWidth
-            bag += view.applyBorderColor { _ in .brandNew(.primaryBorderColor) }
+            bag += view.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
             paddingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 3)
         case .line:
             let border = CALayer()
-            border.backgroundColor = UIColor.brandNew(.primaryBorderColor).cgColor
+            border.backgroundColor = UIColor.brand(.primaryBorderColor).cgColor
             view.layer.addSublayer(border)
 
             bag += view.didLayoutSignal.onValue { _ in

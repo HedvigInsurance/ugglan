@@ -8,7 +8,7 @@ public struct Pill: Hashable, ReusableSizeable {
     public init(
         style: Style,
         title: DisplayableString,
-        textStyle: TextStyle = UIColor.brandNewStyle(.secondaryText)
+        textStyle: TextStyle = UIColor.brandStyle(.secondaryText)
     ) {
         self.style = style
         self.title = title

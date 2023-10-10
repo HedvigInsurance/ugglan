@@ -37,7 +37,7 @@ extension CloseButton: Viewable {
         .map { 1 }.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button, \.alpha)
 
         let icon = Icon(icon: hCoreUIAssets.close.image, iconWidth: 15)
-        icon.image.tintColor = .brandNew(.primaryText())
+        icon.image.tintColor = .brand(.primaryText())
         button.addSubview(icon)
 
         icon.snp.makeConstraints { make in make.width.height.centerX.centerY.equalToSuperview() }

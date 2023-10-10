@@ -14,8 +14,8 @@ extension AdyenSuccess: Presentable {
         let continueButton = Button(
             title: L10n.PayInConfirmation.continueButton,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 

@@ -17,7 +17,7 @@ extension EmbarkSelectActionOption: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .brandNew(.secondaryBackground())
+        control.backgroundColor = .brand(.secondaryBackground())
         control.layer.cornerRadius = 8
         bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
@@ -28,7 +28,7 @@ extension EmbarkSelectActionOption: Viewable {
                 })
         {
             control.layer.borderWidth = 2
-            bag += control.applyBorderColor { _ in UIColor.brandNew(.primaryText()) }
+            bag += control.applyBorderColor { _ in UIColor.brand(.primaryText()) }
         }
 
         control.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(80) }
@@ -79,7 +79,7 @@ extension EmbarkSelectActionOption: Viewable {
                 if let badge = data.badge, !badge.isEmpty {
                     let label = MultilineLabel(
                         value: badge,
-                        style: TextStyle.brand(.subHeadline(color: .primary)).centerAligned
+                        style: UIColor.brandStyle(.primaryText()).centerAligned
                     )
 
                     bag += stackView.addArranged(label)
@@ -87,7 +87,7 @@ extension EmbarkSelectActionOption: Viewable {
 
                 let valueLabel = MultilineLabel(
                     value: data.link.fragments.embarkLinkFragment.label,
-                    style: TextStyle.brand(.headline(color: .primary)).centerAligned
+                    style: UIColor.brandStyle(.primaryText()).centerAligned
                 )
 
                 bag += stackView.addArranged(valueLabel)

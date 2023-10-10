@@ -13,14 +13,14 @@ extension AdyenError: Presentable {
         let tryAgainButton = Button(
             title: L10n.PayInError.retryButton,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 
         let cancelButton = Button(
             title: L10n.PayInError.postponeButton,
-            type: .standardOutline(borderColor: .brandNew(.primaryText()), textColor: .brandNew(.primaryText()))
+            type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
         )
 
         let didFailAction = ImageTextAction<Bool>(

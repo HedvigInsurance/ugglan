@@ -10,11 +10,11 @@ extension AttachGIFButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = UIColor.brandNew(.chatTextView)
+        control.backgroundColor = UIColor.brand(.chatTextView)
         control.layer.cornerRadius = 8
         control.layer.borderWidth = 0.5
 
-        bag += control.applyBorderColor { _ in UIColor.BrandColorNew.secondaryBorderColor.color }
+        bag += control.applyBorderColor { _ in UIColor.brand(.secondaryBorderColor)}
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
         let icon = Icon(icon: hCoreUIAssets.gif.image, iconWidth: 20)
@@ -43,12 +43,12 @@ extension AttachGIFButton: Viewable {
 
         bag += control.signal(for: .touchDown)
             .animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                control.backgroundColor = UIColor.brandNew(.primaryBackground()).darkened(amount: 0.1)
+                control.backgroundColor = UIColor.brand(.primaryBackground()).darkened(amount: 0.1)
             }
 
         bag += merge(touchUpInside, control.signal(for: .touchCancel), control.signal(for: .touchUpOutside))
             .animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                control.backgroundColor = .brandNew(.primaryBackground())
+                control.backgroundColor = .brand(.primaryBackground())
             }
 
         return (

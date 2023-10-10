@@ -53,8 +53,8 @@ public enum ContextGradient {
             switch self {
             case .none:
                 return [
-                    .brandNew(.primaryBackground()), .brandNew(.primaryBackground()),
-                    .brandNew(.primaryBackground()),
+                    .brand(.primaryBackground()), .brand(.primaryBackground()),
+                    .brand(.primaryBackground()),
                 ]
             case .home:
                 if traitCollection.userInterfaceStyle == .dark {

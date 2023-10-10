@@ -32,7 +32,7 @@ extension AddressInput: Viewable {
         let bag = DisposeBag()
 
         let box = UIView()
-        box.backgroundColor = .brandNew(.secondaryBackground())
+        box.backgroundColor = .brand(.secondaryBackground())
         box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
@@ -72,7 +72,7 @@ extension AddressInput: Viewable {
 
         let postalCodeLabel = UILabel(
             value: "",
-            style: UIColor.brandNewStyle(.secondaryText).centerAligned
+            style: UIColor.brandStyle(.secondaryText).centerAligned
         )
         boxStack.addArrangedSubview(postalCodeLabel)
         postalCodeLabel.animationSafeIsHidden = true

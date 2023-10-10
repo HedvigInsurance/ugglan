@@ -22,7 +22,7 @@ extension AddressNotFoundRow: Reusable {
 
         mainTextContainer.snp.makeConstraints { make in make.width.equalToSuperview().priority(.medium) }
 
-        let addressLabel = UILabel(value: "", style: UIColor.brandNewStyle(.caution))
+        let addressLabel = UILabel(value: "", style: UIColor.brandStyle(.caution))
         mainTextContainer.addArrangedSubview(addressLabel)
 
         return (

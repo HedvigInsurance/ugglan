@@ -109,7 +109,7 @@ public enum ButtonType {
         case .transparent:
             return .clear
         case .transparentLarge:
-            return .brandNew(.primaryBackground())
+            return .brand(.primaryBackground())
         }
     }
 
@@ -166,17 +166,17 @@ public enum ButtonType {
     var textStyle: TextStyle {
         switch self {
         case .standard, .outline, .standardIcon, .standardOutline, .standardOutlineIcon:
-            return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .standardSmall:
-            return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .pillSemiTransparent:
-            return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .iconTransparent, .transparentLarge:
-            return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .tinyIcon, .outlineIcon:
-            return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .transparent:
-            return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
+            return UIColor.brandStyle(.primaryText()).colored(textColor)
         }
     }
 

@@ -53,15 +53,15 @@ struct EmbarkInput {
 
 extension FieldStyle {
     static let embarkInputLarge = FieldStyle.default.restyled { (style: inout FieldStyle) in
-        style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
+        style.text = UIColor.brandStyle(.primaryText()).centerAligned
         style.autocorrection = .no
-        style.cursorColor = .brandNew(.primaryBackground())
+        style.cursorColor = .brand(.primaryBackground())
     }
 
     static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
-        style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
+        style.text = UIColor.brandStyle(.primaryText()).centerAligned
         style.autocorrection = .no
-        style.cursorColor = .brandNew(.primaryBackground())
+        style.cursorColor = .brand(.primaryBackground())
     }
 }
 
@@ -103,7 +103,7 @@ extension EmbarkInput: Viewable {
 
         paddingView.addArrangedSubview(textField)
 
-        let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
+        let placeholderLabel = UILabel(value: placeholder.value, style: UIColor.brandStyle(.primaryBackground()))
         placeholderLabel.textAlignment = textFieldAlignment
 
         bag += textField.atOnce().onValue { value in placeholderLabel.alpha = value.isEmpty ? 1 : 0 }

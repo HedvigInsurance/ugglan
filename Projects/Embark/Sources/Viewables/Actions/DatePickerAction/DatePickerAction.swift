@@ -30,12 +30,12 @@ extension EmbarkDatePickerAction: Viewable {
         view.edgeInsets = .init(top: 20, left: 16, bottom: 20, right: 0)
 
         let box = UIView()
-        box.backgroundColor = .brandNew(.secondaryBackground())
+        box.backgroundColor = .brand(.secondaryBackground())
         box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
         let containerView = UIView()
-        containerView.backgroundColor = .brandNew(.secondaryBackground())
+        containerView.backgroundColor = .brand(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
         let stackView = UIStackView()
@@ -47,16 +47,16 @@ extension EmbarkDatePickerAction: Viewable {
         datePicker.minimumDate = Date()
         datePicker.calendar = Calendar.current
         datePicker.datePickerMode = .date
-        datePicker.tintColor = .brandNew(.primaryText())
+        datePicker.tintColor = .brand(.primaryText())
         datePicker.preferredDatePickerStyle = .inline
         datePicker.date = Date()
 
         let titleLabel = UILabel()
-        titleLabel.style = .brand(.body(color: .primary))
+        titleLabel.style = UIColor.brandStyle(.primaryText())
         titleLabel.text = data.label
 
         let placeHolderLabel = UILabel()
-        placeHolderLabel.style = UIColor.brandNewStyle(.primaryText())
+        placeHolderLabel.style = UIColor.brandStyle(.primaryText())
         placeHolderLabel.textAlignment = .right
 
         stackView.addArrangedSubview(titleLabel)
@@ -68,7 +68,7 @@ extension EmbarkDatePickerAction: Viewable {
             }
 
         let divider = UIView()
-        divider.backgroundColor = .brandNew(.primaryBorderColor)
+        divider.backgroundColor = .brand(.primaryBorderColor)
         divider.snp.makeConstraints { make in make.height.equalTo(1) }
 
         view.addArrangedSubview(stackView)
@@ -84,8 +84,8 @@ extension EmbarkDatePickerAction: Viewable {
         let button = Button(
             title: L10n.generalContinueButton,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 

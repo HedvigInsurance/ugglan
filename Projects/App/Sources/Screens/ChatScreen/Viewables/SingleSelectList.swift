@@ -77,8 +77,8 @@ extension SingleSelectList: Viewable {
                 let button = Button(
                     title: option.text,
                     type: .standardSmall(
-                        backgroundColor: .brandNew(.primaryBackground(true)),
-                        textColor: .brandNew(.primaryText())
+                        backgroundColor: .brand(.primaryBackground(true)),
+                        textColor: .brand(.primaryText())
                     )
                 )
 

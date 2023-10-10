@@ -25,8 +25,8 @@ struct PostOnboarding {
         let paymentButton = Button(
             title: L10n.PayInExplainer.buttonText,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 
@@ -47,14 +47,14 @@ struct PostOnboarding {
         let pushNotificationsDoButton = Button(
             title: L10n.onboardingActivateNotificationsCta,
             type: .standard(
-                backgroundColor: .brandNew(.secondaryBackground(true)),
-                textColor: .brandNew(.primaryText())
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
 
         let pushNotificationsSkipButton = Button(
             title: L10n.onboardingActivateNotificationsDismiss,
-            type: .transparent(textColor: .brandNew(.primaryText()))
+            type: .transparent(textColor: .brand(.primaryText()))
         )
 
         bag += pushNotificationsDoButton.onTapSignal.onValue { _ in onAction(.push) }
@@ -103,7 +103,7 @@ extension PostOnboarding: Presentable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.isScrollEnabled = false
         collectionKit.view.contentInsetAdjustmentBehavior = .never
-        collectionKit.view.backgroundColor = .brandNew(.secondaryBackground())
+        collectionKit.view.backgroundColor = .brand(.secondaryBackground())
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in collectionKit.view.bounds.size }
 

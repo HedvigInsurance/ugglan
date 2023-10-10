@@ -21,7 +21,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .brandNew(.primaryBackground())
+        cardContainer.backgroundColor = .brand(.primaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         let fillView = UIView()
@@ -44,7 +44,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
+        let titleLabel = UILabel(value: "", style: UIColor.brandStyle(.primaryBackground()))
         contentView.addArrangedSubview(titleLabel)
 
         contentView.setCustomSpacing(8, after: titleLabel)
@@ -57,7 +57,7 @@ struct EmergencyAction: Reusable, SignalProvider {
 
                 let descriptionLabel = MultilineLabel(
                     value: action.description,
-                    style: UIColor.brandNewStyle(.secondaryText)
+                    style: UIColor.brandStyle(.secondaryText)
                 )
                 bag += contentView.addArranged(descriptionLabel)
 
@@ -66,8 +66,8 @@ struct EmergencyAction: Reusable, SignalProvider {
                 let button = Button(
                     title: action.buttonTitle,
                     type: .standard(
-                        backgroundColor: .brandNew(.primaryBackground(true)),
-                        textColor: .brandNew(.primaryText(true))
+                        backgroundColor: .brand(.primaryBackground(true)),
+                        textColor: .brand(.primaryText(true))
                     )
                 )
                 bag += contentView.addArranged(button)

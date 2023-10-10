@@ -26,9 +26,9 @@ extension MultiActionAddObjectRow: Reusable {
         control.layer.cornerRadius = 8
         bag += control.applyBorderColor { (traitCollection) -> UIColor in
             switch traitCollection.userInterfaceStyle {
-            case .dark: return UIColor.brandNew(.primaryText())
-            case .light: return UIColor.brandNew(.primaryBorderColor)
-            default: return UIColor.brandNew(.primaryBorderColor)
+            case .dark: return UIColor.brand(.primaryText())
+            case .light: return UIColor.brand(.primaryBorderColor)
+            default: return UIColor.brand(.primaryBorderColor)
             }
         }
 
@@ -47,9 +47,9 @@ extension MultiActionAddObjectRow: Reusable {
         imageView.image = hCoreUIAssets.circularPlus.image
         imageView.snp.makeConstraints { make in make.height.width.equalTo(24) }
         stackView.addArrangedSubview(imageView)
-        imageView.tintColor = .brandNew(.primaryText())
+        imageView.tintColor = .brand(.primaryText())
 
-        let title = UILabel(value: "", style: .brand(.body(color: .primary)))
+        let title = UILabel(value: "", style: UIColor.brandStyle(.primaryText()))
         stackView.addArrangedSubview(title)
 
         return (

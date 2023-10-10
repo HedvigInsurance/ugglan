@@ -16,11 +16,11 @@ extension RecordButton: Viewable {
         control.layer.cornerRadius = size / 2
         control.layer.borderWidth = 3
 
-        bag += control.applyBorderColor { _ -> UIColor in UIColor.brandNew(.primaryBorderColor) }
+        bag += control.applyBorderColor { _ -> UIColor in UIColor.brand(.primaryBorderColor) }
 
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false
-        recordIcon.backgroundColor = .brandNew(.alert)
+        recordIcon.backgroundColor = .brand(.alert)
         control.addSubview(recordIcon)
 
         let touchUpInside = control.signal(for: .touchUpInside)

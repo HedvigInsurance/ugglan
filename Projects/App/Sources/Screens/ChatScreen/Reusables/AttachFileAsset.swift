@@ -54,8 +54,8 @@ struct AttachFileAsset: Reusable {
                         let button = Button(
                             title: L10n.chatUploadPresend,
                             type: .standardSmall(
-                                backgroundColor: .brandNew(.primaryBackground()),
-                                textColor: .brandNew(.primaryText())
+                                backgroundColor: .brand(.primaryBackground()),
+                                textColor: .brand(.primaryText())
                             )
                         )
                         let loadableButton = LoadableButton(

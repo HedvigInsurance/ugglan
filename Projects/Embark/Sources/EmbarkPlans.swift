@@ -54,7 +54,7 @@ extension EmbarkPlans: Presentable {
         let tableKit = TableKit<String, PlanRow>(style: style, holdIn: bag)
 
         let containerView = UIView()
-        containerView.backgroundColor = .brandNew(.primaryBackground())
+        containerView.backgroundColor = .brand(.primaryBackground())
         viewController.view = containerView
 
         containerView.addSubview(tableKit.view)
@@ -82,8 +82,8 @@ extension EmbarkPlans: Presentable {
         let continueButton = Button(
             title: L10n.OnboardingStartpage.continueButtonText,
             type: .standard(
-                backgroundColor: UIColor.brandNew(.secondaryBackground(true)),
-                textColor: UIColor.brandNew(.primaryText())
+                backgroundColor: UIColor.brand(.secondaryBackground(true)),
+                textColor: UIColor.brand(.primaryText())
             )
         )
 

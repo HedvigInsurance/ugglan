@@ -1,113 +1,195 @@
 import DynamicColor
+import Form
 import Foundation
 import UIKit
 import hCore
 
-extension UIColor { private enum BrandColorBase {
-    static let offWhite = UIColor(red: 0.98, green: 0.98, blue: 0.99, alpha: 1.0)
-    static let offBlack = UIColor(red: 0.25, green: 0.25, blue: 0.31, alpha: 1.0)
-    static let white = UIColor.white
-    static let black = UIColor.black
-    static let transparent = UIColor.clear
-    static let darkGray = UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15)
-    static let lightGray = UIColor(red: 0.91, green: 0.93, blue: 0.94, alpha: 1.0)
-    static let tertiaryText = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.lightGray : BrandColorBase.darkGray
-    })
-    static let primaryTextMuted = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.lightGray : BrandColorBase.darkGray
-    })
-    static let secondaryText = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.offBlack
-    })
-    static let lavender = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark
-            ? UIColor(red: 0.75, green: 0.61, blue: 0.95, alpha: 1.00)
-            : UIColor(red: 0.79, green: 0.67, blue: 0.96, alpha: 1.00)
-    })
-    static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark
-            ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBase.grayBorder
-    })
-    static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
-//    static let link = UIColor.tint(.lavenderOne)
-    static let caution = UIColor(red: 0.95, green: 0.783, blue: 0.321, alpha: 1)
-    static let destructive = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark
-            ? UIColor(red: 0.867, green: 0.153, blue: 0.153, alpha: 1)
-            : UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
-    })
-}
+extension UIColor {
+    private enum BrandColorBase {
+        static let grayScale25 = UIColor(hexString: "FAFAFA")
+        static let grayScale50 = UIColor(hexString: "F5F5F5")
+        static let grayScale100 = UIColor(hexString: "F0F0F0")
+        static let grayScale200 = UIColor(hexString: "EAEAEA")
+        static let grayScale300 = UIColor(hexString: "E0E0E0")
+        static let grayScale400 = UIColor(hexString: "CFCFCF")
+        static let grayScale500 = UIColor(hexString: "B4B4B4")
+        static let grayScale700 = UIColor(hexString: "707070")
+        static let grayScale800 = UIColor(hexString: "505050")
+        static let grayScale900 = UIColor(hexString: "303030")
+        static let grayScale1000 = UIColor(hexString: "121212")
+        static let amber600 = UIColor(hexString: "FFBF00")
+        static let amberDark = UIColor(hexString: "E5AC00")
+        static let red600 = UIColor(hexString: "FF513A")
+        static let redDark = UIColor(hexString: "FF391F")
+        static let white = UIColor.white
+        static let black = UIColor.black
 
-    public enum TypographyColor {
-        case primary(state: State)
-//        case secondary(state: State)
+        static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
+            BrandColorBase.grayScale1000.withAlphaComponent(0.07)
+        })
 
-        public enum State {
-            case negative
-            case positive
-            case dynamic
-            case dynamicReversed
-            case matching(_ color: UIColor)
-        }
+    }
+    public enum BrandColorNew {
+        case primaryBackground(_ negative: Bool = false)
+        case secondaryBackground(_ negative: Bool = false)
+        case primaryBorderColor
+        case secondaryBorderColor
+        case primaryText(_ negative: Bool = false)
+        case secondaryText
+        case messageBackground(_ my: Bool = false)
+        case navigationButton
+        case chatTimeStamp
+        case chatMessage
+        case toasterBackground
+        case toasterBorder
+        case toasterTitle
+        case toasterSubtitle
+        case chatTextView
+        case alert
+        case caution
 
-        public static var primary: Self { Self.primary(state: .dynamic) }
-
-//        public static var secondary: Self { Self.secondary(state: .dynamic) }
-
-        public var positiveColor: UIColor {
+        public var color: UIColor {
             switch self {
-            case .primary: return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 1)
+            case let .primaryBackground(negative):
+                if negative {
+                    return UIColor(dynamic: { trait -> UIColor in
+                        trait.userInterfaceStyle == .dark
+                            ? BrandColorBase.grayScale25 : BrandColorBase.grayScale1000
+                    })
+                }
 
-//            case .secondary: return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.73)
-                
-            }
-        }
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.grayScale1000 : BrandColorBase.grayScale25
+                })
+            case let .secondaryBackground(negative):
+                if negative {
+                    return UIColor(dynamic: { trait -> UIColor in
+                        BrandColorBase.grayScale1000.withAlphaComponent(0.045)
+                    })
+                }
 
-        public var negativeColor: UIColor {
-            switch self {
-            case .primary: return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 1)
-//            case .secondary: return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.66)
+                return UIColor(dynamic: { trait -> UIColor in
+                    BrandColorBase.grayScale1000.withAlphaComponent(0.045)
+                })
+            case .primaryBorderColor:
+                return BrandColorBase.primaryBorder
+            case .secondaryBorderColor:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.grayScale800 : BrandColorBase.grayScale1000.withAlphaComponent(0.07)
+                })
+            case let .primaryText(negative):
+                if negative {
+                    return UIColor(dynamic: { trait -> UIColor in
+                        trait.userInterfaceStyle == .dark
+                            ? BrandColorBase.grayScale1000 : BrandColorBase.grayScale25
+                    })
+                }
 
-            }
-        }
-
-        var dynamicColor: UIColor {
-            UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark { return self.negativeColor }
-
-                return self.positiveColor
-            })
-        }
-
-        var dynamicReversedColor: UIColor {
-            UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark { return self.dynamicColor }
-
-                return self.negativeColor
-            })
-        }
-
-        func color(for state: State) -> UIColor {
-            switch state {
-            case .dynamic: return dynamicColor
-            case .dynamicReversed: return dynamicReversedColor
-            case .negative: return negativeColor
-            case .positive: return positiveColor
-            case let .matching(color):
-                return UIColor(dynamic: { _ -> UIColor in
-                    color.luminance > 0.3 ? self.positiveColor : self.negativeColor
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.grayScale25 : BrandColorBase.grayScale1000
+                })
+            case .secondaryText:
+                return UIColor(dynamic: { trait -> UIColor in
+                    BrandColorBase.grayScale700
+                })
+            case let .messageBackground(my):
+                return UIColor(dynamic: { trait -> UIColor in
+                    if my {
+                        return hSignalColor.blueFill
+                            .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
+                    } else {
+                        return UIColor(dynamic: { trait -> UIColor in
+                            trait.userInterfaceStyle == .dark
+                                ? BrandColorBase.grayScale100 : BrandColorBase.grayScale100
+                        })
+                    }
+                })
+            case .navigationButton:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
+                })
+            case .chatTimeStamp:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hTextColor.tertiary.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .chatMessage:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.grayScale1000 : BrandColorBase.grayScale1000
+                })
+            case .toasterBackground:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColor.greenFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .toasterBorder:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hBorderColor.translucentOne.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                        .color
+                        .uiColor()
+                })
+            case .toasterTitle:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColor.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .toasterSubtitle:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColor.greenText.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            case .chatTextView:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.grayScale900 : BrandColorBase.grayScale1000.withAlphaComponent(0.045)
+                })
+            case .caution:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.amberDark: BrandColorBase.amber600
+                })
+            case .alert:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.redDark: BrandColorBase.red600
                 })
             }
         }
+        var textStyle: TextStyle {
+            TextStyle.default.restyled { (style: inout TextStyle) in
+                style.font = font
+                style.color = color
+                style.adjustsFontForContentSizeCategory = true
+            }
+        }
 
-        var color: UIColor {
+        private var font: UIFont {
             switch self {
-            case let .primary(state: state): return color(for: state)
-//            case let .secondary(state: state): return color(for: state)
+            case .primaryBackground: return Fonts.fontFor(style: .title1)
+            case .secondaryBackground: return Fonts.fontFor(style: .title1)
+            case .primaryBorderColor: return Fonts.fontFor(style: .title1)
+            case .secondaryBorderColor: return Fonts.fontFor(style: .title1)
+            case .primaryText: return Fonts.fontFor(style: .title2)
+            case .secondaryText: return Fonts.fontFor(style: .title3)
+            case .messageBackground: return Fonts.fontFor(style: .headline)
+            case .navigationButton: return Fonts.fontFor(style: .standard)
+            case .chatTimeStamp: return Fonts.fontFor(style: .standardExtraSmall)
+            case .chatMessage: return Fonts.fontFor(style: .standard)
+            case .toasterBackground: return Fonts.fontFor(style: .title1)
+            case .toasterBorder: return Fonts.fontFor(style: .body)
+            case .toasterTitle: return Fonts.fontFor(style: .standardSmall)
+            case .toasterSubtitle: return Fonts.fontFor(style: .standardExtraSmall)
+            case .chatTextView: return Fonts.fontFor(style: .standard)
+            case .caution: return Fonts.fontFor(style: .standard)
+            case .alert: return Fonts.fontFor(style: .standard)
             }
         }
     }
 
-    public static func typographyColor(_ typographyColor: TypographyColor) -> UIColor { typographyColor.color }
+    public static func brand(_ color: BrandColorNew) -> UIColor { color.color }
+
+    public static func brandStyle(_ color: BrandColorNew) -> TextStyle { color.textStyle }
+
 }

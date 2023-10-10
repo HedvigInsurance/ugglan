@@ -82,8 +82,8 @@ extension EmbarkSelectAction: Viewable {
                         button: Button(
                             title: option.link.label,
                             type: .standard(
-                                backgroundColor: .brandNew(.secondaryBackground(true)),
-                                textColor: .brandNew(.primaryText())
+                                backgroundColor: .brand(.secondaryBackground(true)),
+                                textColor: .brand(.primaryText())
                             )
                         )
                     )

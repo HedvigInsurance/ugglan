@@ -44,9 +44,9 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = .brandNew(.toasterTitle),
-        backgroundColor: UIColor = UIColor.brandNew(.toasterBackground),
-        borderColor: UIColor = UIColor.brandNew(.toasterBorder),
+        textColor: UIColor = .brand(.toasterTitle),
+        backgroundColor: UIColor = UIColor.brand(.toasterBackground),
+        borderColor: UIColor = UIColor.brand(.toasterBorder),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
@@ -63,7 +63,7 @@ extension Toast: Viewable {
     var symbolView: UIView {
         switch symbol {
         case let .character(character):
-            let view = UILabel(value: String(character), style: UIColor.brandNewStyle(.primaryText()))
+            let view = UILabel(value: String(character), style: UIColor.brandStyle(.primaryText()))
             view.minimumScaleFactor = 0.5
             view.adjustsFontSizeToFitWidth = true
             return view
@@ -164,7 +164,7 @@ extension Toast: Viewable {
         textContainer.spacing = 5
         let bodyLabel = UILabel(
             value: body,
-            style: UIColor.brandNewStyle(.toasterTitle).colored(textColor)
+            style: UIColor.brandStyle(.toasterTitle).colored(textColor)
         )
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
@@ -174,7 +174,7 @@ extension Toast: Viewable {
         if let subtitle = subtitle {
             let bodySubtitleLabel = UILabel(
                 value: subtitle,
-                style: UIColor.brandNewStyle(.toasterSubtitle).colored(textColor)
+                style: UIColor.brandStyle(.toasterSubtitle).colored(textColor)
             )
             textContainer.addArrangedSubview(bodySubtitleLabel)
         }

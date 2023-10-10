@@ -114,23 +114,23 @@ class LargeNavBar: UINavigationBar {
 }
 
 extension BarButtonStyle {
-    public static var destructive = BarButtonStyle(text: UIColor.brandNewStyle(.caution))
+    public static var destructive = BarButtonStyle(text: UIColor.brandStyle(.caution))
 }
 
 extension DefaultStyling {
-    public static let tabBarBackgroundColor = UIColor.brandNew(.primaryBackground())
+    public static let tabBarBackgroundColor = UIColor.brand(.primaryBackground())
 
     public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-        return .brandNew(.primaryBackground())
+        return .brand(.primaryBackground())
     })
 
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText()),
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
             NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
         appearance.largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText()),
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
             NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
         ]
 
@@ -161,7 +161,7 @@ extension DefaultStyling {
     public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = UIColor.brandNew(.primaryBackground())
+        appearance.backgroundColor = UIColor.brand(.primaryBackground())
         appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundImage = nil
         appearance.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
@@ -220,25 +220,25 @@ extension DefaultStyling {
             }
         }
 
-        ListTableView.appearance().backgroundColor = .brandNew(.primaryBackground())
+        ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(
                 for: UITraitCollection(userInterfaceIdiom: .pad)
             )
-            .backgroundColor = .brandNew(.primaryBackground())
-            view.appearance().backgroundColor = .brandNew(.primaryBackground())
+            .backgroundColor = .brand(.primaryBackground())
+            view.appearance().backgroundColor = .brand(.primaryBackground())
 
             view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor =
-                .brandNew(.primaryBackground())
+                .brand(.primaryBackground())
         }
 
-        UIRefreshControl.appearance().tintColor = .brandNew(.primaryText())
+        UIRefreshControl.appearance().tintColor = .brand(.primaryText())
         setNavigationBarAppearance()
         setTabBarAppearance()
         setSegmentedControllAppearance()
 
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brandNew(.primaryText())
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(.primaryText())
 
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
@@ -272,7 +272,7 @@ extension DefaultStyling {
                 for: .highlighted
             )
 
-        UIBarButtonItem.appearance().tintColor = .brandNew(.primaryText())
+        UIBarButtonItem.appearance().tintColor = .brand(.primaryText())
 
         let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
             hNavigationController.self
@@ -286,11 +286,11 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
-        barButtonItemAppearance.tintColor = .brandNew(.primaryText())
+        barButtonItemAppearance.tintColor = .brand(.primaryText())
 
-        UIDatePicker.appearance().tintColor = .brandNew(.primaryText())  //.brand(.primaryT)
-        UIImageView.appearance().tintColor = .brandNew(.primaryText())
-        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
+        UIDatePicker.appearance().tintColor = .brand(.primaryText())  //.brand(.primaryT)
+        UIImageView.appearance().tintColor = .brand(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
 
@@ -301,16 +301,16 @@ extension DefaultStyling {
         let standard = UITabBarAppearance()
         let scrollEdgeAppearance = UITabBarAppearance()
         scrollEdgeAppearance.configureWithOpaqueBackground()
-        scrollEdgeAppearance.backgroundColor = UIColor.brandNew(.primaryBackground())
+        scrollEdgeAppearance.backgroundColor = UIColor.brand(.primaryBackground())
         standard.configureWithOpaqueBackground()
-        standard.backgroundColor = UIColor.brandNew(.primaryBackground())
+        standard.backgroundColor = UIColor.brand(.primaryBackground())
 
         func configureTabBar(appearance: UITabBarItemStateAppearance) {
             appearance.badgeBackgroundColor = .clear
             appearance.badgePositionAdjustment.horizontal = 0
             appearance.badgePositionAdjustment.vertical = -4
             appearance.badgeTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brandNew(.alert),
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
             ]
         }
@@ -323,8 +323,8 @@ extension DefaultStyling {
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
         }
-        UITabBar.appearance().unselectedItemTintColor = UIColor.brandNew(.primaryText()).withAlphaComponent(0.4)
-        UITabBar.appearance().tintColor = .brandNew(.primaryText())
+        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        UITabBar.appearance().tintColor = .brand(.primaryText())
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
 
         UITabBar.appearance(
@@ -344,13 +344,13 @@ extension DefaultStyling {
         UITabBar.appearance(
             for: UITraitCollection(userInterfaceStyle: .dark)
         )
-        .shadowImage = UIColor.brandNew(.primaryText())
+        .shadowImage = UIColor.brand(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
         UITabBar.appearance(
             for: UITraitCollection(userInterfaceStyle: .light)
         )
-        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
         if #available(iOS 15.0, *) {
@@ -358,14 +358,14 @@ extension DefaultStyling {
                 for: UITraitCollection(userInterfaceStyle: .light)
             )
             .scrollEdgeAppearance?
-            .shadowImage = UIColor.brandNew(.primaryText())
+            .shadowImage = UIColor.brand(.primaryText())
                 .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
         }
 
         UITabBar.appearance(
             for: UITraitCollection(userInterfaceStyle: .dark)
         )
-        .standardAppearance.shadowImage = UIColor.brandNew(.primaryText())
+        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
         UITabBar.appearance(
@@ -377,7 +377,7 @@ extension DefaultStyling {
                 for: UITraitCollection(userInterfaceStyle: .dark)
             )
             .scrollEdgeAppearance?
-            .shadowImage = UIColor.brandNew(.primaryText())
+            .shadowImage = UIColor.brand(.primaryText())
                 .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
         }
     }
@@ -388,7 +388,7 @@ extension DefaultStyling {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.secondaryText),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .normal
@@ -397,7 +397,7 @@ extension DefaultStyling {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText(false)),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText(false)),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .selected
@@ -409,24 +409,24 @@ extension DefaultStyling {
     }
 
     public static let custom = DefaultStyling(
-        text: .brand(.body(color: .primary)),
+        text: UIColor.brandStyle(.primaryText()),
         field: FieldStyle(
-            text: .brand(.body(color: .primary)),
-            placeholder: UIColor.brandNewStyle(.secondaryText),
-            disabled: UIColor.brandNewStyle(.secondaryText),
-            cursorColor: .brandNew(.primaryText())
+            text: UIColor.brandStyle(.primaryText()),
+            placeholder: UIColor.brandStyle(.secondaryText),
+            disabled: UIColor.brandStyle(.secondaryText),
+            cursorColor: .brand(.primaryText())
         ),
-        detailText: TextStyle.brand(.largeTitle(color: .primary)).centerAligned,
+        detailText: UIColor.brandStyle(.primaryText()).centerAligned,
         titleSubtitle: .init(
-            title: .brand(.headline(color: .primary)),
-            subtitle: UIColor.brandNewStyle(.secondaryText),
+            title: UIColor.brandStyle(.primaryText()),
+            subtitle: UIColor.brandStyle(.secondaryText),
             spacing: 0,
             insets: .zero
         ),
         button: .default,
-        barButton: .init(text: UIColor.brandNewStyle(.primaryText())),
+        barButton: .init(text: UIColor.brandStyle(.primaryText())),
         switch: .init(
-            onTintColor: .brandNew(.primaryBackground(true)),
+            onTintColor: .brand(.primaryBackground(true)),
             thumbTintColor: .white,
             onImage: nil,
             offImage: nil
@@ -437,12 +437,12 @@ extension DefaultStyling {
         formGrouped: .brandGrouped,
         formPlain: .brandPlain,
         sectionBackground: .init(
-            background: .init(color: .brandNew(.primaryBackground(true)), border: .none),
+            background: .init(color: .brand(.primaryBackground(true)), border: .none),
             topSeparator: .none,
             bottomSeparator: .none
         ),
         sectionBackgroundSelected: .init(
-            background: .init(color: .brandNew(.primaryBackground(true)), border: .none),
+            background: .init(color: .brand(.primaryBackground(true)), border: .none),
             topSeparator: .none,
             bottomSeparator: .none
         ),
@@ -466,7 +466,7 @@ extension DynamicSectionStyle {
         var color: UIColor {
             switch self {
             case .largeIcons, .standard, .custom:
-                return UIColor.brandNew(.primaryBorderColor)
+                return UIColor.brand(.primaryBorderColor)
             case .none:
                 return UIColor.clear
             }
@@ -497,7 +497,7 @@ extension DynamicSectionStyle {
         appliesShadow: Bool = true
     ) -> DynamicSectionStyle {
         DynamicSectionStyle { _ -> SectionStyle in
-            let selectedBackgroundColor = UIColor.brandNew(.primaryBackground(true)).withAlphaComponent(0.1)
+            let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
             let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
             return Style(
@@ -509,7 +509,7 @@ extension DynamicSectionStyle {
                     style:
                         .init(
                             background: .init(
-                                color: .brandNew(.secondaryBackground()),
+                                color: .brand(.secondaryBackground()),
                                 border: border
                             ),
                             topSeparator: .init(
@@ -577,9 +577,9 @@ extension DynamicSectionStyle {
                     offset: CGSize(width: 0, height: 1),
                     blurRadius: 2
                 ),
-                header: .init(text: .brand(.title3(color: .primary)), insets: headerAndFooterInset),
+                header: .init(text: UIColor.brandStyle(.primaryText()), insets: headerAndFooterInset),
                 footer: .init(
-                    text: UIColor.brandNewStyle(.secondaryText),
+                    text: UIColor.brandStyle(.secondaryText),
                     insets: headerAndFooterInset
                 )
             )
@@ -597,7 +597,7 @@ extension DynamicSectionStyle {
         }
     ) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
-            let selectedBackgroundColor = UIColor.brandNew(.primaryBackground(true)).withAlphaComponent(0.1)
+            let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
             return Style(
                 insets: insets,
@@ -683,87 +683,14 @@ extension DynamicSectionStyle {
                         )
                 ),
                 shadow: .none,
-                header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
+                header: .init(text: UIColor.brandStyle(.primaryText()), insets: UIEdgeInsets(inset: 15)),
                 footer: .init(
-                    text: UIColor.brandNewStyle(.secondaryText),
+                    text: UIColor.brandStyle(.secondaryText),
                     insets: UIEdgeInsets(inset: 15)
                 )
             )
         }
     }
-
-//    public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
-//        let backgroundColor = UIColor.tint(.yellowTwo)
-//        let cornerRadius =
-//            trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
-//            ? CGFloat.defaultCornerRadius : 0
-//
-//        return Style(
-//            insets: .zero,
-//            rowInsets: .init(inset: 15),
-//            itemSpacing: 10,
-//            minRowHeight: 0,
-//            background: .init(
-//                style:
-//                    .init(
-//                        background: .init(
-//                            color: backgroundColor,
-//                            border: .init(
-//                                width: 1,
-//                                color: .clear,
-//                                cornerRadius: cornerRadius,
-//                                borderEdges: .all
-//                            )
-//                        ),
-//                        topSeparator: .init(
-//                            style: .init(
-//                                width: .hairlineWidth,
-//                                color: UIColor.brandNew(.primaryBorderColor)
-//                            ),
-//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-//                        ),
-//                        bottomSeparator: .init(
-//                            style: .init(
-//                                width: .hairlineWidth,
-//                                color: UIColor.brandNew(.primaryBorderColor)
-//                            ),
-//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-//                        )
-//                    )
-//            ),
-//            selectedBackground: .init(
-//                style:
-//                    .init(
-//                        background: .init(
-//                            color: UIColor.tint(.yellowOne),
-//                            border: .init(
-//                                width: 1,
-//                                color: .clear,
-//                                cornerRadius: cornerRadius,
-//                                borderEdges: .all
-//                            )
-//                        ),
-//                        topSeparator: .init(
-//                            style: .init(
-//                                width: .hairlineWidth,
-//                                color: UIColor.brandNew(.primaryBorderColor)
-//                            ),
-//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-//                        ),
-//                        bottomSeparator: .init(
-//                            style: .init(
-//                                width: .hairlineWidth,
-//                                color: UIColor.brandNew(.primaryBorderColor)
-//                            ),
-//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-//                        )
-//                    )
-//            ),
-//            shadow: .none,
-//            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
-//            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
-//        )
-//    }
 
     public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
         Style(
@@ -774,8 +701,8 @@ extension DynamicSectionStyle {
             background: .none,
             selectedBackground: .none,
             shadow: .none,
-            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
-            footer: .init(text: UIColor.brandNewStyle(.secondaryText), insets: UIEdgeInsets(inset: 8))
+            header: .init(text: UIColor.brandStyle(.primaryText()), insets: UIEdgeInsets(inset: 8)),
+            footer: .init(text: UIColor.brandStyle(.secondaryText), insets: UIEdgeInsets(inset: 8))
         )
     }
 }

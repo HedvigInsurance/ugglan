@@ -24,12 +24,12 @@ extension IconTitleTappableRow: Viewable {
             title: title,
             subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary))
-                style.subtitle = UIColor.brandNewStyle(.secondaryText)
+                style.title = UIColor.brandStyle(.primaryText())
+                style.subtitle = UIColor.brandStyle(.secondaryText)
             }
         )
 
-        row.backgroundColor = .brandNew(.secondaryBackground())
+        row.backgroundColor = .brand(.secondaryBackground())
         row.layer.cornerRadius = 8
 
         let imageView = UIImageView()
