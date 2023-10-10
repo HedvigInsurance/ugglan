@@ -43,11 +43,6 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
         dark: hTextColorNew.negative
     )
 
-    //    private let innerCircleRecordingColorScheme: some hColor = hColorScheme.init(
-    //        light: hSignalColorNew.redElement,
-    //        dark: hSignalColorNew.redElementDark
-    //    )
-
     @hColorBuilder
     private var outerCircleRecordingColorScheme: some hColor {
         if isRecording {
