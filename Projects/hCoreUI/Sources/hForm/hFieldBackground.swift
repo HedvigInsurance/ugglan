@@ -3,7 +3,7 @@ import SwiftUI
 struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-    
+
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if #available(iOS 15.0, *) {
@@ -12,7 +12,7 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
-                
+
             } else {
                 content
                     .padding(.horizontal, 16)
@@ -22,7 +22,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             }
         }
     }
-    
+
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if animate {
@@ -45,7 +45,7 @@ extension View {
 struct hFieldErrorModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-    
+
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             content
@@ -62,7 +62,7 @@ struct hFieldErrorModifier: ViewModifier {
             }
         }
     }
-    
+
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if animate {
@@ -88,7 +88,7 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
-    
+
     var body: some View {
         let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
@@ -100,7 +100,7 @@ struct hFieldLabel: View {
             .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
             .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }
-    
+
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {

@@ -505,7 +505,7 @@ extension Message: Reusable {
                     }
 
                     bag += bubble.didLayoutSignal.onValue { _ in applyRounding() }
-                    
+
                     applySpacing()
                 }
 
