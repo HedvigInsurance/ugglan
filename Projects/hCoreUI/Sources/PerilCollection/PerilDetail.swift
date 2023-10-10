@@ -40,7 +40,7 @@ extension PerilDetail: Presentable {
         bag += stackView.addArranged(
             MultilineLabel(
                 value: peril.description,
-                style: TextStyle.brand(.body(color: .secondary)).centerAligned
+                style: UIColor.brandNewStyle(.secondaryText).centerAligned
             )
         )
 

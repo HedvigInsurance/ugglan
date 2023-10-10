@@ -25,7 +25,7 @@ extension IconTitleTappableRow: Viewable {
             subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary))
-                style.subtitle = .brand(.subHeadline(color: .secondary))
+                style.subtitle = UIColor.brandNewStyle(.secondaryText)
             }
         )
 

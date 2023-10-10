@@ -17,7 +17,7 @@ extension MultiActionDropDownRow: Viewable {
         let containerView = UIView()
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: containerView.backgroundColor = .grayscale(.grayFive)
+            case .dark: containerView.backgroundColor = .brandNew(.secondaryBackground())
             default: containerView.backgroundColor = .brandNew(.primaryBackground())
             }
         }
@@ -49,7 +49,7 @@ extension MultiActionDropDownRow: Viewable {
         buttonStack.isUserInteractionEnabled = false
 
         let buttonTitle = UILabel()
-        buttonTitle.style = .brand(.body(color: .tertiary))
+        buttonTitle.style = UIColor.brandNewStyle(.secondaryText)
         buttonTitle.setContentHuggingPriority(.required, for: .vertical)
         buttonTitle.text = L10n.generalSelectButton
 
@@ -68,7 +68,7 @@ extension MultiActionDropDownRow: Viewable {
         topStack.addArrangedSubview(button)
 
         mainStack.addArrangedSubview(topStack)
-        bag += mainStack.add(Divider(backgroundColor: .brand(.primaryShadowColor)))
+        bag += mainStack.add(Divider(backgroundColor: .brandNew(.primaryBorderColor)))
 
         bag += button.signal(for: .touchUpInside).withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
             .bindTo(isExpanded)

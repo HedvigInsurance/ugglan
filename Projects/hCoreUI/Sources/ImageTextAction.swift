@@ -125,7 +125,7 @@ extension ImageTextAction: Viewable {
 
         var bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.brand(.body(color: .secondary)).aligned(to: alignment)
+            style: UIColor.brandNewStyle(.secondaryText).aligned(to: alignment)
         )
         bag += view.addArranged(bodyLabel)
         bag += $body.onValue { value in bodyLabel.value = value }

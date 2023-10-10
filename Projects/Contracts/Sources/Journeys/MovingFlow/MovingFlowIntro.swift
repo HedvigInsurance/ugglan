@@ -85,7 +85,7 @@ extension MovingFlowIntro: Presentable {
         let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
         let descriptionLabel = MultilineLabel(
             value: "",
-            style: .brand(.body(color: .secondary)).aligned(to: .center)
+            style: UIColor.brandNewStyle(.secondaryText).aligned(to: .center)
         )
 
         form.appendSpacing(.top)

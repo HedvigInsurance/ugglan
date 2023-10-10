@@ -161,7 +161,7 @@ extension Card: Viewable {
 
         let bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.brand(.subHeadline(color: .secondary(state: .matching(backgroundColor))))
+            style: UIColor.brandNewStyle(.secondaryText)
                 .centerAligned
         )
         bag += $body.bindTo(bodyLabel.$value)

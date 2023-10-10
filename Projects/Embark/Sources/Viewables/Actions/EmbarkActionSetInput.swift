@@ -156,8 +156,8 @@ extension EmbarkActionSetInputData: Viewable {
                 let button = Button(
                     title: link.label,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brandNew(.secondaryBackground(true)),
+                        textColor: .brandNew(.primaryText())
                     ),
                     isEnabled: false
                 )

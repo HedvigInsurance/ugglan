@@ -114,7 +114,7 @@ class LargeNavBar: UINavigationBar {
 }
 
 extension BarButtonStyle {
-    public static var destructive = BarButtonStyle(text: .brand(.headline(color: .destructive)))
+    public static var destructive = BarButtonStyle(text: UIColor.brandNewStyle(.caution))
 }
 
 extension DefaultStyling {
@@ -310,7 +310,7 @@ extension DefaultStyling {
             appearance.badgePositionAdjustment.horizontal = 0
             appearance.badgePositionAdjustment.vertical = -4
             appearance.badgeTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.destructive),
+                NSAttributedString.Key.foregroundColor: UIColor.brandNew(.alert),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
             ]
         }
@@ -412,21 +412,21 @@ extension DefaultStyling {
         text: .brand(.body(color: .primary)),
         field: FieldStyle(
             text: .brand(.body(color: .primary)),
-            placeholder: .brand(.body(color: .secondary)),
-            disabled: .brand(.body(color: .tertiary)),
+            placeholder: UIColor.brandNewStyle(.secondaryText),
+            disabled: UIColor.brandNewStyle(.secondaryText),
             cursorColor: .brandNew(.primaryText())
         ),
         detailText: TextStyle.brand(.largeTitle(color: .primary)).centerAligned,
         titleSubtitle: .init(
             title: .brand(.headline(color: .primary)),
-            subtitle: .brand(.subHeadline(color: .secondary)),
+            subtitle: UIColor.brandNewStyle(.secondaryText),
             spacing: 0,
             insets: .zero
         ),
         button: .default,
-        barButton: .init(text: .brand(.headline(color: .link))),
+        barButton: .init(text: UIColor.brandNewStyle(.primaryText())),
         switch: .init(
-            onTintColor: .brand(.primaryButtonBackgroundColor),
+            onTintColor: .brandNew(.primaryBackground(true)),
             thumbTintColor: .white,
             onImage: nil,
             offImage: nil
@@ -437,12 +437,12 @@ extension DefaultStyling {
         formGrouped: .brandGrouped,
         formPlain: .brandPlain,
         sectionBackground: .init(
-            background: .init(color: .brandNew(.primaryBackground()), border: .none),
+            background: .init(color: .brandNew(.primaryBackground(true)), border: .none),
             topSeparator: .none,
             bottomSeparator: .none
         ),
         sectionBackgroundSelected: .init(
-            background: .init(color: .brand(.primaryButtonBackgroundColor), border: .none),
+            background: .init(color: .brandNew(.primaryBackground(true)), border: .none),
             topSeparator: .none,
             bottomSeparator: .none
         ),
@@ -579,7 +579,7 @@ extension DynamicSectionStyle {
                 ),
                 header: .init(text: .brand(.title3(color: .primary)), insets: headerAndFooterInset),
                 footer: .init(
-                    text: .brand(.footnote(color: .tertiary)),
+                    text: UIColor.brandNewStyle(.secondaryText),
                     insets: headerAndFooterInset
                 )
             )
@@ -685,85 +685,85 @@ extension DynamicSectionStyle {
                 shadow: .none,
                 header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
                 footer: .init(
-                    text: .brand(.footnote(color: .tertiary)),
+                    text: UIColor.brandNewStyle(.secondaryText),
                     insets: UIEdgeInsets(inset: 15)
                 )
             )
         }
     }
 
-    public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
-        let backgroundColor = UIColor.tint(.yellowTwo)
-        let cornerRadius =
-            trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
-            ? CGFloat.defaultCornerRadius : 0
-
-        return Style(
-            insets: .zero,
-            rowInsets: .init(inset: 15),
-            itemSpacing: 10,
-            minRowHeight: 0,
-            background: .init(
-                style:
-                    .init(
-                        background: .init(
-                            color: backgroundColor,
-                            border: .init(
-                                width: 1,
-                                color: .clear,
-                                cornerRadius: cornerRadius,
-                                borderEdges: .all
-                            )
-                        ),
-                        topSeparator: .init(
-                            style: .init(
-                                width: .hairlineWidth,
-                                color: UIColor.brandNew(.primaryBorderColor)
-                            ),
-                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                        ),
-                        bottomSeparator: .init(
-                            style: .init(
-                                width: .hairlineWidth,
-                                color: UIColor.brandNew(.primaryBorderColor)
-                            ),
-                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                        )
-                    )
-            ),
-            selectedBackground: .init(
-                style:
-                    .init(
-                        background: .init(
-                            color: UIColor.tint(.yellowOne),
-                            border: .init(
-                                width: 1,
-                                color: .clear,
-                                cornerRadius: cornerRadius,
-                                borderEdges: .all
-                            )
-                        ),
-                        topSeparator: .init(
-                            style: .init(
-                                width: .hairlineWidth,
-                                color: UIColor.brandNew(.primaryBorderColor)
-                            ),
-                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                        ),
-                        bottomSeparator: .init(
-                            style: .init(
-                                width: .hairlineWidth,
-                                color: UIColor.brandNew(.primaryBorderColor)
-                            ),
-                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                        )
-                    )
-            ),
-            shadow: .none,
-            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
-            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
-        )
-    }
+//    public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
+//        let backgroundColor = UIColor.tint(.yellowTwo)
+//        let cornerRadius =
+//            trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
+//            ? CGFloat.defaultCornerRadius : 0
+//
+//        return Style(
+//            insets: .zero,
+//            rowInsets: .init(inset: 15),
+//            itemSpacing: 10,
+//            minRowHeight: 0,
+//            background: .init(
+//                style:
+//                    .init(
+//                        background: .init(
+//                            color: backgroundColor,
+//                            border: .init(
+//                                width: 1,
+//                                color: .clear,
+//                                cornerRadius: cornerRadius,
+//                                borderEdges: .all
+//                            )
+//                        ),
+//                        topSeparator: .init(
+//                            style: .init(
+//                                width: .hairlineWidth,
+//                                color: UIColor.brandNew(.primaryBorderColor)
+//                            ),
+//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+//                        ),
+//                        bottomSeparator: .init(
+//                            style: .init(
+//                                width: .hairlineWidth,
+//                                color: UIColor.brandNew(.primaryBorderColor)
+//                            ),
+//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+//                        )
+//                    )
+//            ),
+//            selectedBackground: .init(
+//                style:
+//                    .init(
+//                        background: .init(
+//                            color: UIColor.tint(.yellowOne),
+//                            border: .init(
+//                                width: 1,
+//                                color: .clear,
+//                                cornerRadius: cornerRadius,
+//                                borderEdges: .all
+//                            )
+//                        ),
+//                        topSeparator: .init(
+//                            style: .init(
+//                                width: .hairlineWidth,
+//                                color: UIColor.brandNew(.primaryBorderColor)
+//                            ),
+//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+//                        ),
+//                        bottomSeparator: .init(
+//                            style: .init(
+//                                width: .hairlineWidth,
+//                                color: UIColor.brandNew(.primaryBorderColor)
+//                            ),
+//                            insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+//                        )
+//                    )
+//            ),
+//            shadow: .none,
+//            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
+//            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
+//        )
+//    }
 
     public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
         Style(
@@ -775,7 +775,7 @@ extension DynamicSectionStyle {
             selectedBackground: .none,
             shadow: .none,
             header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
-            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
+            footer: .init(text: UIColor.brandNewStyle(.secondaryText), insets: UIEdgeInsets(inset: 8))
         )
     }
 }

@@ -12,7 +12,7 @@ extension WaveForm: Viewable {
         let view = UIView()
         let bag = DisposeBag()
 
-        view.backgroundColor = .brand(.destructive)
+        view.backgroundColor = .brandNew(.alert)
 
         let viewHeight = 50
 

@@ -14,7 +14,7 @@ extension MultiActionSwitchRow: Viewable {
         let containerView = UIView()
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: containerView.backgroundColor = .grayscale(.grayFive)
+            case .dark: containerView.backgroundColor = .brandNew(.secondaryBackground())
             default: containerView.backgroundColor = .brandNew(.primaryBackground())
             }
         }
@@ -35,7 +35,7 @@ extension MultiActionSwitchRow: Viewable {
         view.addArrangedSubview(titleLabel)
 
         let toggle = UISwitch()
-        toggle.onTintColor = .brand(.secondaryButtonBackgroundColor)
+        toggle.onTintColor = .brandNew(.secondaryBackground(true))
         toggle.setContentHuggingPriority(.required, for: .horizontal)
         view.addArrangedSubview(toggle)
 

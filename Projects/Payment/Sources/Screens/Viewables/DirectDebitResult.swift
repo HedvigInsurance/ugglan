@@ -83,7 +83,7 @@ extension DirectDebitResult: Viewable {
         if let messageText = type.messageText {
             let body = MultilineLabel(
                 value: messageText,
-                style: TextStyle.brand(.body(color: .secondary)).centerAligned
+                style: UIColor.brandNewStyle(.secondaryText).centerAligned
             )
 
             bag += stackView.addArranged(body)
@@ -117,8 +117,8 @@ extension DirectDebitResult: Viewable {
                     let continueButton = Button(
                         title: self.type.mainButtonText,
                         type: .standard(
-                            backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                            textColor: .brand(.secondaryButtonTextColor)
+                            backgroundColor: .brandNew(.secondaryBackground(true)),
+                            textColor: .brandNew(.primaryText())
                         )
                     )
 
@@ -129,8 +129,8 @@ extension DirectDebitResult: Viewable {
                     let retryButton = Button(
                         title: self.type.mainButtonText,
                         type: .standard(
-                            backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                            textColor: .brand(.secondaryButtonTextColor)
+                            backgroundColor: .brandNew(.secondaryBackground(true)),
+                            textColor: .brandNew(.primaryText())
                         )
                     )
 

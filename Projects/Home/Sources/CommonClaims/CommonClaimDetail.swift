@@ -56,8 +56,8 @@ extension CommonClaimDetail: Presentable {
             let claimButton = Button(
                 title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
                 type: .standard(
-                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                    textColor: .brand(.secondaryButtonTextColor)
+                    backgroundColor: .brandNew(.secondaryBackground(true)),
+                    textColor: .brandNew(.primaryText(true))
                 )
             )
             bag += topCardContentView.addArranged(claimButton)
@@ -78,7 +78,7 @@ extension CommonClaimDetail: Presentable {
                 }
             }
 
-            bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
+//            bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
         } else {
             let emergencyActions = EmergencyActions(presentingViewController: viewController)
             bag += view.addArranged(emergencyActions)

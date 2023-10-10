@@ -29,21 +29,21 @@ extension MultiActionValueRow: Reusable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 blurRadius: 3,
-                color: .brand(.primaryShadowColor),
+                color: .brandNew(.primaryBorderColor),
                 path: nil,
                 radius: 8
             )
         }
         stylingView.layer.cornerRadius = 8
         stylingView.alpha = 0
-        stylingView.backgroundColor = .brand(.embarkMessageBubble(false))
+        stylingView.backgroundColor = .brandNew(.secondaryBackground())
 
         view.addSubview(stylingView)
         stylingView.snp.makeConstraints { make in make.edges.equalToSuperview() }
         let title = UILabel(value: "", style: .brand(.body(color: .primary)))
         title.textAlignment = .center
 
-        let values = UILabel(value: "", style: .brand(.footnote(color: .secondary)))
+        let values = UILabel(value: "", style: UIColor.brandNewStyle(.secondaryText))
         values.textAlignment = .center
         values.numberOfLines = 0
         values.lineBreakMode = .byWordWrapping

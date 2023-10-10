@@ -28,7 +28,7 @@ extension EmbarkSelectActionOption: Viewable {
                 })
         {
             control.layer.borderWidth = 2
-            bag += control.applyBorderColor { _ in UIColor.tint(.lavenderOne) }
+            bag += control.applyBorderColor { _ in UIColor.brandNew(.primaryText()) }
         }
 
         control.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(80) }

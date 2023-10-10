@@ -57,7 +57,7 @@ struct EmergencyAction: Reusable, SignalProvider {
 
                 let descriptionLabel = MultilineLabel(
                     value: action.description,
-                    style: .brand(.body(color: .secondary))
+                    style: UIColor.brandNewStyle(.secondaryText)
                 )
                 bag += contentView.addArranged(descriptionLabel)
 
@@ -66,8 +66,8 @@ struct EmergencyAction: Reusable, SignalProvider {
                 let button = Button(
                     title: action.buttonTitle,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brandNew(.primaryBackground(true)),
+                        textColor: .brandNew(.primaryText(true))
                     )
                 )
                 bag += contentView.addArranged(button)

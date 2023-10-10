@@ -27,7 +27,7 @@ extension MultiActionTable: Presentable {
 
         bag += form.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: form.backgroundColor = .grayscale(.grayFive)
+            case .dark: form.backgroundColor = .brandNew(.secondaryBackground())
             default: form.backgroundColor = .brandNew(.primaryBackground())
             }
         }
@@ -97,8 +97,8 @@ extension MultiActionTable: Presentable {
         let button = Button(
             title: L10n.generalSaveButton,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brandNew(.secondaryBackground(true)),
+                textColor: .brandNew(.primaryText())
             ),
             isEnabled: false
         )

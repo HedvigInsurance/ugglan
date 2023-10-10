@@ -13,8 +13,8 @@ extension AdyenError: Presentable {
         let tryAgainButton = Button(
             title: L10n.PayInError.retryButton,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brandNew(.secondaryBackground(true)),
+                textColor: .brandNew(.primaryText())
             )
         )
 
