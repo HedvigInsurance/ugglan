@@ -26,7 +26,7 @@ struct MovingFlowConfirm: View {
                     if let movingFlowModel {
                         VStack(spacing: 16) {
                             VStack(spacing: 16) {
-                                ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                ForEach(movingFlowModel.quotes, id: \.id) { quote in
                                     contractInfoView(for: quote)
                                 }
                                 if movingFlowModel.quotes.count > 1 {
@@ -47,7 +47,7 @@ struct MovingFlowConfirm: View {
                             )
                             .padding(.bottom, spacingFaq)
                             VStack(spacing: 32) {
-                                ForEach(movingFlowModel.quotes, id: \.address) { quote in
+                                ForEach(movingFlowModel.quotes, id: \.id) { quote in
                                     whatIsCovered(for: quote)
                                 }
                             }
@@ -107,11 +107,11 @@ struct MovingFlowConfirm: View {
                 }
                 if isExpanded {
                     VStack(alignment: .leading) {
-                        ForEach(quote.detailsInfo, id: \.key) { keyValue in
+                        ForEach(quote.displayItems, id: \.displayTitle) { displayItem in
                             HStack {
-                                hText(keyValue.key, style: .body)
+                                hText(displayItem.displayTitle, style: .body)
                                 Spacer()
-                                hText(keyValue.value, style: .body)
+                                hText(displayItem.displayValue, style: .body)
                                     .multilineTextAlignment(.trailing)
                             }
                         }
@@ -328,8 +328,6 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                 let quote = OctopusGraphQL.MoveIntentFragment.Quote.init(
                     premium: .init(amount: 22, currencyCode: .sek),
                     startDate: "",
-                    address: .init(id: "id", street: "street", postalCode: "postal code"),
-                    numberCoInsured: 2,
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_HOUSE",
@@ -351,13 +349,12 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                             .init(headline: "Headline 2", body: "Body 2"),
                             .init(headline: "Headline 3", body: "Body 3"),
                         ]
-                    )
+                    ),
+                    displayItems: []
                 )
                 let quote2 = OctopusGraphQL.MoveIntentFragment.Quote.init(
                     premium: .init(amount: 33, currencyCode: .sek),
                     startDate: "",
-                    address: .init(id: "id2", street: "street 22", postalCode: "postal code 22"),
-                    numberCoInsured: 2,
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_CAT_BASIC",
@@ -379,7 +376,8 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                             .init(headline: "Headline 2", body: "Body 2"),
                             .init(headline: "Headline 3", body: "Body 3"),
                         ]
-                    )
+                    ),
+                    displayItems: []
                 )
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
                     currentHomeAddresses: [],

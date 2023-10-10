@@ -105,7 +105,7 @@ struct MovingFlowAddressView: View {
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
-            maxValue: (vm.store.state.movingFlowModel?.maxNumberOfConsuredFor(vm.store.state.selectedHousingType) ?? 5)
+            maxValue: (vm.store.state.movingFlowModel?.maxNumberOfCoinsuredFor(vm.store.state.selectedHousingType) ?? 5)
                 + 1
         ) { value in
             vm.type = nil

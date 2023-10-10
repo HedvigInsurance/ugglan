@@ -202,10 +202,6 @@ public struct hForm<Content: View>: View {
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
-
-        if contentPosition != .bottom {
-            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
-        }
     }
 }
 

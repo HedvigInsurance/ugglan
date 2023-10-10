@@ -39,15 +39,13 @@ fragment QuoteFragment on MoveIntent {
             ...MoneyFragment
         }
         startDate
-        address {
-            ...MoveAddressFragment
-        }
-        numberCoInsured
         productVariant {
             ...ProductVariantFragment
         }
-        ancilliaryArea
-        squareMeters
-        yearOfConstruction
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
       }
 }

@@ -66,7 +66,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         return quotes.first?.startDate ?? ""
     }
 
-    func maxNumberOfConsuredFor(_ type: HousingType) -> Int {
+    func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
         switch type {
         case .apartmant, .rental:
             return maxApartmentNumberCoInsured ?? 5
@@ -107,9 +107,7 @@ struct MoveAddress: Codable, Equatable, Hashable {
 
 struct Quote: Codable, Equatable, Hashable {
     typealias KeyValue = (key: String, value: String)
-    let address: MoveAddress
     let premium: MonetaryAmount
-    let numberCoInsured: Int?
     let startDate: String
     let displayName: String
     let highlights: [Highlight]
@@ -118,14 +116,11 @@ struct Quote: Codable, Equatable, Hashable {
     let documents: [InsuranceDocument]
     let contractType: Contract.TypeOfContract?
     let id: String
-    let ancilliaryArea: Int?
-    let squareMeters: Int?
-    let yearOfConstruction: Int?
+    let displayItems: [DisplayItem]
+
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         id = UUID().uuidString
-        address = .init(from: data.address.fragments.moveAddressFragment)
         premium = .init(fragment: data.premium.fragments.moneyFragment)
-        numberCoInsured = data.numberCoInsured
         startDate = data.startDate.localDateToDate?.displayDateDotFormat ?? data.startDate
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         displayName = productVariantFragment.displayName
@@ -134,35 +129,7 @@ struct Quote: Codable, Equatable, Hashable {
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
-        ancilliaryArea = data.ancilliaryArea
-        squareMeters = data.squareMeters
-        yearOfConstruction = data.yearOfConstruction
-    }
-
-    var detailsInfo: [KeyValue] {
-        var list: [KeyValue] = []
-        list.append((L10n.changeAddressNewAddressLabel, address.street))
-        list.append((L10n.changeAddressNewPostalCodeLabel, address.postalCode))
-        if let squareMeters {
-            list.append((L10n.changeAddressNewLivingSpaceLabel, "\(squareMeters) \(L10n.changeAddressSizeSuffix)"))
-        }
-        if let ancilliaryArea {
-            list.append((L10n.changeAddressAncillaryAreaLabel, "\(ancilliaryArea) \(L10n.changeAddressSizeSuffix)"))
-        }
-
-        if let yearOfConstruction {
-            list.append((L10n.changeAddressYearOfConstructionLabel, "\(yearOfConstruction)"))
-        }
-        if let numberCoInsured {
-            let totalNumber = numberCoInsured + 1
-            if totalNumber == 1 {
-                list.append((L10n.changeAddressCoInsuredLabel, L10n.changeAddressOnePerson))
-            } else {
-                list.append((L10n.changeAddressCoInsuredLabel, L10n.changeAddressTotalPersons(totalNumber)))
-            }
-        }
-
-        return list
+        displayItems = data.displayItems.map({ .init($0) })
     }
 }
 
@@ -173,5 +140,17 @@ struct InsuranceDocument: Codable, Equatable, Hashable {
     init(_ data: OctopusGraphQL.ProductVariantFragment.Document) {
         self.displayName = data.displayName
         self.url = data.url
+    }
+}
+
+struct DisplayItem: Codable, Equatable, Hashable {
+    let displaySubtitle: String?
+    let displayTitle: String
+    let displayValue: String
+
+    init(_ data: OctopusGraphQL.QuoteFragment.Quote.DisplayItem) {
+        displaySubtitle = data.displaySubtitle
+        displayTitle = data.displayTitle
+        displayValue = data.displayValue
     }
 }
