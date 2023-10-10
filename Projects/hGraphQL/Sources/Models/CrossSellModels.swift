@@ -57,7 +57,7 @@ public struct CrossSell: Codable, Equatable, Hashable {
         )
         webActionURL = data.storeUrl
         typeOfContract = data.id
-        type = data.type?.crossSellType ?? .unknown
+        type = data.type.crossSellType
     }
 }
 
