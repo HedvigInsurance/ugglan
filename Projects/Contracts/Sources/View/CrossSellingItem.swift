@@ -42,7 +42,7 @@ struct CrossSellingItem: View {
                 } content: {
                     hText(L10n.crossSellGetPrice)
                 }
-                .fixedSize(horizontal: true, vertical: false)
+                .fixedSize(horizontal: true, vertical: true)
             }
         }
         .onTapGesture {
