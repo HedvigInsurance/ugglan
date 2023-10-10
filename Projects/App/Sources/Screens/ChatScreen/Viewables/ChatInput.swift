@@ -233,17 +233,17 @@ extension ChatInput: Viewable {
                 singleSelectContainer.alpha = 0
                 audioContainer.alpha = 1
 
-//                UIView.performWithoutAnimation {
-//                    let audioRecorder = AudioRecorder(chatState: self.chatState)
-//
-//                    audioContainer.subviews.forEach { view in view.removeFromSuperview() }
-//
-//                    bag += audioContainer.add(audioRecorder) { view in
-//                        view.snp.makeConstraints { make in
-//                            make.top.bottom.trailing.leading.equalToSuperview()
-//                        }
-//                    }
-//                }
+            //                UIView.performWithoutAnimation {
+            //                    let audioRecorder = AudioRecorder(chatState: self.chatState)
+            //
+            //                    audioContainer.subviews.forEach { view in view.removeFromSuperview() }
+            //
+            //                    bag += audioContainer.add(audioRecorder) { view in
+            //                        view.snp.makeConstraints { make in
+            //                            make.top.bottom.trailing.leading.equalToSuperview()
+            //                        }
+            //                    }
+            //                }
             }
         }
 
