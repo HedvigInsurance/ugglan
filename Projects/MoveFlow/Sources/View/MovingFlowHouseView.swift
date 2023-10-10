@@ -138,6 +138,7 @@ struct MovingFlowHouseView: View {
                     }
                 }
                 .fixedSize(horizontal: true, vertical: false)
+                .hUseLightMode
                 .padding(.top, 8)
 
             }

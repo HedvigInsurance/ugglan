@@ -197,7 +197,7 @@ struct MovingFlowConfirm: View {
                 }
                 .background(
                     Squircle.default()
-                        .fill(hBlueColor.blue100)
+                        .fill(whatIsCoveredBgColorScheme)
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -236,6 +236,11 @@ struct MovingFlowConfirm: View {
             Spacing(height: 40)
         }
     }
+
+    private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
+        light: hBlueColor.blue100,
+        dark: hBlueColor.blue900
+    )
 
     @ViewBuilder
     func faqsComponent(for faqs: [FAQ]) -> some View {
