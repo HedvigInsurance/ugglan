@@ -117,13 +117,14 @@ struct Quote: Codable, Equatable, Hashable {
     let contractType: Contract.TypeOfContract?
     let id: String
     let displayItems: [DisplayItem]
-
+    let exposureName: String?
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         id = UUID().uuidString
         premium = .init(fragment: data.premium.fragments.moneyFragment)
         startDate = data.startDate.localDateToDate?.displayDateDotFormat ?? data.startDate
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         displayName = productVariantFragment.displayName
+        exposureName = data.exposureName
         highlights = productVariantFragment.highlights.compactMap({ .init($0) })
         insurableLimits = productVariantFragment.insurableLimits.compactMap({ .init($0) })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })

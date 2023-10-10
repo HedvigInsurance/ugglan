@@ -39,6 +39,7 @@ fragment QuoteFragment on MoveIntent {
             ...MoneyFragment
         }
         startDate
+        exposureName
         productVariant {
             ...ProductVariantFragment
         }

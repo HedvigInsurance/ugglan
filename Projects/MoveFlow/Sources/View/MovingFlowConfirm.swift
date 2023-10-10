@@ -86,14 +86,14 @@ struct MovingFlowConfirm: View {
                         .resizable()
                         .frame(width: 48, height: 48)
                     VStack(alignment: .leading) {
-                        hText(quote.displayName)
+                        hText(quote.exposureName ?? quote.displayName)
                         hText(L10n.changeAddressActivationDate(quote.startDate))
                             .foregroundColor(hTextColorNew.secondary)
                     }
                     Spacer()
                 }
                 Divider()
-                let index = selectedInsurances.firstIndex(of: quote.displayName)
+                let index = selectedInsurances.firstIndex(of: quote.id)
                 let isExpanded = index != nil
                 HStack(spacing: 8) {
                     hText(L10n.changeAddressDetails, style: .body)
@@ -123,11 +123,11 @@ struct MovingFlowConfirm: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
-                    let index = selectedInsurances.firstIndex(of: quote.displayName)
+                    let index = selectedInsurances.firstIndex(of: quote.id)
                     if let index {
                         selectedInsurances.remove(at: index)
                     } else {
-                        selectedInsurances.append(quote.displayName)
+                        selectedInsurances.append(quote.id)
                     }
                 }
             }
@@ -189,7 +189,7 @@ struct MovingFlowConfirm: View {
         VStack(spacing: 0) {
             hSection {
                 VStack {
-                    hText(quote.displayName, style: .standard)
+                    hText(quote.exposureName ?? quote.displayName, style: .standard)
                         .padding([.top, .bottom], 4)
                         .padding([.leading, .trailing], 8)
 
