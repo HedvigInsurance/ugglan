@@ -18,17 +18,10 @@ extension AppJourney {
                 item.journey
             }
             .onPresent {
-                chat.chatState.fetch()
-                //                giraffe.client.perform(mutation: GiraffeGraphQL.TriggerFreeTextChatMutation())
-                //                    .onValue { _ in
-                //                        chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
-                ////                            chat.chatState.subscribe()
-                //                        }
-                //                    }
-                //                    .onError { error in
-                //                        log.error("Chat Error: TriggerFreeTextChatMutation", error: error, attributes: nil)
-                //                        chat.chatState.errorSignal.value = (ChatError.mutationFailed, nil)
-                //                    }
+                chat.chatState.initFetch()
+            }
+            .onDismiss {
+                chat.chatState.reset()
             }
             .configureTitle(L10n.chatTitle)
             .setScrollEdgeNavigationBarAppearanceToStandard
@@ -49,14 +42,10 @@ extension AppJourney {
                 }
             }
             .onPresent {
-                chat.chatState.fetch()
-                //                let giraffe: hGiraffe = Dependencies.shared.resolve()
-                //                giraffe.client.perform(mutation: GiraffeGraphQL.TriggerFreeTextChatMutation())
-                //                    .onValue { _ in
-                //                        chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
-                ////                            chat.chatState.subscribe()
-                //                        }
-                //                    }
+                chat.chatState.initFetch()
+            }
+            .onDismiss {
+                chat.chatState.reset()
             }
             .configureTitle(L10n.chatTitle)
             .setScrollEdgeNavigationBarAppearanceToStandard

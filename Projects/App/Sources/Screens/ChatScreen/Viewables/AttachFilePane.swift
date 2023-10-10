@@ -26,20 +26,23 @@ struct FileUpload {
     let fileName: String
 
     func upload() -> Future<(key: String, bucket: String)> {
-        let giraffe: hGiraffe = Dependencies.shared.resolve()
+        let giraffe: hOctopus = Dependencies.shared.resolve()
 
         let file = GraphQLFile(fieldName: "file", originalName: fileName, mimeType: mimeType, data: data)
 
         return Future { completion in
             giraffe.client
                 .upload(
-                    operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
+                    operation: OctopusGraphQL.ChatSendFileMutation(
+                        input: OctopusGraphQL.ChatMessageFileInput(upload: "file")
+                    ),
                     files: [file],
                     queue: DispatchQueue.global(qos: .background)
                 )
-                .onValue { data in let key = data.uploadFile.key
-                    let bucket = data.uploadFile.bucket
-                    completion(.success((key, bucket)))
+                .onValue { data in
+                    //                    let key = data.uploadFile.key
+                    //                    let bucket = data.uploadFile.bucket
+                    completion(.success(("", "")))
                 }
                 .onError({ error in
                     completion(.failure(error))

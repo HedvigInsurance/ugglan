@@ -185,8 +185,11 @@ extension Chat: Presentable {
             setSheetInteractionState(true)
         }
 
-        bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, index in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
+            if index.row == tableKit.view.numberOfRows(inSection: 0) - 1 {
+                self.chatState.fetchNext()
+            }
         }
 
         bag += NotificationCenter.default
@@ -238,6 +241,10 @@ extension Chat: Presentable {
                         sectionDelete: .top,
                         rowInsert: .top,
                         rowDelete: .fade
+                    )
+                    tableKit.view.reloadRows(
+                        at: [IndexPath(row: tableKit.view.numberOfRows(inSection: 0) - 1, section: 0)],
+                        with: .automatic
                     )
                     tableKit.set(table, animation: tableAnimation)
                 }
