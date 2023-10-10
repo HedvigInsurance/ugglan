@@ -157,7 +157,7 @@ extension MovingFlowIntro: Presentable {
                         })
                     {
                         $section.value = .normal(
-                            //                                    bundle.movingFlowEmbarkId ?? ""
+                            // bundle.movingFlowEmbarkId ?? ""
                             ""
                         )
                     } else {

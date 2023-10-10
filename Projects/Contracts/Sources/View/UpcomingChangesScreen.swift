@@ -6,25 +6,30 @@ import hGraphQL
 
 struct UpcomingChangesScreen: View {
     let updateDate: String
-    let upcomingAgreementsTable: DetailAgreementsTable
+    let upcomingAgreement: Agreement?
     @PresentableStore var store: ContractStore
-
-    fileprivate init(updateDate: String, upcomingAgreementsTable: DetailAgreementsTable) {
+    
+    fileprivate init(
+        updateDate: String,
+        upcomingAgreement: Agreement?
+    ) {
         self.updateDate = updateDate
-        self.upcomingAgreementsTable = upcomingAgreementsTable
+        self.upcomingAgreement = upcomingAgreement
     }
     var body: some View {
         hForm {
-            hSection(upcomingAgreementsTable.sections.first?.rows ?? [], id: \.title) { item in
-                hRow {
-                    HStack {
-                        hText(item.title)
-                        Spacer()
-                        hText(item.value).foregroundColor(hLabelColor.secondary)
+            if let upcomingAgreement {
+                hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
+                    hRow {
+                        HStack {
+                            hText(item.displayTitle)
+                            Spacer()
+                            hText(item.displayValue).foregroundColor(hLabelColor.secondary)
+                        }
                     }
                 }
+                .withoutHorizontalPadding
             }
-            .withoutHorizontalPadding
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
@@ -40,7 +45,7 @@ struct UpcomingChangesScreen: View {
                         } content: {
                             hText(L10n.openChat)
                         }
-
+                        
                     }
                     hSection {
                         hButton.LargeButton(type: .ghost) {
@@ -59,9 +64,21 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
     static var previews: some View {
         UpcomingChangesScreen(
             updateDate: "DATE",
-            upcomingAgreementsTable: .init(
-                sections: [.init(title: "TITLE", rows: [.init(title: "TITLE", subtitle: nil, value: "VALUE")])],
-                title: "TITLE MORE"
+            upcomingAgreement: .init(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant:
+                    ProductVariant(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: "",
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        highlights: [],
+                        FAQ: [],
+                        displayName: ""
+                    )
             )
         )
     }
@@ -73,7 +90,7 @@ extension UpcomingChangesScreen {
             ContractStore.self,
             rootView: UpcomingChangesScreen(
                 updateDate: contract.upcomingChangedAgreement?.activeFrom ?? "",
-                upcomingAgreementsTable: DetailAgreementsTable(sections: [], title: "")
+                upcomingAgreement: contract.upcomingChangedAgreement
             ),
             style: .detented(.large),
             options: [.largeNavigationBar]
