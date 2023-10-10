@@ -153,7 +153,6 @@ struct PaymentInfoView: View {
                                     .hButtonIsLoading(vm.isLoadingDiscount)
                                     .hUseLightMode
                                     .frame(width: 127, height: 56)
-
                                 })
                                 .disabled(vm.isLoadingDiscount)
                                 .background(
