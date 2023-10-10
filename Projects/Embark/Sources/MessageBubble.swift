@@ -59,7 +59,7 @@ extension MessageBubble: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 blurRadius: 3,
-                color: .brand(.primaryShadowColor),
+                color: .brandNew(.primaryBorderColor),
                 path: nil,
                 radius: 8
             )
@@ -79,7 +79,7 @@ extension MessageBubble: Viewable {
         let label = MarkdownTextView(
             textSignal: textSignal,
             style: bodyStyle,
-            linkColor: messageType == .received ? UIColor.brand(.link) : bodyStyle.color
+            linkColor: messageType == .received ? UIColor.brandNew(.primaryText()) : bodyStyle.color
         )
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in UIPasteboard.general.string = labelView.text }
@@ -124,7 +124,7 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .brand(.embarkMessageBubble(messageType == .replied))
+        stylingView.backgroundColor = .brandNew(.secondaryBackground())
         stylingView.layer.cornerRadius = 10
 
         if messageType == .replied {

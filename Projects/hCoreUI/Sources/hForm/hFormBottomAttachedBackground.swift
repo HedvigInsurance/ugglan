@@ -12,10 +12,10 @@ public struct hFormBottomAttachedBackground<Content: View>: View {
 
     public var body: some View {
         VStack {
-            hSeparatorColor.separator.frame(height: .hairlineWidth)
+            hBorderColor.opaqueFour.frame(height: .hairlineWidth)
                 .edgesIgnoringSafeArea(.horizontal)
             content().padding(16)
         }
-        .background(hBackgroundColor.secondary.edgesIgnoringSafeArea([.bottom, .horizontal]))
+        .background(hBackgroundColor.primary.edgesIgnoringSafeArea([.bottom, .horizontal]))
     }
 }

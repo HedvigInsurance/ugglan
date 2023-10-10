@@ -113,8 +113,8 @@ extension EmbarkNumberAction: Viewable {
                 let button = Button(
                     title: self.data.link.fragments.embarkLinkFragment.label,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brandNew(.secondaryBackground(true)),
+                        textColor: .brandNew(.primaryText())
                     )
                 )
 

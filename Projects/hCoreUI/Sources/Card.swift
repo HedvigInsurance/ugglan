@@ -42,7 +42,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
             }
             bodyText
                 .hText(.subheadline)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .padding(10)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -57,7 +57,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
         .overlay(
             Squircle.default(lineWidth: .hairlineWidth)
                 .stroke(lineWidth: .hairlineWidth)
-                .foregroundColor(hSeparatorColor.separator)
+                .foregroundColor(hBorderColor.opaqueFour)
         )
     }
 }
@@ -161,7 +161,7 @@ extension Card: Viewable {
 
         let bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.brand(.subHeadline(color: .secondary(state: .matching(backgroundColor))))
+            style: UIColor.brandNewStyle(.secondaryText)
                 .centerAligned
         )
         bag += $body.bindTo(bodyLabel.$value)

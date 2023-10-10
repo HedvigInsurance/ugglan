@@ -10,9 +10,9 @@ struct SupportView: View {
         VStack(spacing: 24) {
             VStack(spacing: 0) {
                 hText(L10n.submitClaimNeedHelpTitle)
-                    .foregroundColor(hTextColorNew.primaryTranslucent)
+                    .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.submitClaimNeedHelpLabel)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
             }
             hButton.MediumButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)

@@ -52,8 +52,8 @@ extension PDFViewer: Viewable {
             let downloadButton = Button(
                 title: downloadButtonTitle,
                 type: .standard(
-                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                    textColor: .brand(.secondaryButtonTextColor)
+                    backgroundColor: .brandNew(.primaryBackground()),
+                    textColor: .brandNew(.primaryText())
                 )
             )
             bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in

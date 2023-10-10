@@ -37,14 +37,13 @@ public struct UpdateAppScreenOld: View {
                     onSelected()
                 } content: {
                     hText(L10n.embarkUpdateAppButton, style: .body)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButton(type: .primary) {
                     onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
                 }
                 .padding(.bottom, 2)
             }

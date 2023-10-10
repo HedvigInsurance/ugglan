@@ -14,7 +14,7 @@ struct IconRow {
     let title: ReadWriteSignal<DisplayableString>
     let titleTextStyle = ReadWriteSignal(TextStyle.brand(.headline(color: .primary)))
     let subtitle: ReadWriteSignal<DisplayableString>
-    let subtitleTextStyle = ReadWriteSignal(TextStyle.brand(.subHeadline(color: .secondary)))
+    let subtitleTextStyle = ReadWriteSignal(UIColor.brandNewStyle(.secondaryText))
 
     let options: ReadWriteSignal<[IconRow.Options]>
 

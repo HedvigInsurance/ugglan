@@ -69,7 +69,7 @@ struct Loader: Presentable {
         let activityIndicatorView = HostingView(
             rootView: ActivityIndicator(
                 style: .large,
-                color: hLabelColor.primary
+                color: hTextColor.primary
             )
         )
         scrollView.addSubview(activityIndicatorView)

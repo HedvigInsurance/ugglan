@@ -4,39 +4,39 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatusBar: View {
-    let status: Claim.ClaimStatusProgressSegment
+    let status: ClaimModel.ClaimStatusProgressSegment
 
     @hColorBuilder var barColor: some hColor {
         switch status.type {
         case .currentlyActive:
-            hTextColorNew.primary
+            hTextColor.primary
         case .pastInactive:
-            hTextColorNew.secondary
+            hTextColor.secondary
         case .paid:
-            hSignalColorNew.blueElement
+            hSignalColor.blueElement
         case .reopened:
-            hSignalColorNew.amberElement
+            hSignalColor.amberElement
         case .futureInactive:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         case .none:
-            hLabelColor.primary
+            hTextColor.primary
         }
     }
 
     @hColorBuilder var textColor: some hColor {
         switch status.type {
         case .currentlyActive:
-            hTextColorNew.primary
+            hTextColor.primary
         case .pastInactive:
-            hTextColorNew.secondary
+            hTextColor.secondary
         case .paid:
-            hTextColorNew.primary
+            hTextColor.primary
         case .reopened:
-            hTextColorNew.primary
+            hTextColor.primary
         case .futureInactive:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         case .none:
-            hTextColorNew.primary
+            hTextColor.primary
         }
     }
 

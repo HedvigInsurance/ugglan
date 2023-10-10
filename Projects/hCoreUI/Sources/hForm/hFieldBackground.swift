@@ -27,12 +27,12 @@ struct hFieldBackgroundModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hColorScheme(light: hSignalColorNew.amberFill, dark: hAmberColorNew.amber300)
+                hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
             } else {
-                hColorScheme(light: hSignalColorNew.amberFill, dark: hGrayscaleColorNew.greyScale800)
+                hColorScheme(light: hSignalColor.amberFill, dark: hGrayscaleColor.greyScale800)
             }
         } else {
-            hFillColorNew.opaqueOne
+            hFillColor.opaqueOne
         }
     }
 }
@@ -52,13 +52,13 @@ struct hFieldErrorModifier: ViewModifier {
             if let errorMessage = error {
                 HStack {
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColorNew.amberElement)
+                        .foregroundColor(hSignalColor.amberElement)
                     hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
-                .foregroundColor(hSignalColorNew.amberFill)
+                .foregroundColor(hSignalColor.amberFill)
             }
         }
     }
@@ -67,12 +67,12 @@ struct hFieldErrorModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hSignalColorNew.amberFill
+                hSignalColor.amberFill
             } else {
-                hSignalColorNew.greenFill
+                hSignalColor.greenFill
             }
         } else {
-            hFillColorNew.opaqueOne
+            hFillColor.opaqueOne
         }
     }
 }
@@ -104,13 +104,13 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hSignalColorNew.amberText
+            hSignalColor.amberText
         } else if animate {
-            hColorScheme(light: hSignalColorNew.greenText, dark: hGrayscaleColorNew.greyScale500)
+            hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled {
-            hTextColorNew.secondary
+            hTextColor.secondary
         } else {
-            hTextColorNew.disabled
+            hTextColor.disabled
         }
     }
 }

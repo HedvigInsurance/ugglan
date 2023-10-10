@@ -14,7 +14,7 @@ extension MultiActionNumberRow: Viewable {
         let containerView = UIView()
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: containerView.backgroundColor = .grayscale(.grayFive)
+            case .dark: containerView.backgroundColor = .brandNew(.secondaryBackground())
             default: containerView.backgroundColor = .brandNew(.primaryBackground())
             }
         }

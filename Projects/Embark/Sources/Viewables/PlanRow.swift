@@ -29,8 +29,8 @@ struct PlanRowContent: View {
     @ViewBuilder var discountBackground: some View {
         if !selected {
             hColorScheme(
-                light: hGrayscaleColor.five,
-                dark: hGrayscaleColor.one
+                light: hButtonColor.primaryHover,
+                dark: hBorderColor.opaqueOne
             )
         } else {
             hBackgroundColor.primary
@@ -39,9 +39,9 @@ struct PlanRowContent: View {
 
     @hColorBuilder var discountForegroundColor: some hColor {
         if !selected {
-            hLabelColor.primary.inverted
+            hTextColor.negative
         } else {
-            hLabelColor.primary
+            hTextColor.primary
         }
     }
 
@@ -69,12 +69,12 @@ struct PlanRowContent: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
                     row.title.hText(.title2)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                     Spacer()
                     BulletView(isSelected: selected).frame(width: 24, height: 24)
                 }
                 row.message.hText(.body)
-                    .foregroundColor(hLabelColor.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .padding(.trailing, 24)
             }
             .padding([.leading, .trailing], 16)

@@ -92,7 +92,7 @@ extension Tooltip: Presentable {
         let bag = DisposeBag()
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = .brand(.primaryButtonBackgroundColor)
+        backgroundView.backgroundColor = .brandNew(.primaryBackground(true))
         backgroundView.layer.cornerRadius = .defaultCornerRadius
         backgroundView.layer.masksToBounds = false
 
@@ -101,13 +101,13 @@ extension Tooltip: Presentable {
                 opacity: 1,
                 offset: CGSize(width: 0, height: 4.58),
                 blurRadius: 4.58,
-                color: .brand(.primaryShadowColor),
+                color: .brandNew(.primaryBorderColor),
                 path: nil,
                 radius: 4.58
             )
         }
 
-        let triangleView = TriangleView(frame: .zero, color: .brand(.primaryButtonBackgroundColor))
+        let triangleView = TriangleView(frame: .zero, color: .brandNew(.primaryBackground(true)))
         backgroundView.addSubview(triangleView)
 
         triangleView.snp.makeConstraints { make in make.height.equalTo(8)

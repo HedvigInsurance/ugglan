@@ -19,8 +19,8 @@ private struct StatusPill: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .foregroundColor(hTextColorNew.primary).colorScheme(.dark)
-        .background(hTextColorNew.tertiaryTranslucent).colorScheme(.light)
+        .foregroundColor(hTextColor.primary).colorScheme(.dark)
+        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
         .cornerRadius(8)
     }
 }
@@ -54,8 +54,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
         } else {
             hColorScheme(
-                light: hTextColorNew.secondary,
-                dark: hGrayscaleColorNew.greyScale900
+                light: hTextColor.secondary,
+                dark: hGrayscaleColor.greyScale900
             )
         }
     }
@@ -69,7 +69,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundColor(hTextColorNew.primary).colorScheme(.dark)
+                .foregroundColor(hTextColor.primary).colorScheme(.dark)
         }
     }
 
@@ -85,7 +85,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Spacer()
             HStack {
                 hText(contract.displayName)
-                    .foregroundColor(hTextColorNew.primary).colorScheme(.dark)
+                    .foregroundColor(hTextColor.primary).colorScheme(.dark)
                 Spacer()
             }
             hText(contract.getDetails())
@@ -97,11 +97,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .clipShape(Squircle.default())
-        .overlay(
-            Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
-        )
-        .foregroundColor(hTextColorNew.negative)
+        .hShadow()
+        .foregroundColor(hTextColor.negative)
         .contentShape(Rectangle())
     }
 }

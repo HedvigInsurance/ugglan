@@ -37,7 +37,7 @@ extension AddressRow: Reusable {
 
         let postalCodeLabel = UILabel(
             value: "",
-            style: .brand(.subHeadline(color: .secondary))
+            style: UIColor.brandNewStyle(.secondaryText)
         )
         postalCodeLabel.animationSafeIsHidden = true
         mainTextContainer.addArrangedSubview(postalCodeLabel)

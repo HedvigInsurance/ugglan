@@ -20,7 +20,7 @@ extension RecordButton: Viewable {
 
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false
-        recordIcon.backgroundColor = .brand(.destructive)
+        recordIcon.backgroundColor = .brandNew(.alert)
         control.addSubview(recordIcon)
 
         let touchUpInside = control.signal(for: .touchUpInside)

@@ -1,6 +1,7 @@
 import CoreGraphics
 import Flow
 import UIKit
+import hCore
 import hGraphQL
 
 extension GradientView {
@@ -16,7 +17,7 @@ extension GradientView {
         }
 
         public init(
-            gradientOption: Contract.PillowType,
+            gradientOption: PillowType,
             shouldShimmer: Bool = true,
             shouldAnimate: Bool = true
         ) {
@@ -130,7 +131,7 @@ extension GradientView {
     }
 }
 
-extension Contract.PillowType {
+extension PillowType {
     public var preset: GradientView.Preset {
         switch self {
         case .accident:

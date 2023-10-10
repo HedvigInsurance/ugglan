@@ -25,8 +25,8 @@ struct PostOnboarding {
         let paymentButton = Button(
             title: L10n.PayInExplainer.buttonText,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brandNew(.secondaryBackground(true)),
+                textColor: .brandNew(.primaryText())
             )
         )
 
@@ -47,8 +47,8 @@ struct PostOnboarding {
         let pushNotificationsDoButton = Button(
             title: L10n.onboardingActivateNotificationsCta,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brandNew(.secondaryBackground(true)),
+                textColor: .brandNew(.primaryText())
             )
         )
 
