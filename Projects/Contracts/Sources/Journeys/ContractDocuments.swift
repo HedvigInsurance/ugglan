@@ -13,7 +13,7 @@ import hGraphQL
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
     let id: String
-    
+
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -42,7 +42,9 @@ struct ContractDocumentsView: View {
                             }
                             .onTap {
                                 contractStore.send(
-                                    .contractDetailNavigationAction(action: .document(url: url, title: document.displayName))
+                                    .contractDetailNavigationAction(
+                                        action: .document(url: url, title: document.displayName)
+                                    )
                                 )
                             }
                         }
@@ -51,13 +53,16 @@ struct ContractDocumentsView: View {
             }
         }
     }
-    
+
     func getDocumentsToDisplay(contract: Contract) -> [InsuranceTerm] {
         var documents: [InsuranceTerm] = []
         contract.currentAgreement.productVariant.documents.forEach { document in
             documents.append(document)
         }
-        let certficateUrl = InsuranceTerm(displayName: L10n.myDocumentsInsuranceCertificate, url:  contract.currentAgreement.certificateUrl ?? "")
+        let certficateUrl = InsuranceTerm(
+            displayName: L10n.myDocumentsInsuranceCertificate,
+            url: contract.currentAgreement.certificateUrl ?? ""
+        )
         documents.append(certficateUrl)
         return documents
     }

@@ -10,7 +10,7 @@ public struct InsuranceTerm: Codable, Equatable, Hashable {
         self.displayName = data.displayName
         self.url = data.url
     }
-    
+
     public init(
         displayName: String,
         url: String
