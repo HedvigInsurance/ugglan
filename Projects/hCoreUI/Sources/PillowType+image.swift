@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
+import hCore
 import hGraphQL
 
-extension Contract.PillowType {
+extension PillowType {
     public var bgImage: UIImage {
         switch self {
         case .accident:

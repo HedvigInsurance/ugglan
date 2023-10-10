@@ -37,7 +37,7 @@ struct ClaimContactCard: View {
                     hText(title)
                     Spacer()
                     Image(uiImage: hCoreUIAssets.infoSmall.image)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                         .fixedSize()
                         .onTapGesture {
                             store.send(
@@ -65,14 +65,14 @@ struct ClaimContactCard: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
-                    .foregroundColor(hTextColorNew.negative)
+                    .foregroundColor(hTextColor.negative)
                     .padding(.vertical, 16)
             }
 
             hText(label)
                 .fixedSize()
                 .multilineTextAlignment(.center)
-                .foregroundColor(hTextColorNew.tertiary)
+                .foregroundColor(hTextColor.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
             hButton.MediumButton(type: .secondaryAlt) {

@@ -12,7 +12,7 @@ struct ClaimSectionLoading: View {
     @PresentableStore var store: ClaimsStore
 
     @ViewBuilder
-    func claimsSection(_ claims: [Claim]) -> some View {
+    func claimsSection(_ claims: [ClaimModel]) -> some View {
         VStack {
             if claims.isEmpty {
                 Spacer().frame(height: 40)

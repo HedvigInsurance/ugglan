@@ -172,7 +172,7 @@ public struct hForm<Content: View>: View {
 
     @hColorBuilder
     static func returnTintColor() -> some hColor {
-        hSignalColorNew.greenFill
+        hSignalColor.greenFill
     }
 
     func recalculateHeight() {

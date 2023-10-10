@@ -162,7 +162,7 @@ extension DefaultStyling {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.clear
-        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundEffect = UIBlurEffect(style: .light)
         applyCommonNavigationBarStyling(appearance)
 
@@ -173,7 +173,7 @@ extension DefaultStyling {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.clear
-        appearance.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
+        appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundEffect = UIBlurEffect(style: .light)
         applyCommonNavigationBarStyling(appearance)
 

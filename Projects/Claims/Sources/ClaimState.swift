@@ -7,7 +7,7 @@ import hGraphQL
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
-    var claims: [Claim]? = nil
+    var claims: [ClaimModel]? = nil
 
     public init() {}
 

@@ -36,7 +36,7 @@ struct SubmitClaimPestsScreen: View {
                         VStack(alignment: .leading, spacing: 8) {
                             hText(L10n.submitClaimHowItWorksTitle)
                             hText(L10n.submitClaimPestsHowItWorksLabel)
-                                .foregroundColor(hTextColorNew.secondary)
+                                .foregroundColor(hTextColor.secondary)
                         }
                     }
                     .padding(.top, 8)

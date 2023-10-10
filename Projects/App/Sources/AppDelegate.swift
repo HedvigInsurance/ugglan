@@ -307,7 +307,7 @@ import hGraphQL
                             )
 
                             self.bag += self.window.present(
-                                ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney
+                                ActivityIndicator(style: .large, color: hTextColor.primary).disposableHostingJourney
                                     .onPresent({
                                         Journey(alert)
                                             .onPresent {

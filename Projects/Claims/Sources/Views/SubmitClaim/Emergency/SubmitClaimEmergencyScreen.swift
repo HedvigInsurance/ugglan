@@ -32,7 +32,7 @@ struct SubmitClaimEmergencyScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(L10n.submitClaimEmergencyInsuranceCoverTitle)
                         hText(L10n.submitClaimEmergencyInsuranceCoverLabel)
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
                 .padding(.top, 16)
@@ -98,16 +98,16 @@ struct ClaimEmergencyContactCard: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 80)
-                        .foregroundColor(hTextColorNew.negative)
+                        .foregroundColor(hTextColor.negative)
                         .padding(.vertical, 8)
                 }
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
-                            .foregroundColor(hTextColorNew.negative)
+                            .foregroundColor(hTextColor.negative)
                     }
                     hText(label)
-                        .foregroundColor(hTextColorNew.tertiary)
+                        .foregroundColor(hTextColor.tertiary)
                         .padding(.horizontal, 18)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.center)
@@ -128,7 +128,7 @@ struct ClaimEmergencyContactCard: View {
 
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
-                        .foregroundColor(hTextColorNew.tertiary)
+                        .foregroundColor(hTextColor.tertiary)
                 }
             }
             .padding(.vertical, 24)

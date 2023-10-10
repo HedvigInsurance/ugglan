@@ -19,7 +19,7 @@ public struct PieChartView: View {
         GeometryReader { geometry in
             ZStack {
                 Circle()
-                    .foregroundColor(hSignalColorNew.greenElement)
+                    .foregroundColor(hSignalColor.greenElement)
                 if !state.percentagePerSlice.isNaN && state.percentagePerSlice != 0 {
                     Slice(
                         startSlices: state.slices,
@@ -27,7 +27,7 @@ public struct PieChartView: View {
                         percentagePerSlice: state.percentagePerSlice,
                         slices: state.slices + 1
                     )
-                    .fill(hTextColorNew.tertiaryTranslucent)
+                    .fill(hTextColor.tertiaryTranslucent)
                     .onAppear {
                         withAnimation(self.animation.delay(state.slices == 0 ? 0 : 1.2).repeatForever()) {
                             self.nextSlicePercentage = 1.0
