@@ -29,7 +29,7 @@ public struct ChecboxToggleStyle: ToggleStyle {
                             }
                         }
                     Circle()
-                        .fill(hTextColorNew.negative)
+                        .fill(hTextColor.negative)
                         .padding(1)
                         .offset(x: configuration.isOn ? 5 : -5)
                 }
@@ -49,9 +49,9 @@ public struct ChecboxToggleStyle: ToggleStyle {
     @hColorBuilder
     func backgroundColor(isOn: Bool) -> some hColor {
         if isOn {
-            hSignalColorNew.greenElement
+            hSignalColor.greenElement
         } else {
-            hFillColorNew.opaqueThree
+            hFillColor.opaqueThree
         }
     }
 }

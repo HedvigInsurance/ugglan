@@ -225,8 +225,7 @@ struct ShowTagList: View {
             TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
                 if showTags {
                     HStack(spacing: 0) {
-                        hText(tag, style: .body)
-                            .foregroundColor(hTextColorNew.primary)
+                        getPillText(claimId: tag)
                             .lineLimit(1)
                             .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                     }
@@ -287,7 +286,7 @@ struct ShowTagList: View {
         if notValid {
             HStack {
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
-                    .foregroundColor(hAmberColorNew.amber600)
+                    .foregroundColor(hAmberColor.amber600)
                 hText(L10n.claimsSelectCategory, style: .body)
             }
         }
@@ -297,12 +296,23 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hButtonColorNew.primaryAltDefault)
+                .foregroundColor(hButtonColor.primaryAltDefault)
                 .hShadow()
 
         } else {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent100)
+                .foregroundColor(hGrayscaleColor.greyScale100)
+        }
+    }
+
+    @ViewBuilder
+    func getPillText(claimId: String) -> some View {
+        if selection == claimId {
+            hText(claimId, style: .body)
+                .foregroundColor(hTextColor.primary)
+                .colorScheme(.light)
+        } else {
+            hText(claimId, style: .body)
         }
     }
 }

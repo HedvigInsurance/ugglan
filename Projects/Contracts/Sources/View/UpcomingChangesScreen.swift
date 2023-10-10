@@ -20,7 +20,7 @@ struct UpcomingChangesScreen: View {
                     HStack {
                         hText(item.title)
                         Spacer()
-                        hText(item.value).foregroundColor(hLabelColor.secondary)
+                        hText(item.value).foregroundColor(hTextColor.secondary)
                     }
                 }
             }

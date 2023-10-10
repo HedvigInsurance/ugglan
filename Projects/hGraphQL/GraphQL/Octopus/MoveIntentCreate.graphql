@@ -17,6 +17,11 @@ fragment MoveIntentFragment on MoveIntent {
       id
       maxMovingDate
       minMovingDate
+      isApartmentAvailableforStudent
+      maxApartmentNumberCoInsured
+      maxApartmentSquareMeters
+      maxHouseNumberCoInsured
+      maxHouseSquareMeters
       suggestedNumberCoInsured
         ...QuoteFragment
 }
@@ -34,12 +39,14 @@ fragment QuoteFragment on MoveIntent {
             ...MoneyFragment
         }
         startDate
-        address {
-            ...MoveAddressFragment
-        }
-        numberCoInsured
+        exposureName
         productVariant {
             ...ProductVariantFragment
+        }
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
         }
       }
 }

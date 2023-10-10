@@ -82,8 +82,8 @@ extension EmbarkPlans: Presentable {
         let continueButton = Button(
             title: L10n.OnboardingStartpage.continueButtonText,
             type: .standard(
-                backgroundColor: UIColor.brand(.secondaryButtonBackgroundColor),
-                textColor: UIColor.brand(.secondaryButtonTextColor)
+                backgroundColor: UIColor.brand(.secondaryBackground(true)),
+                textColor: UIColor.brand(.primaryText())
             )
         )
 

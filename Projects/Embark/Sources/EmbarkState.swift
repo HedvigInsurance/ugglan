@@ -7,10 +7,8 @@ import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
-    case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
-    case quoteCartOffer(id: String, selectedInsuranceTypes: [String])
     case menu(_ action: MenuChildAction)
 }
 
@@ -108,49 +106,16 @@ public class EmbarkState {
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
-
-                    let ids = [store.getValue(key: "quoteId")].compactMap { $0 }
-
-                    externalRedirectSignal.value = .offer(
-                        allIds: ids,
-                        selectedIds: ids
-                    )
+                    externalRedirectSignal.value = .close
                 case .close:
                     externalRedirectSignal.value = .close
                 case .chat:
                     externalRedirectSignal.value = .chat
                 case .__unknown: fatalError("Can't external redirect to location")
                 }
-            } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
-                let ids = offerRedirectKeys.flatMap { key in
-                    store.getValues(key: key) ?? []
-                }
-                externalRedirectSignal.value = .offer(
-                    allIds: ids,
-                    selectedIds: ids
-                )
             } else if let passingVariantedRedirect = resultingPassage.variantedOfferRedirects.first(where: { redirect in
                 return store.passes(expression: redirect.data.expression.fragments.expressionFragment)
             }) {
-                let allIds = passingVariantedRedirect.data.allKeys.flatMap { key in
-                    store.getValues(key: key) ?? []
-                }
-
-                let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
-                    store.getValues(key: key) ?? []
-                }
-
-                externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
-            } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: {
-                store.passes(expression: $0.data.expression.fragments.expressionFragment)
-            }) {
-
-                let id = quoteCartOfferRedirects.data.id
-                let type = quoteCartOfferRedirects.data.selectedInsuranceTypes
-
-                let quoteCartId = store.getValue(key: id) ?? ""
-
-                externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId, selectedInsuranceTypes: type)
             } else {
                 self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage

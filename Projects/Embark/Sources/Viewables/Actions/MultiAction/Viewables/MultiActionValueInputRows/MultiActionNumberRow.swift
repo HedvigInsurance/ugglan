@@ -14,7 +14,7 @@ extension MultiActionNumberRow: Viewable {
         let containerView = UIView()
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: containerView.backgroundColor = .grayscale(.grayFive)
+            case .dark: containerView.backgroundColor = .brand(.secondaryBackground())
             default: containerView.backgroundColor = .brand(.primaryBackground())
             }
         }
@@ -27,7 +27,7 @@ extension MultiActionNumberRow: Viewable {
         view.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
         let titleLabel = UILabel()
-        titleLabel.style = .brand(.body(color: .primary))
+        titleLabel.style = UIColor.brandStyle(.primaryBackground())
         titleLabel.text = data.label
         titleLabel.setContentHuggingPriority(.required, for: .horizontal)
 

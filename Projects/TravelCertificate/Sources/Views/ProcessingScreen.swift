@@ -36,10 +36,10 @@ struct ProcessingScreen: View {
                 Spacer()
                 VStack(spacing: 16) {
                     Image(uiImage: hCoreUIAssets.tick.image)
-                        .foregroundColor(hSignalColorNew.greenElement)
+                        .foregroundColor(hSignalColor.greenElement)
                     VStack(spacing: 0) {
                         hText(L10n.TravelCertificate.travelCertificateReady)
-                        hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColorNew.secondary)
+                        hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColor.secondary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.horizontal, 16)
@@ -91,7 +91,7 @@ struct ProcessingScreen: View {
             Spacer()
             hText(L10n.TravelCertificate.generating)
             ProgressView(value: vm.progress)
-                .tint(hTextColorNew.primary)
+                .tint(hTextColor.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
             Spacer()
             Spacer()
@@ -158,7 +158,7 @@ struct SuccessScreen_Previews: PreviewProvider {
 struct BackgroundView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brandNew(.primaryBackground())
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {

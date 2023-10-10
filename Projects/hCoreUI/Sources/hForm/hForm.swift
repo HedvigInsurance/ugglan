@@ -179,7 +179,7 @@ public struct hForm<Content: View>: View {
 
     @hColorBuilder
     static func returnTintColor() -> some hColor {
-        hSignalColorNew.greenFill
+        hSignalColor.greenFill
     }
 
     func recalculateHeight() {
@@ -190,19 +190,17 @@ public struct hForm<Content: View>: View {
                 switch contentPosition {
                 case .top: return 0
                 case .center: return (maxContentHeight - contentHeight) / 2
-                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight - 16
+                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
                 }
             }()
         } else {
             additionalSpaceFromTop = 0
         }
+
         if mergeBottomWithContentIfNeeded {
             let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
-        }
-        if contentPosition != .bottom {
-            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 100
         }
     }
 }
@@ -349,7 +347,7 @@ extension View {
 struct BackgroundView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brandNew(.primaryBackground())
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {

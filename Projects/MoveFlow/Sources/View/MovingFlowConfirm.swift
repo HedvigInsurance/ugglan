@@ -1,3 +1,4 @@
+import Contracts
 import Flow
 import Presentation
 import SwiftUI
@@ -11,8 +12,10 @@ struct MovingFlowConfirm: View {
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
     @State var selectedFaq: [String] = [""]
-    @State var showCoverage = false
+    @State var spacingFaq: CGFloat = 0
+    @State var totalHeight: CGFloat = 0
     var body: some View {
+
         ScrollViewReader { proxy in
             hForm {
                 PresentableStoreLens(
@@ -23,32 +26,57 @@ struct MovingFlowConfirm: View {
                 ) { movingFlowModel in
                     if let movingFlowModel {
                         VStack(spacing: 16) {
-                            ForEach(movingFlowModel.quotes, id: \.address) { quote in
-                                contractInfoView(for: quote)
-                            }
-                            noticeComponent
-                            totalAmountComponent
-                            buttonComponent(proxy: proxy)
-                                .padding(.top, 126)
-                                .padding(.bottom, 48)
-                            if showCoverage {
-                                ZStack {
-                                    VStack(spacing: 32) {
-                                        ForEach(movingFlowModel.quotes, id: \.address) { quote in
-                                            whatIsCovered(for: quote)
-                                        }
-                                    }
+                            VStack(spacing: 16) {
+                                ForEach(movingFlowModel.quotes, id: \.id) { quote in
+                                    contractInfoView(for: quote)
                                 }
-                                .padding(.top, 8)
-                                .id(whatIsCoveredId)
-                                chatComponent
+                                if movingFlowModel.quotes.count > 1 {
+                                    noticeComponent
+                                }
+                                totalAmountComponent
                             }
+                            .background(
+                                GeometryReader { proxy in
+                                    Color.clear
+                                        .onAppear {
+                                            spacingFaq = max(totalHeight - proxy.size.height, 0)
+                                        }
+                                        .onChange(of: proxy.size) { size in
+                                            spacingFaq = max(totalHeight - size.height, 0)
+                                        }
+                                }
+                            )
+                            .padding(.bottom, spacingFaq)
+                            VStack(spacing: 32) {
+                                ForEach(movingFlowModel.quotes, id: \.id) { quote in
+                                    whatIsCovered(for: quote)
+                                }
+                            }
+
+                            .padding(.top, 16)
+                            .id(whatIsCoveredId)
+                            faqsComponent(for: movingFlowModel.faqs)
+                            chatComponent
 
                         }
                     }
                 }
             }
+            .hFormAttachToBottom {
+                buttonComponent(proxy: proxy)
+            }
         }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        totalHeight = proxy.size.height
+                    }
+                    .onChange(of: proxy.size) { size in
+                        totalHeight = size.height
+                    }
+            }
+        )
     }
 
     private func contractInfoView(for quote: Quote) -> some View {
@@ -59,47 +87,48 @@ struct MovingFlowConfirm: View {
                         .resizable()
                         .frame(width: 48, height: 48)
                     VStack(alignment: .leading) {
-                        hText(quote.displayName)
+                        hText(quote.exposureName ?? quote.displayName)
                         hText(L10n.changeAddressActivationDate(quote.startDate))
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                     Spacer()
                 }
                 Divider()
-                let index = selectedInsurances.firstIndex(of: quote.displayName)
+                let index = selectedInsurances.firstIndex(of: quote.id)
                 let isExpanded = index != nil
                 HStack(spacing: 8) {
                     hText(L10n.changeAddressDetails, style: .body)
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColorNew.tertiary)
+                        .foregroundColor(hTextColor.tertiary)
                         .rotationEffect(isExpanded ? Angle(degrees: -180) : Angle(degrees: 0))
                     Spacer()
                     hText("\(quote.premium.formattedAmountWithoutDecimal)\(L10n.perMonth)")
                 }
                 if isExpanded {
                     VStack(alignment: .leading) {
-                        ForEach(quote.detailsInfo, id: \.key) { keyValue in
+                        ForEach(quote.displayItems, id: \.displayTitle) { displayItem in
                             HStack {
-                                hText(keyValue.key, style: .body)
+                                hText(displayItem.displayTitle, style: .body)
                                 Spacer()
-                                hText(keyValue.value, style: .body)
+                                hText(displayItem.displayValue, style: .body)
+                                    .multilineTextAlignment(.trailing)
                             }
                         }
                     }
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                 }
             }
             .padding(16)
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
-                    let index = selectedInsurances.firstIndex(of: quote.displayName)
+                    let index = selectedInsurances.firstIndex(of: quote.id)
                     if let index {
                         selectedInsurances.remove(at: index)
                     } else {
-                        selectedInsurances.append(quote.displayName)
+                        selectedInsurances.append(quote.id)
                     }
                 }
             }
@@ -110,7 +139,7 @@ struct MovingFlowConfirm: View {
         hSection {
             InfoCard(
                 text:
-                    L10n.changeAddressAccidentNotice,
+                    L10n.changeAddressOtherInsurancesInfoText,
                 type: .info
             )
         }
@@ -121,24 +150,18 @@ struct MovingFlowConfirm: View {
         hSection {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.postMoveIntent)
+                    store.send(.confirmMoveIntent)
                     store.send(.navigation(action: .openProcessingView))
                 } content: {
-                    hText(L10n.changeAddressAcceptOffer, style: .body)
+                    hText(L10n.changeAddressAcceptOffer, style: .standard)
                 }
 
                 hButton.LargeButton(type: .ghost) {
-
                     withAnimation {
-                        showCoverage = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        withAnimation {
-                            proxy.scrollTo(whatIsCoveredId, anchor: .top)
-                        }
+                        proxy.scrollTo(whatIsCoveredId, anchor: .top)
                     }
                 } content: {
-                    hText(L10n.changeAddressViewCoverage, style: .body)
+                    hText(L10n.changeAddressViewCoverage, style: .standard)
                 }
             }
         }
@@ -167,14 +190,14 @@ struct MovingFlowConfirm: View {
         VStack(spacing: 0) {
             hSection {
                 VStack {
-                    hText(quote.displayName, style: .standard)
+                    hText(quote.exposureName ?? quote.displayName, style: .standard)
                         .padding([.top, .bottom], 4)
                         .padding([.leading, .trailing], 8)
 
                 }
                 .background(
                     Squircle.default()
-                        .fill(hBlueColorNew.blue100)
+                        .fill(whatIsCoveredBgColorScheme)
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -183,12 +206,8 @@ struct MovingFlowConfirm: View {
             hSection(quote.insurableLimits, id: \.label) { field in
                 hRow {
                     hText(field.label, style: .body)
-                    Spacer()
+                    Spacer(minLength: 8)
                     hText(field.limit, style: .body)
-                    Image(uiImage: hCoreUIAssets.infoSmall.image)
-                        .resizable()
-                        .frame(width: 14, height: 14)
-                        .foregroundColor(hGrayscaleColorNew.greyScale700)
                 }
                 .noHorizontalPadding()
             }
@@ -208,27 +227,35 @@ struct MovingFlowConfirm: View {
                     Spacer()
                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                 }
+                .onTap {
+                    if let url = URL(string: document.url) {
+                        store.send(.navigation(action: .document(url: url, title: document.displayName)))
+                    }
+                }
             }
             Spacing(height: 40)
-            faqsComponent(for: quote)
         }
     }
 
+    private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
+        light: hBlueColor.blue100,
+        dark: hBlueColor.blue900
+    )
+
     @ViewBuilder
-    func faqsComponent(for quote: Quote) -> some View {
-        if !quote.faqs.isEmpty {
+    func faqsComponent(for faqs: [FAQ]) -> some View {
+        if !faqs.isEmpty {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.changeAddressQa)
-                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColorNew.secondary)
+                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColor.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .sectionContainerStyle(.transparent)
-            Spacing(height: 24)
             VStack(spacing: 4) {
-                ForEach(quote.faqs, id: \.title) { faq in
-                    let id = "\(quote.id) \(faq.title)"
+                ForEach(faqs, id: \.title) { faq in
+                    let id = "\(faq.title)"
                     let index = selectedFaq.firstIndex(of: id)
                     let expanded = index != nil
                     hSection {
@@ -247,7 +274,8 @@ struct MovingFlowConfirm: View {
                             .verticalPadding(12)
                             if expanded, let description = faq.description {
                                 hRow {
-                                    hText(description, style: .standardSmall).foregroundColor(hTextColorNew.secondary)
+                                    hText(description, style: .standardSmall).foregroundColor(hTextColor.secondary)
+
                                 }
                                 .verticalPadding(12)
                             }
@@ -275,7 +303,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                //open chat
+                store.send(.navigation(action: .goToFreeTextChat))
             } content: {
                 hText(L10n.openChat, style: .body)
             }
@@ -299,15 +327,13 @@ public struct FieldInfo: Hashable, Equatable, Codable {
 
 struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale = .nb_NO
         return MovingFlowConfirm()
             .onAppear {
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()
                 let quote = OctopusGraphQL.MoveIntentFragment.Quote.init(
                     premium: .init(amount: 22, currencyCode: .sek),
                     startDate: "",
-                    address: .init(id: "id", street: "street", postalCode: "postal code"),
-                    numberCoInsured: 2,
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_HOUSE",
@@ -329,13 +355,12 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                             .init(headline: "Headline 2", body: "Body 2"),
                             .init(headline: "Headline 3", body: "Body 3"),
                         ]
-                    )
+                    ),
+                    displayItems: []
                 )
                 let quote2 = OctopusGraphQL.MoveIntentFragment.Quote.init(
                     premium: .init(amount: 33, currencyCode: .sek),
                     startDate: "",
-                    address: .init(id: "id2", street: "street 22", postalCode: "postal code 22"),
-                    numberCoInsured: 2,
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_CAT_BASIC",
@@ -357,7 +382,8 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                             .init(headline: "Headline 2", body: "Body 2"),
                             .init(headline: "Headline 3", body: "Body 3"),
                         ]
-                    )
+                    ),
+                    displayItems: []
                 )
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
                     currentHomeAddresses: [],

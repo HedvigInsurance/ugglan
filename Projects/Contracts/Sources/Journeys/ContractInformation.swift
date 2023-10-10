@@ -28,26 +28,24 @@ struct ContractInformationView: View {
                 changeAddressInfo(contract)
                 VStack(spacing: 0) {
                     if let table = contract.currentAgreementsTable {
-                        ForEach(table.sections) { section in
-                            hSection(section.rows, id: \.title) { row in
-                                hRow {
-                                    hText(row.title)
-                                }
-                                .noSpacing()
-                                .withCustomAccessory({
-                                    Spacer()
-                                    hText(row.value)
-                                        .foregroundColor(hTextColorNew.secondary)
-                                })
+                        hSection(table.mergedSections, id: \.title) { row in
+                            hRow {
+                                hText(row.title)
                             }
-                            .withoutHorizontalPadding
-                            .padding(.bottom, 16)
+                            .noSpacing()
+                            .withCustomAccessory({
+                                Spacer()
+                                hText(row.value)
+                                    .foregroundColor(hTextColor.secondary)
+                            })
                         }
+                        .withoutHorizontalPadding
+                        .padding(.bottom, 16)
                     }
 
                     hSection {
                         VStack(spacing: 8) {
-                            if contract.currentAgreement?.status != .terminated {
+                            if contract.showEditButton {
                                 hButton.LargeButton(type: .secondary) {
                                     store.send(.contractEditInfo(id: id))
                                 } content: {
@@ -112,7 +110,7 @@ struct ContractInformationView: View {
                             },
                             content: {
                                 hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTextColorNew.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             },
                             buttonStyleSelect: .textButton
                         )
@@ -134,7 +132,7 @@ struct ChangePeopleView: View {
                     .hText(.title2)
                 L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
                     .hText(.subheadline)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 10)

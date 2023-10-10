@@ -41,7 +41,7 @@ struct PriceSectionView: View {
                         didPressInfo()
                     }
             }
-            .foregroundColor(hTextColorNew.secondary)
+            .foregroundColor(hTextColor.secondary)
         }
         .onAppear {
             netAmount = .init(amount: netAmount.amount, currency: netAmount.currency)

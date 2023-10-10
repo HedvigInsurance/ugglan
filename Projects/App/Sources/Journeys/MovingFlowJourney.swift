@@ -34,37 +34,11 @@ extension AppJourney {
 
     @JourneyBuilder
     static func movingFlow() -> some JourneyPresentation {
-        MovingFlowJourneyNew.startMovingFlow()
-    }
-
-    static var movingFlowEmbark: some JourneyPresentation {
-        Journey(
-            MovingFlowIntro(),
-            style: .detented(.large)
-        ) { introRoute in
-            switch introRoute {
+        MovingFlowJourneyNew.startMovingFlow { redirectType in
+            switch redirectType {
             case .chat:
-                AppJourney.freeTextChat().withJourneyDismissButton
-            case let .embark(name):
-                AppJourney.embark(Embark(name: name), storeOffer: false) { offerResult in
-                    switch offerResult {
-                    case .chat:
-                        AppJourney.freeTextChat().withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .menu:
-                        ContinueJourney()
-                    case let .signed(_, startDates), let .signedQuoteCart(_, startDates):
-                        Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
-                            DismissJourney()
-                                .sendActionImmediately(ContractStore.self, .fetch)
-                                .withCompletedToast
-                        }
-                        .hidesBackButton.withJourneyDismissButton
-                    }
-                }
+                AppJourney.freeTextChat().withDismissButton
             }
         }
-        .withDismissButton
     }
 }

@@ -19,7 +19,7 @@ public struct RaisedCard<Content: View>: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(hBackgroundColor.tertiary)
+                .fill(hBackgroundColor.primary)
                 .hShadow()
         )
     }

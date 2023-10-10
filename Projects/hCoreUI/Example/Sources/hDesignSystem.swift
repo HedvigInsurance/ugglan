@@ -15,7 +15,7 @@ struct ButtonShowcase<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading) {
             hText(title, style: .headline)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .padding(.bottom, 10)
             VStack(spacing: 10) {
                 content
@@ -38,12 +38,12 @@ struct FormShowcase: View {
             hSection(header: hText("Buttons")) {
                 hRow {
                     ButtonShowcase(title: "Large Button - Filled") {
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
 
                         } content: {
                             hText("Enabled")
                         }
-                        hButton.LargeButtonPrimary {
+                        hButton.LargeButton(type: .primary) {
 
                         } content: {
                             hText("Disabled")
@@ -68,12 +68,12 @@ struct FormShowcase: View {
                 }
                 hRow {
                     ButtonShowcase(title: "Large Button - Text") {
-                        hButton.LargeButtonText {
+                        hButton.LargeButton(type: .ghost) {
 
                         } content: {
                             hText("Enabled")
                         }
-                        hButton.LargeButtonText {
+                        hButton.LargeButton(type: .ghost) {
 
                         } content: {
                             hText("Disabled")

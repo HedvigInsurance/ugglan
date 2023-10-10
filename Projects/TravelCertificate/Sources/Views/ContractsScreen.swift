@@ -73,9 +73,9 @@ struct ContractsScreen: View {
         HStack {
             Spacer()
             if item.contractId == selectedOne?.contractId {
-                Circle().fill(hTextColorNew.primary).frame(width: 22, height: 22)
+                Circle().fill(hTextColor.primary).frame(width: 22, height: 22)
             } else {
-                Circle().stroke(hTextColorNew.tertiary)
+                Circle().stroke(hTextColor.tertiary)
                     .frame(width: 22, height: 22)
             }
         }

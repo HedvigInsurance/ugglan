@@ -6,28 +6,30 @@ import hGraphQL
 
 public struct MovingFlowJourneyNew {
 
-    public static func startMovingFlow() -> some JourneyPresentation {
+    public static func startMovingFlow<ResultJourney: JourneyPresentation>(
+        @JourneyBuilder resultJourney: @escaping (_ result: MovingFlowRedirectType) -> ResultJourney
+    ) -> some JourneyPresentation {
         openSelectHousingScreen()
+            .onAction(
+                MoveFlowStore.self
+            ) { action in
+                if case let .navigation(navigationAction) = action {
+                    if case .goToFreeTextChat = navigationAction {
+                        resultJourney(.chat)
+                    }
+                }
+            }
     }
 
-    @JourneyBuilder
-    static func getMovingFlowScreenForAction(
-        for action: MoveFlowAction,
-        withHidesBack: Bool = false
-    ) -> some JourneyPresentation {
-        if withHidesBack {
-            getMovingFlowScreen(for: action).hidesBackButton
-        } else {
-            getMovingFlowScreen(for: action).showsBackButton
-        }
-    }
     @JourneyBuilder
     static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
         if case let .navigation(navigationAction) = action {
             if case .openAddressFillScreen = navigationAction {
                 MovingFlowJourneyNew.openApartmentFillScreen()
             } else if case .openHouseFillScreen = navigationAction {
-                MovingFlowJourneyNew.openApartmentFillScreen()
+                MovingFlowJourneyNew.openHouseFillScreen()
+            } else if case .openAddBuilding = navigationAction {
+                MovingFlowJourneyNew.openAddExtraBuilding()
             } else if case .openConfirmScreen = navigationAction {
                 MovingFlowJourneyNew.openConfirmScreen()
             } else if case let .openFailureScreen(error) = navigationAction {
@@ -47,26 +49,98 @@ public struct MovingFlowJourneyNew {
         HostingJourney(
             MoveFlowStore.self,
             rootView: MovingFlowHousingTypeView(),
-            style: .detented(.large),
+            style: .modally(presentationStyle: .fullScreen),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
             ]
         ) {
             action in
-            getMovingFlowScreenForAction(for: action)
+            getMovingFlowScreen(for: action).showsBackButton
         }
         .withJourneyDismissButton
     }
 
     static func openApartmentFillScreen() -> some JourneyPresentation {
-        HostingJourney(
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        return HostingJourney(
             MoveFlowStore.self,
-            rootView: MovingFlowApartmentView()
+            rootView: MovingFlowAddressView(vm: store.addressInputModel)
         ) {
             action in
-            getMovingFlowScreenForAction(for: action)
+            getMovingFlowScreen(for: action).showsBackButton
         }
         .withJourneyDismissButton
+    }
+
+    static func openHouseFillScreen() -> some JourneyPresentation {
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        return HostingJourney(
+            MoveFlowStore.self,
+            rootView: MovingFlowHouseView(vm: store.houseInformationInputModel)
+        ) {
+            action in
+            getMovingFlowScreen(for: action).showsBackButton
+        }
+        .withJourneyDismissButton
+    }
+
+    static func openAddExtraBuilding() -> some JourneyPresentation {
+        HostingJourney(
+            MoveFlowStore.self,
+            rootView: MovingFlowAddExtraBuildingView(),
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar]
+        ) { action in
+            if case .navigation(.dismissAddBuilding) = action {
+                PopJourney()
+            } else if case let .navigation(.openTypeOfBuilding(type)) = action {
+                MovingFlowJourneyNew.openTypeOfBuildingPicker(for: type)
+            } else {
+                getMovingFlowScreen(for: action).showsBackButton
+            }
+        }
+        .configureTitle(L10n.changeAddressAddBuilding)
+    }
+
+    static func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some JourneyPresentation {
+        HostingJourney(
+            MoveFlowStore.self,
+            rootView: CheckboxPickerScreen<ExtraBuildingType>(
+                items: {
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                    return store.state.movingFlowModel?.extraBuildingTypes
+                        .compactMap({ (object: $0, displayName: $0.translatedValue) }) ?? []
+                }(),
+                preSelectedItems: {
+                    if let currentlySelected {
+                        return [currentlySelected]
+                    }
+                    return []
+                },
+                onSelected: { selected in
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                    if let selected = selected.first {
+                        store.send(.navigation(action: .dismissTypeOfBuilding))
+                        store.send(.setExtraBuildingType(with: selected))
+                    }
+                },
+                onCancel: {
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                    store.send(.navigation(action: .dismissTypeOfBuilding))
+                },
+                singleSelect: true
+            ),
+            style: .modally(presentationStyle: .fullScreen),
+            options: [.largeNavigationBar, .blurredBackground]
+        ) {
+            action in
+            if case .navigation(.dismissTypeOfBuilding) = action {
+                PopJourney()
+            } else {
+                getMovingFlowScreen(for: action).showsBackButton
+            }
+        }
+        .configureTitle(L10n.changeAddressExtraBuildingContainerTitle)
     }
 
     static func openConfirmScreen() -> some JourneyPresentation {
@@ -75,7 +149,15 @@ public struct MovingFlowJourneyNew {
             rootView: MovingFlowConfirm()
         ) {
             action in
-            getMovingFlowScreen(for: action).hidesBackButton
+            if case let .navigation(.document(url, title)) = action {
+                Journey(
+                    Document(url: url, title: title),
+                    style: .detented(.large)
+                )
+                .withDismissButton
+            } else {
+                getMovingFlowScreen(for: action).hidesBackButton
+            }
         }
         .configureTitle(L10n.changeAddressSummaryTitle)
         .withJourneyDismissButton
@@ -87,7 +169,7 @@ public struct MovingFlowJourneyNew {
             rootView: MovingFlowProcessingView()
         ) {
             action in
-            getMovingFlowScreenForAction(for: action)
+            getMovingFlowScreen(for: action).hidesBackButton
         }
     }
 
@@ -97,8 +179,12 @@ public struct MovingFlowJourneyNew {
             rootView: MovingFlowFailure(error: error)
         ) {
             action in
-            getMovingFlowScreenForAction(for: action, withHidesBack: true)
+            getMovingFlowScreen(for: action).hidesBackButton
         }
         .withJourneyDismissButton
     }
+}
+
+public enum MovingFlowRedirectType {
+    case chat
 }

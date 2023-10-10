@@ -76,9 +76,9 @@ public struct hFloatingField: View {
     @hColorBuilder
     private var foregroundColor: some hColor {
         if isEnabled {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 

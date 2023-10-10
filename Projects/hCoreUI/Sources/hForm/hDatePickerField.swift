@@ -38,7 +38,7 @@ public struct hDatePickerField: View {
         self.onShowDatePicker = onShowDatePicker
         self.selectedDate = selectedDate
         self._error = error ?? Binding.constant(nil)
-        self.date = config.minDate ?? Date()
+        self.date = selectedDate ?? config.minDate ?? Date()
         self.placeholderText = placehodlerText
     }
 
@@ -68,6 +68,7 @@ public struct hDatePickerField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
+            self.date = selectedDate ?? config.minDate ?? Date()
             if let onShowDatePicker {
                 onShowDatePicker()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -88,7 +89,7 @@ public struct hDatePickerField: View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
-                .foregroundColor(foregroundColor)
+                .foregroundColor(hTextColor.primary)
             Spacer()
         }
     }
@@ -96,9 +97,9 @@ public struct hDatePickerField: View {
     @hColorBuilder
     private var foregroundColor: some hColor {
         if isEnabled {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 
@@ -177,7 +178,7 @@ private struct DatePickerView: View {
                         L10n.generalSaveButton,
                         style: .body
                     )
-                    .foregroundColor(hLabelColor.primary.inverted)
+                    .foregroundColor(hTextColor.negative)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
@@ -189,10 +190,9 @@ private struct DatePickerView: View {
                         L10n.generalCancelButton,
                         style: .body
                     )
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
+                .sectionContainerStyle(.transparent)
             }
         }
         .toolbar {
@@ -200,40 +200,39 @@ private struct DatePickerView: View {
                 VStack {
                     hText(config.title)
                     if let subtitle = date.displayDateDotFormat {
-                        hText(subtitle).foregroundColor(hTextColorNew.secondary)
+                        hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
             }
         }
     }
 
-    @ViewBuilder
     private var datePicker: some View {
         let minDate = config.minDate
         let maxDate = config.maxDate
         if let minDate, let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
         } else if let minDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...,
                 displayedComponents: [.date]
             )
         } else if let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
         } else {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 displayedComponents: [.date]

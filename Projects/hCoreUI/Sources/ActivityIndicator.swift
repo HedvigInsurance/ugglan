@@ -71,7 +71,7 @@ public struct WordmarkActivityIndicator: View {
         ZStack {
             Circle()
                 .stroke(lineWidth: 2.0)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hTextColor.primary)
 
             hText("H", style: .title1).minimumScaleFactor(0.1).padding(1.5)
                 .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: -360))
@@ -150,9 +150,9 @@ private struct PulsingCircle: View {
     @hColorBuilder
     var getFillColor: some hColor {
         if useDarkColor {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTextColorNew.negative
+            hTextColor.negative
         }
     }
 

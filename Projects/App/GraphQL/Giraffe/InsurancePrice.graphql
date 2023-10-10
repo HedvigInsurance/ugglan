@@ -1,7 +1,0 @@
-query InsurancePrice {
-    chargeEstimation {
-        subscription {
-                ...CostFragment
-        }
-    }
-}

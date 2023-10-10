@@ -25,7 +25,7 @@ struct HeaderView: View {
                             currency: netAmount.currency
                         )
                         hText(discountValue.negative.formattedAmount)
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
                 PresentableStoreLens(
@@ -71,7 +71,7 @@ struct HeaderView: View {
                                         .formattedAmount
                                 )
                             )
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)
                         }
