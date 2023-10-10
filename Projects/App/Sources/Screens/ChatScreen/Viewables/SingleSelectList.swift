@@ -108,7 +108,6 @@ extension SingleSelectList: Viewable {
                         }
                         removeViews()
                     case .selection:
-                        self.chatState.sendSingleSelectResponse(selectedValue: option.value)
                         removeViews()
                     case .login: self.navigateCallbacker.callAll(with: .login)
                     }

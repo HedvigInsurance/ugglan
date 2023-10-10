@@ -164,8 +164,6 @@ extension AudioRecorder: Viewable {
                         loadableSendButton.isLoadingSignal.value = true
                         playContainer.layoutIfNeeded()
                     }
-
-                self.chatState.sendChatAudioResponse(fileUrl: fileUrl)
             }
 
             bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in
