@@ -148,12 +148,12 @@ extension UIColor {
             case .caution:
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.amberDark: BrandColorBase.amber600
+                        ? BrandColorBase.amberDark : BrandColorBase.amber600
                 })
             case .alert:
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.redDark: BrandColorBase.red600
+                        ? BrandColorBase.redDark : BrandColorBase.red600
                 })
             }
         }
