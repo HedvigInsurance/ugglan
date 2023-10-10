@@ -14,18 +14,18 @@ import hGraphQL
 public struct HomeView<Content: View, Claims: View>: View {
     @PresentableStore var store: HomeStore
     @State var toolbarOptionTypes: [ToolbarOptionType] = []
-
-    var statusCard: Content
+    @StateObject var vm = HomeVM()
+    var statusCard: Content?
 
     var claimsContent: Claims
     var memberId: String
 
     public init(
         claimsContent: Claims,
-        statusCard: () -> Content,
+        statusCard: (() -> Content)?,
         memberId: @escaping () -> String
     ) {
-        self.statusCard = statusCard()
+        self.statusCard = statusCard?()
         self.claimsContent = claimsContent
         self.memberId = memberId()
         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -105,21 +105,8 @@ extension HomeView {
 
     private var bottomContent: some View {
         hSection {
-            bottomActions
-        }
-        .padding(.bottom, 16)
-    }
-
-    @ViewBuilder
-    private var bottomActions: some View {
-        VStack(spacing: 8) {
-            PresentableStoreLens(
-                HomeStore.self,
-                getter: { state in
-                    state.memberStateData
-                }
-            ) { memberStateData in
-                switch memberStateData.state {
+            VStack(spacing: 8) {
+                switch vm.memberStateData.state {
                 case .active:
                     ImportantMessagesView()
                     statusCard
@@ -128,7 +115,7 @@ extension HomeView {
                     openOtherServices
                 case .future:
                     ImportantMessagesView()
-                    FutureSectionInfoView(memberName: memberStateData.name ?? "")
+                    FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:
                     deletedInfoView
@@ -140,6 +127,7 @@ extension HomeView {
                 }
             }
         }
+        .padding(.bottom, 16)
     }
 
     @ViewBuilder
@@ -173,12 +161,30 @@ extension HomeView {
     }
 }
 
+class HomeVM: ObservableObject {
+    @Published var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    var memberStateDataCancellable: AnyCancellable?
+
+    init() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        memberStateData = store.state.memberStateData
+        memberStateDataCancellable = store.stateSignal
+            .map({ $0.memberStateData })
+            .plain()
+            .publisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                self?.memberStateData = value
+            })
+
+    }
+}
+
 extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
         claimsContent: Claims,
         memberId: @escaping () -> String,
         @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
-        statusCard: @escaping () -> Content
+        statusCard: (() -> Content)?
     ) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,

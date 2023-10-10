@@ -81,11 +81,7 @@ struct InvitationTable: View {
             hRow {
                 hText(L10n.Referrals.yourOtherDiscounts)
                 Spacer()
-            }
-            .withCustomAccessory {
-                HStack {
-                    hText("\(otherDiscounts.negative.formattedAmount)")
-                }
+                hText("\(otherDiscounts.negative.formattedAmount)")
             }
         }
     }

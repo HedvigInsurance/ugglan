@@ -40,23 +40,8 @@ public struct hForm<Content: View>: View {
                 getScrollView()
             }
             if mergeBottomViewWithContent {
-                bottomAttachedView
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onReceive(Just(geo.size.height)) { height in
-                                    if bottomAttachedViewHeight == 0 {
-                                        self.bottomAttachedViewHeight = height
-                                    } else {
-                                        withAnimation {
-                                            self.bottomAttachedViewHeight = height
-                                            recalculateHeight()
-                                        }
-                                    }
-                                }
-                        }
-                    )
-                    .frame(maxHeight: .infinity, alignment: .bottom)
+                Color.clear
+                    .frame(maxHeight: bottomAttachedViewHeight, alignment: .bottom)
                     .opacity(0)
             } else {
                 if bottomAttachedView != nil {
@@ -132,6 +117,21 @@ public struct hForm<Content: View>: View {
                 if mergeBottomViewWithContent {
                     bottomAttachedView
                         .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onReceive(Just(geo.size.height)) { height in
+                                        if bottomAttachedViewHeight == 0 {
+                                            self.bottomAttachedViewHeight = height
+                                        } else {
+                                            withAnimation {
+                                                self.bottomAttachedViewHeight = height
+                                                recalculateHeight()
+                                            }
+                                        }
+                                    }
+                            }
+                        )
                 }
             }
             .frame(maxWidth: .infinity)
@@ -198,14 +198,14 @@ public struct hForm<Content: View>: View {
         }
 
         if mergeBottomWithContentIfNeeded {
-            let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight - 16 < 0
+            let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
 
-        //        if contentPosition != .bottom {
-        //            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
-        //        }
+        if contentPosition != .bottom {
+            shouldIgnoreTitleMargins = maxContentHeight - contentHeight < 50
+        }
     }
 }
 
