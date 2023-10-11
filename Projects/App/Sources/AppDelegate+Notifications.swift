@@ -22,13 +22,8 @@ extension AppDelegate {
                 let octopus: hOctopus = Dependencies.shared.resolve()
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-                let deviceMutationInput = OctopusGraphQL.MemberDeviceRegisterInput(
-                    token: deviceTokenString,
-                    platform: .ios
-                )
-
                 octopus.client
-                    .perform(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(input: deviceMutationInput))
+                    .perform(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(token: deviceTokenString))
                     .onValue({ data in
                         if data.memberDeviceRegister == true {
                             log.info("Did register CustomerIO push token for user")
