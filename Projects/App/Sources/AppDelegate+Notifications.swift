@@ -22,8 +22,11 @@ extension AppDelegate {
                 let octopus: hOctopus = Dependencies.shared.resolve()
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-                let deviceMutationInput = OctopusGraphQL.MemberDeviceRegisterInput(token: deviceTokenString, type: "ios")
-                
+                let deviceMutationInput = OctopusGraphQL.MemberDeviceRegisterInput(
+                    token: deviceTokenString,
+                    type: "ios"
+                )
+
                 octopus.client
                     .perform(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(input: deviceMutationInput))
                     .onValue({ data in
