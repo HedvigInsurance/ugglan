@@ -1,5 +1,9 @@
+import Contracts
 import Flow
 import Foundation
+import hCore
+import hCoreUI
+import hGraphQL
 
 public typealias OfferData = GiraffeGraphQL.QuoteBundleQuery.Data
 
@@ -157,7 +161,7 @@ public struct QuoteBundle: Codable, Equatable {
     public let quotes: [Quote]
     public var inception: Inception
     public var displayName: String
-    public var pillowType: Contract.PillowType? {
+    public var pillowType: PillowType? {
         Contract.TypeOfContract(
             rawValue: self.quotes.first?.typeOfContract ?? ""
         )?

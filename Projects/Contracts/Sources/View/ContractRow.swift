@@ -12,21 +12,22 @@ import hGraphQL
 
 private struct StatusPill: View {
     var text: String
-
+    
     var body: some View {
         VStack {
             hText(text, style: .standardSmall)
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .background(hTextColorNew.tertiaryTranslucent)
+        .foregroundColor(hTextColor.primary).colorScheme(.dark)
+        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
         .cornerRadius(8)
     }
 }
 
 private struct ContractRowChevron: View {
     @SwiftUI.Environment(\.isEnabled) var isEnabled
-
+    
     var body: some View {
         if isEnabled {
             Image(uiImage: hCoreUIAssets.arrowForward.image)
@@ -52,16 +53,19 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     )
             }
         } else {
-            hTextColorNew.secondary
+            hColorScheme(
+                light: hTextColor.secondary,
+                dark: hGrayscaleColor.greyScale900
+            )
         }
     }
-
+    
     @ViewBuilder var logo: some View {
         Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
             .resizable()
             .frame(width: 24, height: 24)
     }
-
+    
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
@@ -74,7 +78,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
                     StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
                 } else if let inceptionDate = contract.masterInceptionDate?.localDateToDate,
-                    daysBetween(start: Date(), end: inceptionDate) > 0
+                          daysBetween(start: Date(), end: inceptionDate) > 0
                 {
                     StatusPill(text: L10n.contractStatusActiveInFuture(inceptionDate.localDateString))
                         .padding(.trailing, 4)
@@ -88,7 +92,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
             }
             hText(contract.exposureDisplayName)
-                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700.inverted)
+                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700)
         }
         .padding(16)
         .frame(minHeight: 200)
@@ -96,14 +100,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .clipShape(Squircle.default())
-        .overlay(
-            Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
-        )
-        .foregroundColor(hTextColorNew.negative)
+        .hShadow()
+        .foregroundColor(hTextColor.primary)
+        .colorScheme(.dark)
         .contentShape(Rectangle())
     }
-
+    
     func daysBetween(start: Date, end: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: end).day!
     }
@@ -112,7 +114,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 struct ContractRow: View {
     @PresentableStore var store: ContractStore
     @State var frameWidth: CGFloat = 0
-
+    
     var id: String
     var allowDetailNavigation = true
     var body: some View {

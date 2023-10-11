@@ -53,6 +53,7 @@ public struct InfoCard: View {
                 }
             }
             .padding(.leading, 8)
+            .hUseLightMode
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)
@@ -64,7 +65,7 @@ public struct InfoCard: View {
                 .fill(getBackgroundColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
-                        .strokeBorder(hBorderColorNew.translucentOne, lineWidth: 0.5)
+                        .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
                 )
         )
         .fixedSize(horizontal: false, vertical: true)
@@ -74,13 +75,13 @@ public struct InfoCard: View {
     var getTextColor: some hColor {
         switch type {
         case .info:
-            hSignalColorNew.blueText
+            hSignalColor.blueText
         case .attention:
-            hSignalColorNew.amberText
+            hSignalColor.amberText
         case .error:
-            hSignalColorNew.redText
+            hSignalColor.redText
         case .campaign:
-            hSignalColorNew.greenText
+            hSignalColor.greenText
         }
     }
 
@@ -88,13 +89,13 @@ public struct InfoCard: View {
     var getBackgroundColor: some hColor {
         switch type {
         case .info:
-            hSignalColorNew.blueFill
+            hColorScheme(light: hSignalColor.blueFill, dark: hSignalColor.blueHighLight)
         case .attention:
-            hSignalColorNew.amberFill
+            hColorScheme(light: hSignalColor.amberFill, dark: hSignalColor.amberHighLight)
         case .error:
-            hSignalColorNew.redFill
+            hColorScheme(light: hSignalColor.redFill, dark: hSignalColor.redHighlight)
         case .campaign:
-            hSignalColorNew.greenFill
+            hColorScheme(light: hSignalColor.greenFill, dark: hSignalColor.greenHighlight)
         }
     }
 
@@ -102,13 +103,13 @@ public struct InfoCard: View {
     var imageColor: some hColor {
         switch type {
         case .info:
-            hSignalColorNew.blueElement
+            hSignalColor.blueElement
         case .attention:
-            hSignalColorNew.amberElement
+            hSignalColor.amberElement
         case .error:
-            hSignalColorNew.redElement
+            hSignalColor.redElement
         case .campaign:
-            hSignalColorNew.greenElement
+            hSignalColor.greenElement
         }
     }
 }

@@ -24,7 +24,7 @@ struct UpcomingChangesScreen: View {
                         HStack {
                             hText(item.displayTitle)
                             Spacer()
-                            hText(item.displayValue).foregroundColor(hLabelColor.secondary)
+                            hText(item.displayValue).foregroundColor(hTextColor.secondary)
                         }
                     }
                 }

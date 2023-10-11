@@ -34,7 +34,7 @@ struct MessageBubble {
 
 extension MessageBubble: Viewable {
     func itemView(value: String) -> UIView {
-        let label = UILabel(value: "", style: .brand(.body(color: .primary(state: .positive))))
+        let label = UILabel(value: "", style: UIColor.brandStyle(.primaryText()))
         let backgroundView = UIView()
         backgroundView.layer.borderWidth = 1.0
         backgroundView.layer.borderColor = UIColor.brand(.primaryBorderColor).cgColor
@@ -59,7 +59,7 @@ extension MessageBubble: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 blurRadius: 3,
-                color: .brand(.primaryShadowColor),
+                color: .brand(.primaryBorderColor),
                 path: nil,
                 radius: 8
             )
@@ -72,14 +72,12 @@ extension MessageBubble: Viewable {
         containerView.insetsLayoutMarginsFromSafeArea = false
         containerView.layoutMargins = UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 15)
 
-        let bodyStyle = TextStyle.brand(
-            .body(color: messageType == .replied ? .primary(state: .positive) : .primary)
-        )
+        let bodyStyle = UIColor.brandStyle(.primaryText())
 
         let label = MarkdownTextView(
             textSignal: textSignal,
             style: bodyStyle,
-            linkColor: messageType == .received ? UIColor.brand(.link) : bodyStyle.color
+            linkColor: messageType == .received ? UIColor.brand(.primaryText()) : bodyStyle.color
         )
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in UIPasteboard.general.string = labelView.text }
@@ -124,7 +122,7 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .brand(.embarkMessageBubble(messageType == .replied))
+        stylingView.backgroundColor = .brand(.secondaryBackground())
         stylingView.layer.cornerRadius = 10
 
         if messageType == .replied {

@@ -98,7 +98,7 @@ struct ContractDetail: View {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.secondaryText),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .normal
@@ -107,7 +107,7 @@ struct ContractDetail: View {
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.foregroundColor: UIColor.brandNew(.primaryText(false)),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText(false)),
                     NSAttributedString.Key.font: font,
                 ],
                 for: .selected

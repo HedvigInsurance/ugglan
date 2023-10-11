@@ -11,7 +11,7 @@ public struct LoadingIndicator {
     public let size: CGFloat
 
     public static let defaultLoaderColor = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? .white : .brand(.primaryTintColor)
+        trait.userInterfaceStyle == .dark ? .white : .brand(.primaryText())
     })
 
     public init(

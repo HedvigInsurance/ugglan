@@ -284,8 +284,6 @@ class ChatState {
                     .compactMap { offset, item -> ChatListContent? in
                         if item.right != nil { if offset != 0 { return nil } }
 
-                        if item.left?.responseType == .audio { return item }
-
                         if item.left?.body == "", !(item.left?.type.isRichType ?? false) {
                             return nil
                         }

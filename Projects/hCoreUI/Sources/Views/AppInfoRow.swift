@@ -34,8 +34,8 @@ extension AppInfoRow: Viewable {
             title: title,
             subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary))
-                style.subtitle = .brand(.subHeadline(color: .secondary))
+                style.title = UIColor.brandStyle(.primaryText())
+                style.subtitle = UIColor.brandStyle(.secondaryText)
             }
         )
 
@@ -46,7 +46,7 @@ extension AppInfoRow: Viewable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.color = .brand(.primaryText())
         activityIndicator.startAnimating()
 
         row.append(activityIndicator)

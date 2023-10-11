@@ -39,7 +39,7 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
                     hCoreUIAssets.chevronRight.view
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
             .padding(.horizontal, 16)
@@ -49,7 +49,7 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
                     hText(title)
                 }
                 hText(subTitle ?? " ", style: .standardSmall)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
 
             }
             .padding([.leading, .trailing], 16)
@@ -63,7 +63,7 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
         .padding(.vertical, 16)
         .background(
             Squircle.default()
-                .fill(hFillColorNew.opaqueOne)
+                .fill(hFillColor.opaqueOne)
         )
         .onTapGesture {
             if let onSelected = onSelected {

@@ -14,17 +14,17 @@ public struct UpdateAppScreen: View {
     public var body: some View {
         hForm {
             Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                .foregroundColor(hSignalColorNew.amberElement)
+                .foregroundColor(hSignalColor.amberElement)
                 .padding(.top, 254)
                 .padding(.bottom, 8)
 
             Group {
                 hText(L10n.embarkUpdateAppTitle, style: .body)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
 
                 hText(L10n.embarkUpdateAppBody, style: .body)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
             }
             .padding(.horizontal, 32)
         }

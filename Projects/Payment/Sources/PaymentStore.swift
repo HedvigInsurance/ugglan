@@ -257,7 +257,7 @@ extension PayoutMethodStatus: Codable {
 
 public struct PaymentData: Codable, Equatable {
     let nextPayment: NextPayment?
-    let contracts: [ContractPaymentModel]?
+    let contracts: [ContractInfo]?
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
@@ -287,7 +287,7 @@ public struct PaymentData: Codable, Equatable {
         }
     }
 
-    struct ContractPaymentModel: Codable, Equatable {
+    struct ContractInfo: Codable, Equatable {
         let id: String
         let type: Contract.TypeOfContract
         let name: String

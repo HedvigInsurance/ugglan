@@ -14,7 +14,7 @@ struct ContractBundleLoadingIndicator: View {
             if !hasLoadedContractBundlesOnce {
                 ActivityIndicator(
                     style: .large,
-                    color: hLabelColor.primary
+                    color: hTextColor.primary
                 )
                 .padding(.top, 15)
             }

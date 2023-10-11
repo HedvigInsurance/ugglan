@@ -172,7 +172,7 @@ public struct hForm<Content: View>: View {
 
     @hColorBuilder
     static func returnTintColor() -> some hColor {
-        hSignalColorNew.greenFill
+        hSignalColor.greenFill
     }
 
     func recalculateHeight() {
@@ -340,7 +340,7 @@ extension View {
 struct BackgroundView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brandNew(.primaryBackground())
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {

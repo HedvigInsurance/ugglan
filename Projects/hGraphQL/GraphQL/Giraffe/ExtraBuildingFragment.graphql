@@ -1,5 +1,0 @@
-fragment ExtraBuildingFragment on ExtraBuildingCore {
-    displayName
-    area
-    hasWaterConnected
-}

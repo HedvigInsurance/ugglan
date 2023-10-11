@@ -39,7 +39,7 @@ struct PaymentInfoView: View {
                 if let date {
                     hText(L10n.paymentsNextPaymentSectionTitle)
                     Spacer()
-                    hText(date).foregroundColor(hLabelColor.secondary)
+                    hText(date).foregroundColor(hTextColor.secondary)
                 } else {
                     hText(L10n.paymentsCardNoStartdate)
                 }
@@ -64,7 +64,7 @@ struct PaymentInfoView: View {
                         Spacer()
 
                         hText(item.amount?.formattedAmount.addPerMonth ?? "")
-                            .foregroundColor(hLabelColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
             }
@@ -84,7 +84,7 @@ struct PaymentInfoView: View {
                         .padding(.leading, 2)
                     Spacer()
                     hText(discount.negative.formattedAmount.addPerMonth)
-                        .foregroundColor(hLabelColor.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
         }
@@ -106,7 +106,7 @@ struct PaymentInfoView: View {
                         hText(reedemCampaign.displayValue ?? "")
                             .fixedSize(horizontal: false, vertical: true)
 
-                            .foregroundColor(hLabelColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
             } else {
@@ -151,8 +151,8 @@ struct PaymentInfoView: View {
                                             .frame(height: vm.fieldHeight)
                                     }
                                     .hButtonIsLoading(vm.isLoadingDiscount)
+                                    .hUseLightMode
                                     .frame(width: 127, height: 56)
-
                                 })
                                 .disabled(vm.isLoadingDiscount)
                                 .background(
@@ -195,17 +195,17 @@ struct PaymentInfoView: View {
                                         paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? ""
                                     )
                                 )
-                                .foregroundColor(hTextColorNew.secondary)
+                                .foregroundColor(hTextColor.secondary)
                                 .modifier(hFontModifier(style: .standard))
                             } else {
                                 hText(paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? "")
-                                    .foregroundColor(hTextColorNew.secondary)
+                                    .foregroundColor(hTextColor.secondary)
                             }
                         }
                         hText(paymentData?.insuranceCost?.net?.formattedAmount.addPerMonth ?? "")
                     }
                     hText("", style: .standardSmall)
-                        .foregroundColor(hLabelColor.secondary)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
         }
@@ -223,7 +223,7 @@ struct PaymentInfoView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
                     .background(
-                        RoundedRectangle(cornerRadius: 12).fill(hFillColorNew.opaqueOne)
+                        RoundedRectangle(cornerRadius: 12).fill(hFillColor.opaqueOne)
                     )
                     .padding(.horizontal, 16)
             }

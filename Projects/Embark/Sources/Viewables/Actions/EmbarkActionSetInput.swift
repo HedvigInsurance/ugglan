@@ -113,7 +113,7 @@ extension EmbarkActionSetInputData: Viewable {
                     textFieldAlignment: .right
                 )
 
-                let label = UILabel(value: action.title ?? "", style: .brand(.body(color: .primary)))
+                let label = UILabel(value: action.title ?? "", style: UIColor.brandStyle(.primaryText()))
 
                 let stack = UIStackView()
                 stack.axis = .horizontal
@@ -156,8 +156,8 @@ extension EmbarkActionSetInputData: Viewable {
                 let button = Button(
                     title: link.label,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brand(.secondaryBackground(true)),
+                        textColor: .brand(.primaryText())
                     ),
                     isEnabled: false
                 )

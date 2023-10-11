@@ -69,7 +69,7 @@ public struct InfoView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(title)
                     hText(description)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, 8)
