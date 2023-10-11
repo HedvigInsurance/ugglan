@@ -1,0 +1,3 @@
+mutation MemberDeviceRegister($input: MemberDeviceRegisterInput!) {
+  memberDeviceRegister(input: $input)
+}

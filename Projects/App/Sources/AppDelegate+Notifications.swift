@@ -19,21 +19,20 @@ extension AppDelegate {
     ) {
         bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
             .onValue { _ in
-                let giraffe: hGiraffe = Dependencies.shared.resolve()
+                let octopus: hOctopus = Dependencies.shared.resolve()
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-
-                giraffe.client
-                    .perform(
-                        mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
-                    )
-                    .onValue { data in
-                        if data.notificationRegisterDevice == true {
+                let deviceMutationInput = OctopusGraphQL.MemberDeviceRegisterInput(token: deviceTokenString, type: "ios")
+                
+                octopus.client
+                    .perform(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(input: deviceMutationInput))
+                    .onValue({ data in
+                        if data.memberDeviceRegister == true {
                             log.info("Did register CustomerIO push token for user")
                         } else {
                             log.info("Failed to register CustomerIO push token for user")
                         }
-                    }
+                    })
             }
     }
 
