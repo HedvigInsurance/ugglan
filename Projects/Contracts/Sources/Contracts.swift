@@ -55,7 +55,6 @@ public struct Contracts {
 extension Contracts: View {
     func fetch() {
         store.send(.fetchContracts)
-        store.send(.fetchContractBundles)
     }
 
     public var body: some View {
@@ -77,9 +76,7 @@ extension Contracts: View {
                 store,
                 send: {
                     ContractAction.fetch
-                },
-                endOn: .fetchContractBundlesDone,
-                .fetchContractsDone
+                }
             )
 
         }

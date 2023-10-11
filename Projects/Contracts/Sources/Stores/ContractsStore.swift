@@ -51,7 +51,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             Contract(pendingContract: contract)
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))
-                        callback(.value(.fetchContractsDone))
                     }
                     .onError { error in
                         if ApplicationContext.shared.isDemoMode {
@@ -59,15 +58,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchContracts)
                         }
-                        callback(.value(.fetchContractsDone))
                     }
                 return disposeBag
             }
         case .fetch:
             return [
                 .fetchCrossSale,
-                .fetchContracts,
-                .fetchContractBundles,
+                .fetchContracts
             ]
             .emitEachThenEnd
         default:
@@ -79,8 +76,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
-        case .fetchContractBundles:
-            setLoading(for: .fetchContractBundles)
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case let .setActiveContracts(contracts):

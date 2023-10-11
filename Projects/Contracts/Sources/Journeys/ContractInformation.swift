@@ -27,31 +27,33 @@ struct ContractInformationView: View {
             if let contract {
                 changeAddressInfo(contract)
                 VStack(spacing: 0) {
-                    hSection(contract.currentAgreement.displayItems, id: \.displayValue) { item in
-                        hRow {
-                            hText(item.displayTitle)
+                    if let displayItems = contract.currentAgreement?.displayItems {
+                        hSection(displayItems, id: \.displayValue) { item in
+                            hRow {
+                                hText(item.displayTitle)
+                            }
+                            .noSpacing()
+                            .withCustomAccessory({
+                                Spacer()
+                                hText(item.displayValue)
+                                    .foregroundColor(hTextColor.secondary)
+                            })
                         }
-                        .noSpacing()
-                        .withCustomAccessory({
-                            Spacer()
-                            hText(item.displayValue)
-                                .foregroundColor(hTextColor.secondary)
-                        })
-                    }
-                    .withoutHorizontalPadding
-                    .padding(.bottom, 16)
-                    hSection {
-                        VStack(spacing: 8) {
-                            if contract.terminationDate == nil {
-                                hButton.LargeButton(type: .secondary) {
-                                    store.send(.contractEditInfo(id: id))
-                                } content: {
-                                    hText(L10n.contractEditInfoLabel)
+                        .withoutHorizontalPadding
+                        .padding(.bottom, 16)
+                        hSection {
+                            VStack(spacing: 8) {
+                                if contract.showEditInfo {
+                                    hButton.LargeButton(type: .secondary) {
+                                        store.send(.contractEditInfo(id: id))
+                                    } content: {
+                                        hText(L10n.contractEditInfoLabel)
+                                    }
                                 }
                             }
                         }
+                        .padding(.bottom, 16)
                     }
-                    .padding(.bottom, 16)
                 }
                 displayTerminationButton
             }
@@ -88,7 +90,7 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if (contract?.terminationDate) == nil {
+                if (contract?.showEditInfo) == nil {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,

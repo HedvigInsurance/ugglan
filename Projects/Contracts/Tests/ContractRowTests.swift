@@ -81,21 +81,3 @@ extension DetailAgreementsTable {
         .init(sections: [.init(title: "", rows: [])], title: "Table")
     }
 }
-
-//extension TermsAndConditions {
-//    public static func mock() -> TermsAndConditions {
-//        .init(displayName: "mock", url: "https://www.mock.com/terms.pdf")
-//    }
-//}
-//
-//extension CurrentAgreement {
-//    public static func mock(status: ContractStatus) -> CurrentAgreement {
-//        .init(
-//            certificateUrl: "https://www.mock.com/terms.pdf",
-//            activeFrom: nil,
-//            activeTo: nil,
-//            premium: .init(amount: "100", currency: "SEK"),
-//            status: status
-//        )
-//    }
-//}

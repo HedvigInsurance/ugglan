@@ -56,12 +56,12 @@ struct ContractDocumentsView: View {
 
     func getDocumentsToDisplay(contract: Contract) -> [InsuranceTerm] {
         var documents: [InsuranceTerm] = []
-        contract.currentAgreement.productVariant.documents.forEach { document in
+        contract.currentAgreement?.productVariant.documents.forEach { document in
             documents.append(document)
         }
         let certficateUrl = InsuranceTerm(
             displayName: L10n.myDocumentsInsuranceCertificate,
-            url: contract.currentAgreement.certificateUrl ?? ""
+            url: contract.currentAgreement?.certificateUrl ?? ""
         )
         documents.append(certficateUrl)
         return documents

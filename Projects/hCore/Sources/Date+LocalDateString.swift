@@ -25,6 +25,10 @@ extension Date {
     public var localDateStringWithToday: String? {
         if Calendar.current.isDateInToday(self) { return L10n.startDateToday } else { return localDateString }
     }
+    
+    public func daysBetween(start: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: start, to: self).day!
+    }
 }
 private struct DateFormatters {
     static let localDateStringFormatter: DateFormatter = {
