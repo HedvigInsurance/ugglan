@@ -64,7 +64,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetch:
             return [
                 .fetchCrossSale,
-                .fetchContracts
+                .fetchContracts,
             ]
             .emitEachThenEnd
         default:

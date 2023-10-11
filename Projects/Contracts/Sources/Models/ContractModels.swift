@@ -110,7 +110,8 @@ public struct Contract: Codable, Hashable, Equatable {
     }
     public var activeInFuture: Bool {
         if let inceptionDate = masterInceptionDate?.localDateToDate,
-           inceptionDate.daysBetween(start: Date()) > 0 {
+            inceptionDate.daysBetween(start: Date()) > 0
+        {
             return true
         }
         return false
