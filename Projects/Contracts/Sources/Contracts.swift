@@ -18,7 +18,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return false
         }
     }
-    
+
     var displaysTerminatedContracts: Bool {
         switch self {
         case .terminated: return true
@@ -26,7 +26,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return false
         }
     }
-    
+
     var emptyFilter: ContractFilter {
         switch self {
         case let .terminated(ifEmpty): return ifEmpty
@@ -34,7 +34,7 @@ public indirect enum ContractFilter: Equatable, Hashable {
         case .none: return .none
         }
     }
-    
+
     case terminated(ifEmpty: ContractFilter)
     case active(ifEmpty: ContractFilter)
     case none
@@ -57,7 +57,7 @@ extension Contracts: View {
         store.send(.fetchContracts)
         store.send(.fetchContractBundles)
     }
-    
+
     public var body: some View {
         hForm {
             ContractTable(showTerminated: showTerminated)
@@ -81,7 +81,7 @@ extension Contracts: View {
                 endOn: .fetchContractBundlesDone,
                 .fetchContractsDone
             )
-            
+
         }
         .hFormAttachToBottom {
             if showTerminated {
@@ -156,7 +156,7 @@ extension Contracts {
         }
         .configureTitle(
             showTerminated
-            ? L10n.InsurancesTab.cancelledInsurancesTitle : L10n.InsurancesTab.yourInsurances
+                ? L10n.InsurancesTab.cancelledInsurancesTitle : L10n.InsurancesTab.yourInsurances
         )
         .configureContractsTabBarItem
     }
