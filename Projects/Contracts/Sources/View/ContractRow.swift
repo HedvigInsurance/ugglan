@@ -126,7 +126,7 @@ struct ContractRow: View {
         ) { contract in
             if let contract = contract {
                 SwiftUI.Button {
-                    store.send(.openDetail(contractId: contract.id, title: contract.exposureDisplayName))
+                    store.send(.openDetail(contractId: contract.id, title: contract.currentAgreement.productVariant.displayName))
                 } label: {
                     EmptyView()
                 }
