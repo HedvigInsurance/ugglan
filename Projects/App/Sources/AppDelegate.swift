@@ -89,7 +89,9 @@ import hGraphQL
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        self.handleDeepLink(url)
+        if let rootVC = window.rootViewController {
+            self.handleDeepLink(url, fromVC: rootVC)
+        }
         return true
     }
 

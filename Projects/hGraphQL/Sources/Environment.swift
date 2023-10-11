@@ -138,6 +138,14 @@ public enum Environment: Hashable {
         }
     }
 
+    public var deepLinkUrl: String {
+        switch self {
+        case .staging: return "https://hedvigtest.page.link"
+        case .production: return "https://hedvig.page.link"
+        case .custom(_, _, _, _): return ""
+        }
+    }
+
     public var appStoreURL: URL {
         return URL(string: "https://apps.apple.com/se/app/hedvig/id1303668531")!
     }

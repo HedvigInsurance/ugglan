@@ -74,10 +74,6 @@ extension Message: Reusable {
             return constantHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
 
-        if case .deepLink = type {
-            return 100 + largerMarginTop + extraHeightForTimeStampLabel
-        }
-
         let attributedString = NSAttributedString(
             styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
         )
@@ -328,8 +324,6 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
-                    case let .deepLink(url):
-                        let button = UIButton(style: <#T##ButtonStyle#>)
                     case let .gif(url):
                         bubble.backgroundColor = .clear
                         let imageViewContainer = UIView()
@@ -493,13 +487,19 @@ extension Message: Reusable {
                                 if let url = tappedLink?.url,
                                     ["http", "https"].contains(url.scheme)
                                 {
-                                    label.viewController?
-                                        .present(
-                                            SFSafariViewController(
-                                                url: url
-                                            ),
-                                            animated: true
-                                        )
+                                    if url.absoluteString.isDeepLink {
+                                        if let vc = UIApplication.shared.getTopViewController() {
+                                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                                        }
+                                    } else {
+                                        label.viewController?
+                                            .present(
+                                                SFSafariViewController(
+                                                    url: url
+                                                ),
+                                                animated: true
+                                            )
+                                    }
                                 }
                             }
                     }
