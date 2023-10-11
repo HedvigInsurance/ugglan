@@ -96,7 +96,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
+	<string>Automatic</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict/>
