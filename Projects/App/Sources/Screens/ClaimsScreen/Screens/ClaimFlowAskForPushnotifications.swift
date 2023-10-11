@@ -24,13 +24,14 @@ struct AskForPushnotifications: View {
         hForm {
             VStack {
                 Spacer(minLength: 24)
-                Image(hCoreUIAssets.activatePushNotificationsIllustration.name).resizable()
+                Image(uiImage: hCoreUIAssets.activatePushNotificationsIllustration.image).resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 200)
+                    .foregroundColor(hTextColor.primary)
                 Spacer(minLength: 24)
-                hText(L10n.claimsActivateNotificationsHeadline, style: .title2).foregroundColor(.primary)
+                hText(L10n.claimsActivateNotificationsHeadline, style: .title2).foregroundColor(hTextColor.primary)
                 Spacer(minLength: 24)
-                hText(L10n.claimsActivateNotificationsBody, style: .body).foregroundColor(.secondary)
+                hText(L10n.claimsActivateNotificationsBody, style: .body).foregroundColor(hTextColor.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding([.leading, .trailing], 16)
@@ -51,7 +52,6 @@ struct AskForPushnotifications: View {
                     })
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
@@ -61,7 +61,7 @@ struct AskForPushnotifications: View {
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
             }
             .padding([.leading, .trailing], 16)

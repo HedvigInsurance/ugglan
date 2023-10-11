@@ -44,7 +44,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
+        let titleLabel = UILabel(value: "", style: UIColor.brandStyle(.primaryBackground()))
         contentView.addArrangedSubview(titleLabel)
 
         contentView.setCustomSpacing(8, after: titleLabel)
@@ -57,7 +57,7 @@ struct EmergencyAction: Reusable, SignalProvider {
 
                 let descriptionLabel = MultilineLabel(
                     value: action.description,
-                    style: .brand(.body(color: .secondary))
+                    style: UIColor.brandStyle(.secondaryText)
                 )
                 bag += contentView.addArranged(descriptionLabel)
 
@@ -66,8 +66,8 @@ struct EmergencyAction: Reusable, SignalProvider {
                 let button = Button(
                     title: action.buttonTitle,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brand(.primaryBackground(true)),
+                        textColor: .brand(.primaryText(true))
                     )
                 )
                 bag += contentView.addArranged(button)

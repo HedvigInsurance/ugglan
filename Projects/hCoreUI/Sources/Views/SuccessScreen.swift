@@ -10,7 +10,7 @@ public struct SuccessScreen: View {
                 Spacer()
                 Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
-                    .foregroundColor(hSignalColorNew.greenElement)
+                    .foregroundColor(hSignalColor.greenElement)
                     .frame(width: 24, height: 24)
                 hText(title)
                 Spacer()

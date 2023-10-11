@@ -5,12 +5,12 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    var claims: [Claim]
+    var claims: [ClaimModel]
 
     @PresentableStore
     var store: ClaimsStore
 
-    var tapAction: (Claim) -> Void {
+    var tapAction: (ClaimModel) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }

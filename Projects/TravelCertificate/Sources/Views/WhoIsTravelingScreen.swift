@@ -30,14 +30,14 @@ struct WhoIsTravelingScreen: View {
                     hRow {
                         VStack(alignment: .leading) {
                             hText(L10n.TravelCertificate.includedMembersTitle, style: .standardSmall)
-                                .foregroundColor(hTextColorNew.secondary)
+                                .foregroundColor(hTextColor.secondary)
                             VStack(alignment: .leading, spacing: 16) {
                                 Toggle(isOn: vm.isPolicyHolderIncluded.animation(.default)) {
                                     VStack(alignment: .leading, spacing: 0) {
                                         hText(model?.fullName ?? "", style: .standardLarge)
-                                            .foregroundColor(disabledColorOr(hTextColorNew.primary))
+                                            .foregroundColor(disabledColorOr(hTextColor.primary))
                                         hText(model?.email ?? "")
-                                            .foregroundColor(disabledColorOr(hTextColorNew.secondary))
+                                            .foregroundColor(disabledColorOr(hTextColor.secondary))
                                     }
                                 }
                                 .toggleStyle(ChecboxToggleStyle(.top, spacing: 0))
@@ -66,8 +66,8 @@ struct WhoIsTravelingScreen: View {
                                                     .frame(width: 16, height: 16)
                                             }
                                         }
-                                        .foregroundColor(hTextColorNew.primary)
-                                        hText(coinsured.personalNumber).foregroundColor(hTextColorNew.secondary)
+                                        .foregroundColor(hTextColor.primary)
+                                        hText(coinsured.personalNumber).foregroundColor(hTextColor.secondary)
                                     }
                                     if (model?.policyCoinsuredPersons.count ?? 0 < vm.specifications?.numberOfCoInsured
                                         ?? 0) && index == coinsuredMembers.count - 1
@@ -108,6 +108,7 @@ struct WhoIsTravelingScreen: View {
                 hText(L10n.TravelCertificate.addPeople)
             }
         }
+        .hUseLightMode
         .fixedSize(horizontal: true, vertical: false)
     }
 
@@ -116,7 +117,7 @@ struct WhoIsTravelingScreen: View {
         if vm.isPolicyHolderIncluded.wrappedValue {
             color
         } else {
-            hTextColorNew.disabled
+            hTextColor.disabled
         }
     }
 }

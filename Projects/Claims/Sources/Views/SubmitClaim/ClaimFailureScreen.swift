@@ -13,15 +13,15 @@ public struct ClaimFailureScreen: View {
             VStack {
                 Spacer()
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                    .foregroundColor(hSignalColorNew.amberElement)
+                    .foregroundColor(hSignalColor.amberElement)
                     .padding(.bottom, 8)
 
                 hText(L10n.HomeTab.errorTitle, style: .body)
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
 
                 hText(L10n.HomeTab.errorBody, style: .body)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
                 Spacer()
             }
             .padding(.horizontal, 32)

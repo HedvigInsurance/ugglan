@@ -13,12 +13,12 @@ public struct LoginFail: View {
         hForm {
             VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                    .foregroundColor(hSignalColorNew.amberElement)
+                    .foregroundColor(hSignalColor.amberElement)
                 VStack(spacing: 0) {
                     hText(L10n.somethingWentWrong)
-                        .foregroundColor(hTextColorNew.primaryTranslucent)
+                        .foregroundColor(hTextColor.primaryTranslucent)
                     hText(message ?? L10n.authenticationBankidLoginError)
-                        .foregroundColor(hTextColorNew.secondaryTranslucent)
+                        .foregroundColor(hTextColor.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                 }
             }

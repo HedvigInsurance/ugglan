@@ -32,12 +32,12 @@ extension AddressRow: Reusable {
 
         mainTextContainer.snp.makeConstraints { make in make.width.equalToSuperview().priority(.medium) }
 
-        let addressLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
+        let addressLabel = UILabel(value: "", style: UIColor.brandStyle(.primaryText()))
         mainTextContainer.addArrangedSubview(addressLabel)
 
         let postalCodeLabel = UILabel(
             value: "",
-            style: .brand(.subHeadline(color: .secondary))
+            style: UIColor.brandStyle(.secondaryText)
         )
         postalCodeLabel.animationSafeIsHidden = true
         mainTextContainer.addArrangedSubview(postalCodeLabel)

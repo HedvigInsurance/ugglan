@@ -237,7 +237,7 @@ import hGraphQL
                     body: L10n.forceLogoutMessageTitle,
                     subtitle: L10n.forceLogoutMessageSubtitle,
                     textColor: .black,
-                    backgroundColor: .brand(.regularCaution)
+                    backgroundColor: .brand(.caution)
                 )
 
                 Toasts.shared.displayToast(toast: toast)
@@ -262,7 +262,7 @@ import hGraphQL
                     symbol: .icon(hCoreUIAssets.settingsIcon.image),
                     body: "Targeting \(Environment.current.displayName) environment",
                     textColor: .black,
-                    backgroundColor: .brand(.regularCaution)
+                    backgroundColor: .brand(.caution)
                 )
 
                 self.bag += toast.onTap.onValue {
@@ -307,7 +307,7 @@ import hGraphQL
                             )
 
                             self.bag += self.window.present(
-                                ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney
+                                ActivityIndicator(style: .large, color: hTextColor.primary).disposableHostingJourney
                                     .onPresent({
                                         Journey(alert)
                                             .onPresent {

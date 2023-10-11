@@ -35,7 +35,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption])
-        case text, audio, none
+        case text, none
     }
 
     enum MessageType: Equatable {
@@ -88,6 +88,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         case video(url: URL?)
         case file(url: URL?)
         case gif(url: URL?)
+        case deepLink(url: URL)
     }
 
     var hasTypingIndicatorNext: Bool {
@@ -235,7 +236,13 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             placeholder = nil
             keyboardType = nil
             textContentType = nil
-            if text.text.isGIFURL { type = .gif(url: URL(string: text.text)) } else { type = .text }
+            if text.text.isGIFURL {
+                type = .gif(url: URL(string: text.text))
+            } else if text.text.isDeepLink {
+                type = .deepLink(url: URL(string: text.text)!)
+            } else {
+                type = .text
+            }
         } else if let file = message.fragments.chatMessageFileFragment {
             body = ""
             responseType = .text

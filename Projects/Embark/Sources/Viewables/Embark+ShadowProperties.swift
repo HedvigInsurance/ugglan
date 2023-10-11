@@ -7,7 +7,7 @@ extension UIView.ShadowProperties {
         opacity: 1,
         offset: .init(width: 0, height: 1),
         blurRadius: 1,
-        color: .brand(.secondaryShadowColor),
+        color: .brand(.secondaryBorderColor),
         path: nil,
         radius: 8
     )

@@ -27,7 +27,7 @@ extension MultiActionTable: Presentable {
 
         bag += form.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
-            case .dark: form.backgroundColor = .grayscale(.grayFive)
+            case .dark: form.backgroundColor = .brand(.secondaryBackground())
             default: form.backgroundColor = .brand(.primaryBackground())
             }
         }
@@ -97,8 +97,8 @@ extension MultiActionTable: Presentable {
         let button = Button(
             title: L10n.generalSaveButton,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             ),
             isEnabled: false
         )
@@ -123,7 +123,7 @@ extension MultiActionTable: Presentable {
             FiniteSignal { callback in func submit() { callback(.value($multiActionValues.value)) }
 
                 let cancelButton = UIButton()
-                let textStyle = TextStyle.brand(.body(color: .primary))
+                let textStyle = UIColor.brandStyle(.primaryText())
                 let attributedTitle = NSAttributedString(
                     string: L10n.generalCancelButton,
                     attributes: textStyle.attributes

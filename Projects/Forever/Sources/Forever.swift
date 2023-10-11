@@ -50,7 +50,7 @@ public struct ForeverView: View {
                             }
                         }) {
                             Image(uiImage: hCoreUIAssets.infoIcon.image)
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                     }
             )
