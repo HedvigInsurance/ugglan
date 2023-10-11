@@ -87,7 +87,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public let id: String
-    public let currentAgreement: Agreement
+    public let currentAgreement: Agreement?
     public let exposureDisplayName: String
     public let externalInsuranceCancellation: ContractExternalInsuranceCancellation?
     public let masterInceptionDate: String?
@@ -96,9 +96,28 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
+    public var showEditInfo: Bool {
+        guard let terminationDate else {
+            return true
+        }
+        return false
+    }
+    public var terminatedToday: Bool {
+        if terminationDate == Date().localDateString {
+            return true
+        }
+        return false
+    }
+    public var activeInFuture: Bool {
+        if let inceptionDate = masterInceptionDate?.localDateToDate,
+           inceptionDate.daysBetween(start: Date()) > 0 {
+            return true
+        }
+        return false
+    }
     public var pillowType: PillowType? {
-        if let terminationDate {
-            let daysBetween = daysBetween(start: Date(), end: terminationDate.localDateToDate ?? Date())
+        if let terminationDate = terminationDate?.localDateToDate {
+            let daysBetween = terminationDate.daysBetween(start: Date())
             if daysBetween <= 0 {
                 return nil
             }
@@ -131,24 +150,6 @@ public struct Contract: Codable, Hashable, Equatable {
         id = contract.id
         currentAgreement =
             .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-            ?? Agreement(
-                certificateUrl: "",
-                activeFrom: "",
-                activeTo: "",
-                premium: MonetaryAmount(amount: 0, currency: ""),
-                displayItems: [],
-                productVariant: ProductVariant(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: nil,
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    highlights: [],
-                    FAQ: [],
-                    displayName: ""
-                )
-            )
         exposureDisplayName = contract.exposureDisplayName
         if let cancellation = contract.externalInsuranceCancellation {
             externalInsuranceCancellation = .init(
@@ -233,10 +234,6 @@ public struct Contract: Codable, Hashable, Equatable {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let isNotInTerminationProcess = terminationDate == nil
         return suitableType && isNotInTerminationProcess
-    }
-
-    public func daysBetween(start: Date, end: Date) -> Int {
-        return Calendar.current.dateComponents([.day], from: start, to: end).day!
     }
 }
 

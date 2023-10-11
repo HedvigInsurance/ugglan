@@ -21,11 +21,8 @@ public enum ContractAction: ActionProtocol, Hashable {
     case fetch
 
     // Fetch contracts for terminated
-    case fetchContractBundles
-    case fetchContractBundlesDone
     case fetchCrossSale
     case fetchContracts
-    case fetchContractsDone
 
     case setActiveContracts(contracts: [Contract])
     case setTerminatedContracts(contracts: [Contract])

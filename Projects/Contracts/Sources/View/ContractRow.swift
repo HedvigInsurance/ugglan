@@ -72,17 +72,15 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 if let terminationDate = contract.terminationDate {
-                    if terminationDate == Date().localDateString {
+                    if contract.terminatedToday {
                         StatusPill(text: L10n.contractStatusTerminatedToday).padding(.trailing, 4)
                     } else {
                         StatusPill(text: L10n.contractStatusToBeTerminated(terminationDate)).padding(.trailing, 4)
                     }
                 } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
                     StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
-                } else if let inceptionDate = contract.masterInceptionDate?.localDateToDate,
-                    daysBetween(start: Date(), end: inceptionDate) > 0
-                {
-                    StatusPill(text: L10n.contractStatusActiveInFuture(inceptionDate.localDateString))
+                } else if contract.activeInFuture {
+                    StatusPill(text: L10n.contractStatusActiveInFuture(contract.masterInceptionDate ?? ""))
                         .padding(.trailing, 4)
                 }
                 Spacer()
@@ -90,7 +88,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
             Spacer()
             HStack {
-                hText(contract.currentAgreement.productVariant.displayName)
+                hText(contract.currentAgreement!.productVariant.displayName)
                     .foregroundColor(hTextColor.primary)
                     .colorScheme(.dark)
                 Spacer()
@@ -107,10 +105,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .clipShape(Squircle.default())
         .hShadow()
         .contentShape(Rectangle())
-    }
-
-    func daysBetween(start: Date, end: Date) -> Int {
-        return Calendar.current.dateComponents([.day], from: start, to: end).day!
     }
 }
 
@@ -132,7 +126,7 @@ struct ContractRow: View {
                     store.send(
                         .openDetail(
                             contractId: contract.id,
-                            title: contract.currentAgreement.productVariant.displayName
+                            title: contract.currentAgreement?.productVariant.displayName ?? ""
                         )
                     )
                 } label: {
