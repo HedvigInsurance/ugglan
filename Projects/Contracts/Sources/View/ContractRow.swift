@@ -64,6 +64,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
             .resizable()
             .frame(width: 24, height: 24)
+            .foregroundColor(hTextColor.primary)
+            .colorScheme(.dark)
     }
 
     func makeBody(configuration: Configuration) -> some View {
@@ -89,10 +91,13 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Spacer()
             HStack {
                 hText(contract.currentAgreement.productVariant.displayName)
+                    .foregroundColor(hTextColor.primary)
+                    .colorScheme(.dark)
                 Spacer()
             }
             hText(contract.exposureDisplayName)
                 .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700)
+                .colorScheme(.dark)
         }
         .padding(16)
         .frame(minHeight: 200)
@@ -101,8 +106,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         )
         .clipShape(Squircle.default())
         .hShadow()
-        .foregroundColor(hTextColor.primary)
-        .colorScheme(.dark)
         .contentShape(Rectangle())
     }
 
