@@ -17,11 +17,11 @@ public struct UpcomingRenewal: Codable, Equatable {
     let draftCertificateUrl: String?
 
     public init?(
-        upcomingRenewal: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.UpcomingRenewal?
+        upcomingRenewal: OctopusGraphQL.AgreementFragment?
     ) {
         guard let upcomingRenewal else { return nil }
-        self.renewalDate = upcomingRenewal.renewalDate
-        self.draftCertificateUrl = upcomingRenewal.draftCertificateUrl
+        self.renewalDate = upcomingRenewal.activeFrom
+        self.draftCertificateUrl = upcomingRenewal.certificateUrl
     }
 }
 
@@ -32,7 +32,9 @@ public struct Contract: Codable, Equatable {
     public init(
         contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
     ) {
-        upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
+        upcomingRenewal = UpcomingRenewal(
+            upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
+        )
         displayName = contract.exposureDisplayName
     }
 }

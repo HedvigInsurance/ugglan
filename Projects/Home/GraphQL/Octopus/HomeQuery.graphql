@@ -24,25 +24,18 @@ fragment ContractFragment on Contract {
       }
       id
       masterInceptionDate
-      supportsAddressChange
       terminationDate
+      exposureDisplayName
       upcomingChangedAgreement {
          ...AgreementFragment
       }
-      upcomingRenewal {
-        ...ContractRenewalFragment
-      }
-}
-
-fragment ContractRenewalFragment on ContractRenewal {
-    draftCertificateUrl
-    renewalDate
 }
 
 fragment AgreementFragment on Agreement {
     activeFrom
     activeTo
     certificateUrl
+    creationCause
     displayItems {
         ...AgreementDisplayItemFragment
     }
