@@ -6,16 +6,16 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: ClaimModel
-
+    
     @PresentableStore
     var store: ClaimsStore
-
+    
     var tapAction: (ClaimModel) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }
     }
-
+    
     var body: some View {
         CardComponent(
             onSelected: {
@@ -26,8 +26,10 @@ struct ClaimStatus: View {
             subTitle: claim.subtitle,
             bottomComponent: {
                 HStack(spacing: 6) {
-                    ForEach(claim.segments, id: \.text) { segment in
-                        ClaimStatusBar(status: segment)
+                    ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+                        if !(segment == .none || segment == .reopened) {
+                            ClaimStatusBar(status: segment)
+                        }
                     }
                 }
             }
@@ -37,81 +39,72 @@ struct ClaimStatus: View {
 
 struct ClaimPills: View {
     var claim: ClaimModel
-
+    
     var body: some View {
         HStack {
-            ForEach(claim.pills, id: \.text) { claimPill in
-                hPillFill(
-                    text: claimPill.text.capitalized,
-                    textColor: claimPill.type.textColor,
-                    backgroundColor: claimPill.type.backgroundColor
-                )
-            }
+            hPillFill(
+                text: claim.outcome.text.capitalized,
+                textColor: claim.outcome.textColor,
+                backgroundColor: claim.outcome.backgroundColor
+            )
         }
     }
 }
-extension ClaimModel.ClaimPill.ClaimPillType {
+extension ClaimModel.ClaimOutcome {
     @hColorBuilder
     var textColor: some hColor {
-        switch self {
-        case .none: hTextColor.primary
-        case .open: hTextColor.negative
-        case .reopened: hSignalColor.amberText
-        case .closed: hTextColor.negative
-        case .payment: hSignalColor.blueText
-        }
+        hTextColor.negative
     }
-
+    
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
-        case .none: hFillColor.opaqueTwo
-        case .open: hTextColor.primary
-        case .reopened: hSignalColor.amberHighLight
-        case .closed: hTextColor.primary
-        case .payment: hSignalColor.blueHighLight
+        case .none:
+            hColorScheme(light:  hFillColor.opaqueTwo, dark: hGrayscaleColor.greyScale400)
+        default:
+            hTextColor.primary
         }
     }
 }
 
-struct ClaimStatus_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = GiraffeGraphQL.ClaimStatusCardsQuery.Data.init(
-            claimsStatusCards: [
-                .init(
-                    id: "id",
-                    pills: [
-                        .init(text: "TEXT", type: .open),
-                        .init(text: "TEXT 2", type: .closed),
-                        .init(text: "TEXT 3", type: .payment),
-                        .init(text: "TEXT 4", type: .reopened),
-                    ],
-                    title: "TITLE",
-                    subtitle: "SUBTITLE",
-                    progressSegments: [
-                        .init(text: "STATUS 1", type: .currentlyActive),
-                        .init(text: "Status 2", type: .futureInactive),
-                        .init(text: "Status 3", type: .paid),
-                        .init(text: "Status 4", type: .pastInactive),
-                        .init(text: "Status 5", type: .reopened),
-                    ],
-                    claim: .init(
-                        id: "ID",
-                        submittedAt: "2023-11-23",
-                        status: .beingHandled,
-                        progressSegments: [.init(text: "PROGRESS", type: .currentlyActive)],
-                        statusParagraph: "STATUS"
-                    )
-                )
-            ]
-        )
-        let claimData = ClaimData(cardData: data)
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: claimData.claims.first!)
-            ClaimStatus(claim: claimData.claims.first!)
-                .colorScheme(.dark)
-
-        }
-        .padding(20)
-    }
-}
+//struct ClaimStatus_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let data = GiraffeGraphQL.ClaimStatusCardsQuery.Data.init(
+//            claimsStatusCards: [
+//                .init(
+//                    id: "id",
+//                    pills: [
+//                        .init(text: "TEXT", type: .open),
+//                        .init(text: "TEXT 2", type: .closed),
+//                        .init(text: "TEXT 3", type: .payment),
+//                        .init(text: "TEXT 4", type: .reopened),
+//                    ],
+//                    title: "TITLE",
+//                    subtitle: "SUBTITLE",
+//                    progressSegments: [
+//                        .init(text: "STATUS 1", type: .currentlyActive),
+//                        .init(text: "Status 2", type: .futureInactive),
+//                        .init(text: "Status 3", type: .paid),
+//                        .init(text: "Status 4", type: .pastInactive),
+//                        .init(text: "Status 5", type: .reopened),
+//                    ],
+//                    claim: .init(
+//                        id: "ID",
+//                        submittedAt: "2023-11-23",
+//                        status: .beingHandled,
+//                        progressSegments: [.init(text: "PROGRESS", type: .currentlyActive)],
+//                        statusParagraph: "STATUS"
+//                    )
+//                )
+//            ]
+//        )
+//        let claimData = ClaimData(cardData: data)
+//        return VStack(spacing: 20) {
+//            ClaimStatus(claim: claimData.claims.first!)
+//            ClaimStatus(claim: claimData.claims.first!)
+//                .colorScheme(.dark)
+//
+//        }
+//        .padding(20)
+//    }
+//}

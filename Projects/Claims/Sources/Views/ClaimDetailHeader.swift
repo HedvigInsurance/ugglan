@@ -24,8 +24,8 @@ struct ClaimDetailHeader: View {
 
     @ViewBuilder
     private var bottomView: some View {
-        if let submittedAt = claim.claimDetailData.submittedAt,
-            let closedAt = claim.claimDetailData.closedAt
+        if let submittedAt = claim.submittedAt,
+            let closedAt = claim.closedAt
         {
             HStack {
                 VStack(alignment: .leading) {
@@ -43,8 +43,10 @@ struct ClaimDetailHeader: View {
             }
         } else {
             HStack(spacing: 6) {
-                ForEach(claim.segments, id: \.text) { segment in
-                    ClaimStatusBar(status: segment)
+                ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+                    if !(segment == .none || segment == .reopened) {
+                        ClaimStatusBar(status: segment)
+                    }
                 }
             }
         }

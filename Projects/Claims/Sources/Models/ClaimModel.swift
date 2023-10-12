@@ -1,57 +1,16 @@
 import Foundation
+import hCore
 import hGraphQL
 
-typealias ClaimStatusCard = GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
-
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
-    public init(
-        id: String,
-        pills: [ClaimModel.ClaimPill],
-        segments: [ClaimModel.ClaimStatusProgressSegment],
-        title: String,
-        subtitle: String,
-        claimDetailData: ClaimDetailData
-    ) {
-        self.id = id
-        self.pills = pills
-        self.segments = segments
-        self.title = title
-        self.subtitle = subtitle
-        self.claimDetailData = claimDetailData
-    }
 
-    internal init(
-        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
-    ) {
-        self.id = cardData.id
-        self.pills = cardData.pills.map {
-            .init(text: $0.text, type: .init(rawValue: $0.type.rawValue.lowercased()) ?? .none)
-        }
-        self.segments = cardData.progressSegments.map {
-            .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
-        }
-        self.title = cardData.title
-        self.subtitle = cardData.subtitle
-
-        self.claimDetailData = ClaimDetailData(claim: cardData.claim)
-    }
-
-    public let id: String
-    public let pills: [ClaimPill]
-    public let segments: [ClaimStatusProgressSegment]
-    public let title: String
-    public let subtitle: String
-    public let claimDetailData: ClaimDetailData
-
-    public struct ClaimDetailData: Codable, Equatable, Hashable {
         public init(
             id: String,
-            status: ClaimModel.ClaimDetailData.ClaimStatus,
-            outcome: ClaimModel.ClaimDetailData.ClaimOutcome,
+            status: ClaimStatus,
+            outcome: ClaimOutcome,
             submittedAt: String?,
             closedAt: String?,
             signedAudioURL: String,
-            progressSegments: [ClaimModel.ClaimStatusProgressSegment],
             statusParagraph: String,
             type: String,
             payout: MonetaryAmount
@@ -62,41 +21,37 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             self.submittedAt = submittedAt
             self.closedAt = closedAt
             self.signedAudioURL = signedAudioURL
-            self.progressSegments = progressSegments
             self.statusParagraph = statusParagraph
             self.type = type
-            self.payout = payout
+            self.subtitle = "subtitle"
         }
 
         internal init(
-            claim: ClaimStatusCard.Claim
+            claim: OctopusGraphQL.ClaimsQuery.Data.CurrentMember.Claim
         ) {
             self.id = claim.id
-            self.status = ClaimModel.ClaimDetailData.ClaimStatus(rawValue: claim.status.rawValue) ?? .none
+            self.status = ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none
             self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
             self.submittedAt = claim.submittedAt
             self.closedAt = claim.closedAt
-            self.signedAudioURL = claim.signedAudioUrl ?? ""
-            self.progressSegments = claim.progressSegments.map {
-                .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
-            }
-            self.statusParagraph = claim.statusParagraph
-            self.type = claim.type ?? ""
-            self.payout = .init(amount: claim.payout?.amount ?? "", currency: claim.payout?.currency ?? "")
+            self.signedAudioURL = claim.audioUrl ?? ""
+            self.statusParagraph = claim.memberFreeText ?? ""
+            self.type = claim.associatedTypeOfContract ?? ""
+            self.subtitle = claim.associatedTypeOfContract ?? ""
         }
 
+        public let title = L10n.Claim.Casetype.insuranceCase
+        public let subtitle: String
         public let id: String
         public let status: ClaimStatus
         public let outcome: ClaimOutcome
         public let submittedAt: String?
         public let closedAt: String?
         public let signedAudioURL: String
-        public let progressSegments: [ClaimStatusProgressSegment]
         public let statusParagraph: String
         public let type: String
-        public let payout: MonetaryAmount
 
-        public enum ClaimStatus: String, Codable {
+        public enum ClaimStatus: String, Codable, CaseIterable {
             case none
             case submitted
             case beingHandled
@@ -107,16 +62,31 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
                 rawValue: RawValue
             ) {
                 switch rawValue {
-                case "SUBMITTED": self = .submitted
-                case "BEING_HANDLED": self = .beingHandled
+                case "CREATED": self = .submitted
+                case "IN_PROGRESS": self = .beingHandled
                 case "CLOSED": self = .closed
                 case "REOPENED": self = .reopened
                 default: self = .none
                 }
             }
+            
+            var title: String {
+                switch self {
+                case .submitted:
+                    return "Created"
+                case .beingHandled:
+                    return "In progress"
+                case .closed:
+                    return "Closed"
+                case .none:
+                    return "None"
+                case .reopened:
+                    return "Reopened"
+                }
+            }
         }
 
-        public enum ClaimOutcome: String, Codable {
+    public enum ClaimOutcome: String, Codable, CaseIterable {
             case paid
             case notCompensated
             case notCovered
@@ -132,72 +102,89 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
                 default: self = .none
                 }
             }
-        }
-
-    }
-
-    public struct ClaimPill: Codable, Equatable, Hashable {
-        public init(
-            text: String,
-            type: ClaimModel.ClaimPill.ClaimPillType
-        ) {
-            self.text = text
-            self.type = type
-        }
-
-        public let text: String
-        public let type: ClaimPillType
-
-        public enum ClaimPillType: String, Codable {
-            case none
-            case open
-            case reopened
-            case closed
-            case payment
-        }
-    }
-
-    public struct ClaimStatusProgressSegment: Codable, Equatable, Hashable {
-        public init(
-            text: String,
-            type: ClaimModel.ClaimStatusProgressSegment.ClaimStatusProgressType
-        ) {
-            self.text = text
-            self.type = type
-        }
-
-        public let text: String
-        public let type: ClaimStatusProgressType
-
-        public enum ClaimStatusProgressType: String, Codable {
-            case pastInactive
-            case currentlyActive
-            case futureInactive
-            case paid
-            case reopened
-            case none
-
-            public init?(
-                rawValue: RawValue
-            ) {
-                switch rawValue {
-                case "PAST_INACTIVE", "pastInactive": self = .pastInactive
-                case "CURRENTLY_ACTIVE", "currentlyActive": self = .currentlyActive
-                case "FUTURE_INACTIVE", "futureInactive": self = .futureInactive
-                case "REOPENED", "reopened": self = .reopened
-                case "PAID", "paid": self = .paid
-                default: self = .none
+            
+            var text: String {
+                switch self {
+                case .paid:
+                    return "Paid"
+                case .notCompensated:
+                    return "Not compensated"
+                case .notCovered:
+                    return "Not covered"
+                case .none:
+                    return "Claim"
                 }
             }
         }
-    }
+
+//    public struct ClaimPill: Codable, Equatable, Hashable {
+//        public init(
+//            text: String,
+//            type: ClaimModel.ClaimPill.ClaimPillType
+//        ) {
+//            self.text = text
+//            self.type = type
+//        }
+//
+//        public let text: String
+//        public let type: ClaimPillType
+//
+//        public enum ClaimPillType: String, Codable {
+//            case none
+//            case open
+//            case reopened
+//            case closed
+//            case payment
+//        }
+//    }
+
+//    public struct ClaimStatusProgressSegment: Codable, Equatable, Hashable {
+//        public init(
+//            text: String,
+//            type: ClaimModel.ClaimStatusProgressSegment.ClaimStatusProgressType
+//        ) {
+//            self.text = text
+//            self.type = type
+//        }
+//
+//        public let text: String
+//        public let type: ClaimStatusProgressType
+//
+//        public enum ClaimStatusProgressType: String, Codable {
+////            case pastInactive
+//            case currentlyActive
+////            case futureInactive
+////            case paid
+//            case close
+//            case reopened
+//            case inProgress
+//            case none
+//
+//            public init?(
+//                rawValue: RawValue
+//            ) {
+//                switch rawValue {
+////                case "PAST_INACTIVE", "pastInactive": self = .pastInactive
+////                case "CURRENTLY_ACTIVE", "currentlyActive": self = .currentlyActive
+////                case "FUTURE_INACTIVE", "futureInactive": self = .futureInactive
+//                case "REOPENED", "reopened": self = .reopened
+//                case "CREATED", "created": self = .currentlyActive
+//                case "IN_PROGRESS", "in_progress": self = .inProgress
+////                case "PAID", "paid": self = .paid
+//                default: self = .none
+//                }
+//            }
+//        }
+//    }
 }
 
-public struct ClaimData {
-    public let claims: [ClaimModel]
-    public init(
-        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data
-    ) {
-        claims = cardData.claimsStatusCards.map { .init(cardData: $0) }
-    }
-}
+//public struct ClaimData {
+//    public let claims: [ClaimModel]
+//    public init(
+////        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data
+//        cardData: OctopusGraphQL.ClaimsQuery.Data
+//    ) {
+////        claims = cardData.map { .init(cardData: $0) }
+//        claims = cardData.currentMember.claims.map({ .init(claim: $0 )})
+//    }
+//}
