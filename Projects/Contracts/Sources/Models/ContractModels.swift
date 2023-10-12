@@ -116,16 +116,19 @@ public struct Contract: Codable, Hashable, Equatable {
     }
     public var activeInFuture: Bool {
         if let inceptionDate = masterInceptionDate?.localDateToDate,
-            inceptionDate.daysBetween(start: Date()) > 0
+            let localDate = Date().localDateString.localDateToDate,
+            inceptionDate.daysBetween(start: localDate) > 0
         {
             return true
         }
         return false
     }
     public var pillowType: PillowType? {
-        if let terminationDate = terminationDate?.localDateToDate {
-            let daysBetween = terminationDate.daysBetween(start: Date())
-            if daysBetween <= 0 {
+        if let terminationDate = terminationDate?.localDateToDate,
+            let localDate = Date().localDateString.localDateToDate
+        {
+            let daysBetween = terminationDate.daysBetween(start: localDate)
+            if daysBetween < 0 {
                 return nil
             }
         }
