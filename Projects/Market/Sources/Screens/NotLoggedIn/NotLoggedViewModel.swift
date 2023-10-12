@@ -47,41 +47,6 @@ public class NotLoggedViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        detectMarketFromLocation()
-    }
-
-    private func detectMarketFromLocation() {
-        let store: MarketStore = globalPresentableStoreContainer.get()
-        bag += giraffe.client
-            .fetch(
-                query: GiraffeGraphQL.GeoQuery(),
-                queue: .global(qos: .background)
-            )
-            .valueSignal
-            .map { $0.geo.countryIsoCode.lowercased() }
-            .map { code -> Market in
-                guard
-                    let bestMatch = Market.activatedMarkets
-                        .flatMap({ market in
-                            market.languages
-                        })
-                        .first(where: { locale -> Bool in
-                            locale.rawValue.lowercased().contains(code)
-                        })
-                else {
-                    return .sweden
-                }
-
-                return Market(rawValue: bestMatch.market.rawValue)!
-            }
-            .atValue(on: .main) { market in
-                store.send(.selectMarket(market: market))
-                self.bootStrapped = true
-            }
-            .onError(on: .main) { _ in
-                store.send(.selectMarket(market: .sweden))
-                self.bootStrapped = true
-            }
     }
 
     func onCountryPressed() {
