@@ -18,6 +18,9 @@ query Home {
         ...ProductVariantFragment
       }
     }
+    terminatedContracts {
+        terminationDate
+    }
   }
 }
 

@@ -50,28 +50,6 @@ public struct MemberStateData: Codable, Equatable {
     }
 }
 
-public struct OtherServiceData: Codable, Equatable {
-    let type: OtherServicesType
-}
-
-public enum OtherServicesType: String, Codable, Equatable {
-    case chat
-    case changeAddress
-    case travelCertificate
-    case contactFirstVet
-    case sickAbroad
-
-    var title: String {
-        switch self {
-        case .chat: return L10n.chatTitle
-        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        case .travelCertificate: return L10n.TravelCertificate.cardTitle
-        case .contactFirstVet: return "Contact FirstVet"
-        case .sickAbroad: return "Sick abroad"
-        }
-    }
-}
-
 public struct HomeState: StateProtocol {
     public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     public var futureStatus: FutureStatus = .none
@@ -294,11 +272,14 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     }
 
     private var isTerminated: Bool {
-        activeContracts.count == 0 && pendingContracts.count == 0
+        return activeContracts.count == 0 && pendingContracts.count == 0
     }
 
     private var isFuture: Bool {
-        pendingContracts.count > 0 && activeContracts.count == 0
+        let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
+            return contract.currentAgreement.activeFrom.localDateToDate?.daysBetween(start: Date()) ?? 0 > 0
+        }
+        return !activeContracts.isEmpty && hasActiveContractsInFuture
     }
 }
 
