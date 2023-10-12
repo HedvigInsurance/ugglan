@@ -51,6 +51,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             Contract(pendingContract: contract)
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))
+                        callback(.value(.fetchCompleted))
                     }
                     .onError { error in
                         if ApplicationContext.shared.isDemoMode {
@@ -58,6 +59,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchContracts)
                         }
+                        callback(.value(.fetchCompleted))
                     }
                 return disposeBag
             }
@@ -79,6 +81,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case let .setActiveContracts(contracts):
+
             newState.activeContracts = contracts
         case let .setTerminatedContracts(contracts):
             newState.terminatedContracts = contracts

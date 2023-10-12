@@ -177,21 +177,6 @@ struct ContractRow_Previews: PreviewProvider {
                             )
                     ),
                 exposureDisplayName: "",
-                externalInsuranceCancellation: ContractExternalInsuranceCancellation(
-                    id: "",
-                    bankSignering:
-                        ContractExternalInsuranceCancellation.BankSignering(
-                            approvedByDate: "",
-                            url: ""
-                        ),
-                    externalInsurer: ContractExternalInsuranceCancellation.ExternalInsurer(
-                        id: "",
-                        displayName: "",
-                        insurelyId: ""
-                    ),
-                    status: .completed,
-                    type: .bankSigned
-                ),
                 masterInceptionDate: "",
                 terminationDate: "",
                 supportsAddressChange: true,

@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+
 extension UIApplication {
     public func getTopViewController() -> UIViewController? {
         return UIApplication.shared.connectedScenes

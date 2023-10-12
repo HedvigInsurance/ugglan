@@ -1,0 +1,10 @@
+mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
+  moveIntentRequest(intentId: $intentId, input: $input) {
+    userError {
+        message
+    }
+    moveIntent {
+        ...MoveIntentFragment
+    }
+  }
+}

@@ -12,6 +12,7 @@ public enum MaskType: String {
     case norwegianPersonalNumber = "NorwegianPersonalNumber"
     case danishPersonalNumber = "DanishPersonalNumber"
     case postalCode = "PostalCode"
+    case address = "Address"
     case email = "Email"
     case birthDate = "BirthDate"
     case birthDateReverse = "BirthDateReverse"
@@ -71,6 +72,10 @@ public struct Masking {
             return emailPredicate.evaluate(with: text)
         case .norwegianPostalCode: return text.count == 4
         case .postalCode: return unmask(text: text).count == 5
+        case .address:
+            let addressRegEx = "[(A-Z|Å|Ä|Ö)a-zåäö]+(\\s*)+[0-9]*"
+            let addressPredicate = NSPredicate(format: "SELF MATCHES %@", addressRegEx)
+            return addressPredicate.evaluate(with: text)
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
@@ -92,6 +97,7 @@ public struct Masking {
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
         case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .none: return text
+        case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         }
@@ -155,6 +161,7 @@ public struct Masking {
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
+        case .address: return .default
         case .disabledSuggestion: return .default
         case .euroBonus: return .default
         }
@@ -163,6 +170,7 @@ public struct Masking {
     public var textContentType: UITextContentType? {
         switch type {
         case .email: return .emailAddress
+        case .address: return .streetAddressLine1
         case .disabledSuggestion: return .oneTimeCode
         default: return nil
         }
@@ -197,6 +205,8 @@ public struct Masking {
             return nil
         case .digits:
             return nil
+        case .address:
+            return L10n.changeAddressNewAddressLabel
         case .disabledSuggestion:
             return nil
         case .euroBonus:
@@ -225,6 +235,8 @@ public struct Masking {
         case .norwegianPostalCode:
             return nil
         case .digits:
+            return nil
+        case .address:
             return nil
         case .disabledSuggestion:
             return nil
@@ -317,6 +329,7 @@ public struct Masking {
         case .danishPersonalNumber:
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
+        case .address: return text
         case .disabledSuggestion: return text
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)

@@ -53,6 +53,12 @@ extension Shape {
         }
     }
 
+    public func fill2<S>(_ content: S, _ content2: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
+        ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
+            self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
+        }
+    }
+
     public func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.stroke(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)

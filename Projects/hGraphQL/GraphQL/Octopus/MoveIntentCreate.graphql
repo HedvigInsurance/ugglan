@@ -1,0 +1,52 @@
+mutation MoveIntentCreate {
+  moveIntentCreate {
+    moveIntent {
+    ...MoveIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}
+
+fragment MoveIntentFragment on MoveIntent {
+      currentHomeAddresses {
+        ...MoveAddressFragment
+      }
+      extraBuildingTypes
+      id
+      maxMovingDate
+      minMovingDate
+      isApartmentAvailableforStudent
+      maxApartmentNumberCoInsured
+      maxApartmentSquareMeters
+      maxHouseNumberCoInsured
+      maxHouseSquareMeters
+      suggestedNumberCoInsured
+        ...QuoteFragment
+}
+
+fragment MoveAddressFragment on MoveAddress {
+    id
+    street
+    postalCode
+    city
+}
+
+fragment QuoteFragment on MoveIntent {
+      quotes {
+        premium {
+            ...MoneyFragment
+        }
+        startDate
+        exposureName
+        productVariant {
+            ...ProductVariantFragment
+        }
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
+      }
+}
