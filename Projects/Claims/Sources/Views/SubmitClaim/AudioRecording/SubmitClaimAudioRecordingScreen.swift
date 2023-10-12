@@ -213,7 +213,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                             self.isAudioInput = false
                                         }
                                     } content: {
-                                        hText("Use text instead", style: .body)
+                                        hText(L10n.claimsUseTextInstead, style: .body)
                                             .foregroundColor(hTextColorNew.primary)
                                     }
 
@@ -263,7 +263,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     self.isAudioInput = true
                 }
             } content: {
-                hText("Use audio recording", style: .body)
+                hText(L10n.claimsUseAudioRecording, style: .body)
             }
         }
         .padding(16)
@@ -271,7 +271,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
     @ViewBuilder
     private var textField: some View {
-        CustomTextViewRepresentable(placeholder: "Start writing...", text: $inputText)
+        CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
             .cornerRadius(12)
             .frame(height: 128)
             .padding(.vertical, 16)
@@ -290,7 +290,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 inputTextError = nil
             }
         }
-        print(inputTextError)
         return inputTextError == nil
     }
 }

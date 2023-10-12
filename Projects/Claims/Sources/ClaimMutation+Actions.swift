@@ -89,7 +89,6 @@ extension GraphQLMutation {
             store.setLoading(for: self.getLoadingType())
             disposeBag += octopus.client.perform(mutation: self)
                 .map { data in
-                    let ss = ""
                     if let data = data as? ClaimStepId {
                         callback(.value(.setNewClaimId(with: data.getStepId())))
                     }

@@ -49,26 +49,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                         }
                     }
-                //                disposeBag += self.giraffe.client
-                //                    .fetch(
-                //                        query: GiraffeGraphQL.ClaimStatusCardsQuery(
-                //                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                //                        ),
-                //                        cachePolicy: .fetchIgnoringCacheData
-                //                    )
-                //                    .onValue { claimData in
-                //                        let claimData = ClaimData(cardData: claimData)
-                //                        callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
-                //                    }
-                //                    .onError { error in
-                //                        if ApplicationContext.shared.isDemoMode {
-                //                            callback(.value(.setLoadingState(action: action, state: nil)))
-                //                        } else {
-                //                            callback(
-                //                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-                //                            )
-                //                        }
-                //                    }
                 return disposeBag
             }
         default:
