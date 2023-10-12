@@ -6,7 +6,6 @@ import hCore
 import hGraphQL
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     public override func effects(
@@ -47,16 +46,16 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 return disposeBag
             }
         case .fetchMemberDetails:
-            let query = GiraffeGraphQL.MemberDetailsQuery()
+            let query = OctopusGraphQL.MemberDetailsQuery()
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
                         query: query,
                         cachePolicy: .returnCacheDataElseFetch
                     )
-                    .compactMap(on: .main) { details in
-                        let details = MemberDetails(memberData: details.member)
+                    .compactMap { details in
+                        let details = MemberDetails(memberData: details.currentMember)
                         callback(.value(.setMemberDetails(details: details)))
                     }
                 return disposeBag
