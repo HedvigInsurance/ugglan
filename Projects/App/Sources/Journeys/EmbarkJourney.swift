@@ -28,7 +28,7 @@ extension AppJourney {
                     .onDismiss {
                         embark.goBack()
                     }
-                    .withDismissButton
+                    .withJourneyDismissButton
             case .close:
                 DismissJourney()
             case let .menu(action):

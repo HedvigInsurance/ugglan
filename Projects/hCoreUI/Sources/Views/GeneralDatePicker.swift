@@ -6,7 +6,9 @@ public struct GeneralDatePicker: View {
 
     private let model: GeneralDatePickerViewModel
 
-    public init(_ model: GeneralDatePickerViewModel) {
+    public init(
+        _ model: GeneralDatePickerViewModel
+    ) {
         self.model = model
         dateOfOccurrence = model.selectedDate ?? Date()
     }
@@ -17,9 +19,10 @@ public struct GeneralDatePicker: View {
                 getDatePicker
                     .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                     .datePickerStyle(.graphical)
-                    .padding([.leading, .trailing], 16)
+                    .padding(.horizontal, 16)
                     .padding([.top], 5)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             VStack {

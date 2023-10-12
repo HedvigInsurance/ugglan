@@ -2,10 +2,10 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct CardComponent<MainContent, BottomContent>: View where MainContent: View, BottomContent: View {
+public struct CardComponent<MainContent, BottomContent>: View
+where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
-    let topTitle: String?
     let title: String?
     let subTitle: String?
     let bottomComponent: () -> BottomContent
@@ -15,13 +15,11 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
         mainContent: MainContent? = nil,
         title: String? = nil,
         subTitle: String? = nil,
-        topTitle: String? = nil,
         bottomComponent: @escaping () -> BottomContent
     ) {
         self.onSelected = onSelected
         self.mainContent = mainContent
         self.title = title
-        self.topTitle = topTitle
         self.subTitle = subTitle
         self.bottomComponent = bottomComponent
     }
@@ -30,10 +28,6 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center) {
                 mainContent
-                if let topTitle = topTitle {
-                    hText(topTitle)
-                        .padding(.leading, 16)
-                }
                 Spacer()
                 if onSelected != nil {
                     hCoreUIAssets.chevronRight.view
@@ -71,9 +65,36 @@ public struct CardComponent<MainContent, BottomContent>: View where MainContent:
             }
         }
     }
+
+    @ViewBuilder
+    var getBackground: some View {
+        Squircle.default()
+            .fill(hFillColor.opaqueOne)
+    }
 }
 
 struct CardComponent_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Spacer()
+            CardComponent(
+                onSelected: {
+
+                },
+                mainContent: Text("T"),
+                title: "TITLE",
+                subTitle: "SUBTITLE",
+                bottomComponent: {
+                    Text("BOTTOM COMPONENT")
+                }
+            )
+            Spacer()
+        }
+        .background(Color.gray)
+    }
+}
+
+struct FCardComponent_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()

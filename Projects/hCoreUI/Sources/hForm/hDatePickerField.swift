@@ -7,6 +7,8 @@ public struct hDatePickerField: View {
     private let config: HDatePickerFieldConfig
     private let onUpdate: (_ date: Date) -> Void
     private let onContinue: (_ date: Date) -> Void
+    private let onShowDatePicker: (() -> Void)?
+
     @State private var animate = false
     @State private var date: Date = Date()
     private var selectedDate: Date?
@@ -27,14 +29,16 @@ public struct hDatePickerField: View {
         selectedDate: Date?,
         placehodlerText: String? = "",
         error: Binding<String?>? = nil,
-        onContinue: @escaping (_ date: Date) -> Void = { _ in }
+        onContinue: @escaping (_ date: Date) -> Void = { _ in },
+        onShowDatePicker: (() -> Void)? = nil
     ) {
         self.config = config
         self.onUpdate = { _ in }
         self.onContinue = onContinue
+        self.onShowDatePicker = onShowDatePicker
         self.selectedDate = selectedDate
         self._error = error ?? Binding.constant(nil)
-        self.date = date
+        self.date = selectedDate ?? config.minDate ?? Date()
         self.placeholderText = placehodlerText
     }
 
@@ -55,6 +59,7 @@ public struct hDatePickerField: View {
             .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
             .onChange(of: selectedDate) { date in
                 if let date {
+                    error = nil
                     onUpdate(date)
                 }
             }
@@ -63,7 +68,15 @@ public struct hDatePickerField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
-            showDatePicker()
+            self.date = selectedDate ?? config.minDate ?? Date()
+            if let onShowDatePicker {
+                onShowDatePicker()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    showDatePicker()
+                }
+            } else {
+                showDatePicker()
+            }
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.animate = false
@@ -76,7 +89,7 @@ public struct hDatePickerField: View {
         HStack {
             Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                 .modifier(hFontModifier(style: .title3))
-                .foregroundColor(foregroundColor)
+                .foregroundColor(hTextColor.primary)
             Spacer()
         }
     }
@@ -179,8 +192,7 @@ private struct DatePickerView: View {
                     )
                     .foregroundColor(hTextColor.primary)
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
+                .sectionContainerStyle(.transparent)
             }
         }
         .toolbar {
@@ -195,33 +207,32 @@ private struct DatePickerView: View {
         }
     }
 
-    @ViewBuilder
     private var datePicker: some View {
         let minDate = config.minDate
         let maxDate = config.maxDate
         if let minDate, let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
         } else if let minDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...,
                 displayedComponents: [.date]
             )
         } else if let maxDate {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
         } else {
-            DatePicker(
+            return DatePicker(
                 "",
                 selection: self.$date.animation(.easeInOut(duration: 0.2)),
                 displayedComponents: [.date]

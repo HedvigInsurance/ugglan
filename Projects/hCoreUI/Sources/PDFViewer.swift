@@ -11,7 +11,9 @@ public struct PDFViewer {
     public let downloadButtonPressed = ReadWriteSignal<Bool>(false)
     private let dataReadWriteSignal: ReadWriteSignal<Data?>
     private let downloadButtonTitle: String?
-    public init(downloadButtonTitle: String?) {
+    public init(
+        downloadButtonTitle: String?
+    ) {
         dataReadWriteSignal = ReadWriteSignal(nil)
         data = dataReadWriteSignal.readOnly()
         self.downloadButtonTitle = downloadButtonTitle

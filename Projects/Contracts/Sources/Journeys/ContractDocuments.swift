@@ -4,6 +4,7 @@ import Form
 import Foundation
 import Presentation
 import SwiftUI
+import TerminateContracts
 import UIKit
 import hAnalytics
 import hCore
@@ -67,4 +68,7 @@ struct ContractDocumentsView: View {
         documents.append(certficateUrl)
         return documents
     }
+}
+private class ContractsDocumentViewModel: ObservableObject {
+    var cancellable: AnyCancellable?
 }

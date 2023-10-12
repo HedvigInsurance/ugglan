@@ -465,7 +465,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
             Label(configuration: configuration).contentShape(Rectangle())
         }
         .modifier(SmallButtonModifier())
-        .background(Color.clear)
+        .background(hGrayscaleColor.greyScale25)
         .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())

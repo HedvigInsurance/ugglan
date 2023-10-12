@@ -55,6 +55,16 @@ public struct InsurableLimits: Codable, Hashable {
     public let description: String
 
     public init(
+        label: String,
+        limit: String,
+        description: String
+    ) {
+        self.label = label
+        self.limit = limit
+        self.description = description
+    }
+
+    public init(
         _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
     ) {
         label = data.label
