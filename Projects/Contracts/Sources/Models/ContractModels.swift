@@ -147,7 +147,7 @@ public struct Contract: Codable, Hashable, Equatable {
         supportsAddressChange = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
-        typeOfContract = .unknown
+        typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
     }
 
     init(
