@@ -6,20 +6,8 @@ query Home {
     }
     pendingContracts {
       externalInsuranceCancellationHandledByHedvig
-      displayItems {
-        ...AgreementDisplayItemFragment
-      }
       exposureDisplayName
       id
-      premium {
-        ...MoneyFragment
-      }
-      productVariant {
-        ...ProductVariantFragment
-      }
-    }
-    terminatedContracts {
-        terminationDate
     }
   }
 }
@@ -31,7 +19,6 @@ fragment ContractFragment on Contract {
       currentAgreement {
         ...AgreementFragment
       }
-      exposureDisplayName
       externalInsuranceCancellation {
         ...ContractExternalInsuranceCancellationFragment
       }

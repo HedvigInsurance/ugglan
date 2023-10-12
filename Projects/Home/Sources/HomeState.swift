@@ -104,6 +104,26 @@ public enum FutureStatus: Codable, Equatable {
     case none
 }
 
+extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
+    fileprivate var futureStatus: FutureStatus {
+        let localDate = Date().localDateString.localDateToDate ?? Date()
+        let allActiveInFuture = activeContracts.allSatisfy({ contract in
+            return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
+        })
+
+        let externalInsraunceCancellation = pendingContracts.compactMap({ contract in
+            contract.externalInsuranceCancellationHandledByHedvig
+        })
+
+        if allActiveInFuture && externalInsraunceCancellation.count == 0 {
+            return .activeInFuture(inceptionDate: activeContracts.first?.masterInceptionDate ?? "")
+        } else if let firstExternal = externalInsraunceCancellation.first {
+            return firstExternal ? .pendingSwitchable : .pendingNonswitchable
+        }
+        return .none
+    }
+}
+
 public enum HomeLoadingType: LoadingProtocol {
     case fetchCommonClaim
 }
@@ -145,19 +165,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                                 )
                             )
                         )
-                        if let pending = data.currentMember.pendingContracts.first(where: {
-                            $0.externalInsuranceCancellationHandledByHedvig
-                        })?
-                        .externalInsuranceCancellationHandledByHedvig, contracts.count == 0 {
-                            if pending {
-                                callback(.value(.setFutureStatus(status: .pendingSwitchable)))
-                            } else {
-                                callback(.value(.setFutureStatus(status: .pendingNonswitchable)))
-                            }
-                            //todo check if starts in future
-                        } else {
-                            callback(.value(.setFutureStatus(status: .none)))
-                        }
+                        callback(.value(.setFutureStatus(status: data.currentMember.futureStatus)))
                     }
                     .onError { [weak self] error in
                         if ApplicationContext.shared.isDemoMode {
