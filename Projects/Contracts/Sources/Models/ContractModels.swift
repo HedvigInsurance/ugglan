@@ -96,6 +96,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
+
     public var showEditInfo: Bool {
         guard let terminationDate else {
             return true
@@ -104,7 +105,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var canTerminate: Bool {
-        return currentAgreement?.activeTo == nil
+        return terminationDate == nil
     }
 
     public var terminatedToday: Bool {
