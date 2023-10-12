@@ -40,48 +40,26 @@ public indirect enum ContractFilter: Equatable, Hashable {
     case none
 }
 
-extension ContractFilter {
-    func nonemptyFilter(state: ContractState) -> ContractFilter {
-        switch self {
-        case .active:
-            let activeContracts =
-                state
-                .contractBundles
-                .flatMap { $0.contracts }
-            return activeContracts.isEmpty ? self.emptyFilter : self
-        case .terminated:
-            let terminatedContracts =
-                state.contracts
-                .filter { contract in
-                    contract.currentAgreement?.status == .terminated
-                }
-            return terminatedContracts.isEmpty ? self.emptyFilter : self
-        case .none: return self
-        }
-    }
-}
-
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-    let filter: ContractFilter
     let disposeBag = DisposeBag()
+    let showTerminated: Bool
     public init(
-        filter: ContractFilter
+        showTerminated: Bool
     ) {
-        self.filter = filter
+        self.showTerminated = showTerminated
     }
 }
 
 extension Contracts: View {
     func fetch() {
         store.send(.fetchContracts)
-        store.send(.fetchContractBundles)
     }
 
     public var body: some View {
         hForm {
-            ContractTable(filter: filter)
+            ContractTable(showTerminated: showTerminated)
                 .padding(.top, 8)
         }
         .onReceive(pollTimer) { _ in
@@ -98,14 +76,12 @@ extension Contracts: View {
                 store,
                 send: {
                     ContractAction.fetch
-                },
-                endOn: .fetchContractBundlesDone,
-                .fetchContractsDone
+                }
             )
 
         }
         .hFormAttachToBottom {
-            if self.filter.displaysTerminatedContracts {
+            if showTerminated {
                 InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
                     .padding(16)
             }
@@ -122,19 +98,19 @@ public enum ContractsResult {
 
 extension Contracts {
     public static func journey<ResultJourney: JourneyPresentation>(
-        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none)),
+        showTerminated: Bool = false,
         @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
         openDetails: Bool = true
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Contracts(filter: filter)
+            rootView: Contracts(showTerminated: showTerminated)
         ) { action in
             if case let .openDetail(contractId, title) = action, openDetails {
                 ContractDetail(id: contractId, title: title).journey(resultJourney: resultJourney)
             } else if case .openTerminatedContracts = action {
                 Self.journey(
-                    filter: .terminated(ifEmpty: .none),
+                    showTerminated: true,
                     resultJourney: resultJourney,
                     openDetails: false
                 )
@@ -176,8 +152,8 @@ extension Contracts {
             }
         }
         .configureTitle(
-            filter.displaysActiveContracts
-                ? L10n.InsurancesTab.yourInsurances : L10n.InsurancesTab.cancelledInsurancesTitle
+            showTerminated
+                ? L10n.InsurancesTab.cancelledInsurancesTitle : L10n.InsurancesTab.yourInsurances
         )
         .configureContractsTabBarItem
     }

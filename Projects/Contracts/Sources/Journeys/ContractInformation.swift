@@ -27,35 +27,33 @@ struct ContractInformationView: View {
             if let contract {
                 changeAddressInfo(contract)
                 VStack(spacing: 0) {
-                    if let table = contract.currentAgreementsTable {
-                        hSection(table.mergedSections, id: \.title) { row in
+                    if let displayItems = contract.currentAgreement?.displayItems {
+                        hSection(displayItems, id: \.displayValue) { item in
                             hRow {
-                                hText(row.title)
+                                hText(item.displayTitle)
                             }
                             .noSpacing()
                             .withCustomAccessory({
                                 Spacer()
-                                hText(row.value)
+                                hText(item.displayValue)
                                     .foregroundColor(hTextColor.secondary)
                             })
                         }
                         .withoutHorizontalPadding
                         .padding(.bottom, 16)
-                    }
-
-                    hSection {
-                        VStack(spacing: 8) {
-                            if contract.showEditButton {
-                                hButton.LargeButton(type: .secondary) {
-                                    store.send(.contractEditInfo(id: id))
-                                } content: {
-                                    hText(L10n.contractEditInfoLabel)
+                        if contract.showEditInfo {
+                            hSection {
+                                VStack(spacing: 8) {
+                                    hButton.LargeButton(type: .secondary) {
+                                        store.send(.contractEditInfo(id: id))
+                                    } content: {
+                                        hText(L10n.contractEditInfoLabel)
+                                    }
                                 }
                             }
+                            .padding(.bottom, 16)
                         }
                     }
-                    .padding(.bottom, 16)
-
                 }
                 displayTerminationButton
             }
@@ -65,7 +63,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
-        if let date = contract.upcomingAgreementDate?.displayDateDotFormat {
+        if let date = contract.upcomingChangedAgreement?.activeFrom {
             hSection {
                 InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
                     .buttons([
@@ -92,14 +90,14 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if (contract?.currentAgreement?.activeTo) == nil {
+                if contract?.canTerminate ?? false {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,
                             .startTermination,
                             buttonAction: {
                                 terminationContractStore.send(
-                                    .startTermination(contractId: id, contractName: contract?.displayName ?? "")
+                                    .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
                                 )
                                 vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
                                     if case let .navigationAction(navigationAction) = action {

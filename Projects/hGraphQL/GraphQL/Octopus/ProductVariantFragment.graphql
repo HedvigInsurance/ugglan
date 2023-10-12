@@ -1,18 +1,18 @@
 fragment ProductVariantFragment on ProductVariant {
     perils {
-        colorCode
-        covered
-        description
-        exceptions
         id
-        info
         title
+        description
+        info
+        covered
+        exceptions
+        colorCode
     }
     typeOfContract
+    termsVersion
+    partner
     documents {
-        displayName
-        type
-        url
+        ...InsuranceDocumentFragment
     }
     displayName
     insurableLimits {
@@ -29,4 +29,23 @@ fragment ProductVariantFragment on ProductVariant {
         headline
         body
     }
+}
+
+fragment CrossSellFragment on Member {
+    crossSells {
+      id
+      title
+      description
+      about
+      imageUrl
+      blurHash
+      storeUrl
+      type
+    }
+}
+
+fragment InsuranceDocumentFragment on InsuranceDocument {
+    displayName
+    type
+    url
 }

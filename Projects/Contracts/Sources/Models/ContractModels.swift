@@ -3,20 +3,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct ActiveContractBundle: Codable, Equatable, Hashable {
-    public var contracts: [Contract]
-    public var id: String
-    public var movingFlowEmbarkId: String?
-
-    public init(
-        bundle: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
-    ) {
-        contracts = bundle.contracts.map { .init(contract: $0) }
-        movingFlowEmbarkId = bundle.angelStories.addressChangeV2
-        id = bundle.id
-    }
-}
-
 extension String {
     // converts a YYYY-MM-DD date-string to a Date
     var localDateToDate: Date? {
@@ -26,137 +12,165 @@ extension String {
     }
 }
 
+public struct ProductVariant: Codable, Hashable {
+    let termsVersion: String
+    let typeOfContract: String
+    let partner: String?
+    let perils: [Perils]
+    let insurableLimits: [InsurableLimits]
+    let documents: [InsuranceTerm]
+    let highlights: [Highlight]
+    let FAQ: [FAQ]?
+    let displayName: String
+
+    init(
+        termsVersion: String,
+        typeOfContract: String,
+        partner: String?,
+        perils: [Perils],
+        insurableLimits: [InsurableLimits],
+        documents: [InsuranceTerm],
+        highlights: [Highlight],
+        FAQ: [FAQ]?,
+        displayName: String
+    ) {
+        self.termsVersion = termsVersion
+        self.typeOfContract = typeOfContract
+        self.partner = partner
+        self.perils = perils
+        self.insurableLimits = insurableLimits
+        self.documents = documents
+        self.highlights = highlights
+        self.FAQ = FAQ
+        self.displayName = displayName
+    }
+
+    init(
+        data: OctopusGraphQL.ProductVariantFragment
+    ) {
+        self.displayName = data.displayName
+        self.termsVersion = data.termsVersion
+        self.typeOfContract = data.typeOfContract
+        self.partner = data.partner ?? ""
+        self.perils = data.perils.map({ .init(fragment: $0) })
+        self.insurableLimits = data.insurableLimits.map({ .init($0) })
+        self.documents = data.documents.map({ .init($0) })
+        self.highlights = data.highlights.map({ .init($0) })
+        self.FAQ = data.faq.map({ .init($0) })
+    }
+
+}
+
 public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
-        typeOfContract: TypeOfContract,
-        upcomingAgreementsTable: DetailAgreementsTable,
-        currentAgreementsTable: DetailAgreementsTable?,
-        logo: IconEnvelope?,
-        displayName: String,
-        switchedFromInsuranceProvider: String?,
-        upcomingRenewal: UpcomingRenewal?,
-        contractPerils: [Perils],
-        insurableLimits: [InsurableLimits],
-        termsAndConditions: TermsAndConditions,
-        currentAgreement: CurrentAgreement,
-        statusPills: [String],
-        detailPills: [String],
-        showsMovingFlowButton: Bool = false,
-        upcomingAgreementDate: Date? = nil,
-        terminationDate: Date? = nil
+        currentAgreement: Agreement,
+        exposureDisplayName: String,
+        externalInsuranceCancellation: ContractExternalInsuranceCancellation,
+        masterInceptionDate: String,
+        terminationDate: String?,
+        supportsAddressChange: Bool,
+        upcomingChangedAgreement: Agreement,
+        upcomingRenewal: ContractRenewal,
+        typeOfContract: TypeOfContract
     ) {
         self.id = id
-        self.typeOfContract = typeOfContract
-        self.upcomingAgreementsTable = upcomingAgreementsTable
-        self.currentAgreementsTable = currentAgreementsTable
-        self.logo = logo
-        self.displayName = displayName
-        self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
-        self.upcomingRenewal = upcomingRenewal
-        self.contractPerils = contractPerils
-        self.insurableLimits = insurableLimits
-        self.termsAndConditions = termsAndConditions
         self.currentAgreement = currentAgreement
-        self.statusPills = statusPills
-        self.detailPills = detailPills
-        self.showsMovingFlowButton = showsMovingFlowButton
-        self.upcomingAgreementDate = nil
+        self.exposureDisplayName = exposureDisplayName
+        self.externalInsuranceCancellation = externalInsuranceCancellation
+        self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
+        self.supportsAddressChange = supportsAddressChange
+        self.upcomingChangedAgreement = upcomingChangedAgreement
+        self.upcomingRenewal = upcomingRenewal
+        self.typeOfContract = typeOfContract
     }
 
     public let id: String
+    public let currentAgreement: Agreement?
+    public let exposureDisplayName: String
+    public let externalInsuranceCancellation: ContractExternalInsuranceCancellation?
+    public let masterInceptionDate: String?
+    public let terminationDate: String?
+    public let supportsAddressChange: Bool
+    public let upcomingChangedAgreement: Agreement?
+    public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
-    public let upcomingAgreementsTable: DetailAgreementsTable
-    public let currentAgreementsTable: DetailAgreementsTable?
-    public var pillowType: PillowType? {
-        if self.currentAgreement?.status == .terminated {
-            return nil
-        }
 
+    public var showEditInfo: Bool {
+        guard let terminationDate else {
+            return true
+        }
+        return false
+    }
+
+    public var canTerminate: Bool {
+        return terminationDate == nil
+    }
+
+    public var terminatedToday: Bool {
+        if terminationDate == Date().localDateString {
+            return true
+        }
+        return false
+    }
+    public var activeInFuture: Bool {
+        if let inceptionDate = masterInceptionDate?.localDateToDate,
+            inceptionDate.daysBetween(start: Date()) > 0
+        {
+            return true
+        }
+        return false
+    }
+    public var pillowType: PillowType? {
+        if let terminationDate = terminationDate?.localDateToDate {
+            let daysBetween = terminationDate.daysBetween(start: Date())
+            if daysBetween <= 0 {
+                return nil
+            }
+        }
         return self.typeOfContract.pillowType
     }
 
-    public let logo: IconEnvelope?
-    public let displayName: String
-    public let switchedFromInsuranceProvider: String?
-    public let upcomingRenewal: UpcomingRenewal?
-    public let contractPerils: [Perils]
-    public let insurableLimits: [InsurableLimits]
-    public let termsAndConditions: TermsAndConditions
-    public let currentAgreement: CurrentAgreement?
-    public let statusPills: [String]
-    public let detailPills: [String]
-    public let showsMovingFlowButton: Bool
-    public let upcomingAgreementDate: Date?
-    public let terminationDate: Date?
-
     init(
-        contract: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
+        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
     ) {
-        id = contract.id
-        typeOfContract = TypeOfContract.resolve(for: contract.typeOfContract)
-        upcomingAgreementsTable = .init(
-            fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
+        exposureDisplayName = pendingContract.exposureDisplayName
+        id = pendingContract.id
+        currentAgreement = .init(
+            premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
+            displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
         )
-        currentAgreementsTable = .init(
-            fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment
-        )
-        upcomingRenewal = .init(upcomingRenewal: contract.upcomingRenewal)
-        contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
-        insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
-        termsAndConditions = .init(
-            displayName: contract.termsAndConditions.displayName,
-            url: contract.termsAndConditions.url
-        )
-        currentAgreement = .init(currentAgreement: contract.currentAgreement)
-        displayName = contract.displayName
-        switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
-        statusPills = contract.statusPills
-        detailPills = contract.detailPills
-        if let logo = contract.logo {
-            self.logo = .init(fragment: logo.fragments.iconFragment)
-        } else {
-            self.logo = nil
-        }
-
-        showsMovingFlowButton = contract.supportsAddressChange
-        upcomingAgreementDate =
-            contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
-        terminationDate = contract.termination?.localDateToDate
+        externalInsuranceCancellation = nil
+        masterInceptionDate = nil
+        terminationDate = nil
+        supportsAddressChange = false
+        upcomingChangedAgreement = nil
+        upcomingRenewal = nil
+        typeOfContract = .unknown
     }
 
-    public init(
-        contract: GiraffeGraphQL.ContractsQuery.Data.Contract
+    init(
+        contract: OctopusGraphQL.ContractFragment
     ) {
         id = contract.id
-        typeOfContract = TypeOfContract.resolve(for: contract.typeOfContract)
-        upcomingAgreementsTable = .init(
-            fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
-        )
-        currentAgreementsTable = .init(fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment)
-        upcomingRenewal = nil
-        contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
-        insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
-        termsAndConditions = .init(
-            displayName: contract.termsAndConditions.displayName,
-            url: contract.termsAndConditions.url
-        )
-        currentAgreement = .init(currentAgreement: contract.currentAgreement)
-        displayName = contract.displayName
-        switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
-        statusPills = contract.statusPills
-        detailPills = contract.detailPills
-
-        if let logo = contract.logo {
-            self.logo = .init(fragment: logo.fragments.iconFragment)
+        currentAgreement =
+            .init(agreement: contract.currentAgreement.fragments.agreementFragment)
+        exposureDisplayName = contract.exposureDisplayName
+        if let cancellation = contract.externalInsuranceCancellation {
+            externalInsuranceCancellation = .init(
+                data: cancellation.fragments.contractExternalInsuranceCancellationFragment
+            )
         } else {
-            self.logo = nil
+            externalInsuranceCancellation = nil
         }
-
-        showsMovingFlowButton = false
-        upcomingAgreementDate = nil
-        terminationDate = nil
+        masterInceptionDate = contract.masterInceptionDate
+        terminationDate = contract.terminationDate
+        supportsAddressChange = contract.supportsAddressChange
+        upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
+        upcomingRenewal = .init(upcomingRenewal: contract.upcomingRenewal.fragments.contractRenewalFragment)
+        typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
     }
 
     public enum TypeOfContract: String, Codable {
@@ -202,13 +216,13 @@ public struct Contract: Codable, Hashable, Equatable {
         case dkTravelStudent = "DK_TRAVEL_STUDENT"
         case unknown = "UNKNOWN"
 
-        static func resolve(for typeOfContract: GiraffeGraphQL.TypeOfContract) -> Self {
-            if let concreteTypeOfContract = Self(rawValue: typeOfContract.rawValue) {
+        static func resolve(for typeOfContract: String) -> Self {
+            if let concreteTypeOfContract = Self(rawValue: typeOfContract) {
                 return concreteTypeOfContract
             }
 
             log.warn(
-                "Got an unknown type of contract \(typeOfContract.rawValue) that couldn't be resolved.",
+                "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
                 error: nil,
                 attributes: nil
             )
@@ -227,10 +241,6 @@ public struct Contract: Codable, Hashable, Equatable {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let isNotInTerminationProcess = terminationDate == nil
         return suitableType && isNotInTerminationProcess
-    }
-
-    public func getDetails() -> String {
-        detailPills.joined(separator: " · ")
     }
 }
 
@@ -320,6 +330,23 @@ extension Contract.TypeOfContract {
         case .unknown:
             return .unknown
         }
+    }
+}
+
+extension PillowType {
+    public enum PillowType: Codable {
+        case accident
+        case car
+        case cat
+        case dog
+        case home
+        case homeOwner
+        case pet
+        case rental
+        case student
+        case travel
+        case villa
+        case unknown
     }
 }
 
@@ -413,8 +440,8 @@ extension Contract {
     }
 }
 
-public struct UpcomingRenewal: Codable, Hashable {
-    public let renewalDate: String?
+public struct ContractRenewal: Codable, Hashable {
+    public let renewalDate: String
     public let draftCertificateUrl: String?
 
     init(
@@ -426,10 +453,182 @@ public struct UpcomingRenewal: Codable, Hashable {
     }
 
     init(
-        upcomingRenewal: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.UpcomingRenewal?
+        upcomingRenewal: OctopusGraphQL.ContractRenewalFragment
     ) {
-        renewalDate = upcomingRenewal?.renewalDate
-        draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
+        renewalDate = upcomingRenewal.renewalDate
+        draftCertificateUrl = upcomingRenewal.draftCertificateUrl
+    }
+}
+
+public struct Agreement: Codable, Hashable {
+    public init(
+        certificateUrl: String,
+        activeFrom: String,
+        activeTo: String,
+        premium: MonetaryAmount,
+        displayItems: [AgreementDisplayItem],
+        productVariant: ProductVariant
+    ) {
+        self.certificateUrl = certificateUrl
+        self.activeFrom = activeFrom
+        self.activeTo = activeTo
+        self.premium = premium
+        self.displayItems = displayItems
+        self.productVariant = productVariant
+    }
+
+    public let certificateUrl: String?
+    public let activeFrom: String?
+    public let activeTo: String?
+    public let premium: MonetaryAmount
+    public let displayItems: [AgreementDisplayItem]
+    public let productVariant: ProductVariant
+
+    init(
+        premium: MonetaryAmount,
+        displayItems: [AgreementDisplayItem],
+        productVariant: ProductVariant
+    ) {
+        self.premium = premium
+        self.displayItems = displayItems
+        self.productVariant = productVariant
+        self.certificateUrl = nil
+        self.activeFrom = nil
+        self.activeTo = nil
+    }
+
+    init?(
+        agreement: OctopusGraphQL.AgreementFragment?
+    ) {
+        guard let agreement = agreement else {
+            return nil
+        }
+        certificateUrl = agreement.certificateUrl
+        activeFrom = agreement.activeFrom
+        activeTo = agreement.activeTo
+        premium = .init(fragment: agreement.premium.fragments.moneyFragment)
+        displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
+        productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
+    }
+
+}
+
+public struct AgreementDisplayItem: Codable, Hashable {
+    let displayTitle: String
+    let displayValue: String
+
+    public init(
+        data: OctopusGraphQL.AgreementDisplayItemFragment
+    ) {
+        self.displayTitle = data.displayTitle
+        self.displayValue = data.displayValue
+    }
+}
+
+public struct ContractExternalInsuranceCancellation: Codable, Hashable {
+    let id: String
+    let bankSignering: BankSignering?
+    let externalInsurer: ExternalInsurer
+    let status: ContractExternalInsuranceCancellationStatus
+    let type: ContractExternalInsuranceCancellationType
+
+    public init(
+        id: String,
+        bankSignering: BankSignering?,
+        externalInsurer: ExternalInsurer,
+        status: ContractExternalInsuranceCancellationStatus,
+        type: ContractExternalInsuranceCancellationType
+    ) {
+        self.id = id
+        self.bankSignering = bankSignering
+        self.externalInsurer = externalInsurer
+        self.status = status
+        self.type = type
+    }
+
+    public init(
+        data: OctopusGraphQL.ContractExternalInsuranceCancellationFragment
+    ) {
+        self.id = data.id
+        if let bankSignering = data.bankSignering {
+            self.bankSignering = BankSignering(approvedByDate: bankSignering.approveByDate, url: bankSignering.url)
+        } else {
+            bankSignering = nil
+        }
+        self.externalInsurer = ExternalInsurer(
+            id: data.externalInsurer.id,
+            displayName: data.externalInsurer.displayName,
+            insurelyId: data.externalInsurer.insurelyId
+        )
+        self.status = ContractExternalInsuranceCancellationStatus.resolve(for: data.status)
+        self.type = ContractExternalInsuranceCancellationType.resolve(for: data.type)
+    }
+
+    public struct BankSignering: Codable, Hashable {
+        let approvedByDate: String
+        let url: String?
+
+        init(
+            approvedByDate: String,
+            url: String?
+        ) {
+            self.approvedByDate = approvedByDate
+            self.url = url
+        }
+    }
+
+    public struct ExternalInsurer: Codable, Hashable {
+        let id: String
+        let displayName: String
+        let insurelyId: String?
+
+        init(
+            id: String,
+            displayName: String,
+            insurelyId: String?
+        ) {
+            self.id = id
+            self.displayName = displayName
+            self.insurelyId = insurelyId
+        }
+    }
+
+    public enum ContractExternalInsuranceCancellationStatus: String, Codable {
+        case notInitiated = "NOT_INITIATED"
+        case initiated = "INITIATED"
+        case completed = "COMPLETED"
+        case unknown = "UNKNOWN"
+
+        static func resolve(for status: OctopusGraphQL.ContractExternalInsuranceCancellationStatus) -> Self {
+            if let concreteStatus = Self(rawValue: status.rawValue) {
+                return concreteStatus
+            }
+
+            log.warn(
+                "Got an unknown type of status \(status.rawValue) that couldn't be resolved.",
+                error: nil,
+                attributes: nil
+            )
+            return .unknown
+        }
+    }
+
+    public enum ContractExternalInsuranceCancellationType: String, Codable {
+        case bankSigned = "BANKSIGNERING"
+        case unknown = "UNKNOWN"
+
+        static func resolve(for type: OctopusGraphQL.ContractExternalInsuranceCancellationType) -> Self {
+            if let concreteType = Self(rawValue: type.rawValue) {
+                return concreteType
+            }
+
+            log.warn(
+                "Got an unknown type of status \(type.rawValue) that couldn't be resolved.",
+                error: nil,
+                attributes: nil
+            )
+            return .unknown
+        }
     }
 }
 
@@ -448,65 +647,4 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
     public let displayName: String
     public let url: String
-}
-
-public struct AngelStories: Codable {
-    public let addressChange: String
-}
-
-public struct CurrentAgreement: Codable, Hashable {
-    public init(
-        certificateUrl: String?,
-        activeFrom: String?,
-        activeTo: String?,
-        premium: MonetaryAmount,
-        status: ContractStatus?
-    ) {
-        self.certificateUrl = certificateUrl
-        self.activeFrom = activeFrom
-        self.activeTo = activeTo
-        self.premium = premium
-        self.status = status
-    }
-
-    public let certificateUrl: String?
-    public let activeFrom: String?
-    public let activeTo: String?
-    public let premium: MonetaryAmount
-    public let status: ContractStatus?
-
-    init?(
-        currentAgreement: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement?
-    ) {
-        guard let currentAgreement = currentAgreement else {
-            return nil
-        }
-
-        certificateUrl = currentAgreement.certificateUrl
-        activeFrom = currentAgreement.activeFrom
-        activeTo = currentAgreement.activeTo
-        premium = .init(fragment: currentAgreement.premium.fragments.monetaryAmountFragment)
-        status = .init(rawValue: currentAgreement.status.rawValue)
-    }
-
-    init?(
-        currentAgreement: GiraffeGraphQL.ContractsQuery.Data.Contract.CurrentAgreement?
-    ) {
-        guard let currentAgreement = currentAgreement else {
-            return nil
-        }
-
-        certificateUrl = currentAgreement.certificateUrl
-        activeFrom = currentAgreement.activeFrom
-        activeTo = currentAgreement.activeTo
-        premium = .init(fragment: currentAgreement.premium.fragments.monetaryAmountFragment)
-        status = .init(rawValue: currentAgreement.status.rawValue)
-    }
-}
-
-public enum ContractStatus: String, Codable {
-    case active = "ACTIVE"
-    case activeInFuture = "ACTIVE_IN_FUTURE"
-    case terminated = "TERMINATED"
-    case pending = "PENDING"
 }

@@ -21,19 +21,18 @@ struct FutureSectionInfoView: View {
             case .activeInFuture(let inceptionDate):
                 InfoCard(
                     text:
-                        "Your insurance will be activated on \(inceptionDate). For now, just sit back and relax. If you have any questions, reach out in the chat.",
+                        L10n.HomeTab.activeInFutureInfo(inceptionDate),
                     type: .info
                 )
             case .pendingSwitchable:
                 InfoCard(
-                    text:
-                        "Right now we’re contacting your old insurer to change your insurance to Hedvig. For now, just sit back and relax. If you have any questions, reach out in the chat.",
+                    text: L10n.HomeTab.pendingSwitchableInfo,
                     type: .info
                 )
             case .pendingNonswitchable:
                 InfoCard(
                     text:
-                        "Quick reminder: have you cancelled your old insurance yet? If you have any questions, reach out in the chat.",
+                        L10n.HomeTab.pendingNonswitchableInfo,
                     type: .info
                 )
             case .none:

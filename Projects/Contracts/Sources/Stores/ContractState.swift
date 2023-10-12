@@ -11,14 +11,21 @@ public struct ContractState: StateProtocol {
     public init() {}
 
     @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
-    public var contractBundles: [ActiveContractBundle] = []
-    public var contracts: [Contract] = []
+    public var activeContracts: [Contract] = []
+    public var terminatedContracts: [Contract] = []
+    public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
 
     func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap({ $0.contracts })
+        let activeContracts = activeContracts.compactMap({ $0 })
+        let terminatedContracts = terminatedContracts.compactMap({ $0 })
+        let pendingContracts = pendingContracts.compactMap({ $0 })
+        let allContracts = activeContracts + terminatedContracts + pendingContracts
+
+        if let inBundleContract =
+            allContracts
             .first(where: { contract in
                 contract.id == id
             })
@@ -26,11 +33,7 @@ public struct ContractState: StateProtocol {
             return inBundleContract
         }
 
-        return
-            contracts
-            .first { contract in
-                contract.id == id
-            }
+        return nil
     }
 }
 
@@ -40,11 +43,11 @@ extension ContractState {
     }
 
     public var hasActiveContracts: Bool {
-        !(contractBundles.flatMap { $0.contracts }.isEmpty)
+        !(activeContracts.compactMap { $0 }.isEmpty)
     }
 
     public var isTravelInsuranceIncluded: Bool {
-        return contractBundles.flatMap({ $0.contracts }).contains(where: { $0.hasTravelInsurance })
+        return activeContracts.compactMap({ $0 }).contains(where: { $0.hasTravelInsurance })
             && hAnalyticsExperiment.travelInsurance
     }
 }
