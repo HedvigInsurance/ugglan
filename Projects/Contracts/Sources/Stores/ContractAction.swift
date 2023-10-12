@@ -20,7 +20,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
     case fetch
-
+    case fetchCompleted
     // Fetch contracts for terminated
     case fetchCrossSale
     case fetchContracts
