@@ -116,18 +116,18 @@ struct RenewalCardView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return RenewalCardView()
-            .onAppear {
-                let state = MemberStateData(state: .active, name: "NAME")
-                let girafeContract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                    displayName: "CONTRACT NAME",
-                    status: .makeDeletedStatus(),
-                    upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal(
-                        renewalDate: "2023-10-10",
-                        draftCertificateUrl: "https://www.google.com"
-                    )
-                )
-                let contract = Home.Contract(contract: girafeContract)
-                store.send(.setMemberContractState(state: state, contracts: [contract]))
-            }
+        //            .onAppear {
+        //                let state = MemberStateData(state: .active, name: "NAME")
+        //                let girafeContract = GiraffeGraphQL.HomeQuery.Data.Contract(
+        //                    displayName: "CONTRACT NAME",
+        //                    status: .makeDeletedStatus(),
+        //                    upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal(
+        //                        renewalDate: "2023-10-10",
+        //                        draftCertificateUrl: "https://www.google.com"
+        //                    )
+        //                )
+        //                let contract = Home.Contract(contract: girafeContract)
+        //                store.send(.setMemberContractState(state: state, contracts: [contract]))
+        //            }
     }
 }

@@ -47,22 +47,22 @@ struct ActiveInFutureView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
             FutureSectionInfoView(memberName: "NAME")
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
-                    )
-                    store.send(
-                        .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
-                        )
-                    )
-                    store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-                }
+            //                .onAppear {
+            //                    let store: HomeStore = globalPresentableStoreContainer.get()
+            //                    let contract = OctopusGraphQL.HomeQuery.Data.Contract(
+            //                        displayName: "DISPLAY NAME",
+            //                        switchedFromInsuranceProvider: nil,
+            //                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
+            //                        upcomingRenewal: nil
+            //                    )
+            //                    store.send(
+            //                        .setMemberContractState(
+            //                            state: .init(state: .future, name: "NAME"),
+            //                            contracts: [.init(contract: contract)]
+            //                        )
+            //                    )
+            //                    store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+            //                }
         }
 
     }
@@ -73,22 +73,22 @@ struct PendingSwitchableView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
             FutureSectionInfoView(memberName: "NAME")
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
-                    )
-                    store.send(
-                        .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
-                        )
-                    )
-                    store.send(.setFutureStatus(status: .pendingSwitchable))
-                }
+            //                .onAppear {
+            //                    let store: HomeStore = globalPresentableStoreContainer.get()
+            //                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+            //                        displayName: "DISPLAY NAME",
+            //                        switchedFromInsuranceProvider: nil,
+            //                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
+            //                        upcomingRenewal: nil
+            //                    )
+            //                    store.send(
+            //                        .setMemberContractState(
+            //                            state: .init(state: .future, name: "NAME"),
+            //                            contracts: [.init(contract: contract)]
+            //                        )
+            //                    )
+            //                    store.send(.setFutureStatus(status: .pendingSwitchable))
+            //                }
         }
 
     }
@@ -99,22 +99,22 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
             FutureSectionInfoView(memberName: "NAME")
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
-                    )
-                    store.send(
-                        .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
-                        )
-                    )
-                    store.send(.setFutureStatus(status: .pendingNonswitchable))
-                }
+            //                .onAppear {
+            //                    let store: HomeStore = globalPresentableStoreContainer.get()
+            //                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
+            //                        displayName: "DISPLAY NAME",
+            //                        switchedFromInsuranceProvider: nil,
+            //                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
+            //                        upcomingRenewal: nil
+            //                    )
+            //                    store.send(
+            //                        .setMemberContractState(
+            //                            state: .init(state: .future, name: "NAME"),
+            //                            contracts: [.init(contract: contract)]
+            //                        )
+            //                    )
+            //                    store.send(.setFutureStatus(status: .pendingNonswitchable))
+            //                }
         }
 
     }

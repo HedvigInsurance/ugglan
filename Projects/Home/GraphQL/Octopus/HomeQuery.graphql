@@ -5,6 +5,7 @@ query Home {
         ...ContractFragment
     }
     pendingContracts {
+      externalInsuranceCancellationHandledByHedvig
       displayItems {
         ...AgreementDisplayItemFragment
       }

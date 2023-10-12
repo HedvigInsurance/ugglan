@@ -16,11 +16,12 @@ public struct UpcomingRenewal: Codable, Equatable {
     let renewalDate: String?
     let draftCertificateUrl: String?
 
-    public init(
-        upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal?
+    public init?(
+        upcomingRenewal: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.UpcomingRenewal?
     ) {
-        self.renewalDate = upcomingRenewal?.renewalDate
-        self.draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
+        guard let upcomingRenewal else { return nil }
+        self.renewalDate = upcomingRenewal.renewalDate
+        self.draftCertificateUrl = upcomingRenewal.draftCertificateUrl
     }
 }
 
@@ -29,12 +30,10 @@ public struct Contract: Codable, Equatable {
     var displayName: String
 
     public init(
-        contract: GiraffeGraphQL.HomeQuery.Data.Contract
+        contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
     ) {
-        if contract.upcomingRenewal != nil {
-            upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
-        }
-        displayName = contract.displayName
+        upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
+        displayName = contract.exposureDisplayName
     }
 }
 
@@ -100,7 +99,7 @@ public enum HomeAction: ActionProtocol {
     case setImportantMessage(message: ImportantMessage)
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
-    case fetchFutureStatus
+    //    case fetchFutureStatus
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
@@ -151,49 +150,48 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 }
                 .valueThenEndSignal
         case .fetchMemberState:
-            return
-                giraffe
-                .client
-                .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .map { data in
-                    .setMemberContractState(
-                        state: .init(state: data.homeState, name: data.member.firstName),
-                        contracts: data.contracts.map { Contract(contract: $0) }
-                    )
-                }
-                .valueThenEndSignal
-        case .fetchFutureStatus:
-            return
-                giraffe
-                .client
-                .fetch(
-                    query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
-                )
-                .join(with: giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery()))
-                .map { insuranceProviderData, homeData in
-                    if let contract = homeData.contracts.first(where: {
-                        $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil
-                    }) {
-                        if let activeInFutureStatus = contract.status.asActiveInFutureStatus {
-                            return .setFutureStatus(
-                                status: .activeInFuture(inceptionDate: activeInFutureStatus.futureInception ?? "")
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag +=
+                    self.octopus
+                    .client
+                    .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                    .onValue { data in
+                        let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
+                        callback(
+                            .value(
+                                .setMemberContractState(
+                                    state: .init(
+                                        state: data.currentMember.homeState,
+                                        name: data.currentMember.firstName
+                                    ),
+                                    contracts: contracts
+                                )
                             )
-                        } else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
-                            let insuranceProvider = insuranceProviderData.insuranceProviders.first(where: {
-                                provider -> Bool in provider.id == switchedFromInsuranceProvider
-                            }), insuranceProvider.switchable
-                        {
-                            return .setFutureStatus(status: .pendingSwitchable)
+                        )
+                        if let pending = data.currentMember.pendingContracts.first(where: {
+                            $0.externalInsuranceCancellationHandledByHedvig
+                        })?
+                        .externalInsuranceCancellationHandledByHedvig, contracts.count == 0 {
+                            if pending {
+                                callback(.value(.setFutureStatus(status: .pendingSwitchable)))
+                            } else {
+                                callback(.value(.setFutureStatus(status: .pendingNonswitchable)))
+                            }
+                            //todo check if starts in future
                         } else {
-                            return .setFutureStatus(status: .pendingNonswitchable)
+                            callback(.value(.setFutureStatus(status: .none)))
                         }
-                    } else {
-                        return .setFutureStatus(status: .none)
                     }
-                }
-                .valueThenEndSignal
+                    .onError { [weak self] error in
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setCommonClaims(commonClaims: [])))
+                        } else {
+                            self?.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                        }
+                    }
+                return disposeBag
+            }
         case .fetchCommonClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -284,7 +282,7 @@ public enum MemberContractState: String, Codable, Equatable {
     case loading
 }
 
-extension GiraffeGraphQL.HomeQuery.Data {
+extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future
@@ -296,15 +294,11 @@ extension GiraffeGraphQL.HomeQuery.Data {
     }
 
     private var isTerminated: Bool {
-        contracts.allSatisfy({ (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
-        })
+        activeContracts.count == 0 && pendingContracts.count == 0
     }
 
     private var isFuture: Bool {
-        contracts.allSatisfy { (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
-        }
+        pendingContracts.count > 0 && activeContracts.count == 0
     }
 }
 
