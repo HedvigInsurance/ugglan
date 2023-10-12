@@ -105,7 +105,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var canTerminate: Bool {
-        return currentAgreement?.activeTo == nil
+        return terminationDate == nil
     }
 
     public var terminatedToday: Bool {
