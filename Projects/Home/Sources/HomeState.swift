@@ -298,7 +298,6 @@ extension GiraffeGraphQL.HomeQuery.Data {
     private var isTerminated: Bool {
         contracts.allSatisfy({ (contract) -> Bool in
             contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
-                || contract.status.asTerminatedTodayStatus != nil
         })
     }
 

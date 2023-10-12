@@ -100,7 +100,7 @@ extension EmbarkNumberAction: Viewable {
                 if let unit = self.data.unit {
                     let unitLabel = MultilineLabel(
                         value: unit,
-                        style: TextStyle.brand(.body(color: .primary)).centerAligned
+                        style: UIColor.brandStyle(.primaryText()).centerAligned
                     )
                     bag += boxStack.addArranged(unitLabel)
                 }
@@ -113,8 +113,8 @@ extension EmbarkNumberAction: Viewable {
                 let button = Button(
                     title: self.data.link.fragments.embarkLinkFragment.label,
                     type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                        backgroundColor: .brand(.secondaryBackground(true)),
+                        textColor: .brand(.primaryText())
                     )
                 )
 

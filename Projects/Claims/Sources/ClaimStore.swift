@@ -32,22 +32,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         ),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag += combineLatest(octopusFetch.resultSignal, giraffeFetch.resultSignal)
-                    .onValue { octopusResult, giraffeResult in
-                        if let octopusResults = octopusResult.value, let giraffeResults = giraffeResult.value {
-                            let claimData = ClaimData(cardData: giraffeResults, octopusData: octopusResults)
-                            callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
-                        } else {
-                            if ApplicationContext.shared.isDemoMode {
-                                callback(.value(.setLoadingState(action: action, state: nil)))
-                            } else {
-                                callback(
-                                    .value(
-                                        .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                                    )
-                                )
-                            }
-                        }
+                disposeBag +=
+                    giraffeFetch
+                    .onValue { value in
+                        let claimData = ClaimData(cardData: value)
+                        callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
+                    }
+                    .onError { error in
+                        callback(
+                            .value(
+                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
+                            )
+                        )
                     }
                 return disposeBag
             }

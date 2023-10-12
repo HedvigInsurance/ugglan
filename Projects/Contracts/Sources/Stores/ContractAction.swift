@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import TerminateContracts
 import hCore
+import hCoreUI
 import hGraphQL
 
 public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
@@ -20,15 +21,14 @@ public enum ContractAction: ActionProtocol, Hashable {
     case fetch
 
     // Fetch contracts for terminated
-    case fetchContractBundles
-    case fetchContractBundlesDone
     case fetchCrossSale
     case fetchContracts
-    case fetchContractsDone
 
-    case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setActiveContracts(contracts: [Contract])
+    case setTerminatedContracts(contracts: [Contract])
+    case setPendingContracts(contracts: [Contract])
+
     case setCrossSells(crossSells: [CrossSell])
-    case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)

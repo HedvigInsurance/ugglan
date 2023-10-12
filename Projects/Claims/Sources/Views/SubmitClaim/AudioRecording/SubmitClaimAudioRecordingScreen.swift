@@ -55,12 +55,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         question in
                         HStack {
                             hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                         .padding(16)
                         .background(
                             Squircle.default()
-                                .fill(hFillColorNew.opaqueOne)
+                                .fill(hFillColor.opaqueOne)
                         )
                         .padding(.vertical, 12)
                         .padding(.leading, 16)
@@ -74,12 +74,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         question in
                         HStack {
                             hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                         .padding(16)
                         .background(
                             Squircle.default()
-                                .fill(hFillColorNew.opaqueOne)
+                                .fill(hFillColor.opaqueOne)
                         )
                         .padding(.vertical, 12)
                         .padding(.leading, 16)
@@ -111,12 +111,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         question in
                         HStack {
                             hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                         .padding(16)
                         .background(
                             Squircle.default()
-                                .fill(hFillColorNew.opaqueOne)
+                                .fill(hFillColor.opaqueOne)
                         )
                         .padding(.vertical, 12)
                         .padding(.leading, 16)
@@ -130,12 +130,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         question in
                         HStack {
                             hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                         .padding(16)
                         .background(
                             Squircle.default()
-                                .fill(hFillColorNew.opaqueOne)
+                                .fill(hFillColor.opaqueOne)
                         )
                         .padding(.vertical, 12)
                         .padding(.leading, 16)
@@ -214,12 +214,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                         }
                                     } content: {
                                         hText(L10n.claimsUseTextInstead, style: .body)
-                                            .foregroundColor(hTextColorNew.primary)
+                                            .foregroundColor(hTextColor.primary)
                                     }
 
                                 } else {
                                     hText(L10n.claimsStartRecordingLabel, style: .body)
-                                        .foregroundColor(hTextColorNew.primary)
+                                        .foregroundColor(hTextColor.primary)
 
                                 }
                             }
@@ -227,7 +227,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             let minutesToString = String(format: "%02d", minutes)
                             let secondsToString = String(format: "%02d", seconds)
                             hText("\(minutesToString):\(secondsToString)", style: .body)
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                                 .onReceive(timer) { time in
                                     if ((seconds % 59) == 0) && seconds != 0 {
                                         minutes += 1
@@ -341,7 +341,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             self.text = inputText.wrappedValue
             self.textColor = UIColor.black
         }
-        self.backgroundColor = UIColor(hFillColorNew.opaqueOne.colorFor(.light, .base).color)
+        self.backgroundColor = UIColor(hFillColor.opaqueOne.colorFor(.light, .base).color)
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         let doneButton = UIBarButtonItem(
             barButtonSystemItem: .done,

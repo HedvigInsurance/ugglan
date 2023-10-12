@@ -49,7 +49,7 @@ extension MultiActionAddObjectRow: Reusable {
         stackView.addArrangedSubview(imageView)
         imageView.tintColor = .brand(.primaryText())
 
-        let title = UILabel(value: "", style: .brand(.body(color: .primary)))
+        let title = UILabel(value: "", style: UIColor.brandStyle(.primaryText()))
         stackView.addArrangedSubview(title)
 
         return (

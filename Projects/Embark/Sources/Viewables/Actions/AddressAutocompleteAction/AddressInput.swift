@@ -72,7 +72,7 @@ extension AddressInput: Viewable {
 
         let postalCodeLabel = UILabel(
             value: "",
-            style: .brand(.subHeadline(color: .secondary)).centerAligned
+            style: UIColor.brandStyle(.secondaryText).centerAligned
         )
         boxStack.addArrangedSubview(postalCodeLabel)
         postalCodeLabel.animationSafeIsHidden = true

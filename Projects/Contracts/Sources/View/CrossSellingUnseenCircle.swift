@@ -16,7 +16,7 @@ struct CrossSellingUnseenCircle: View {
         ) { hasUnseenCrossSell, setHasSeenCrossSells in
             if hasUnseenCrossSell {
                 Circle()
-                    .fill(hTintColor.red)
+                    .fill(hSignalColor.redElement)
                     .frame(width: 8, height: 8)
                     .onDisappear {
                         setHasSeenCrossSells(true)

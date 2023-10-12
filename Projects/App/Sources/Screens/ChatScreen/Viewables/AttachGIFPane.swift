@@ -56,7 +56,7 @@ extension AttachGIFPane: Viewable {
         let infoText = MultilineLabel(
             styledText: .init(
                 text: L10n.labelSearchGif,
-                style: TextStyle.brand(.body(color: .primary)).centerAligned
+                style: UIColor.brandStyle(.primaryText()).centerAligned
             )
         )
         let searchBar = TextView(placeholder: L10n.searchBarGif)

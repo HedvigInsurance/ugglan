@@ -33,7 +33,7 @@ extension ChatTextView: Viewable {
             if let message = self.chatState.currentMessageSignal.value {
                 switch message.responseType {
                 case .text: break
-                case .none, .singleSelect, .audio: bag += Signal(after: 0).feedback(type: .error)
+                case .none, .singleSelect: bag += Signal(after: 0).feedback(type: .error)
                 }
             }
         }

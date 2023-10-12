@@ -19,7 +19,8 @@ private struct StatusPill: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .background(hTextColorNew.tertiaryTranslucent)
+        .foregroundColor(hTextColor.primary).colorScheme(.dark)
+        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
         .cornerRadius(8)
     }
 }
@@ -52,38 +53,49 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     )
             }
         } else {
-            hTextColorNew.secondary
+            hColorScheme(
+                light: hTextColor.secondary,
+                dark: hGrayscaleColor.greyScale900
+            )
         }
     }
 
     @ViewBuilder var logo: some View {
-        if let logo = contract.logo {
-            RemoteVectorIconView(icon: logo, backgroundFetch: true)
-                .frame(width: 36, height: 36)
-        } else {
-            // Fallback to Hedvig logo if no logo
-            Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
-                .resizable()
-                .frame(width: 24, height: 24)
-        }
+        Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hTextColor.primary)
+            .colorScheme(.dark)
     }
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                ForEach(contract.statusPills, id: \.self) { pill in
-                    StatusPill(text: pill).padding(.trailing, 4)
+                if let terminationDate = contract.terminationDate {
+                    if contract.terminatedToday {
+                        StatusPill(text: L10n.contractStatusTerminatedToday).padding(.trailing, 4)
+                    } else {
+                        StatusPill(text: L10n.contractStatusToBeTerminated(terminationDate)).padding(.trailing, 4)
+                    }
+                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
+                    StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
+                } else if contract.activeInFuture {
+                    StatusPill(text: L10n.contractStatusActiveInFuture(contract.masterInceptionDate ?? ""))
+                        .padding(.trailing, 4)
                 }
                 Spacer()
                 logo
             }
             Spacer()
             HStack {
-                hText(contract.displayName)
+                hText(contract.currentAgreement!.productVariant.displayName)
+                    .foregroundColor(hTextColor.primary)
+                    .colorScheme(.dark)
                 Spacer()
             }
-            hText(contract.getDetails())
-                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700.inverted)
+            hText(contract.exposureDisplayName)
+                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700)
+                .colorScheme(.dark)
         }
         .padding(16)
         .frame(minHeight: 200)
@@ -91,11 +103,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .clipShape(Squircle.default())
-        .overlay(
-            Squircle.default(lineWidth: .hairlineWidth)
-                .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
-        )
-        .foregroundColor(hTextColorNew.negative)
+        .hShadow()
         .contentShape(Rectangle())
     }
 }
@@ -115,7 +123,12 @@ struct ContractRow: View {
         ) { contract in
             if let contract = contract {
                 SwiftUI.Button {
-                    store.send(.openDetail(contractId: contract.id, title: contract.displayName))
+                    store.send(
+                        .openDetail(
+                            contractId: contract.id,
+                            title: contract.currentAgreement?.productVariant.displayName ?? ""
+                        )
+                    )
                 } label: {
                     EmptyView()
                 }
@@ -145,37 +158,69 @@ struct ContractRow_Previews: PreviewProvider {
         .onAppear {
             let store: ContractStore = globalPresentableStoreContainer.get()
             let contract = Contract(
-                id: "2",
-                typeOfContract: .noHomeContentOwn,
-                upcomingAgreementsTable: DetailAgreementsTable(
-                    sections: [
-                        DetailAgreementsTable.Section(
-                            title: "TITLE Details",
-                            rows: [.init(title: "Title 1", subtitle: "Subtitle 1", value: "Value 1")]
-                        )
-                    ],
-                    title: "Section title"
+                id: "1",
+                currentAgreement:
+                    Agreement(
+                        premium: MonetaryAmount(amount: 0, currency: ""),
+                        displayItems: [],
+                        productVariant:
+                            ProductVariant(
+                                termsVersion: "",
+                                typeOfContract: "",
+                                partner: nil,
+                                perils: [],
+                                insurableLimits: [],
+                                documents: [],
+                                highlights: [],
+                                FAQ: nil,
+                                displayName: ""
+                            )
+                    ),
+                exposureDisplayName: "",
+                externalInsuranceCancellation: ContractExternalInsuranceCancellation(
+                    id: "",
+                    bankSignering:
+                        ContractExternalInsuranceCancellation.BankSignering(
+                            approvedByDate: "",
+                            url: ""
+                        ),
+                    externalInsurer: ContractExternalInsuranceCancellation.ExternalInsurer(
+                        id: "",
+                        displayName: "",
+                        insurelyId: ""
+                    ),
+                    status: .completed,
+                    type: .bankSigned
                 ),
-                currentAgreementsTable: nil,
-                logo: nil,
-                displayName: "Car Insurance",
-                switchedFromInsuranceProvider: "Provider",
-                upcomingRenewal: nil,
-                contractPerils: [],
-                insurableLimits: [],
-                termsAndConditions: TermsAndConditions(displayName: "Terms", url: "URL"),
-                currentAgreement: CurrentAgreement.init(
-                    certificateUrl: "URL",
-                    activeFrom: "Active from",
-                    activeTo: "Active to",
-                    premium: .sek(10),
-                    status: .terminated
-                ),
-                statusPills: ["Activates 20.03.2024."],
-                detailPills: ["BELLMAN 19A", "Ba", "asdas", "asdasdasasdad", "1232", "SDASDASDS", "asdasd"]
+                masterInceptionDate: "",
+                terminationDate: "",
+                supportsAddressChange: true,
+                upcomingChangedAgreement:
+                    Agreement(
+                        premium: MonetaryAmount(amount: 0, currency: ""),
+                        displayItems: [],
+                        productVariant:
+                            ProductVariant(
+                                termsVersion: "",
+                                typeOfContract: "",
+                                partner: nil,
+                                perils: [],
+                                insurableLimits: [],
+                                documents: [],
+                                highlights: [],
+                                FAQ: nil,
+                                displayName: ""
+                            )
+                    ),
+                upcomingRenewal:
+                    ContractRenewal(
+                        renewalDate: "",
+                        draftCertificateUrl: ""
+                    ),
+                typeOfContract: .seHouse
             )
             let contracts = [contract]
-            store.send(.setContracts(contracts: contracts))
+            store.send(.setActiveContracts(contracts: contracts))
         }
     }
 }

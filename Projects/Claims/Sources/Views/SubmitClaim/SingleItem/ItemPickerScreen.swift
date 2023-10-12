@@ -23,14 +23,14 @@ public struct ItemPickerScreen<T>: View {
                     hSection {
                         hRow {
                             hText(item.displayName, style: .title3)
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                         }
                         .withChevronAccessory
                         .verticalPadding(9)
                         .onTap {
                             onSelected(item.object)
                         }
-                        .foregroundColor(hTextColorNew.tertiary)
+                        .foregroundColor(hTextColor.tertiary)
                     }
                 }
             }

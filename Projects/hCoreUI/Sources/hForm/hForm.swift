@@ -40,23 +40,8 @@ public struct hForm<Content: View>: View {
                 getScrollView()
             }
             if mergeBottomViewWithContent {
-                bottomAttachedView
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onReceive(Just(geo.size.height)) { height in
-                                    if bottomAttachedViewHeight == 0 {
-                                        self.bottomAttachedViewHeight = height
-                                    } else {
-                                        withAnimation {
-                                            self.bottomAttachedViewHeight = height
-                                            recalculateHeight()
-                                        }
-                                    }
-                                }
-                        }
-                    )
-                    .frame(maxHeight: .infinity, alignment: .bottom)
+                Color.clear
+                    .frame(maxHeight: bottomAttachedViewHeight, alignment: .bottom)
                     .opacity(0)
             } else {
                 BackgroundBlurView()
@@ -126,6 +111,21 @@ public struct hForm<Content: View>: View {
                 if mergeBottomViewWithContent {
                     bottomAttachedView
                         .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onReceive(Just(geo.size.height)) { height in
+                                        if bottomAttachedViewHeight == 0 {
+                                            self.bottomAttachedViewHeight = height
+                                        } else {
+                                            withAnimation {
+                                                self.bottomAttachedViewHeight = height
+                                                recalculateHeight()
+                                            }
+                                        }
+                                    }
+                            }
+                        )
                 }
             }
             .frame(maxWidth: .infinity)
@@ -172,12 +172,12 @@ public struct hForm<Content: View>: View {
 
     @hColorBuilder
     static func returnTintColor() -> some hColor {
-        hSignalColorNew.greenFill
+        hSignalColor.greenFill
     }
 
     func recalculateHeight() {
         let maxContentHeight =
-            scrollViewHeight - bottomAttachedViewHeight - (UIApplication.shared.safeArea?.bottom ?? 0)
+            scrollViewHeight - bottomAttachedViewHeight
         if contentHeight <= maxContentHeight {
             self.additionalSpaceFromTop = {
                 switch contentPosition {
@@ -190,7 +190,7 @@ public struct hForm<Content: View>: View {
             additionalSpaceFromTop = 0
         }
         if mergeBottomWithContentIfNeeded {
-            let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight - 16 < 0
+            let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight < 0
             scrollView?.bounces = shouldMerge
             mergeBottomViewWithContent = shouldMerge
         }
@@ -340,7 +340,7 @@ extension View {
 struct BackgroundView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brandNew(.primaryBackground())
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
     func makeUIView(context: Context) -> some UIView {

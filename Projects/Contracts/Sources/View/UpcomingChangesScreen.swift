@@ -6,25 +6,30 @@ import hGraphQL
 
 struct UpcomingChangesScreen: View {
     let updateDate: String
-    let upcomingAgreementsTable: DetailAgreementsTable
+    let upcomingAgreement: Agreement?
     @PresentableStore var store: ContractStore
 
-    fileprivate init(updateDate: String, upcomingAgreementsTable: DetailAgreementsTable) {
+    fileprivate init(
+        updateDate: String,
+        upcomingAgreement: Agreement?
+    ) {
         self.updateDate = updateDate
-        self.upcomingAgreementsTable = upcomingAgreementsTable
+        self.upcomingAgreement = upcomingAgreement
     }
     var body: some View {
         hForm {
-            hSection(upcomingAgreementsTable.sections.first?.rows ?? [], id: \.title) { item in
-                hRow {
-                    HStack {
-                        hText(item.title)
-                        Spacer()
-                        hText(item.value).foregroundColor(hLabelColor.secondary)
+            if let upcomingAgreement {
+                hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
+                    hRow {
+                        HStack {
+                            hText(item.displayTitle)
+                            Spacer()
+                            hText(item.displayValue).foregroundColor(hTextColor.secondary)
+                        }
                     }
                 }
+                .withoutHorizontalPadding
             }
-            .withoutHorizontalPadding
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
@@ -59,9 +64,21 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
     static var previews: some View {
         UpcomingChangesScreen(
             updateDate: "DATE",
-            upcomingAgreementsTable: .init(
-                sections: [.init(title: "TITLE", rows: [.init(title: "TITLE", subtitle: nil, value: "VALUE")])],
-                title: "TITLE MORE"
+            upcomingAgreement: .init(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant:
+                    ProductVariant(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: "",
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        highlights: [],
+                        FAQ: [],
+                        displayName: ""
+                    )
             )
         )
     }
@@ -72,8 +89,8 @@ extension UpcomingChangesScreen {
         return HostingJourney(
             ContractStore.self,
             rootView: UpcomingChangesScreen(
-                updateDate: contract.upcomingAgreementDate?.displayDateDotFormat ?? "",
-                upcomingAgreementsTable: contract.upcomingAgreementsTable
+                updateDate: contract.upcomingChangedAgreement?.activeFrom ?? "",
+                upcomingAgreement: contract.upcomingChangedAgreement
             ),
             style: .detented(.large),
             options: [.largeNavigationBar]

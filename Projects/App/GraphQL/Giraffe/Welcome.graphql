@@ -1,9 +1,0 @@
-query Welcome($locale: Locale!) {
-    welcome(platform: iOS, locale: $locale) {
-        illustration {
-            ...IconFragment
-        }
-        title
-        paragraph
-    }
-}

@@ -23,9 +23,9 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder func background(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
-            hOverlayColor.pressed.opacity(0.5)
+            hTextColor.tertiaryTranslucent
         } else {
-            hBackgroundColor.tertiary
+            hBackgroundColor.primary
         }
     }
 
@@ -57,7 +57,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
-                                .foregroundColor(hTextColorNew.tertiary)
+                                .foregroundColor(hTextColor.tertiary)
                             hText(item, style: .footnote)
                         }
                     }
@@ -109,30 +109,22 @@ public struct PerilCollection: View {
         }
     }
 }
+
 struct PerilCollection_Previews: PreviewProvider {
     static var previews: some View {
         let perils: [Perils] =
             [
                 .init(
                     fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
-                        id: "1",
-                        info: "info",
-                        title: "title"
-                    )
-                ),
-                .init(
-                    fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
                         id: "2",
+                        title: "title",
+                        description: "DESC",
                         info: "info",
-                        title: "title2"
+                        covered: [],
+                        exceptions: [],
+                        colorCode: "color"
                     )
-                ),
+                )
             ]
         PerilCollection(
             perils: perils

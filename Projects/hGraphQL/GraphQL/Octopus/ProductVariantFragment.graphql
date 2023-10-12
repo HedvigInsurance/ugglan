@@ -1,0 +1,51 @@
+fragment ProductVariantFragment on ProductVariant {
+    perils {
+        id
+        title
+        description
+        info
+        covered
+        exceptions
+        colorCode
+    }
+    typeOfContract
+    termsVersion
+    partner
+    documents {
+        ...InsuranceDocumentFragment
+    }
+    displayName
+    insurableLimits {
+        label
+        limit
+        description
+        type
+    }
+    highlights {
+        title
+        description
+    }
+    faq {
+        headline
+        body
+    }
+}
+
+fragment CrossSellFragment on Member {
+    crossSells {
+      id
+      title
+      description
+      about
+      imageUrl
+      blurHash
+      storeUrl
+      type
+    }
+}
+
+fragment InsuranceDocumentFragment on InsuranceDocument {
+    displayName
+    type
+    url
+}
