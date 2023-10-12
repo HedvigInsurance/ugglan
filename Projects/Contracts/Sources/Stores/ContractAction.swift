@@ -81,9 +81,3 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         return editTypes
     }
 }
-
-extension Contract {
-    public var showEditButton: Bool {
-        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
-    }
-}

@@ -95,10 +95,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
 
     public var showEditInfo: Bool {
-        guard let terminationDate else {
-            return true
-        }
-        return false
+        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
     }
 
     public var canTerminate: Bool {
