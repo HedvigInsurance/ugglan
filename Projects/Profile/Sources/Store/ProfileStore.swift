@@ -54,7 +54,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                         query: query,
                         cachePolicy: .returnCacheDataElseFetch
                     )
-                    .compactMap{ details in
+                    .compactMap { details in
                         let details = MemberDetails(memberData: details.currentMember)
                         callback(.value(.setMemberDetails(details: details)))
                     }
