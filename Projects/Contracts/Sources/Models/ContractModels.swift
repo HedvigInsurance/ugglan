@@ -102,6 +102,11 @@ public struct Contract: Codable, Hashable, Equatable {
         }
         return false
     }
+
+    public var canTerminate: Bool {
+        return currentAgreement?.activeTo == nil
+    }
+
     public var terminatedToday: Bool {
         if terminationDate == Date().localDateString {
             return true

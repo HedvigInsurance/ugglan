@@ -41,9 +41,9 @@ struct ContractInformationView: View {
                         }
                         .withoutHorizontalPadding
                         .padding(.bottom, 16)
-                        hSection {
-                            VStack(spacing: 8) {
-                                if contract.showEditInfo {
+                        if contract.showEditInfo {
+                            hSection {
+                                VStack(spacing: 8) {
                                     hButton.LargeButton(type: .secondary) {
                                         store.send(.contractEditInfo(id: id))
                                     } content: {
@@ -51,8 +51,8 @@ struct ContractInformationView: View {
                                     }
                                 }
                             }
+                            .padding(.bottom, 16)
                         }
-                        .padding(.bottom, 16)
                     }
                 }
                 displayTerminationButton
@@ -90,7 +90,7 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if (contract?.showEditInfo) == nil {
+                if contract?.canTerminate ?? false {
                     hSection {
                         LoadingButtonWithContent(
                             TerminationContractStore.self,

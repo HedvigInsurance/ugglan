@@ -1,0 +1,16 @@
+query Home {
+    member {
+        firstName
+    }
+    contracts {
+        displayName
+        switchedFromInsuranceProvider
+        status {
+            ...ContractStatusFragment
+        }
+        upcomingRenewal {
+            renewalDate
+            draftCertificateUrl
+        }
+    }
+}
