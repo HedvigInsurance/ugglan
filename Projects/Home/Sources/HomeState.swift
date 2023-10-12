@@ -139,14 +139,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     ) -> FiniteSignal<HomeAction>? {
         switch action {
         case .fetchImportantMessages:
-            return
-                giraffe
+            return octopus
                 .client
-                .fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
-                .compactMap { $0.importantMessages.first }
-                .compactMap { $0 }
+                .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
+                .map { $0.currentMember.importantMessages.first }
                 .map { data in
-                    .setImportantMessage(message: .init(message: data.message, link: data.link))
+                    .setImportantMessage(message: .init(message: data?.message, link: data?.link))
                 }
                 .valueThenEndSignal
         case .fetchMemberState:
@@ -233,6 +231,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case .setImportantMessage(let message):
             if let text = message.message, text != "" {
                 newState.importantMessage = message
+            } else {
+                newState.importantMessage = nil
             }
         case .fetchCommonClaims:
             setLoading(for: .fetchCommonClaim)
