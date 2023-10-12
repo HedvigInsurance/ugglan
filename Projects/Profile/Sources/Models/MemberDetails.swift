@@ -13,14 +13,13 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
     }
 
     public init?(
-        memberData: GiraffeGraphQL.MemberDetailsQuery.Data.Member
+        memberData: OctopusGraphQL.MemberDetailsQuery.Data.CurrentMember
     ) {
-        guard let id = memberData.id else { return nil }
-        self.id = id.description
+        self.id = memberData.id
         self.email = memberData.email
         self.phone = memberData.phoneNumber
-        self.firstName = memberData.firstName ?? ""
-        self.lastName = memberData.lastName ?? ""
+        self.firstName = memberData.firstName
+        self.lastName = memberData.lastName
     }
 
     public init(

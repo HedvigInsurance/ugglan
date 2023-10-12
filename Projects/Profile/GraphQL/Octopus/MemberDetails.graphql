@@ -1,9 +1,9 @@
 query MemberDetails {
-  member {
-    id
+  currentMember {
     firstName
     lastName
-    email
     phoneNumber
+    email
+    id
   }
 }

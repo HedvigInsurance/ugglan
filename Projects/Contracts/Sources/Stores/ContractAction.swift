@@ -20,7 +20,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
     case fetch
-
+    case fetchCompleted
     // Fetch contracts for terminated
     case fetchCrossSale
     case fetchContracts
@@ -79,11 +79,5 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
             editTypes.append(.coInsured)
         }
         return editTypes
-    }
-}
-
-extension Contract {
-    public var showEditButton: Bool {
-        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
     }
 }

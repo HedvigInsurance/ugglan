@@ -27,30 +27,20 @@ fragment ContractFragment on Contract {
         ...AgreementFragment
       }
       exposureDisplayName
-      externalInsuranceCancellation {
-        ...ContractExternalInsuranceCancellationFragment
-      }
       id
       masterInceptionDate
-      supportsAddressChange
+      supportsMoving
       terminationDate
       upcomingChangedAgreement {
          ...AgreementFragment
       }
-      upcomingRenewal {
-        ...ContractRenewalFragment
-      }
-}
-
-fragment ContractRenewalFragment on ContractRenewal {
-    draftCertificateUrl
-    renewalDate
 }
 
 fragment AgreementFragment on Agreement {
     activeFrom
     activeTo
     certificateUrl
+    creationCause
     displayItems {
         ...AgreementDisplayItemFragment
     }
@@ -65,19 +55,4 @@ fragment AgreementFragment on Agreement {
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {
     displayTitle
     displayValue
-}
-
-fragment ContractExternalInsuranceCancellationFragment on ContractExternalInsuranceCancellation {
-    bankSignering {
-        approveByDate
-        url
-      }
-    externalInsurer {
-        displayName
-        id
-        insurelyId
-      }
-    id
-    status
-    type
 }
