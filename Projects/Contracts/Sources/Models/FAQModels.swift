@@ -6,9 +6,17 @@ public struct FAQ: Codable, Equatable, Hashable {
     public var description: String?
 
     public init(
+        title: String,
+        description: String?
+    ) {
+        self.title = title
+        self.description = description
+    }
+
+    public init(
         _ data: OctopusGraphQL.ProductVariantFragment.Faq
     ) {
         self.title = data.headline
-        self.description = data.body ?? ""
+        self.description = data.body
     }
 }

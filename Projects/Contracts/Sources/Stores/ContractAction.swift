@@ -72,7 +72,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
-        if hAnalyticsExperiment.movingFlow && contract.showsMovingFlowButton {
+        if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
         if contract.canChangeCoInsured {
@@ -84,6 +84,6 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
 extension Contract {
     public var showEditButton: Bool {
-        return !EditType.getTypes(for: self).isEmpty && self.currentAgreement?.status != .terminated
+        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
     }
 }

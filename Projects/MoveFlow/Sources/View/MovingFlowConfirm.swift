@@ -337,6 +337,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_HOUSE",
+                        termsVersion: "Id",
                         documents: [
                             .init(
                                 displayName: "termsAndConditions",
@@ -364,6 +365,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                     productVariant: .init(
                         perils: [],
                         typeOfContract: "SE_CAT_BASIC",
+                        termsVersion: "Id",
                         documents: [
                             .init(
                                 displayName: "termsAndConditions",
