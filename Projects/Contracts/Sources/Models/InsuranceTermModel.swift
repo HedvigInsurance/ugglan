@@ -3,17 +3,20 @@ import hGraphQL
 
 public struct InsuranceTerm: Codable, Equatable, Hashable {
     public var displayName: String
-    public var url: URL
+    public var url: String
 
-    init?(
+    public init(
         _ data: OctopusGraphQL.ProductVariantFragment.Document
     ) {
-        guard let url = URL(string: data.url) else {
-
-            return nil
-        }
-
         self.displayName = data.displayName
+        self.url = data.url
+    }
+
+    public init(
+        displayName: String,
+        url: String
+    ) {
+        self.displayName = displayName
         self.url = url
     }
 }

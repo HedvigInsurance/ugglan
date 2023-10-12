@@ -109,30 +109,22 @@ public struct PerilCollection: View {
         }
     }
 }
+
 struct PerilCollection_Previews: PreviewProvider {
     static var previews: some View {
         let perils: [Perils] =
             [
                 .init(
                     fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
-                        id: "1",
-                        info: "info",
-                        title: "title"
-                    )
-                ),
-                .init(
-                    fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
                         id: "2",
+                        title: "title",
+                        description: "DESC",
                         info: "info",
-                        title: "title2"
+                        covered: [],
+                        exceptions: [],
+                        colorCode: "color"
                     )
-                ),
+                )
             ]
         PerilCollection(
             perils: perils

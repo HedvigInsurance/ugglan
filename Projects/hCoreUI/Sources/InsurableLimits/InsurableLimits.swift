@@ -55,15 +55,15 @@ public struct InsurableLimits: Codable, Hashable {
     public let description: String
 
     public init(
-        fragment: GiraffeGraphQL.InsurableLimitFragment
+        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
     ) {
-        label = fragment.label
-        limit = fragment.limit
-        description = fragment.description
+        label = data.label
+        limit = data.limit
+        description = data.description
     }
 
-    init(
-        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
+    public init(
+        _ data: GiraffeGraphQL.InsurableLimitFragment
     ) {
         label = data.label
         limit = data.limit

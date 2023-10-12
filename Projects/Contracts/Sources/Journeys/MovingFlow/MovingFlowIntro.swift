@@ -143,21 +143,22 @@ extension MovingFlowIntro: Presentable {
 
         bag += store.stateSignal.atOnce()
             .onValue { state in
-                if let upcomingAgreementTable = state.contractBundles.flatMap({ $0.contracts })
+                if let upcomingAgreementTable = state.activeContracts.compactMap({ $0 })
                     .first(where: {
-                        !$0.upcomingAgreementsTable.sections.isEmpty
+                        !($0.upcomingChangedAgreement?.displayItems.isEmpty ?? false)
                     })?
-                    .upcomingAgreementsTable
+                    .upcomingChangedAgreement
                 {
-                    $section.value = .existing(upcomingAgreementTable)
+                    $section.value = .existing(DetailAgreementsTable(sections: [], title: ""))
                 } else {
-                    if let bundle = state.contractBundles
+                    if let bundle = state.activeContracts
                         .first(where: { bundle in
-                            bundle.movingFlowEmbarkId != nil
+                            bundle != nil
                         })
                     {
                         $section.value = .normal(
-                            bundle.movingFlowEmbarkId ?? ""
+                            // bundle.movingFlowEmbarkId ?? ""
+                            ""
                         )
                     } else {
                         $section.value = .manual
