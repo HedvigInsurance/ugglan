@@ -19,12 +19,13 @@ struct ClaimStatus: View {
 
     var body: some View {
         CardComponent(
-            onSelected: enableTap ? {
-                if enableTap {
-                    tapAction(claim)
-                } else {
-                }
-            } : nil,
+            onSelected: enableTap
+                ? {
+                    if enableTap {
+                        tapAction(claim)
+                    } else {
+                    }
+                } : nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.title,
             subTitle: claim.subtitle,
