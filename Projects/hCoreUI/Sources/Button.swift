@@ -17,6 +17,7 @@ public enum ButtonType {
     case transparent(textColor: UIColor)
     case transparentLarge(textColor: UIColor)
     case iconTransparent(textColor: UIColor, icon: ButtonIcon)
+    case normal(backgroundColor: UIColor, textColor: UIColor)
 
     public enum ButtonIcon {
         case left(image: UIImage, width: CGFloat)
@@ -43,7 +44,7 @@ public enum ButtonType {
 
     var backgroundOpacity: CGFloat {
         switch self {
-        case .standard, .standardSmall, .standardIcon, .tinyIcon:
+        case .standard, .standardSmall, .standardIcon, .tinyIcon, .normal:
             return 1
         case .outline, .outlineIcon, .transparent, .standardOutline, .standardOutlineIcon:
             return 0
@@ -56,7 +57,7 @@ public enum ButtonType {
 
     var disabledBackgroundOpacity: CGFloat {
         switch self {
-        case .standard, .standardSmall, .standardIcon, .tinyIcon:
+        case .standard, .standardSmall, .standardIcon, .tinyIcon, .normal:
             return 1
         case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
             return 0.05
@@ -71,7 +72,7 @@ public enum ButtonType {
 
     var highlightedBackgroundOpacity: CGFloat {
         switch self {
-        case .standard, .standardSmall, .standardIcon, .tinyIcon:
+        case .standard, .standardSmall, .standardIcon, .tinyIcon, .normal:
             return 1
         case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
             return 0.05
@@ -110,6 +111,8 @@ public enum ButtonType {
             return .clear
         case .transparentLarge:
             return .brand(.primaryBackground())
+        case let .normal(backgroundColor, _):
+            return backgroundColor
         }
     }
 
@@ -139,12 +142,14 @@ public enum ButtonType {
             return textColor
         case let .standardOutlineIcon(_, textColor, _):
             return textColor
+        case let .normal(_, textColor):
+            return textColor
         }
     }
 
     public var height: CGFloat {
         switch self {
-        case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
+        case .standard, .standardIcon, .standardOutline, .standardOutlineIcon, .normal:
             return 50
         case .standardSmall:
             return 34
@@ -177,12 +182,17 @@ public enum ButtonType {
             return UIColor.brandStyle(.primaryText()).colored(textColor)
         case .transparent:
             return UIColor.brandStyle(.primaryText()).colored(textColor)
+        case .normal:
+            return TextStyle(
+                font: Fonts.fontFor(style: .standard),
+                color: textColor
+            )
         }
     }
 
     public var extraWidthOffset: CGFloat {
         switch self {
-        case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
+        case .standard, .standardIcon, .standardOutline, .standardOutlineIcon, .normal:
             return 50
         case .standardSmall:
             return 40
