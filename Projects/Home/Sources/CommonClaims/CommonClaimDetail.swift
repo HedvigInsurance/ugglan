@@ -56,7 +56,7 @@ extension CommonClaimDetail: Presentable {
             let claimButton = Button(
                 title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
                 type: .standard(
-                    backgroundColor: .brand(.secondaryBackground(true)),
+                    backgroundColor: .brand(.primaryBackground(true)),
                     textColor: .brand(.primaryText(true))
                 )
             )
