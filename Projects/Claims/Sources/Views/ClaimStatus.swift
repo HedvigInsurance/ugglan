@@ -85,8 +85,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
-            statusParagraph: "",
-            type: "type"
+            type: "type",
+            memberFreeText: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)
@@ -106,8 +106,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
-            statusParagraph: "",
-            type: "type"
+            type: "type",
+            memberFreeText: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)
@@ -127,8 +127,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
-            statusParagraph: "",
-            type: "type"
+            type: "type",
+            memberFreeText: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)
@@ -148,8 +148,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
-            statusParagraph: "",
-            type: "type"
+            type: "type",
+            memberFreeText: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)
@@ -169,8 +169,8 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
-            statusParagraph: "",
-            type: "type"
+            type: "type",
+            memberFreeText: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)

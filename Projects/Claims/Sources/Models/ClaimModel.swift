@@ -10,9 +10,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         outcome: ClaimOutcome,
         submittedAt: String?,
         closedAt: String?,
-        signedAudioURL: String,
-        statusParagraph: String,
-        type: String
+        signedAudioURL: String?,
+        type: String,
+        memberFreeText: String?
     ) {
         self.id = id
         self.status = status
@@ -22,6 +22,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.signedAudioURL = signedAudioURL
         self.type = type
         self.subtitle = ""
+        self.memberFreeText = memberFreeText
     }
 
     internal init(
@@ -35,6 +36,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.signedAudioURL = claim.audioUrl ?? ""
         self.type = claim.associatedTypeOfContract ?? ""
         self.subtitle = ""
+        self.memberFreeText = claim.memberFreeText
     }
 
     public let title = L10n.Claim.Casetype.insuranceCase
@@ -44,22 +46,30 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let outcome: ClaimOutcome
     public let submittedAt: String?
     public let closedAt: String?
-    public let signedAudioURL: String
+    public let signedAudioURL: String?
+    public let memberFreeText: String?
     public var statusParagraph: String {
-        if outcome == .paid {
-            return L10n.ClaimStatus.Paid.supportText
-        } else if outcome == .notCompensated {
-            return L10n.ClaimStatus.NotCompensated.supportText
-        } else if outcome == .notCovered {
-            return L10n.ClaimStatus.NotCovered.supportText
-        } else if status == .submitted {
+        switch self.status {
+        case .submitted:
             return L10n.ClaimStatus.Submitted.supportText
-        } else if status == .beingHandled {
+        case .beingHandled:
             return L10n.ClaimStatus.BeingHandled.supportText
-        } else if status == .reopened {
+        case .closed:
+            switch outcome {
+            case .paid:
+                return L10n.ClaimStatus.Paid.supportText
+            case .notCompensated:
+                return L10n.ClaimStatus.NotCompensated.supportText
+            case .notCovered:
+                return L10n.ClaimStatus.NotCovered.supportText
+            case .none:
+                return ""
+            }
+        case .reopened:
             return L10n.ClaimStatus.BeingHandledReopened.supportText
+        default:
+            return ""
         }
-        return ""
     }
     public let type: String
 
