@@ -8,7 +8,7 @@ struct ClaimStatusBar: View {
     let outcome: ClaimModel.ClaimOutcome
 
     @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
-        
+
         if outcome == .paid {
             hSignalColor.blueElement
         } else {
@@ -87,21 +87,20 @@ struct ClaimStatusBar: View {
     var body: some View {
         ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
             if !(segment == .none || segment == .reopened) {
-            VStack {
-                Rectangle()
-                    .fill(barColor(segment: segment))
-                    .frame(height: 4)
-                    .cornerRadius(2)
+                VStack {
+                    Rectangle()
+                        .fill(barColor(segment: segment))
+                        .frame(height: 4)
+                        .cornerRadius(2)
                     hText(segment.title, style: .standardSmall)
                         .foregroundColor(textColor(segment: segment))
                         .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
-        }
         }
     }
 }
-
 
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
