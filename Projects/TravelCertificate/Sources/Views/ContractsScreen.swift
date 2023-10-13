@@ -50,13 +50,14 @@ struct ContractsScreen: View {
         hSection {
             hRow {
                 HStack {
-                    hCoreUIAssets.bigPillowHome.view.resizable().frame(width: 48, height: 48)
+                    hCoreUIAssets.bigPillowHome.view.resizable()
+                        .frame(width: 48, height: 48)
                     hText(item.street)
+                    Spacer()
+                    getCustomAccessory(item: item, and: selectedOne)
                 }
             }
-            .withCustomAccessory {
-                getCustomAccessory(item: item, and: selectedOne)
-            }
+            .withEmptyAccessory
             .onTap {
                 store.send(.setTravelInsuranceData(specification: item))
             }
@@ -70,7 +71,6 @@ struct ContractsScreen: View {
         and selectedOne: TravelInsuranceContractSpecification?
     ) -> some View {
         HStack {
-            Spacer()
             if item.contractId == selectedOne?.contractId {
                 Circle().fill(hTextColor.primary).frame(width: 22, height: 22)
             } else {
