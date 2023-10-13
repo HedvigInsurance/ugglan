@@ -106,11 +106,11 @@ struct ClaimStatusBar: View {
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
         HStack {
-//            ClaimStatusBar(status: .init(text: "currently Active", type: .currentlyActive))
-//            ClaimStatusBar(status: .init(text: "future Inactive", type: .futureInactive))
-//            ClaimStatusBar(status: .init(text: "paid", type: ClaimModel.ClaimOutcome.paid))
-//            ClaimStatusBar(status: .init(text: "past Inactive", type: .pastInactive))
-//            ClaimStatusBar(status: .init(text: "reopened", type: .reopened))
+            ClaimStatusBar(status: .beingHandled, outcome: .none)
+            ClaimStatusBar(status: .closed, outcome: .notCompensated)
+            ClaimStatusBar(status: .reopened, outcome: .none)
+            ClaimStatusBar(status: .submitted, outcome: .none)
+            ClaimStatusBar(status: .none, outcome: .none)
         }
     }
 }
