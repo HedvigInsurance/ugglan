@@ -47,6 +47,8 @@ public class NotLoggedViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        self.bootStrapped = true
     }
 
     func onCountryPressed() {
