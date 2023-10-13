@@ -75,7 +75,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             statusParagraph: "",
-            type: "")
+            type: ""
+        )
         return ClaimDetailView(claim: claim)
     }
 }

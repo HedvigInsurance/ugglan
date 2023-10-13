@@ -3,7 +3,7 @@ import hCore
 import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
-    
+
     public init(
         id: String,
         status: ClaimStatus,
@@ -23,7 +23,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.type = type
         self.subtitle = ""
     }
-    
+
     internal init(
         claim: OctopusGraphQL.ClaimsQuery.Data.CurrentMember.Claim
     ) {
@@ -36,7 +36,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.type = claim.associatedTypeOfContract ?? ""
         self.subtitle = ""
     }
-    
+
     public let title = L10n.Claim.Casetype.insuranceCase
     public let subtitle: String
     public let id: String
@@ -62,14 +62,14 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         return ""
     }
     public let type: String
-    
+
     public enum ClaimStatus: String, Codable, CaseIterable {
         case none
         case submitted
         case beingHandled
         case closed
         case reopened
-        
+
         public init?(
             rawValue: RawValue
         ) {
@@ -81,7 +81,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             default: self = .none
             }
         }
-        
+
         var title: String {
             switch self {
             case .submitted:
@@ -97,13 +97,13 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             }
         }
     }
-    
+
     public enum ClaimOutcome: String, Codable, CaseIterable {
         case paid
         case notCompensated
         case notCovered
         case none
-        
+
         public init?(
             rawValue: RawValue
         ) {
@@ -114,7 +114,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             default: self = .none
             }
         }
-        
+
         var text: String {
             switch self {
             case .paid:

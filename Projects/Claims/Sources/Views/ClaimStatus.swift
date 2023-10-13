@@ -6,16 +6,16 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: ClaimModel
-    
+
     @PresentableStore
     var store: ClaimsStore
-    
+
     var tapAction: (ClaimModel) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }
     }
-    
+
     var body: some View {
         CardComponent(
             onSelected: {
@@ -35,7 +35,7 @@ struct ClaimStatus: View {
 
 struct ClaimPills: View {
     var claim: ClaimModel
-    
+
     var body: some View {
         HStack {
             if claim.status == .reopened {
@@ -64,12 +64,12 @@ extension ClaimModel.ClaimOutcome {
             hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
         }
     }
-    
+
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
         case .none:
-            hColorScheme(light:  hFillColor.opaqueTwo, dark: hGrayscaleColor.greyScale400)
+            hColorScheme(light: hFillColor.opaqueTwo, dark: hGrayscaleColor.greyScale400)
         default:
             hTextColor.primary
         }
@@ -87,7 +87,7 @@ struct ClaimStatus_Previews: PreviewProvider {
             signedAudioURL: "",
             statusParagraph: "",
             type: "type"
-         )
+        )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data)
                 .colorScheme(.dark)
