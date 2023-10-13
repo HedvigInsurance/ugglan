@@ -77,6 +77,7 @@ extension CommonClaimDetail: Presentable {
                     store?.send(.startClaim)
                 }
             }
+            bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
         } else {
             let emergencyActions = EmergencyActions(presentingViewController: viewController)
             bag += view.addArranged(emergencyActions)

@@ -36,10 +36,20 @@ extension BulletPointCard: Reusable {
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
+        let titleStyle: TextStyle = TextStyle(
+            font: Fonts.fontFor(style: .standard),
+            color: UIColor.BrandColorNew.primaryText().color,
+            minimumScaleFactor: 1
+        )
+        let titleLabel = UILabel(value: "", style: titleStyle)
         contentView.addArrangedSubview(titleLabel)
 
-        var descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)))
+        let descriptionStyle: TextStyle = TextStyle(
+            font: Fonts.fontFor(style: .standard),
+            color: UIColor.BrandColorNew.secondaryText.color,
+            minimumScaleFactor: 1
+        )
+        var descriptionLabel = MultilineLabel(value: "", style: descriptionStyle)
 
         return (
             view,
@@ -50,7 +60,7 @@ extension BulletPointCard: Reusable {
                         opacity: 0.05,
                         offset: CGSize(width: 0, height: 16),
                         blurRadius: 30,
-                        color: .brand(.primaryShadowColor),
+                        color: UIColor.BrandColorNew.primaryText().color,
                         path: nil,
                         radius: 30
                     )
