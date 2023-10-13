@@ -36,16 +36,6 @@ struct ClaimSectionLoading: View {
                 .fetchClaims
             }
         ) { claims, _ in
-            //            let claims = [ClaimModel(
-            //                id: "1",
-            //                status: .closed,
-            //                outcome: .notCovered,
-            //                submittedAt: "2023-10-10",
-            //                closedAt: "2023-10-11",
-            //                signedAudioURL: "",
-            //                statusParagraph: "",
-            //                type: ""
-            //            )]
             claimsSection(claims)
         }
     }

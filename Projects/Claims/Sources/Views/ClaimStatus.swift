@@ -76,13 +76,97 @@ extension ClaimModel.ClaimOutcome {
     }
 }
 
-struct ClaimStatus_Previews: PreviewProvider {
+struct ClaimBeingHandled_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .beingHandled,
+            outcome: .none,
+            submittedAt: "2023-10-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "type"
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimReopened_Previews: PreviewProvider {
     static var previews: some View {
         let data = ClaimModel(
             id: "1",
             status: .reopened,
+            outcome: .none,
+            submittedAt: "2023-10-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "type"
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimPaid_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .paid,
+            submittedAt: "2023-10-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "type"
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimNotCompensated_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
             outcome: .notCompensated,
-            submittedAt: "2023-010-10",
+            submittedAt: "2023-10-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "type"
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimNotCocered_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .notCovered,
+            submittedAt: "2023-10-10",
             closedAt: nil,
             signedAudioURL: "",
             statusParagraph: "",

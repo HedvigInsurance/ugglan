@@ -8,7 +8,6 @@ struct ClaimStatusBar: View {
     let outcome: ClaimModel.ClaimOutcome
 
     @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
-
         if outcome == .paid {
             hSignalColor.blueElement
         } else {
