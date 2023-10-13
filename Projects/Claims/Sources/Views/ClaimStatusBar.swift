@@ -8,39 +8,39 @@ struct ClaimStatusBar: View {
     let outcome: ClaimModel.ClaimOutcome
 
     @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
-        if outcome == .paid {
-            hSignalColor.blueElement
-        } else {
-            switch status {
-            case .submitted:
-                if segment == .submitted {
-                    hTextColor.primary
-                } else {
-                    hTextColor.tertiary
-                }
-            case .beingHandled:
-                switch segment {
-                case .submitted:
-                    hTextColor.secondary
-                case .beingHandled:
-                    hTextColor.primary
-                default:
-                    hTextColor.tertiary
-                }
-            case .closed:
+        switch status {
+        case .submitted:
+            if segment == .submitted {
                 hTextColor.primary
-            case .reopened:
-                switch segment {
-                case .submitted:
-                    hTextColor.secondary
-                case .beingHandled:
-                    hSignalColor.amberElement
-                default:
-                    hTextColor.tertiary
-                }
-            default:
-                hTextColor.secondary
+            } else {
+                hTextColor.tertiary
             }
+        case .beingHandled:
+            switch segment {
+            case .submitted:
+                hTextColor.secondary
+            case .beingHandled:
+                hTextColor.primary
+            default:
+                hTextColor.tertiary
+            }
+        case .closed:
+            if outcome == .paid {
+                hSignalColor.blueElement
+            } else {
+                hTextColor.primary
+            }
+        case .reopened:
+            switch segment {
+            case .submitted:
+                hTextColor.secondary
+            case .beingHandled:
+                hSignalColor.amberElement
+            default:
+                hTextColor.tertiary
+            }
+        default:
+            hTextColor.secondary
         }
     }
 

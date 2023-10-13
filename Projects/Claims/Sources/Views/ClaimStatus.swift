@@ -6,6 +6,7 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: ClaimModel
+    var enableTap: Bool
 
     @PresentableStore
     var store: ClaimsStore
@@ -18,9 +19,12 @@ struct ClaimStatus: View {
 
     var body: some View {
         CardComponent(
-            onSelected: {
-                tapAction(claim)
-            },
+            onSelected: enableTap ? {
+                if enableTap {
+                    tapAction(claim)
+                } else {
+                }
+            } : nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.title,
             subTitle: claim.subtitle,
@@ -89,7 +93,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             memberFreeText: nil
         )
         return VStack(spacing: 20) {
-            ClaimStatus(claim: data)
+            ClaimStatus(claim: data, enableTap: true)
                 .colorScheme(.dark)
 
         }
@@ -110,7 +114,7 @@ struct ClaimReopened_Previews: PreviewProvider {
             memberFreeText: nil
         )
         return VStack(spacing: 20) {
-            ClaimStatus(claim: data)
+            ClaimStatus(claim: data, enableTap: true)
                 .colorScheme(.dark)
 
         }
@@ -131,7 +135,7 @@ struct ClaimPaid_Previews: PreviewProvider {
             memberFreeText: nil
         )
         return VStack(spacing: 20) {
-            ClaimStatus(claim: data)
+            ClaimStatus(claim: data, enableTap: true)
                 .colorScheme(.dark)
 
         }
@@ -152,7 +156,7 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             memberFreeText: nil
         )
         return VStack(spacing: 20) {
-            ClaimStatus(claim: data)
+            ClaimStatus(claim: data, enableTap: true)
                 .colorScheme(.dark)
 
         }
@@ -173,7 +177,7 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             memberFreeText: nil
         )
         return VStack(spacing: 20) {
-            ClaimStatus(claim: data)
+            ClaimStatus(claim: data, enableTap: true)
                 .colorScheme(.dark)
 
         }

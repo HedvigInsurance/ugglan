@@ -22,7 +22,7 @@ public struct ClaimDetailView: View {
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                ClaimStatus(claim: claim)
+                ClaimStatus(claim: claim, enableTap: false)
                     .padding(.top, 8)
                     .padding(.horizontal, 16)
                 hSection {
