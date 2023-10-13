@@ -26,11 +26,7 @@ struct ClaimStatus: View {
             subTitle: claim.subtitle,
             bottomComponent: {
                 HStack(spacing: 6) {
-                    ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
-                        if !(segment == .none || segment == .reopened) {
-                            ClaimStatusBar(status: segment)
-                        }
-                    }
+                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
                 }
             }
         )
@@ -42,6 +38,13 @@ struct ClaimPills: View {
     
     var body: some View {
         HStack {
+            if claim.status == .reopened {
+                hPillFill(
+                    text: claim.status.title,
+                    textColor: hSignalColor.amberText,
+                    backgroundColor: hSignalColor.amberHighLight
+                )
+            }
             hPillFill(
                 text: claim.outcome.text.capitalized,
                 textColor: claim.outcome.textColor,
@@ -50,10 +53,16 @@ struct ClaimPills: View {
         }
     }
 }
+
 extension ClaimModel.ClaimOutcome {
     @hColorBuilder
     var textColor: some hColor {
-        hTextColor.negative
+        switch self {
+        case .paid:
+            hTextColor.negative
+        default:
+            hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+        }
     }
     
     @hColorBuilder
@@ -67,44 +76,23 @@ extension ClaimModel.ClaimOutcome {
     }
 }
 
-//struct ClaimStatus_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let data = GiraffeGraphQL.ClaimStatusCardsQuery.Data.init(
-//            claimsStatusCards: [
-//                .init(
-//                    id: "id",
-//                    pills: [
-//                        .init(text: "TEXT", type: .open),
-//                        .init(text: "TEXT 2", type: .closed),
-//                        .init(text: "TEXT 3", type: .payment),
-//                        .init(text: "TEXT 4", type: .reopened),
-//                    ],
-//                    title: "TITLE",
-//                    subtitle: "SUBTITLE",
-//                    progressSegments: [
-//                        .init(text: "STATUS 1", type: .currentlyActive),
-//                        .init(text: "Status 2", type: .futureInactive),
-//                        .init(text: "Status 3", type: .paid),
-//                        .init(text: "Status 4", type: .pastInactive),
-//                        .init(text: "Status 5", type: .reopened),
-//                    ],
-//                    claim: .init(
-//                        id: "ID",
-//                        submittedAt: "2023-11-23",
-//                        status: .beingHandled,
-//                        progressSegments: [.init(text: "PROGRESS", type: .currentlyActive)],
-//                        statusParagraph: "STATUS"
-//                    )
-//                )
-//            ]
-//        )
-//        let claimData = ClaimData(cardData: data)
-//        return VStack(spacing: 20) {
-//            ClaimStatus(claim: claimData.claims.first!)
-//            ClaimStatus(claim: claimData.claims.first!)
-//                .colorScheme(.dark)
-//
-//        }
-//        .padding(20)
-//    }
-//}
+struct ClaimStatus_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .reopened,
+            outcome: .notCompensated,
+            submittedAt: "2023-010-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "type"
+         )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data)
+                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}

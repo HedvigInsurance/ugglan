@@ -22,8 +22,9 @@ public struct ClaimDetailView: View {
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                ClaimDetailHeader(claim: claim)
+                ClaimStatus(claim: claim)
                     .padding(.top, 8)
+                    .padding(.horizontal, 16)
                 hSection {
                     hRow {
                         hText(statusParagraph)
@@ -64,29 +65,17 @@ public struct ClaimDetailView: View {
 
 }
 
-//struct ClaimDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let claimDetails = ClaimModel.init(
-//            id: "id",
-//            status: .closed,
-//            outcome: .paid,
-//            submittedAt: "2019-07-03T19:07:38.494081Z",
-//            closedAt: "2019-07-03T20:10:38.494081Z",
-//            signedAudioURL: "https://www.hedvig.com",
-////            progressSegments: [.init(text: "1", type: .futureInactive)],
-//            statusParagraph:
-//                "Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH Status PARAGRAPH ",
-//            type: "TYPE",
-//            payout: .sek(20)
-//        )
-//        let claim = ClaimModel(
-//            id: "id",
-////            pills: [.init(text: "1", type: .closed)],
-////            segments: [.init(text: "a", type: .pastInactive)],
-//            title: "title",
-//            subtitle: "subtitle",
-////            claimDetailData: claimDetails
-//        )
-//        return ClaimDetailView(claim: claim)
-//    }
-//}
+struct ClaimDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let claim = ClaimModel(
+            id: "2",
+            status: .closed,
+            outcome: .notCovered,
+            submittedAt: "2023-10-10",
+            closedAt: nil,
+            signedAudioURL: "",
+            statusParagraph: "",
+            type: "")
+        return ClaimDetailView(claim: claim)
+    }
+}

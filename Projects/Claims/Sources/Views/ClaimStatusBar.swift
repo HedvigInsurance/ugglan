@@ -5,52 +5,104 @@ import hGraphQL
 
 struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus
+    let outcome: ClaimModel.ClaimOutcome
 
-    @hColorBuilder var barColor: some hColor {
-        switch status {
-        case .none:
-            hSignalColor.redElement
-        case .submitted:
-            hTextColor.secondary
-        case .beingHandled:
-            hTextColor.primary
-        case .closed:
-            hTextColor.tertiary
-        case .reopened:
-            hTextColor.secondary
+    @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
+        
+        if outcome == .paid {
+            hSignalColor.blueElement
+        } else {
+            switch status {
+            case .submitted:
+                if segment == .submitted {
+                    hTextColor.primary
+                } else {
+                    hTextColor.tertiary
+                }
+            case .beingHandled:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hTextColor.primary
+                default:
+                    hTextColor.tertiary
+                }
+            case .closed:
+                hTextColor.primary
+            case .reopened:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hSignalColor.amberElement
+                default:
+                    hTextColor.tertiary
+                }
+            default:
+                hTextColor.secondary
+            }
         }
     }
 
-    @hColorBuilder var textColor: some hColor {
-//        switch status.type {
-//        case .currentlyActive:
-//            hTextColor.primary
-//        case .pastInactive:
-            hTextColor.secondary
-//        case .paid:
-//            hTextColor.primary
-//        case .reopened:
-//            hTextColor.primary
-//        case .futureInactive:
-//            hTextColor.tertiary
-//        case .none:
-//            hTextColor.primary
-//        }
+    @hColorBuilder func textColor(segment: ClaimModel.ClaimStatus) -> some hColor {
+        if outcome == .paid {
+            hTextColor.primary
+        } else {
+            switch status {
+            case .submitted:
+                if segment == .submitted {
+                    hTextColor.primary
+                } else {
+                    hTextColor.tertiary
+                }
+            case .beingHandled:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hTextColor.primary
+                case .closed:
+                    hTextColor.tertiary
+                default:
+                    hTextColor.tertiary
+                }
+            case .reopened:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hTextColor.primary
+                default:
+                    hTextColor.tertiary
+                }
+            case .closed:
+                hTextColor.primary
+            default:
+                hTextColor.secondary
+            }
+        }
     }
 
     var body: some View {
-        VStack {
-            Rectangle()
-                .fill(barColor)
-                .frame(height: 4)
-                .cornerRadius(2)
-            hText(status.title, style: .standardSmall)
-                .foregroundColor(textColor)
-                .lineLimit(1)
+        ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+            if !(segment == .none || segment == .reopened) {
+            VStack {
+                Rectangle()
+                    .fill(barColor(segment: segment))
+                    .frame(height: 4)
+                    .cornerRadius(2)
+                    hText(segment.title, style: .standardSmall)
+                        .foregroundColor(textColor(segment: segment))
+                        .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        }
     }
 }
+
+
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
         HStack {
