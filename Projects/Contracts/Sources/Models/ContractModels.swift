@@ -75,7 +75,6 @@ public struct Contract: Codable, Hashable, Equatable {
     ) {
         self.id = id
         self.currentAgreement = currentAgreement
-        self.exposureDisplayName = exposureDisplayName
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
         self.supportsAddressChange = supportsAddressChange
@@ -86,7 +85,6 @@ public struct Contract: Codable, Hashable, Equatable {
 
     public let id: String
     public let currentAgreement: Agreement?
-    public let exposureDisplayName: String
     public let masterInceptionDate: String?
     public let terminationDate: String?
     public let supportsAddressChange: Bool
@@ -132,7 +130,6 @@ public struct Contract: Codable, Hashable, Equatable {
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
     ) {
-        exposureDisplayName = pendingContract.exposureDisplayName
         id = pendingContract.id
         currentAgreement = .init(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
@@ -153,7 +150,6 @@ public struct Contract: Codable, Hashable, Equatable {
         id = contract.id
         currentAgreement =
             .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-        exposureDisplayName = contract.exposureDisplayName
         masterInceptionDate = contract.masterInceptionDate
         terminationDate = contract.terminationDate
         supportsAddressChange = contract.supportsMoving
@@ -455,7 +451,8 @@ public struct Agreement: Codable, Hashable {
         activeTo: String,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
+        exposureDisplayName: String
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -463,8 +460,10 @@ public struct Agreement: Codable, Hashable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.exposureDisplayName = exposureDisplayName
     }
 
+    public let exposureDisplayName: String?
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
@@ -483,6 +482,7 @@ public struct Agreement: Codable, Hashable {
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
+        self.exposureDisplayName = nil
     }
 
     init?(
@@ -497,6 +497,7 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
+        exposureDisplayName = agreement.exposureDisplayName
     }
 
 }

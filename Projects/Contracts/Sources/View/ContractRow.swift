@@ -93,7 +93,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     .colorScheme(.dark)
                 Spacer()
             }
-            hText(contract.exposureDisplayName)
+            hText(contract.currentAgreement?.exposureDisplayName ?? "")
                 .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent700)
                 .colorScheme(.dark)
         }
