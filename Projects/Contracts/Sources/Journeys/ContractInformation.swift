@@ -97,7 +97,10 @@ struct ContractInformationView: View {
                             .startTermination,
                             buttonAction: {
                                 terminationContractStore.send(
-                                    .startTermination(contractId: id, contractName: contract?.currentAgreement?.exposureDisplayName ?? "")
+                                    .startTermination(
+                                        contractId: id,
+                                        contractName: contract?.currentAgreement?.exposureDisplayName ?? ""
+                                    )
                                 )
                                 vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
                                     if case let .navigationAction(navigationAction) = action {
