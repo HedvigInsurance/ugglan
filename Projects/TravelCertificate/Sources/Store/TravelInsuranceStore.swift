@@ -58,7 +58,10 @@ final class TravelInsuranceStore: LoadingStateStore<
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client
-                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
+                    .fetch(
+                        query: OctopusGraphQL.TravelCertificateQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
                     .onValue { data in
                         let email = data.currentMember.email
                         let specification = TravelInsuranceSpecification(
