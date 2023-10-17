@@ -280,8 +280,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         state.toolbarOptionTypes = types
 
     }
-    
-    private func findUniqueCommonClaims(commonClaims: [CommonClaim], newCommonClaim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription) -> Bool {
+
+    private func findUniqueCommonClaims(
+        commonClaims: [CommonClaim],
+        newCommonClaim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
+    ) -> Bool {
         var isUnique = true
         commonClaims.forEach { commonClaim in
             if commonClaim.id == newCommonClaim.id {

@@ -6,7 +6,7 @@ import hGraphQL
 public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
-    
+
     public init(
         limits: [InsurableLimits],
         didTap: @escaping (InsurableLimits) -> Void
@@ -14,7 +14,7 @@ public struct InsurableLimitsSectionView: View {
         self.limits = limits
         self.didTap = didTap
     }
-    
+
     public var body: some View {
         hSection(limits, id: \.label) { limit in
             hRow {
@@ -53,7 +53,7 @@ public struct InsurableLimits: Codable, Hashable {
     public let label: String
     public let limit: String
     public let description: String
-    
+
     public init(
         label: String,
         limit: String,
@@ -63,7 +63,7 @@ public struct InsurableLimits: Codable, Hashable {
         self.limit = limit
         self.description = description
     }
-    
+
     public init(
         _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
     ) {
