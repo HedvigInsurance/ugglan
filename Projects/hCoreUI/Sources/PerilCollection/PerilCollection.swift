@@ -20,7 +20,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
     var selectedPerils: [Perils]
     @State var nbOfPerils = 1
-    
+
     @hColorBuilder func background(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
             hTextColor.tertiaryTranslucent
@@ -28,7 +28,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
             hBackgroundColor.primary
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
@@ -41,12 +41,12 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
                 Image(
                     uiImage: selectedPerils.contains(peril)
-                    ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
                 )
                 .transition(.opacity.animation(.easeOut))
             }
             .padding(.vertical, 13)
-            
+
             if selectedPerils.contains(peril) {
                 VStack(alignment: .leading, spacing: 12) {
                     hText(peril.description, style: .footnote)
@@ -79,7 +79,7 @@ public struct PerilCollection: View {
     public var perils: [Perils]
     public var didTapPeril: (_ peril: Perils) -> Void
     @State var selectedPerils: [Perils] = []
-    
+
     public init(
         perils: [Perils],
         didTapPeril: @escaping (_ peril: Perils) -> Void
@@ -87,7 +87,7 @@ public struct PerilCollection: View {
         self.perils = perils
         self.didTapPeril = didTapPeril
     }
-    
+
     public var body: some View {
         ForEach(perils, id: \.title) { peril in
             hSection {
@@ -110,24 +110,24 @@ public struct PerilCollection: View {
 struct PerilCollection_Previews: PreviewProvider {
     static var previews: some View {
         let perils: [Perils] =
-        [
-            .init(
-                fragment: .init(
-                    id: "2",
-                    title: "title",
-                    description: "DESC",
-                    info: "info",
-                    shortDescription: "",
-                    covered: [],
-                    exceptions: [],
-                    colorCode: "color"
+            [
+                .init(
+                    fragment: .init(
+                        id: "2",
+                        title: "title",
+                        description: "DESC",
+                        info: "info",
+                        shortDescription: "",
+                        covered: [],
+                        exceptions: [],
+                        colorCode: "color"
+                    )
                 )
-            )
-        ]
+            ]
         PerilCollection(
             perils: perils
         ) { peril in
-            
+
         }
     }
 }

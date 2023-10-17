@@ -282,7 +282,9 @@ public struct PaymentData: Codable, Equatable {
         let date: String?
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
-            amount = MonetaryAmount(optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragmentGiraffe)
+            amount = MonetaryAmount(
+                optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragmentGiraffe
+            )
             date = data.nextChargeDate?.localDateToDate?.displayDateMMMDDYYYYFormat
         }
     }
