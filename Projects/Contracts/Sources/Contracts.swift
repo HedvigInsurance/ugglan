@@ -76,7 +76,8 @@ extension Contracts: View {
                 store,
                 send: {
                     ContractAction.fetch
-                }
+                },
+                endOn: .fetchCompleted
             )
 
         }

@@ -1,7 +1,0 @@
-query HomeInsuranceProviders($locale: Locale!) {
-    insuranceProviders(locale: $locale) {
-        id
-        name
-        switchable
-    }
-}

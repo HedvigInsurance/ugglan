@@ -19,14 +19,13 @@ struct ContractsScreen: View {
             ) { travelInsuranceModels in
                 if !travelInsuranceModels.isEmpty {
                     hForm {
-                        hText(L10n.TravelCertificate.selectContractTitle, style: .title3)
-                            .padding(.vertical, 100)
-                            .padding(.horizontal, 16)
-                            .multilineTextAlignment(.center)
-                        ForEach(travelInsuranceModels, id: \.contractId) { item in
-                            getContractView(for: item, and: travelInsuranceConfig)
+                        VStack(spacing: 4) {
+                            ForEach(travelInsuranceModels, id: \.contractId) { item in
+                                getContractView(for: item, and: travelInsuranceConfig)
+                            }
                         }
                     }
+                    .hFormTitle(.standard, .title3, L10n.TravelCertificate.selectContractTitle)
                     .hFormAttachToBottom {
                         hButton.LargeButton(type: .primary) {
                             store.send(.navigation(.openStartDateScreen))
@@ -51,13 +50,14 @@ struct ContractsScreen: View {
         hSection {
             hRow {
                 HStack {
-                    hCoreUIAssets.pillowHome.view.resizable().frame(width: 48, height: 48)
+                    hCoreUIAssets.bigPillowHome.view.resizable()
+                        .frame(width: 48, height: 48)
                     hText(item.street)
+                    Spacer()
+                    getCustomAccessory(item: item, and: selectedOne)
                 }
             }
-            .withCustomAccessory {
-                getCustomAccessory(item: item, and: selectedOne)
-            }
+            .withEmptyAccessory
             .onTap {
                 store.send(.setTravelInsuranceData(specification: item))
             }
@@ -71,7 +71,6 @@ struct ContractsScreen: View {
         and selectedOne: TravelInsuranceContractSpecification?
     ) -> some View {
         HStack {
-            Spacer()
             if item.contractId == selectedOne?.contractId {
                 Circle().fill(hTextColor.primary).frame(width: 22, height: 22)
             } else {

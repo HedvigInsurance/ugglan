@@ -78,7 +78,12 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             public var title: String?
             public var bulletPoints: [BulletPoint]
 
-            public init(color: String, buttonTitle: String? = nil, title: String? = nil, bulletPoints: [BulletPoint]) {
+            public init(
+                color: String,
+                buttonTitle: String? = nil,
+                title: String? = nil,
+                bulletPoints: [BulletPoint]
+            ) {
                 self.color = color
                 self.buttonTitle = buttonTitle
                 self.title = title
@@ -90,7 +95,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 public let description: String
                 public let icon: IconEnvelope?
 
-                public init(title: String, description: String, icon: IconEnvelope?) {
+                public init(
+                    title: String,
+                    description: String,
+                    icon: IconEnvelope?
+                ) {
                     self.title = title
                     self.description = description
                     self.icon = icon
@@ -102,7 +111,10 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             public let title: String
             public let color: String
 
-            public init(title: String, color: String) {
+            public init(
+                title: String,
+                color: String
+            ) {
                 self.title = title
                 self.color = color
             }

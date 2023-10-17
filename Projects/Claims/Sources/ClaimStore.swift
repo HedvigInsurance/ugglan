@@ -8,7 +8,6 @@ import hCoreUI
 import hGraphQL
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     public override func effects(
@@ -21,22 +20,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .fetchClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                let octopusFetch = self.octopus.client.fetch(
-                    query: OctopusGraphQL.UpdatedClaimsQuery(),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                let giraffeFetch = self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
-                        query: GiraffeGraphQL.ClaimStatusCardsQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        ),
+                        query: OctopusGraphQL.ClaimsQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag +=
-                    giraffeFetch
-                    .onValue { value in
-                        let claimData = ClaimData(cardData: value)
-                        callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
+                    .onValue { data in
+                        let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
+                        callback(.value(ClaimsAction.setClaims(claims: claimData)))
                     }
                     .onError { error in
                         callback(

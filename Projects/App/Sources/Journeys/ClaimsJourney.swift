@@ -35,8 +35,8 @@ extension AppJourney {
                 switch redirect {
                 case .chat:
                     AppJourney.claimsChat()
-                        .hidesBackButton
                         .withJourneyDismissButton
+                        .hidesBackButton
                 case .close:
                     DismissJourney()
                 case .menu:

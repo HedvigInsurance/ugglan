@@ -53,6 +53,12 @@ extension Shape {
         }
     }
 
+    public func fill2<S>(_ content: S, _ content2: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
+        ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
+            self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
+        }
+    }
+
     public func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.stroke(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
@@ -296,11 +302,18 @@ public struct hTextColor {
     }
 
     public static var tertiary: some hColor {
-        hGrayscaleColor.greyScale500
+        hColorScheme(
+            light: hGrayscaleColor.greyScale500,
+            dark: hGrayscaleColor.greyScale700
+        )
     }
 
     public static var disabled: some hColor {
-        hGrayscaleColor.greyScale400
+        hColorScheme(
+            light: hGrayscaleColor.greyScale400,
+            dark: hGrayscaleColor.greyScale800
+        )
+
     }
 
     public static var primaryTranslucent: some hColor {
@@ -318,38 +331,59 @@ public struct hTextColor {
 
 public struct hBorderColor {
     public static var opaqueOne: some hColor {
-        hGrayscaleColor.greyScale200
+        hColorScheme(
+            light: hGrayscaleColor.greyScale200,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var opaqueTwo: some hColor {
         hColorScheme(
             light: hGrayscaleColor.greyScale300,
-            dark: hGrayscaleColor.greyScale700
+            dark: hGrayscaleColor.greyScale800
         )
     }
 
     public static var opaqueThree: some hColor {
-        hGrayscaleColor.greyScale700
+        hColorScheme(
+            light: hGrayscaleColor.greyScale700,
+            dark: hGrayscaleColor.greyScale300
+        )
     }
 
     public static var opaqueFour: some hColor {
-        hGrayscaleColor.greyScale800
+        hColorScheme(
+            light: hGrayscaleColor.greyScale800,
+            dark: hGrayscaleColor.greyScale200
+        )
     }
 
     public static var translucentOne: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent200
+        hColorScheme(
+            light: hGrayscaleTranslucent.greyScaleTranslucent200,
+            dark: hGrayscaleTranslucent.greyScaleTranslucent900
+        )
     }
 
     public static var translucentTwo: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent300
+        hColorScheme(
+            light: hGrayscaleTranslucent.greyScaleTranslucent300,
+            dark: hGrayscaleTranslucent.greyScaleTranslucent800
+        )
     }
 
     public static var translucentThree: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent700
+        hColorScheme(
+            light: hGrayscaleTranslucent.greyScaleTranslucent700,
+            dark: hGrayscaleTranslucent.greyScaleTranslucent300
+        )
     }
 
     public static var translucentFour: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent800
+        hColorScheme(
+            light: hGrayscaleTranslucent.greyScaleTranslucent800,
+            dark: hGrayscaleTranslucent.greyScaleTranslucent200
+        )
     }
 }
 
@@ -461,12 +495,15 @@ public struct hSignalColor {
     public static var greenFill: some hColor {
         hColorScheme(
             light: hGreenColor.green100,
-            dark: greenHighlight
+            dark: hGreenColor.green300
         )
     }
 
     public static var greenHighlight: some hColor {
-        hGreenColor.green300
+        hColorScheme(
+            light: hGreenColor.green300,
+            dark: hGreenColor.green500
+        )
     }
 
     public static var greenElement: some hColor {
@@ -477,18 +514,24 @@ public struct hSignalColor {
     }
 
     public static var greenText: some hColor {
-        hGreenColor.green800
+        hColorScheme(
+            light: hGreenColor.green800,
+            dark: hGreenColor.green900
+        )
     }
 
     public static var amberFill: some hColor {
         hColorScheme(
             light: hAmberColor.amber100,
-            dark: amberHighLight
+            dark: hAmberColor.amber300
         )
     }
 
     public static var amberHighLight: some hColor {
-        hAmberColor.amber300
+        hColorScheme(
+            light: hAmberColor.amber300,
+            dark: hAmberColor.amber500
+        )
     }
 
     public static var amberElement: some hColor {
@@ -499,15 +542,24 @@ public struct hSignalColor {
     }
 
     public static var amberText: some hColor {
-        hAmberColor.amber800
+        hColorScheme(
+            light: hAmberColor.amber800,
+            dark: hAmberColor.amber900
+        )
     }
 
     public static var redFill: some hColor {
-        hRedColor.red100
+        hColorScheme(
+            light: hRedColor.red100,
+            dark: hRedColor.red300
+        )
     }
 
     public static var redHighlight: some hColor {
-        hRedColor.red300
+        hColorScheme(
+            light: hRedColor.red300,
+            dark: hRedColor.red500
+        )
     }
 
     public static var redElement: some hColor {
@@ -518,18 +570,24 @@ public struct hSignalColor {
     }
 
     public static var redText: some hColor {
-        hRedColor.red800
+        hColorScheme(
+            light: hRedColor.red800,
+            dark: hRedColor.red900
+        )
     }
 
     public static var blueFill: some hColor {
         hColorScheme(
             light: hBlueColor.blue100,
-            dark: blueHighLight
+            dark: hBlueColor.blue300
         )
     }
 
     public static var blueHighLight: some hColor {
-        hBlueColor.blue300
+        hColorScheme(
+            light: hBlueColor.blue300,
+            dark: hBlueColor.blue500
+        )
     }
 
     public static var blueElement: some hColor {
@@ -540,7 +598,10 @@ public struct hSignalColor {
     }
 
     public static var blueText: some hColor {
-        hBlueColor.blue800
+        hColorScheme(
+            light: hBlueColor.blue800,
+            dark: hBlueColor.blue900
+        )
     }
 }
 
@@ -553,11 +614,17 @@ public struct hButtonColor {
     }
 
     public static var primaryHover: some hColor {
-        hGrayscaleColor.greyScale900
+        hColorScheme(
+            light: hGrayscaleColor.greyScale900,
+            dark: hGrayscaleColor.greyScale300
+        )
     }
 
     public static var primaryDisabled: some hColor {
-        hGrayscaleColor.greyScale200
+        hColorScheme(
+            light: hGrayscaleColor.greyScale200,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var primaryAltDefault: some hColor {
@@ -568,23 +635,38 @@ public struct hButtonColor {
     }
 
     public static var primaryAltHover: some hColor {
-        hGreenColor.green200
+        hColorScheme(
+            light: hGreenColor.green200,
+            dark: hGreenColor.green400
+        )
     }
 
     public static var primaryAltDisabled: some hColor {
-        hGrayscaleColor.greyScale200
+        hColorScheme(
+            light: hGrayscaleColor.greyScale200,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var secondaryDefault: some hColor {
-        hGrayscaleColor.greyScale50
+        hColorScheme(
+            light: hGrayscaleColor.greyScale50,
+            dark: hGrayscaleColor.greyScale800
+        )
     }
 
     public static var secondaryHover: some hColor {
-        hGrayscaleColor.greyScale300
+        hColorScheme(
+            light: hGrayscaleColor.greyScale300,
+            dark: hGrayscaleColor.greyScale700
+        )
     }
 
     public static var secondaryDisabled: some hColor {
-        hGrayscaleColor.greyScale200
+        hColorScheme(
+            light: hGrayscaleColor.greyScale200,
+            dark: hGrayscaleColor.greyScale900
+        )
     }
 
     public static var secondaryAltDefault: some hColor {

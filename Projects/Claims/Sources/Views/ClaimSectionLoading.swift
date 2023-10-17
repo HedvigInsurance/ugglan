@@ -17,7 +17,7 @@ struct ClaimSectionLoading: View {
             if claims.isEmpty {
                 Spacer().frame(height: 40)
             } else if claims.count == 1, let claim = claims.first {
-                ClaimStatus(claim: claim)
+                ClaimStatus(claim: claim, enableTap: true)
                     .padding([.bottom, .top])
             } else {
                 ClaimSection(claims: claims)
@@ -27,7 +27,6 @@ struct ClaimSectionLoading: View {
     }
 
     var body: some View {
-
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in

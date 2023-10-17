@@ -36,7 +36,6 @@ public struct HomeView<Content: View, Claims: View>: View {
 extension HomeView {
     func fetch() {
         store.send(.fetchMemberState)
-        store.send(.fetchFutureStatus)
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
     }
@@ -256,19 +255,10 @@ struct Active_Preview: PreviewProvider {
         }
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
-                status: .makeActiveStatus(),
-                upcomingRenewal: .init(
-                    renewalDate: "2023-11-11",
-                    draftCertificateUrl: "URL"
-                )
-            )
             store.send(
                 .setMemberContractState(
                     state: .init(state: .active, name: "NAME"),
-                    contracts: [.init(contract: contract)]
+                    contracts: []
                 )
             )
             store.send(.setFutureStatus(status: .none))
@@ -288,16 +278,10 @@ struct ActiveInFuture_Previews: PreviewProvider {
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: nil,
-                status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                upcomingRenewal: nil
-            )
             store.send(
                 .setMemberContractState(
                     state: .init(state: .future, name: "NAME"),
-                    contracts: [.init(contract: contract)]
+                    contracts: []
                 )
             )
             store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
@@ -316,19 +300,10 @@ struct TerminatedToday_Previews: PreviewProvider {
         }
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
-                status: .makeTerminatedTodayStatus(),
-                upcomingRenewal: .init(
-                    renewalDate: "2023-11-11",
-                    draftCertificateUrl: "URL"
-                )
-            )
             store.send(
                 .setMemberContractState(
                     state: .init(state: .terminated, name: "NAME"),
-                    contracts: [.init(contract: contract)]
+                    contracts: []
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
@@ -347,19 +322,10 @@ struct Terminated_Previews: PreviewProvider {
         }
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
-                status: .makeTerminatedStatus(),
-                upcomingRenewal: .init(
-                    renewalDate: "2023-11-11",
-                    draftCertificateUrl: "URL"
-                )
-            )
             store.send(
                 .setMemberContractState(
                     state: .init(state: .terminated, name: "NAME"),
-                    contracts: [.init(contract: contract)]
+                    contracts: []
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
@@ -379,19 +345,10 @@ struct Deleted_Previews: PreviewProvider {
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                displayName: "DISPLAY NAME",
-                switchedFromInsuranceProvider: "switchedFromInsuranceProvider",
-                status: .makeDeletedStatus(),
-                upcomingRenewal: .init(
-                    renewalDate: "2023-11-11",
-                    draftCertificateUrl: "URL"
-                )
-            )
             store.send(
                 .setMemberContractState(
                     state: .init(state: .active, name: "NAME"),
-                    contracts: [.init(contract: contract)]
+                    contracts: []
                 )
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))

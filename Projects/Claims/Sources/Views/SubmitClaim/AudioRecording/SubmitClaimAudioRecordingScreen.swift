@@ -164,13 +164,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 minutes = 0
                                 seconds = 0
                             }
-                        LoadingButtonWithContent(SubmitClaimStore.self, .postAudioRecording) {
+                        hButton.LargeButton(type: .primary) {
                             onSubmit(url)
                             store.send(.submitAudioRecording(audioURL: url))
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel)
                         }
-
+                        .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
                         hButton.LargeButton(type: .ghost) {
                             withAnimation(.spring()) {
                                 store.send(.resetAudioRecording)
@@ -257,6 +257,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             } content: {
                 hText(L10n.saveAndContinueButtonLabel)
             }
+            .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
 
             hButton.LargeButton(type: .ghost) {
                 withAnimation {
@@ -265,6 +266,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             } content: {
                 hText(L10n.claimsUseAudioRecording, style: .body)
             }
+            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
         }
         .padding(16)
         .frame(height: 300)
@@ -275,8 +277,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .cornerRadius(12)
             .frame(height: 128)
             .padding(.vertical, 16)
-            .padding(.horizontal, 8)
-            //            .addFieldBackground(animate: $animateField, error: $inputTextError)
             .addFieldError(animate: $animateField, error: $inputTextError)
     }
 
