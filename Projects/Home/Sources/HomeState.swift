@@ -79,7 +79,6 @@ public enum HomeAction: ActionProtocol {
     case setImportantMessage(message: ImportantMessage)
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
-    //    case fetchFutureStatus
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
