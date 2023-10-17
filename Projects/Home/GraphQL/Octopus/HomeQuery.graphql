@@ -19,9 +19,6 @@ fragment ContractFragment on Contract {
       currentAgreement {
         ...AgreementFragment
       }
-      externalInsuranceCancellation {
-        ...ContractExternalInsuranceCancellationFragment
-      }
       id
       masterInceptionDate
       terminationDate
@@ -51,19 +48,3 @@ fragment AgreementDisplayItemFragment on AgreementDisplayItem {
     displayTitle
     displayValue
 }
-
-fragment ContractExternalInsuranceCancellationFragment on ContractExternalInsuranceCancellation {
-    bankSignering {
-        approveByDate
-        url
-      }
-    externalInsurer {
-        displayName
-        id
-        insurelyId
-      }
-    id
-    status
-    type
-}
-
