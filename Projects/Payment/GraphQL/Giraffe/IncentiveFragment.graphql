@@ -1,10 +1,10 @@
-fragment IncentiveFragment on Incentive {
+fragment IncentiveFragmentGiraffe on Incentive {
     ... on FreeMonths {
         quantity
     }
     ... on MonthlyCostDeduction {
         amount {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
     }
     ... on PercentageDiscountMonths {

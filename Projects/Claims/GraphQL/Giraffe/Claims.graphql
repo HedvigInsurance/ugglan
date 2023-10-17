@@ -27,7 +27,7 @@ query ClaimStatusCards($locale: Locale!) {
       }
       statusParagraph
       payout {
-        ... MonetaryAmountFragment
+        ... MonetaryAmountFragmentGiraffe
       }
       type
     }

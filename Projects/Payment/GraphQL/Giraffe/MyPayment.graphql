@@ -10,38 +10,38 @@ query MyPayment($locale: Locale!) {
     }
     balance {
         currentBalance {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         failedCharges
     }
     chargeHistory {
         amount {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         date
     }
     
     insuranceCost {
         monthlyDiscount {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         monthlyGross {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         monthlyNet {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
     }
     
     chargeEstimation {
         charge {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         discount {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
         subscription {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
     }
     

@@ -8,7 +8,7 @@ query AdyenAvailableMethods {
     adyenPublicKey
     chargeEstimation {
         subscription {
-            ...MonetaryAmountFragment
+            ...MonetaryAmountFragmentGiraffe
         }
     }
 }

@@ -197,15 +197,20 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case .fetchCommonClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
-                        query: GiraffeGraphQL.CommonClaimsQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        )
+                        query: OctopusGraphQL.CommonClaimsQuery()
                     )
                     .onValue { claimData in
-                        let commonClaims = claimData.commonClaims.map {
-                            CommonClaim(claim: $0)
+                        var commonClaims: [CommonClaim] = []
+                        claimData.availableProducts.forEach { availableProducts in
+                            availableProducts.variants.forEach { variant in
+                                variant.commonClaimDescriptions.forEach({ claim in
+                                    if self.findUniqueCommonClaims(commonClaims: commonClaims, newCommonClaim: claim) {
+                                        return commonClaims.append(CommonClaim(claim: claim))
+                                    }
+                                })
+                            }
                         }
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
                     }
@@ -274,6 +279,20 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         state.toolbarOptionTypes = types
 
+    }
+    
+    private func findUniqueCommonClaims(commonClaims: [CommonClaim], newCommonClaim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription) -> Bool {
+        var isUnique = true
+        commonClaims.forEach { commonClaim in
+            if commonClaim.id == newCommonClaim.id {
+                isUnique = false
+            }
+        }
+        if isUnique {
+            return true
+        } else {
+            return false
+        }
     }
 }
 

@@ -1,12 +1,12 @@
 fragment CostFragment on InsuranceCost {
     freeUntil
     monthlyDiscount {
-        ...MonetaryAmountFragment
+        ...MonetaryAmountFragmentGiraffe
     }
     monthlyGross {
-        ...MonetaryAmountFragment
+        ...MonetaryAmountFragmentGiraffe
     }
     monthlyNet {
-        ...MonetaryAmountFragment
+        ...MonetaryAmountFragmentGiraffe
     }
 }

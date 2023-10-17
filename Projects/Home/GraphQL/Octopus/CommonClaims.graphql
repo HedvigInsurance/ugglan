@@ -1,0 +1,33 @@
+query CommonClaims {
+  availableProducts {
+    variants {
+      commonClaimDescriptions {
+        id
+        icon {
+          ...IconFragment
+        }
+        title
+        layout {
+          ... on CommonClaimLayoutTitleAndBulletPoints {
+            color
+            title
+            buttonTitle
+            bulletPoints {
+              icon {
+                ...IconFragment
+              }
+              title
+              description
+            }
+          }
+          ... on CommonClaimLayoutEmergency {
+            color
+            title
+            emergencyNumber
+          }
+        }
+      }
+    }
+  }
+}
+

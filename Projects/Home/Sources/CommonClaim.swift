@@ -7,11 +7,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     public let imageName: String?
     public let displayTitle: String
     public let layout: Layout
-
+    
     public enum CommonClaimItemType: String {
         case phone = "PHONE"
     }
-
+    
     public init(
         id: String,
         icon: IconEnvelope?,
@@ -24,11 +24,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         self.imageName = imageName
         self.displayTitle = displayTitle
         self.layout = layout
-
+        
     }
-
+    
     public init(
-        claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
+        claim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
     ) {
         self.id = claim.id
         self.displayTitle = claim.title
@@ -36,11 +36,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         self.imageName = nil
         self.layout = Layout(layout: claim.layout)
     }
-
+    
     public struct Layout: Codable, Equatable, Hashable {
         public var titleAndBulletPoint: TitleAndBulletPoints?
         public var emergency: Emergency?
-
+        
         public init(
             titleAndBulletPoint: TitleAndBulletPoints?,
             emergency: Emergency?
@@ -48,13 +48,13 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             self.titleAndBulletPoint = titleAndBulletPoint
             self.emergency = emergency
         }
-
+        
         public init(
-            layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
+            layout: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription.Layout
         ) {
-            if let emergency = layout.asEmergency {
+            if let emergency = layout.asCommonClaimLayoutEmergency {
                 self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)
-            } else if let content = layout.asTitleAndBulletPoints {
+            } else if let content = layout.asCommonClaimLayoutTitleAndBulletPoints {
                 let bulletPoints: [TitleAndBulletPoints.BulletPoint] = content.bulletPoints.map {
                     TitleAndBulletPoints.BulletPoint(
                         title: $0.title,
@@ -62,7 +62,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                         icon: IconEnvelope(fragment: $0.icon.fragments.iconFragment)
                     )
                 }
-
+                
                 self.titleAndBulletPoint = TitleAndBulletPoints(
                     color: content.color.rawValue,
                     buttonTitle: content.buttonTitle,
@@ -71,13 +71,13 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 )
             }
         }
-
+        
         public struct TitleAndBulletPoints: Codable, Equatable, Hashable {
             public let color: String
             public var buttonTitle: String?
             public var title: String?
             public var bulletPoints: [BulletPoint]
-
+            
             public init(
                 color: String,
                 buttonTitle: String? = nil,
@@ -89,12 +89,12 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 self.title = title
                 self.bulletPoints = bulletPoints
             }
-
+            
             public struct BulletPoint: Codable, Hashable, Equatable {
                 public let title: String
                 public let description: String
                 public let icon: IconEnvelope?
-
+                
                 public init(
                     title: String,
                     description: String,
@@ -106,11 +106,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 }
             }
         }
-
+        
         public struct Emergency: Codable, Hashable, Equatable {
             public let title: String
             public let color: String
-
+            
             public init(
                 title: String,
                 color: String
@@ -118,9 +118,9 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 self.title = title
                 self.color = color
             }
-
+            
             public var isAlert: Bool {
-                return GiraffeGraphQL.HedvigColor(rawValue: color) == .yellow
+                return OctopusGraphQL.HedvigColor(rawValue: color) == .yellow
             }
         }
     }

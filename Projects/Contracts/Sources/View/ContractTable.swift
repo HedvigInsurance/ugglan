@@ -11,9 +11,9 @@ import hGraphQL
 struct ContractTable {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
-
+    
     func getContractsToShow(for state: ContractState) -> [Contract] {
-
+        
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
         } else {
@@ -32,7 +32,7 @@ extension ContractTable: View {
                     ContractStore.self,
                     getter: { state in
                         getContractsToShow(for: state)
-
+                        
                     }
                 ) { contracts in
                     ForEach(contracts, id: \.id) { contract in
