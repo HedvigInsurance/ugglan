@@ -116,18 +116,50 @@ struct RenewalCardView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return RenewalCardView()
-        //            .onAppear {
-        //                let state = MemberStateData(state: .active, name: "NAME")
-        //                let girafeContract = GiraffeGraphQL.HomeQuery.Data.Contract(
-        //                    displayName: "CONTRACT NAME",
-        //                    status: .makeDeletedStatus(),
-        //                    upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal(
-        //                        renewalDate: "2023-10-10",
-        //                        draftCertificateUrl: "https://www.google.com"
-        //                    )
-        //                )
-        //                let contract = Home.Contract(contract: girafeContract)
-        //                store.send(.setMemberContractState(state: state, contracts: [contract]))
-        //            }
+            .onAppear {
+                let state = MemberStateData(state: .active, name: "NAME")
+                let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
+                    currentAgreement: .init(
+                        activeFrom: "",
+                        activeTo: "",
+                        creationCause: .midtermChange,
+                        displayItems: [],
+                        premium: .init(amount: 22, currencyCode: .sek),
+                        productVariant: .init(
+                            perils: [],
+                            typeOfContract: "",
+                            termsVersion: "",
+                            documents: [],
+                            displayName: "dispaly name",
+                            insurableLimits: [],
+                            highlights: [],
+                            faq: []
+                        )
+                    ),
+                    id: "",
+                    masterInceptionDate: "",
+                    exposureDisplayName: "exposure dispay name",
+                    upcomingChangedAgreement: .init(
+                        activeFrom: "2023-12-10",
+                        activeTo: "2024-12-10",
+                        creationCause: .renewal,
+                        displayItems: [],
+                        premium: .init(amount: 22, currencyCode: .sek),
+                        productVariant: .init(
+                            perils: [],
+                            typeOfContract: "",
+                            termsVersion: "",
+                            documents: [],
+                            displayName: "display name",
+                            insurableLimits: [],
+                            highlights: [],
+                            faq: []
+                        )
+                    )
+                )
+
+                let contract = Home.Contract(contract: octopusContract)
+                store.send(.setMemberContractState(state: state, contracts: [contract]))
+            }
     }
 }
