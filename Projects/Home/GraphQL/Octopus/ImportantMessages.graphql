@@ -1,0 +1,9 @@
+query ImportantMessages {
+  currentMember {
+    importantMessages {
+      id
+      message
+      link
+    }
+  }
+}

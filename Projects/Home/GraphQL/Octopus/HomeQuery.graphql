@@ -1,0 +1,50 @@
+query Home {
+  currentMember {
+    firstName
+    activeContracts {
+        ...ContractFragment
+    }
+    pendingContracts {
+      externalInsuranceCancellationHandledByHedvig
+      exposureDisplayName
+      id
+    }
+  }
+}
+
+
+
+
+fragment ContractFragment on Contract {
+      currentAgreement {
+        ...AgreementFragment
+      }
+      id
+      masterInceptionDate
+      terminationDate
+      exposureDisplayName
+      upcomingChangedAgreement {
+         ...AgreementFragment
+      }
+}
+
+fragment AgreementFragment on Agreement {
+    activeFrom
+    activeTo
+    certificateUrl
+    creationCause
+    displayItems {
+        ...AgreementDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+    displayTitle
+    displayValue
+}
