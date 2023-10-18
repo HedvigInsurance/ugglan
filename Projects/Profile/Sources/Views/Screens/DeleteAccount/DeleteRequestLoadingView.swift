@@ -7,21 +7,21 @@ import hGraphQL
 struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     @Inject var octopus: hOctopus
-    
+
     enum ScreenState {
         case sendingMessage(MemberDetails)
         case success
         case error
     }
-    
+
     @State var screenState: ScreenState
-    
+
     @ViewBuilder var sendingState: some View {
         VStack {
             DotsActivityIndicator(.standard).useDarkColor
         }
     }
-    
+
     @ViewBuilder private var successState: some View {
         hForm {
             VStack(spacing: 0) {
@@ -48,32 +48,32 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 16)
         }
     }
-    
+
     @ViewBuilder private var errorState: some View {
         VStack {
             Spacer()
             VStack {
                 hCoreUIAssets.circularCross.view
                     .frame(width: 32, height: 32)
-                
+
                 Spacer()
                     .frame(height: 16)
-                
+
                 hText(L10n.HomeTab.errorTitle, style: .body)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
-                
+
                 Spacer()
                     .frame(height: 16)
-                
+
                 hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
             Spacer()
-            
+
             hButton.LargeButtonOutlined {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
@@ -84,7 +84,7 @@ struct DeleteRequestLoadingView: View {
             .padding(.bottom, 40)
         }
     }
-    
+
     var body: some View {
         switch screenState {
         case let .sendingMessage(memberDetails):
@@ -102,7 +102,7 @@ struct DeleteRequestLoadingView: View {
             errorState
         }
     }
-    
+
     private func sendSlackMessage(details: MemberDetails) throws {
         var errorMessage: String?
         self.octopus.client
