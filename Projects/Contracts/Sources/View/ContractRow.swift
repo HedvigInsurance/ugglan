@@ -103,6 +103,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .border(hBorderColor.translucentOne, width: 0.5)
+        .colorScheme(.light)
         .clipShape(Squircle.default())
         .hShadow()
         .contentShape(Rectangle())
