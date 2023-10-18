@@ -166,7 +166,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             }
                         hButton.LargeButton(type: .primary) {
                             onSubmit(url)
-                            store.send(.submitAudioRecording(audioURL: url))
+                            store.send(.submitAudioRecording(type: .audio(url: url)))
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel)
                         }
@@ -252,7 +252,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             hButton.LargeButton(type: .primary) {
                 UIApplication.dismissKeyboard()
                 if validate() {
-                    store.send(.submitTextInput(text: inputText))
+                    store.send(.submitAudioRecording(type: .text(text: inputText)))
                 }
             } content: {
                 hText(L10n.saveAndContinueButtonLabel)

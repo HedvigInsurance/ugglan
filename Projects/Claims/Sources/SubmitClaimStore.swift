@@ -62,65 +62,67 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
             }
             return nil
-        case let .submitAudioRecording(audioURL):
-            return FiniteSignal { [unowned self] callback in
-                let disposeBag = DisposeBag()
-                do {
-                    if let url = self.state.audioRecordingStep?.audioContent?.audioUrl {
-                        let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                            audioUrl: url
-                        )
-                        let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                            input: audioInput,
-                            context: newClaimContext
-                        )
-                        disposeBag +=
-                            mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
-                            .onValue({ action in
-                                callback(.value(action))
-                            })
-                    } else {
-                        let data = try Data(contentsOf: audioURL)
-                        let name = audioURL.lastPathComponent
-                        let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
-                        disposeBag += try self.fileUploaderClient
-                            .upload(flowId: self.state.currentClaimId, file: uploadFile)
-                            .onValue({ responseModel in
-                                let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                                    audioUrl: responseModel.audioUrl
-                                )
-                                let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                                    input: audioInput,
-                                    context: newClaimContext
-                                )
-                                disposeBag +=
-                                    mutation.execute(
-                                        \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
+        case let .submitAudioRecording(type):
+            switch type {
+            case .audio(let audioURL):
+                return FiniteSignal { [unowned self] callback in
+                    let disposeBag = DisposeBag()
+                    do {
+                        if let url = self.state.audioRecordingStep?.audioContent?.audioUrl {
+                            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+                                audioUrl: url
+                            )
+                            let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
+                                input: audioInput,
+                                context: newClaimContext
+                            )
+                            disposeBag +=
+                                mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
+                                .onValue({ action in
+                                    callback(.value(action))
+                                })
+                        } else {
+                            let data = try Data(contentsOf: audioURL)
+                            let name = audioURL.lastPathComponent
+                            let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
+                            disposeBag += try self.fileUploaderClient
+                                .upload(flowId: self.state.currentClaimId, file: uploadFile)
+                                .onValue({ responseModel in
+                                    let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+                                        audioUrl: responseModel.audioUrl
                                     )
-                                    .onValue({ action in
-                                        callback(.value(action))
-                                    })
-                            })
-                            .onError({ [weak self] error in
-                                self?.setError(L10n.General.errorBody, for: .postAudioRecording)
-                            })
-                            .disposable
+                                    let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
+                                        input: audioInput,
+                                        context: newClaimContext
+                                    )
+                                    disposeBag +=
+                                        mutation.execute(
+                                            \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
+                                        )
+                                        .onValue({ action in
+                                            callback(.value(action))
+                                        })
+                                })
+                                .onError({ [weak self] error in
+                                    self?.setError(L10n.General.errorBody, for: .postAudioRecording)
+                                })
+                                .disposable
+                        }
+                    } catch _ {
+                        self.setError(L10n.General.errorBody, for: .postAudioRecording)
                     }
-                } catch _ {
-                    self.setError(L10n.General.errorBody, for: .postAudioRecording)
+                    return disposeBag
                 }
-
-                return disposeBag
+            case let .text(text):
+                let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+                    freeText: text
+                )
+                let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
+                    input: audioInput,
+                    context: newClaimContext
+                )
+                return mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
             }
-        case let .submitTextInput(text):
-            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                freeText: text
-            )
-            let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                input: audioInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
         case let .submitDamage(damages):
             return FiniteSignal { callback in
                 callback(.value(.setSingleItemDamage(damages: damages)))
@@ -221,8 +223,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
         case .submitAudioRecording:
-            setLoading(for: .postAudioRecording)
-        case .submitTextInput:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
             newState.audioRecordingStep?.audioContent = nil
