@@ -65,7 +65,7 @@ public struct ClaimDetailView: View {
                         }
                     }
                     .withHeader {
-                        hText("Submitted message")
+                        hText(L10n.ClaimStatusDetail.submittedMessage)
                             .padding(.leading, 2)
                     }
                     .padding(.top, 16)
