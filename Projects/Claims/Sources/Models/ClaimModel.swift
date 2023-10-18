@@ -39,7 +39,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.memberFreeText = claim.memberFreeText
     }
 
-    public let title = L10n.Claim.Casetype.insuranceCase
+    public var title: String {
+        L10n.Claim.Casetype.insuranceCase
+    }
     public let subtitle: String
     public let id: String
     public let status: ClaimStatus

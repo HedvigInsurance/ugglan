@@ -19,7 +19,7 @@ public struct UpcomingRenewal: Codable, Equatable {
     public init?(
         upcomingRenewal: OctopusGraphQL.AgreementFragment?
     ) {
-        guard let upcomingRenewal else { return nil }
+        guard let upcomingRenewal, upcomingRenewal.creationCause == .renewal else { return nil }
         self.renewalDate = upcomingRenewal.activeFrom
         self.draftCertificateUrl = upcomingRenewal.certificateUrl
     }
