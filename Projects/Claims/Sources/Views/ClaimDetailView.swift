@@ -58,6 +58,18 @@ public struct ClaimDetailView: View {
                         perform: { player in
                         }
                     )
+                } else if let inputText = claim.memberFreeText {
+                    hSection {
+                        hRow {
+                            hText(inputText)
+                        }
+                    }
+                    .withHeader {
+                        hText(L10n.ClaimStatusDetail.submittedMessage)
+                            .padding(.leading, 2)
+                    }
+                    .padding(.top, 16)
+
                 }
             }
         }

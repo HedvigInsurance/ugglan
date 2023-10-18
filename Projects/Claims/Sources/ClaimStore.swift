@@ -30,13 +30,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         callback(.value(ClaimsAction.setClaims(claims: claimData)))
                     }
                     .onError { error in
-                        if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setLoadingState(action: action, state: nil)))
-                        } else {
-                            callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                        callback(
+                            .value(
+                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
                             )
-                        }
+                        )
                     }
                 return disposeBag
             }
