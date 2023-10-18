@@ -4,63 +4,111 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatusBar: View {
-    let status: ClaimModel.ClaimStatusProgressSegment
+    let status: ClaimModel.ClaimStatus
+    let outcome: ClaimModel.ClaimOutcome
 
-    @hColorBuilder var barColor: some hColor {
-        switch status.type {
-        case .currentlyActive:
-            hTextColor.primary
-        case .pastInactive:
-            hTextColor.secondary
-        case .paid:
-            hSignalColor.blueElement
+    @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
+        switch status {
+        case .submitted:
+            if segment == .submitted {
+                hTextColor.primary
+            } else {
+                hTextColor.tertiary
+            }
+        case .beingHandled:
+            switch segment {
+            case .submitted:
+                hTextColor.secondary
+            case .beingHandled:
+                hTextColor.primary
+            default:
+                hTextColor.tertiary
+            }
+        case .closed:
+            if outcome == .paid {
+                hSignalColor.blueElement
+            } else {
+                hTextColor.primary
+            }
         case .reopened:
-            hSignalColor.amberElement
-        case .futureInactive:
-            hTextColor.tertiary
-        case .none:
-            hTextColor.primary
+            switch segment {
+            case .submitted:
+                hTextColor.secondary
+            case .beingHandled:
+                hSignalColor.amberElement
+            default:
+                hTextColor.tertiary
+            }
+        default:
+            hTextColor.secondary
         }
     }
 
-    @hColorBuilder var textColor: some hColor {
-        switch status.type {
-        case .currentlyActive:
+    @hColorBuilder func textColor(segment: ClaimModel.ClaimStatus) -> some hColor {
+        if outcome == .paid {
             hTextColor.primary
-        case .pastInactive:
-            hTextColor.secondary
-        case .paid:
-            hTextColor.primary
-        case .reopened:
-            hTextColor.primary
-        case .futureInactive:
-            hTextColor.tertiary
-        case .none:
-            hTextColor.primary
+        } else {
+            switch status {
+            case .submitted:
+                if segment == .submitted {
+                    hTextColor.primary
+                } else {
+                    hTextColor.tertiary
+                }
+            case .beingHandled:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hTextColor.primary
+                case .closed:
+                    hTextColor.tertiary
+                default:
+                    hTextColor.tertiary
+                }
+            case .reopened:
+                switch segment {
+                case .submitted:
+                    hTextColor.secondary
+                case .beingHandled:
+                    hTextColor.primary
+                default:
+                    hTextColor.tertiary
+                }
+            case .closed:
+                hTextColor.primary
+            default:
+                hTextColor.secondary
+            }
         }
     }
 
     var body: some View {
-        VStack {
-            Rectangle()
-                .fill(barColor)
-                .frame(height: 4)
-                .cornerRadius(2)
-            hText(status.text, style: .standardSmall)
-                .foregroundColor(textColor)
-                .lineLimit(1)
+        ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+            if !(segment == .none || segment == .reopened) {
+                VStack {
+                    Rectangle()
+                        .fill(barColor(segment: segment))
+                        .frame(height: 4)
+                        .cornerRadius(2)
+                    hText(segment.title, style: .standardSmall)
+                        .foregroundColor(textColor(segment: segment))
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
-        .frame(maxWidth: .infinity)
     }
 }
+
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
         HStack {
-            ClaimStatusBar(status: .init(text: "currently Active", type: .currentlyActive))
-            ClaimStatusBar(status: .init(text: "future Inactive", type: .futureInactive))
-            ClaimStatusBar(status: .init(text: "paid", type: .paid))
-            ClaimStatusBar(status: .init(text: "past Inactive", type: .pastInactive))
-            ClaimStatusBar(status: .init(text: "reopened", type: .reopened))
+            ClaimStatusBar(status: .beingHandled, outcome: .none)
+            ClaimStatusBar(status: .closed, outcome: .notCompensated)
+            ClaimStatusBar(status: .reopened, outcome: .none)
+            ClaimStatusBar(status: .submitted, outcome: .none)
+            ClaimStatusBar(status: .none, outcome: .none)
         }
     }
 }

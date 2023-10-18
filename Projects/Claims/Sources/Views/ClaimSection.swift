@@ -22,7 +22,7 @@ struct ClaimSection: View {
             items: claims,
             tapAction: tapAction
         ) { claim in
-            ClaimStatus(claim: claim)
+            ClaimStatus(claim: claim, enableTap: true)
                 .padding(.top)
                 .padding(.bottom, 5)
         }

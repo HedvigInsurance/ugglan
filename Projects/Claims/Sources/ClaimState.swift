@@ -19,8 +19,8 @@ public struct ClaimsState: StateProtocol {
         if let claims = claims {
             return
                 !claims.filter {
-                    $0.claimDetailData.status == .beingHandled || $0.claimDetailData.status == .reopened
-                        || $0.claimDetailData.status == .submitted
+                    $0.status == .beingHandled || $0.status == .reopened
+                        || $0.status == .submitted
                 }
                 .isEmpty
         }
