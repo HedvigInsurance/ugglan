@@ -90,13 +90,7 @@ struct DeleteRequestLoadingView: View {
         case let .sendingMessage(memberDetails):
             sendingState
                 .onAppear {
-                    Task {
-                        do {
-                            try await sendSlackMessage(details: memberDetails)
-                        } catch let ex {
-                            print(ex.localizedDescription)
-                        }
-                    }
+                    sendSlackMessage(details: memberDetails)
                 }
         case .success:
             successState
@@ -105,24 +99,20 @@ struct DeleteRequestLoadingView: View {
         }
     }
 
-    private func sendSlackMessage(details: MemberDetails) async throws {
-        try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
-            self.octopus.client
-                .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
-                .onValue { value in
-                    if let errorFromGraphQL = value.memberDeletionRequest?.message {
-                        inCont.resume(throwing: MemberDeletionRequestError.errorMessage(message: errorFromGraphQL))
-                    } else {
-                        store.send(.dismissScreen)
-                        store.send(.deleteAccountAlreadyRequested)
-                        ApolloClient.saveDeleteAccountStatus(for: details.id)
-                        inCont.resume()
-                    }
+    private func sendSlackMessage(details: MemberDetails) {
+        self.octopus.client
+            .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+            .onValue { value in
+                if let _ = value.memberDeletionRequest?.message {
+                    screenState = .error
+                } else {
+                    ApolloClient.saveDeleteAccountStatus(for: details.id)
+                    screenState = .success
                 }
-                .onError { graphQLError in
-                    inCont.resume(throwing: graphQLError)
-                }
-        }
+            }
+            .onError { graphQLError in
+                screenState = .error
+            }
     }
 }
 
