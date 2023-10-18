@@ -185,16 +185,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         query: OctopusGraphQL.CommonClaimsQuery()
                     )
                     .onValue { claimData in
-                        var commonClaims: [CommonClaim] = []
-                        claimData.availableProducts.forEach { availableProducts in
-                            availableProducts.variants.forEach { variant in
-                                variant.commonClaimDescriptions.forEach({ claim in
-                                    if self.findUniqueCommonClaims(commonClaims: commonClaims, newCommonClaim: claim) {
-                                        return commonClaims.append(CommonClaim(claim: claim))
-                                    }
-                                })
-                            }
-                        }
+                        let commonClaims = claimData.availableProducts
+                            .flatMap({ $0.variants })
+                            .flatMap({ $0.commonClaimDescriptions })
+                            .compactMap({ CommonClaim(claim: $0) })
+                            .unique()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
                     }
                     .onError { [weak self] error in
@@ -264,23 +259,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         state.toolbarOptionTypes = types
 
-    }
-
-    private func findUniqueCommonClaims(
-        commonClaims: [CommonClaim],
-        newCommonClaim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
-    ) -> Bool {
-        var isUnique = true
-        commonClaims.forEach { commonClaim in
-            if commonClaim.id == newCommonClaim.id {
-                isUnique = false
-            }
-        }
-        if isUnique {
-            return true
-        } else {
-            return false
-        }
     }
 }
 
