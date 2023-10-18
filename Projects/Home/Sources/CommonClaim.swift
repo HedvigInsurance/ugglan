@@ -28,7 +28,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     }
 
     public init(
-        claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
+        claim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
     ) {
         self.id = claim.id
         self.displayTitle = claim.title
@@ -50,11 +50,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         }
 
         public init(
-            layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
+            layout: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription.Layout
         ) {
-            if let emergency = layout.asEmergency {
+            if let emergency = layout.asCommonClaimLayoutEmergency {
                 self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)
-            } else if let content = layout.asTitleAndBulletPoints {
+            } else if let content = layout.asCommonClaimLayoutTitleAndBulletPoints {
                 let bulletPoints: [TitleAndBulletPoints.BulletPoint] = content.bulletPoints.map {
                     TitleAndBulletPoints.BulletPoint(
                         title: $0.title,
@@ -120,7 +120,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             }
 
             public var isAlert: Bool {
-                return GiraffeGraphQL.HedvigColor(rawValue: color) == .yellow
+                return OctopusGraphQL.HedvigColor(rawValue: color) == .yellow
             }
         }
     }

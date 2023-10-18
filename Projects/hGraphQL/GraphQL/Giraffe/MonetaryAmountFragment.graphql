@@ -1,4 +1,4 @@
-fragment MonetaryAmountFragment on MonetaryAmountV2 {
+fragment MonetaryAmountFragmentGiraffe on MonetaryAmountV2 {
     amount
     currency
 }

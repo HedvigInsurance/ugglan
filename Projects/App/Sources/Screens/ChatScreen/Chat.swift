@@ -2,7 +2,6 @@ import AVKit
 import Apollo
 import Flow
 import Form
-import Offer
 import Presentation
 import Profile
 import UIKit

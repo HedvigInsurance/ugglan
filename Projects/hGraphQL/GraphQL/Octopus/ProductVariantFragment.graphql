@@ -1,12 +1,6 @@
 fragment ProductVariantFragment on ProductVariant {
     perils {
-        id
-        title
-        description
-        info
-        covered
-        exceptions
-        colorCode
+        ...PerilFragment
     }
     typeOfContract
     termsVersion
@@ -48,4 +42,14 @@ fragment InsuranceDocumentFragment on InsuranceDocument {
     displayName
     type
     url
+}
+
+fragment PerilFragment on Peril {
+    id
+    title
+    description
+    info
+    covered
+    exceptions
+    colorCode
 }

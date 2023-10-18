@@ -12,7 +12,6 @@ mkdir Projects/Forever/Sources/Derived
 mkdir Projects/Contracts/Sources/Derived
 mkdir Projects/Home/Sources/Derived
 mkdir Projects/Market/Sources/Derived
-mkdir Projects/Offer/Sources/Derived
 
 if [[ -f $TMPDIR/bin/swiftgen ]]
 then

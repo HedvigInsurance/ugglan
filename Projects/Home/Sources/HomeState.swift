@@ -180,16 +180,16 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case .fetchCommonClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
-                        query: GiraffeGraphQL.CommonClaimsQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        )
+                        query: OctopusGraphQL.CommonClaimsQuery()
                     )
                     .onValue { claimData in
-                        let commonClaims = claimData.commonClaims.map {
-                            CommonClaim(claim: $0)
-                        }
+                        let commonClaims = claimData.availableProducts
+                            .flatMap({ $0.variants })
+                            .flatMap({ $0.commonClaimDescriptions })
+                            .compactMap({ CommonClaim(claim: $0) })
+                            .unique()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
                     }
                     .onError { [weak self] error in

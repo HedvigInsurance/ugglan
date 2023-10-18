@@ -32,10 +32,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
-                if let icon = peril.icon {
-                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
-                        .frame(width: 24, height: 24)
-                } else if let color = peril.color {
+                if let color = peril.color {
                     Circle().fill(Color(hexString: color))
                         .frame(width: 24, height: 24)
                 }
