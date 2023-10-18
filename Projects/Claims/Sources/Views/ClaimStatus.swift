@@ -55,6 +55,13 @@ struct ClaimPills: View {
                 textColor: claim.outcome.textColor,
                 backgroundColor: claim.outcome.backgroundColor
             )
+            if let payout = claim.payoutAmount {
+                hPillFill(
+                    text: payout.formattedAmount,
+                    textColor: hSignalColor.blueText,
+                    backgroundColor: hSignalColor.blueHighLight
+                )
+            }
         }
     }
 }
@@ -91,7 +98,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             type: "type",
-            memberFreeText: nil
+            memberFreeText: nil,
+            payoutAmount: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -112,7 +120,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             type: "type",
-            memberFreeText: nil
+            memberFreeText: nil,
+            payoutAmount: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -133,7 +142,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             type: "type",
-            memberFreeText: nil
+            memberFreeText: nil,
+            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -154,7 +164,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             type: "type",
-            memberFreeText: nil
+            memberFreeText: nil,
+            payoutAmount: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -175,7 +186,8 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             closedAt: nil,
             signedAudioURL: "",
             type: "type",
-            memberFreeText: nil
+            memberFreeText: nil,
+            payoutAmount: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

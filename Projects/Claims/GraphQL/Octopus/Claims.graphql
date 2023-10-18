@@ -9,6 +9,9 @@ query Claims {
       closedAt
       audioUrl
       memberFreeText
+      payoutAmount {
+        ...MoneyFragment
+      }
     }
   }
 }

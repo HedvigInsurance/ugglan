@@ -12,7 +12,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         closedAt: String?,
         signedAudioURL: String?,
         type: String,
-        memberFreeText: String?
+        memberFreeText: String?,
+        payoutAmount: MonetaryAmount?
     ) {
         self.id = id
         self.status = status
@@ -23,6 +24,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.type = type
         self.subtitle = ""
         self.memberFreeText = memberFreeText
+        self.payoutAmount = payoutAmount
     }
 
     internal init(
@@ -37,6 +39,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.type = claim.associatedTypeOfContract ?? ""
         self.subtitle = ""
         self.memberFreeText = claim.memberFreeText
+        self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
     }
 
     public let title = L10n.Claim.Casetype.insuranceCase
@@ -48,6 +51,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let closedAt: String?
     public let signedAudioURL: String?
     public let memberFreeText: String?
+    public let payoutAmount: MonetaryAmount?
     public var statusParagraph: String {
         switch self.status {
         case .submitted:
