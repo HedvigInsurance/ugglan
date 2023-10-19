@@ -11,7 +11,7 @@ struct DeleteRequestLoadingView: View {
     enum ScreenState {
         case sendingMessage(MemberDetails)
         case success
-        case error(errorMessage: String?)
+        case error(errorMessage: String)
     }
     
     @State var screenState: ScreenState
@@ -49,41 +49,17 @@ struct DeleteRequestLoadingView: View {
         }
     }
     
-    @ViewBuilder private func errorState(errorMessage: String?) -> some View {
+    @ViewBuilder private func errorState(errorMessage: String) -> some View {
         VStack {
             Spacer()
-            VStack {
-                hCoreUIAssets.circularCross.view
-                    .frame(width: 32, height: 32)
-                
-                Spacer()
-                    .frame(height: 16)
-                
-                hText(L10n.HomeTab.errorTitle, style: .body)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-                
-                Spacer()
-                    .frame(height: 16)
-                
-                Group {
-                    if let errorMessage {
-                        hText(errorMessage, style: .callout)
-                    } else {
-                        hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
-                    }
-                }
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            }
-            Spacer()
             
+            RetryView(subtitle: errorMessage)
+            Spacer()
+
             hButton.LargeButtonOutlined {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
-                hText("Back to home", style: .body)
+                hText(L10n.generalCloseButton, style: .body)
                     .foregroundColor(.primary)
             }
             .padding([.top, .horizontal])
@@ -117,7 +93,7 @@ struct DeleteRequestLoadingView: View {
                 }
             }
             .onError { graphQLError in
-                screenState = .error(errorMessage: nil)
+                screenState = .error(errorMessage: L10n.General.errorBody)
             }
     }
 }
