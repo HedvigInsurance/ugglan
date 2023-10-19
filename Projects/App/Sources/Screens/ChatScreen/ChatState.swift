@@ -297,7 +297,7 @@ enum FileUploadRequest {
         switch self {
         case let .uploadFile(file):
             var baseUrlString = baseUrl.absoluteString
-            baseUrlString.append("/api/upload")
+            baseUrlString.append("api/files/upload")
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             multipartFormDataRequest.addDataField(
@@ -313,7 +313,6 @@ enum FileUploadRequest {
             TokenRefresher.shared.refreshIfNeeded()
                 .onValue {
                     var headers = ApolloClient.headers()
-                    headers["Odyssey-Platform"] = "ios"
                     headers.forEach { element in
                         request.setValue(element.value, forHTTPHeaderField: element.key)
                     }

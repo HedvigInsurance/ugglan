@@ -116,9 +116,9 @@ public enum Environment: Hashable {
 
     public var botServiceApiURL: URL {
         switch self {
-        case .staging: return URL(string: "https://odyssey.dev.hedvigit.com")!
-        case .production: return URL(string: "https://odyssey.prod.hedvigit.com")!
-        case .custom: return URL(string: "https://odyssey.dev.hedvigit.com")!
+        case .staging: return URL(string: "https://gateway.test.hedvig.com/bot-service/")!
+        case .production: return URL(string: "https://gateway.hedvig.com/bot-service/")!
+        case .custom: return URL(string: "https://gateway.test.hedvig.com/bot-service/")!
         }
     }
 
