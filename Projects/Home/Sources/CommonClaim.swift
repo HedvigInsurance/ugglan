@@ -28,7 +28,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     }
 
     public init(
-        claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
+        claim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
     ) {
         self.id = claim.id
         self.displayTitle = claim.title
@@ -50,11 +50,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         }
 
         public init(
-            layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
+            layout: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription.Layout
         ) {
-            if let emergency = layout.asEmergency {
+            if let emergency = layout.asCommonClaimLayoutEmergency {
                 self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)
-            } else if let content = layout.asTitleAndBulletPoints {
+            } else if let content = layout.asCommonClaimLayoutTitleAndBulletPoints {
                 let bulletPoints: [TitleAndBulletPoints.BulletPoint] = content.bulletPoints.map {
                     TitleAndBulletPoints.BulletPoint(
                         title: $0.title,
@@ -78,7 +78,12 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             public var title: String?
             public var bulletPoints: [BulletPoint]
 
-            public init(color: String, buttonTitle: String? = nil, title: String? = nil, bulletPoints: [BulletPoint]) {
+            public init(
+                color: String,
+                buttonTitle: String? = nil,
+                title: String? = nil,
+                bulletPoints: [BulletPoint]
+            ) {
                 self.color = color
                 self.buttonTitle = buttonTitle
                 self.title = title
@@ -90,7 +95,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 public let description: String
                 public let icon: IconEnvelope?
 
-                public init(title: String, description: String, icon: IconEnvelope?) {
+                public init(
+                    title: String,
+                    description: String,
+                    icon: IconEnvelope?
+                ) {
                     self.title = title
                     self.description = description
                     self.icon = icon
@@ -102,13 +111,16 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             public let title: String
             public let color: String
 
-            public init(title: String, color: String) {
+            public init(
+                title: String,
+                color: String
+            ) {
                 self.title = title
                 self.color = color
             }
 
             public var isAlert: Bool {
-                return GiraffeGraphQL.HedvigColor(rawValue: color) == .yellow
+                return OctopusGraphQL.HedvigColor(rawValue: color) == .yellow
             }
         }
     }

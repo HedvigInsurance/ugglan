@@ -55,10 +55,6 @@ public enum Fonts {
             return UIFont(descriptor: fontDescriptor, size: size)
         }
 
-        //        if !hAnalyticsExperiment.useHedvigLettersFont {
-        //            return getFont(favoritStdBook)
-        //        }
-
         switch style {
         case .title1, .title:
             return getFont(hedvigLettersBig)

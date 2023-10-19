@@ -1,0 +1,17 @@
+query Claims {
+  currentMember {
+    claims {
+      id
+      outcome
+      status
+      submittedAt
+      associatedTypeOfContract
+      closedAt
+      audioUrl
+      memberFreeText
+      payoutAmount {
+        ...MoneyFragment
+      }
+    }
+  }
+}

@@ -16,14 +16,14 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
     }
 
     public init(
-        fragment: GiraffeGraphQL.MonetaryAmountFragment
+        fragment: GiraffeGraphQL.MonetaryAmountFragmentGiraffe
     ) {
         amount = fragment.amount
         currency = fragment.currency
     }
 
     public init?(
-        optionalFragment: GiraffeGraphQL.MonetaryAmountFragment?
+        optionalFragment: GiraffeGraphQL.MonetaryAmountFragmentGiraffe?
     ) {
         guard let optionalFragment else { return nil }
         amount = optionalFragment.amount
@@ -35,6 +35,14 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
     ) {
         amount = String(fragment.amount)
         currency = fragment.currencyCode.rawValue
+    }
+
+    public init?(
+        optionalFragment: OctopusGraphQL.MoneyFragment?
+    ) {
+        guard let optionalFragment else { return nil }
+        amount = String(optionalFragment.amount)
+        currency = optionalFragment.currencyCode.rawValue
     }
 
     public var amount: String

@@ -33,6 +33,9 @@ fragment FlowClaimFragment on Flow {
 fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
     id
     questions
+    freeText
+    freeTextQuestions
+    freeTextAvailable
     audioContent {
         ...FlowClaimAudioContentFragment
     }

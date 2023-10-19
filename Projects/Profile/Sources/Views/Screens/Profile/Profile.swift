@@ -67,6 +67,7 @@ public struct ProfileView: View {
                 .padding(.top, 16)
             }
         }
+        .hFormMergeBottomViewWithContentIfNeeded
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 ConnectPaymentCardView()

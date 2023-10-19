@@ -4,7 +4,6 @@ import Foundation
 import Payment
 import Presentation
 import Profile
-import SwiftUI
 import UIKit
 import hAnalytics
 import hCore
@@ -17,13 +16,18 @@ extension AppDelegate {
         guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
 
         if path == .directDebit {
-            fromVC.present(
-                PaymentSetup(setupType: .initial)
-                    .journeyThenDismiss
-            )
-            .onValue { _ in
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    UIApplication.shared.getTopViewController()?
+                        .present(
+                            PaymentSetup(setupType: .initial)
+                                .journeyThenDismiss
+                        )
+                        .onValue { _ in
 
-            }
+                        }
+                    self?.deepLinkDisposeBag.dispose()
+                }
         } else if path == .sasEuroBonus {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
@@ -46,9 +50,10 @@ extension AppDelegate {
 
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { _ in
+                .onValue { [weak self] _ in
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.makeTabActive(deeplink: path))
+                    self?.deepLinkDisposeBag.dispose()
                 }
         }
     }

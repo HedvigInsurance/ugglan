@@ -21,6 +21,7 @@ extension UIColor {
         static let amberDark = UIColor(hexString: "E5AC00")
         static let red600 = UIColor(hexString: "FF513A")
         static let redDark = UIColor(hexString: "FF391F")
+        static let green200 = UIColor(hexString: "DAEEBD")
         static let white = UIColor.white
         static let black = UIColor.black
 
@@ -47,6 +48,7 @@ extension UIColor {
         case chatTextView
         case alert
         case caution
+        case primaryAltButton
 
         public var color: UIColor {
             switch self {
@@ -155,6 +157,11 @@ extension UIColor {
                     trait.userInterfaceStyle == .dark
                         ? BrandColorBase.redDark : BrandColorBase.red600
                 })
+            case .primaryAltButton:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark
+                        ? BrandColorBase.grayScale500 : BrandColorBase.green200
+                })
             }
         }
         var textStyle: TextStyle {
@@ -184,6 +191,7 @@ extension UIColor {
             case .chatTextView: return Fonts.fontFor(style: .standard)
             case .caution: return Fonts.fontFor(style: .standard)
             case .alert: return Fonts.fontFor(style: .standard)
+            case .primaryAltButton: return Fonts.fontFor(style: .standard)
             }
         }
     }

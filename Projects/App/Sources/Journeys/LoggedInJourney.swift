@@ -6,6 +6,7 @@ import Forever
 import Form
 import Foundation
 import Home
+import MoveFlow
 import Payment
 import Presentation
 import Profile
@@ -29,7 +30,7 @@ extension AppJourney {
             ) { result in
                 switch result {
                 case .startMovingFlow:
-                    AppJourney.movingFlow
+                    AppJourney.movingFlow()
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
@@ -69,7 +70,7 @@ extension AppJourney {
         Contracts.journey { result in
             switch result {
             case .movingFlow:
-                AppJourney.movingFlow
+                AppJourney.movingFlow()
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):

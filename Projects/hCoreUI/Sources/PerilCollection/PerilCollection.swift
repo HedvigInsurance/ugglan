@@ -32,10 +32,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
-                if let icon = peril.icon {
-                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
-                        .frame(width: 24, height: 24)
-                } else if let color = peril.color {
+                if let color = peril.color {
                     Circle().fill(Color(hexString: color))
                         .frame(width: 24, height: 24)
                 }
@@ -109,30 +106,22 @@ public struct PerilCollection: View {
         }
     }
 }
+
 struct PerilCollection_Previews: PreviewProvider {
     static var previews: some View {
         let perils: [Perils] =
             [
                 .init(
                     fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
-                        id: "1",
-                        info: "info",
-                        title: "title"
-                    )
-                ),
-                .init(
-                    fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
                         id: "2",
+                        title: "title",
+                        description: "DESC",
                         info: "info",
-                        title: "title2"
+                        covered: [],
+                        exceptions: [],
+                        colorCode: "color"
                     )
-                ),
+                )
             ]
         PerilCollection(
             perils: perils

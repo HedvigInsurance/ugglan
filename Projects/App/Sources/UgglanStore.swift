@@ -20,8 +20,7 @@ enum UgglanAction: ActionProtocol {
     case openChat
     case closeChat
     case dismissScreen
-    case businessModelDetail
-    case aboutBusinessModel
+
     case setIsDemoMode(to: Bool)
 }
 
@@ -32,10 +31,6 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
-        switch action {
-        default:
-            break
-        }
 
         return nil
     }

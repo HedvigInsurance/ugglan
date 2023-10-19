@@ -25,6 +25,8 @@ extension AppDelegate {
                 .trackURLSession(firstPartyHosts: [
                     Environment.production.giraffeEndpointURL.host ?? "",
                     Environment.staging.giraffeEndpointURL.host ?? "",
+                    Environment.production.octopusEndpointURL.host ?? "",
+                    Environment.staging.octopusEndpointURL.host ?? "",
                 ])
                 .set(uploadFrequency: .frequent)
                 .build()

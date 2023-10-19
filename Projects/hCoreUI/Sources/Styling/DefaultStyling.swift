@@ -288,11 +288,17 @@ extension DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brand(.primaryText())
 
+        //selection color
+        //selected date is this color, system adds bold to it automaticly
+        //this color is used as background and system adds some alpha to it
         UIDatePicker.appearance().tintColor = .brand(.primaryText())
+
         UIImageView.appearance().tintColor = .brand(.primaryText())
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
+        //date picker buttons < and > for switching months
+        UIButton.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.primaryText())
 
         current = .custom
     }
@@ -402,10 +408,6 @@ extension DefaultStyling {
                 ],
                 for: .selected
             )
-    }
-
-    private func setTabBarItemBadgeAppearance(_ itemAppearance: UITabBarItemAppearance) {
-        itemAppearance.normal.badgeBackgroundColor = UIColor.green
     }
 
     public static let custom = DefaultStyling(

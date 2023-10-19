@@ -9,34 +9,30 @@ import hCoreUI
 import hGraphQL
 
 struct ContractTable {
-    let filter: ContractFilter
     @PresentableStore var store: ContractStore
+    let showTerminated: Bool
 
-    func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
-        switch filter {
-        case .active:
-            return state
-                .contractBundles
-                .flatMap { $0.contracts }
-        case .terminated:
-            return state.contracts
-                .filter { contract in
-                    contract.currentAgreement?.status == .terminated
-                }
-        case .none: return []
+    func getContractsToShow(for state: ContractState) -> [Contract] {
+
+        if showTerminated {
+            return state.terminatedContracts.compactMap { $0 }
+        } else {
+            let activeContractsToShow = state.activeContracts.compactMap { $0 }
+            let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
+            return activeContractsToShow + pendingContractsToShow
         }
     }
 }
 
 extension ContractTable: View {
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.fetchContractBundles], [.fetchContractBundles], showLoading: false)
-        {
+        LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
             hSection {
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
+                        getContractsToShow(for: state)
+
                     }
                 ) { contracts in
                     ForEach(contracts, id: \.id) { contract in
@@ -50,19 +46,14 @@ extension ContractTable: View {
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                return self.filter.nonemptyFilter(state: state).displaysActiveContracts
-            }
-        ) { displaysActiveContracts in
-            if self.filter.displaysActiveContracts {
+        if !showTerminated {
+            VStack(spacing: 16) {
                 CrossSellingStack(withHeader: true)
                     .padding(.top, 24)
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        getContractsToShow(for: state, filter: .terminated(ifEmpty: .none))
+                        state.terminatedContracts
                     }
                 ) { terminatedContracts in
                     if !terminatedContracts.isEmpty {
@@ -82,9 +73,9 @@ extension ContractTable: View {
                     }
                 }
                 .presentableStoreLensAnimation(.spring())
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, 24)
             }
         }
-        .sectionContainerStyle(.transparent)
-        .padding(.bottom, 24)
     }
 }

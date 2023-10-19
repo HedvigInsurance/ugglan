@@ -9,7 +9,7 @@ public struct hPagerDots: View {
         if index == currentIndex {
             hTextColor.primary
         } else {
-            hTextColor.tertiary
+            hFillColor.opaqueTwo
         }
     }
 
