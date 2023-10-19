@@ -1,6 +1,0 @@
-query SlackDetails {
-  slackDetails {
-      token
-    channelId
-  }
-}
