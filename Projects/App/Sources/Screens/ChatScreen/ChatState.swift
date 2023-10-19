@@ -216,12 +216,12 @@ class ChatState {
         }
     }
 
-    func sendChatFileResponseMutation(key: String, mimeType: String) {
+    func sendChatFileResponseMutation(key: String) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
                 self.bag += self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ChatSendFileMutation(input: .init(upload: key))
+                        mutation: OctopusGraphQL.ChatSendFileMutation(input: .init(uploadToken: key))
                     )
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
                     .onError({ error in
@@ -229,7 +229,7 @@ class ChatState {
                         self.errorSignal.value = (
                             ChatError.mutationFailed,
                             retry: {
-                                self.sendChatFileResponseMutation(key: key, mimeType: mimeType)
+                                self.sendChatFileResponseMutation(key: key)
                             }
                         )
                     })
@@ -266,6 +266,87 @@ extension ChatError: LocalizedError {
         switch self {
         case .fetchFailed: return L10n.General.errorBody
         case .mutationFailed: return L10n.General.errorBody
+        }
+    }
+}
+
+protocol ChatFileUploaderClient {
+    func upload(file: UploadFile) throws -> Flow.Future<ChatUploadFileResponseModel>
+}
+
+struct ChatUploadFileResponseModel: Decodable {
+    let uploadToken: String
+}
+
+enum FileUploadRequest {
+    case uploadFile(file: UploadFile)
+
+    var baseUrl: URL {
+        return Environment.current.botServiceApiURL
+    }
+
+    var methodType: String {
+        switch self {
+        case .uploadFile:
+            return "POST"
+        }
+    }
+
+    var asRequest: Flow.Future<URLRequest> {
+        var request: URLRequest!
+        switch self {
+        case let .uploadFile(file):
+            var baseUrlString = baseUrl.absoluteString
+            baseUrlString.append("/api/upload")
+            let url = URL(string: baseUrlString)!
+            let multipartFormDataRequest = MultipartFormDataRequest(url: url)
+            multipartFormDataRequest.addDataField(
+                fieldName: file.name,
+                fileName: file.name,
+                data: file.data,
+                mimeType: file.mimeType
+            )
+            request = multipartFormDataRequest.asURLRequest()
+        }
+        request.httpMethod = self.methodType
+        return Future { completion in
+            TokenRefresher.shared.refreshIfNeeded()
+                .onValue {
+                    var headers = ApolloClient.headers()
+                    headers["Odyssey-Platform"] = "ios"
+                    headers.forEach { element in
+                        request.setValue(element.value, forHTTPHeaderField: element.key)
+                    }
+                    completion(.success(request))
+                }
+            return NilDisposer()
+        }
+    }
+}
+
+extension NetworkClient: ChatFileUploaderClient {
+    func upload(file: UploadFile) throws -> Flow.Future<ChatUploadFileResponseModel> {
+        return Future { [weak self] completion in
+            FileUploadRequest.uploadFile(file: file).asRequest
+                .onValue { request in
+                    let task = self?.sessionClient
+                        .dataTask(
+                            with: request,
+                            completionHandler: { (data, response, error) in
+                                do {
+                                    if let data: ChatUploadFileResponseModel = try self?
+                                        .handleResponse(data: data, response: response, error: error)
+                                    {
+                                        completion(.success(data))
+                                    }
+                                } catch let error {
+                                    completion(.failure(error))
+                                }
+                            }
+                        )
+                    task?.resume()
+                }
+            return NilDisposer()
         }
     }
 }
