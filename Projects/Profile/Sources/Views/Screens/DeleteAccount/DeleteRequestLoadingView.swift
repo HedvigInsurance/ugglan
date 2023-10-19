@@ -31,7 +31,7 @@ struct DeleteRequestLoadingView: View {
                     .foregroundColor(hSignalColor.greenElement)
                     .padding(.bottom, 16)
                 hText(L10n.DeleteAccount.processedTitle, style: .body)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.primary)
                 hText(L10n.DeleteAccount.processedDescription, style: .body)
                     .foregroundColor(hTextColor.secondaryTranslucent)
                     .multilineTextAlignment(.center)
