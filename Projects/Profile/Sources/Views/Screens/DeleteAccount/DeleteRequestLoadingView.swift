@@ -116,17 +116,6 @@ struct DeleteRequestLoadingView: View {
     }
 }
 
-public enum MemberDeletionRequestError: Error, LocalizedError, Equatable {
-    case errorMessage(message: String)
-
-    public var errorDescription: String? {
-        switch self {
-        case let .errorMessage(message):
-            return message
-        }
-    }
-}
-
 struct DeleteRequestLoadingView_Previews: PreviewProvider {
     static var previews: some View {
         DeleteRequestLoadingView(screenState: .success)
