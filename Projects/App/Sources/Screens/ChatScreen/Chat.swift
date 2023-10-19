@@ -43,7 +43,10 @@ enum ChatResult {
                     UgglanStore.self,
                     rootView: AskForPushnotifications(
                         text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {}
+                        onActionExecuted: {
+                            let store: UgglanStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissScreen)
+                        }
                     ),
                     style: .detented(.large)
                 ) { action in
