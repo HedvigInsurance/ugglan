@@ -87,8 +87,7 @@ extension HomeView {
             switch memberStateData.state {
             case .active:
                 ActiveSectionView(
-                    claimsContent: claimsContent,
-                    memberId: memberId
+                    claimsContent: claimsContent
                 )
             case .future:
                 hText(L10n.hedvigNameText, style: .title)
