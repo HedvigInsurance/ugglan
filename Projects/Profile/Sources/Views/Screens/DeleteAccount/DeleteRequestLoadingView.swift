@@ -7,21 +7,21 @@ import hGraphQL
 struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     @Inject var octopus: hOctopus
-    
+
     enum ScreenState {
         case sendingMessage(MemberDetails)
         case success
         case error(errorMessage: String)
     }
-    
+
     @State var screenState: ScreenState
-    
+
     @ViewBuilder var sendingState: some View {
         VStack {
             DotsActivityIndicator(.standard).useDarkColor
         }
     }
-    
+
     @ViewBuilder private var successState: some View {
         hForm {
             VStack(spacing: 0) {
@@ -48,11 +48,11 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 16)
         }
     }
-    
+
     @ViewBuilder private func errorState(errorMessage: String) -> some View {
         VStack {
             Spacer()
-            
+
             RetryView(subtitle: errorMessage)
             Spacer()
 
@@ -66,7 +66,7 @@ struct DeleteRequestLoadingView: View {
             .padding(.bottom, 40)
         }
     }
-    
+
     var body: some View {
         switch screenState {
         case let .sendingMessage(memberDetails):
@@ -80,7 +80,7 @@ struct DeleteRequestLoadingView: View {
             errorState(errorMessage: errorMessage)
         }
     }
-    
+
     private func sendSlackMessage(details: MemberDetails) {
         self.octopus.client
             .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
