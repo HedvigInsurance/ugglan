@@ -7,21 +7,21 @@ import hGraphQL
 struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     @Inject var octopus: hOctopus
-
+    
     enum ScreenState {
         case sendingMessage(MemberDetails)
         case success
-        case error
+        case error(errorMessage: String?)
     }
-
+    
     @State var screenState: ScreenState
-
+    
     @ViewBuilder var sendingState: some View {
         VStack {
             DotsActivityIndicator(.standard).useDarkColor
         }
     }
-
+    
     @ViewBuilder private var successState: some View {
         hForm {
             VStack(spacing: 0) {
@@ -48,32 +48,38 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 16)
         }
     }
-
-    @ViewBuilder private var errorState: some View {
+    
+    @ViewBuilder private func errorState(errorMessage: String?) -> some View {
         VStack {
             Spacer()
             VStack {
                 hCoreUIAssets.circularCross.view
                     .frame(width: 32, height: 32)
-
+                
                 Spacer()
                     .frame(height: 16)
-
+                
                 hText(L10n.HomeTab.errorTitle, style: .body)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
-
+                
                 Spacer()
                     .frame(height: 16)
-
-                hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
+                
+                Group {
+                    if let errorMessage {
+                        hText(errorMessage, style: .callout)
+                    } else {
+                        hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
+                    }
+                }
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
             }
             Spacer()
-
+            
             hButton.LargeButtonOutlined {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
@@ -84,7 +90,7 @@ struct DeleteRequestLoadingView: View {
             .padding(.bottom, 40)
         }
     }
-
+    
     var body: some View {
         switch screenState {
         case let .sendingMessage(memberDetails):
@@ -94,24 +100,24 @@ struct DeleteRequestLoadingView: View {
                 }
         case .success:
             successState
-        case .error:
-            errorState
+        case let .error(errorMessage):
+            errorState(errorMessage: errorMessage)
         }
     }
-
+    
     private func sendSlackMessage(details: MemberDetails) {
         self.octopus.client
             .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
             .onValue { value in
-                if let _ = value.memberDeletionRequest?.message {
-                    screenState = .error
+                if let errorFromGraphQL = value.memberDeletionRequest?.message {
+                    screenState = .error(errorMessage: errorFromGraphQL)
                 } else {
                     ApolloClient.saveDeleteAccountStatus(for: details.id)
                     screenState = .success
                 }
             }
             .onError { graphQLError in
-                screenState = .error
+                screenState = .error(errorMessage: nil)
             }
     }
 }
