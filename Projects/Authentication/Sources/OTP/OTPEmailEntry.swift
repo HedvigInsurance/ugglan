@@ -61,8 +61,6 @@ public struct OTPEmailEntry: View {
                         onSubmit()
                     } content: {
                         hText(L10n.Login.continueButton)
-                            .foregroundColor(.primary)
-                            .colorScheme(.light)
                     }
                     .hButtonIsLoading(state.isLoading)
                 }
