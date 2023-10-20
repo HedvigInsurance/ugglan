@@ -48,11 +48,6 @@ extension AppJourney {
                         }
                     }
                 }
-            } statusCard: {
-                VStack(spacing: 8) {
-                    ConnectPaymentCardView()
-                    RenewalCardView()
-                }
             }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {

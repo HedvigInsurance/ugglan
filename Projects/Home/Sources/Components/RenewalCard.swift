@@ -12,9 +12,38 @@ public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
-
+    
     public init() {}
-
+    
+    public var hasActiveInfoCard: Bool {
+        if RenewalCardModel().showRenewalCard {
+            return true
+        }
+        return false
+    }
+    
+    struct RenewalCardModel {
+        var showRenewalCard: Bool = false
+        var renewalDate: Date = Date()
+        var contracts: [Contract]
+        
+        init() {
+            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+            let contracts = homeStore.state.upcomingRenewalContracts
+            
+            self.contracts = contracts
+            
+            if contracts.count > 1,
+               contracts.allSatisfy({ contract in
+                   contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
+               }), let renewalDate = contracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
+            {
+                self.showRenewalCard = true
+                self.renewalDate = renewalDate
+            }
+        }
+    }
+    
     private func buildSheetButtons(contracts: [Contract]) -> [ActionSheet.Button] {
         var buttons = contracts.map { contract in
             ActionSheet.Button.default(Text(contract.displayName)) {
@@ -24,7 +53,7 @@ public struct RenewalCardView: View {
         buttons.append(ActionSheet.Button.cancel())
         return buttons
     }
-
+    
     private func dateComponents(from renewalDate: Date) -> DateComponents {
         return Calendar.current.dateComponents(
             [.day],
@@ -32,87 +61,75 @@ public struct RenewalCardView: View {
             to: renewalDate
         )
     }
-
+    
     private func openDocument(_ contract: Contract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
-            let url = URL(string: draftCertificateUrl)
+           let url = URL(string: draftCertificateUrl)
         {
             store.send(.openDocument(contractURL: url))
         } else {
             showFailedToOpenUrlAlert = true
         }
     }
-
+    
     public var body: some View {
         VStack {
-            PresentableStoreLens(
-                HomeStore.self,
-                getter: { state in
-                    state.upcomingRenewalContracts
-                }
-            ) { contracts in
-                if contracts.count > 1,
-                    contracts.allSatisfy({ contract in
-                        contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
-                    }), let renewalDate = contracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
-                {
-                    InfoCard(
-                        text: L10n.dashboardMultipleRenewalsPrompterBody(
-                            dateComponents(from: renewalDate).day ?? 0
-                        ),
-                        type: .info
-                    )
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                            buttonAction: {
-                                showMultipleAlert = true
-                            }
-                        )
-                    ])
-                    .actionSheet(isPresented: $showMultipleAlert) {
-                        ActionSheet(
-                            title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                            buttons: buildSheetButtons(contracts: contracts)
-                        )
-                    }
-                } else {
-                    VStack(spacing: 16) {
-                        ForEach(contracts, id: \.displayName) { contract in
-                            let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
-                            InfoCard(
-                                text: L10n.dashboardRenewalPrompterBody(
-                                    dateComponents(from: renewalDate).day ?? 0
-                                ),
-                                type: .info
-                            )
-                            .buttons([
-                                .init(
-                                    buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                                    buttonAction: {
-                                        openDocument(contract)
-                                    }
-                                )
-                            ])
-                        }
-                    }
-                }
-
-            }
-            .alert(isPresented: $showFailedToOpenUrlAlert) {
-                Alert(
-                    title: Text("Failed to open new insurance terms"),
-                    message: Text("Try again, or write to us in the chat."),
-                    dismissButton: .default(Text("OK"))
+            if RenewalCardModel().showRenewalCard {
+                InfoCard(
+                    text: L10n.dashboardMultipleRenewalsPrompterBody(
+                        dateComponents(from: RenewalCardModel().renewalDate).day ?? 0
+                    ),
+                    type: .info
                 )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                        buttonAction: {
+                            showMultipleAlert = true
+                        }
+                    )
+                ])
+                .actionSheet(isPresented: $showMultipleAlert) {
+                    ActionSheet(
+                        title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
+                        buttons: buildSheetButtons(contracts: RenewalCardModel().contracts)
+                    )
+                }
+            } else {
+                VStack(spacing: 16) {
+                    ForEach(RenewalCardModel().contracts, id: \.displayName) { contract in
+                        let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
+                        InfoCard(
+                            text: L10n.dashboardRenewalPrompterBody(
+                                dateComponents(from: renewalDate).day ?? 0
+                            ),
+                            type: .info
+                        )
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                                buttonAction: {
+                                    openDocument(contract)
+                                }
+                            )
+                        ])
+                    }
+                }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .alert(isPresented: $showFailedToOpenUrlAlert) {
+            Alert(
+                title: Text(L10n.renewalOpenInsuranceTermsErrorTitle),
+                message: Text(L10n.renewalOpenInsuranceTermsErrorBody),
+                dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
+            )
+        }
     }
 }
+
 struct RenewalCardView_Previews: PreviewProvider {
     @PresentableStore static var store: HomeStore
-
+    
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return RenewalCardView()
@@ -136,9 +153,10 @@ struct RenewalCardView_Previews: PreviewProvider {
                             faq: []
                         )
                     ),
+                    exposureDisplayName: "exposure dispay name",
                     id: "",
                     masterInceptionDate: "",
-                    exposureDisplayName: "exposure dispay name",
+                    supportsMoving: true,
                     upcomingChangedAgreement: .init(
                         activeFrom: "2023-12-10",
                         activeTo: "2024-12-10",
@@ -157,7 +175,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                         )
                     )
                 )
-
+                
                 let contract = Home.Contract(contract: octopusContract)
                 store.send(.setMemberContractState(state: state, contracts: [contract]))
             }

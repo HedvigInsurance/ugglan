@@ -8,9 +8,9 @@ import hGraphQL
 
 struct ActiveSectionView<Claims: View>: View {
     @PresentableStore var store: HomeStore
-
+    
     var claimsContent: Claims
-
+    
     var body: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -24,7 +24,6 @@ struct ActiveSectionView<Claims: View>: View {
                     .fixedSize(horizontal: false, vertical: true)
                 claimsContent
             }
-            .slideUpFadeAppearAnimation()
             .sectionContainerStyle(.transparent)
         }
     }

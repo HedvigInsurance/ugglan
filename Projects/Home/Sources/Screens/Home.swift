@@ -1,4 +1,5 @@
 import Apollo
+import Payment
 import Combine
 import Flow
 import Form
@@ -11,21 +12,18 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Content: View, Claims: View>: View {
+public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
     @State var toolbarOptionTypes: [ToolbarOptionType] = []
     @StateObject var vm = HomeVM()
-    var statusCard: Content?
-
+    
     var claimsContent: Claims
     var memberId: String
-
+    
     public init(
         claimsContent: Claims,
-        statusCard: (() -> Content)?,
         memberId: @escaping () -> String
     ) {
-        self.statusCard = statusCard?()
         self.claimsContent = claimsContent
         self.memberId = memberId()
         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -39,44 +37,47 @@ extension HomeView {
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
     }
-
+    
     public var body: some View {
-        hForm {
-            centralContent
-        }
-        .setHomeNavigationBars(
-            with: $toolbarOptionTypes,
-            action: { type in
-                switch type {
-                case .newOffer:
-                    store.send(.showNewOffer)
-                case .firstVet:
-                    if let claim = store.state.commonClaims.first(where: {
-                        $0.id == "30" || $0.id == "31" || $0.id == "32"
-                    }) {
-                        store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
+        hForm {}
+            .setHomeNavigationBars(
+                with: $toolbarOptionTypes,
+                action: { type in
+                    switch type {
+                    case .newOffer:
+                        store.send(.showNewOffer)
+                    case .firstVet:
+                        if let claim = store.state.commonClaims.first(where: {
+                            $0.id == "30" || $0.id == "31" || $0.id == "32"
+                        }) {
+                            store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
+                        }
+                    case .chat:
+                        store.send(.openFreeTextChat)
                     }
-                case .chat:
-                    store.send(.openFreeTextChat)
+                }
+            )
+            .onAppear {
+                fetch()
+                self.toolbarOptionTypes = store.state.toolbarOptionTypes
+            }
+            .hFormAttachToBottom {
+                withAnimation(.easeInOut(duration: 1)) {
+                    VStack(spacing: 0) {
+                        centralContent
+                        bottomContent
+                    }
                 }
             }
-        )
-        .onAppear {
-            fetch()
-            self.toolbarOptionTypes = store.state.toolbarOptionTypes
-        }
-        .hFormAttachToBottom {
-            bottomContent
-        }
-        .sectionContainerStyle(.transparent)
-        .hFormContentPosition(.center)
-        .hFormMergeBottomViewWithContentIfNeeded
-        .onReceive(store.stateSignal.plain().publisher) { value in
-            self.toolbarOptionTypes = value.toolbarOptionTypes
-        }
-
+            .sectionContainerStyle(.transparent)
+            .hFormContentPosition(.center)
+            .hFormMergeBottomViewWithContentIfNeeded
+            .onReceive(store.stateSignal.plain().publisher) { value in
+                self.toolbarOptionTypes = value.toolbarOptionTypes
+            }
+        
     }
-
+    
     private var centralContent: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -91,26 +92,67 @@ extension HomeView {
                 )
             case .future:
                 hText(L10n.hedvigNameText, style: .title)
-                    .slideUpFadeAppearAnimation()
             case .terminated:
                 TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
-                    .slideUpFadeAppearAnimation()
             case .loading:
                 EmptyView()
             }
         }
     }
-
+    
+    
+    private var showInfoCardsScrollView: some View {
+        var items: [InfoCardView] = []
+        
+        let paymentView = ConnectPaymentCardView()
+        if paymentView.hasActiveInfoCard {
+            items.append(InfoCardView(type: .payment))
+        }
+        
+        let renewalView = RenewalCardView()
+        if renewalView.hasActiveInfoCard {
+            items.append(InfoCardView(type: .renewal))
+        }
+        
+        let members = ApolloClient.retreiveMembersWithDeleteRequests()
+        if members.contains(memberId) {
+            items.append(InfoCardView(type: .deletedView))
+        }
+        
+        let importantMessageView = ImportantMessagesView()
+        if importantMessageView.hasActiveInfoCard {
+            items.append(InfoCardView(type: .importantMessage))
+        }
+        
+        return InfoCardScrollView(
+            spacing: 16,
+            items: items,
+            content: { content in
+                switch content.type {
+                case .payment:
+                    paymentView
+                case .renewal:
+                    renewalView
+                case .deletedView:
+                    deletedInfoView
+                case .importantMessage:
+                    importantMessageView
+                }
+            })
+    }
+    
     private var bottomContent: some View {
         hSection {
-            VStack(spacing: 8) {
+            VStack(spacing: 0) {
                 switch vm.memberStateData.state {
                 case .active:
-                    ImportantMessagesView()
-                    statusCard
-                    deletedInfoView
-                    startAClaimButton
-                    openOtherServices
+                    VStack(spacing: 16) {
+                        showInfoCardsScrollView
+                        VStack(spacing: 8) {
+                            startAClaimButton
+                            openOtherServices
+                        }
+                    }
                 case .future:
                     ImportantMessagesView()
                     FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
@@ -127,18 +169,15 @@ extension HomeView {
         }
         .padding(.bottom, 16)
     }
-
+    
     @ViewBuilder
     private var deletedInfoView: some View {
-        let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        if members.contains(memberId) {
-            InfoCard(
-                text: L10n.hometabAccountDeletionNotification,
-                type: .attention
-            )
-        }
+        InfoCard(
+            text: L10n.hometabAccountDeletionNotification,
+            type: .attention
+        )
     }
-
+    
     private var startAClaimButton: some View {
         hButton.LargeButton(type: .primary) {
             store.send(.startClaim)
@@ -146,7 +185,7 @@ extension HomeView {
             hText(L10n.HomeTab.claimButtonText)
         }
     }
-
+    
     @ViewBuilder
     private var openOtherServices: some View {
         if hAnalyticsExperiment.homeCommonClaim {
@@ -162,7 +201,7 @@ extension HomeView {
 class HomeVM: ObservableObject {
     @Published var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     var memberStateDataCancellable: AnyCancellable?
-
+    
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberStateData = store.state.memberStateData
@@ -173,7 +212,7 @@ class HomeVM: ObservableObject {
             .sink(receiveValue: { [weak self] value in
                 self?.memberStateData = value
             })
-
+        
     }
 }
 
@@ -181,14 +220,12 @@ extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
         claimsContent: Claims,
         memberId: @escaping () -> String,
-        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
-        statusCard: (() -> Content)?
+        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
             rootView: HomeView(
                 claimsContent: claimsContent,
-                statusCard: statusCard,
                 memberId: memberId
             ),
             options: [
@@ -246,12 +283,12 @@ public enum HomeResult {
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            })
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -262,18 +299,18 @@ struct Active_Preview: PreviewProvider {
             )
             store.send(.setFutureStatus(status: .none))
         }
-
+        
     }
 }
 
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            })
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -285,18 +322,18 @@ struct ActiveInFuture_Previews: PreviewProvider {
             )
             store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
         }
-
+        
     }
 }
 
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            })
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -307,18 +344,18 @@ struct TerminatedToday_Previews: PreviewProvider {
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
         }
-
+        
     }
 }
 
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            })
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -329,18 +366,18 @@ struct Terminated_Previews: PreviewProvider {
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
         }
-
+        
     }
 }
 
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            })
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -352,6 +389,6 @@ struct Deleted_Previews: PreviewProvider {
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
         }
-
+        
     }
 }
