@@ -93,7 +93,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
                     if let next = equals?.next {
                         let button = UIButton(type: .custom)
-                        button.setTitle(L10n.generalNextButton)
+                        button.setTitle(L10n.generalDoneButton)
                         button.backgroundColor = .clear
 
                         let color = UIColor.BrandColorNew.primaryText().color

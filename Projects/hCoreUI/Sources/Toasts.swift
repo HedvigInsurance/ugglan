@@ -225,8 +225,8 @@ extension Toasts: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let containerView = PassThroughView()
-
+        let containerView = UIView()
+        let heightConstraint = containerView.heightAnchor.constraint(equalToConstant: 0)
         containerView.layer.zPosition = .greatestFiniteMagnitude
 
         bag += containerView.didMoveToWindowSignal.take(first: 1)
@@ -249,10 +249,7 @@ extension Toasts: Viewable {
                 parent.bringSubviewToFront(containerView)
             }
         }
-
-        containerView.snp.makeConstraints { make in
-            make.height.equalTo(0)
-        }
+        heightConstraint.isActive = true
 
         bag +=
             toastCallbacker
@@ -260,6 +257,7 @@ extension Toasts: Viewable {
             .wait(until: pauseSignal.distinct().map { !$0 })
             .distinct()
             .onValueDisposePrevious { toast in
+                containerView.layer.zPosition = .greatestFiniteMagnitude
                 let innerBag = bag.innerBag()
                 pauseSignal.value = true
                 hideBag.dispose()
@@ -327,7 +325,11 @@ extension Toasts: Viewable {
                         .onValue { _ in
                             pauseSignal.value = false
                         }
-
+                    innerBag += toastView.didLayoutSignal.onValue { _ in
+                        if toastView.frame.height > 0 {
+                            heightConstraint.constant = toastView.frame.height
+                        }
+                    }
                     let hideCallbacker = Callbacker<Void>()
 
                     bag +=
@@ -344,6 +346,7 @@ extension Toasts: Viewable {
                         }
                         .onValue { _ in
                             toastView.removeFromSuperview()
+                            heightConstraint.constant = 0
                             innerBag.dispose()
                             pauseSignal.value = false
                         }
