@@ -74,24 +74,18 @@ struct ButtonFilledStandardBackground: View {
         case .secondary:
             if configuration.isPressed {
                 hButtonColor.secondaryHover
-                    .hShadow()
             } else if isEnabled {
                 hFillColor.translucentOne
-                    .hShadow()
             } else {
                 hButtonColor.secondaryDisabled
-                    .hShadow()
             }
         case .secondaryAlt:
             if configuration.isPressed {
                 hButtonColor.secondaryAltHover
-                    .hShadow()
             } else if isEnabled {
                 hButtonColor.secondaryAltDefault
-                    .hShadow()
             } else {
                 hButtonColor.secondaryAltDisabled
-                    .hShadow()
             }
         case .ghost:
             if configuration.isPressed {
@@ -327,7 +321,21 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         case .primary, .ghost, .alert:
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
-            getView(configuration: configuration).hShadow()
+            getView(configuration: configuration)
+                .background(
+                    ZStack {
+                        //create shadow - this create shadows for whole shape
+                        Squircle.default()
+                            .fill(hTextColor.primary.inverted.opacity(0.01))
+                            .hShadow()
+
+                        //cut out shape from previously created shape - we only need shadows
+                        Squircle.default()
+                            .blendMode(.destinationOut)
+
+                    }
+                    .compositingGroup()
+                )
         }
     }
 
