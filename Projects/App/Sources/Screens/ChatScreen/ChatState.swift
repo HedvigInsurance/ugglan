@@ -334,10 +334,12 @@ extension NetworkClient: ChatFileUploaderClient {
                             with: request,
                             completionHandler: { (data, response, error) in
                                 do {
-                                    if let data: ChatUploadFileResponseModel = try self?
+                                    if let data: [ChatUploadFileResponseModel] = try self?
                                         .handleResponse(data: data, response: response, error: error)
                                     {
-                                        completion(.success(data))
+                                        if let responseModel = data.first {
+                                            completion(.success(responseModel))
+                                        }
                                     }
                                 } catch let error {
                                     completion(.failure(error))
