@@ -317,7 +317,10 @@ public struct hTextColor {
     }
 
     public static var primaryTranslucent: some hColor {
-        hGrayscaleTranslucent.offBlackTranslucent
+        hColorScheme(
+            light: hGrayscaleTranslucent.offBlackTranslucent,
+            dark: hGrayscaleTranslucent.offWhiteTranslucent
+        )
     }
 
     public static var secondaryTranslucent: some hColor {
