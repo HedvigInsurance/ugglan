@@ -31,20 +31,6 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
         self.content = content
     }
 
-    var dragOverTap: some Gesture {
-        TapGesture()
-            .exclusively(
-                before:
-                    DragGesture(minimumDistance: 0)
-                    .onChanged { currentState in
-                        self.calculateOffset(Float(currentState.translation.width))
-                    }
-                    .onEnded { value in
-                        self.handleDragEnd(value.translation.width)
-                    }
-            )
-    }
-
     public var body: some View {
         VStack {
             HStack(spacing: spacing) {
@@ -61,7 +47,15 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
             .animation(
                 .easeInOut(duration: 0.15)
             )
-            .gesture(dragOverTap, including: .gesture)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { currentState in
+                        self.calculateOffset(Float(currentState.translation.width))
+                    }
+                    .onEnded { value in
+                        self.handleDragEnd(value.translation.width)
+                    }
+            )
         }
     }
 
