@@ -127,7 +127,8 @@ class ChatState {
         }
     }
 
-    private func fetch(cachePolicy: CachePolicy = .returnCacheDataAndFetch, hasFetched: @escaping () -> Void = {}) {
+    private func fetch(cachePolicy: CachePolicy = .fetchIgnoringCacheCompletely, hasFetched: @escaping () -> Void = {})
+    {
         isFetching.value = true
         bag +=
             octopus.client
@@ -301,7 +302,7 @@ enum FileUploadRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             multipartFormDataRequest.addDataField(
-                fieldName: file.name,
+                fieldName: "files",  //file.name,
                 fileName: file.name,
                 data: file.data,
                 mimeType: file.mimeType
