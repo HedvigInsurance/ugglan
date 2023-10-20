@@ -9,7 +9,7 @@ import hGraphQL
 
 struct FutureSectionInfoView: View {
     var memberName: String
-    
+
     var body: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -72,7 +72,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                         masterInceptionDate: "2023-11-22",
                         supportsMoving: true
                     )
-                    
+
                     store.send(
                         .setMemberContractState(
                             state: .init(state: .future, name: "NAME"),
@@ -82,7 +82,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
                 }
         }
-        
+
     }
 }
 
@@ -102,7 +102,7 @@ struct PendingSwitchableView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .pendingSwitchable))
                 }
         }
-        
+
     }
 }
 
@@ -122,6 +122,6 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .pendingNonswitchable))
                 }
         }
-        
+
     }
 }
