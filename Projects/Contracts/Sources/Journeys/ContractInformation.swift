@@ -41,21 +41,23 @@ struct ContractInformationView: View {
                         }
                         .withoutHorizontalPadding
                         .padding(.bottom, 16)
-                        if contract.showEditInfo {
-                            hSection {
-                                VStack(spacing: 8) {
+                        VStack(spacing: 8) {
+                            if contract.showEditInfo {
+                                hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         store.send(.contractEditInfo(id: id))
                                     } content: {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
+
                             }
-                            .padding(.bottom, 16)
+                            displayTerminationButton
                         }
+                        .padding(.bottom, 16)
+
                     }
                 }
-                displayTerminationButton
             }
         }
         .sectionContainerStyle(.transparent)
@@ -92,26 +94,21 @@ struct ContractInformationView: View {
             ) { contract in
                 if contract?.canTerminate ?? false {
                     hSection {
-                        LoadingButtonWithContent(
-                            TerminationContractStore.self,
-                            .startTermination,
-                            buttonAction: {
-                                terminationContractStore.send(
-                                    .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
-                                )
-                                vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
-                                    if case let .navigationAction(navigationAction) = action {
-                                        store.send(.startTermination(action: navigationAction))
-                                        self.vm.cancellable = nil
-                                    }
+                        hButton.LargeButton(type: .ghost) {
+                            terminationContractStore.send(
+                                .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
+                            )
+                            vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
+                                if case let .navigationAction(navigationAction) = action {
+                                    store.send(.startTermination(action: navigationAction))
+                                    self.vm.cancellable = nil
                                 }
-                            },
-                            content: {
-                                hText(L10n.terminationButton, style: .body)
-                                    .foregroundColor(hTextColor.secondary)
-                            },
-                            buttonStyleSelect: .textButton
-                        )
+                            }
+                        } content: {
+                            hText(L10n.terminationButton, style: .body)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        .trackLoading(TerminationContractStore.self, action: .startTermination)
                     }
                     .sectionContainerStyle(.transparent)
                 }

@@ -34,16 +34,20 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
             HStack(spacing: 8) {
                 if let color = peril.color {
                     Circle().fill(Color(hexString: color))
-                        .frame(width: 24, height: 24)
+                        .frame(width: 16, height: 16)
+                        .padding(.horizontal, 4)
                 }
-                hText(peril.title, style: .title3)
+                hText(peril.title, style: .standardLarge)
                     .lineLimit(1)
                 Spacer()
                 Image(
                     uiImage: selectedPerils.contains(peril)
                         ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
                 )
+                .resizable()
+                .frame(width: 16, height: 16)
                 .transition(.opacity.animation(.easeOut))
+                .padding(.trailing, 4)
             }
             .padding(.vertical, 13)
 

@@ -26,7 +26,7 @@ public struct InsurableLimitsSectionView: View {
             }
             .withCustomAccessory {
                 Spacer()
-                HStack(alignment: .center) {
+                HStack(alignment: .top) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(hTextColor.secondary)
@@ -34,6 +34,7 @@ public struct InsurableLimitsSectionView: View {
                         .resizable()
                         .foregroundColor(hTextColor.secondary)
                         .frame(width: 16, height: 16)
+                        .padding(.vertical, 4)
                         .onTapGesture {
                             didTap(limit)
                         }
@@ -70,5 +71,21 @@ public struct InsurableLimits: Codable, Hashable {
         label = data.label
         limit = data.limit
         description = data.description
+    }
+}
+
+struct InsurableLimitsSectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        let limits: [InsurableLimits] = [
+            .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
+            .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+        ]
+
+        return VStack {
+            InsurableLimitsSectionView(limits: limits) { _ in
+
+            }
+            Spacer()
+        }
     }
 }
