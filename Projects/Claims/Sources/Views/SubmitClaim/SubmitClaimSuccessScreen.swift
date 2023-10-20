@@ -9,7 +9,7 @@ public struct SubmitClaimSuccessScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 16){
+            VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
                     .frame(width: 24, height: 24)
