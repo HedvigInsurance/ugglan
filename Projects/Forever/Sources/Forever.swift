@@ -11,6 +11,18 @@ import hGraphQL
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
     @State var scrollTo: Int = -1
+    @State var spacing: CGFloat = 0
+    @State var totalHeight: CGFloat = 0
+    @State var discountCodeHeight: CGFloat = 0 {
+        didSet {
+            recalculateHeight()
+        }
+    }
+    @State var headerHeight: CGFloat = 0 {
+        didSet {
+            recalculateHeight()
+        }
+    }
 
     public init() {}
 
@@ -18,9 +30,37 @@ public struct ForeverView: View {
         LoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
             ScrollViewReader { value in
                 hForm {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 0) {
                         HeaderView { scrollTo = 2 }.id(0)
+                            .padding(.bottom, 16)
+                            .background(
+                                GeometryReader(content: { proxy in
+                                    Color.clear
+                                        .onAppear {
+                                            print(proxy.size)
+                                            headerHeight = proxy.size.height
+                                        }
+                                        .onChange(of: proxy.size) { size in
+                                            print(proxy.size)
+                                            headerHeight = size.height
+                                        }
+                                })
+                            )
+                        Spacing(height: Float(spacing))
                         DiscountCodeSectionView().id(1)
+                            .background(
+                                GeometryReader(content: { proxy in
+                                    Color.clear
+                                        .onAppear {
+                                            print(proxy.size)
+                                            discountCodeHeight = proxy.size.height
+                                        }
+                                        .onChange(of: proxy.size) { size in
+                                            print(proxy.size)
+                                            discountCodeHeight = size.height
+                                        }
+                                })
+                            )
                         InvitationTable().id(2)
                     }
                 }
@@ -34,7 +74,7 @@ public struct ForeverView: View {
                 }
             }
             .onAppear {
-                store.send(.fetch)
+                //                store.send(.fetch)
             }
             .navigationBarItems(
                 trailing:
@@ -55,6 +95,23 @@ public struct ForeverView: View {
                     }
             )
         }
+        .background(
+            GeometryReader(content: { proxy in
+                Color.clear
+                    .onAppear {
+                        print(proxy.size)
+                        totalHeight = proxy.size.height
+                    }
+                    .onChange(of: proxy.size) { size in
+                        print(proxy.size)
+                        totalHeight = size.height
+                    }
+            })
+        )
+    }
+
+    private func recalculateHeight() {
+        spacing = max(totalHeight - discountCodeHeight - headerHeight, 0)
     }
 }
 
