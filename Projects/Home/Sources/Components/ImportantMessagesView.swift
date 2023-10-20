@@ -6,34 +6,34 @@ import hCoreUI
 
 struct ImportantMessagesView: View {
     @PresentableStore var store: HomeStore
-    
+
     @State var showSafariView = false
     @State var url: URL? = URL(string: "")
-    
+
     public init() {
         store.send(.fetchImportantMessages)
     }
-    
+
     public var hasActiveInfoCard: Bool {
         if ImportantMessageModel().hasImportantMessage {
             return true
         }
         return false
     }
-    
+
     struct ImportantMessageModel {
         var hasImportantMessage: Bool = false
         var hasLink: Bool = false
         var message: String = ""
         var url: URL?
-        
+
         init() {
             let homeStore: HomeStore = globalPresentableStoreContainer.get()
             let state = homeStore.state
-            
+
             let importantMessage = state.importantMessage
             let hideImportantMessage = state.hideImportantMessage
-            
+
             if let importantMessage = importantMessage, let message = importantMessage.message, !hideImportantMessage {
                 hasImportantMessage = true
                 self.message = message
@@ -44,7 +44,7 @@ struct ImportantMessagesView: View {
             }
         }
     }
-    
+
     var body: some View {
         if ImportantMessageModel().hasImportantMessage {
             if ImportantMessageModel().hasLink {
