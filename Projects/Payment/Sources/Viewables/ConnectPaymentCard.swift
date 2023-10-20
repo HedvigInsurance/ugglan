@@ -7,7 +7,7 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
-    
+
     public init() {
         switch hAnalyticsExperiment.paymentType {
         case .adyen:
@@ -16,7 +16,7 @@ public struct ConnectPaymentCardView: View {
             store.send(.fetchPayInMethodStatus)
         }
     }
-    
+
     public var hasActiveInfoCard: Bool {
         switch hAnalyticsExperiment.paymentType {
         case .adyen:
@@ -31,67 +31,67 @@ public struct ConnectPaymentCardView: View {
             return false
         }
     }
-    
+
     struct ConnectPaymentModelAdyen {
         var hasFailed: Bool = false
         var failedCharges = 0
         var nextChargeDate = ""
         var missingPaymentData = false
-        
+
         init() {
             let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
             let state = paymentStore.state
             let paymentStatusData = state.paymentStatusData
-            
+
             if let failedCharges = paymentStatusData?.failedCharges,
-               let nextChargeDate = paymentStatusData?.nextChargeDate,
-               state.activePaymentData == nil,
-               failedCharges > 0
+                let nextChargeDate = paymentStatusData?.nextChargeDate,
+                state.activePaymentData == nil,
+                failedCharges > 0
             {
                 self.hasFailed = true
                 self.failedCharges = failedCharges
                 self.nextChargeDate = nextChargeDate
-            }
-            
-            else if state.activePaymentData == nil {
+            } else if state.activePaymentData == nil {
                 self.missingPaymentData = true
             }
         }
     }
-    
+
     struct ConnectPaymentModelTrustly {
         var hasFailed: Bool = false
         var failedCharges = 0
         var nextChargeDate = ""
         var needsSetUp = false
-        
+
         init() {
             let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
             let state = paymentStore.state
-            
+
             let paymentStatusData = state.paymentStatusData
             if let failedCharges = paymentStatusData?.failedCharges,
-               let nextChargeDate = paymentStatusData?.nextChargeDate,
-               paymentStatusData?.status == .needsSetup,
-               failedCharges > 0
+                let nextChargeDate = paymentStatusData?.nextChargeDate,
+                paymentStatusData?.status == .needsSetup,
+                failedCharges > 0
             {
                 self.hasFailed = true
                 self.failedCharges = failedCharges
                 self.nextChargeDate = nextChargeDate
-            }
-            else if paymentStatusData?.status == .needsSetup {
+            } else if paymentStatusData?.status == .needsSetup {
                 needsSetUp = true
             }
         }
     }
-    
+
     public var body: some View {
         VStack {
             switch hAnalyticsExperiment.paymentType {
             case .adyen:
                 if ConnectPaymentModelAdyen().hasFailed {
                     InfoCard(
-                        text: L10n.paymentsLatePaymentsMessage(ConnectPaymentModelAdyen().failedCharges, ConnectPaymentModelAdyen().nextChargeDate),
+                        text: L10n.paymentsLatePaymentsMessage(
+                            ConnectPaymentModelAdyen().failedCharges,
+                            ConnectPaymentModelAdyen().nextChargeDate
+                        ),
                         type: .attention
                     )
                     .buttons([
@@ -116,7 +116,10 @@ public struct ConnectPaymentCardView: View {
             case .trustly:
                 if ConnectPaymentModelTrustly().hasFailed {
                     InfoCard(
-                        text: L10n.paymentsLatePaymentsMessage(ConnectPaymentModelTrustly().failedCharges, ConnectPaymentModelTrustly().nextChargeDate),
+                        text: L10n.paymentsLatePaymentsMessage(
+                            ConnectPaymentModelTrustly().failedCharges,
+                            ConnectPaymentModelTrustly().nextChargeDate
+                        ),
                         type: .attention
                     )
                     .buttons([
