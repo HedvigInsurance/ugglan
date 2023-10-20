@@ -66,9 +66,7 @@ struct HeaderView: View {
                             // No discount present
                             hText(
                                 L10n.ReferralsEmpty.body(
-                                    monthlyDiscountPerReferral.formattedAmount,
-                                    MonetaryAmount(amount: 0, currency: monthlyDiscountPerReferral.currency)
-                                        .formattedAmount
+                                    monthlyDiscountPerReferral.formattedAmount
                                 )
                             )
                             .foregroundColor(hTextColor.secondary)
