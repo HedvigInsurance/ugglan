@@ -9,7 +9,7 @@ public struct SubmitClaimSuccessScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 16){
+            VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
                     .frame(width: 24, height: 24)
@@ -26,6 +26,7 @@ public struct SubmitClaimSuccessScreen: View {
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)
             .padding(.horizontal, 16)
         }
+        .hDisableScroll
         .hFormAttachToBottom {
             hButton.LargeButton(type: .ghost) {
                 store.send(.dissmissNewClaimFlow)
