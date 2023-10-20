@@ -39,42 +39,41 @@ extension HomeView {
     }
 
     public var body: some View {
-        hForm {}
-            .setHomeNavigationBars(
-                with: $toolbarOptionTypes,
-                action: { type in
-                    switch type {
-                    case .newOffer:
-                        store.send(.showNewOffer)
-                    case .firstVet:
-                        if let claim = store.state.commonClaims.first(where: {
-                            $0.id == "30" || $0.id == "31" || $0.id == "32"
-                        }) {
-                            store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
-                        }
-                    case .chat:
-                        store.send(.openFreeTextChat)
+        hForm {
+            centralContent
+        }
+        .setHomeNavigationBars(
+            with: $toolbarOptionTypes,
+            action: { type in
+                switch type {
+                case .newOffer:
+                    store.send(.showNewOffer)
+                case .firstVet:
+                    if let claim = store.state.commonClaims.first(where: {
+                        $0.id == "30" || $0.id == "31" || $0.id == "32"
+                    }) {
+                        store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
                     }
-                }
-            )
-            .onAppear {
-                fetch()
-                self.toolbarOptionTypes = store.state.toolbarOptionTypes
-            }
-            .hFormAttachToBottom {
-                withAnimation(.easeInOut(duration: 1)) {
-                    VStack(spacing: 0) {
-                        centralContent
-                        bottomContent
-                    }
+                case .chat:
+                    store.send(.openFreeTextChat)
                 }
             }
-            .sectionContainerStyle(.transparent)
-            .hFormContentPosition(.center)
-            .hFormMergeBottomViewWithContentIfNeeded
-            .onReceive(store.stateSignal.plain().publisher) { value in
-                self.toolbarOptionTypes = value.toolbarOptionTypes
+        )
+        .onAppear {
+            fetch()
+            self.toolbarOptionTypes = store.state.toolbarOptionTypes
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: 0) {
+                bottomContent
             }
+        }
+        .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.center)
+        .hFormMergeBottomViewWithContentIfNeeded
+        .onReceive(store.stateSignal.plain().publisher) { value in
+            self.toolbarOptionTypes = value.toolbarOptionTypes
+        }
 
     }
 
