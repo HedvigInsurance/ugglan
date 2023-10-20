@@ -5,7 +5,7 @@ import UIKit
 import hCore
 
 extension Color {
-    func uiColor() -> UIColor {
+    public func uiColor() -> UIColor {
         return UIColor(self)
     }
 }
