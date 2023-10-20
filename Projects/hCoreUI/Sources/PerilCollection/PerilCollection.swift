@@ -21,14 +21,6 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var selectedPerils: [Perils]
     @State var nbOfPerils = 1
 
-    @hColorBuilder func background(configuration: Configuration) -> some hColor {
-        if configuration.isPressed {
-            hTextColor.tertiaryTranslucent
-        } else {
-            hBackgroundColor.primary
-        }
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
