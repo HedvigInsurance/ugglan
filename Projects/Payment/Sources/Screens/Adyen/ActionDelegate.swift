@@ -17,6 +17,8 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 
     @PresentableStore var store: PaymentStore
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
+
     let onResult: ResultHandler
 
     init(onResult: @escaping ResultHandler) { self.onResult = onResult }
@@ -30,39 +32,45 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
         guard let detailsJsonData = try? JSONEncoder().encode(additionalDetails),
             let detailsJson = String(data: detailsJsonData, encoding: .utf8)
         else { return }
-
-        giraffe.client
-            .perform(
-                mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
-                    paymentConnectionID: store.state.paymentConnectionID ?? "",
-                    req: detailsJson
-                )
-            )
+        let req = OctopusGraphQL.SubmitAdyenRedirectionRequest(md: "", pares: "")
+        let mutation = OctopusGraphQL.SubmitAdyenRedirection2Mutation(req: req)
+        octopus.client
+            .perform(mutation: mutation)
             .onValue { data in
-                if [.pending, .authorised]
-                    .contains(
-                        data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
-                    ),
-                    let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails
-                        .asConnectPaymentFinished?
-                        .paymentTokenId
-                {
-                    self.store.send(.setConnectionID(id: paymentConnectionId))
-                    self.onResult(.success(.make(())))
-                } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
-                    self.store.send(.setConnectionID(id: data.paymentTokenId))
-
-                    guard let jsonData = data.actionV2.data(using: .utf8) else { return }
-                    guard
-                        let action = try? JSONDecoder()
-                            .decode(AdyenActions.Action.self, from: jsonData)
-                    else { return }
-
-                    self.onResult(.success(.make(action)))
-                } else {
-                    self.onResult(.failure(AdyenError.action))
-                }
+                let ss = ""
             }
+        //        giraffe.client
+        //            .perform(
+        //                mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
+        //                    paymentConnectionID: store.state.paymentConnectionID ?? "",
+        //                    req: detailsJson
+        //                )
+        //            )
+        //            .onValue { data in
+        //                if [.pending, .authorised]
+        //                    .contains(
+        //                        data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
+        //                    ),
+        //                    let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails
+        //                        .asConnectPaymentFinished?
+        //                        .paymentTokenId
+        //                {
+        //                    self.store.send(.setConnectionID(id: paymentConnectionId))
+        //                    self.onResult(.success(.make(())))
+        //                } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
+        //                    self.store.send(.setConnectionID(id: data.paymentTokenId))
+        //
+        //                    guard let jsonData = data.actionV2.data(using: .utf8) else { return }
+        //                    guard
+        //                        let action = try? JSONDecoder()
+        //                            .decode(AdyenActions.Action.self, from: jsonData)
+        //                    else { return }
+        //
+        //                    self.onResult(.success(.make(action)))
+        //                } else {
+        //                    self.onResult(.failure(AdyenError.action))
+        //                }
+        //            }
     }
 
     func didFail(with error: Error, from component: ActionComponent) {

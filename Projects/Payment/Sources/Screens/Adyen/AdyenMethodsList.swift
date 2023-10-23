@@ -1,7 +1,7 @@
 import Adyen
 import Adyen3DS2
 import AdyenActions
-import AdyenCard
+//import AdyenCard
 import AdyenComponents
 import Apollo
 import Flow

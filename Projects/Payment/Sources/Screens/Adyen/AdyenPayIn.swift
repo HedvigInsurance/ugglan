@@ -24,6 +24,8 @@ public struct AdyenPayIn: Presentable {
     @PresentableStore var paymentStore: PaymentStore
 
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
+
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -41,38 +43,86 @@ public struct AdyenPayIn: Presentable {
                 let json = String(data: jsonData, encoding: .utf8)
             else { return }
 
-            self.giraffe.client
-                .perform(
-                    mutation: GiraffeGraphQL.AdyenTokenizePaymentDetailsMutation(
-                        input: GiraffeGraphQL.ConnectPaymentInput(
-                            paymentMethodDetails: json,
-                            channel: .ios,
-                            returnUrl: "\(urlScheme)://adyen",
-                            market: Localization.Locale.currentLocale.market.graphQL
-                        )
-                    )
-                )
+            let req = OctopusGraphQL.TokenizationRequest(
+                paymentMethodDetails: json,
+                channel: .ios,
+                returnUrl: "\(urlScheme)://adyen"
+            )
+            let mutation = OctopusGraphQL.TokenizePaymentDetails2Mutation(req: req)
+            self.octopus.client
+                .perform(mutation: mutation)
                 .onValue { data in
-                    if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            let store: PaymentStore = globalPresentableStoreContainer.get()
-                            store.send(.fetchActivePayment)
-                        }
-                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
-                        onResult(.success(.make(())))
-                    } else if let data = data.paymentConnectionConnectPayment.asActionRequired {
-                        guard let jsonData = data.actionV2.data(using: .utf8) else { return }
+                    if let data = data.tokenizePaymentDetails2?.asTokenizationResponseAction {
+                        guard let jsonData = data.action.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
                                 .decode(AdyenActions.Action.self, from: jsonData)
                         else { return }
 
-                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
+                        //                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(action)))
+                    } else if let data = data.tokenizePaymentDetails2?.asTokenizationResponseFinished {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            let store: PaymentStore = globalPresentableStoreContainer.get()
+                            store.send(.fetchActivePayment)
+                        }
+                        paymentStore.send(.setConnectionID(id: data.resultCode))
+                        onResult(.success(.make(())))
                     } else {
                         onResult(.failure(AdyenError.tokenization))
                     }
+                    //                    if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
+                    //                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    //                            let store: PaymentStore = globalPresentableStoreContainer.get()
+                    //                            store.send(.fetchActivePayment)
+                    //                        }
+                    //                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
+                    //                        onResult(.success(.make(())))
+                    //                    } else if let data = data.paymentConnectionConnectPayment.asActionRequired {
+                    //                        guard let jsonData = data.actionV2.data(using: .utf8) else { return }
+                    //                        guard
+                    //                            let action = try? JSONDecoder()
+                    //                                .decode(AdyenActions.Action.self, from: jsonData)
+                    //                        else { return }
+                    //
+                    //                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
+                    //                        onResult(.success(.make(action)))
+                    //                    } else {
+                    //                        onResult(.failure(AdyenError.tokenization))
+                    //                    }
                 }
+            //            self.giraffe.client
+            //                .perform(
+            //                    mutation: GiraffeGraphQL.AdyenTokenizePaymentDetailsMutation(
+            //                        input: GiraffeGraphQL.ConnectPaymentInput(
+            //                            paymentMethodDetails: json,
+            //                            channel: .ios,
+            //                            returnUrl: "\(urlScheme)://adyen",
+            //                            market: Localization.Locale.currentLocale.market.graphQL
+            //                        )
+            //                    )
+            //                )
+            //                .onValue { data in
+            //                    if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
+            //                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            //                            let store: PaymentStore = globalPresentableStoreContainer.get()
+            //                            store.send(.fetchActivePayment)
+            //                        }
+            //                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
+            //                        onResult(.success(.make(())))
+            //                    } else if let data = data.paymentConnectionConnectPayment.asActionRequired {
+            //                        guard let jsonData = data.actionV2.data(using: .utf8) else { return }
+            //                        guard
+            //                            let action = try? JSONDecoder()
+            //                                .decode(AdyenActions.Action.self, from: jsonData)
+            //                        else { return }
+            //
+            //                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
+            //                        onResult(.success(.make(action)))
+            //                    } else {
+            //                        onResult(.failure(AdyenError.tokenization))
+            //                    }
+            //                }
         } onSuccess: {
             giraffe.store.withinReadWriteTransaction { transaction in
                 try? transaction.update(query: GiraffeGraphQL.PayInMethodStatusQuery()) {

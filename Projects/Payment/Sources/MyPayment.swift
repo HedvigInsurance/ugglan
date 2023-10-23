@@ -25,7 +25,6 @@ public struct MyPaymentsView: View {
                 PaymentInfoView(urlScheme: vm.urlScheme)
                     .padding(.top, 8)
                 PaymentView(paymentType: paymentType)
-                PayoutView(paymentType: paymentType)
                 bottomButtonView
             }
             .sectionContainerStyle(.transparent)
@@ -77,7 +76,6 @@ class MyPaymentsViewModel: ObservableObject {
         switch paymentType {
         case .adyen:
             store.send(.fetchActivePayment)
-            store.send(.fetchActivePayout)
         case .trustly:
             break
         }

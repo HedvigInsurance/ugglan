@@ -12,6 +12,8 @@ import hGraphQL
 struct DirectDebitSetup {
     @PresentableStore var paymentStore: PaymentStore
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
+
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -136,9 +138,28 @@ extension DirectDebitSetup: Presentable {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
-            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
+            //            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
+            //                .onValue({ data in
+            //                    if let url = URL(string: data.startDirectDebitRegistration) {
+            //                        let request = URLRequest(
+            //                            url: url,
+            //                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            //                            timeoutInterval: 10
+            //                        )
+            //                        urlSignal.value = url
+            //                        webView.load(request)
+            //                    } else {
+            //                        presentAlert()
+            //                    }
+            //                })
+            //                .onError({ error in
+            //                    presentAlert()
+            //                })
+            //            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation(clientContext: .init(successUrl: "https://hedvig.page.link", failureUrl: "https://hedvig.page.link"))
+            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
+            bag += octopus.client.perform(mutation: mutation)
                 .onValue({ data in
-                    if let url = URL(string: data.startDirectDebitRegistration) {
+                    if let url = URL(string: data.registerDirectDebit2.url) {
                         let request = URLRequest(
                             url: url,
                             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
@@ -231,13 +252,6 @@ extension DirectDebitSetup: Presentable {
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
-                                giraffe.client
-                                    .perform(
-                                        mutation:
-                                            GiraffeGraphQL
-                                            .CancelDirectDebitRequestMutation()
-                                    )
-                                    .sink()
                                 callback(.value(true))
                             }
                         }

@@ -14,7 +14,6 @@ public struct PaymentState: StateProtocol {
     var activePaymentData: ActivePaymentData? = nil
     var paymentConnectionID: String? = nil
     @OptionalTransient var adyenOptions: AdyenOptions?
-    var activePayoutData: ActivePayoutData?
     public init() {}
 }
 
@@ -28,15 +27,10 @@ public enum PaymentAction: ActionProtocol {
     case setConnectionID(id: String)
     case openHistory
     case openConnectBankAccount
-    case openPayoutBankAccount(options: AdyenOptions)
     case fetchActivePayment
     case setActivePaymentData(data: ActivePaymentData?)
     case fetchAdyenAvailableMethods
     case setAdyenAvailableMethods(data: AdyenOptions)
-    case fetchActivePayout
-    case setActivePayout(data: ActivePayoutData?)
-    case fetchAdyenAvailableMethodsForPayout
-    case setAdyenAvailableMethodsForPayout(data: AdyenOptions)
     case goBack
 }
 
@@ -45,12 +39,9 @@ public enum LoadingAction: LoadingProtocol {
     case getPayInMethodStatus
     case getActivePayment
     case getAdyenAvailableMethods
-    case getAdyenAvailableMethodsForPayout
-    case getActivePayout
 }
 
 public typealias PayinMethodStatus = GiraffeGraphQL.PayinMethodStatus
-public typealias PayoutMethodStatus = GiraffeGraphQL.PayoutMethodStatus
 
 extension PayinMethodStatus: Codable {}
 
@@ -107,7 +98,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     })
                 return disposeBag
             }
-        case .fetchAdyenAvailableMethods, .fetchAdyenAvailableMethodsForPayout:
+        case .fetchAdyenAvailableMethods:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
                 disposeBag += self.giraffe.client
@@ -117,37 +108,13 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     )
                     .onValue({ data in
                         if let options = AdyenOptions(data) {
-                            if action == .fetchAdyenAvailableMethods {
-                                callback(.value(.setAdyenAvailableMethods(data: options)))
-                            } else if action == .fetchAdyenAvailableMethodsForPayout {
-                                callback(.value(.setAdyenAvailableMethodsForPayout(data: options)))
-                            }
+                            callback(.value(.setAdyenAvailableMethods(data: options)))
                         } else {
                             //TODO: ERROR
                         }
                     })
                     .onError({ error in
-                        if action == .fetchAdyenAvailableMethods {
-                            self.setError(error.localizedDescription, for: .getAdyenAvailableMethods)
-                        } else if action == .fetchAdyenAvailableMethodsForPayout {
-                            self.setError(error.localizedDescription, for: .getAdyenAvailableMethodsForPayout)
-                        }
-                    })
-                return disposeBag
-            }
-        case .fetchActivePayout:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.ActivePayoutMethodsQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
-                        callback(.value(.setActivePayout(data: .init(status: data.activePayoutMethods?.status))))
-                    })
-                    .onError({ error in
-                        self.setError(error.localizedDescription, for: .getActivePayout)
+                        self.setError(error.localizedDescription, for: .getAdyenAvailableMethods)
                     })
                 return disposeBag
             }
@@ -186,19 +153,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 self?.send(.openConnectBankAccount)
             }
-        case .fetchAdyenAvailableMethodsForPayout:
-            setLoading(for: .getAdyenAvailableMethodsForPayout)
-        case let .setAdyenAvailableMethodsForPayout(data):
-            removeLoading(for: .getAdyenAvailableMethodsForPayout)
-            newState.adyenOptions = data
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                self?.send(.openPayoutBankAccount(options: data))
-            }
-        case .fetchActivePayout:
-            setLoading(for: .getActivePayout)
-        case let .setActivePayout(data):
-            removeLoading(for: .getActivePayout)
-            newState.activePayoutData = data
         default:
             break
         }
@@ -244,15 +198,6 @@ public struct ActivePaymentData: Codable, Equatable {
         return nil
 
     }
-}
-
-public struct ActivePayoutData: Codable, Equatable {
-    let status: PayoutMethodStatus?
-
-}
-
-extension PayoutMethodStatus: Codable {
-
 }
 
 public struct PaymentData: Codable, Equatable {

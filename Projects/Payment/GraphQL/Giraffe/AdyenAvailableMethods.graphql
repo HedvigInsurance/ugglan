@@ -2,13 +2,5 @@ query AdyenAvailableMethods {
     availablePaymentMethods {
         paymentMethodsResponse
     }
-    availablePayoutMethods {
-        paymentMethodsResponse
-    }
     adyenPublicKey
-    chargeEstimation {
-        subscription {
-            ...MonetaryAmountFragmentGiraffe
-        }
-    }
 }
