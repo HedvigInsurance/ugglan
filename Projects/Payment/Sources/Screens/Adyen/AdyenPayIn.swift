@@ -12,8 +12,8 @@ import hGraphQL
 
 extension AdyenMethodsList {
     static var payInOptions: Future<AdyenOptions> {
-        let giraffe: hGiraffe = Dependencies.shared.resolve()
-        return giraffe.client.fetch(query: GiraffeGraphQL.AdyenAvailableMethodsQuery())
+        let octopus: hOctopus = Dependencies.shared.resolve()
+        return octopus.client.fetch(query: OctopusGraphQL.AvailablePaymentMethods2Query())
             .compactMap { data in
                 return AdyenOptions(data)
             }

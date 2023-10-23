@@ -137,28 +137,7 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-
-            //            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
-            //                .onValue({ data in
-            //                    if let url = URL(string: data.startDirectDebitRegistration) {
-            //                        let request = URLRequest(
-            //                            url: url,
-            //                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-            //                            timeoutInterval: 10
-            //                        )
-            //                        urlSignal.value = url
-            //                        webView.load(request)
-            //                    } else {
-            //                        presentAlert()
-            //                    }
-            //                })
-            //                .onError({ error in
-            //                    presentAlert()
-            //                })
-            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation(
-                clientContext: .init(successUrl: "https://dev.hedvigit.com", failureUrl: "https://dev.hedvigit.com")
-            )
-            //            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
+            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
             bag += octopus.client.perform(mutation: mutation)
                 .onValue({ data in
                     if let url = URL(string: data.registerDirectDebit2.url) {
@@ -315,12 +294,12 @@ extension DirectDebitSetup: Presentable {
                 }
 
                 // if user is closing app in the middle of process make sure to inform backend
-                bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
-                    .onValue { _ in
-                        giraffe.client
-                            .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
-                            .sink()
-                    }
+                //                bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
+                //                    .onValue { _ in
+                //                        giraffe.client
+                //                            .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
+                //                            .sink()
+                //                    }
 
                 return DelayedDisposer(bag, delay: 1)
             }

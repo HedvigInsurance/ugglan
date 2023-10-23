@@ -28,49 +28,28 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
             details: data.details.encodable,
             paymentData: data.paymentData
         )
-
-        guard let detailsJsonData = try? JSONEncoder().encode(additionalDetails),
-            let detailsJson = String(data: detailsJsonData, encoding: .utf8)
+        guard let detailsJsonData = try? JSONEncoder().encode(additionalDetails.details),
+            let adyenParesWithMd = try? JSONDecoder().decode(AdyenParesWithMd.self, from: detailsJsonData)
         else { return }
-        let req = OctopusGraphQL.SubmitAdyenRedirectionRequest(md: "", pares: "")
+        let req = OctopusGraphQL.SubmitAdyenRedirectionRequest(md: adyenParesWithMd.md, pares: adyenParesWithMd.pares)
         let mutation = OctopusGraphQL.SubmitAdyenRedirection2Mutation(req: req)
         octopus.client
             .perform(mutation: mutation)
             .onValue { data in
-                let ss = ""
+                if ["pending", "authorised"]
+                    .contains(
+                        data.submitAdyenRedirection2.resultCode.lowercased()
+                    )
+                {
+                    self.onResult(.success(.make(())))
+                } else if let jsonData = data.submitAdyenRedirection2.resultCode.data(using: .utf8),
+                    let action = try? JSONDecoder().decode(AdyenActions.Action.self, from: jsonData)
+                {
+                    self.onResult(.success(.make(action)))
+                } else {
+                    self.onResult(.failure(AdyenError.action))
+                }
             }
-        //        giraffe.client
-        //            .perform(
-        //                mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
-        //                    paymentConnectionID: store.state.paymentConnectionID ?? "",
-        //                    req: detailsJson
-        //                )
-        //            )
-        //            .onValue { data in
-        //                if [.pending, .authorised]
-        //                    .contains(
-        //                        data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
-        //                    ),
-        //                    let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails
-        //                        .asConnectPaymentFinished?
-        //                        .paymentTokenId
-        //                {
-        //                    self.store.send(.setConnectionID(id: paymentConnectionId))
-        //                    self.onResult(.success(.make(())))
-        //                } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
-        //                    self.store.send(.setConnectionID(id: data.paymentTokenId))
-        //
-        //                    guard let jsonData = data.actionV2.data(using: .utf8) else { return }
-        //                    guard
-        //                        let action = try? JSONDecoder()
-        //                            .decode(AdyenActions.Action.self, from: jsonData)
-        //                    else { return }
-        //
-        //                    self.onResult(.success(.make(action)))
-        //                } else {
-        //                    self.onResult(.failure(AdyenError.action))
-        //                }
-        //            }
     }
 
     func didFail(with error: Error, from component: ActionComponent) {
@@ -81,4 +60,14 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
         }
     }
     func didComplete(from component: ActionComponent) {}
+}
+
+struct AdyenParesWithMd: Codable {
+    let md: String
+    let pares: String
+
+    enum CodingKeys: String, CodingKey {
+        case md = "MD"
+        case pares = "PaRes"
+    }
 }

@@ -47,6 +47,7 @@ extension PayinMethodStatus: Codable {}
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
 
     public override func effects(
         _ getState: @escaping () -> PaymentState,
@@ -99,20 +100,17 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 return disposeBag
             }
         case .fetchAdyenAvailableMethods:
+
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.AdyenAvailableMethodsQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
+                disposeBag += octopus.client.fetch(query: OctopusGraphQL.AvailablePaymentMethods2Query())
+                    .onValue { data in
                         if let options = AdyenOptions(data) {
                             callback(.value(.setAdyenAvailableMethods(data: options)))
                         } else {
                             //TODO: ERROR
                         }
-                    })
+                    }
                     .onError({ error in
                         self.setError(error.localizedDescription, for: .getAdyenAvailableMethods)
                     })
