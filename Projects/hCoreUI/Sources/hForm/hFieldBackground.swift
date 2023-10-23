@@ -29,7 +29,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             if error != nil {
                 hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
             } else {
-                hColorScheme(light: hSignalColor.amberFill, dark: hGrayscaleColor.greyScale800)
+                hColorScheme(light: hSignalColor.greenFill, dark: hGrayscaleColor.greyScale800)
             }
         } else {
             hFillColor.opaqueOne
@@ -62,25 +62,14 @@ struct hFieldErrorModifier: ViewModifier {
             }
         }
     }
-
-    @hColorBuilder
-    private func getBackgroundColor() -> some hColor {
-        if animate {
-            if error != nil {
-                hSignalColor.amberFill
-            } else {
-                hSignalColor.greenFill
-            }
-        } else {
-            hFillColor.opaqueOne
-        }
-    }
 }
+
 extension View {
     public func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldErrorModifier(animate: animate, error: error))
     }
 }
+
 struct hFieldLabel: View {
     let placeholder: String
     @Binding var animate: Bool
