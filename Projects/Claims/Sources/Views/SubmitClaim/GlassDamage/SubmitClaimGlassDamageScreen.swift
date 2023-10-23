@@ -53,6 +53,7 @@ struct SubmitClaimGlassDamageScreen: View {
                         text: L10n.submitClaimGlassDamageWorkshopLabel
                     )
                 }
+                .animation(.easeOut)
                 .padding(.top, 8)
 
                 SupportView()
