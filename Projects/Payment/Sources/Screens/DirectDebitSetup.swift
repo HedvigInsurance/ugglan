@@ -155,8 +155,10 @@ extension DirectDebitSetup: Presentable {
             //                .onError({ error in
             //                    presentAlert()
             //                })
-            //            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation(clientContext: .init(successUrl: "https://hedvig.page.link", failureUrl: "https://hedvig.page.link"))
-            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
+            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation(
+                clientContext: .init(successUrl: "https://dev.hedvigit.com", failureUrl: "https://dev.hedvigit.com")
+            )
+            //            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
             bag += octopus.client.perform(mutation: mutation)
                 .onValue({ data in
                     if let url = URL(string: data.registerDirectDebit2.url) {
