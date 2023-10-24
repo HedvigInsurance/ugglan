@@ -74,8 +74,6 @@ public class EditCoInsuredJourney {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredProcessingScreen()
-                //            style: .modally(presentationStyle: .overFullScreen),
-                //            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
