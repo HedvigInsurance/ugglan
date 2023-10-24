@@ -23,16 +23,23 @@ extension AppDelegate {
 
     func updateLanguageMutation(numberOfRetries: Int = 0) {
         let locale = Localization.Locale.currentLocale
-        let giraffe: hGiraffe = Dependencies.shared.resolve()
-        giraffe.client
+        let hOctopus: hOctopus = Dependencies.shared.resolve()
+        let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
+        hOctopus.client
             .perform(
-                mutation: GiraffeGraphQL.UpdateLanguageMutation(
-                    language: locale.code,
-                    pickedLocale: locale.asGraphQLLocale()
-                )
+                mutation: mutation
             )
-            .onValue { _ in
-                log.info("Updated language successfully")
+            .onValue { data in
+                if let error = data.memberUpdateLanguage.userError {
+                    log.info("Failed updating language \(error.message ?? ""), retries in \(numberOfRetries * 100) ms")
+
+                    Signal(after: Double(numberOfRetries) * 0.1).future
+                        .onValue { _ in
+                            self.updateLanguageMutation(numberOfRetries: numberOfRetries + 1)
+                        }
+                } else {
+                    log.info("Updated language successfully")
+                }
             }
             .onError { error in
                 log.info("Failed updating language, retries in \(numberOfRetries * 100) ms")
