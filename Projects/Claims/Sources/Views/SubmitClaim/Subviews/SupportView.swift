@@ -22,8 +22,7 @@ struct SupportView: View {
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
-            .fixedSize(horizontal: true, vertical: false)
-
+            .fixedSize(horizontal: true, vertical: true)
         }
     }
 }
