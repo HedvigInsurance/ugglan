@@ -185,9 +185,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         query: OctopusGraphQL.CommonClaimsQuery()
                     )
                     .onValue { claimData in
-                        let commonClaims = claimData.availableProducts
-                            .flatMap({ $0.variants })
-                            .flatMap({ $0.commonClaimDescriptions })
+                        let commonClaims = claimData.currentMember.activeContracts
+                            .flatMap({ $0.currentAgreement.productVariant.commonClaimDescriptions })
                             .compactMap({ CommonClaim(claim: $0) })
                             .unique()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))

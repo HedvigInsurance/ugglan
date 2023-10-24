@@ -39,7 +39,6 @@ struct InfoExpandableView: View {
             }
             .hWithoutDivider
             .contentShape(Rectangle())
-
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
@@ -47,6 +46,8 @@ struct InfoExpandableView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .foregroundColor(hTextColor.secondary)
                     }
+                    .verticalPadding(0)
+                    .padding(.bottom, 24)
                 }
             }
         }
