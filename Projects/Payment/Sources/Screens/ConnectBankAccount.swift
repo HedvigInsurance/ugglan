@@ -37,7 +37,6 @@ extension ConnectBankAccount {
     public func journey<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
-        let type = hAnalyticsExperiment.paymentType
         Journey(
             self
         ) { result in

@@ -7,6 +7,7 @@ import UIKit
 import WebKit
 import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct AdyenSetup {
@@ -23,12 +24,12 @@ struct AdyenSetup {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandStyle(.navigationButton)
+                style: UIColor.brandStyle(.adyenWebViewText)
             )
         default:
             return UIBarButtonItem(
                 title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandStyle(.navigationButton)
+                style: UIColor.brandStyle(.adyenWebViewText)
             )
         }
     }
@@ -40,6 +41,7 @@ extension AdyenSetup: Presentable {
     func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        configureNavigation(for: viewController)
         viewController.hidesBottomBarWhenPushed = true
         viewController.isModalInPresentation = true
 
@@ -125,7 +127,7 @@ extension AdyenSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
+
             Task {
                 do {
                     let url = try await adyenService.getAdyenUrl()
@@ -252,5 +254,20 @@ extension AdyenSetup: Presentable {
                 return DelayedDisposer(bag, delay: 1)
             }
         )
+    }
+
+    func configureNavigation(for vc: UIViewController) {
+        let appearance = UINavigationBar.appearance().standardAppearance.copy()
+        appearance.titleTextAttributes[NSAttributedString.Key.foregroundColor] = UIColor.brand(.adyenWebViewText)
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = UIColor.brand(.adyenWebViewBg)
+        appearance.shadowColor = nil
+        appearance.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
+        vc.navigationItem.standardAppearance = appearance
+        vc.navigationItem.scrollEdgeAppearance = appearance
+        vc.navigationItem.compactAppearance = appearance
+        if #available(iOS 15.0, *) {
+            vc.navigationItem.compactScrollEdgeAppearance = appearance
+        }
     }
 }

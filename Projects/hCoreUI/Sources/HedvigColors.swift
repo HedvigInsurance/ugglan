@@ -50,6 +50,7 @@ extension UIColor {
         case caution
         case primaryAltButton
         case adyenWebViewBg
+        case adyenWebViewText
         public var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -163,6 +164,8 @@ extension UIColor {
                         ? BrandColorBase.grayScale500 : BrandColorBase.green200
                 })
             case .adyenWebViewBg:
+                return BrandColorBase.grayScale25
+            case .adyenWebViewText:
                 return BrandColorBase.grayScale1000
             }
         }
@@ -194,7 +197,7 @@ extension UIColor {
             case .caution: return Fonts.fontFor(style: .standard)
             case .alert: return Fonts.fontFor(style: .standard)
             case .primaryAltButton: return Fonts.fontFor(style: .standard)
-            case .adyenWebViewBg: return Fonts.fontFor(style: .standard)
+            case .adyenWebViewBg, .adyenWebViewText: return Fonts.fontFor(style: .standard)
             }
         }
     }
