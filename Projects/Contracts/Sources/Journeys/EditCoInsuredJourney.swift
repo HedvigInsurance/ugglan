@@ -21,11 +21,11 @@ public class EditCoInsuredJourney {
     private static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
             if case let .openCoInsuredInput(isDeletion, name, personalNumber, title) = navigationAction {
-                openCoInsuredInput(isDeletion: isDeletion, name: name, personalNumber: personalNumber, title: title)
+                openCoInsuredInput(isDeletion: isDeletion, name: name, personalNumber: personalNumber, title: title).withJourneyDismissButton
             } else if case .dismissEditCoInsuredFlow = navigationAction {
                 DismissJourney()
-            } else if case .openCoInsuredProcessScreen = navigationAction {
-                openProgress()
+            } else if case let .openCoInsuredProcessScreen(showSuccess) = navigationAction {
+                openProgress(showSuccess: showSuccess)
             }
         }
     }
@@ -41,6 +41,21 @@ public class EditCoInsuredJourney {
             getScreen(for: action)
         }
         .configureTitle(L10n.changeAddressCoInsuredLabel)
+        .withJourneyDismissButton
+    }
+    
+    @JourneyBuilder
+    public static func openNewInsuredPeopleNewScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: InsuredPeopleNewScreen(),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
+        ) { action in
+            getScreen(for: action)
+        }
+        .configureTitle(L10n.changeAddressCoInsuredLabel)
+        .withJourneyDismissButton
     }
 
     @JourneyBuilder
@@ -70,14 +85,13 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openProgress() -> some JourneyPresentation {
+    public static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CoInsuredProcessingScreen()
+            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
         ) { action in
             getScreen(for: action)
         }
-        .configureTitle(L10n.changeAddressCoInsuredLabel)
     }
 
 }

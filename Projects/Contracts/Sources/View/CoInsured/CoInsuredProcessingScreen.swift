@@ -6,6 +6,8 @@ import hCoreUI
 struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @State var successViewHidden = true
+    var showSuccessScreen: Bool
+    @PresentableStore var store: ContractStore
 
     var body: some View {
         BlurredProgressOverlay {
@@ -16,7 +18,11 @@ struct CoInsuredProcessingScreen: View {
                     }
                 }
             if !successViewHidden {
-                successView
+                if showSuccessScreen {
+                    successView
+                } else {
+                    let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                }
             }
             //            PresentableLoadingStoreLens(
             //                ContractStore.self,
@@ -49,8 +55,8 @@ struct CoInsuredProcessingScreen: View {
                     Image(uiImage: hCoreUIAssets.tick.image)
                         .foregroundColor(hSignalColor.greenElement)
                     VStack(spacing: 0) {
-                        hText("Co-insured updated")
-                        hText("Your insurance will be updated starting from 16 nov 2023")
+                        hText(L10n.contractAddCoinsuredUpdatedTitle)
+                        hText(L10n.contractAddCoinsuredUpdatedLabel("16 nov 2023"))
                             .foregroundColor(hTextColor.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
@@ -88,7 +94,7 @@ struct CoInsuredProcessingScreen: View {
         VStack {
             Spacer()
             Spacer()
-            hText("Making changes...")
+            hText(L10n.contractAddCoinsuredProcessing)
             ProgressView(value: vm.progress)
                 .tint(hTextColor.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
@@ -106,7 +112,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen()
+        CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
                 let store: ContractStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)

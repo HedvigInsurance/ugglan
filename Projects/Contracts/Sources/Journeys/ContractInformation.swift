@@ -15,7 +15,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
-
+    
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -40,7 +40,55 @@ struct ContractInformationView: View {
                             })
                         }
                         .withoutHorizontalPadding
-                        .padding(.bottom, 16)
+                        hRowDivider()
+                        
+                        PresentableStoreLens(
+                            ContractStore.self,
+                            getter: { state in
+                                state.coInsured
+                            }
+                        ) { coInsured in
+                            
+                            hSection {
+                                HStack {
+                                    hText(L10n.changeAddressCoInsuredLabel)
+                                    Spacer()
+                                    hText(L10n.changeAddressYouPlus(coInsured.count))
+                                        .foregroundColor(hTextColor.secondary)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.top, 16)
+                                
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        hText("Julia Andersson")
+                                        hText("SSN", style: .footnote)
+                                            .foregroundColor(hTextColor.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    Spacer()
+                                    Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                        .foregroundColor(hTextColor.tertiary)
+                                }
+                                .padding(16)
+                                hRowDivider()
+                                
+                                ForEach(coInsured, id: \.self) { coInsured in
+                                    VStack(alignment: .leading) {
+                                        hText(coInsured.name)
+                                        hText(coInsured.SSN, style: .footnote)
+                                            .foregroundColor(hTextColor.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(16)
+                                    hRowDivider()
+                                }
+                            }
+                            .withoutHorizontalPadding
+                            .padding(.bottom, 16)
+                        }
+                        
+                        
                         VStack(spacing: 8) {
                             if contract.showEditInfo {
                                 hSection {
@@ -50,19 +98,18 @@ struct ContractInformationView: View {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
-
+                                
                             }
                             displayTerminationButton
                         }
                         .padding(.bottom, 16)
-
                     }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
     }
-
+    
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
         if let date = contract.upcomingChangedAgreement?.activeFrom {
@@ -82,7 +129,7 @@ struct ContractInformationView: View {
             .padding(.bottom, 16)
         }
     }
-
+    
     @ViewBuilder
     private var displayTerminationButton: some View {
         if hAnalyticsExperiment.terminationFlow {
@@ -119,7 +166,7 @@ struct ContractInformationView: View {
 
 struct ChangePeopleView: View {
     @PresentableStore var store: ContractStore
-
+    
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {

@@ -85,30 +85,30 @@ struct InsuredPeopleScreen: View {
         VStack(spacing: 16) {
             VStack(spacing: 2) {
                 HStack(spacing: 8) {
-                    hText("Total")
+                    hText(L10n.contractAddCoinsuredTotal)
                     Spacer()
 
                     if #available(iOS 16.0, *) {
-                        hText("129 kr/mån")
+                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
                             .strikethrough()
                             .foregroundColor(hTextColor.secondary)
                     } else {
-                        hText("129 kr/mån")
+                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
                             .foregroundColor(hTextColor.secondary)
 
                     }
-                    hText("159 kr/mån")
+                    hText("159" + " " + L10n.paymentCurrencyOccurrence)
                 }
-                hText("Starts from 16 nov 2023", style: .footnote)
+                hText(L10n.contractAddCoinsuredStartsFrom("16 nov 2023"), style: .footnote)
                     .foregroundColor(hTextColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             hButton.LargeButton(type: .primary) {
                 store.send(.applyLocalCoInsured)
-                store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen))
+                store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
-                hText("Confirm changes")
+                hText(L10n.contractAddCoinsuredConfirmChanges)
             }
         }
     }
@@ -195,9 +195,9 @@ struct InsuredPeopleScreen: View {
         VStack {
             switch coInsured.type {
             case .added:
-                hText("Activates 16 nov 2023", style: .standardSmall)
+                hText(L10n.contractAddCoinsuredActiveFrom("16 nov 2023"), style: .standardSmall)
             case .deleted:
-                hText("Active until 16 nov 2023", style: .standardSmall)
+                hText(L10n.contractAddCoinsuredActiveUntil("16 nov 2023"), style: .standardSmall)
             case .none:
                 EmptyView()
             }
