@@ -1,5 +1,3 @@
-import Adyen
-import AdyenActions
 import Apollo
 import Authentication
 import Claims
@@ -131,10 +129,6 @@ import hGraphQL
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
             authenticationStore.send(.loginFailure(message: nil))
         }
-
-        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-
-        if adyenRedirect { return adyenRedirect }
 
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {

@@ -49,7 +49,7 @@ extension UIColor {
         case alert
         case caution
         case primaryAltButton
-
+        case adyenWebViewBg
         public var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -162,6 +162,8 @@ extension UIColor {
                     trait.userInterfaceStyle == .dark
                         ? BrandColorBase.grayScale500 : BrandColorBase.green200
                 })
+            case .adyenWebViewBg:
+                return BrandColorBase.grayScale1000
             }
         }
         var textStyle: TextStyle {
@@ -192,6 +194,7 @@ extension UIColor {
             case .caution: return Fonts.fontFor(style: .standard)
             case .alert: return Fonts.fontFor(style: .standard)
             case .primaryAltButton: return Fonts.fontFor(style: .standard)
+            case .adyenWebViewBg: return Fonts.fontFor(style: .standard)
             }
         }
     }

@@ -13,7 +13,6 @@ public struct PaymentState: StateProtocol {
     public var paymentStatusData: PaymentStatusData? = nil
     var activePaymentData: ActivePaymentData? = nil
     var paymentConnectionID: String? = nil
-    @OptionalTransient var adyenOptions: AdyenOptions?
     public init() {}
 }
 
@@ -29,8 +28,6 @@ public enum PaymentAction: ActionProtocol {
     case openConnectBankAccount
     case fetchActivePayment
     case setActivePaymentData(data: ActivePaymentData?)
-    case fetchAdyenAvailableMethods
-    case setAdyenAvailableMethods(data: AdyenOptions)
     case openUrl
     case goBack
 }
@@ -39,7 +36,6 @@ public enum LoadingAction: LoadingProtocol {
     case getPaymentData
     case getPayInMethodStatus
     case getActivePayment
-    case getAdyenAvailableMethods
 }
 
 public typealias PayinMethodStatus = GiraffeGraphQL.PayinMethodStatus
@@ -100,22 +96,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     })
                 return disposeBag
             }
-        case .fetchAdyenAvailableMethods:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                disposeBag += octopus.client.fetch(query: OctopusGraphQL.AvailablePaymentMethods2Query())
-                    .onValue { data in
-                        if let options = AdyenOptions(data) {
-                            callback(.value(.setAdyenAvailableMethods(data: options)))
-                        } else {
-                            //TODO: ERROR
-                        }
-                    }
-                    .onError({ error in
-                        self.setError(error.localizedDescription, for: .getAdyenAvailableMethods)
-                    })
-                return disposeBag
-            }
         default:
             return nil
         }
@@ -143,14 +123,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setActivePaymentData(data):
             removeLoading(for: .getActivePayment)
             newState.activePaymentData = data
-        case .fetchAdyenAvailableMethods:
-            setLoading(for: .getAdyenAvailableMethods)
-        case let .setAdyenAvailableMethods(data):
-            removeLoading(for: .getAdyenAvailableMethods)
-            newState.adyenOptions = data
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                self?.send(.openConnectBankAccount)
-            }
         default:
             break
         }

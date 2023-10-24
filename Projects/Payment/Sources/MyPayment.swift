@@ -1,5 +1,3 @@
-import Adyen
-import AdyenDropIn
 import Apollo
 import Flow
 import Form
@@ -48,7 +46,6 @@ public struct MyPaymentsView: View {
                             ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
                     )
                 }
-                .trackLoading(PaymentStore.self, action: .getAdyenAvailableMethods)
             }
             .padding(.vertical, 16)
         }

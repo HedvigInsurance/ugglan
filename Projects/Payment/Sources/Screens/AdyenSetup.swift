@@ -44,32 +44,16 @@ extension AdyenSetup: Presentable {
         viewController.isModalInPresentation = true
 
         switch setupType {
-        case .replacement: viewController.title = L10n.PayInIframeInApp.connectPayment
-        case .postOnboarding, .initial, .preOnboarding: viewController.title = L10n.PayInIframePostSign.title
+        case .replacement:
+            viewController.title = L10n.PayInIframeInApp.connectPayment
+        case .postOnboarding, .initial, .preOnboarding:
+            viewController.title = L10n.PayInIframePostSign.title
         }
 
         let dismissButton = makeDismissButton()
-
-        let userContentController = WKUserContentController()
-
         let webViewConfiguration = WKWebViewConfiguration()
-        webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        webViewConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-
-        webViewConfiguration.addOpenBankIDBehaviour(viewController)
-
-        let source = """
-            window.addEventListener('message', function(e) { window.webkit.messageHandlers.iosListener.postMessage(JSON.stringify(e.data)) } )
-            """
-        let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        userContentController.addUserScript(script)
-        webViewConfiguration.userContentController = userContentController
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        userContentController.add(
-            AdyenWKScriptOpenURLScheme(webView: webView),
-            name: AdyenWKScriptOpenURLScheme.NAME
-        )
-        webView.backgroundColor = .brand(.secondaryBackground())
+        webView.backgroundColor = .brand(.adyenWebViewBg)
         webView.isOpaque = false
         bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
             if navigationAction.targetFrame == nil {
@@ -81,7 +65,6 @@ extension AdyenSetup: Presentable {
                     )
                 }
             }
-
             return nil
         }
 
