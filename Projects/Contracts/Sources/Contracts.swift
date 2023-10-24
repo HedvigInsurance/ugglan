@@ -122,7 +122,7 @@ extension Contracts {
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
             } else if case .openEditCoInsured = action {
-                InsuredPeopleScreen().journey(resultJourney: resultJourney)
+                EditCoInsuredJourney.openInsuredPeopleScreen()
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {

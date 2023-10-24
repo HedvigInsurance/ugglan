@@ -81,7 +81,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case let .setActiveContracts(contracts):
-
             newState.activeContracts = contracts
         case let .setTerminatedContracts(contracts):
             newState.terminatedContracts = contracts
@@ -96,19 +95,24 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
-        case .addCoInsured:
+        case .applyLocalCoInsured:
             newState.localCoInsured.forEach { coInsured in
-                newState.coInsured.append(coInsured)
+                if coInsured.type == .added {
+                    newState.coInsured.append(coInsured)
+                } else if coInsured.type == .deleted {
+                    /* TODO: CHANGE TO COMPARE ID WHEN WE HAVE REAL DATA */
+                    if let index = newState.coInsured.firstIndex(where: {
+                        coInsured.name == $0.name && coInsured.SSN == $0.SSN
+                    }) {
+                        newState.coInsured.remove(at: index)
+                    }
+                }
             }
             newState.localCoInsured = []
         case let .addLocalCoInsured(name, personalNumber):
-            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber))
-            newState.haveChangedCoInsured = true
+            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .added))
         case let .removeLocalCoInsured(name, personalNumber):
-            if let index = newState.coInsured.firstIndex(where: { $0.name == name && $0.SSN == personalNumber }) {
-                newState.localCoInsured.remove(at: index)
-            }
-            newState.haveChangedCoInsured = true
+            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .deleted))
         case let .removeCoInsured(name, personalNumber):
             if let index = newState.coInsured.firstIndex(where: { $0.name == name && $0.SSN == personalNumber }) {
                 newState.coInsured.remove(at: index)

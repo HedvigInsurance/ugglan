@@ -105,7 +105,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                 .disabled(saveIsDisabled && !isDeletion)
 
                 hButton.LargeButton(type: .ghost) {
-                    store.send(.dismissEdit)
+                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
                     hText(L10n.generalCancelButton)
                 }

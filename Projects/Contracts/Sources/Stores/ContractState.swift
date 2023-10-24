@@ -16,7 +16,7 @@ public struct ContractState: StateProtocol {
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
     var currentTerminationContext: String?
-    var coInsured: [CoInsuredModel] = [CoInsuredModel(name: "Tove Forsman", SSN: "111111-1111")]
+    var coInsured: [CoInsuredModel] = [CoInsuredModel(name: "Tove Forsman", SSN: "111111-1111", type: nil)]
     var localCoInsured: [CoInsuredModel] = []
     var haveChangedCoInsured: Bool = false
 
