@@ -50,7 +50,6 @@ struct EditContract: View {
                         }
                     }
                 }
-                infoView
                 hSection {
                     VStack(spacing: 4) {
                         if selectedType != nil {
@@ -58,14 +57,14 @@ struct EditContract: View {
                                 store.send(.dismissEditInfo(type: selectedType))
                                 switch selectedType {
                                 case .coInsured:
-                                    store.send(.goToFreeTextChat)
+                                    store.send(.openEditCoInsured)
                                 case .changeAddress:
                                     store.send(.goToMovingFlow)
                                 case nil:
                                     break
                                 }
                             } content: {
-                                hText(selectedType?.buttonTitle ?? "", style: .standard)
+                                hText(L10n.generalContinueButton, style: .standard)
                             }
                         }
                         hButton.LargeButton(type: .ghost) {
@@ -98,21 +97,6 @@ struct EditContract: View {
                     }
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    var infoView: some View {
-        if selectedType == .coInsured {
-            hSection {
-                InfoCard(
-                    text: L10n.InsurancesTab.contactUsToEditCoInsured,
-                    type: .info
-                )
-            }
-            .transition(.opacity)
-            .sectionContainerStyle(.transparent)
-
         }
     }
 

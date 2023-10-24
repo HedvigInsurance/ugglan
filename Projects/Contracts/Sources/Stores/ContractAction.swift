@@ -34,8 +34,17 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
+    case openEditCoInsured
+    case openCoInsuredInput(isDeletion: Bool, name: String?, personalNumber: String?, title: String)
+    case dismissEdit
+    case addCoInsured
+    case addLocalCoInsured(name: String, personalNumber: String)
+    case removeCoInsured(name: String, personalNumber: String)
+    case removeLocalCoInsured(name: String, personalNumber: String)
+    case dismissEditConInsureFlow
+    case resetLocalCoInsured
+
     case hasSeenCrossSells(value: Bool)
-    case closeCrossSellingSigned
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
 
@@ -54,13 +63,6 @@ public enum ContractLoadingAction: LoadingProtocol {
 public enum EditType: String, Codable, Hashable, CaseIterable {
     case changeAddress
     case coInsured
-
-    var buttonTitle: String {
-        switch self {
-        case .changeAddress: return L10n.generalContinueButton
-        case .coInsured: return L10n.openChat
-        }
-    }
 
     var title: String {
         switch self {

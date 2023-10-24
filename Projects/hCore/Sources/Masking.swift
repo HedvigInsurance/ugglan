@@ -19,6 +19,7 @@ public enum MaskType: String {
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
     case euroBonus = "EuroBonus"
+    case fullName = "FullName"
 }
 
 public struct Masking {
@@ -80,6 +81,10 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .euroBonus: return text.count > 3
+        case .fullName:
+            let fullNameRegex = "^[a-zA-Z]+(?:[\\s.]+[a-zA-Z]+)*$"
+            let fullNamePredicate = NSPredicate(format: "SELF MATCHES %@", fullNameRegex)
+            return fullNamePredicate.evaluate(with: text)
         }
     }
 
@@ -100,6 +105,7 @@ public struct Masking {
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
+        case .fullName: return text
         }
     }
 
@@ -157,7 +163,7 @@ public struct Masking {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -211,6 +217,8 @@ public struct Masking {
             return nil
         case .euroBonus:
             return nil
+        case .fullName:
+            return L10n.TravelCertificate.fullNameLabel
         }
     }
 
@@ -241,6 +249,8 @@ public struct Masking {
         case .disabledSuggestion:
             return nil
         case .euroBonus:
+            return nil
+        case .fullName:
             return nil
         }
     }
@@ -333,6 +343,7 @@ public struct Masking {
         case .disabledSuggestion: return text
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
+        case .fullName: return text
         }
     }
 }

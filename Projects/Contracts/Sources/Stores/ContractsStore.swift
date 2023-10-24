@@ -88,7 +88,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
             newState.pendingContracts = contracts
-        case .setCrossSells(let crossSells):
+        case let .setCrossSells(crossSells):
             newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):
             newState.crossSells = newState.crossSells.map { crossSell in
@@ -96,6 +96,25 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
+        case .addCoInsured:
+            newState.localCoInsured.forEach { coInsured in
+                newState.coInsured.append(coInsured)
+            }
+            newState.localCoInsured = []
+        case let .addLocalCoInsured(name, personalNumber):
+            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber))
+            newState.haveChangedCoInsured = true
+        case let .removeLocalCoInsured(name, personalNumber):
+            if let index = newState.coInsured.firstIndex(where: { $0.name == name && $0.SSN == personalNumber }) {
+                newState.localCoInsured.remove(at: index)
+            }
+            newState.haveChangedCoInsured = true
+        case let .removeCoInsured(name, personalNumber):
+            if let index = newState.coInsured.firstIndex(where: { $0.name == name && $0.SSN == personalNumber }) {
+                newState.coInsured.remove(at: index)
+            }
+        case .resetLocalCoInsured:
+            newState.localCoInsured = []
         default:
             break
         }
