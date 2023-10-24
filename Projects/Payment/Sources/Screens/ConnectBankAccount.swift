@@ -26,10 +26,8 @@ extension ConnectBankAccount: Presentable {
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
             return (viewController, result.map { .left($0) })
         case .adyen:
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            let (viewController, result) = AdyenPayIn(adyenOptions: store.state.adyenOptions!, urlScheme: urlScheme)
-                .materialize()
-            return (viewController, result.map({ .left($0) }))
+            let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
+            return (viewController, result.map { .left($0) })
         }
     }
 }
@@ -50,8 +48,8 @@ extension ConnectBankAccount {
                 next(options, store.state.paymentConnectionID)
             }
         }
-        .setStyle(type == .adyen ? .detented(.medium, .large) : .detented(.large))
-        .setOptions(type == .adyen ? [.defaults, .allowSwipeDismissAlways] : [.defaults, .autoPopSelfAndSuccessors])
+        .setStyle(.detented(.large))
+        .setOptions([.defaults, .autoPopSelfAndSuccessors])
     }
 
     /// Sets up payment and then dismisses

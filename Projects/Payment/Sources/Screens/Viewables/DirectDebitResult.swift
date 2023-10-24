@@ -57,7 +57,7 @@ extension DirectDebitResult: Viewable {
         let containerView = UIView()
         containerView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         containerView.alpha = 0
-
+        containerView.backgroundColor = UIColor.brand(.primaryBackground())
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -76,7 +76,7 @@ extension DirectDebitResult: Viewable {
         let icon = Icon(frame: .zero, icon: type.icon.image, iconWidth: 40)
         stackView.addArrangedSubview(icon)
 
-        let heading = MultilineLabel(value: type.headingText, style: UIColor.brandStyle(.primaryBackground()))
+        let heading = MultilineLabel(value: type.headingText, style: UIColor.brandStyle(.primaryText()))
 
         bag += stackView.addArranged(heading)
 
@@ -117,8 +117,8 @@ extension DirectDebitResult: Viewable {
                     let continueButton = Button(
                         title: self.type.mainButtonText,
                         type: .standard(
-                            backgroundColor: .brand(.secondaryBackground(true)),
-                            textColor: .brand(.primaryText())
+                            backgroundColor: .brand(.primaryBackground(true)),
+                            textColor: .brand(.primaryText(true))
                         )
                     )
 

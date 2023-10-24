@@ -337,9 +337,11 @@ extension ApolloClient {
         Self.initClients()
             .onValue { hApollo in
                 let odysseyNetworkClient = OdysseyNetworkClient()
+                let paymentNetworkClient = PaymentNetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in odysseyNetworkClient })
+                Dependencies.shared.add(module: Module { () -> AdyenService in paymentNetworkClient })
             }
             .toVoid()
     }

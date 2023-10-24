@@ -31,6 +31,7 @@ public enum PaymentAction: ActionProtocol {
     case setActivePaymentData(data: ActivePaymentData?)
     case fetchAdyenAvailableMethods
     case setAdyenAvailableMethods(data: AdyenOptions)
+    case openUrl
     case goBack
 }
 
@@ -100,7 +101,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 return disposeBag
             }
         case .fetchAdyenAvailableMethods:
-
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
                 disposeBag += octopus.client.fetch(query: OctopusGraphQL.AvailablePaymentMethods2Query())

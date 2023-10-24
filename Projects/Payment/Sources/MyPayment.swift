@@ -58,6 +58,7 @@ public struct MyPaymentsView: View {
 
 class MyPaymentsViewModel: ObservableObject {
     @PresentableStore var store: PaymentStore
+    @Inject var adyenService: AdyenService
     let urlScheme: String
     let paymentType: PaymentType
     public init(urlScheme: String, paymentType: PaymentType) {
@@ -83,12 +84,10 @@ class MyPaymentsViewModel: ObservableObject {
     }
 
     func openConnectCard() {
-        switch paymentType {
-        case .adyen:
-            store.send(.fetchAdyenAvailableMethods)
-        case .trustly:
-            store.send(.openConnectBankAccount)
-        }
+        store.send(.openConnectBankAccount)
+    }
+
+    private func getPayment() {
 
     }
 }
