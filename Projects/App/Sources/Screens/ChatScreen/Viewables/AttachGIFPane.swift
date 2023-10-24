@@ -11,6 +11,7 @@ struct AttachGIFPane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
@@ -104,13 +105,14 @@ extension AttachGIFPane: Viewable {
 
         bag +=
             searchBarValue.mapLatestToFuture { value in
-                self.giraffe.client.fetch(query: GiraffeGraphQL.GifQuery(query: value))
+                self.octopus.client.fetch(query: OctopusGraphQL.ChatGifsQuery(query: value))
             }
-            .compactMap { data in data.gifs.compactMap { $0 } }
+            .compactMap({ data in
+                data.chatGifs.compactMap({ $0 })
+            })
             .onValue { gifs in
                 let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
-                    guard let url = URL(string: gif.url) else { return nil }
-
+                    guard let stringUrl = gif.url, let url = URL(string: stringUrl) else { return nil }
                     return AttachGIFImage(url: url, chatState: self.chatState)
                 }
                 collectionKit.table = Table(rows: attachGIFImages)
