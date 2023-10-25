@@ -6,8 +6,8 @@ import hCore
 import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
+    let coInsuredViewModel = InsuredPeopleNewScreenModel()
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -95,30 +95,20 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
-        case .applyLocalCoInsured:
-            newState.localCoInsured.forEach { coInsured in
-                if coInsured.type == .added {
-                    newState.coInsured.append(coInsured)
-                } else if coInsured.type == .deleted {
-                    /* TODO: CHANGE TO COMPARE ID WHEN WE HAVE REAL DATA */
-                    if let index = newState.coInsured.firstIndex(where: {
-                        coInsured.name == $0.name && coInsured.SSN == $0.SSN
-                    }) {
-                        newState.coInsured.remove(at: index)
+        case let .applyLocalCoInsured(coInsured, contractId):
+            if let index = state.activeContracts.firstIndex(where: {( $0.id == contractId )}) {
+                coInsured.forEach { coInsuredItem in
+                    if coInsuredItem.type == .added {
+                        newState.activeContracts[index].coInsured.append(coInsuredItem)
+                    } else {
+                        if let deleteIndex = coInsured.firstIndex(where: {( $0.name == coInsuredItem.name
+                                                                            && $0.SSN == coInsuredItem.SSN )}) {
+                            newState.activeContracts[index].coInsured.remove(at: deleteIndex)
+                        }
                     }
+                    
                 }
             }
-            newState.localCoInsured = []
-        case let .addLocalCoInsured(name, personalNumber):
-            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .added))
-        case let .removeLocalCoInsured(name, personalNumber):
-            newState.localCoInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .deleted))
-        case let .removeCoInsured(name, personalNumber):
-            if let index = newState.coInsured.firstIndex(where: { $0.name == name && $0.SSN == personalNumber }) {
-                newState.coInsured.remove(at: index)
-            }
-        case .resetLocalCoInsured:
-            newState.localCoInsured = []
         default:
             break
         }

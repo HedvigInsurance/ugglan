@@ -40,6 +40,12 @@ extension ContractTable: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.bottom, 8)
                             .transition(.slide)
+                        let typeOfContract = contract.currentAgreement?.productVariant.displayName
+                        let infoDisplayText = "Your \(typeOfContract ?? "") is missing important information about co-insured people"
+                        //        if contract.isMissingCoInsured {
+                        CoInsuredInfoView(text: infoDisplayText, contractId: contract.id)
+                            .padding(.bottom, 8)
+//                    }
                     }
                 }
             }

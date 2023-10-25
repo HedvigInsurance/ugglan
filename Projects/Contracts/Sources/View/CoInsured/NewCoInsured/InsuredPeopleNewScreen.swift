@@ -5,10 +5,17 @@ import hCoreUI
 
 struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
+    let contractId: String
     @State var contractNbOfCoinsured = 2 /* TODO: CHANGE WHEN WE HAVE REAL DATA */
+    @ObservedObject var vm: InsuredPeopleNewScreenModel
     
-    public init() {
-        store.send(.resetLocalCoInsured)
+    public init(
+        contractId: String
+    ) {
+        self.contractId = contractId
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        vm = store.coInsuredViewModel
+        vm.resetCoInsured
     }
     
     var body: some View {
@@ -17,23 +24,25 @@ struct InsuredPeopleNewScreen: View {
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        state
+                        state.contractForId(contractId)
                     }
-                ) { state in
-                    contractOwnerField(coInsured: state.coInsured)
-                    
-                    hSection(state.localCoInsured, id: \.self) { localCoInsured in
-                        localInsuredField(coInsured: localCoInsured)
-                    }
-                    .sectionContainerStyle(.transparent)
-                    
-                    if state.localCoInsured.count < contractNbOfCoinsured {
-                        emptyCoInsuredField(localCoInsured: state.localCoInsured)
-                    } else {
-                        hSection {
-                            InfoCard(text: "Please take a moment to review your personal information before saving.", type: .attention)
+                ) { contract in
+                    if let contract = contract {
+                        contractOwnerField(coInsured: contract.coInsured)
+                        
+                        hSection(vm.coInsured, id: \.self) { localCoInsured in
+                            localInsuredField(coInsured: localCoInsured)
                         }
-                        .padding(.top, 16)
+                        .sectionContainerStyle(.transparent)
+                        
+                        if vm.coInsured.count < contractNbOfCoinsured {
+                            emptyCoInsuredField(localCoInsured: vm.coInsured)
+                        } else {
+                            hSection {
+                                InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
+                            }
+                            .padding(.top, 16)
+                        }
                     }
                 }
             }
@@ -42,27 +51,29 @@ struct InsuredPeopleNewScreen: View {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
-                    state
+                    state.contractForId(contractId)
                 }
-            ) { state in
+            ) { contract in
                 VStack(spacing: 8) {
-                    if (state.localCoInsured.count >= contractNbOfCoinsured) {
-                        hButton.LargeButton(type: .primary) {
-                            store.send(.applyLocalCoInsured)
-                            store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false)))
-                        } content: {
-                            hText(L10n.generalSaveChangesButton)
+                    if let contract = contract {
+                        if (vm.coInsured.count >= contractNbOfCoinsured) {
+                            hButton.LargeButton(type: .primary) {
+                                store.send(.applyLocalCoInsured(coInsured: vm.coInsured, contractId: contractId))
+                                store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false)))
+                            } content: {
+                                hText(L10n.generalSaveChangesButton)
+                            }
+                            .disabled((contract.coInsured.count + vm.coInsured.count) < contractNbOfCoinsured)
+                            .padding(.horizontal, 16)
                         }
-                        .disabled((state.coInsured.count + state.localCoInsured.count) < contractNbOfCoinsured)
+                        
+                        hButton.LargeButton(type: .ghost) {
+                            store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                        } content: {
+                            hText(L10n.generalCancelButton)
+                        }
                         .padding(.horizontal, 16)
                     }
-                    
-                    hButton.LargeButton(type: .ghost) {
-                        store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
-                    .padding(.horizontal, 16)
                 }
             }
         }
@@ -106,10 +117,11 @@ struct InsuredPeopleNewScreen: View {
                             store.send(
                                 .coInsuredNavigationAction(
                                     action: .openCoInsuredInput(
-                                        isDeletion: true,
+                                        isDeletion: false,
                                         name: coInsured.name,
                                         personalNumber: coInsured.SSN,
-                                        title: L10n.contractRemoveCoinsuredConfirmation
+                                        title: L10n.contractAddConisuredInfo,
+                                        contractId: contractId
                                     )
                                 )
                             )
@@ -139,7 +151,8 @@ struct InsuredPeopleNewScreen: View {
                                     isDeletion: false,
                                     name: nil,
                                     personalNumber: nil,
-                                    title: L10n.contractAddConisuredInfo
+                                    title: L10n.contractAddConisuredInfo,
+                                    contractId: contractId
                                 )
                                 ))
                         }
@@ -158,6 +171,6 @@ struct InsuredPeopleNewScreen: View {
 
 struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
-        InsuredPeopleScreen()
+        InsuredPeopleScreen(contractId: "")
     }
 }

@@ -42,52 +42,7 @@ struct ContractInformationView: View {
                         .withoutHorizontalPadding
                         hRowDivider()
                         
-                        PresentableStoreLens(
-                            ContractStore.self,
-                            getter: { state in
-                                state.coInsured
-                            }
-                        ) { coInsured in
-                            
-                            hSection {
-                                HStack {
-                                    hText(L10n.changeAddressCoInsuredLabel)
-                                    Spacer()
-                                    hText(L10n.changeAddressYouPlus(coInsured.count))
-                                        .foregroundColor(hTextColor.secondary)
-                                }
-                                .padding(.horizontal, 16)
-                                .padding(.top, 16)
-                                
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        hText("Julia Andersson")
-                                        hText("SSN", style: .footnote)
-                                            .foregroundColor(hTextColor.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    Spacer()
-                                    Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                        .foregroundColor(hTextColor.tertiary)
-                                }
-                                .padding(16)
-                                hRowDivider()
-                                
-                                ForEach(coInsured, id: \.self) { coInsured in
-                                    VStack(alignment: .leading) {
-                                        hText(coInsured.name)
-                                        hText(coInsured.SSN, style: .footnote)
-                                            .foregroundColor(hTextColor.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(16)
-                                    hRowDivider()
-                                }
-                            }
-                            .withoutHorizontalPadding
-                            .padding(.bottom, 16)
-                        }
-                        
+                        addCoInsuredView(contract: contract)
                         
                         VStack(spacing: 8) {
                             if contract.showEditInfo {
@@ -108,6 +63,75 @@ struct ContractInformationView: View {
             }
         }
         .sectionContainerStyle(.transparent)
+    }
+    
+    @ViewBuilder
+    private func addCoInsuredView(contract: Contract) -> some View {
+        hSection {
+            HStack {
+                hText(L10n.changeAddressCoInsuredLabel)
+                Spacer()
+                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                    .foregroundColor(hTextColor.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    hText("Julia Andersson")
+                    hText("SSN", style: .footnote)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                    .foregroundColor(hTextColor.tertiary)
+            }
+            .padding(16)
+            hRowDivider()
+            
+            ForEach(contract.coInsured, id: \.self) { coInsured in
+                VStack(alignment: .leading) {
+                    hText(coInsured.name)
+                    hText(coInsured.SSN, style: .footnote)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                hRowDivider()
+            }
+            
+            /* TODO: CHANGE WHEN REAL DATA */
+            let nbOfMissingCoInsured = 2 - contract.coInsured.count
+            ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                addMissingCoInsuredView
+            }
+            
+            if nbOfMissingCoInsured != 0 {
+                CoInsuredInfoView(text: "You need to add personal information to your co-insured people", contractId: contract.id)
+                    .padding(.horizontal, 16)
+            }
+        }
+        .withoutHorizontalPadding
+        .padding(.bottom, 16)
+    }
+    
+    @ViewBuilder
+    private var addMissingCoInsuredView: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading) {
+                hText(L10n.contractCoinsured)
+                hText(L10n.contractNoInformation, style: .footnote)
+                    .foregroundColor(hTextColor.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer()
+            Image(uiImage: hCoreUIAssets.warningSmall.image)
+                .foregroundColor(hSignalColor.amberElement)
+        }
+        .padding(16)
+        hRowDivider()
     }
     
     @ViewBuilder

@@ -34,14 +34,9 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
-    /* CO-INSURED */
-    case openEditCoInsured
+    case openEditCoInsured(contractId: String, hasCoInsuredData: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
-    case applyLocalCoInsured
-    case addLocalCoInsured(name: String, personalNumber: String)
-    case removeCoInsured(name: String, personalNumber: String)
-    case removeLocalCoInsured(name: String, personalNumber: String)
-    case resetLocalCoInsured
+    case applyLocalCoInsured(coInsured: [CoInsuredModel], contractId: String)
 
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
@@ -85,8 +80,10 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 }
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
-    case openCoInsuredInput(isDeletion: Bool, name: String?, personalNumber: String?, title: String)
+    case openCoInsuredInput(isDeletion: Bool, name: String?, personalNumber: String?, title: String, contractId: String)
     case openCoInsuredProcessScreen(showSuccess: Bool)
     case dismissEdit
     case dismissEditCoInsuredFlow
+    case openInsuredPeopleNewScreen(contractId: String)
+    case openInsuredPeopleScreen(contractId: String)
 }

@@ -121,9 +121,12 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case .openEditCoInsured = action {
-//                EditCoInsuredJourney.openInsuredPeopleScreen()
-                EditCoInsuredJourney.openNewInsuredPeopleNewScreen()
+            } else if case let .openEditCoInsured(contractIds, hasCoInsuredData) = action {
+                if hasCoInsuredData {
+                    EditCoInsuredJourney.openInsuredPeopleScreen(id: contractIds)
+                } else {
+                    EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractIds)
+                }
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {

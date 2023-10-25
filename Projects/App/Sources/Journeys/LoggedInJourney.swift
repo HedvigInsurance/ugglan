@@ -47,9 +47,27 @@ extension AppJourney {
                             AppJourney.webRedirect(url: url)
                         }
                     }
+                case let .startCoInsuredFlow(contractIds):
+                    AppJourney.editCoInsured(contractIds: contractIds)
                 }
             } statusCard: {
                 VStack(spacing: 8) {
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    
+                    /* TODO: CHANGE 2 TO REAL DATA */
+//                    if contractStrore.state.coInsured.count < 2 {
+                        InfoCard(text: "Your insurance is missing important information", type: .attention)
+                            .buttons([
+                                .init(
+                                    buttonTitle: "Add information",
+                                    buttonAction: {
+                                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {( $0.id )}
+                                        homeStore.send(.openCoInsured(contractIds: contractIds))
+                                    }
+                                )
+                            ])
+//                    }
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }

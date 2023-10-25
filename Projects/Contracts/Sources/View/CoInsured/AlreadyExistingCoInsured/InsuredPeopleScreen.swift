@@ -5,9 +5,16 @@ import hCoreUI
 
 struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
+    let contractId: String
+    @ObservedObject var vm: InsuredPeopleNewScreenModel
 
-    public init() {
-        store.send(.resetLocalCoInsured)
+    public init(
+        contractId: String
+    ) {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        vm = store.coInsuredViewModel
+        self.contractId = contractId
+        vm.resetCoInsured
     }
 
     var body: some View {
@@ -16,41 +23,44 @@ struct InsuredPeopleScreen: View {
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        state
+                        state.contractForId(contractId)
                     }
-                ) { state in
-                    contractOwnerField(coInsured: state.coInsured)
-                    hSection {
-                        ForEach(state.coInsured, id: \.self) { coInsured in
-                            existingCoInsuredField(coInsured: coInsured)
+                ) { contract in
+                    if let contract = contract {
+                        contractOwnerField(coInsured: contract.coInsured)
+                        hSection {
+                            ForEach(contract.coInsured, id: \.self) { coInsured in
+                                existingCoInsuredField(coInsured: coInsured)
+                            }
                         }
-                    }
-                    .sectionContainerStyle(.transparent)
-
-                    hSection {
-                        ForEach(state.localCoInsured, id: \.self) { coInsured in
-                            localInsuredField(coInsured: coInsured)
+                        .sectionContainerStyle(.transparent)
+                        
+                        hSection {
+                            ForEach(vm.coInsured, id: \.self) { coInsured in
+                                localInsuredField(coInsured: coInsured)
+                            }
                         }
-                    }
-                    .sectionContainerStyle(.transparent)
-
-                    hSection {
-                        hButton.LargeButton(type: .secondary) {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openCoInsuredInput(
-                                        isDeletion: false,
-                                        name: nil,
-                                        personalNumber: nil,
-                                        title: L10n.contractAddCoinsured
+                        .sectionContainerStyle(.transparent)
+                        
+                        hSection {
+                            hButton.LargeButton(type: .secondary) {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openCoInsuredInput(
+                                            isDeletion: false,
+                                            name: nil,
+                                            personalNumber: nil,
+                                            title: L10n.contractAddCoinsured,
+                                            contractId: contractId
+                                        )
                                     )
                                 )
-                            )
-                        } content: {
-                            hText(L10n.contractAddCoinsured)
+                            } content: {
+                                hText(L10n.contractAddCoinsured)
+                            }
                         }
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
                 }
             }
         }
@@ -59,16 +69,18 @@ struct InsuredPeopleScreen: View {
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
-                        state
+                        state.contractForId(contractId)
                     }
-                ) { state in
-                    if state.localCoInsured.count > 0 {
-                        confirmChangesView
+                ) { contract in
+                    if let contract = contract {
+                        if vm.coInsured.count > 0 {
+                            confirmChangesView
+                        }
                     }
+                    cancelButton
                 }
-                cancelButton
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
         }
     }
 
@@ -105,7 +117,7 @@ struct InsuredPeopleScreen: View {
             }
 
             hButton.LargeButton(type: .primary) {
-                store.send(.applyLocalCoInsured)
+                store.send(.applyLocalCoInsured(coInsured: vm.coInsured, contractId: contractId))
                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
@@ -118,38 +130,41 @@ struct InsuredPeopleScreen: View {
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
-                state
+                state.contractForId(contractId)
             }
-        ) { state in
-            let index = state.localCoInsured.firstIndex(where: { $0.name == coInsured.name && $0.SSN == coInsured.SSN })
-            if index != nil {
-                EmptyView()
-            } else {
-
-                HStack {
-                    VStack(alignment: .leading) {
-                        hText(coInsured.name)
-                        hText(coInsured.SSN)
+        ) { contract in
+            if let contract = contract {
+                let index = vm.coInsured.firstIndex(where: { $0.name == coInsured.name && $0.SSN == coInsured.SSN })
+                if index != nil {
+                    EmptyView()
+                } else {
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            hText(coInsured.name)
+                            hText(coInsured.SSN)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        Spacer()
+                        Image(uiImage: hCoreUIAssets.closeSmall.image)
                             .foregroundColor(hTextColor.secondary)
-                    }
-                    Spacer()
-                    Image(uiImage: hCoreUIAssets.closeSmall.image)
-                        .foregroundColor(hTextColor.secondary)
-                        .onTapGesture {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openCoInsuredInput(
-                                        isDeletion: true,
-                                        name: coInsured.name,
-                                        personalNumber: coInsured.SSN,
-                                        title: L10n.contractRemoveCoinsuredConfirmation
+                            .onTapGesture {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openCoInsuredInput(
+                                            isDeletion: true,
+                                            name: coInsured.name,
+                                            personalNumber: coInsured.SSN,
+                                            title: L10n.contractRemoveCoinsuredConfirmation,
+                                            contractId: contractId
+                                        )
                                     )
                                 )
-                            )
-                        }
+                            }
+                    }
+                    .padding(.vertical, 16)
+                    Divider()
                 }
-                .padding(.vertical, 16)
-                Divider()
             }
         }
     }
@@ -175,7 +190,8 @@ struct InsuredPeopleScreen: View {
                                         isDeletion: true,
                                         name: coInsured.name,
                                         personalNumber: coInsured.SSN,
-                                        title: L10n.contractRemoveCoinsuredConfirmation
+                                        title: L10n.contractRemoveCoinsuredConfirmation,
+                                        contractId: contractId
                                     )
                                 )
                             )
@@ -257,6 +273,22 @@ struct InsuredPeopleScreen: View {
 
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
-        InsuredPeopleScreen()
+        InsuredPeopleScreen(contractId: "")
+    }
+}
+
+class InsuredPeopleNewScreenModel: ObservableObject {
+    @Published var coInsured: [CoInsuredModel] = []
+    
+    var resetCoInsured: Void {
+        coInsured = []
+    }
+    
+    func addCoInsured(name: String, personalNumber: String) -> Void {
+        coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .added))
+    }
+    
+    func removeCoInsured(name: String, personalNumber: String) -> Void {
+        coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .deleted))
     }
 }

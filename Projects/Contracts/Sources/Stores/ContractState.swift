@@ -15,8 +15,6 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
-    var coInsured: [CoInsuredModel] = [CoInsuredModel(name: "Tove Forsman", SSN: "111111-1111", type: nil)]
-    var localCoInsured: [CoInsuredModel] = []
 
     public func contractForId(_ id: String) -> Contract? {
         let activeContracts = activeContracts.compactMap({ $0 })

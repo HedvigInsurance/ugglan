@@ -199,6 +199,8 @@ extension HomeView {
                 resultJourney(.openFreeTextChat)
             } else if case .openMovingFlow = action {
                 resultJourney(.startMovingFlow)
+            } else if case let .openCoInsured(contractIds) = action {
+                resultJourney(.startCoInsuredFlow(contractIds: contractIds))
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
@@ -241,6 +243,7 @@ public enum HomeResult {
     case startNewClaim
     case openTravelInsurance
     case openCrossSells
+    case startCoInsuredFlow(contractIds: [String])
 }
 
 struct Active_Preview: PreviewProvider {

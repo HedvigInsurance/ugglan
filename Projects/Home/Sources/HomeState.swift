@@ -91,6 +91,7 @@ public enum HomeAction: ActionProtocol {
     case openTravelInsurance
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+    case openCoInsured(contractIds: [String])
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices

@@ -4,33 +4,34 @@ import hCore
 import hCoreUI
 
 struct CoInusuredInput: View, KeyboardReadable {
-    @State var fullName: String = ""
-    let name: String?
-    let number: String?
+    @State var fullName: String
     @State var personalNumber: String = ""
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
     @PresentableStore var store: ContractStore
     let isDeletion: Bool
-
+    let contractId: String
+    
     public init(
         isDeletion: Bool,
         name: String?,
-        personalNumber: String?
+        personalNumber: String?,
+        contractId: String
     ) {
         self.isDeletion = isDeletion
-        self.name = name
-        self.number = personalNumber
+        self.fullName = name ?? ""
+        self.personalNumber = personalNumber ?? ""
+        self.contractId = contractId
     }
-
+    
     var body: some View {
         hForm {
             VStack(spacing: 4) {
-
+                
                 if isDeletion {
                     hSection {
                         hFloatingField(
-                            value: name ?? "",
+                            value: fullName,
                             placeholder: L10n.fullNameText,
                             onTap: {}
                         )
@@ -41,10 +42,10 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                     .disabled(true)
                     .sectionContainerStyle(.transparent)
-
+                    
                     hSection {
                         hFloatingField(
-                            value: number ?? "",
+                            value: personalNumber,
                             placeholder: L10n.TravelCertificate.personalNumber,
                             onTap: {}
                         )
@@ -55,7 +56,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                     .disabled(true)
                     .sectionContainerStyle(.transparent)
-
+                    
                 } else {
                     hSection {
                         hFloatingTextField(
@@ -70,7 +71,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                         }
                     }
                     .sectionContainerStyle(.transparent)
-
+                    
                     hSection {
                         hFloatingTextField(
                             masking: Masking(type: .personalNumber),
@@ -88,22 +89,24 @@ struct CoInusuredInput: View, KeyboardReadable {
                 hSection {
                     hButton.LargeButton(type: .primary) {
                         if isDeletion {
-                            store.send(.removeLocalCoInsured(name: name ?? "", personalNumber: number ?? ""))
+                            store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: personalNumber)
+                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         } else {
-                            store.send(.addLocalCoInsured(name: fullName, personalNumber: personalNumber))
+                            store.coInsuredViewModel.addCoInsured(name: fullName, personalNumber: personalNumber)
+                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         }
                     } content: {
                         hText(
                             isDeletion
-                                ? L10n.removeConfirmationButton
-                                : (saveIsDisabled ? L10n.generalSaveButton : L10n.generalAddButton)
+                            ? L10n.removeConfirmationButton
+                            : (saveIsDisabled ? L10n.generalSaveButton : L10n.generalAddButton)
                         )
                         .transition(.opacity.animation(.easeOut))
                     }
                 }
                 .padding(.top, 12)
                 .disabled(saveIsDisabled && !isDeletion)
-
+                
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
@@ -114,7 +117,7 @@ struct CoInusuredInput: View, KeyboardReadable {
             }
         }
     }
-
+    
     var saveIsDisabled: Bool {
         let personalNumberValid = !Masking(type: .personalNumber).isValid(text: personalNumber)
         let fullNameValied = !Masking(type: .fullName).isValid(text: fullName)
@@ -127,7 +130,7 @@ struct CoInusuredInput: View, KeyboardReadable {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, name: "", personalNumber: "")
+        CoInusuredInput(isDeletion: false, name: "", personalNumber: "", contractId: "")
     }
 }
 
@@ -135,14 +138,14 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
         return CoInsuredInputType.fullName
     }
-
+    
     var next: CoInsuredInputType? {
         switch self {
         default:
             return nil
         }
     }
-
+    
     case fullName
     case personalNumber
 }
@@ -157,7 +160,7 @@ extension KeyboardReadable {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
                 .map { _ in true },
-
+            
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in false }
