@@ -301,6 +301,13 @@ public struct hTextColor {
         )
     }
 
+    public static var secondaryAccordion: some hColor {
+        hColorScheme(
+            light: hGrayscaleColor.greyScale750,
+            dark: hGrayscaleColor.greyScale450
+        )
+    }
+
     public static var tertiary: some hColor {
         hColorScheme(
             light: hGrayscaleColor.greyScale500,
@@ -720,6 +727,12 @@ public struct hGrayscaleColor {
     public static var greyScale400: some hColor {
         hColorScheme(
             Color(hexString: "CFCFCF")
+        )
+    }
+
+    public static var greyScale450: some hColor {
+        hColorScheme(
+            Color(hexString: "C5C5C5")
         )
     }
 

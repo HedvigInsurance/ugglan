@@ -6,13 +6,13 @@ import hCore
 import hGraphQL
 
 struct AnalyticsCoordinator {
-    @Inject private var giraffe: hGiraffe
+    @Inject private var octopus: hOctopus
 
     init() {}
 
     func setUserId() {
-        giraffe.client.fetch(query: GiraffeGraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
-            .compactMap { $0.member.id }
+        octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+            .compactMap { $0.currentMember.id }
             .onValue { id in
                 Datadog.setUserInfo(
                     id: id,

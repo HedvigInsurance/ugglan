@@ -1,0 +1,7 @@
+mutation MemberUpdateLanguage($input: MemberUpdateLanguageInput!) {
+  memberUpdateLanguage(input: $input) {
+    userError {
+      message
+    }
+  }
+}

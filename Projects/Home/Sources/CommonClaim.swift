@@ -28,7 +28,8 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     }
 
     public init(
-        claim: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription
+        claim: OctopusGraphQL.CommonClaimsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
+            .CommonClaimDescription
     ) {
         self.id = claim.id
         self.displayTitle = claim.title
@@ -50,7 +51,8 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         }
 
         public init(
-            layout: OctopusGraphQL.CommonClaimsQuery.Data.AvailableProduct.Variant.CommonClaimDescription.Layout
+            layout: OctopusGraphQL.CommonClaimsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
+                .CommonClaimDescription.Layout
         ) {
             if let emergency = layout.asCommonClaimLayoutEmergency {
                 self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)

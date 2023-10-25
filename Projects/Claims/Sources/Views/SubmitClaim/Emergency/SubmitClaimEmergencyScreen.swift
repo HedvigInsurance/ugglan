@@ -57,6 +57,7 @@ struct SubmitClaimEmergencyScreen: View {
                 //                        text: L10n.submitClaimGlassDamageWorkshopLabel
                 //                    )
                 //                }
+                //                .animation(.easeOut)
                 //                .padding(.top, 16)
 
                 SupportView()
