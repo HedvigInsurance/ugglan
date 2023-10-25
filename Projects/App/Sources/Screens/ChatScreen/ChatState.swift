@@ -252,7 +252,11 @@ class ChatState {
                     }
             }
 
-        currentMessageSignal = listSignal.atOnce().map { list in list.first?.left }
+        currentMessageSignal = listSignal.atOnce()
+            .map {
+                list in list.first?.left
+
+            }
         tableSignal = filteredListSignal.atOnce().distinct().map(on: .background) { Table(rows: $0) }
     }
 }
@@ -313,7 +317,7 @@ enum FileUploadRequest {
         return Future { completion in
             TokenRefresher.shared.refreshIfNeeded()
                 .onValue {
-                    var headers = ApolloClient.headers()
+                    let headers = ApolloClient.headers()
                     headers.forEach { element in
                         request.setValue(element.value, forHTTPHeaderField: element.key)
                     }

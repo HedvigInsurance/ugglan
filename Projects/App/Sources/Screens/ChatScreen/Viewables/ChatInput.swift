@@ -96,6 +96,8 @@ extension ChatInput: Viewable {
 
                         if attachGIFPaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
@@ -141,6 +143,8 @@ extension ChatInput: Viewable {
 
                         if attachFilePaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
