@@ -291,7 +291,7 @@ extension DefaultStyling {
         //selection color
         //selected date is this color, system adds bold to it automaticly
         //this color is used as background and system adds some alpha to it
-        UIDatePicker.appearance().tintColor = .brand(.primaryText())
+        UIDatePicker.appearance().tintColor = .brand(.datePickerSelectionColor)
 
         UIImageView.appearance().tintColor = .brand(.primaryText())
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(

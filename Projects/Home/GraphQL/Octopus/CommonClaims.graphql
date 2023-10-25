@@ -1,7 +1,9 @@
 query CommonClaims {
-  availableProducts {
-    variants {
-      commonClaimDescriptions {
+  currentMember {
+    activeContracts {
+      currentAgreement {
+        productVariant {
+        commonClaimDescriptions {
         id
         icon {
           ...IconFragment
@@ -27,7 +29,8 @@ query CommonClaims {
           }
         }
       }
+        }
+      }
     }
   }
 }
-

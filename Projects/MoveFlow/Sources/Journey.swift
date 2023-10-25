@@ -32,9 +32,6 @@ public struct MovingFlowJourneyNew {
                 MovingFlowJourneyNew.openAddExtraBuilding()
             } else if case .openConfirmScreen = navigationAction {
                 MovingFlowJourneyNew.openConfirmScreen()
-            } else if case let .openFailureScreen(error) = navigationAction {
-                MovingFlowJourneyNew.openFailureScreen(with: error)
-                    .configureTitle(L10n.InsuranceDetails.changeAddressButton)
             } else if case .openProcessingView = navigationAction {
                 MovingFlowJourneyNew.openProcessingView()
             } else if case .dismissMovingFlow = navigationAction {
@@ -171,17 +168,6 @@ public struct MovingFlowJourneyNew {
             action in
             getMovingFlowScreen(for: action).hidesBackButton
         }
-    }
-
-    static func openFailureScreen(with error: String) -> some JourneyPresentation {
-        HostingJourney(
-            MoveFlowStore.self,
-            rootView: MovingFlowFailure(error: error)
-        ) {
-            action in
-            getMovingFlowScreen(for: action).hidesBackButton
-        }
-        .withJourneyDismissButton
     }
 }
 

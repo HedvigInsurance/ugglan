@@ -48,9 +48,10 @@ extension UIColor {
         case chatTextView
         case alert
         case caution
-        case primaryAltButton
         case adyenWebViewBg
         case adyenWebViewText
+        case datePickerSelectionColor
+
         public var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -158,10 +159,10 @@ extension UIColor {
                     trait.userInterfaceStyle == .dark
                         ? BrandColorBase.redDark : BrandColorBase.red600
                 })
-            case .primaryAltButton:
+            case .datePickerSelectionColor:
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.grayScale500 : BrandColorBase.green200
+                        ? BrandColorBase.grayScale500 : BrandColorBase.grayScale1000
                 })
             case .adyenWebViewBg:
                 return BrandColorBase.grayScale25
@@ -196,8 +197,8 @@ extension UIColor {
             case .chatTextView: return Fonts.fontFor(style: .standard)
             case .caution: return Fonts.fontFor(style: .standard)
             case .alert: return Fonts.fontFor(style: .standard)
-            case .primaryAltButton: return Fonts.fontFor(style: .standard)
             case .adyenWebViewBg, .adyenWebViewText: return Fonts.fontFor(style: .standard)
+            case .datePickerSelectionColor: return Fonts.fontFor(style: .standard)
             }
         }
     }
