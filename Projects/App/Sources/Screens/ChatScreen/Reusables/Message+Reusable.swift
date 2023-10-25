@@ -93,10 +93,10 @@ extension Message: Reusable {
         }()
 
         if isRelatedToPreviousMessage {
-            return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
+            return size.height + extraPadding + extraHeightForTimeStampLabel
         }
 
-        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel + largerMarginTop
+        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
     }
 
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
