@@ -294,9 +294,9 @@ extension Message: Reusable {
                     }
 
                     switch message.type {
-                    case let .image(url):
+                    case let .image(url, mimeType):
                         let imageViewContainer = UIView()
-
+                        imageViewContainer.isUserInteractionEnabled = false
                         let imageView = UIImageView()
                         imageView.contentMode = .scaleAspectFill
                         imageView.layer.masksToBounds = true
@@ -345,7 +345,16 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
-                    case let .gif(url):
+
+                        let videoTapGestureRecognizer = UITapGestureRecognizer()
+                        bag += contentContainer.install(videoTapGestureRecognizer)
+
+                        bag += videoTapGestureRecognizer.signal(forState: .recognized)
+                            .onValue { _ in
+                                guard let url = url, let vc = imageView.viewController else { return }
+                                bag += vc.present(DocumentPreview(url: url).journey)
+                            }
+                    case let .gif(url, mimeType):
                         bubble.backgroundColor = .clear
                         let imageViewContainer = UIView()
 
@@ -390,6 +399,16 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
+                        let videoTapGestureRecognizer = UITapGestureRecognizer()
+                        bag += contentContainer.install(videoTapGestureRecognizer)
+
+                        bag += videoTapGestureRecognizer.signal(forState: .recognized)
+                            .onValue { _ in
+                                guard let data = imageView.image?.pngData(), let vc = imageView.viewController else {
+                                    return
+                                }
+                                bag += vc.present(DocumentPreview(data: data, mimeType: mimeType).journey)
+                            }
                     case let .crossSell(url):
                         let crossSaleMainContainer = UIView()
                         let crossSaleContainer = UIView()

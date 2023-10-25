@@ -93,10 +93,10 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
 
         case text
-        case image(url: URL?)
+        case image(url: URL?, mimeType: String)
         case video(url: URL?)
         case file(url: URL?)
-        case gif(url: URL?)
+        case gif(url: URL?, mimeType: String)
         case crossSell(url: URL?)
     }
 
@@ -246,7 +246,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             keyboardType = nil
             textContentType = nil
             if text.text.isGIFURL {
-                type = .gif(url: URL(string: text.text))
+                type = .gif(url: URL(string: text.text), mimeType: "image/gif")
             } else if text.text.isCrossSell {
                 type = .crossSell(url: URL(string: text.text))
             } else {
@@ -261,7 +261,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
             switch file.mimeType {
             case "image/jpeg", "image/png", "image/gif":
-                type = .image(url: URL(string: file.signedUrl))
+                type = .image(url: URL(string: file.signedUrl), mimeType: file.mimeType)
             case "video/webm", "video/ogg", "video/mp4", "video/quicktime":
                 type = .video(url: URL(string: file.signedUrl))
             default: type = .file(url: URL(string: file.signedUrl))

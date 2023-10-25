@@ -192,50 +192,50 @@ class ChatState {
     func sendChatFreeTextResponse(text: String) -> Signal<Void> {
         Signal { callback in
             let innerBag = DisposeBag()
-            innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
-                .take(first: 1)
-                .onValue { globalId in
-                    innerBag += self.octopus.client
-                        .perform(
-                            mutation: OctopusGraphQL.ChatSendTextMutation(input: .init(text: text))
-                        )
-                        .onValue { _ in callback(())
-                            self.handleFirstMessage()
-                            self.fetch(cachePolicy: .fetchIgnoringCacheData)
-                        }
-                        .onError({ error in
-                            log.error("Chat Error: SendChatTextResponseMutation", error: error, attributes: nil)
-                            self.errorSignal.value = (
-                                ChatError.mutationFailed,
-                                retry: {
-                                    innerBag += self.sendChatFreeTextResponse(text: text)
-                                }
-                            )
-                        })
+            //            innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
+            //                .take(first: 1)
+            //                .onValue { globalId in
+            innerBag += self.octopus.client
+                .perform(
+                    mutation: OctopusGraphQL.ChatSendTextMutation(input: .init(text: text))
+                )
+                .onValue { _ in callback(())
+                    self.handleFirstMessage()
+                    self.fetch(cachePolicy: .fetchIgnoringCacheData)
                 }
+                .onError({ error in
+                    log.error("Chat Error: SendChatTextResponseMutation", error: error, attributes: nil)
+                    self.errorSignal.value = (
+                        ChatError.mutationFailed,
+                        retry: {
+                            innerBag += self.sendChatFreeTextResponse(text: text)
+                        }
+                    )
+                })
+            //                }
 
             return innerBag
         }
     }
 
     func sendChatFileResponseMutation(key: String) {
-        bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
-            .onValue { globalId in
-                self.bag += self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ChatSendFileMutation(input: .init(uploadToken: key))
-                    )
-                    .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
-                    .onError({ error in
-                        log.error("Chat Error: SendChatFileResponseMutation", error: error, attributes: nil)
-                        self.errorSignal.value = (
-                            ChatError.mutationFailed,
-                            retry: {
-                                self.sendChatFileResponseMutation(key: key)
-                            }
-                        )
-                    })
-            }
+        //        bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
+        //            .onValue { globalId in
+        self.bag += self.octopus.client
+            .perform(
+                mutation: OctopusGraphQL.ChatSendFileMutation(input: .init(uploadToken: key))
+            )
+            .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
+            .onError({ error in
+                log.error("Chat Error: SendChatFileResponseMutation", error: error, attributes: nil)
+                self.errorSignal.value = (
+                    ChatError.mutationFailed,
+                    retry: {
+                        self.sendChatFileResponseMutation(key: key)
+                    }
+                )
+            })
+        //            }
     }
 
     init() {
