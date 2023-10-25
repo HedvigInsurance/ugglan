@@ -7,9 +7,9 @@ public struct hPagerDots: View {
 
     @hColorBuilder func circleColor(_ index: Int) -> some hColor {
         if index == currentIndex {
-            hLabelColor.primary
+            hTextColor.primary
         } else {
-            hSeparatorColor.separator
+            hFillColor.opaqueTwo
         }
     }
 

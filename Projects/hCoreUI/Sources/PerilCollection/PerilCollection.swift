@@ -21,32 +21,25 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var selectedPerils: [Perils]
     @State var nbOfPerils = 1
 
-    @hColorBuilder func background(configuration: Configuration) -> some hColor {
-        if configuration.isPressed {
-            hOverlayColor.pressed.opacity(0.5)
-        } else {
-            hBackgroundColor.tertiary
-        }
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
-                if let icon = peril.icon {
-                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
-                        .frame(width: 24, height: 24)
-                } else if let color = peril.color {
+                if let color = peril.color {
                     Circle().fill(Color(hexString: color))
-                        .frame(width: 24, height: 24)
+                        .frame(width: 16, height: 16)
+                        .padding(.horizontal, 4)
                 }
-                hText(peril.title, style: .title3)
+                hText(peril.title, style: .standardLarge)
                     .lineLimit(1)
                 Spacer()
                 Image(
                     uiImage: selectedPerils.contains(peril)
                         ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
                 )
+                .resizable()
+                .frame(width: 16, height: 16)
                 .transition(.opacity.animation(.easeOut))
+                .padding(.trailing, 4)
             }
             .padding(.vertical, 13)
 
@@ -57,7 +50,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
-                                .foregroundColor(hTextColorNew.tertiary)
+                                .foregroundColor(hTextColor.tertiary)
                             hText(item, style: .footnote)
                         }
                     }
@@ -109,30 +102,22 @@ public struct PerilCollection: View {
         }
     }
 }
+
 struct PerilCollection_Previews: PreviewProvider {
     static var previews: some View {
         let perils: [Perils] =
             [
                 .init(
                     fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
-                        id: "1",
-                        info: "info",
-                        title: "title"
-                    )
-                ),
-                .init(
-                    fragment: .init(
-                        covered: [],
-                        description: "DESC",
-                        exceptions: [],
                         id: "2",
+                        title: "title",
+                        description: "DESC",
                         info: "info",
-                        title: "title2"
+                        covered: [],
+                        exceptions: [],
+                        colorCode: "color"
                     )
-                ),
+                )
             ]
         PerilCollection(
             perils: perils

@@ -2,7 +2,6 @@ import AVKit
 import Apollo
 import Flow
 import Form
-import Offer
 import Presentation
 import Profile
 import UIKit
@@ -28,7 +27,6 @@ enum NavigationEvent {
 }
 
 enum ChatResult {
-    case offer(ids: [String])
     case loggedIn
     case login
     case notifications(dismissed: () -> Void)
@@ -36,36 +34,6 @@ enum ChatResult {
     var journey: some JourneyPresentation {
         GroupJourney {
             switch self {
-            case let .offer(ids):
-                Journey(
-                    Offer(
-                        menu: Menu(
-                            title: nil,
-                            children: [
-                                MenuChild.appInformation,
-                                MenuChild.login,
-                            ]
-                        ),
-                        options: [.shouldPreserveState]
-                    )
-                    .setIds(ids)
-                ) { offerResult in
-                    switch offerResult {
-                    case .chat:
-                        AppJourney
-                            .freeTextChat()
-                            .withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .signed:
-                        ContinueJourney()
-                    case let .menu(action):
-                        action.journey
-                    case .signedQuoteCart:
-                        DismissJourney()
-                    }
-                }
-                .hidesBackButton
             case .loggedIn:
                 AppJourney.loggedIn
             case .login:
@@ -75,7 +43,10 @@ enum ChatResult {
                     UgglanStore.self,
                     rootView: AskForPushnotifications(
                         text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {}
+                        onActionExecuted: {
+                            let store: UgglanStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissScreen)
+                        }
                     ),
                     style: .detented(.large)
                 ) { action in
@@ -105,7 +76,6 @@ extension Chat: Presentable {
             chatState: chatState,
             navigateCallbacker: navigateCallbacker
         )
-
         let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.navigationItem.largeTitleDisplayMode = .never
 
@@ -184,8 +154,11 @@ extension Chat: Presentable {
             setSheetInteractionState(true)
         }
 
-        bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, index in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
+            if index.row == tableKit.view.numberOfRows(inSection: 0) - 1 {
+                self.chatState.fetchNext()
+            }
         }
         bag += tableKit.delegate.didSelect.onValue({ index in
             let item = tableKit.table[index]
@@ -220,6 +193,7 @@ extension Chat: Presentable {
                         right: 0
                     )
                     let headerView = UIView()
+                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
@@ -238,6 +212,7 @@ extension Chat: Presentable {
             width: 0,
             height: hNavigationControllerWithLargerNavBar.navigationBarHeight
         )
+        footerView.backgroundColor = .brand(.primaryBackground())
         tableKit.view.tableFooterView = footerView
 
         bag += chatState.tableSignal.atOnce().delay(by: 0.5)
@@ -250,6 +225,10 @@ extension Chat: Presentable {
                         sectionDelete: .top,
                         rowInsert: .top,
                         rowDelete: .fade
+                    )
+                    tableKit.view.reloadRows(
+                        at: [IndexPath(row: tableKit.view.numberOfRows(inSection: 0) - 1, section: 0)],
+                        with: .automatic
                     )
                     tableKit.set(table, animation: tableAnimation)
                 }

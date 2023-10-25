@@ -17,7 +17,7 @@ public struct BankIDLoginQR: View {
                     DotsActivityIndicator(.standard)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(hBackgroundColorNew.primary.opacity(0.01))
+                .background(hBackgroundColor.primary.opacity(0.01))
                 .edgesIgnoringSafeArea(.top)
                 .useDarkColor
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
@@ -32,7 +32,7 @@ public struct BankIDLoginQR: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(height: 140)
-                                .foregroundColor(hTextColorNew.primary)
+                                .foregroundColor(hTextColor.primary)
                                 .transition(.scale)
                                 .alert(isPresented: $vm.showAlert) {
                                     Alert(
@@ -53,15 +53,13 @@ public struct BankIDLoginQR: View {
 
                         VStack(spacing: 0) {
                             hText(L10n.authenticationBankidLoginTitle)
-                                .foregroundColor(hTextColorNew.primaryTranslucent)
+                                .foregroundColor(hTextColor.primaryTranslucent)
                             hText(L10n.authenticationBankidLoginLabel)
-                                .foregroundColor(hTextColorNew.secondaryTranslucent)
+                                .foregroundColor(hTextColor.secondaryTranslucent)
                                 .multilineTextAlignment(.center)
+                                .padding(.horizontal, 16)
                         }
                         .padding(.horizontal, 16)
-
-                        Image(uiImage: hCoreUIAssets.menuIcon.image)
-                            .frame(height: 6)
                     }
                     .padding(.top, UIScreen.main.bounds.size.height / 5.0)
                 }
@@ -86,7 +84,7 @@ public struct BankIDLoginQR: View {
                             hText(L10n.BankidMissingLogin.emailButton)
                         }
                     }
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 16)
                     .padding(.horizontal, 16)
                 }
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))

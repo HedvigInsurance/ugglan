@@ -28,7 +28,7 @@ struct SetTerminationDate: View {
                                     hText(L10n.terminationDateText, style: .body)
                                     Spacer()
                                     hText(terminationDate.displayDateDotFormat ?? "", style: .body)
-                                        .foregroundColor(hTextColorNew.secondary)
+                                        .foregroundColor(hTextColor.secondary)
                                 }
                                 .padding(.bottom, 8)
                                 .padding(.horizontal, 8)
@@ -63,7 +63,6 @@ struct SetTerminationDate: View {
                                 onSelected(terminationDate)
                             } content: {
                                 hText(L10n.terminationConfirmButton, style: .body)
-                                    .foregroundColor(hLabelColor.primary.inverted)
                             }
                         }
                     }

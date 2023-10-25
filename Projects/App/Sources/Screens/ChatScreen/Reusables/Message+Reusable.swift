@@ -51,7 +51,7 @@ extension Message: Reusable {
             let timeStampText = NSAttributedString(
                 styledText: StyledText(
                     text: "11:33",
-                    style: UIColor.brandNewStyle(.chatTimeStamp)
+                    style: UIColor.brandStyle(.chatTimeStamp)
                 )
             )
 
@@ -76,7 +76,7 @@ extension Message: Reusable {
         if case let .crossSell(url) = type {
             let data = WebMetaDataProvider.shared.data(for: url!)?.title ?? ""
             let attributedString = NSAttributedString(
-                styledText: StyledText(text: data, style: UIColor.brandNewStyle(.chatMessage))
+                styledText: StyledText(text: data, style: UIColor.brandStyle(.chatMessage))
             )
             let size = attributedString.boundingRect(
                 with: CGSize(width: 267.77, height: CGFloat(Int.max)),
@@ -91,7 +91,7 @@ extension Message: Reusable {
         }
 
         let attributedString = NSAttributedString(
-            styledText: StyledText(text: body, style: UIColor.brandNewStyle(.chatMessage))
+            styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
         )
 
         let size = attributedString.boundingRect(
@@ -109,7 +109,7 @@ extension Message: Reusable {
         }()
 
         if isRelatedToPreviousMessage {
-            return size.height + smallerMarginTop + extraPadding + extraHeightForTimeStampLabel
+            return size.height + extraPadding + extraHeightForTimeStampLabel
         }
 
         return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
@@ -118,7 +118,7 @@ extension Message: Reusable {
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
 
     static var hedvigBubbleColor: UIColor {
-        UIColor(base: UIColor.brandNew(.secondaryBackground()), elevated: UIColor.brandNew(.primaryBackground()))
+        UIColor(base: UIColor.brand(.secondaryBackground()), elevated: UIColor.brand(.primaryBackground()))
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
@@ -126,6 +126,7 @@ extension Message: Reusable {
         containerView.axis = .horizontal
         containerView.alignment = .fill
         containerView.spacing = 15
+        containerView.backgroundColor = UIColor.brand(.primaryBackground())
 
         let spacingContainer = UIStackView()
         spacingContainer.axis = .vertical
@@ -139,7 +140,7 @@ extension Message: Reusable {
 
         let timeStampLabel = UILabel(
             value: "",
-            style: UIColor.brandNewStyle(.chatTimeStamp)
+            style: UIColor.brandStyle(.chatTimeStamp)
         )
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
 
@@ -283,13 +284,13 @@ extension Message: Reusable {
                     timeStampLabelContainer.alignment = message.fromMyself ? .trailing : .leading
                     spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                    let messageTextColor = UIColor.brandNew(.chatMessage)
+                    let messageTextColor = UIColor.brand(.chatMessage)
 
                     switch message.type {
                     case .image, .video:
                         bubble.backgroundColor = .clear
                     default:
-                        bubble.backgroundColor = UIColor.brandNew(.messageBackground(message.fromMyself))
+                        bubble.backgroundColor = UIColor.brand(.messageBackground(message.fromMyself))
                     }
 
                     switch message.type {
@@ -415,7 +416,7 @@ extension Message: Reusable {
                         imageView.layer.cornerRadius = 20
                         imageView.clipsToBounds = true
                         //title //subtitle
-                        let textStyle = UIColor.brandNewStyle(.chatMessage)
+                        let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
 
                         let text = L10n.chatFileDownload
@@ -492,7 +493,7 @@ extension Message: Reusable {
                             }
                         }
                     case let .file(url):
-                        let textStyle = UIColor.brandNewStyle(.chatMessage)
+                        let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
 
                         let text = L10n.chatFileDownload
@@ -568,7 +569,7 @@ extension Message: Reusable {
                                     )
                             }
                     case .text:
-                        let textStyle = UIColor.brandNewStyle(.chatMessage)
+                        let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
                         let attributedString = NSMutableAttributedString(
                             text: message.body,
@@ -609,13 +610,19 @@ extension Message: Reusable {
                                 if let url = tappedLink?.url,
                                     ["http", "https"].contains(url.scheme)
                                 {
-                                    label.viewController?
-                                        .present(
-                                            SFSafariViewController(
-                                                url: url
-                                            ),
-                                            animated: true
-                                        )
+                                    if url.absoluteString.isDeepLink {
+                                        if let vc = UIApplication.shared.getTopViewController() {
+                                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                                        }
+                                    } else {
+                                        label.viewController?
+                                            .present(
+                                                SFSafariViewController(
+                                                    url: url
+                                                ),
+                                                animated: true
+                                            )
+                                    }
                                 }
                             }
                     }

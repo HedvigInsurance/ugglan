@@ -1,3 +1,0 @@
-mutation TriggerClaimChat($claimTypeId: ID) {
-    triggerClaimChat(input: { claimTypeId: $claimTypeId })
-}

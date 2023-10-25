@@ -3,7 +3,9 @@ import Flow
 import Presentation
 import SwiftUI
 import TerminateContracts
+import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
@@ -18,17 +20,16 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
     case fetch
-
+    case fetchCompleted
     // Fetch contracts for terminated
-    case fetchContractBundles
-    case fetchContractBundlesDone
     case fetchCrossSale
     case fetchContracts
-    case fetchContractsDone
 
-    case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setActiveContracts(contracts: [Contract])
+    case setTerminatedContracts(contracts: [Contract])
+    case setPendingContracts(contracts: [Contract])
+
     case setCrossSells(crossSells: [CrossSell])
-    case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
@@ -69,7 +70,11 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     }
 
     public static func getTypes(for contract: Contract) -> [EditType] {
-        var editTypes: [EditType] = [.changeAddress]
+        var editTypes: [EditType] = []
+
+        if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
+            editTypes.append(.changeAddress)
+        }
         if contract.canChangeCoInsured {
             editTypes.append(.coInsured)
         }

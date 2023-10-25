@@ -19,7 +19,14 @@ struct OtherService: View {
                     ForEach(otherServices, id: \.id) { claim in
                         hSection {
                             hRow {
-                                hText(claim.displayTitle, style: .title3)
+                                if claim.layout.emergency?.isAlert ?? false {
+                                    hText(claim.displayTitle, style: .title3)
+                                        .foregroundColor(getTextColor(claim: claim))
+                                        .colorScheme(.dark)
+                                } else {
+                                    hText(claim.displayTitle, style: .title3)
+                                        .foregroundColor(getTextColor(claim: claim))
+                                }
                             }
                             .withChevronAccessory
                             .onTap {
@@ -59,6 +66,15 @@ struct OtherService: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.vertical, 16)
             }
+        }
+    }
+
+    @hColorBuilder
+    func getTextColor(claim: CommonClaim) -> some hColor {
+        if claim.layout.emergency?.isAlert ?? false {
+            hTextColor.negative
+        } else {
+            hTextColor.primary
         }
     }
 }

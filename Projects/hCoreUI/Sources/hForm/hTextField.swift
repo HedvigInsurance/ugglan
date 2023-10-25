@@ -69,6 +69,7 @@ public struct hTextField: View {
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
+
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -87,7 +88,7 @@ public struct hTextField: View {
                 SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
                     .modifier(masking)
-                    .tint(hLabelColor.primary)
+                    .tint(hTextColor.primary)
                     .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                         if shouldUpdate {
                             value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -105,7 +106,7 @@ public struct hTextField: View {
                     hText(errorMessage, style: .footnote)
                         .padding(.top, 7)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hTintColor.red)
+                        .foregroundColor(hSignalColor.redText)
                 }
             }
         }
@@ -151,7 +152,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     var onReturnTap: () -> Void = {}
     var onDidEndEditing: () -> Void = {}
     var onBeginEditing: () -> Void = {}
-
+    weak var textField: UITextField?
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
         return true
@@ -162,9 +163,15 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.textField = textField
         onBeginEditing()
     }
+}
 
+extension UITextField {
+    @objc func dismissKeyboad() {
+        self.resignFirstResponder()
+    }
 }
 
 public protocol hTextFieldFocusStateCompliant: Hashable {

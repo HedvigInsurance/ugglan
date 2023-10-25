@@ -49,15 +49,20 @@ extension CommonClaimDetail: Presentable {
             make.top.equalTo(0)
         }
 
-        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
+        let titleStyle: TextStyle = TextStyle(
+            font: Fonts.fontFor(style: .standardLarge),
+            color: UIColor.BrandColorNew.primaryText().color,
+            minimumScaleFactor: 1
+        )
+        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: titleStyle)
         bag += topCardContentView.addArranged(layoutTitle)
 
         if let bulletPoints = claim.layout.titleAndBulletPoint?.bulletPoints {
             let claimButton = Button(
                 title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
-                type: .standard(
-                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                    textColor: .brand(.secondaryButtonTextColor)
+                type: .normal(
+                    backgroundColor: .brand(.primaryBackground(true)),
+                    textColor: .brand(.primaryText(true))
                 )
             )
             bag += topCardContentView.addArranged(claimButton)
@@ -77,7 +82,6 @@ extension CommonClaimDetail: Presentable {
                     store?.send(.startClaim)
                 }
             }
-
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
         } else {
             let emergencyActions = EmergencyActions(presentingViewController: viewController)

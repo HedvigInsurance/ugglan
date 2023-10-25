@@ -26,7 +26,7 @@ extension ChatInput: Viewable {
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
 
-        backgroundView.backgroundColor = UIColor.brandNew(.primaryBackground()).withAlphaComponent(0.75)
+        backgroundView.backgroundColor = UIColor.brand(.primaryBackground()).withAlphaComponent(0.75)
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
 
@@ -43,7 +43,7 @@ extension ChatInput: Viewable {
         containerView.axis = .vertical
         backgroundView.addSubview(containerView)
         let dividerView = UIView()
-        dividerView.backgroundColor = .brandNew(.primaryBorderColor)
+        dividerView.backgroundColor = .brand(.chatTextView)
         backgroundView.addSubview(dividerView)
 
         dividerView.snp.makeConstraints { make in
@@ -51,6 +51,8 @@ extension ChatInput: Viewable {
             make.height.equalTo(1)
         }
         containerView.snp.makeConstraints { make in make.leading.trailing.top.bottom.equalToSuperview() }
+
+        containerView.backgroundColor = .brand(.primaryBackground())
 
         let contentView = UIStackView()
         contentView.axis = .vertical
@@ -94,6 +96,8 @@ extension ChatInput: Viewable {
 
                         if attachGIFPaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
@@ -139,6 +143,8 @@ extension ChatInput: Viewable {
 
                         if attachFilePaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
@@ -226,22 +232,6 @@ extension ChatInput: Viewable {
                 }
 
                 contentView.bringSubviewToFront(singleSelectContainer)
-            case .audio:
-                inputBar.alpha = 0
-                singleSelectContainer.alpha = 0
-                audioContainer.alpha = 1
-
-                UIView.performWithoutAnimation {
-                    let audioRecorder = AudioRecorder(chatState: self.chatState)
-
-                    audioContainer.subviews.forEach { view in view.removeFromSuperview() }
-
-                    bag += audioContainer.add(audioRecorder) { view in
-                        view.snp.makeConstraints { make in
-                            make.top.bottom.trailing.leading.equalToSuperview()
-                        }
-                    }
-                }
             }
         }
 

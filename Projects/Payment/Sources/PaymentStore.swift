@@ -1,4 +1,5 @@
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import Presentation
@@ -256,7 +257,7 @@ extension PayoutMethodStatus: Codable {
 
 public struct PaymentData: Codable, Equatable {
     let nextPayment: NextPayment?
-    let contracts: [Contract]?
+    let contracts: [ContractInfo]?
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
@@ -281,21 +282,23 @@ public struct PaymentData: Codable, Equatable {
         let date: String?
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
-            amount = MonetaryAmount(optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment)
+            amount = MonetaryAmount(
+                optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragmentGiraffe
+            )
             date = data.nextChargeDate?.localDateToDate?.displayDateMMMDDYYYYFormat
         }
     }
 
-    struct Contract: Codable, Equatable {
+    struct ContractInfo: Codable, Equatable {
         let id: String
-        let type: hGraphQL.Contract.TypeOfContract
+        let type: Contract.TypeOfContract
         let name: String
         let amount: MonetaryAmount?
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ActiveContractBundle.Contract) {
             self.id = data.id
             self.name = data.displayName
-            self.type = hGraphQL.Contract.TypeOfContract(rawValue: data.typeOfContract.rawValue) ?? .unknown
+            self.type = Contract.TypeOfContract(rawValue: data.typeOfContract.rawValue) ?? .unknown
             self.amount = nil
         }
     }
@@ -305,7 +308,7 @@ public struct PaymentData: Codable, Equatable {
         let date: String
 
         init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ChargeHistory) {
-            amount = MonetaryAmount(fragment: data.amount.fragments.monetaryAmountFragment)
+            amount = MonetaryAmount(fragment: data.amount.fragments.monetaryAmountFragmentGiraffe)
             let localDate = data.date.localDateToDate?.displayDateMMMDDYYYYFormat ?? ""
             date = localDate
         }
@@ -328,7 +331,7 @@ public struct PaymentData: Codable, Equatable {
         init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.Balance?) {
             guard let data else { return nil }
             failedCharges = data.failedCharges
-            balance = .init(fragment: data.currentBalance.fragments.monetaryAmountFragment)
+            balance = .init(fragment: data.currentBalance.fragments.monetaryAmountFragmentGiraffe)
         }
     }
 
@@ -349,16 +352,16 @@ public struct PaymentData: Codable, Equatable {
 
         init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.InsuranceCost?) {
             guard let data else { return nil }
-            self.gross = MonetaryAmount(fragment: data.monthlyGross.fragments.monetaryAmountFragment)
-            self.discount = MonetaryAmount(fragment: data.monthlyDiscount.fragments.monetaryAmountFragment)
-            self.net = MonetaryAmount(fragment: data.monthlyNet.fragments.monetaryAmountFragment)
+            self.gross = MonetaryAmount(fragment: data.monthlyGross.fragments.monetaryAmountFragmentGiraffe)
+            self.discount = MonetaryAmount(fragment: data.monthlyDiscount.fragments.monetaryAmountFragmentGiraffe)
+            self.net = MonetaryAmount(fragment: data.monthlyNet.fragments.monetaryAmountFragmentGiraffe)
         }
 
         init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ChargeEstimation?) {
             guard let data else { return nil }
-            self.gross = MonetaryAmount(fragment: data.subscription.fragments.monetaryAmountFragment)
-            self.discount = MonetaryAmount(fragment: data.discount.fragments.monetaryAmountFragment)
-            self.net = MonetaryAmount(fragment: data.charge.fragments.monetaryAmountFragment)
+            self.gross = MonetaryAmount(fragment: data.subscription.fragments.monetaryAmountFragmentGiraffe)
+            self.discount = MonetaryAmount(fragment: data.discount.fragments.monetaryAmountFragmentGiraffe)
+            self.net = MonetaryAmount(fragment: data.charge.fragments.monetaryAmountFragmentGiraffe)
         }
     }
 }

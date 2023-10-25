@@ -10,7 +10,6 @@ struct ActiveSectionView<Claims: View>: View {
     @PresentableStore var store: HomeStore
 
     var claimsContent: Claims
-    let memberId: String
 
     var body: some View {
         PresentableStoreLens(
@@ -20,11 +19,9 @@ struct ActiveSectionView<Claims: View>: View {
             }
         ) { memberStateData in
             hSection {
-                if let name = memberStateData.name {
-                    hText(L10n.HomeTab.welcomeTitle(name), style: .title1)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                hText(L10n.HomeTab.welcomeTitleWithoutName, style: .title1)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                 claimsContent
             }
             .slideUpFadeAppearAnimation()

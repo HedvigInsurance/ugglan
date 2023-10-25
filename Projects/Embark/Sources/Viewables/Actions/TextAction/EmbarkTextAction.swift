@@ -69,7 +69,7 @@ extension EmbarkTextAction: Viewable {
         textSignal.value = prefillValue
 
         if let subtitle = data.textActionData.subtitle {
-            let subtitleView = UILabel(value: subtitle, style: .brand(.body(color: .tertiary)).centerAligned)
+            let subtitleView = UILabel(value: subtitle, style: UIColor.brandStyle(.secondaryText).centerAligned)
             boxStack.addArrangedSubview(subtitleView)
             animator.register(key: \.subtitle, value: subtitleView)
         } else {
@@ -79,8 +79,8 @@ extension EmbarkTextAction: Viewable {
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
             type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                backgroundColor: .brand(.secondaryBackground(true)),
+                textColor: .brand(.primaryText())
             )
         )
         bag += view.addArranged(button) { buttonView in animator.register(key: \.button, value: buttonView) }
@@ -148,7 +148,7 @@ extension Masking {
     func maskValueFromStore(text: String) -> String {
         switch type {
         case .personalNumber, .personalNumberCoInsured, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .euroBonus:
+            .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .address, .euroBonus:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
             guard let date = text.localDateToDate else { return text }

@@ -89,7 +89,9 @@ import hGraphQL
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        self.handleDeepLink(url)
+        if let rootVC = window.rootViewController {
+            self.handleDeepLink(url, fromVC: rootVC)
+        }
         return true
     }
 
@@ -237,7 +239,7 @@ import hGraphQL
                     body: L10n.forceLogoutMessageTitle,
                     subtitle: L10n.forceLogoutMessageSubtitle,
                     textColor: .black,
-                    backgroundColor: .brand(.regularCaution)
+                    backgroundColor: .brand(.caution)
                 )
 
                 Toasts.shared.displayToast(toast: toast)
@@ -262,7 +264,7 @@ import hGraphQL
                     symbol: .icon(hCoreUIAssets.settingsIcon.image),
                     body: "Targeting \(Environment.current.displayName) environment",
                     textColor: .black,
-                    backgroundColor: .brand(.regularCaution)
+                    backgroundColor: .brand(.caution)
                 )
 
                 self.bag += toast.onTap.onValue {
@@ -307,7 +309,7 @@ import hGraphQL
                             )
 
                             self.bag += self.window.present(
-                                ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney
+                                ActivityIndicator(style: .large, color: hTextColor.primary).disposableHostingJourney
                                     .onPresent({
                                         Journey(alert)
                                             .onPresent {
@@ -336,10 +338,11 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
-                let odysseyNetworkClient = OdysseyNetworkClient()
+                let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in odysseyNetworkClient })
+                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
             }
             .toVoid()
     }

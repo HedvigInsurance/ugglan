@@ -36,7 +36,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption])
-        case text, audio, none
+        case text, none
     }
 
     enum MessageType: Equatable {
@@ -228,71 +228,23 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
     }
 
     init(
-        from message: GiraffeGraphQL.MessageData,
+        from message: OctopusGraphQL.MessageFragment,
         listSignal: ReadSignal<[ChatListContent]>?
     ) {
-        globalId = message.globalId
+        globalId = message.id
         id = message.id
-        richTextCompatible = message.header.richTextChatCompatible
-
+        richTextCompatible = true
         if let listSignal = listSignal {
             cachedComputedProperties = CachedComputedProperties(listSignal.toVoid().plain())
         } else {
             cachedComputedProperties = nil
         }
-
-        if let singleSelect = message.body.asMessageBodySingleSelect {
-            body = singleSelect.text
-
-            if let choices = singleSelect.choices?.compactMap({ $0 }) {
-                let options = choices.compactMap { choice -> SingleSelectOption? in
-                    if let selection = choice.asMessageBodyChoicesSelection {
-                        return SingleSelectOption(
-                            type: .selection,
-                            text: selection.text,
-                            value: selection.value
-                        )
-                    } else if let link = choice.asMessageBodyChoicesLink, let view = link.view {
-                        return SingleSelectOption(
-                            type: .link(
-                                view: SingleSelectOption.ViewType.from(
-                                    rawValue: view.rawValue
-                                )
-                            ),
-                            text: link.text,
-                            value: link.value
-                        )
-                    } else if let link = choice.asMessageBodyChoicesLink {
-                        return SingleSelectOption(
-                            type: .login,
-                            text: link.text,
-                            value: link.value
-                        )
-                    }
-
-                    return nil
-                }
-                responseType = .singleSelect(options: options)
-            } else {
-                responseType = .none
-            }
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
-        } else if let multipleSelect = message.body.asMessageBodyMultipleSelect {
-            body = multipleSelect.text
-            responseType = .none
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
-        } else if let text = message.body.asMessageBodyText {
+        if let text = message.fragments.chatMessageTextFragment {
             body = text.text
             responseType = .text
-            placeholder = text.placeholder
-            keyboardType = UIKeyboardType.from(text.keyboard)
-            textContentType = UITextContentType.from(text.textContentType)
+            placeholder = nil
+            keyboardType = nil
+            textContentType = nil
             if text.text.isGIFURL {
                 type = .gif(url: URL(string: text.text))
             } else if text.text.isCrossSell {
@@ -300,36 +252,8 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             } else {
                 type = .text
             }
-        } else if let number = message.body.asMessageBodyNumber {
-            body = number.text
-            responseType = .text
-            placeholder = number.placeholder
-            keyboardType = UIKeyboardType.from(number.keyboard)
-            textContentType = UITextContentType.from(number.textContentType)
-            type = .text
-        } else if let audio = message.body.asMessageBodyAudio {
-            body = audio.text
-            responseType = .audio
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
-        } else if let bankIdCollect = message.body.asMessageBodyBankIdCollect {
-            body = bankIdCollect.text
-            responseType = .none
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
-        } else if let paragraph = message.body.asMessageBodyParagraph {
-            body = paragraph.text
-            responseType = .none
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
-        } else if let file = message.body.asMessageBodyFile {
-            body = file.text
+        } else if let file = message.fragments.chatMessageFileFragment {
+            body = ""
             responseType = .text
             placeholder = nil
             keyboardType = nil
@@ -337,18 +261,11 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
             switch file.mimeType {
             case "image/jpeg", "image/png", "image/gif":
-                type = .image(url: URL(string: file.file.signedUrl))
+                type = .image(url: URL(string: file.signedUrl))
             case "video/webm", "video/ogg", "video/mp4", "video/quicktime":
-                type = .video(url: URL(string: file.file.signedUrl))
-            default: type = .file(url: URL(string: file.file.signedUrl))
+                type = .video(url: URL(string: file.signedUrl))
+            default: type = .file(url: URL(string: file.signedUrl))
             }
-        } else if let undefined = message.body.asMessageBodyUndefined {
-            body = undefined.text
-            responseType = .text
-            placeholder = nil
-            keyboardType = nil
-            textContentType = nil
-            type = .text
         } else {
             body = "Oj något gick fel"
             responseType = .text
@@ -358,11 +275,11 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             type = .text
         }
 
-        fromMyself = message.header.fromMyself
-        statusMessage = message.header.statusMessage
-
-        let timeStampInt = Int(message.header.timeStamp) ?? 0
-        timeStamp = TimeInterval(timeStampInt / 1000)
+        fromMyself = message.sender == .member
+        statusMessage = nil  //message.header.statusMessage
+        let timeIntervalSince1970 = message.sentAt.localDateToIso8601Date?.timeIntervalSince1970
+        let timeStampInt = timeIntervalSince1970 ?? 0
+        timeStamp = timeStampInt
         self.listSignal = listSignal
     }
 }

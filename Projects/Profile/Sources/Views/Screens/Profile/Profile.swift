@@ -67,6 +67,7 @@ public struct ProfileView: View {
                 .padding(.top, 16)
             }
         }
+        .hFormMergeBottomViewWithContentIfNeeded
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 ConnectPaymentCardView()
@@ -76,7 +77,7 @@ public struct ProfileView: View {
                     showLogoutAlert = true
                 } content: {
                     hText(L10n.logoutButton)
-                        .foregroundColor(hSignalColorNew.redElement)
+                        .foregroundColor(hSignalColor.redElement)
                 }
                 .alert(isPresented: $showLogoutAlert) {
                     logoutAlert

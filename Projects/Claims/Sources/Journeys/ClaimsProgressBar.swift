@@ -14,10 +14,10 @@ extension JourneyPresentation {
                 if let navigationBar = presenter.viewController.navigationController?.navigationBar,
                     navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
                 {
-                    let progresView = UIProgressView(color: UIColor.brandNew(.primaryBackground(false)))
+                    let progresView = UIProgressView(color: UIColor.brand(.primaryBackground(false)))
                     progresView.layer.cornerRadius = 2
                     progresView.tag = progressViewTag
-                    progresView.tintColor = .brandNew(.primaryText(false))
+                    progresView.tintColor = .brand(.primaryText(false))
                     navigationBar.addSubview(progresView)
                     progresView.snp.makeConstraints { make in
                         make.leading.equalToSuperview().offset(15)

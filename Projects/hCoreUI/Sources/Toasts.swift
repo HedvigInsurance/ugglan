@@ -44,9 +44,9 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = .brandNew(.toasterTitle),
-        backgroundColor: UIColor = UIColor.brandNew(.toasterBackground),
-        borderColor: UIColor = UIColor.brandNew(.toasterBorder),
+        textColor: UIColor = .brand(.toasterTitle),
+        backgroundColor: UIColor = UIColor.brand(.toasterBackground),
+        borderColor: UIColor = UIColor.brand(.toasterBorder),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
@@ -63,7 +63,7 @@ extension Toast: Viewable {
     var symbolView: UIView {
         switch symbol {
         case let .character(character):
-            let view = UILabel(value: String(character), style: UIColor.brandNewStyle(.primaryText()))
+            let view = UILabel(value: String(character), style: UIColor.brandStyle(.primaryText()))
             view.minimumScaleFactor = 0.5
             view.adjustsFontSizeToFitWidth = true
             return view
@@ -72,7 +72,7 @@ extension Toast: Viewable {
             view.image = icon
             let symbolColor = UIColor(dynamic: { trait -> UIColor in
                 UIColor(
-                    hSignalColorNew.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColor.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                 )
             })
@@ -164,7 +164,7 @@ extension Toast: Viewable {
         textContainer.spacing = 5
         let bodyLabel = UILabel(
             value: body,
-            style: UIColor.brandNewStyle(.toasterTitle).colored(textColor)
+            style: UIColor.brandStyle(.toasterTitle).colored(textColor)
         )
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
@@ -174,7 +174,7 @@ extension Toast: Viewable {
         if let subtitle = subtitle {
             let bodySubtitleLabel = UILabel(
                 value: subtitle,
-                style: UIColor.brandNewStyle(.toasterSubtitle).colored(textColor)
+                style: UIColor.brandStyle(.toasterSubtitle).colored(textColor)
             )
             textContainer.addArrangedSubview(bodySubtitleLabel)
         }
@@ -225,8 +225,8 @@ extension Toasts: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let containerView = PassThroughView()
-
+        let containerView = UIView()
+        let heightConstraint = containerView.heightAnchor.constraint(equalToConstant: 0)
         containerView.layer.zPosition = .greatestFiniteMagnitude
 
         bag += containerView.didMoveToWindowSignal.take(first: 1)
@@ -249,10 +249,7 @@ extension Toasts: Viewable {
                 parent.bringSubviewToFront(containerView)
             }
         }
-
-        containerView.snp.makeConstraints { make in
-            make.height.equalTo(0)
-        }
+        heightConstraint.isActive = true
 
         bag +=
             toastCallbacker
@@ -260,6 +257,7 @@ extension Toasts: Viewable {
             .wait(until: pauseSignal.distinct().map { !$0 })
             .distinct()
             .onValueDisposePrevious { toast in
+                containerView.layer.zPosition = .greatestFiniteMagnitude
                 let innerBag = bag.innerBag()
                 pauseSignal.value = true
                 hideBag.dispose()
@@ -327,7 +325,11 @@ extension Toasts: Viewable {
                         .onValue { _ in
                             pauseSignal.value = false
                         }
-
+                    innerBag += toastView.didLayoutSignal.onValue { _ in
+                        if toastView.frame.height > 0 {
+                            heightConstraint.constant = toastView.frame.height
+                        }
+                    }
                     let hideCallbacker = Callbacker<Void>()
 
                     bag +=
@@ -344,6 +346,7 @@ extension Toasts: Viewable {
                         }
                         .onValue { _ in
                             toastView.removeFromSuperview()
+                            heightConstraint.constant = 0
                             innerBag.dispose()
                             pauseSignal.value = false
                         }

@@ -25,7 +25,7 @@ struct HeaderView: View {
                             currency: netAmount.currency
                         )
                         hText(discountValue.negative.formattedAmount)
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
                 PresentableStoreLens(
@@ -66,12 +66,10 @@ struct HeaderView: View {
                             // No discount present
                             hText(
                                 L10n.ReferralsEmpty.body(
-                                    monthlyDiscountPerReferral.formattedAmount,
-                                    MonetaryAmount(amount: 0, currency: monthlyDiscountPerReferral.currency)
-                                        .formattedAmount
+                                    monthlyDiscountPerReferral.formattedAmount
                                 )
                             )
-                            .foregroundColor(hTextColorNew.secondary)
+                            .foregroundColor(hTextColor.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)
                         }

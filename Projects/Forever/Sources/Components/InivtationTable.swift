@@ -8,29 +8,29 @@ extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {
         case .active:
-            hSignalColorNew.greenElement
+            hSignalColor.greenElement
         case .pending:
-            hSignalColorNew.amberElement
+            hSignalColor.amberElement
         case .terminated:
-            hSignalColorNew.redElement
+            hSignalColor.redElement
         }
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
-            hTextColorNew.primary
+            hTextColor.primary
         case .pending, .terminated:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         }
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.status {
         case .active, .pending:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         case .terminated:
-            hTextColorNew.tertiary
+            hTextColor.tertiary
         }
     }
 
@@ -56,7 +56,10 @@ struct InvitationTable: View {
                 state.foreverData
             }
         ) { foreverData in
-            if let foreverData {
+            if let foreverData,
+                !foreverData.referrals.isEmpty || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
+                    || foreverData.grossAmount.amount != foreverData.netAmount.amount
+            {
                 hSection {
                     if !foreverData.referrals.isEmpty {
                         hRow {
@@ -71,6 +74,7 @@ struct InvitationTable: View {
                     getTotalRow(foreverData)
                 }
                 .sectionContainerStyle(.transparent)
+                .padding(.vertical, 16)
             }
         }
     }
@@ -80,12 +84,8 @@ struct InvitationTable: View {
         if let otherDiscounts = foreverData.otherDiscounts, otherDiscounts.floatAmount > 0 {
             hRow {
                 hText(L10n.Referrals.yourOtherDiscounts)
-            }
-            .withCustomAccessory {
-                HStack {
-                    Spacer()
-                    hText("\(otherDiscounts.negative.formattedAmount)")
-                }
+                Spacer()
+                hText("\(otherDiscounts.negative.formattedAmount)")
             }
         }
     }
@@ -111,10 +111,10 @@ struct InvitationTable: View {
     private func getGrossField(_ text: String) -> some View {
         if #available(iOS 15.0, *) {
             Text(attributedString(text))
-                .foregroundColor(hTextColorNew.secondary)
+                .foregroundColor(hTextColor.secondary)
                 .modifier(hFontModifier(style: .standard))
         } else {
-            hText(text).foregroundColor(hTextColorNew.secondary)
+            hText(text).foregroundColor(hTextColor.secondary)
         }
     }
 
@@ -134,9 +134,7 @@ struct InvitationRow: View {
             HStack(spacing: 8) {
                 Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
-                    hText(row.name).foregroundColor(hTextColorNew.primary)
-                    hText(L10n.ReferallsInviteeStates.invitedYou, style: .subheadline)
-                        .foregroundColor(row.invitedByOtherLabelColor)
+                    hText(row.name).foregroundColor(hTextColor.primary)
                 }
             }
         }

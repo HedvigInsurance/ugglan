@@ -87,7 +87,7 @@ extension MonetaryAmount {
     }
 }
 
-extension GiraffeGraphQL.MonetaryAmountFragment {
+extension GiraffeGraphQL.MonetaryAmountFragmentGiraffe {
     public var monetaryAmount: MonetaryAmount {
         .init(amount: amount, currency: currency)
     }

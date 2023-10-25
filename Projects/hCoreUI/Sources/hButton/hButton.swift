@@ -57,50 +57,44 @@ struct ButtonFilledStandardBackground: View {
         switch hButtonConfigurationType {
         case .primary:
             if configuration.isPressed {
-                hButtonColorNew.primaryHover
+                hButtonColor.primaryHover
             } else if isEnabled {
-                hButtonColorNew.primaryDefault
+                hButtonColor.primaryDefault
             } else {
-                hButtonColorNew.primaryDisabled
+                hButtonColor.primaryDisabled
             }
         case .primaryAlt:
             if configuration.isPressed {
-                hButtonColorNew.primaryAltHover
+                hButtonColor.primaryAltHover
             } else if isEnabled {
-                hButtonColorNew.primaryAltDefault
+                hButtonColor.primaryAltDefault
             } else {
-                hButtonColorNew.primaryAltDisabled
+                hButtonColor.primaryAltDisabled
             }
         case .secondary:
             if configuration.isPressed {
-                hButtonColorNew.secondaryHover
-                    .hShadow()
+                hButtonColor.secondaryHover
             } else if isEnabled {
-                hFillColorNew.translucentOne
-                    .hShadow()
+                hFillColor.translucentOne
             } else {
-                hButtonColorNew.secondaryDisabled
-                    .hShadow()
+                hButtonColor.secondaryDisabled
             }
         case .secondaryAlt:
             if configuration.isPressed {
-                hButtonColorNew.secondaryAltHover
-                    .hShadow()
+                hButtonColor.secondaryAltHover
             } else if isEnabled {
-                hButtonColorNew.secondaryAltDefault
-                    .hShadow()
+                hButtonColor.secondaryAltDefault
             } else {
-                hButtonColorNew.secondaryAltDisabled
-                    .hShadow()
+                hButtonColor.secondaryAltDisabled
             }
         case .ghost:
             if configuration.isPressed {
-                hFillColorNew.translucentOne
+                hFillColor.translucentOne
             } else if isEnabled {
                 Color.clear
             }
         case .alert:
-            hSignalColorNew.redElement
+            hSignalColor.redElement
         }
     }
 }
@@ -111,9 +105,9 @@ struct ButtonFilledOverImageBackground: View {
 
     var body: some View {
         if isEnabled {
-            hButtonColorNew.primaryDefault
+            hButtonColor.primaryDefault
         } else {
-            hButtonColorNew.primaryDisabled
+            hButtonColor.primaryDisabled
         }
     }
 }
@@ -160,6 +154,23 @@ extension EnvironmentValues {
     var hButtonConfigurationType: hButtonConfigurationType {
         get { self[EnvironmentHButtonConfigurationType.self] }
         set { self[EnvironmentHButtonConfigurationType.self] = newValue }
+    }
+}
+
+private struct EnvironmentHUseLightMode: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUseLightMode: Bool {
+        get { self[EnvironmentHUseLightMode.self] }
+        set { self[EnvironmentHUseLightMode.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUseLightMode: some View {
+        self.environment(\.hUseLightMode, true)
     }
 }
 
@@ -248,6 +259,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+        @Environment(\.hUseLightMode) var hUseLightMode
 
         var configuration: Configuration
 
@@ -257,41 +269,49 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 if isEnabled {
                     switch hButtonFilledStyle {
                     case .standard:
-                        hTextColorNew.negative
+                        hTextColor.negative
                     case .overImage:
-                        hTextColorNew.negative
+                        hTextColor.negative
                     }
                 } else {
-                    hTextColorNew.disabled
+                    hTextColor.disabled
                 }
             case .primaryAlt:
                 if isEnabled {
                     switch hButtonFilledStyle {
                     case .standard:
-                        hTextColorNew.primary
+                        hTextColor.primary
                     case .overImage:
-                        hTextColorNew.primary
+                        hTextColor.primary
                     }
                 } else {
-                    hTextColorNew.disabled
+                    hTextColor.disabled
                 }
             case .secondary, .ghost, .secondaryAlt:
                 if isEnabled {
-                    hTextColorNew.primary
+                    hTextColor.primary
                 } else {
-                    hTextColorNew.disabled
+                    hTextColor.disabled
                 }
             case .alert:
-                hTextColorNew.negative
+                hTextColor.negative
             }
         }
 
         var body: some View {
             LoaderOrContent(color: foregroundColor) {
-                configuration.label
-                    .foregroundColor(
-                        foregroundColor
-                    )
+                if hUseLightMode {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        )
+                        .colorScheme(.light)
+                } else {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        )
+                }
             }
         }
     }
@@ -301,7 +321,21 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         case .primary, .ghost, .alert:
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
-            getView(configuration: configuration).hShadow()
+            getView(configuration: configuration)
+                .background(
+                    ZStack {
+                        //create shadow - this create shadows for whole shape
+                        Squircle.default()
+                            .fill(hTextColor.primary.inverted.opacity(0.01))
+                            .hShadow()
+
+                        //cut out shape from previously created shape - we only need shadows
+                        Squircle.default()
+                            .blendMode(.destinationOut)
+
+                    }
+                    .compositingGroup()
+                )
         }
     }
 
@@ -324,9 +358,9 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hLabelColor.primary) {
+            LoaderOrContent(color: hTextColor.primary) {
                 configuration.label
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hTextColor.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -348,12 +382,12 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             if colorScheme == .light {
                 content.overlay(
                     Squircle.default(lineWidth: configuration.isPressed ? 0 : 1)
-                        .stroke(hLabelColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
+                        .stroke(hTextColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
                 )
             } else {
                 content.overlay(
                     Squircle.default(lineWidth: 1)
-                        .stroke(hLabelColor.primary, lineWidth: 1)
+                        .stroke(hTextColor.primary, lineWidth: 1)
                 )
             }
         }
@@ -365,7 +399,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(Color.clear)
-        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
+        //        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .clipShape(Squircle.default())
         .modifier(OverlayModifier(configuration: configuration))
         .modifier(OpacityModifier())
@@ -378,9 +412,9 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hTextColorNew.primary) {
+            LoaderOrContent(color: hTextColor.primary) {
                 configuration.label
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -408,7 +442,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var getPressedColor: some hColor {
-        hButtonColorNew.secondaryHover
+        hButtonColor.secondaryHover
     }
 }
 
@@ -418,9 +452,9 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hTextColorNew.primary) {
+            LoaderOrContent(color: hTextColor.primary) {
                 configuration.label
-                    .foregroundColor(hTextColorNew.primary)
+                    .foregroundColor(hTextColor.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -439,7 +473,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
             Label(configuration: configuration).contentShape(Rectangle())
         }
         .modifier(SmallButtonModifier())
-        .background(Color.clear)
+        .background(hGrayscaleColor.greyScale25)
         .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())
@@ -448,7 +482,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var getPressedColor: some hColor {
-        hButtonColorNew.secondaryHover
+        hButtonColor.secondaryHover
     }
 }
 
@@ -534,6 +568,7 @@ public enum hButton {
         var type: hButtonConfigurationType
         var content: () -> Content
         var action: () -> Void
+        @Environment(\.hUseLightMode) var useLightMode
 
         public init(
             type: hButtonConfigurationType,

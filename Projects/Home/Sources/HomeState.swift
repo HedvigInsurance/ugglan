@@ -16,11 +16,12 @@ public struct UpcomingRenewal: Codable, Equatable {
     let renewalDate: String?
     let draftCertificateUrl: String?
 
-    public init(
-        upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal?
+    public init?(
+        upcomingRenewal: OctopusGraphQL.AgreementFragment?
     ) {
-        self.renewalDate = upcomingRenewal?.renewalDate
-        self.draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
+        guard let upcomingRenewal, upcomingRenewal.creationCause == .renewal else { return nil }
+        self.renewalDate = upcomingRenewal.activeFrom
+        self.draftCertificateUrl = upcomingRenewal.certificateUrl
     }
 }
 
@@ -29,12 +30,12 @@ public struct Contract: Codable, Equatable {
     var displayName: String
 
     public init(
-        contract: GiraffeGraphQL.HomeQuery.Data.Contract
+        contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
     ) {
-        if contract.upcomingRenewal != nil {
-            upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
-        }
-        displayName = contract.displayName
+        upcomingRenewal = UpcomingRenewal(
+            upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
+        )
+        displayName = contract.exposureDisplayName
     }
 }
 
@@ -48,28 +49,6 @@ public struct MemberStateData: Codable, Equatable {
     ) {
         self.state = state
         self.name = name
-    }
-}
-
-public struct OtherServiceData: Codable, Equatable {
-    let type: OtherServicesType
-}
-
-public enum OtherServicesType: String, Codable, Equatable {
-    case chat
-    case changeAddress
-    case travelCertificate
-    case contactFirstVet
-    case sickAbroad
-
-    var title: String {
-        switch self {
-        case .chat: return L10n.chatTitle
-        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        case .travelCertificate: return L10n.TravelCertificate.cardTitle
-        case .contactFirstVet: return "Contact FirstVet"
-        case .sickAbroad: return "Sick abroad"
-        }
     }
 }
 
@@ -100,7 +79,6 @@ public enum HomeAction: ActionProtocol {
     case setImportantMessage(message: ImportantMessage)
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
-    case fetchFutureStatus
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
@@ -127,6 +105,26 @@ public enum FutureStatus: Codable, Equatable {
     case none
 }
 
+extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
+    fileprivate var futureStatus: FutureStatus {
+        let localDate = Date().localDateString.localDateToDate ?? Date()
+        let allActiveInFuture = activeContracts.allSatisfy({ contract in
+            return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
+        })
+
+        let externalInsraunceCancellation = pendingContracts.compactMap({ contract in
+            contract.externalInsuranceCancellationHandledByHedvig
+        })
+
+        if allActiveInFuture && externalInsraunceCancellation.count == 0 {
+            return .activeInFuture(inceptionDate: activeContracts.first?.masterInceptionDate ?? "")
+        } else if let firstExternal = externalInsraunceCancellation.first {
+            return firstExternal ? .pendingSwitchable : .pendingNonswitchable
+        }
+        return .none
+    }
+}
+
 public enum HomeLoadingType: LoadingProtocol {
     case fetchCommonClaim
 }
@@ -140,73 +138,57 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     ) -> FiniteSignal<HomeAction>? {
         switch action {
         case .fetchImportantMessages:
-            return
-                giraffe
+            return octopus
                 .client
-                .fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
-                .compactMap { $0.importantMessages.first }
-                .compactMap { $0 }
+                .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
+                .map { $0.currentMember.importantMessages.first }
                 .map { data in
-                    .setImportantMessage(message: .init(message: data.message, link: data.link))
+                    .setImportantMessage(message: .init(message: data?.message, link: data?.link))
                 }
                 .valueThenEndSignal
         case .fetchMemberState:
-            return
-                giraffe
-                .client
-                .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .map { data in
-                    .setMemberContractState(
-                        state: .init(state: data.homeState, name: data.member.firstName),
-                        contracts: data.contracts.map { Contract(contract: $0) }
-                    )
-                }
-                .valueThenEndSignal
-        case .fetchFutureStatus:
-            return
-                giraffe
-                .client
-                .fetch(
-                    query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
-                )
-                .join(with: giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery()))
-                .map { insuranceProviderData, homeData in
-                    if let contract = homeData.contracts.first(where: {
-                        $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil
-                    }) {
-                        if let activeInFutureStatus = contract.status.asActiveInFutureStatus {
-                            return .setFutureStatus(
-                                status: .activeInFuture(inceptionDate: activeInFutureStatus.futureInception ?? "")
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag +=
+                    self.octopus
+                    .client
+                    .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                    .onValue { data in
+                        let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
+                        callback(
+                            .value(
+                                .setMemberContractState(
+                                    state: .init(
+                                        state: data.currentMember.homeState,
+                                        name: data.currentMember.firstName
+                                    ),
+                                    contracts: contracts
+                                )
                             )
-                        } else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
-                            let insuranceProvider = insuranceProviderData.insuranceProviders.first(where: {
-                                provider -> Bool in provider.id == switchedFromInsuranceProvider
-                            }), insuranceProvider.switchable
-                        {
-                            return .setFutureStatus(status: .pendingSwitchable)
-                        } else {
-                            return .setFutureStatus(status: .pendingNonswitchable)
-                        }
-                    } else {
-                        return .setFutureStatus(status: .none)
+                        )
+                        callback(.value(.setFutureStatus(status: data.currentMember.futureStatus)))
                     }
-                }
-                .valueThenEndSignal
+                    .onError { [weak self] error in
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setCommonClaims(commonClaims: [])))
+                        } else {
+                            self?.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                        }
+                    }
+                return disposeBag
+            }
         case .fetchCommonClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
-                        query: GiraffeGraphQL.CommonClaimsQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        )
+                        query: OctopusGraphQL.CommonClaimsQuery()
                     )
                     .onValue { claimData in
-                        let commonClaims = claimData.commonClaims.map {
-                            CommonClaim(claim: $0)
-                        }
+                        let commonClaims = claimData.currentMember.activeContracts
+                            .flatMap({ $0.currentAgreement.productVariant.commonClaimDescriptions })
+                            .compactMap({ CommonClaim(claim: $0) })
+                            .unique()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
                     }
                     .onError { [weak self] error in
@@ -235,6 +217,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case .setImportantMessage(let message):
             if let text = message.message, text != "" {
                 newState.importantMessage = message
+            } else {
+                newState.importantMessage = nil
             }
         case .fetchCommonClaims:
             setLoading(for: .fetchCommonClaim)
@@ -284,7 +268,7 @@ public enum MemberContractState: String, Codable, Equatable {
     case loading
 }
 
-extension GiraffeGraphQL.HomeQuery.Data {
+extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future
@@ -296,16 +280,14 @@ extension GiraffeGraphQL.HomeQuery.Data {
     }
 
     private var isTerminated: Bool {
-        contracts.allSatisfy({ (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
-                || contract.status.asTerminatedTodayStatus != nil
-        })
+        return activeContracts.count == 0 && pendingContracts.count == 0
     }
 
     private var isFuture: Bool {
-        contracts.allSatisfy { (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
+        let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
+            return contract.currentAgreement.activeFrom.localDateToDate?.daysBetween(start: Date()) ?? 0 > 0
         }
+        return !activeContracts.isEmpty && hasActiveContractsInFuture
     }
 }
 

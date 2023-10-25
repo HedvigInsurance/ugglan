@@ -30,41 +30,28 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                     })
                 return disposeBag
             }
-        case .fetchContractBundles:
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                    .onValue { activeContractBundles in
-                        callback(
-                            .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
-                        )
-                        callback(.value(.fetchContractBundlesDone))
-                    }
-                    .onError { [unowned self] error in
-                        if ApplicationContext.shared.isDemoMode {
-                            self.removeLoading(for: .fetchContractBundles)
-                        } else {
-                            if !self.state.hasLoadedContractBundlesOnce {
-                                self.setError(L10n.General.errorBody, for: .fetchContractBundles)
-                            }
-                        }
-                        callback(.value(.fetchContractBundlesDone))
-                    }
-                return disposeBag
-            }
         case .fetchContracts:
             return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                let query = OctopusGraphQL.ContractBundleQuery()
+                disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { contracts in
-                        if getState().contracts != contracts {
-                            callback(.value(.setContracts(contracts: contracts)))
-                        } else {
-                            self.removeLoading(for: .fetchContracts)
+                        let activeContracts = contracts.currentMember.activeContracts.map { contract in
+                            Contract(contract: contract.fragments.contractFragment)
+
                         }
-                        callback(.value(.fetchContractsDone))
+                        callback(.value(.setActiveContracts(contracts: activeContracts)))
+
+                        let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
+                            Contract(contract: contract.fragments.contractFragment)
+                        }
+                        callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
+
+                        let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
+                            Contract(pendingContract: contract)
+                        }
+                        callback(.value(.setPendingContracts(contracts: pendingContracts)))
+                        callback(.value(.fetchCompleted))
                     }
                     .onError { error in
                         if ApplicationContext.shared.isDemoMode {
@@ -72,7 +59,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchContracts)
                         }
-                        callback(.value(.fetchContractsDone))
+                        callback(.value(.fetchCompleted))
                     }
                 return disposeBag
             }
@@ -80,7 +67,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             return [
                 .fetchCrossSale,
                 .fetchContracts,
-                .fetchContractBundles,
             ]
             .emitEachThenEnd
         default:
@@ -92,18 +78,16 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
-        case .fetchContractBundles:
-            setLoading(for: .fetchContractBundles)
         case .fetchContracts:
             setLoading(for: .fetchContracts)
-        case .setContractBundles(let activeContractBundles):
-            newState.hasLoadedContractBundlesOnce = true
-            removeLoading(for: .fetchContractBundles)
-            guard activeContractBundles != state.contractBundles else { return newState }
-            newState.contractBundles = activeContractBundles
-        case let .setContracts(contracts):
+        case let .setActiveContracts(contracts):
+
+            newState.activeContracts = contracts
+        case let .setTerminatedContracts(contracts):
+            newState.terminatedContracts = contracts
+        case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
-            newState.contracts = contracts
+            newState.pendingContracts = contracts
         case .setCrossSells(let crossSells):
             newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):

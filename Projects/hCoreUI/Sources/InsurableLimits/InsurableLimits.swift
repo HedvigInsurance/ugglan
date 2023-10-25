@@ -26,14 +26,15 @@ public struct InsurableLimitsSectionView: View {
             }
             .withCustomAccessory {
                 Spacer()
-                HStack(alignment: .center) {
+                HStack(alignment: .top) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()
-                        .foregroundColor(hTextColorNew.secondary)
+                        .foregroundColor(hTextColor.secondary)
                         .frame(width: 16, height: 16)
+                        .padding(.vertical, 4)
                         .onTapGesture {
                             didTap(limit)
                         }
@@ -46,5 +47,45 @@ public struct InsurableLimitsSectionView: View {
         }
         .withoutHorizontalPadding
         .sectionContainerStyle(.transparent)
+    }
+}
+
+public struct InsurableLimits: Codable, Hashable {
+    public let label: String
+    public let limit: String
+    public let description: String
+
+    public init(
+        label: String,
+        limit: String,
+        description: String
+    ) {
+        self.label = label
+        self.limit = limit
+        self.description = description
+    }
+
+    public init(
+        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
+    ) {
+        label = data.label
+        limit = data.limit
+        description = data.description
+    }
+}
+
+struct InsurableLimitsSectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        let limits: [InsurableLimits] = [
+            .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
+            .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+        ]
+
+        return VStack {
+            InsurableLimitsSectionView(limits: limits) { _ in
+
+            }
+            Spacer()
+        }
     }
 }

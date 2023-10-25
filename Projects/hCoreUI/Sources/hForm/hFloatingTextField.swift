@@ -1,4 +1,5 @@
 import Combine
+import Flow
 import Foundation
 import Introspect
 import SwiftUI
@@ -9,6 +10,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
+    @Namespace private var animationNamespace
     @State private var animationEnabled: Bool = true
     private var masking: Masking
     private var placeholder: String
@@ -19,13 +21,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var shouldMoveLabel: Bool = false
     @State private var observer: TextFieldObserver = TextFieldObserver()
     @StateObject private var vm = TextFieldVM()
-
     @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
     let focusValue: Value
     let onReturn: () -> Void
-
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -52,23 +52,19 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         HStack(spacing: 8) {
             VStack {
                 VStack(alignment: .leading, spacing: 0) {
-                    if suffix != nil, suffix != "" {
-                        HStack {
-                            getTextField
-                            Spacer()
-                            getSuffixLabel
-                        }
-                        .padding(.vertical, 15)
-                    } else {
+                    HStack {
                         hFieldLabel(
                             placeholder: placeholder,
                             animate: $animate,
                             error: $error,
                             shouldMoveLabel: $shouldMoveLabel
                         )
-                        getTextField
-
+                        Spacer()
+                        if !(suffix ?? "").isEmpty && !shouldMoveLabel {
+                            getSuffixLabel
+                        }
                     }
+                    getTextField
                 }
                 .padding(.vertical, shouldMoveLabel ? (size == .large ? 10 : 7.5) : 3)
             }
@@ -81,12 +77,44 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             if focusValue == Value.last {
                 textField?.returnKeyType = .done
             }
+
+            func dismissKeyboard() {
+                textField?.resignFirstResponder()
+            }
             observer.onBeginEditing = {
                 withAnimation {
                     self.error = nil
                 }
                 updateMoveLabel(true)
                 equals = focusValue
+
+                if masking.keyboardType == .numberPad {
+                    let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+                    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                    if let next = equals?.next {
+                        let button = UIButton(type: .custom)
+                        button.setTitle(L10n.generalDoneButton)
+                        button.backgroundColor = .clear
+
+                        let color = UIColor.BrandColorNew.primaryText().color
+                        button.setTitleColor(color, for: .normal)
+                        let nextButton = UIBarButtonItem(button: button)
+
+                        vm.disposeBag += button.signal(for: .touchUpInside)
+                            .onValue { _ in
+                                equals = equals?.next
+                            }
+                        toolbar.setItems([space, nextButton], animated: false)
+                    } else {
+                        let doneButton = UIBarButtonItem(
+                            barButtonSystemItem: .done,
+                            target: self,
+                            action: #selector(textField?.dismissKeyboad)
+                        )
+                        toolbar.setItems([space, doneButton], animated: false)
+                    }
+                    textField?.inputAccessoryView = toolbar
+                }
             }
             observer.onDidEndEditing = {
                 updateMoveLabel(true)
@@ -108,6 +136,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .onChange(of: equals) { equals in
             if equals == focusValue {
                 self.vm.textField?.becomeFirstResponder()
+            } else if self.vm.textField?.isEditing == true {
+                self.vm.textField?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in
@@ -149,6 +179,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
     }
 
+    private func dismiss() {
+
+    }
+
     private func updateMoveLabel(_ animation: Bool) {
         if ((vm.textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
             if animation {
@@ -171,28 +205,37 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        return SwiftUI.TextField("", text: $innerValue)
-            .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
-            .modifier(masking)
-            .tint(foregroundColor)
-            .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                if shouldUpdate {
-                    let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                    self.value = value
-                    innerValue = value
-                    previousInnerValue = value
+        return HStack {
+            SwiftUI.TextField("", text: $innerValue)
+                .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
+                .modifier(masking)
+                .tint(foregroundColor)
+                .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                    if shouldUpdate {
+                        let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                        self.value = value
+                        innerValue = value
+                        previousInnerValue = value
+                    }
                 }
+                .frame(
+                    height: getHeight()
+                )
+                .showClearButton(
+                    $innerValue,
+                    equals: $equals,
+                    animationEnabled: $animationEnabled,
+                    focusValue: focusValue
+                )
+            if !(suffix ?? "").isEmpty && shouldMoveLabel {
+                getSuffixLabel
             }
-            .frame(
-                height: getHeight()
-            )
-            .showClearButton($innerValue, equals: $equals, animationEnabled: $animationEnabled, focusValue: focusValue)
-
+        }
     }
 
     private func getHeight() -> CGFloat {
         let value =
-            (shouldMoveLabel && suffix == nil)
+            (shouldMoveLabel)
             ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) + 6 : 0
         return value
     }
@@ -200,20 +243,22 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @hColorBuilder
     private var foregroundColor: some hColor {
         if isEnabled {
-            hTextColorNew.primary
+            hTextColor.primary
         } else {
-            hTextColorNew.secondary
+            hTextColor.secondary
         }
     }
 
     private var getSuffixLabel: some View {
         hText(suffix ?? "", style: .title3)
-            .foregroundColor(hTextColorNew.secondary)
+            .foregroundColor(hTextColor.secondary)
     }
 }
 
 class TextFieldVM: ObservableObject {
     @Published var textField: UITextField?
+    let disposeBag = DisposeBag()
+
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
@@ -237,7 +282,7 @@ struct hFloatingTextField_Previews: PreviewProvider {
                 placeholder: "Label",
                 error: $error
             )
-            .hFieldSize(.small)
+            //            .hFieldSize(.small)
             hFloatingTextField<Bool>(
                 masking: .init(type: .none),
                 value: $value,
@@ -252,6 +297,7 @@ struct hFloatingTextField_Previews: PreviewProvider {
                 ),
                 focusValue: true,
                 placeholder: "Label",
+                suffix: "m2",
                 error: $error
             )
         }
@@ -321,7 +367,7 @@ struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier 
                                 Image(uiImage: hCoreUIAssets.closeSmall.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColorNew.primary)
+                                    .foregroundColor(hTextColor.primary)
                             }
                         )
                     )

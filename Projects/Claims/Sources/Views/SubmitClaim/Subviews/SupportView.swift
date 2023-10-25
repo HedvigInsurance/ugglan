@@ -10,9 +10,9 @@ struct SupportView: View {
         VStack(spacing: 24) {
             VStack(spacing: 0) {
                 hText(L10n.submitClaimNeedHelpTitle)
-                    .foregroundColor(hTextColorNew.primaryTranslucent)
+                    .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.submitClaimNeedHelpLabel)
-                    .foregroundColor(hTextColorNew.secondary)
+                    .foregroundColor(hTextColor.secondary)
             }
             hButton.MediumButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)
@@ -22,8 +22,7 @@ struct SupportView: View {
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
             }
-            .fixedSize(horizontal: true, vertical: false)
-
+            .fixedSize(horizontal: true, vertical: true)
         }
     }
 }

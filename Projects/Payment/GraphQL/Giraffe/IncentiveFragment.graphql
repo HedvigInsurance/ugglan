@@ -1,0 +1,17 @@
+fragment IncentiveFragmentGiraffe on Incentive {
+    ... on FreeMonths {
+        quantity
+    }
+    ... on MonthlyCostDeduction {
+        amount {
+            ...MonetaryAmountFragmentGiraffe
+        }
+    }
+    ... on PercentageDiscountMonths {
+        percentageDiscount
+        percentageNumberOfMonths: quantity
+    }
+    ... on IndefinitePercentageDiscount {
+        percentageDiscount
+    }
+}

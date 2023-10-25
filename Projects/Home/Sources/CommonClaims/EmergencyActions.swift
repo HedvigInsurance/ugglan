@@ -18,6 +18,8 @@ struct EmergencyAction: Reusable, SignalProvider {
 
     static func makeAndConfigure() -> (make: UIView, configure: (EmergencyAction) -> Disposable) {
         let view = UIStackView()
+
+        view.backgroundColor = .brand(.primaryBackground())
         view.axis = .vertical
 
         let cardContainer = UIView()
@@ -38,13 +40,19 @@ struct EmergencyAction: Reusable, SignalProvider {
 
         cardContainer.addSubview(contentView)
 
-        contentView.snp.makeConstraints { make in make.leading.equalToSuperview()
+        contentView.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
+        let titleStyle: TextStyle = TextStyle(
+            font: Fonts.fontFor(style: .standard),
+            color: UIColor.BrandColorNew.primaryText().color,
+            minimumScaleFactor: 1
+        )
+        let titleLabel = UILabel(value: "", style: titleStyle)
         contentView.addArrangedSubview(titleLabel)
 
         contentView.setCustomSpacing(8, after: titleLabel)
@@ -55,9 +63,14 @@ struct EmergencyAction: Reusable, SignalProvider {
 
                 titleLabel.text = action.title
 
+                let descriptionLabelStyle: TextStyle = TextStyle(
+                    font: Fonts.fontFor(style: .standardSmall),
+                    color: UIColor.BrandColorNew.secondaryText.color,
+                    minimumScaleFactor: 1
+                )
                 let descriptionLabel = MultilineLabel(
                     value: action.description,
-                    style: .brand(.body(color: .secondary))
+                    style: descriptionLabelStyle
                 )
                 bag += contentView.addArranged(descriptionLabel)
 
@@ -65,12 +78,24 @@ struct EmergencyAction: Reusable, SignalProvider {
 
                 let button = Button(
                     title: action.buttonTitle,
-                    type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
+                    type: .normal(
+                        backgroundColor: .brand(.primaryBackground(true)),
+                        textColor: .brand(.primaryText(true))
                     )
                 )
                 bag += contentView.addArranged(button)
+                contentView.backgroundColor = UIColor.brand(.primaryBackground())
+                contentView.layer.cornerRadius = 12
+                bag += contentView.applyShadow { _ -> UIView.ShadowProperties in
+                    UIView.ShadowProperties(
+                        opacity: 1,
+                        offset: CGSize(width: 0, height: 0),
+                        blurRadius: 5,
+                        color: UIColor.BrandColorNew.secondaryBackground().color,
+                        path: nil,
+                        radius: 5
+                    )
+                }
                 view.layoutIfNeeded()
 
                 bag += button.onTapSignal.onValue { _ in action.onClickButtonCallbacker.callAll() }

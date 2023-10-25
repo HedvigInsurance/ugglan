@@ -15,7 +15,7 @@ public struct RemoteVectorIcon {
 
     public let hasIcon: Bool
     public init(
-        _ icon: GiraffeGraphQL.IconFragment? = nil,
+        _ icon: OctopusGraphQL.IconFragment? = nil,
         threaded: Bool? = false
     ) {
         let hIcon = IconEnvelope(fragment: icon)

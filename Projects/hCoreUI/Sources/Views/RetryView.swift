@@ -29,20 +29,22 @@ public struct RetryView: View {
                     Group {
                         Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                             .resizable()
-                            .foregroundColor(hSignalColorNew.amberElement)
+                            .foregroundColor(hSignalColor.amberElement)
                             .frame(width: 24, height: 24)
                         VStack(spacing: 0) {
                             if let title {
                                 hText(title)
                             }
                             hText(subtitle, style: .body)
-                                .foregroundColor(hTextColorNew.secondary)
+                                .foregroundColor(hTextColor.secondary)
                                 .multilineTextAlignment(.center)
                         }
-                        hButton.SmallButton(type: .primary) {
-                            action?()
-                        } content: {
-                            hText(retryTitle)
+                        if let action {
+                            hButton.SmallButton(type: .primary) {
+                                action()
+                            } content: {
+                                hText(retryTitle)
+                            }
                         }
                     }
                     .padding(8)

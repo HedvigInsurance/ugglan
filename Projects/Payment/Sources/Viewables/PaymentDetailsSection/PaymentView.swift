@@ -85,7 +85,7 @@ struct PaymentView: View {
                                 .frame(width: 24, height: 24)
                             hText(bankAccount.name ?? "")
                             Spacer()
-                            hText(bankAccount.descriptor ?? "").foregroundColor(hLabelColor.secondary)
+                            hText(bankAccount.descriptor ?? "").foregroundColor(hTextColor.secondary)
                         }
                     }
                 }
@@ -105,7 +105,7 @@ struct PaymentView: View {
                         hText(title)
                         Spacer()
                         hText(subtitle)
-                            .foregroundColor(hLabelColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                     }
 
                 }

@@ -24,7 +24,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .withHeader {
                 HStack {
-                    L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColorNew.primary)
+                    L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColor.primary)
                         .padding(.top, 16)
                 }
             }
@@ -34,19 +34,10 @@ public struct SubmitClaimSummaryScreen: View {
             VStack(spacing: 8) {
                 InfoCard(text: L10n.claimsComplementClaim, type: .info)
                     .padding(.bottom, 8)
-                Group {
-                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
-                        store.send(.summaryRequest)
-                    } content: {
-                        hText(L10n.embarkSubmitClaim)
-                    }
-
-                    hButton.LargeButton(type: .ghost) {
-                        store.send(.navigationAction(action: .dismissScreen))
-                    } content: {
-                        hText(L10n.embarkGoBackButton)
-                    }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
+                LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
+                    store.send(.summaryRequest)
+                } content: {
+                    hText(L10n.embarkSubmitClaim)
                 }
             }
             .padding(.horizontal, 16)
@@ -150,9 +141,9 @@ public struct SubmitClaimSummaryScreen: View {
     func createRow(with title: String?, and value: String?) -> some View {
         if let title, let value {
             HStack {
-                title.hText(.body).foregroundColor(hTextColorNew.secondary)
+                title.hText(.body).foregroundColor(hTextColor.secondary)
                 Spacer()
-                value.hText(.body).foregroundColor(hTextColorNew.secondary)
+                value.hText(.body).foregroundColor(hTextColor.secondary)
             }
         }
     }

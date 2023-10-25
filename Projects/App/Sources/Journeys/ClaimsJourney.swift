@@ -13,7 +13,7 @@ import hGraphQL
 
 extension AppJourney {
 
-    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+    static func claimDetailJourney(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: ClaimDetailView(claim: claim)
@@ -35,17 +35,13 @@ extension AppJourney {
                 switch redirect {
                 case .chat:
                     AppJourney.claimsChat()
-                        .hidesBackButton
                         .withJourneyDismissButton
+                        .hidesBackButton
                 case .close:
                     DismissJourney()
                 case .menu:
                     ContinueJourney()
                 case .mailingList:
-                    DismissJourney()
-                case .offer:
-                    DismissJourney()
-                case .quoteCartOffer:
                     DismissJourney()
                 }
             }

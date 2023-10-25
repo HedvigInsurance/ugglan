@@ -35,7 +35,7 @@ extension OnboardingChat: Presentable {
         let (viewController, signal) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
-        chat.chatState.fetch()
+        chat.chatState.initFetch()
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = hCoreUIAssets.menuIcon.image

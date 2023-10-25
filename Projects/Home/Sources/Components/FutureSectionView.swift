@@ -21,19 +21,18 @@ struct FutureSectionInfoView: View {
             case .activeInFuture(let inceptionDate):
                 InfoCard(
                     text:
-                        "Your insurance will be activated on \(inceptionDate). For now, just sit back and relax. If you have any questions, reach out in the chat.",
+                        L10n.HomeTab.activeInFutureInfo(inceptionDate),
                     type: .info
                 )
             case .pendingSwitchable:
                 InfoCard(
-                    text:
-                        "Right now we’re contacting your old insurer to change your insurance to Hedvig. For now, just sit back and relax. If you have any questions, reach out in the chat.",
+                    text: L10n.HomeTab.pendingSwitchableInfo,
                     type: .info
                 )
             case .pendingNonswitchable:
                 InfoCard(
                     text:
-                        "Quick reminder: have you cancelled your old insurance yet? If you have any questions, reach out in the chat.",
+                        L10n.HomeTab.pendingNonswitchableInfo,
                     type: .info
                 )
             case .none:
@@ -50,12 +49,29 @@ struct ActiveInFutureView_Previews: PreviewProvider {
             FutureSectionInfoView(memberName: "NAME")
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
+                    let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
+                        currentAgreement: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement(
+                            activeFrom: "",
+                            activeTo: "",
+                            creationCause: .midtermChange,
+                            displayItems: [],
+                            premium: .init(amount: 20, currencyCode: .sek),
+                            productVariant: .init(
+                                perils: [],
+                                typeOfContract: "",
+                                termsVersion: "i",
+                                documents: [],
+                                displayName: "dis name",
+                                insurableLimits: [],
+                                highlights: [],
+                                faq: []
+                            )
+                        ),
+                        id: "id",
+                        masterInceptionDate: "2023-11-22",
+                        exposureDisplayName: "DISPLAY NAME"
                     )
+
                     store.send(
                         .setMemberContractState(
                             state: .init(state: .future, name: "NAME"),
@@ -76,16 +92,10 @@ struct PendingSwitchableView_Previews: PreviewProvider {
             FutureSectionInfoView(memberName: "NAME")
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
-                    )
                     store.send(
                         .setMemberContractState(
                             state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
+                            contracts: []
                         )
                     )
                     store.send(.setFutureStatus(status: .pendingSwitchable))
@@ -102,16 +112,10 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
             FutureSectionInfoView(memberName: "NAME")
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = GiraffeGraphQL.HomeQuery.Data.Contract(
-                        displayName: "DISPLAY NAME",
-                        switchedFromInsuranceProvider: nil,
-                        status: .makeActiveInFutureStatus(futureInception: "2023-11-22"),
-                        upcomingRenewal: nil
-                    )
                     store.send(
                         .setMemberContractState(
                             state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
+                            contracts: []
                         )
                     )
                     store.send(.setFutureStatus(status: .pendingNonswitchable))

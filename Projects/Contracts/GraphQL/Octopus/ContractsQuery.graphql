@@ -1,0 +1,58 @@
+query ContractBundle {
+  currentMember {
+    activeContracts {
+        ...ContractFragment
+    }
+    pendingContracts {
+      displayItems {
+        ...AgreementDisplayItemFragment
+      }
+      exposureDisplayName
+      id
+      premium {
+        ...MoneyFragment
+      }
+      productVariant {
+        ...ProductVariantFragment
+      }
+    }
+    terminatedContracts {
+        ...ContractFragment
+    }
+  }
+}
+
+fragment ContractFragment on Contract {
+      currentAgreement {
+        ...AgreementFragment
+      }
+      exposureDisplayName
+      id
+      masterInceptionDate
+      supportsMoving
+      terminationDate
+      upcomingChangedAgreement {
+         ...AgreementFragment
+      }
+}
+
+fragment AgreementFragment on Agreement {
+    activeFrom
+    activeTo
+    certificateUrl
+    creationCause
+    displayItems {
+        ...AgreementDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+    displayTitle
+    displayValue
+}

@@ -27,17 +27,17 @@ struct hFieldBackgroundModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hSignalColorNew.amberFill
+                hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
             } else {
-                hSignalColorNew.greenFill
+                hColorScheme(light: hSignalColor.greenFill, dark: hGrayscaleColor.greyScale800)
             }
         } else {
-            hFillColorNew.opaqueOne
+            hFillColor.opaqueOne
         }
     }
 }
 extension View {
-    func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+    public func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldBackgroundModifier(animate: animate, error: error))
     }
 }
@@ -52,35 +52,24 @@ struct hFieldErrorModifier: ViewModifier {
             if let errorMessage = error {
                 HStack {
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColorNew.amberElement)
+                        .foregroundColor(hSignalColor.amberElement)
                     hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hTextColor.primary)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
-                .foregroundColor(hSignalColorNew.amberFill)
+                .foregroundColor(hSignalColor.amberFill)
             }
-        }
-    }
-
-    @hColorBuilder
-    private func getBackgroundColor() -> some hColor {
-        if animate {
-            if error != nil {
-                hSignalColorNew.amberFill
-            } else {
-                hSignalColorNew.greenFill
-            }
-        } else {
-            hFillColorNew.opaqueOne
         }
     }
 }
+
 extension View {
-    func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+    public func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldErrorModifier(animate: animate, error: error))
     }
 }
+
 struct hFieldLabel: View {
     let placeholder: String
     @Binding var animate: Bool
@@ -104,13 +93,13 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hSignalColorNew.amberText
+            hSignalColor.amberText
         } else if animate {
-            hSignalColorNew.greenText
+            hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled {
-            hTextColorNew.secondary
+            hTextColor.secondary
         } else {
-            hTextColorNew.disabled
+            hTextColor.disabled
         }
     }
 }

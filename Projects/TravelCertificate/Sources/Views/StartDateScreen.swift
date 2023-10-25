@@ -9,6 +9,26 @@ struct StartDateScreen: View {
     @StateObject var vm = StartDateViewModel()
     @PresentableStore var store: TravelInsuranceStore
     var body: some View {
+        if store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 1 < 2 {
+            form
+                .toolbar {
+                    ToolbarItem(
+                        placement: store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 1 == 1
+                            ? .navigationBarLeading : .navigationBarTrailing
+                    ) {
+                        InfoViewHolder(
+                            title: L10n.TravelCertificate.Info.title,
+                            description: L10n.TravelCertificate.Info.subtitle
+                        )
+                        .foregroundColor(hTextColor.primary)
+                    }
+                }
+        } else {
+            form
+        }
+    }
+
+    var form: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
             getter: { state in
@@ -70,15 +90,6 @@ struct StartDateScreen: View {
                         }
                     }
                 }
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                InfoViewHolder(
-                    title: L10n.TravelCertificate.Info.title,
-                    description: L10n.TravelCertificate.Info.subtitle
-                )
-                .foregroundColor(hLabelColor.primary)
-            }
         }
     }
 }

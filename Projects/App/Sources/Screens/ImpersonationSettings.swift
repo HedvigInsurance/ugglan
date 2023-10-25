@@ -1,4 +1,5 @@
 import Foundation
+import Market
 import Presentation
 import SwiftUI
 import hCore
@@ -6,6 +7,7 @@ import hCoreUI
 
 struct ImpersonationSettings: View {
     @PresentableStore var store: UgglanStore
+    @PresentableStore var marketStore: MarketStore
 
     var body: some View {
         hForm {
@@ -15,6 +17,10 @@ struct ImpersonationSettings: View {
                         hText(locale.rawValue)
                     }
                     .onTap {
+                        if let realMarket = Market(rawValue: locale.market.rawValue) {
+                            marketStore.send(.selectMarket(market: realMarket))
+                        }
+                        marketStore.send(.selectLanguage(language: locale.rawValue))
                         Localization.Locale.currentLocale = locale
                         store.send(.showLoggedIn)
                     }
