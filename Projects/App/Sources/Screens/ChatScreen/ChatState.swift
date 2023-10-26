@@ -52,9 +52,10 @@ class ChatState {
             hasShownStatusMessage = true
             let innerBag = bag.innerBag()
             let status = self.profileStore.state.pushNotificationCurrentStatus()
-            if status == .notDetermined {
+            switch status {
+            case .notDetermined:
                 self.askForPermissionsSignal.value = true
-            } else {
+            case .denied:
                 func createToast() -> Toast {
                     return Toast(
                         symbol: .icon(hCoreUIAssets.chatQuickNav.image),
@@ -69,6 +70,9 @@ class ChatState {
                     UIApplication.shared.appDelegate.registerForPushNotifications().sink()
                 }
                 Toasts.shared.displayToast(toast: toast)
+            default:
+                break
+
             }
         }
     }
