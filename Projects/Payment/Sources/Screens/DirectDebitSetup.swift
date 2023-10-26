@@ -188,7 +188,7 @@ extension DirectDebitSetup: Presentable {
                     shouldDismissViewSignal
                     .filter(predicate: { $0 })
                     .onValue({ _ in
-                        paymentStore.send(.fetchPayInMethodStatus)
+                        paymentStore.send(.fetchPaymentStatus)
                         callback(.value(true))
                     })
 
@@ -268,7 +268,7 @@ extension DirectDebitSetup: Presentable {
                             }
                         }
                         .onValue { success in
-                            paymentStore.send(.fetchPayInMethodStatus)
+                            paymentStore.send(.fetchPaymentStatus)
                             callback(.value(success))
                         }
                         .onError { _ in

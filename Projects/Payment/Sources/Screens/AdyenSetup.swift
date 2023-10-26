@@ -153,7 +153,7 @@ extension AdyenSetup: Presentable {
                     shouldDismissViewSignal
                     .filter(predicate: { $0 })
                     .onValue({ _ in
-                        paymentStore.send(.fetchPayInMethodStatus)
+                        paymentStore.send(.fetchPaymentStatus)
                         callback(.value(true))
                     })
 
@@ -193,14 +193,14 @@ extension AdyenSetup: Presentable {
                         )
                     case .replacement:
                         let store: PaymentStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchActivePayment)
+                        store.send(.fetchPaymentStatus)
                         callback(.value(true))
                         return
                     }
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             let store: PaymentStore = globalPresentableStoreContainer.get()
-                            store.send(.fetchActivePayment)
+                            store.send(.fetchPaymentStatus)
                             if shouldDismiss {
                                 callback(.value(true))
                             }
@@ -228,7 +228,7 @@ extension AdyenSetup: Presentable {
                             }
                         }
                         .onValue { success in
-                            paymentStore.send(.fetchActivePayment)
+                            paymentStore.send(.fetchPaymentStatus)
                             callback(.value(success))
                         }
                         .onError { _ in

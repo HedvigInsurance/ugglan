@@ -11,7 +11,6 @@ public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
     var monthlyNetCost: MonetaryAmount? = nil
     public var paymentStatusData: PaymentStatusData? = nil
-    var activePaymentData: ActivePaymentData? = nil
     var paymentConnectionID: String? = nil
     public init() {}
 }
@@ -20,25 +19,20 @@ public enum PaymentAction: ActionProtocol {
     case load
     case setMonthlyNetCost(cost: MonetaryAmount)
     case setPaymentData(data: PaymentData)
-    case setPayInMethodStatusData(data: PaymentStatusData)
+    case fetchPaymentStatus
+    case setPaymentStatus(data: PaymentStatusData)
     case connectPayments
-    case fetchPayInMethodStatus
     case setConnectionID(id: String)
     case openHistory
     case openConnectBankAccount
-    case fetchActivePayment
-    case setActivePaymentData(data: ActivePaymentData?)
     case openUrl
     case goBack
 }
 
 public enum LoadingAction: LoadingProtocol {
     case getPaymentData
-    case getPayInMethodStatus
-    case getActivePayment
+    case getPaymentStatus
 }
-
-public typealias PayinMethodStatus = GiraffeGraphQL.PayinMethodStatus
 
 extension PayinMethodStatus: Codable {}
 
@@ -70,29 +64,20 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     })
                 return disposeBag
             }
-        case .fetchPayInMethodStatus:
-            return giraffe
-                .client
-                .fetch(query: GiraffeGraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .map { data in
-                    .setPayInMethodStatusData(data: .init(data: data))
-                }
-                .valueThenEndSignal
-
-        case .fetchActivePayment:
+        case .fetchPaymentStatus:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
+                disposeBag += self.octopus.client
                     .fetch(
-                        query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
+                        query: OctopusGraphQL.PaymentInformationQuery(),
                         cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .onValue({ data in
-                        let activePaymentData = ActivePaymentData(data)
-                        callback(.value(.setActivePaymentData(data: activePaymentData)))
+                        let paymentStatus = PaymentStatusData(data: data)
+                        callback(.value(.setPaymentStatus(data: paymentStatus)))
                     })
                     .onError({ error in
-                        self.setError(error.localizedDescription, for: .getActivePayment)
+                        self.setError(error.localizedDescription, for: .getPaymentStatus)
                     })
                 return disposeBag
             }
@@ -111,62 +96,19 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
             newState.monthlyNetCost = data.chargeEstimation?.net
-            newState.paymentStatusData = .init(data: data)
         case let .setMonthlyNetCost(cost):
             newState.monthlyNetCost = cost
-        case .setPayInMethodStatusData(let data):
-            newState.paymentStatusData = data
         case let .setConnectionID(id):
             newState.paymentConnectionID = id
-        case .fetchActivePayment:
-            setLoading(for: .getActivePayment)
-        case let .setActivePaymentData(data):
-            removeLoading(for: .getActivePayment)
-            newState.activePaymentData = data
+        case .fetchPaymentStatus:
+            setLoading(for: .getPaymentStatus)
+        case let .setPaymentStatus(data):
+            removeLoading(for: .getPaymentStatus)
+            newState.paymentStatusData = data
         default:
             break
         }
         return newState
-    }
-}
-
-public struct ActivePaymentData: Codable, Equatable {
-    let brand: String?
-    let lastFourDigits: String?
-    let thirdPartyDetailsName: String?
-    let thirdPartyDetailsType: String?
-
-    init?(_ data: GiraffeGraphQL.ActivePaymentMethodsQuery.Data?) {
-        brand = data?.activePaymentMethodsV2?.asStoredCardDetails?.brand
-        lastFourDigits = data?.activePaymentMethodsV2?.asStoredCardDetails?.lastFourDigits
-        thirdPartyDetailsName = data?.activePaymentMethodsV2?.asStoredThirdPartyDetails?.name
-        thirdPartyDetailsType = data?.activePaymentMethodsV2?.asStoredThirdPartyDetails?.type
-        if [
-            brand,
-            lastFourDigits,
-            thirdPartyDetailsName,
-            thirdPartyDetailsType,
-        ]
-        .filter({ $0 != nil }).count == 0 {
-            return nil
-        }
-    }
-
-    var rowTitle: String? {
-        return brand?.capitalized ?? thirdPartyDetailsType
-    }
-
-    var rowValue: String? {
-        if let lastFourDigits = lastFourDigits {
-            return L10n.PaymentScreen.creditCardMasking(
-                lastFourDigits
-            )
-        } else if let thirdPartyDetailsName = thirdPartyDetailsName {
-            return thirdPartyDetailsName
-        }
-
-        return nil
-
     }
 }
 
@@ -176,8 +118,6 @@ public struct PaymentData: Codable, Equatable {
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
-    let bankAccount: BankAccount?
-    let status: PayinMethodStatus
     let balance: Balance?
     var reedemCampaigns: [ReedemCampaign]
     init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
@@ -186,8 +126,6 @@ public struct PaymentData: Codable, Equatable {
         insuranceCost = MonetaryStack(data.insuranceCost)
         chargeEstimation = MonetaryStack(data.chargeEstimation)
         paymentHistory = data.chargeHistory.map({ PaymentHistory($0) })
-        bankAccount = BankAccount(data.bankAccount)
-        status = data.payinMethodStatus
         balance = .init(data.balance)
         reedemCampaigns = data.redeemedCampaigns.compactMap({ .init($0) })
     }
@@ -226,17 +164,6 @@ public struct PaymentData: Codable, Equatable {
             amount = MonetaryAmount(fragment: data.amount.fragments.monetaryAmountFragmentGiraffe)
             let localDate = data.date.localDateToDate?.displayDateMMMDDYYYYFormat ?? ""
             date = localDate
-        }
-    }
-
-    struct BankAccount: Codable, Equatable {
-        let name: String?
-        let descriptor: String?
-
-        init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.BankAccount?) {
-            guard let data else { return nil }
-            name = data.bankName
-            descriptor = data.descriptor
         }
     }
 
@@ -285,16 +212,36 @@ public struct PaymentStatusData: Codable, Equatable {
     public var status: PayinMethodStatus = .active
     public var failedCharges: Int?
     public var nextChargeDate: String?
+    let displayName: String?
+    let descriptor: String?
 
-    init(data: GiraffeGraphQL.PayInMethodStatusQuery.Data) {
-        self.status = data.payinMethodStatus
-        self.failedCharges = data.balance.failedCharges
-        self.nextChargeDate = data.nextChargeDate
+    init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
+        self.status = data.currentMember.paymentInformation.status.asPayinMethodStatus
+        self.displayName = data.currentMember.paymentInformation.connection?.displayName
+        self.descriptor = data.currentMember.paymentInformation.connection?.descriptor
+        self.failedCharges = 0  //data.balance.failedCharges
+        self.nextChargeDate = nil  //data.nextChargeDate
     }
+}
 
-    init(data: PaymentData) {
-        self.status = data.status
-        self.failedCharges = data.balance?.failedCharges
-        self.nextChargeDate = data.nextPayment?.date
+extension OctopusGraphQL.MemberPaymentConnectionStatus {
+    var asPayinMethodStatus: PayinMethodStatus {
+        switch self {
+        case .active:
+            return .active
+        case .pending:
+            return .pending
+        case .needsSetup:
+            return .needsSetup
+        case .__unknown:
+            return .unknown
+        }
     }
+}
+
+public enum PayinMethodStatus {
+    case active
+    case needsSetup
+    case pending
+    case unknown
 }

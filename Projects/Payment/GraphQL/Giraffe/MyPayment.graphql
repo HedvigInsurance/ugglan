@@ -1,8 +1,4 @@
 query MyPayment($locale: Locale!) {
-    bankAccount {
-        bankName
-        descriptor
-    }
     nextChargeDate
     payinMethodStatus
     redeemedCampaigns {

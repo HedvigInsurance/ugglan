@@ -129,7 +129,7 @@ enum AdyenRequest {
         return Future { completion in
             TokenRefresher.shared.refreshIfNeeded()
                 .onValue {
-                    var headers = ApolloClient.headers()
+                    let headers = ApolloClient.headers()
                     headers.forEach { element in
                         request.setValue(element.value, forHTTPHeaderField: element.key)
                     }

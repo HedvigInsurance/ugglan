@@ -1,0 +1,11 @@
+query PaymentInformation {
+  currentMember {
+    paymentInformation {
+      connection {
+        displayName
+        descriptor
+      }
+      status
+    }
+  }
+}

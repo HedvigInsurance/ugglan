@@ -238,7 +238,6 @@ struct PaymentInfoView_Previews: PreviewProvider {
                 .onAppear {
                     let store: PaymentStore = globalPresentableStoreContainer.get()
                     let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                        bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
                         nextChargeDate: "May 26th 2023",
                         payinMethodStatus: .active,
                         redeemedCampaigns: [

@@ -18,7 +18,7 @@ public struct MyPaymentsView: View {
         self.paymentType = hAnalyticsExperiment.paymentType
     }
     public var body: some View {
-        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment], vm.getActionsToSendToStore()) {
+        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getPaymentStatus], [.load]) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
                     .padding(.top, 8)
@@ -34,15 +34,15 @@ public struct MyPaymentsView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentData
+                state.paymentStatusData
             }
-        ) { paymentData in
+        ) { statusData in
             hSection {
                 hButton.LargeButton(type: .primary) {
                     vm.openConnectCard()
                 } content: {
                     hText(
-                        paymentData?.status == .needsSetup
+                        statusData?.status == .needsSetup
                             ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
                     )
                 }
@@ -61,25 +61,12 @@ class MyPaymentsViewModel: ObservableObject {
     public init(urlScheme: String, paymentType: PaymentType) {
         self.urlScheme = urlScheme
         let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.load)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            store.send(.load)
+            store.send(.fetchPaymentStatus)
+        }
         self.paymentType = paymentType
-        for action in getActionsToSendToStore() {
-            store.send(action)
-        }
     }
-
-    func getActionsToSendToStore() -> [PaymentAction] {
-        var actions = [PaymentAction]()
-        actions.append(.load)
-        switch paymentType {
-        case .adyen:
-            store.send(.fetchActivePayment)
-        case .trustly:
-            break
-        }
-        return actions
-    }
-
     func openConnectCard() {
         store.send(.openConnectBankAccount)
     }
@@ -95,7 +82,6 @@ struct MyPaymentsView_Previews: PreviewProvider {
             .onAppear {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
                     nextChargeDate: "May 26th 2023",
                     payinMethodStatus: .pending,
                     redeemedCampaigns: [.init(code: "CODE")],
