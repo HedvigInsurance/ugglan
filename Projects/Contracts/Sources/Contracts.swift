@@ -121,11 +121,15 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .openEditCoInsured(contractIds, hasCoInsuredData) = action {
+            } else if case let .openEditCoInsured(contractId, hasCoInsuredData, fromInfoCard) = action {
                 if hasCoInsuredData {
-                    EditCoInsuredJourney.openInsuredPeopleScreen(id: contractIds)
+                    EditCoInsuredJourney.openInsuredPeopleScreen(id: contractId)
                 } else {
-                    EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractIds)
+                    if fromInfoCard {
+                        EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
+                    } else {
+                        EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
+                    }
                 }
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))

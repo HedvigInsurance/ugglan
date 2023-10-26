@@ -28,10 +28,13 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        contractOwnerField(coInsured: contract.coInsured)
+                        ContractOwnerField(coInsured: contract.coInsured)
                         
                         hSection(vm.coInsured, id: \.self) { localCoInsured in
-                            localInsuredField(coInsured: localCoInsured)
+                            CoInsuredField(
+                                coInsured: localCoInsured,
+                                accessoryView: localAccessoryView(coInsured: localCoInsured)
+                            )
                         }
                         .sectionContainerStyle(.transparent)
                         
@@ -79,27 +82,6 @@ struct InsuredPeopleNewScreen: View {
         }
     }
     
-    func contractOwnerField(coInsured: [CoInsuredModel]) -> some View {
-        hSection {
-            HStack {
-                VStack(alignment: .leading) {
-                    hText("Julia Andersson")
-                    hText("19900101-1111")
-                }
-                .foregroundColor(hTextColor.tertiary)
-                Spacer()
-                HStack(alignment: .top) {
-                    Image(uiImage: hCoreUIAssets.lockSmall.image)
-                        .foregroundColor(hTextColor.tertiary)
-                        .frame(maxWidth: .infinity, alignment: .topTrailing)
-                }
-            }
-            .padding(.vertical, 16)
-            hRowDivider()
-        }
-        .sectionContainerStyle(.transparent)
-    }
-    
     @ViewBuilder
     func localInsuredField(coInsured: CoInsuredModel) -> some View {
         VStack(spacing: 4) {
@@ -133,6 +115,43 @@ struct InsuredPeopleNewScreen: View {
         Divider()
     }
     
+    @ViewBuilder
+    func localAccessoryView(coInsured: CoInsuredModel) -> some View {
+        hText(L10n.Claims.Edit.Screen.title)
+            .onTapGesture {
+                store.send(
+                    .coInsuredNavigationAction(
+                        action: .openCoInsuredInput(
+                            isDeletion: false,
+                            name: coInsured.name,
+                            personalNumber: coInsured.SSN,
+                            title: L10n.contractAddConisuredInfo,
+                            contractId: contractId
+                        )
+                    )
+                )
+            }
+    }
+    
+    @ViewBuilder
+    func emptyAccessoryView(coInsured: CoInsuredModel) -> some View {
+        HStack {
+            hText(L10n.generalAddInfoButton)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
+        }
+        .onTapGesture {
+            store.send(
+                .coInsuredNavigationAction(action: .openCoInsuredInput(
+                    isDeletion: true,
+                    name: nil,
+                    personalNumber: nil,
+                    title: L10n.contractAddConisuredInfo,
+                    contractId: contractId
+                )
+                ))
+        }
+    }
+    
     func emptyCoInsuredField(localCoInsured: [CoInsuredModel]) -> some View {
         hSection {
             let nbOfFields = contractNbOfCoinsured - localCoInsured.count
@@ -148,7 +167,7 @@ struct InsuredPeopleNewScreen: View {
                         .onTapGesture {
                             store.send(
                                 .coInsuredNavigationAction(action: .openCoInsuredInput(
-                                    isDeletion: false,
+                                    isDeletion: true,
                                     name: nil,
                                     personalNumber: nil,
                                     title: L10n.contractAddConisuredInfo,

@@ -78,10 +78,6 @@ public class EditCoInsuredJourney {
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
                 PopJourney()
-//            } else if case .addLocalCoInsured = action {
-//                PopJourney()
-//            } else if case .removeLocalCoInsured = action {
-//                PopJourney()
             } else {
                 getScreen(for: action)
             }
@@ -94,6 +90,16 @@ public class EditCoInsuredJourney {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
+        ) { action in
+            getScreen(for: action)
+        }
+    }
+    
+    @JourneyBuilder
+    public static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: RemoveCoInsuredScreen(contractId: id)
         ) { action in
             getScreen(for: action)
         }

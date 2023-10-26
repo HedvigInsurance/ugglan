@@ -5,7 +5,7 @@ import hCoreUI
 
 struct CoInusuredInput: View, KeyboardReadable {
     @State var fullName: String
-    @State var personalNumber: String = ""
+    @State var personalNumber: String
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
     @PresentableStore var store: ContractStore
@@ -27,36 +27,36 @@ struct CoInusuredInput: View, KeyboardReadable {
     var body: some View {
         hForm {
             VStack(spacing: 4) {
-                
                 if isDeletion {
-                    hSection {
-                        hFloatingField(
-                            value: fullName,
-                            placeholder: L10n.fullNameText,
-                            onTap: {}
-                        )
+                    if fullName != "" && personalNumber != "" {
+                        hSection {
+                            hFloatingField(
+                                value: fullName,
+                                placeholder: L10n.fullNameText,
+                                onTap: {}
+                            )
+                        }
+                        .hFieldTrailingView {
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        .disabled(true)
+                        .sectionContainerStyle(.transparent)
+                        
+                        hSection {
+                            hFloatingField(
+                                value: personalNumber,
+                                placeholder: L10n.TravelCertificate.personalNumber,
+                                onTap: {}
+                            )
+                        }
+                        .hFieldTrailingView {
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        .disabled(true)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lockSmall.image)
-                            .foregroundColor(hTextColor.secondary)
-                    }
-                    .disabled(true)
-                    .sectionContainerStyle(.transparent)
-                    
-                    hSection {
-                        hFloatingField(
-                            value: personalNumber,
-                            placeholder: L10n.TravelCertificate.personalNumber,
-                            onTap: {}
-                        )
-                    }
-                    .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lockSmall.image)
-                            .foregroundColor(hTextColor.secondary)
-                    }
-                    .disabled(true)
-                    .sectionContainerStyle(.transparent)
-                    
                 } else {
                     hSection {
                         hFloatingTextField(

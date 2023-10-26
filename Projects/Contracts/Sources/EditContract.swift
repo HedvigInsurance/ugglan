@@ -57,7 +57,12 @@ struct EditContract: View {
                                 store.send(.dismissEditInfo(type: selectedType))
                                 switch selectedType {
                                 case .coInsured:
-                                    store.send(.openEditCoInsured(contractId: contract?.id ?? "", hasCoInsuredData: true))
+                                    if contract?.coInsured.count ?? 0 < 2 {
+                                        store.send(.openEditCoInsured(contractId: contract?.id ?? "", hasCoInsuredData: false, fromInfoCard: false))
+                                    } else {
+                                        store.send(.openEditCoInsured(contractId: contract?.id ?? "", hasCoInsuredData: true, fromInfoCard: false))
+                                    }
+                                    
                                 case .changeAddress:
                                     store.send(.goToMovingFlow)
                                 case nil:

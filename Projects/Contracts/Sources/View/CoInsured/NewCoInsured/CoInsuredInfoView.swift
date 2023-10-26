@@ -16,12 +16,10 @@ struct CoInsuredInfoView: View {
     }
     
     var body: some View {
-        /* ADD WHEN BACKEND IS DONE */
-            InfoCard(text: text, type: .attention)
-                .buttons([.init(buttonTitle: "Add information", buttonAction: {
-                    store.send(.openEditCoInsured(contractId: contractId, hasCoInsuredData: false))
-                    
-                })])
+        InfoCard(text: text, type: .attention)
+            .buttons([.init(buttonTitle: "Add information", buttonAction: {
+                store.send(.openEditCoInsured(contractId: contractId, hasCoInsuredData: false, fromInfoCard: true))
+            })])
     }
 }
 

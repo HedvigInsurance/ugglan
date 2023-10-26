@@ -34,7 +34,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
-    case openEditCoInsured(contractId: String, hasCoInsuredData: Bool)
+    case openEditCoInsured(contractId: String, hasCoInsuredData: Bool, fromInfoCard: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
     case applyLocalCoInsured(coInsured: [CoInsuredModel], contractId: String)
 
