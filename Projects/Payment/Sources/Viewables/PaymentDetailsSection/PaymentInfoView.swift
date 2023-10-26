@@ -297,32 +297,33 @@ class MyPaymentInfoViewModel: ObservableObject {
 
     func submitDiscount() async throws {
         try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
-            self.giraffe.client
+            self.store.octopus.client
                 .perform(
-                    mutation: GiraffeGraphQL.RedeemCodeMutation(
-                        code: discountText,
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
+                    mutation: OctopusGraphQL.RedeemCodeMutation(code: discountText)
                 )
                 .onValue { [weak self] data in
-                    guard data.redeemCodeV2.asSuccessfulRedeemResult != nil else {
-                        inCont.resume(throwing: AddDiscountError.missing)
-                        return
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                        self?.store.send(.load)
-                    }
-                    DispatchQueue.main.async {
-                        Toasts.shared.displayToast(
-                            toast: Toast(
-                                symbol: .icon(hCoreUIAssets.campaignSmall.image),
-                                body: L10n.discountRedeemSuccess,
-                                subtitle: L10n.discountRedeemSuccessBody
+                    if let userError = data.memberCampaignsRedeem.userError {
+                        if let errorMessage = userError.message {
+                            inCont.resume(throwing: AddDiscountError.error(message: errorMessage))
+                        } else {
+                            inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))
+                        }
+                    } else {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                            self?.store.send(.load)
+                        }
+                        DispatchQueue.main.async {
+                            Toasts.shared.displayToast(
+                                toast: Toast(
+                                    symbol: .icon(hCoreUIAssets.campaignSmall.image),
+                                    body: L10n.discountRedeemSuccess,
+                                    subtitle: L10n.discountRedeemSuccessBody
+                                )
                             )
-                        )
-                    }
-                    inCont.resume()
+                        }
+                        inCont.resume()
 
+                    }
                 }
                 .onError { error in
                     inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))

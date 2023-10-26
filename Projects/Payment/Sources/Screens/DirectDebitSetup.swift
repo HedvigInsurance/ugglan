@@ -249,14 +249,7 @@ extension DirectDebitSetup: Presentable {
 
                     switch type {
                     case .success:
-                        giraffe.client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
-                            .onValue { _ in
-                                giraffe.client.store.update(
-                                    query: GiraffeGraphQL.PayInMethodStatusQuery()
-                                ) { (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
-                                    data.payinMethodStatus = .pending
-                                }
-                            }
+                        paymentStore.send(.fetchPaymentStatus)
                         ClearDirectDebitStatus.clear()
                     case .failure: break
                     }
