@@ -4,8 +4,6 @@ import WebKit
 import hCore
 
 struct DocumentPreview: UIViewRepresentable {
-    // 1
-
     let data: Data?
     let mimeType: String?
     let url: URL?
@@ -21,14 +19,15 @@ struct DocumentPreview: UIViewRepresentable {
         self.mimeType = nil
         self.url = url
     }
-    // 2
+
     func makeUIView(context: Context) -> WKWebView {
+        webView.scrollView.backgroundColor = .clear
         return webView
     }
 
-    // 3
     func updateUIView(_ webView: WKWebView, context: Context) {
         webView.backgroundColor = .brand(.primaryBackground())
+        webView.viewController?.view.backgroundColor = .brand(.primaryBackground())
         if let data, let mimeType {
             webView.load(data, mimeType: mimeType, characterEncodingName: "UTF-8", baseURL: URL(fileURLWithPath: ""))
         } else if let url {

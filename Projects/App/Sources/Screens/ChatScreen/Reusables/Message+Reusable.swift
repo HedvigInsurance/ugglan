@@ -287,14 +287,14 @@ extension Message: Reusable {
                     let messageTextColor = UIColor.brand(.chatMessage)
 
                     switch message.type {
-                    case .image, .video:
+                    case .image, .video, .gif:
                         bubble.backgroundColor = .clear
                     default:
                         bubble.backgroundColor = UIColor.brand(.messageBackground(message.fromMyself))
                     }
 
                     switch message.type {
-                    case let .image(url, mimeType):
+                    case let .image(url):
                         let imageViewContainer = UIView()
                         imageViewContainer.isUserInteractionEnabled = false
                         let imageView = UIImageView()
@@ -354,8 +354,7 @@ extension Message: Reusable {
                                 guard let url = url, let vc = imageView.viewController else { return }
                                 bag += vc.present(DocumentPreview(url: url).journey)
                             }
-                    case let .gif(url, mimeType):
-                        bubble.backgroundColor = .clear
+                    case let .gif(url):
                         let imageViewContainer = UIView()
 
                         let imageView = UIImageView()
@@ -399,20 +398,13 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
-                        let videoTapGestureRecognizer = UITapGestureRecognizer()
-                        bag += contentContainer.install(videoTapGestureRecognizer)
-
-                        bag += videoTapGestureRecognizer.signal(forState: .recognized)
-                            .onValue { _ in
-                                guard let data = imageView.image?.pngData(), let vc = imageView.viewController else {
-                                    return
-                                }
-                                bag += vc.present(DocumentPreview(data: data, mimeType: mimeType).journey)
-                            }
                     case let .crossSell(url):
                         let crossSaleMainContainer = UIView()
+                        crossSaleMainContainer.backgroundColor = .clear
                         let crossSaleContainer = UIView()
+                        crossSaleContainer.backgroundColor = .clear
                         let loadingIndicator = UIActivityIndicatorView(style: .medium)
+                        loadingIndicator.color = UIColor.brand(.chatMessage)
                         loadingIndicator.hidesWhenStopped = true
                         crossSaleMainContainer.addSubview(crossSaleContainer)
                         crossSaleContainer.snp.makeConstraints { make in
@@ -459,8 +451,11 @@ extension Message: Reusable {
                         //button
                         let button = UIButton(type: .custom)
                         button.setTitle(L10n.crossSellGetPrice)
-                        button.backgroundColor = UIColor(hexString: "#EAFFCC")
-                        button.tintColor = UIColor.black
+                        button.backgroundColor = UIColor(dynamic: { trait in
+                            hButtonColor.primaryAltDefault
+                                .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
+                        })
+                        button.tintColor = UIColor.brand(.primaryText())
                         button.setTitleColor(UIColor.black, for: .normal)
                         button.titleLabel?.textColor = UIColor.black
                         button.titleLabel?.font = Fonts.fontFor(style: .standard)
@@ -471,7 +466,11 @@ extension Message: Reusable {
                         bag += button.signal(for: .touchUpInside)
                             .onValue { _ in
                                 if let url {
-                                    UIApplication.shared.open(url)
+                                    button.viewController?
+                                        .present(
+                                            SFSafariViewController(url: url),
+                                            animated: true
+                                        )
                                 }
                             }
                         crossSaleContainer.addSubview(button)
@@ -482,7 +481,7 @@ extension Message: Reusable {
                         }
                         contentContainer.addArrangedSubview(crossSaleMainContainer)
                         crossSaleContainer.snp.makeConstraints { make in
-                            make.width.equalTo(300)
+                            make.width.equalToSuperview()
                         }
 
                         crossSaleContainer.alpha = 0

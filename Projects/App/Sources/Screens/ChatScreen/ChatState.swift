@@ -140,13 +140,15 @@ class ChatState {
             )
             .onError({ error in
                 self.isFetching.value = false
-                log.error("Chat Error: ChatMessagesQuery", error: error, attributes: nil)
-                self.errorSignal.value = (
-                    ChatError.fetchFailed,
-                    retry: {
-                        self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
-                    }
-                )
+                if UIApplication.shared.applicationState == .active {
+                    log.error("Chat Error: ChatMessagesQuery", error: error, attributes: nil)
+                    self.errorSignal.value = (
+                        ChatError.fetchFailed,
+                        retry: {
+                            self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
+                        }
+                    )
+                }
             })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [OctopusGraphQL.MessageFragment]? in

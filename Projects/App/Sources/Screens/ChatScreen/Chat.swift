@@ -4,6 +4,7 @@ import Flow
 import Form
 import Presentation
 import Profile
+import SafariServices
 import UIKit
 import hAnalytics
 import hCore
@@ -166,7 +167,11 @@ extension Chat: Presentable {
                 switch message.type {
                 case let .crossSell(url):
                     if let url = url {
-                        UIApplication.shared.open(url)
+                        tableKit.view.viewController?
+                            .present(
+                                SFSafariViewController(url: url),
+                                animated: true
+                            )
                     }
                 default:
                     break
