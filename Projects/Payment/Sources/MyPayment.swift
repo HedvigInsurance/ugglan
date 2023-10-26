@@ -84,7 +84,6 @@ struct MyPaymentsView_Previews: PreviewProvider {
                 let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
                     nextChargeDate: "May 26th 2023",
                     payinMethodStatus: .pending,
-                    redeemedCampaigns: [.init(code: "CODE")],
                     balance: .init(currentBalance: .init(amount: "20", currency: "SEK")),
                     chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")],
                     chargeEstimation: .init(
@@ -96,7 +95,8 @@ struct MyPaymentsView_Previews: PreviewProvider {
                         .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "name")])
                     ]
                 )
-                let data = PaymentData(myPaymentQueryData)
+                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
+                let data = PaymentData(myPaymentQueryData, octopusData: octopusData)
                 store.send(.setPaymentData(data: data))
             }
     }

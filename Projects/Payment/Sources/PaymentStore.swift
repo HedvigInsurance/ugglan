@@ -48,20 +48,40 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .load:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.giraffe.client
-                    .fetch(
-                        query: GiraffeGraphQL.MyPaymentQuery(
-                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                        ),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
-                        let paymentData = PaymentData(data)
-                        callback(.value(.setPaymentData(data: paymentData)))
-                    })
-                    .onError({ error in
-                        self.setError(error.localizedDescription, for: .getPaymentData)
-                    })
+                let giraffeQuery = self.giraffe.client.fetch(
+                    query: GiraffeGraphQL.MyPaymentQuery(),
+                    cachePolicy: .fetchIgnoringCacheCompletely
+                )
+
+                let octopusQuery = self.octopus.client.fetch(
+                    query: OctopusGraphQL.PaymentDataQuery(),
+                    cachePolicy: .fetchIgnoringCacheCompletely
+                )
+                disposeBag += combineLatest(giraffeQuery.resultSignal, octopusQuery.resultSignal)
+                    .onValue { [weak self] giraffeResponse, octopusQueryResponse in
+                        if let giraffeData = giraffeResponse.value, let octopusData = octopusQueryResponse.value {
+                            let paymentData = PaymentData(giraffeData, octopusData: octopusData)
+                            callback(.value(.setPaymentData(data: paymentData)))
+                        } else if let error = giraffeResponse.error ?? octopusQueryResponse.error {
+                            self?.setError(error.localizedDescription, for: .getPaymentData)
+                        } else {
+                            self?.setError(L10n.General.errorBody, for: .getPaymentData)
+                        }
+                    }
+                //                disposeBag += self.giraffe.client
+                //                    .fetch(
+                //                        query: GiraffeGraphQL.MyPaymentQuery(
+                //                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                //                        ),
+                //                        cachePolicy: .fetchIgnoringCacheCompletely
+                //                    )
+                //                    .onValue({ data in
+                //                        let paymentData = PaymentData(data)
+                //                        callback(.value(.setPaymentData(data: paymentData)))
+                //                    })
+                //                    .onError({ error in
+                //                        self.setError(error.localizedDescription, for: .getPaymentData)
+                //                    })
                 return disposeBag
             }
         case .fetchPaymentStatus:
@@ -120,14 +140,14 @@ public struct PaymentData: Codable, Equatable {
     let paymentHistory: [PaymentHistory]?
     let balance: Balance?
     var reedemCampaigns: [ReedemCampaign]
-    init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
+    init(_ data: GiraffeGraphQL.MyPaymentQuery.Data, octopusData: OctopusGraphQL.PaymentDataQuery.Data) {
         nextPayment = NextPayment(data)
         contracts = data.activeContractBundles.first?.contracts.map({ .init($0) }) ?? []
         insuranceCost = MonetaryStack(data.insuranceCost)
         chargeEstimation = MonetaryStack(data.chargeEstimation)
         paymentHistory = data.chargeHistory.map({ PaymentHistory($0) })
         balance = .init(data.balance)
-        reedemCampaigns = data.redeemedCampaigns.compactMap({ .init($0) })
+        reedemCampaigns = octopusData.currentMember.redeemedCampaigns.compactMap({ .init($0) })
     }
 
     struct NextPayment: Codable, Equatable {
@@ -180,10 +200,10 @@ public struct PaymentData: Codable, Equatable {
     struct ReedemCampaign: Codable, Equatable {
         let code: String?
         let displayValue: String?
-        init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.RedeemedCampaign?) {
+        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?) {
             guard let data else { return nil }
             code = data.code
-            displayValue = data.displayValue
+            displayValue = data.description
         }
     }
 

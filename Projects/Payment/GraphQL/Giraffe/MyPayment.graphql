@@ -1,9 +1,6 @@
-query MyPayment($locale: Locale!) {
+query MyPayment {
     nextChargeDate
     payinMethodStatus
-    redeemedCampaigns {
-        ...CampaignFragment
-    }
     balance {
         currentBalance {
             ...MonetaryAmountFragmentGiraffe

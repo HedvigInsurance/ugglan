@@ -1,0 +1,9 @@
+query PaymentData {
+  currentMember {
+    redeemedCampaigns {
+      code
+      description
+      id
+    }
+  }
+}
