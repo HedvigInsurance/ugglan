@@ -1,0 +1,5 @@
+query AvailablePaymentMethods {
+  availablePaymentMethods2 {
+    paymentMethodsResponse
+  }
+}

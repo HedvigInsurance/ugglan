@@ -137,7 +137,7 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-            let mutation = OctopusGraphQL.RegisterDirectDebit2Mutation()
+            let mutation = OctopusGraphQL.RegisterDirectDebitMutation()
             bag += octopus.client.perform(mutation: mutation)
                 .onValue({ data in
                     if let url = URL(string: data.registerDirectDebit2.url) {
