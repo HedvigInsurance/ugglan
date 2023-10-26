@@ -30,21 +30,33 @@ struct InsuredPeopleScreen: View {
                         ContractOwnerField(coInsured: contract.coInsured)
                         hSection {
                             ForEach(contract.coInsured, id: \.self) { coInsured in
-                                CoInsuredField(
-                                    coInsured: coInsured,
-                                    accessoryView: existingAccessoryView(coInsured: coInsured)
-                                )
+                                var isDeleted = false
+                                
+                                ForEach(vm.coInsured, id: \.self) { localCoInsured in
+                                    if localCoInsured.name == coInsured.name && localCoInsured.type == .deleted {
+                                        let _ = isDeleted = true
+                                    }
+                                }
+                                
+                                if !isDeleted {
+                                    CoInsuredField(
+                                        coInsured: coInsured,
+                                        accessoryView: existingAccessoryView(coInsured: coInsured)
+                                    )
+                                }
                             }
                         }
                         .sectionContainerStyle(.transparent)
                         
                         hSection {
                             ForEach(vm.coInsured, id: \.self) { coInsured in
-                                CoInsuredField(
-                                    coInsured: coInsured,
-                                    accessoryView: localAccessoryView(coInsured: coInsured),
-                                    includeStatusPill: true
-                                )
+                                if coInsured.type == .added {
+                                    CoInsuredField(
+                                        coInsured: coInsured,
+                                        accessoryView: localAccessoryView(coInsured: coInsured),
+                                        includeStatusPill: true
+                                    )
+                                }
                             }
                         }
                         .sectionContainerStyle(.transparent)
@@ -159,6 +171,7 @@ struct InsuredPeopleScreen: View {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
             }
         }
+        .padding(.horizontal, 16)
     }
 }
 

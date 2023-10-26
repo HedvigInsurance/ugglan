@@ -83,39 +83,6 @@ struct InsuredPeopleNewScreen: View {
     }
     
     @ViewBuilder
-    func localInsuredField(coInsured: CoInsuredModel) -> some View {
-        VStack(spacing: 4) {
-            HStack {
-                VStack(alignment: .leading) {
-                    hText(coInsured.name)
-                    hText(coInsured.SSN)
-                        .foregroundColor(hTextColor.secondary)
-                }
-                Spacer()
-                HStack {
-                    Spacer()
-                    hText(L10n.Claims.Edit.Screen.title)
-                        .onTapGesture {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openCoInsuredInput(
-                                        isDeletion: false,
-                                        name: coInsured.name,
-                                        personalNumber: coInsured.SSN,
-                                        title: L10n.contractAddConisuredInfo,
-                                        contractId: contractId
-                                    )
-                                )
-                            )
-                        }
-                }
-            }
-            .padding(.vertical, 16)
-        }
-        Divider()
-    }
-    
-    @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         hText(L10n.Claims.Edit.Screen.title)
             .onTapGesture {
@@ -142,7 +109,7 @@ struct InsuredPeopleNewScreen: View {
         .onTapGesture {
             store.send(
                 .coInsuredNavigationAction(action: .openCoInsuredInput(
-                    isDeletion: true,
+                    isDeletion: false,
                     name: nil,
                     personalNumber: nil,
                     title: L10n.contractAddConisuredInfo,
@@ -153,38 +120,49 @@ struct InsuredPeopleNewScreen: View {
     }
     
     func emptyCoInsuredField(localCoInsured: [CoInsuredModel]) -> some View {
-        hSection {
-            let nbOfFields = contractNbOfCoinsured - localCoInsured.count
-            ForEach((1...nbOfFields), id: \.self) { index in
-                VStack {
-                    HStack {
-                        hText(L10n.contractCoinsured)
-                        Spacer()
-                        HStack {
-                            hText(L10n.generalAddInfoButton)
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        }
-                        .onTapGesture {
-                            store.send(
-                                .coInsuredNavigationAction(action: .openCoInsuredInput(
-                                    isDeletion: true,
-                                    name: nil,
-                                    personalNumber: nil,
-                                    title: L10n.contractAddConisuredInfo,
-                                    contractId: contractId
-                                )
-                                ))
-                        }
-                    }
-                    hText(L10n.contractNoInformation)
-                        .foregroundColor(hTextColor.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(.vertical, 16)
-                hRowDivider()
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state
             }
+        ) { contract in
+            hSection {
+                let nbOfFields = contractNbOfCoinsured - localCoInsured.count
+                ForEach((1...nbOfFields), id: \.self) { index in
+                    VStack {
+                        HStack {
+                            hText(L10n.contractCoinsured)
+                            Spacer()
+                            HStack {
+                                hText(L10n.generalAddInfoButton)
+                                Image(uiImage: hCoreUIAssets.plusSmall.image)
+                            }
+                            .onTapGesture {
+                                if !contract.fetchAllCoInsured.isEmpty {
+                                    store.send(.coInsuredNavigationAction(action: .openCoInsuredSelectScreen(contractId: contractId)))
+                                } else {
+                                    store.send(
+                                        .coInsuredNavigationAction(action: .openCoInsuredInput(
+                                            isDeletion: true,
+                                            name: nil,
+                                            personalNumber: nil,
+                                            title: L10n.contractAddConisuredInfo,
+                                            contractId: contractId
+                                        )
+                                        ))
+                                }
+                            }
+                        }
+                        hText(L10n.contractNoInformation)
+                            .foregroundColor(hTextColor.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.vertical, 16)
+                    hRowDivider()
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 }
 

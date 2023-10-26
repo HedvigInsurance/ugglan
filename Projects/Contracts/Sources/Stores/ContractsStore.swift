@@ -106,7 +106,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             newState.activeContracts[index].coInsured.remove(at: deleteIndex)
                         }
                     }
-                    
+
                 }
             }
         default:

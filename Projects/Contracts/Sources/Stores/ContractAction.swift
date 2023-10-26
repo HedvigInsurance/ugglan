@@ -86,4 +86,7 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case dismissEditCoInsuredFlow
     case openInsuredPeopleNewScreen(contractId: String)
     case openInsuredPeopleScreen(contractId: String)
+    case openCoInsuredSelectScreen(contractId: String)
+    case deletionSuccess
+    case addSuccess
 }

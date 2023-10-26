@@ -53,21 +53,23 @@ extension AppJourney {
             } statusCard: {
                 VStack(spacing: 8) {
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     
                     /* TODO: CHANGE 2 TO REAL DATA */
-//                    if contractStrore.state.coInsured.count < 2 {
+                    let index = contractStore.state.activeContracts.first(where: { $0.coInsured.count < 2 })
+                    if let index {
                         InfoCard(text: "Your insurance is missing important information", type: .attention)
                             .buttons([
                                 .init(
                                     buttonTitle: "Add information",
                                     buttonAction: {
-                                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
                                         let contractIds: [String] = contractStore.state.activeContracts.compactMap {( $0.id )}
                                         homeStore.send(.openCoInsured(contractIds: contractIds))
                                     }
                                 )
                             ])
-//                    }
+                    }
+                    
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }

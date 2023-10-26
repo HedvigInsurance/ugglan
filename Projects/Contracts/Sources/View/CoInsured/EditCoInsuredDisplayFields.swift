@@ -67,6 +67,7 @@ struct CoInsuredField<Content: View>: View {
                         hText(title ?? "")
                         hText(subTitle ?? "")
                             .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     }
                 }
@@ -80,7 +81,7 @@ struct CoInsuredField<Content: View>: View {
         .padding(.vertical, (includeStatusPill ?? false) ? 0 : 16 )
         .padding(.top, (includeStatusPill ?? false) ? 16 : 0 )
         if includeStatusPill ?? false, let coInsured {
-            statusPill(coInsured: coInsured)
+            statusPill
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 16)
         }
@@ -88,46 +89,15 @@ struct CoInsuredField<Content: View>: View {
     }
     
     @ViewBuilder
-    func statusPill(coInsured: CoInsuredModel) -> some View {
+    var statusPill: some View {
         VStack {
-            switch coInsured.type {
-            case .added:
-                hText(L10n.contractAddCoinsuredActiveFrom("16 nov 2023"), style: .standardSmall)
-            case .deleted:
-                hText(L10n.contractAddCoinsuredActiveUntil("16 nov 2023"), style: .standardSmall)
-            case .none:
-                EmptyView()
-            }
+            hText(L10n.contractAddCoinsuredActiveFrom("16 nov 2023"), style: .standardSmall)
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .foregroundColor(pillTextdColor(coInsured: coInsured))
-        .background(pillBackgroundColor(coInsured: coInsured))
+        .foregroundColor(hSignalColor.amberText)
+        .background(hSignalColor.amberFill)
         .cornerRadius(8)
-    }
-    
-    @hColorBuilder
-    func pillBackgroundColor(coInsured: CoInsuredModel) -> some hColor {
-        switch coInsured.type {
-        case .added:
-            hSignalColor.amberFill
-        case .deleted:
-            hSignalColor.redFill
-        case .none:
-            hBackgroundColor.clear
-        }
-    }
-    
-    @hColorBuilder
-    func pillTextdColor(coInsured: CoInsuredModel) -> some hColor {
-        switch coInsured.type {
-        case .added:
-            hSignalColor.amberText
-        case .deleted:
-            hSignalColor.redText
-        case .none:
-            hBackgroundColor.clear
-        }
     }
 }
 

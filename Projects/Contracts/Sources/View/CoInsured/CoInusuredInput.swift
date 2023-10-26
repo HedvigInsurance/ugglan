@@ -5,12 +5,13 @@ import hCoreUI
 
 struct CoInusuredInput: View, KeyboardReadable {
     @State var fullName: String
-    @State var personalNumber: String
+    @State var SSN: String
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
     @PresentableStore var store: ContractStore
     let isDeletion: Bool
     let contractId: String
+    @State var noSSN = false
     
     public init(
         isDeletion: Bool,
@@ -20,7 +21,7 @@ struct CoInusuredInput: View, KeyboardReadable {
     ) {
         self.isDeletion = isDeletion
         self.fullName = name ?? ""
-        self.personalNumber = personalNumber ?? ""
+        self.SSN = personalNumber ?? ""
         self.contractId = contractId
     }
     
@@ -28,7 +29,7 @@ struct CoInusuredInput: View, KeyboardReadable {
         hForm {
             VStack(spacing: 4) {
                 if isDeletion {
-                    if fullName != "" && personalNumber != "" {
+                    if fullName != "" && SSN != "" {
                         hSection {
                             hFloatingField(
                                 value: fullName,
@@ -45,7 +46,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                         
                         hSection {
                             hFloatingField(
-                                value: personalNumber,
+                                value: SSN,
                                 placeholder: L10n.TravelCertificate.personalNumber,
                                 onTap: {}
                             )
@@ -72,28 +73,64 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                     .sectionContainerStyle(.transparent)
                     
+                    if noSSN {
+                        hSection {
+                            hFloatingTextField(
+                                masking: Masking(type: .birthDateReverse),
+                                value: $SSN,
+                                equals: $type,
+                                focusValue: .SSN,
+                                placeholder: "YYMMDD"
+                            )
+                        }
+                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                            keyboardEnabled = newIsKeyboardEnabled
+                        }
+                        .sectionContainerStyle(.transparent)
+                    } else {
+                        hSection {
+                            hFloatingTextField(
+                                masking: Masking(type: .personalNumber),
+                                value: $SSN,
+                                equals: $type,
+                                focusValue: .SSN,
+                                placeholder: L10n.TravelCertificate.ssnLabel
+                            )
+                        }
+                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                            keyboardEnabled = newIsKeyboardEnabled
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                    
                     hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .personalNumber),
-                            value: $personalNumber,
-                            equals: $type,
-                            focusValue: .personalNumber,
-                            placeholder: L10n.TravelCertificate.ssnLabel
-                        )
+                        Toggle(isOn: $noSSN.animation(.default)) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText("Add without personal identity no.", style: .body)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                        }
+                        .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation {
+                                noSSN.toggle()
+                            }
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
                     }
-                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                        keyboardEnabled = newIsKeyboardEnabled
-                    }
-                    .sectionContainerStyle(.transparent)
+                    .sectionContainerStyle(.opaque)
                 }
+                
                 hSection {
                     hButton.LargeButton(type: .primary) {
                         if isDeletion {
-                            store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: personalNumber)
-                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                            store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: SSN)
+                            store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                         } else {
-                            store.coInsuredViewModel.addCoInsured(name: fullName, personalNumber: personalNumber)
-                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                            store.coInsuredViewModel.addCoInsured(name: fullName, personalNumber: SSN)
+                            store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
                     } content: {
                         hText(
@@ -119,7 +156,7 @@ struct CoInusuredInput: View, KeyboardReadable {
     }
     
     var saveIsDisabled: Bool {
-        let personalNumberValid = !Masking(type: .personalNumber).isValid(text: personalNumber)
+        let personalNumberValid = !Masking(type: .personalNumber).isValid(text: SSN)
         let fullNameValied = !Masking(type: .fullName).isValid(text: fullName)
         if personalNumberValid || fullNameValied {
             return true
@@ -147,7 +184,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     }
     
     case fullName
-    case personalNumber
+    case SSN
 }
 
 protocol KeyboardReadable {

@@ -15,6 +15,14 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
+    
+    public var fetchAllCoInsured: [CoInsuredModel] {
+        var coInsuredList: [CoInsuredModel] = []
+        activeContracts.forEach { contract in
+            coInsuredList.append(contentsOf: contract.coInsured)
+        }
+        return coInsuredList
+    }
 
     public func contractForId(_ id: String) -> Contract? {
         let activeContracts = activeContracts.compactMap({ $0 })
