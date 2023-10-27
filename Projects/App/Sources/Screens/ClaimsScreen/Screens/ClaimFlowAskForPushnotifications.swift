@@ -21,25 +21,21 @@ struct AskForPushnotifications: View {
     }
 
     var body: some View {
-        hForm {
-            VStack {
-                Spacer(minLength: 24)
-                Image(uiImage: hCoreUIAssets.activatePushNotificationsIllustration.image).resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 200)
-                    .foregroundColor(hTextColor.primary)
-                Spacer(minLength: 24)
-                hText(L10n.claimsActivateNotificationsHeadline, style: .title2).foregroundColor(hTextColor.primary)
-                Spacer(minLength: 24)
-                hText(L10n.claimsActivateNotificationsBody, style: .body).foregroundColor(hTextColor.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .padding([.leading, .trailing], 16)
-
-        }
-        .hFormAttachToBottom {
-            VStack(spacing: 12) {
-                hButton.LargeButton(type: .primary) {
+        hSection {
+            VStack(spacing: 24) {
+                Spacer()
+                hCoreUIAssets.infoIconFilled.view
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(hSignalColor.blueElement)
+                VStack(spacing: 0) {
+                    hText(L10n.activateNotificationsTitle)
+                    hText(text)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                hButton.MediumButton(type: .primary) {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
@@ -53,9 +49,10 @@ struct AskForPushnotifications: View {
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
+                .fixedSize()
 
-                hButton.SmallButton(type: .ghost) {
+                Spacer()
+                hButton.LargeButton(type: .ghost) {
                     onActionExecuted()
                     let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
@@ -63,9 +60,13 @@ struct AskForPushnotifications: View {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
                         .foregroundColor(hTextColor.primary)
                 }
+                .padding(.bottom, 16)
             }
-            .padding([.leading, .trailing], 16)
         }
+        .sectionContainerStyle(.transparent)
+        .background(
+            BackgroundView().ignoresSafeArea()
+        )
     }
 }
 
@@ -105,5 +106,12 @@ extension AskForPushnotifications {
             }
         }
         .hidesBackButton
+    }
+}
+struct AskForPushnotifications_Previews: PreviewProvider {
+    static var previews: some View {
+        AskForPushnotifications(text: "TEXT") {
+
+        }
     }
 }
