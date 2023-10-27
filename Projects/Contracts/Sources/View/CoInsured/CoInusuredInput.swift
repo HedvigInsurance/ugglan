@@ -59,68 +59,68 @@ struct CoInusuredInput: View, KeyboardReadable {
                         .sectionContainerStyle(.transparent)
                     }
                 } else {
-                    hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .none),
-                            value: $fullName,
-                            equals: $type,
-                            focusValue: .fullName,
-                            placeholder: L10n.fullNameText
-                        )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-
-                    if noSSN {
+                    Group {
                         hSection {
                             hFloatingTextField(
-                                masking: Masking(type: .birthDateYYMMDD),
-                                value: $SSN,
+                                masking: Masking(type: .none),
+                                value: $fullName,
                                 equals: $type,
-                                focusValue: .SSN,
-                                placeholder: L10n.contractBirthdate
+                                focusValue: .fullName,
+                                placeholder: L10n.fullNameText
                             )
+                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                                keyboardEnabled = newIsKeyboardEnabled
+                            }
                         }
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
-                        .sectionContainerStyle(.transparent)
-                    } else {
-                        hSection {
-                            hFloatingTextField(
-                                masking: Masking(type: .personalNumber),
-                                value: $SSN,
-                                equals: $type,
-                                focusValue: .SSN,
-                                placeholder: L10n.TravelCertificate.ssnLabel
-                            )
-                        }
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
 
-                    hSection {
-                        Toggle(isOn: $noSSN.animation(.default)) {
-                            VStack(alignment: .leading, spacing: 0) {
-                                hText(L10n.contractAddCoinsuredNoSsn, style: .body)
-                                    .foregroundColor(hTextColor.secondary)
+                        if noSSN {
+                            hSection {
+                                hFloatingTextField(
+                                    masking: Masking(type: .birthDateYYMMDD),
+                                    value: $SSN,
+                                    equals: $type,
+                                    focusValue: .SSN,
+                                    placeholder: L10n.contractBirthdate
+                                )
+                            }
+                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                                keyboardEnabled = newIsKeyboardEnabled
+                            }
+                        } else {
+                            hSection {
+                                hFloatingTextField(
+                                    masking: Masking(type: .personalNumber),
+                                    value: $SSN,
+                                    equals: $type,
+                                    focusValue: .SSN,
+                                    placeholder: L10n.TravelCertificate.ssnLabel
+                                )
+                            }
+                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                                keyboardEnabled = newIsKeyboardEnabled
                             }
                         }
-                        .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation {
-                                noSSN.toggle()
+
+                        hSection {
+                            Toggle(isOn: $noSSN.animation(.default)) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    hText(L10n.contractAddCoinsuredNoSsn, style: .body)
+                                        .foregroundColor(hTextColor.secondary)
+                                }
                             }
+                            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                withAnimation {
+                                    noSSN.toggle()
+                                }
+                            }
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
                         }
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
+                        .sectionContainerStyle(.opaque)
                     }
-                    .sectionContainerStyle(.opaque)
+                    .hFieldSize(.small)
                 }
 
                 hSection {

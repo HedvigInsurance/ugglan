@@ -4,17 +4,18 @@ import hCoreUI
 
 struct ContractOwnerField: View {
     let coInsured: [CoInsuredModel]
-    
+
     init(
         coInsured: [CoInsuredModel]
-    ){
+    ) {
         self.coInsured = coInsured
     }
-    
+
     var body: some View {
         hSection {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
+                    /* TODO: CHANGE WHEN REAL DATA */
                     hText("Julia Andersson")
                     hText("19900101-1111")
                 }
@@ -27,7 +28,7 @@ struct ContractOwnerField: View {
                 }
             }
             .padding(.vertical, 16)
-            hRowDivider()
+            Divider()
         }
         .sectionContainerStyle(.transparent)
     }
@@ -39,24 +40,24 @@ struct CoInsuredField<Content: View>: View {
     let includeStatusPill: Bool?
     let title: String?
     let subTitle: String?
-    
+
     init(
         coInsured: CoInsuredModel? = nil,
         accessoryView: Content,
         includeStatusPill: Bool? = false,
         title: String? = nil,
         subTitle: String? = nil
-    ){
+    ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
         self.includeStatusPill = includeStatusPill
         self.title = title
         self.subTitle = subTitle
     }
-    
+
     var body: some View {
         VStack(spacing: 4) {
-            HStack {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     if let coInsured {
                         hText(coInsured.name)
@@ -78,16 +79,16 @@ struct CoInsuredField<Content: View>: View {
                 }
             }
         }
-        .padding(.vertical, (includeStatusPill ?? false) ? 0 : 16 )
-        .padding(.top, (includeStatusPill ?? false) ? 16 : 0 )
+        .padding(.vertical, (includeStatusPill ?? false) ? 0 : 16)
+        .padding(.top, (includeStatusPill ?? false) ? 16 : 0)
         if includeStatusPill ?? false, let coInsured {
             statusPill
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 16)
         }
-        hRowDivider()
+        Divider()
     }
-    
+
     @ViewBuilder
     var statusPill: some View {
         VStack {
