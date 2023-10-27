@@ -98,7 +98,7 @@ public class EditCoInsuredJourney {
             if case .coInsuredNavigationAction(.dismissEdit) = action {
                 PopJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
-                SuccessScreen.journey(with: L10n.contractCoinsuredAdded)
+                SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ContractStore = globalPresentableStoreContainer.get()
@@ -106,7 +106,7 @@ public class EditCoInsuredJourney {
                         }
                     }
             } else if case .coInsuredNavigationAction(.addSuccess) = action {
-                SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
+                SuccessScreen.journey(with: L10n.contractCoinsuredAdded)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ContractStore = globalPresentableStoreContainer.get()

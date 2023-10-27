@@ -16,6 +16,7 @@ public enum MaskType: String {
     case email = "Email"
     case birthDate = "BirthDate"
     case birthDateReverse = "BirthDateReverse"
+    case birthDateYYMMDD = "BirthDateYYMMDD"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
     case euroBonus = "EuroBonus"
@@ -64,7 +65,7 @@ public struct Masking {
         case .personalNumberCoInsured:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 0...130 ~= age
-        case .birthDate, .birthDateReverse:
+        case .birthDate, .birthDateReverse, .birthDateYYMMDD:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
         case .email:
@@ -106,6 +107,11 @@ public struct Masking {
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         case .fullName: return text
+        case .birthDateYYMMDD:
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyddMM"
+            guard let date = dateFormatter.date(from: text) else { return text }
+            return date.localDateString
         }
     }
 
@@ -149,6 +155,9 @@ public struct Masking {
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else { return nil }
 
             return age
+        case .birthDateYYMMDD:
+            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) { return age }
+            return nil
         default: return nil
         }
     }
@@ -163,7 +172,7 @@ public struct Masking {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .fullName:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateYYMMDD:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -219,6 +228,8 @@ public struct Masking {
             return nil
         case .fullName:
             return L10n.TravelCertificate.fullNameLabel
+        case .birthDateYYMMDD:
+            return L10n.contractBirthdate
         }
     }
 
@@ -251,6 +262,8 @@ public struct Masking {
         case .euroBonus:
             return nil
         case .fullName:
+            return nil
+        case .birthDateYYMMDD:
             return nil
         }
     }
@@ -321,6 +334,19 @@ public struct Masking {
             return previousText
         }
 
+        func isDigit(maxCount: Int) -> String {
+            if text.count < previousText.count {
+                return text
+            }
+
+            if text.count <= maxCount {
+                let sanitizedText = String(text.filter { $0.isDigit })
+                return sanitizedText
+            }
+
+            return previousText
+        }
+
         switch type {
         case .personalNumber, .personalNumberCoInsured:
             if text.count > 11, text.prefix(2) == "19" || text.prefix(2) == "20" {
@@ -344,6 +370,8 @@ public struct Masking {
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
         case .fullName: return text
+        case .birthDateYYMMDD:
+            return isDigit(maxCount: 6)
         }
     }
 }

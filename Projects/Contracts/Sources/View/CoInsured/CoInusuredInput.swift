@@ -12,7 +12,7 @@ struct CoInusuredInput: View, KeyboardReadable {
     let isDeletion: Bool
     let contractId: String
     @State var noSSN = false
-    
+
     public init(
         isDeletion: Bool,
         name: String?,
@@ -24,7 +24,7 @@ struct CoInusuredInput: View, KeyboardReadable {
         self.SSN = personalNumber ?? ""
         self.contractId = contractId
     }
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 4) {
@@ -43,7 +43,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                         }
                         .disabled(true)
                         .sectionContainerStyle(.transparent)
-                        
+
                         hSection {
                             hFloatingField(
                                 value: SSN,
@@ -72,11 +72,11 @@ struct CoInusuredInput: View, KeyboardReadable {
                         }
                     }
                     .sectionContainerStyle(.transparent)
-                    
+
                     if noSSN {
                         hSection {
                             hFloatingTextField(
-                                masking: Masking(type: .birthDateReverse),
+                                masking: Masking(type: .birthDateYYMMDD),
                                 value: $SSN,
                                 equals: $type,
                                 focusValue: .SSN,
@@ -102,7 +102,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    
+
                     hSection {
                         Toggle(isOn: $noSSN.animation(.default)) {
                             VStack(alignment: .leading, spacing: 0) {
@@ -122,7 +122,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                     .sectionContainerStyle(.opaque)
                 }
-                
+
                 hSection {
                     hButton.LargeButton(type: .primary) {
                         if isDeletion {
@@ -135,15 +135,15 @@ struct CoInusuredInput: View, KeyboardReadable {
                     } content: {
                         hText(
                             isDeletion
-                            ? L10n.removeConfirmationButton
-                            : (saveIsDisabled ? L10n.generalSaveButton : L10n.generalAddButton)
+                                ? L10n.removeConfirmationButton
+                                : (saveIsDisabled ? L10n.generalSaveButton : L10n.generalAddButton)
                         )
                         .transition(.opacity.animation(.easeOut))
                     }
                 }
                 .padding(.top, 12)
                 .disabled(saveIsDisabled && !isDeletion)
-                
+
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
@@ -154,14 +154,20 @@ struct CoInusuredInput: View, KeyboardReadable {
             }
         }
     }
-    
+
     var saveIsDisabled: Bool {
-        let personalNumberValid = !Masking(type: .personalNumber).isValid(text: SSN)
-        let fullNameValied = !Masking(type: .fullName).isValid(text: fullName)
-        if personalNumberValid || fullNameValied {
-            return true
+        var personalNumberValid = false
+        var fullNameValid = false
+        if noSSN {
+            personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: SSN)
+        } else {
+            personalNumberValid = Masking(type: .personalNumber).isValid(text: SSN)
         }
-        return false
+        fullNameValid = Masking(type: .fullName).isValid(text: fullName)
+        if personalNumberValid && fullNameValid {
+            return false
+        }
+        return true
     }
 }
 
@@ -175,14 +181,14 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
         return CoInsuredInputType.fullName
     }
-    
+
     var next: CoInsuredInputType? {
         switch self {
         default:
             return nil
         }
     }
-    
+
     case fullName
     case SSN
 }
@@ -197,7 +203,7 @@ extension KeyboardReadable {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
                 .map { _ in true },
-            
+
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in false }
