@@ -114,7 +114,7 @@ public struct PaymentData: Codable, Equatable {
     init(_ data: OctopusGraphQL.PaymentDataQuery.Data) {
         let currentMember = data.currentMember
         nextPayment = NextPayment(currentMember.upcomingCharge)
-        contracts = currentMember.upcomingCharge?.contractsChargeBreakdown.map({ .init($0) }) ?? []
+        contracts = currentMember.activeContracts.map({ .init($0) })
         insuranceCost = MonetaryStack(currentMember.insuranceCost)
         chargeEstimation = MonetaryStack(currentMember.upcomingCharge)
         paymentHistory = currentMember.chargeHistory.map({ PaymentHistory($0) })
@@ -128,7 +128,7 @@ public struct PaymentData: Codable, Equatable {
         init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge?) {
             guard let data else { return nil }
             amount = MonetaryAmount(optionalFragment: data.net.fragments.moneyFragment)
-            date = data.date
+            date = data.date.localDateToDate?.displayDateMMMDDYYYYFormat
         }
     }
 
@@ -138,14 +138,13 @@ public struct PaymentData: Codable, Equatable {
         let name: String
         let amount: MonetaryAmount?
 
-        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge.ContractsChargeBreakdown) {
-            self.id = data.contract.id
-            self.name = data.contract.exposureDisplayName
+        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.ActiveContract) {
+            self.id = data.id
+            self.name = data.currentAgreement.productVariant.displayName
             self.type =
-                Contract.TypeOfContract(rawValue: data.contract.currentAgreement.productVariant.typeOfContract)
+                Contract.TypeOfContract(rawValue: data.currentAgreement.productVariant.typeOfContract)
                 ?? .unknown
-            //            self.amount = MonetaryAmount(fragment: data.contract.currentAgreement.premium.fragments.moneyFragment)
-            self.amount = MonetaryAmount(fragment: data.gross.fragments.moneyFragment)
+            self.amount = nil
         }
     }
 

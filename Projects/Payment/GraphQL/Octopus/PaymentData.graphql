@@ -1,5 +1,14 @@
 query PaymentData {
   currentMember {
+    activeContracts {
+      id
+      currentAgreement {
+        productVariant {
+          typeOfContract
+          displayName
+        }
+      }
+    }
     redeemedCampaigns {
       code
       description
@@ -35,23 +44,6 @@ query PaymentData {
         ...MoneyFragment
       }
       date
-      contractsChargeBreakdown {
-        contract {
-        id
-          exposureDisplayName
-          currentAgreement {
-            productVariant {
-              typeOfContract
-            }
-            premium {
-                ...MoneyFragment
-            }
-          }
-        }
-        gross {
-            ...MoneyFragment
-        }
-      }
     }
   }
 }
