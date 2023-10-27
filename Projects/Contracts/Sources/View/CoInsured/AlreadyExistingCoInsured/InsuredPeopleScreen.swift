@@ -7,7 +7,7 @@ struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    
+
     public init(
         contractId: String
     ) {
@@ -16,7 +16,7 @@ struct InsuredPeopleScreen: View {
         self.contractId = contractId
         vm.resetCoInsured
     }
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -31,13 +31,13 @@ struct InsuredPeopleScreen: View {
                         hSection {
                             ForEach(contract.coInsured, id: \.self) { coInsured in
                                 var isDeleted = false
-                                
+
                                 ForEach(vm.coInsured, id: \.self) { localCoInsured in
                                     if localCoInsured.name == coInsured.name && localCoInsured.type == .deleted {
                                         let _ = isDeleted = true
                                     }
                                 }
-                                
+
                                 if !isDeleted {
                                     CoInsuredField(
                                         coInsured: coInsured,
@@ -47,7 +47,7 @@ struct InsuredPeopleScreen: View {
                             }
                         }
                         .sectionContainerStyle(.transparent)
-                        
+
                         hSection {
                             ForEach(vm.coInsured, id: \.self) { coInsured in
                                 if coInsured.type == .added {
@@ -60,7 +60,7 @@ struct InsuredPeopleScreen: View {
                             }
                         }
                         .sectionContainerStyle(.transparent)
-                        
+
                         hSection {
                             hButton.LargeButton(type: .secondary) {
                                 store.send(
@@ -93,7 +93,7 @@ struct InsuredPeopleScreen: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
@@ -112,7 +112,7 @@ struct InsuredPeopleScreen: View {
                 )
             }
     }
-    
+
     @ViewBuilder
     func existingAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
@@ -131,7 +131,7 @@ struct InsuredPeopleScreen: View {
                 )
             }
     }
-    
+
     var cancelButton: some View {
         hButton.LargeButton(type: .ghost) {
             store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
@@ -140,14 +140,14 @@ struct InsuredPeopleScreen: View {
         }
         .padding(.horizontal, 16)
     }
-    
+
     var confirmChangesView: some View {
         VStack(spacing: 16) {
             VStack(spacing: 2) {
                 HStack(spacing: 8) {
                     hText(L10n.contractAddCoinsuredTotal)
                     Spacer()
-                    
+
                     if #available(iOS 16.0, *) {
                         hText("129" + " " + L10n.paymentCurrencyOccurrence)
                             .strikethrough()
@@ -155,7 +155,7 @@ struct InsuredPeopleScreen: View {
                     } else {
                         hText("129" + " " + L10n.paymentCurrencyOccurrence)
                             .foregroundColor(hTextColor.secondary)
-                        
+
                     }
                     hText("159" + " " + L10n.paymentCurrencyOccurrence)
                 }
@@ -163,8 +163,8 @@ struct InsuredPeopleScreen: View {
                     .foregroundColor(hTextColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            
-            hButton.LargeButton(type: .primary) {
+
+            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
                 /* TODO: SEND MUTATION */
                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
@@ -175,7 +175,6 @@ struct InsuredPeopleScreen: View {
     }
 }
 
-
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
         InsuredPeopleScreen(contractId: "")
@@ -184,16 +183,16 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 
 class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var coInsured: [CoInsuredModel] = []
-    
+
     var resetCoInsured: Void {
         coInsured = []
     }
-    
-    func addCoInsured(name: String, personalNumber: String) -> Void {
+
+    func addCoInsured(name: String, personalNumber: String) {
         coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .added))
     }
-    
-    func removeCoInsured(name: String, personalNumber: String) -> Void {
+
+    func removeCoInsured(name: String, personalNumber: String) {
         coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .deleted))
     }
 }

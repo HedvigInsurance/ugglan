@@ -89,4 +89,5 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case deletionSuccess
     case addSuccess
     case openMissingCoInsuredAlert(contractId: String)
+    case openErrorScreen
 }

@@ -8,7 +8,7 @@ struct InsuredPeopleNewScreen: View {
     let contractId: String
     @State var contractNbOfCoinsured = 2 /* TODO: CHANGE WHEN WE HAVE REAL DATA */
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    
+
     public init(
         contractId: String
     ) {
@@ -17,7 +17,7 @@ struct InsuredPeopleNewScreen: View {
         vm = store.coInsuredViewModel
         vm.resetCoInsured
     }
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -29,7 +29,7 @@ struct InsuredPeopleNewScreen: View {
                 ) { contract in
                     if let contract = contract {
                         ContractOwnerField(coInsured: contract.coInsured)
-                        
+
                         hSection(vm.coInsured, id: \.self) { localCoInsured in
                             CoInsuredField(
                                 coInsured: localCoInsured,
@@ -37,7 +37,7 @@ struct InsuredPeopleNewScreen: View {
                             )
                         }
                         .sectionContainerStyle(.transparent)
-                        
+
                         if vm.coInsured.count < contractNbOfCoinsured {
                             emptyCoInsuredField(localCoInsured: vm.coInsured)
                         } else {
@@ -59,29 +59,32 @@ struct InsuredPeopleNewScreen: View {
             ) { contract in
                 VStack(spacing: 8) {
                     if let contract = contract {
-                        if (vm.coInsured.count >= contractNbOfCoinsured) {
-                            hButton.LargeButton(type: .primary) {
+                        if vm.coInsured.count >= contractNbOfCoinsured {
+
+                            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
                                 /* TODO: SEND MUTATION */
-                                store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false)))
+                                store.send(
+                                    .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
+                                )
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
                             }
                             .disabled((contract.coInsured.count + vm.coInsured.count) < contractNbOfCoinsured)
                             .padding(.horizontal, 16)
                         }
-                        
+
                         hButton.LargeButton(type: .ghost) {
                             store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
                         } content: {
                             hText(L10n.generalCancelButton)
                         }
-                        .padding(.horizontal, 16)
+                        .disableOn(ContractStore.self, [.postCoInsured])
                     }
                 }
             }
         }
     }
-    
+
     @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         hText(L10n.Claims.Edit.Screen.title)
@@ -99,7 +102,7 @@ struct InsuredPeopleNewScreen: View {
                 )
             }
     }
-    
+
     func emptyCoInsuredField(localCoInsured: [CoInsuredModel]) -> some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -120,17 +123,23 @@ struct InsuredPeopleNewScreen: View {
                             }
                             .onTapGesture {
                                 if !contract.fetchAllCoInsured.isEmpty {
-                                    store.send(.coInsuredNavigationAction(action: .openCoInsuredSelectScreen(contractId: contractId)))
+                                    store.send(
+                                        .coInsuredNavigationAction(
+                                            action: .openCoInsuredSelectScreen(contractId: contractId)
+                                        )
+                                    )
                                 } else {
                                     store.send(
-                                        .coInsuredNavigationAction(action: .openCoInsuredInput(
-                                            isDeletion: false,
-                                            name: nil,
-                                            personalNumber: nil,
-                                            title: L10n.contractAddConisuredInfo,
-                                            contractId: contractId
+                                        .coInsuredNavigationAction(
+                                            action: .openCoInsuredInput(
+                                                isDeletion: false,
+                                                name: nil,
+                                                personalNumber: nil,
+                                                title: L10n.contractAddConisuredInfo,
+                                                contractId: contractId
+                                            )
                                         )
-                                        ))
+                                    )
                                 }
                             }
                         }
