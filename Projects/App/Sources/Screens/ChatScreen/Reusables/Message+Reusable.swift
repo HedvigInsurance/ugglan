@@ -14,10 +14,10 @@ private let fiveMinutes: TimeInterval = 60 * 5
 extension Message: Reusable {
     var largerMarginTop: CGFloat { 20 }
 
-    var smallerMarginTop: CGFloat { 2 }
+    var smallerMarginTop: CGFloat { 4 }
 
     var shouldShowTimeStamp: Bool {
-        guard let previous = previous else { return timeStamp < Date().timeIntervalSince1970 - fiveMinutes }
+        guard let previous = previous else { return true }
         return previous.timeStamp < timeStamp - fiveMinutes
     }
 
@@ -74,20 +74,26 @@ extension Message: Reusable {
             return constantHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
         if case let .crossSell(url) = type {
-            let data = WebMetaDataProvider.shared.data(for: url!)?.title ?? ""
+            let data = WebMetaDataProvider.shared.data(for: url!)
+            let title = data?.title ?? ""
             let attributedString = NSAttributedString(
-                styledText: StyledText(text: data, style: UIColor.brandStyle(.chatMessage))
+                styledText: StyledText(text: title, style: UIColor.brandStyle(.chatMessage))
             )
             let size = attributedString.boundingRect(
                 with: CGSize(width: 267.77, height: CGFloat(Int.max)),
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
                 context: nil
             )
+            let imageHeight: CGFloat = {
+                let imageToShow = data?.image ?? hCoreUIAssets.hedvigBigLogo.image
+                let ratio = imageToShow.size.width / imageToShow.size.height
+                return (267.77) / ratio
+            }()
             if isRelatedToPreviousMessage {
-                return 350 + size.height + smallerMarginTop + extraHeightForTimeStampLabel
+                return 84 + imageHeight + size.height + smallerMarginTop + extraHeightForTimeStampLabel
             }
 
-            return 350 + size.height + largerMarginTop + extraHeightForTimeStampLabel
+            return 84 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
         }
 
         let attributedString = NSAttributedString(
@@ -109,7 +115,7 @@ extension Message: Reusable {
         }()
 
         if isRelatedToPreviousMessage {
-            return size.height + extraPadding + extraHeightForTimeStampLabel
+            return size.height + extraPadding + extraHeightForTimeStampLabel + smallerMarginTop
         }
 
         return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
@@ -421,11 +427,11 @@ extension Message: Reusable {
                             make.leading.equalToSuperview()
                             make.trailing.equalToSuperview()
                             make.top.equalToSuperview().offset(message.shouldShowTimeStamp ? 12 : 12)
-                            make.width.equalTo(imageView.snp.height)
                         }
 
                         imageView.layer.cornerRadius = 20
                         imageView.clipsToBounds = true
+                        imageView.contentMode = .scaleAspectFit
 
                         let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
@@ -462,17 +468,7 @@ extension Message: Reusable {
 
                         button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
                         button.layer.cornerRadius = 12
-
-                        bag += button.signal(for: .touchUpInside)
-                            .onValue { _ in
-                                if let url {
-                                    button.viewController?
-                                        .present(
-                                            SFSafariViewController(url: url),
-                                            animated: true
-                                        )
-                                }
-                            }
+                        button.isUserInteractionEnabled = false
                         crossSaleContainer.addSubview(button)
                         button.snp.makeConstraints { make in
                             make.leading.equalToSuperview()
@@ -487,17 +483,27 @@ extension Message: Reusable {
                         crossSaleContainer.alpha = 0
 
                         if let data = WebMetaDataProvider.shared.data(for: url!) {
+                            let imageToShow = data.image ?? hCoreUIAssets.hedvigBigLogo.image
                             crossSaleContainer.alpha = 1
                             titleLabel.text = data.title
-                            imageView.image = data.image
+                            imageView.image = imageToShow
+                            let ratio = imageToShow.size.width / imageToShow.size.height
+                            imageView.snp.makeConstraints { make in
+                                make.width.equalTo(imageView.snp.height).multipliedBy(ratio)
+                            }
                         } else {
                             loadingIndicator.startAnimating()
                             WebMetaDataProvider.shared.data(for: url!) { data in
                                 if let data {
+                                    let imageToShow = data.image ?? hCoreUIAssets.hedvigBigLogo.image
                                     UIView.animate(withDuration: 0.4) {
                                         crossSaleContainer.alpha = 1
                                         titleLabel.text = data.title
-                                        imageView.image = data.image ?? hCoreUIAssets.hedvigBigLogo.image
+                                        imageView.image = imageToShow
+                                    }
+                                    let ratio = imageToShow.size.width / imageToShow.size.height
+                                    imageView.snp.makeConstraints { make in
+                                        make.width.equalTo(imageView.snp.height).multipliedBy(ratio)
                                     }
                                     let superview = containerView.superview?.superview?.superview
                                     if let superviewCell = superview as? UITableViewCell,

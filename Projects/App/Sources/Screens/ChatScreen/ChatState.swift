@@ -145,11 +145,12 @@ class ChatState {
             .onError({ error in
                 self.isFetching.value = false
                 if UIApplication.shared.applicationState == .active {
+                    self.fetchTimerCancellable = nil
                     log.error("Chat Error: ChatMessagesQuery", error: error, attributes: nil)
                     self.errorSignal.value = (
                         ChatError.fetchFailed,
                         retry: {
-                            self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
+                            self.initFetch()
                         }
                     )
                 }

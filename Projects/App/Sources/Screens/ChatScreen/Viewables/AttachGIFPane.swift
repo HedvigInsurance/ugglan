@@ -100,7 +100,15 @@ extension AttachGIFPane: Viewable {
             }
         }
 
-        bag += isOpenSignal.onValue { isOpen in if !isOpen { searchBarValue.value = "" } }
+        bag += isOpenSignal.onValue { isOpen in
+            if !isOpen {
+                searchBarValue.value = ""
+                //                searchBar.enabledSignal.value = false
+                searchBar.resignFirstResponderSignal.value = true
+                searchBar.resignFirstResponderSignal.value = false
+
+            }
+        }
 
         bag +=
             searchBarValue.mapLatestToFuture { value in
