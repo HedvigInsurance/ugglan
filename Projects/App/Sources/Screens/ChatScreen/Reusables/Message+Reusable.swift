@@ -9,7 +9,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 
-private let fiveMinutes: TimeInterval = 60 * 5
+private let twoMinutes: TimeInterval = 60 * 1
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat { 20 }
@@ -18,14 +18,14 @@ extension Message: Reusable {
 
     var shouldShowTimeStamp: Bool {
         guard let previous = previous else { return true }
-        return previous.timeStamp < timeStamp - fiveMinutes
+        return previous.timeStamp < timeStamp - twoMinutes
     }
 
     /// identifies if message belongs logically to the previous message
     var isRelatedToPreviousMessage: Bool {
         guard let previous = previous else { return false }
 
-        if previous.timeStamp < timeStamp - fiveMinutes { return false }
+        if previous.timeStamp < timeStamp - twoMinutes { return false }
 
         return previous.fromMyself == fromMyself
     }
@@ -38,7 +38,7 @@ extension Message: Reusable {
             return false
         }
 
-        if next.timeStamp - fiveMinutes > timeStamp { return false }
+        if next.timeStamp - twoMinutes > timeStamp { return false }
 
         return next.fromMyself == fromMyself
     }
