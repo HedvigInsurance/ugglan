@@ -9,7 +9,6 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
-    var monthlyNetCost: MonetaryAmount? = nil
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentConnectionID: String? = nil
     public init() {}
@@ -17,7 +16,6 @@ public struct PaymentState: StateProtocol {
 
 public enum PaymentAction: ActionProtocol {
     case load
-    case setMonthlyNetCost(cost: MonetaryAmount)
     case setPaymentData(data: PaymentData)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
@@ -92,9 +90,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setPaymentData(data):
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
-            newState.monthlyNetCost = data.chargeEstimation?.net
-        case let .setMonthlyNetCost(cost):
-            newState.monthlyNetCost = cost
         case let .setConnectionID(id):
             newState.paymentConnectionID = id
         case .fetchPaymentStatus:
@@ -115,7 +110,6 @@ public struct PaymentData: Codable, Equatable {
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
-    //    let balance: Balance?
     var reedemCampaigns: [ReedemCampaign]
     init(_ data: OctopusGraphQL.PaymentDataQuery.Data) {
         let currentMember = data.currentMember
@@ -124,7 +118,6 @@ public struct PaymentData: Codable, Equatable {
         insuranceCost = MonetaryStack(currentMember.insuranceCost)
         chargeEstimation = MonetaryStack(currentMember.upcomingCharge)
         paymentHistory = currentMember.chargeHistory.map({ PaymentHistory($0) })
-        //        balance = nil//.init(currentMember.balance)
         reedemCampaigns = currentMember.redeemedCampaigns.compactMap({ .init($0) })
     }
 
@@ -166,16 +159,6 @@ public struct PaymentData: Codable, Equatable {
             date = localDate
         }
     }
-
-    //    struct Balance: Codable, Equatable {
-    //        let failedCharges: Int?
-    //        let balance: MonetaryAmount?
-    ////        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.?) {
-    ////            guard let data else { return nil }
-    ////            failedCharges = data.failedCharges
-    ////            balance = .init(fragment: data.currentBalance.fragments.monetaryAmountFragmentGiraffe)
-    ////        }
-    //    }
 
     struct ReedemCampaign: Codable, Equatable {
         let code: String?
