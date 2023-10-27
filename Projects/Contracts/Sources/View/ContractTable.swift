@@ -40,15 +40,6 @@ extension ContractTable: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.bottom, 8)
                             .transition(.slide)
-                        
-                        /* TODO: CHANGE WHEN WE HAVE REAL DATA */
-                        if contract.coInsured.count < 2 {
-                        let typeOfContract = contract.currentAgreement?.productVariant.displayName
-                        let infoDisplayText = "Your \(typeOfContract ?? "") is missing important information about co-insured people"
-
-                        CoInsuredInfoView(text: infoDisplayText, contractId: contract.id)
-                            .padding(.bottom, 8)
-                    }
                     }
                 }
             }
