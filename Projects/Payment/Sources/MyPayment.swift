@@ -80,24 +80,10 @@ struct MyPaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
             .onAppear {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    nextChargeDate: "May 26th 2023",
-                    payinMethodStatus: .pending,
-                    balance: .init(currentBalance: .init(amount: "20", currency: "SEK")),
-                    chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")],
-                    chargeEstimation: .init(
-                        charge: .init(amount: "20", currency: "SEK"),
-                        discount: .init(amount: "20", currency: "SEK"),
-                        subscription: .init(amount: "20", currency: "SEK")
-                    ),
-                    activeContractBundles: [
-                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "name")])
-                    ]
-                )
-                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
-                let data = PaymentData(myPaymentQueryData, octopusData: octopusData)
-                store.send(.setPaymentData(data: data))
+                //                let store: PaymentStore = globalPresentableStoreContainer.get()
+                //                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
+                //                let data = PaymentData(myPaymentQueryData, octopusData: octopusData)
+                //                store.send(.setPaymentData(data: data))
             }
     }
 }

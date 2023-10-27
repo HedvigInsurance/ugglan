@@ -37,7 +37,6 @@ public enum LoadingAction: LoadingProtocol {
 extension PayinMethodStatus: Codable {}
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     public override func effects(
@@ -48,40 +47,18 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .load:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                let giraffeQuery = self.giraffe.client.fetch(
-                    query: GiraffeGraphQL.MyPaymentQuery(),
-                    cachePolicy: .fetchIgnoringCacheCompletely
-                )
-
-                let octopusQuery = self.octopus.client.fetch(
-                    query: OctopusGraphQL.PaymentDataQuery(),
-                    cachePolicy: .fetchIgnoringCacheCompletely
-                )
-                disposeBag += combineLatest(giraffeQuery.resultSignal, octopusQuery.resultSignal)
-                    .onValue { [weak self] giraffeResponse, octopusQueryResponse in
-                        if let giraffeData = giraffeResponse.value, let octopusData = octopusQueryResponse.value {
-                            let paymentData = PaymentData(giraffeData, octopusData: octopusData)
-                            callback(.value(.setPaymentData(data: paymentData)))
-                        } else if let error = giraffeResponse.error ?? octopusQueryResponse.error {
-                            self?.setError(error.localizedDescription, for: .getPaymentData)
-                        } else {
-                            self?.setError(L10n.General.errorBody, for: .getPaymentData)
-                        }
-                    }
-                //                disposeBag += self.giraffe.client
-                //                    .fetch(
-                //                        query: GiraffeGraphQL.MyPaymentQuery(
-                //                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                //                        ),
-                //                        cachePolicy: .fetchIgnoringCacheCompletely
-                //                    )
-                //                    .onValue({ data in
-                //                        let paymentData = PaymentData(data)
-                //                        callback(.value(.setPaymentData(data: paymentData)))
-                //                    })
-                //                    .onError({ error in
-                //                        self.setError(error.localizedDescription, for: .getPaymentData)
-                //                    })
+                disposeBag += self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PaymentDataQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue({ data in
+                        let paymentData = PaymentData(data)
+                        callback(.value(.setPaymentData(data: paymentData)))
+                    })
+                    .onError({ error in
+                        self.setError(error.localizedDescription, for: .getPaymentData)
+                    })
                 return disposeBag
             }
         case .fetchPaymentStatus:
@@ -138,27 +115,27 @@ public struct PaymentData: Codable, Equatable {
     let insuranceCost: MonetaryStack?
     let chargeEstimation: MonetaryStack?
     let paymentHistory: [PaymentHistory]?
-    let balance: Balance?
+    //    let balance: Balance?
     var reedemCampaigns: [ReedemCampaign]
-    init(_ data: GiraffeGraphQL.MyPaymentQuery.Data, octopusData: OctopusGraphQL.PaymentDataQuery.Data) {
-        nextPayment = NextPayment(data)
-        contracts = data.activeContractBundles.first?.contracts.map({ .init($0) }) ?? []
-        insuranceCost = MonetaryStack(data.insuranceCost)
-        chargeEstimation = MonetaryStack(data.chargeEstimation)
-        paymentHistory = data.chargeHistory.map({ PaymentHistory($0) })
-        balance = .init(data.balance)
-        reedemCampaigns = octopusData.currentMember.redeemedCampaigns.compactMap({ .init($0) })
+    init(_ data: OctopusGraphQL.PaymentDataQuery.Data) {
+        let currentMember = data.currentMember
+        nextPayment = NextPayment(currentMember.upcomingCharge)
+        contracts = currentMember.upcomingCharge?.contractsChargeBreakdown.map({ .init($0) }) ?? []
+        insuranceCost = MonetaryStack(currentMember.insuranceCost)
+        chargeEstimation = MonetaryStack(currentMember.upcomingCharge)
+        paymentHistory = currentMember.chargeHistory.map({ PaymentHistory($0) })
+        //        balance = nil//.init(currentMember.balance)
+        reedemCampaigns = currentMember.redeemedCampaigns.compactMap({ .init($0) })
     }
 
     struct NextPayment: Codable, Equatable {
         let amount: MonetaryAmount?
         let date: String?
 
-        init(_ data: GiraffeGraphQL.MyPaymentQuery.Data) {
-            amount = MonetaryAmount(
-                optionalFragment: data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragmentGiraffe
-            )
-            date = data.nextChargeDate?.localDateToDate?.displayDateMMMDDYYYYFormat
+        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge?) {
+            guard let data else { return nil }
+            amount = MonetaryAmount(optionalFragment: data.net.fragments.moneyFragment)
+            date = data.date
         }
     }
 
@@ -168,11 +145,14 @@ public struct PaymentData: Codable, Equatable {
         let name: String
         let amount: MonetaryAmount?
 
-        init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ActiveContractBundle.Contract) {
-            self.id = data.id
-            self.name = data.displayName
-            self.type = Contract.TypeOfContract(rawValue: data.typeOfContract.rawValue) ?? .unknown
-            self.amount = nil
+        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge.ContractsChargeBreakdown) {
+            self.id = data.contract.id
+            self.name = data.contract.exposureDisplayName
+            self.type =
+                Contract.TypeOfContract(rawValue: data.contract.currentAgreement.productVariant.typeOfContract)
+                ?? .unknown
+            //            self.amount = MonetaryAmount(fragment: data.contract.currentAgreement.premium.fragments.moneyFragment)
+            self.amount = MonetaryAmount(fragment: data.gross.fragments.moneyFragment)
         }
     }
 
@@ -180,22 +160,22 @@ public struct PaymentData: Codable, Equatable {
         let amount: MonetaryAmount
         let date: String
 
-        init(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ChargeHistory) {
-            amount = MonetaryAmount(fragment: data.amount.fragments.monetaryAmountFragmentGiraffe)
-            let localDate = data.date.localDateToDate?.displayDateMMMDDYYYYFormat ?? ""
+        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.ChargeHistory) {
+            amount = MonetaryAmount(fragment: data.amount.fragments.moneyFragment)
+            let localDate = data.date
             date = localDate
         }
     }
 
-    struct Balance: Codable, Equatable {
-        let failedCharges: Int?
-        let balance: MonetaryAmount?
-        init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.Balance?) {
-            guard let data else { return nil }
-            failedCharges = data.failedCharges
-            balance = .init(fragment: data.currentBalance.fragments.monetaryAmountFragmentGiraffe)
-        }
-    }
+    //    struct Balance: Codable, Equatable {
+    //        let failedCharges: Int?
+    //        let balance: MonetaryAmount?
+    ////        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.?) {
+    ////            guard let data else { return nil }
+    ////            failedCharges = data.failedCharges
+    ////            balance = .init(fragment: data.currentBalance.fragments.monetaryAmountFragmentGiraffe)
+    ////        }
+    //    }
 
     struct ReedemCampaign: Codable, Equatable {
         let code: String?
@@ -212,19 +192,19 @@ public struct PaymentData: Codable, Equatable {
         let discount: MonetaryAmount?
         let net: MonetaryAmount?
 
-        init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.InsuranceCost?) {
+        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge?) {
             guard let data else { return nil }
-            self.gross = MonetaryAmount(fragment: data.monthlyGross.fragments.monetaryAmountFragmentGiraffe)
-            self.discount = MonetaryAmount(fragment: data.monthlyDiscount.fragments.monetaryAmountFragmentGiraffe)
-            self.net = MonetaryAmount(fragment: data.monthlyNet.fragments.monetaryAmountFragmentGiraffe)
+            self.gross = MonetaryAmount(fragment: data.gross.fragments.moneyFragment)
+            self.discount = MonetaryAmount(fragment: data.discount.fragments.moneyFragment)
+            self.net = MonetaryAmount(fragment: data.net.fragments.moneyFragment)
         }
 
-        init?(_ data: GiraffeGraphQL.MyPaymentQuery.Data.ChargeEstimation?) {
-            guard let data else { return nil }
-            self.gross = MonetaryAmount(fragment: data.subscription.fragments.monetaryAmountFragmentGiraffe)
-            self.discount = MonetaryAmount(fragment: data.discount.fragments.monetaryAmountFragmentGiraffe)
-            self.net = MonetaryAmount(fragment: data.charge.fragments.monetaryAmountFragmentGiraffe)
+        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.InsuranceCost) {
+            self.gross = MonetaryAmount(fragment: data.monthlyGross.fragments.moneyFragment)
+            self.discount = MonetaryAmount(fragment: data.monthlyDiscount.fragments.moneyFragment)
+            self.net = MonetaryAmount(fragment: data.monthlyNet.fragments.moneyFragment)
         }
+
     }
 }
 

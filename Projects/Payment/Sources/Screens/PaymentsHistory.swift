@@ -60,28 +60,28 @@ struct PaymentHistory_Previews: PreviewProvider {
         return PaymentHistory()
             .onAppear {
 
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    nextChargeDate: "May 26th 2023",
-                    payinMethodStatus: .active,
-                    balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
-                    chargeHistory: [
-                        .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
-                        .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
-                        .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
-                    ],
-                    chargeEstimation: .init(
-                        charge: .init(amount: "20", currency: "SEKF"),
-                        discount: .init(amount: "20", currency: "SEK"),
-                        subscription: .init(amount: "20", currency: "SEK")
-                    ),
-                    activeContractBundles: [
-                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
-                    ]
-                )
-                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
-                let paymentData = PaymentData(myPaymentQueryData, octopusData: octopusData)
-                store.send(.setPaymentData(data: paymentData))
+                //                let store: PaymentStore = globalPresentableStoreContainer.get()
+                //                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
+                //                    nextChargeDate: "May 26th 2023",
+                //                    payinMethodStatus: .active,
+                //                    balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
+                //                    chargeHistory: [
+                //                        .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
+                //                        .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
+                //                        .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
+                //                    ],
+                //                    chargeEstimation: .init(
+                //                        charge: .init(amount: "20", currency: "SEKF"),
+                //                        discount: .init(amount: "20", currency: "SEK"),
+                //                        subscription: .init(amount: "20", currency: "SEK")
+                //                    ),
+                //                    activeContractBundles: [
+                //                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
+                //                    ]
+                //                )
+                //                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
+                //                let paymentData = PaymentData(myPaymentQueryData, octopusData: octopusData)
+                //                store.send(.setPaymentData(data: paymentData))
             }
     }
 }

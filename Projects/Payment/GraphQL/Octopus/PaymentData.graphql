@@ -5,5 +5,53 @@ query PaymentData {
       description
       id
     }
+    chargeHistory {
+      amount {
+        ...MoneyFragment
+      }
+      date
+      status
+    }
+    insuranceCost {
+      freeUntil
+      monthlyDiscount {
+        ...MoneyFragment
+      }
+      monthlyGross {
+        ...MoneyFragment
+      }
+      monthlyNet {
+        ...MoneyFragment
+      }
+    }
+    upcomingCharge {
+      gross {
+        ...MoneyFragment
+      }
+      net {
+        ...MoneyFragment
+      }
+      discount {
+        ...MoneyFragment
+      }
+      date
+      contractsChargeBreakdown {
+        contract {
+        id
+          exposureDisplayName
+          currentAgreement {
+            productVariant {
+              typeOfContract
+            }
+            premium {
+                ...MoneyFragment
+            }
+          }
+        }
+        gross {
+            ...MoneyFragment
+        }
+      }
+    }
   }
 }
