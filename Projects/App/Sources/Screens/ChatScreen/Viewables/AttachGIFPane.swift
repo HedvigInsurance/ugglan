@@ -10,7 +10,6 @@ import hGraphQL
 struct AttachGIFPane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     init(

@@ -276,7 +276,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         }
 
         fromMyself = message.sender == .member
-        statusMessage = nil  //message.header.statusMessage
+        statusMessage = nil
         let timeIntervalSince1970 = message.sentAt.localDateToIso8601Date?.timeIntervalSince1970
         let timeStampInt = timeIntervalSince1970 ?? 0
         timeStamp = timeStampInt

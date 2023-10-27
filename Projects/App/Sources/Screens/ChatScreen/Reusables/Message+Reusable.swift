@@ -426,7 +426,7 @@ extension Message: Reusable {
 
                         imageView.layer.cornerRadius = 20
                         imageView.clipsToBounds = true
-                        //title //subtitle
+
                         let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
 
