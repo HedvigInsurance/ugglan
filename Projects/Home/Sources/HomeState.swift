@@ -96,7 +96,7 @@ public enum HomeAction: ActionProtocol {
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
     case hideImportantMessage
-
+    case openContractCertificate(url: URL, title: String)
 }
 
 public enum FutureStatus: Codable, Equatable {

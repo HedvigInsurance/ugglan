@@ -201,6 +201,12 @@ extension HomeView {
                 resultJourney(.startMovingFlow)
             } else if case let .openCoInsured(contractIds) = action {
                 resultJourney(.startCoInsuredFlow(contractIds: contractIds))
+            } else if case let .openContractCertificate(url, title) = action {
+                Journey(
+                    Document(url: url, title: title),
+                    style: .detented(.large)
+                )
+                .withDismissButton
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {

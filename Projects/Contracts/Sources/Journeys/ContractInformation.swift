@@ -15,7 +15,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
-    
+
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -26,6 +26,7 @@ struct ContractInformationView: View {
         ) { contract in
             if let contract {
                 changeAddressInfo(contract)
+                upComingCoInsuredView(contract: contract)
                 VStack(spacing: 0) {
                     if let displayItems = contract.currentAgreement?.displayItems {
                         hSection(displayItems, id: \.displayValue) { item in
@@ -41,9 +42,9 @@ struct ContractInformationView: View {
                         }
                         .withoutHorizontalPadding
                         hRowDivider()
-                        
+
                         addCoInsuredView(contract: contract)
-                        
+
                         VStack(spacing: 8) {
                             if contract.showEditInfo {
                                 hSection {
@@ -53,7 +54,7 @@ struct ContractInformationView: View {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
-                                
+
                             }
                             displayTerminationButton
                         }
@@ -64,7 +65,7 @@ struct ContractInformationView: View {
         }
         .sectionContainerStyle(.transparent)
     }
-    
+
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
         hSection {
@@ -76,7 +77,7 @@ struct ContractInformationView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
-            
+
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     hText("Julia Andersson")
@@ -90,7 +91,7 @@ struct ContractInformationView: View {
             }
             .padding(16)
             hRowDivider()
-            
+
             ForEach(contract.coInsured, id: \.self) { coInsured in
                 VStack(alignment: .leading) {
                     hText(coInsured.name)
@@ -101,22 +102,22 @@ struct ContractInformationView: View {
                 .padding(16)
                 hRowDivider()
             }
-            
+
             /* TODO: CHANGE WHEN REAL DATA */
             let nbOfMissingCoInsured = 2 - contract.coInsured.count
             ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
                 addMissingCoInsuredView
             }
-            
+
             if nbOfMissingCoInsured != 0 {
-                CoInsuredInfoView(text: "You need to add personal information to your co-insured people", contractId: contract.id)
+                CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
                     .padding(.horizontal, 16)
             }
         }
         .withoutHorizontalPadding
         .padding(.bottom, 16)
     }
-    
+
     @ViewBuilder
     private var addMissingCoInsuredView: some View {
         HStack(alignment: .top) {
@@ -133,7 +134,33 @@ struct ContractInformationView: View {
         .padding(16)
         hRowDivider()
     }
-    
+
+    @ViewBuilder
+    private func upComingCoInsuredView(contract: Contract) -> some View {
+        // if....
+        hSection {
+            InfoCard(text: L10n.contractCoinsuredUpdateInFuture(3, "16 nov 2023"), type: .info)
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.contractViewCertificateButton,
+                        buttonAction: {
+                            /* TODO: CHANGE */
+                            //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
+                            let certificateURL = contract.currentAgreement?.certificateUrl
+                            if let url = URL(string: certificateURL) {
+                                store.send(
+                                    .contractDetailNavigationAction(
+                                        action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                ])
+        }
+        .padding(.top, 8)
+    }
+
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
         if let date = contract.upcomingChangedAgreement?.activeFrom {
@@ -153,7 +180,7 @@ struct ContractInformationView: View {
             .padding(.bottom, 16)
         }
     }
-    
+
     @ViewBuilder
     private var displayTerminationButton: some View {
         if hAnalyticsExperiment.terminationFlow {
@@ -190,7 +217,7 @@ struct ContractInformationView: View {
 
 struct ChangePeopleView: View {
     @PresentableStore var store: ContractStore
-    
+
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {

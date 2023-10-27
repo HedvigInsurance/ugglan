@@ -54,22 +54,46 @@ extension AppJourney {
                 VStack(spacing: 8) {
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    
+
                     /* TODO: CHANGE 2 TO REAL DATA */
-                    let index = contractStore.state.activeContracts.first(where: { $0.coInsured.count < 2 })
-                    if let index {
-                        InfoCard(text: "Your insurance is missing important information", type: .attention)
+                    if let index = contractStore.state.activeContracts.first(where: { $0.coInsured.count < 2 }) {
+                        InfoCard(text: L10n.contractCoinsuredMissingInfoText, type: .attention)
                             .buttons([
                                 .init(
-                                    buttonTitle: "Add information",
+                                    buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                                     buttonAction: {
-                                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {( $0.id )}
+                                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {
+                                            ($0.id)
+                                        }
                                         homeStore.send(.openCoInsured(contractIds: contractIds))
                                     }
                                 )
                             ])
                     }
-                    
+                    /* TODO: FIX WHEN REAL DATA */
+                    //else if let index = contractStore.state.activeContracts.first(where: { $0.upcomingChangedAgreement.coInsured }) {
+                    InfoCard(text: L10n.contractCoinsuredUpdateInFuture(3, "16 nov 2023"), type: .info)
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.contractViewCertificateButton,
+                                buttonAction: {
+                                    /* TODO: CHANGE */
+                                    //                                    let certificateURL = contractStore.state.activeContracts.first?.upcomingChangedAgreement?.certificateUrl
+                                    let certificateURL = contractStore.state.activeContracts.first?.currentAgreement?
+                                        .certificateUrl
+                                    if let url = URL(string: certificateURL) {
+                                        homeStore.send(
+                                            .openContractCertificate(
+                                                url: url,
+                                                title: L10n.myDocumentsInsuranceCertificate
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        ])
+                    // }
+
                     ConnectPaymentCardView()
                     RenewalCardView()
                 }
