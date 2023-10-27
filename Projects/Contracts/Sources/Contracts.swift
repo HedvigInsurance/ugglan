@@ -131,6 +131,8 @@ extension Contracts {
                         EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
                     }
                 }
+            } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
+                EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {

@@ -61,7 +61,7 @@ struct InsuredPeopleNewScreen: View {
                     if let contract = contract {
                         if (vm.coInsured.count >= contractNbOfCoinsured) {
                             hButton.LargeButton(type: .primary) {
-                                store.send(.applyLocalCoInsured(coInsured: vm.coInsured, contractId: contractId))
+                                /* TODO: SEND MUTATION */
                                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false)))
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
@@ -100,25 +100,6 @@ struct InsuredPeopleNewScreen: View {
             }
     }
     
-    @ViewBuilder
-    func emptyAccessoryView(coInsured: CoInsuredModel) -> some View {
-        HStack {
-            hText(L10n.generalAddInfoButton)
-            Image(uiImage: hCoreUIAssets.plusSmall.image)
-        }
-        .onTapGesture {
-            store.send(
-                .coInsuredNavigationAction(action: .openCoInsuredInput(
-                    isDeletion: false,
-                    name: nil,
-                    personalNumber: nil,
-                    title: L10n.contractAddConisuredInfo,
-                    contractId: contractId
-                )
-                ))
-        }
-    }
-    
     func emptyCoInsuredField(localCoInsured: [CoInsuredModel]) -> some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -143,7 +124,7 @@ struct InsuredPeopleNewScreen: View {
                                 } else {
                                     store.send(
                                         .coInsuredNavigationAction(action: .openCoInsuredInput(
-                                            isDeletion: true,
+                                            isDeletion: false,
                                             name: nil,
                                             personalNumber: nil,
                                             title: L10n.contractAddConisuredInfo,

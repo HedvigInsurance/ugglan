@@ -32,6 +32,8 @@ public class EditCoInsuredJourney {
                 openProgress(showSuccess: showSuccess).hidesBackButton
             } else if case let .openCoInsuredSelectScreen(contractId) = navigationAction {
                 openCoInsuredSelectScreen(contractId: contractId)
+            } else if case let .openMissingCoInsuredAlert(contractId) = navigationAction {
+                openMissingCoInsuredAlert(contractId: contractId)
             }
         }
     }
@@ -81,7 +83,7 @@ public class EditCoInsuredJourney {
             if case .coInsuredNavigationAction(.dismissEdit) = action {
                 PopJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
-                SuccessScreen.journey(with: "Co-insured removed")
+                SuccessScreen.journey(with: L10n.contractCoinsuredAdded)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ContractStore = globalPresentableStoreContainer.get()
@@ -89,7 +91,7 @@ public class EditCoInsuredJourney {
                         }
                     }
             } else if case .coInsuredNavigationAction(.addSuccess) = action {
-                SuccessScreen.journey(with: "Co-insured added")
+                SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ContractStore = globalPresentableStoreContainer.get()
@@ -125,6 +127,23 @@ public class EditCoInsuredJourney {
             rootView: RemoveCoInsuredScreen(contractId: id)
         ) { action in
             getScreen(for: action)
+        }
+    }
+    
+    @JourneyBuilder
+    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: CoInsuredMissingAlertView(contractId: contractId),
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar, .blurredBackground]
+        ) { action in
+            getScreen(for: action)
+        }
+        .onAction(ContractStore.self) { action in
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            }
         }
     }
     

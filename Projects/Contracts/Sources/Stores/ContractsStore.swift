@@ -95,20 +95,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
-        case let .applyLocalCoInsured(coInsured, contractId):
-            if let index = state.activeContracts.firstIndex(where: {( $0.id == contractId )}) {
-                coInsured.forEach { coInsuredItem in
-                    if coInsuredItem.type == .added {
-                        newState.activeContracts[index].coInsured.append(coInsuredItem)
-                    } else {
-                        if let deleteIndex = coInsured.firstIndex(where: {( $0.name == coInsuredItem.name
-                                                                            && $0.SSN == coInsuredItem.SSN )}) {
-                            newState.activeContracts[index].coInsured.remove(at: deleteIndex)
-                        }
-                    }
-
-                }
-            }
         default:
             break
         }

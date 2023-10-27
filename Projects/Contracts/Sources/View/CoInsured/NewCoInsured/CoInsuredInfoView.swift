@@ -17,7 +17,7 @@ struct CoInsuredInfoView: View {
     
     var body: some View {
         InfoCard(text: text, type: .attention)
-            .buttons([.init(buttonTitle: "Add information", buttonAction: {
+            .buttons([.init(buttonTitle: L10n.contractCoinsuredMissingAddInfo, buttonAction: {
                 store.send(.openEditCoInsured(contractId: contractId, hasCoInsuredData: false, fromInfoCard: true))
             })])
     }

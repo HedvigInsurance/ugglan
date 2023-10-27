@@ -80,7 +80,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                                 value: $SSN,
                                 equals: $type,
                                 focusValue: .SSN,
-                                placeholder: "YYMMDD"
+                                placeholder: L10n.contractBirthdate
                             )
                         }
                         .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
@@ -106,7 +106,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                     hSection {
                         Toggle(isOn: $noSSN.animation(.default)) {
                             VStack(alignment: .leading, spacing: 0) {
-                                hText("Add without personal identity no.", style: .body)
+                                hText(L10n.contractAddCoinsuredNoSsn, style: .body)
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }

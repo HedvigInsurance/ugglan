@@ -165,7 +165,7 @@ struct InsuredPeopleScreen: View {
             }
             
             hButton.LargeButton(type: .primary) {
-                store.send(.applyLocalCoInsured(coInsured: vm.coInsured, contractId: contractId))
+                /* TODO: SEND MUTATION */
                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
