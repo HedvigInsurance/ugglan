@@ -30,21 +30,34 @@ struct DeleteAccountView: View {
                 )
             )
         } else {
-            InfoView(
-                title: L10n.DeleteAccount.confirmationTitle,
-                description: L10n.DeleteAccount.deletedDataDescription + "\n\n" + L10n.DeleteAccount.processingFooter,
-                onDismiss: {
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissScreen)
-                },
-                extraButton: (
-                    text: L10n.profileDeleteAccountConfirmDeleteion,
-                    style: .alert,
-                    action: {
-                        viewModel.deleteAccount()
+            hForm {
+                hSection {
+                    RetryView(
+                        subtitle:
+                            "We can’t delete your account right now. Please contact us in the chat for further assistance.",
+                        retryTitle: L10n.openChat
+                    ) {
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        store.send(.dismissScreen)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            store.send(.openChat)
+                        }
                     }
-                )
-            )
+                }
+            }
+            .hFormContentPosition(.center)
+            .hDisableScroll
+            .sectionContainerStyle(.transparent)
+            .hFormAttachToBottom {
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        store.send(.dismissScreen)
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                }
+            }
         }
     }
 }
@@ -64,17 +77,18 @@ extension DeleteAccountView {
     static func deleteAccountJourney(details: MemberDetails) -> some JourneyPresentation {
         let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
         let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-
+        let model = DeleteAccountViewModel(
+            memberDetails: details,
+            claimsStore: claimsStore,
+            contractsStore: contractsStore
+        )
         return HostingJourney(
             ProfileStore.self,
             rootView: DeleteAccountView(
-                viewModel: DeleteAccountViewModel(
-                    memberDetails: details,
-                    claimsStore: claimsStore,
-                    contractsStore: contractsStore
-                )
+                viewModel: model
             ),
-            style: .detented(.scrollViewContentSize),
+            style: model.hasActiveClaims || model.hasActiveContracts
+                ? .detented(.scrollViewContentSize) : .modally(presentationStyle: .overFullScreen),
             options: [.blurredBackground]
         ) { action in
             if case let .sendAccountDeleteRequest(memberDetails) = action {
