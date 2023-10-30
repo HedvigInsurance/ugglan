@@ -52,6 +52,7 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchContractBundles
     case fetchContracts
     case postCoInsured
+    case fetchNameFromSSN
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {

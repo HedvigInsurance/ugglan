@@ -10,6 +10,7 @@ struct CoInusuredInput: View, KeyboardReadable {
     @State var SSN: String
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
+    @State var nameFetchedFromSSN: Bool = false
     @PresentableStore var store: ContractStore
     let isDeletion: Bool
     let contractId: String
@@ -18,14 +19,14 @@ struct CoInusuredInput: View, KeyboardReadable {
     public init(
         isDeletion: Bool,
         fullName: String?,
-        personalNumber: String?,
+        SSN: String?,
         contractId: String
     ) {
         self.isDeletion = isDeletion
         self.fullName = fullName ?? ""
         self.firstName = ""
         self.lastName = ""
-        self.SSN = personalNumber ?? ""
+        self.SSN = SSN ?? ""
         self.contractId = contractId
     }
 
@@ -33,133 +34,35 @@ struct CoInusuredInput: View, KeyboardReadable {
         hForm {
             VStack(spacing: 4) {
                 if isDeletion {
-                    if fullName != "" && SSN != "" {
-                        hSection {
-                            hFloatingField(
-                                value: fullName,
-                                placeholder: L10n.fullNameText,
-                                onTap: {}
-                            )
-                        }
-                        .hFieldTrailingView {
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                .foregroundColor(hTextColor.secondary)
-                        }
-                        .disabled(true)
-                        .sectionContainerStyle(.transparent)
-
-                        hSection {
-                            hFloatingField(
-                                value: SSN,
-                                placeholder: L10n.TravelCertificate.personalNumber,
-                                onTap: {}
-                            )
-                        }
-                        .hFieldTrailingView {
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                .foregroundColor(hTextColor.secondary)
-                        }
-                        .disabled(true)
-                        .sectionContainerStyle(.transparent)
-                    }
+                    deleteCoInsuredFields
                 } else {
-                    Group {
-                        if noSSN {
-                            hSection {
-                                hFloatingTextField(
-                                    masking: Masking(type: .birthDateYYMMDD),
-                                    value: $SSN,
-                                    equals: $type,
-                                    focusValue: .SSN,
-                                    placeholder: L10n.contractBirthDate
-                                )
-                            }
-                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                                keyboardEnabled = newIsKeyboardEnabled
-                            }
-                        } else {
-                            hSection {
-                                hFloatingTextField(
-                                    masking: Masking(type: .personalNumber),
-                                    value: $SSN,
-                                    equals: $type,
-                                    focusValue: .SSN,
-                                    placeholder: L10n.contractPersonalIdentity
-                                )
-                            }
-                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                                keyboardEnabled = newIsKeyboardEnabled
-                            }
-                        }
-
-                        hSection {
-                            HStack(spacing: 4) {
-                                hFloatingTextField(
-                                    masking: Masking(type: .none),
-                                    value: $firstName,
-                                    equals: $type,
-                                    focusValue: .firstName,
-                                    placeholder: L10n.contractFirstName
-                                )
-                                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                                    keyboardEnabled = newIsKeyboardEnabled
-                                }
-                                hFloatingTextField(
-                                    masking: Masking(type: .none),
-                                    value: $lastName,
-                                    equals: $type,
-                                    focusValue: .lastName,
-                                    placeholder: L10n.contractLastName
-                                )
-                                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                                    keyboardEnabled = newIsKeyboardEnabled
-                                }
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-
-                        hSection {
-                            Toggle(isOn: $noSSN.animation(.default)) {
-                                VStack(alignment: .leading, spacing: 0) {
-                                    hText(L10n.contractAddCoinsuredNoSsn, style: .body)
-                                        .foregroundColor(hTextColor.secondary)
-                                }
-                            }
-                            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation {
-                                    noSSN.toggle()
-                                }
-                            }
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 16)
-                        }
-                        .sectionContainerStyle(.opaque)
-                    }
-                    .hFieldSize(.small)
+                    addCoInsuredFields
                 }
-
                 hSection {
-                    hButton.LargeButton(type: .primary) {
-                        if isDeletion {
+                    LoadingButtonWithContent(ContractStore.self, .fetchNameFromSSN) {
+                        if !(buttonIsDisabled || nameFetchedFromSSN || noSSN) {
+                            /* TODO: FETCH SSN MUTATION*/
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                                //on success - show name field
+                                // else show error
+                                nameFetchedFromSSN = true
+                                firstName = "Hedvig"
+                                lastName = "AB"
+                            }
+                        } else if isDeletion {
                             store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: SSN)
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
-                        } else {
+                        } else if nameFetchedFromSSN || noSSN {
                             store.coInsuredViewModel.addCoInsured(name: firstName + " " + lastName, personalNumber: SSN)
                             store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
                     } content: {
-                        hText(
-                            isDeletion
-                                ? L10n.removeConfirmationButton
-                                : (saveIsDisabled ? L10n.generalSaveButton : L10n.generalAddButton)
-                        )
-                        .transition(.opacity.animation(.easeOut))
+                        hText(buttonDisplayText)
+                            .transition(.opacity.animation(.easeOut))
                     }
                 }
                 .padding(.top, 12)
-                .disabled(saveIsDisabled && !isDeletion)
+                .disabled(buttonIsDisabled && !isDeletion)
 
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -172,19 +75,149 @@ struct CoInusuredInput: View, KeyboardReadable {
         }
     }
 
-    var saveIsDisabled: Bool {
+    var buttonDisplayText: String {
+        if isDeletion {
+            return L10n.removeConfirmationButton
+        } else if nameFetchedFromSSN {
+            return L10n.contractAddCoinsured
+        } else if Masking(type: .personalNumber).isValid(text: SSN) {
+            return L10n.contractSsnFetchInfo
+        } else if buttonIsDisabled || noSSN {
+            return L10n.generalSaveButton
+        }
+        return ""
+    }
+
+    @ViewBuilder
+    var addCoInsuredFields: some View {
+        Group {
+            ZStack {
+                if noSSN {
+                    hSection {
+                        hFloatingTextField(
+                            masking: Masking(type: .birthDateYYMMDD),
+                            value: $SSN,
+                            equals: $type,
+                            focusValue: .birthDay,
+                            placeholder: L10n.contractBirthDate
+                        )
+                    }
+                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                        keyboardEnabled = newIsKeyboardEnabled
+                    }
+                } else {
+                    hSection {
+                        hFloatingTextField(
+                            masking: Masking(type: .personalNumber),
+                            value: $SSN,
+                            equals: $type,
+                            focusValue: .SSN,
+                            placeholder: L10n.contractPersonalIdentity
+                        )
+                    }
+                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                        keyboardEnabled = newIsKeyboardEnabled
+                    }
+                }
+            }
+
+            if nameFetchedFromSSN || noSSN {
+                hSection {
+                    HStack(spacing: 4) {
+                        hFloatingTextField(
+                            masking: Masking(type: .firstName),
+                            value: $firstName,
+                            equals: $type,
+                            focusValue: .firstName,
+                            placeholder: L10n.contractFirstName
+                        )
+                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                            keyboardEnabled = newIsKeyboardEnabled
+                        }
+                        hFloatingTextField(
+                            masking: Masking(type: .lastName),
+                            value: $lastName,
+                            equals: $type,
+                            focusValue: .lastName,
+                            placeholder: L10n.contractLastName
+                        )
+                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                            keyboardEnabled = newIsKeyboardEnabled
+                        }
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+            }
+
+            hSection {
+                Toggle(isOn: $noSSN.animation(.default)) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(L10n.contractAddCoinsuredNoSsn, style: .body)
+                            .foregroundColor(hTextColor.secondary)
+                    }
+                }
+                .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        noSSN.toggle()
+                    }
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+            }
+            .sectionContainerStyle(.opaque)
+        }
+        .hFieldSize(.small)
+    }
+
+    @ViewBuilder
+    var deleteCoInsuredFields: some View {
+        if fullName != "" && SSN != "" {
+            hSection {
+                hFloatingField(
+                    value: fullName,
+                    placeholder: L10n.fullNameText,
+                    onTap: {}
+                )
+            }
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                    .foregroundColor(hTextColor.secondary)
+            }
+            .disabled(true)
+            .sectionContainerStyle(.transparent)
+
+            hSection {
+                hFloatingField(
+                    value: SSN,
+                    placeholder: L10n.TravelCertificate.personalNumber,
+                    onTap: {}
+                )
+            }
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                    .foregroundColor(hTextColor.secondary)
+            }
+            .disabled(true)
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
+    var buttonIsDisabled: Bool {
         var personalNumberValid = false
-        var firstNameValid = false
-        var lastNameValid = false
         if noSSN {
             personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: SSN)
+            let firstNameValid = Masking(type: .firstName).isValid(text: firstName)
+            let lastNameValid = Masking(type: .lastName).isValid(text: lastName)
+            if personalNumberValid && firstNameValid && lastNameValid {
+                return false
+            }
         } else {
             personalNumberValid = Masking(type: .personalNumber).isValid(text: SSN)
-        }
-        firstNameValid = Masking(type: .firstName).isValid(text: firstName)
-        lastNameValid = Masking(type: .lastName).isValid(text: lastName)
-        if personalNumberValid && firstNameValid && lastNameValid {
-            return false
+            if personalNumberValid {
+                return false
+            }
         }
         return true
     }
@@ -192,18 +225,24 @@ struct CoInusuredInput: View, KeyboardReadable {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, fullName: "", personalNumber: "", contractId: "")
+        CoInusuredInput(isDeletion: false, fullName: "", SSN: "", contractId: "")
     }
 }
 
 enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
-        return CoInsuredInputType.SSN
+        return CoInsuredInputType.lastName
     }
 
     var next: CoInsuredInputType? {
         switch self {
-        default:
+        case .SSN:
+            return .firstName
+        case .birthDay:
+            return .firstName
+        case .firstName:
+            return .lastName
+        case .lastName:
             return nil
         }
     }
@@ -211,6 +250,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
+    case birthDay
 }
 
 protocol KeyboardReadable {

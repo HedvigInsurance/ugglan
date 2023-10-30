@@ -89,7 +89,7 @@ public class EditCoInsuredJourney {
             rootView: CoInusuredInput(
                 isDeletion: isDeletion,
                 fullName: name,
-                personalNumber: personalNumber,
+                SSN: personalNumber,
                 contractId: contractId
             ),
             style: .detented(.scrollViewContentSize),
@@ -168,6 +168,8 @@ public class EditCoInsuredJourney {
         .onAction(ContractStore.self) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
+            } else {
+                getScreen(for: action)
             }
         }
     }
