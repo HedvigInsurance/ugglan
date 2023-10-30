@@ -27,7 +27,7 @@ struct CoInsuredProcessingScreen: View {
                         let contracts = contractStore.state
                         contracts.activeContracts.forEach { contract in
                             if contract.coInsured.count < 2 { /* TODO: CHANGE WHEN REAL DATA */
-                                let _ = store.send(
+                                store.send(
                                     .coInsuredNavigationAction(
                                         action: .openMissingCoInsuredAlert(contractId: contract.id)
                                     )

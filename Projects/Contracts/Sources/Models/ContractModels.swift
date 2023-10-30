@@ -94,8 +94,8 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
     public var coInsured: [CoInsuredModel] = [
-//        CoInsuredModel] = [CoInsuredModel(name: "Julia", SSN: "000000000"),
-//                           CoInsuredModel(name: "Test", SSN: "11111111")
+        CoInsuredModel(name: "Julia", SSN: "000000000"),
+        CoInsuredModel(name: "Test", SSN: "11111111"),
     ] /* TODO: MOVE INITIAIZATION AND CHANGE TO LET */
 
     public var showEditInfo: Bool {

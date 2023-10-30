@@ -30,15 +30,7 @@ struct InsuredPeopleScreen: View {
                         ContractOwnerField(coInsured: contract.coInsured)
                         hSection {
                             ForEach(contract.coInsured, id: \.self) { coInsured in
-                                var isDeleted = false
-
-                                ForEach(vm.coInsured, id: \.self) { localCoInsured in
-                                    if localCoInsured.name == coInsured.name && localCoInsured.type == .deleted {
-                                        let _ = isDeleted = true
-                                    }
-                                }
-
-                                if !isDeleted {
+                                if !vm.coInsuredDeleted.contains(coInsured) {
                                     CoInsuredField(
                                         coInsured: coInsured,
                                         accessoryView: existingAccessoryView(coInsured: coInsured)
@@ -49,14 +41,12 @@ struct InsuredPeopleScreen: View {
                         .sectionContainerStyle(.transparent)
 
                         hSection {
-                            ForEach(vm.coInsured, id: \.self) { coInsured in
-                                if coInsured.type == .added {
-                                    CoInsuredField(
-                                        coInsured: coInsured,
-                                        accessoryView: localAccessoryView(coInsured: coInsured),
-                                        includeStatusPill: true
-                                    )
-                                }
+                            ForEach(vm.coInsuredAdded, id: \.self) { coInsured in
+                                CoInsuredField(
+                                    coInsured: coInsured,
+                                    accessoryView: localAccessoryView(coInsured: coInsured),
+                                    includeStatusPill: true
+                                )
                             }
                         }
                         .sectionContainerStyle(.transparent)
@@ -85,7 +75,7 @@ struct InsuredPeopleScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                if vm.coInsured.count > 0 {
+                if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
                     confirmChangesView
                 }
                 cancelButton
@@ -185,17 +175,18 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
-    @Published var coInsured: [CoInsuredModel] = []
+    @Published var coInsuredAdded: [CoInsuredModel] = []
+    @Published var coInsuredDeleted: [CoInsuredModel] = []
 
     var resetCoInsured: Void {
-        coInsured = []
+        coInsuredAdded = []
     }
 
     func addCoInsured(name: String, personalNumber: String) {
-        coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .added))
+        coInsuredAdded.append(CoInsuredModel(name: name, SSN: personalNumber))
     }
 
     func removeCoInsured(name: String, personalNumber: String) {
-        coInsured.append(CoInsuredModel(name: name, SSN: personalNumber, type: .deleted))
+        coInsuredDeleted.append(CoInsuredModel(name: name, SSN: personalNumber))
     }
 }

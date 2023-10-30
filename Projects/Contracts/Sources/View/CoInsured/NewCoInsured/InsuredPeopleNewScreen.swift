@@ -30,7 +30,7 @@ struct InsuredPeopleNewScreen: View {
                     if let contract = contract {
                         ContractOwnerField(coInsured: contract.coInsured)
 
-                        hSection(vm.coInsured, id: \.self) { localCoInsured in
+                        hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
                             CoInsuredField(
                                 coInsured: localCoInsured,
                                 accessoryView: localAccessoryView(coInsured: localCoInsured)
@@ -38,8 +38,8 @@ struct InsuredPeopleNewScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
 
-                        if vm.coInsured.count < contractNbOfCoinsured {
-                            let nbOfFields = contractNbOfCoinsured - vm.coInsured.count
+                        if vm.coInsuredAdded.count < contractNbOfCoinsured {
+                            let nbOfFields = contractNbOfCoinsured - vm.coInsuredAdded.count
                             hSection {
                                 ForEach((1...nbOfFields), id: \.self) { index in
                                     CoInsuredField(
@@ -50,11 +50,14 @@ struct InsuredPeopleNewScreen: View {
                                 }
                             }
                             .sectionContainerStyle(.transparent)
+                            hSection {
+                                InfoCard(text: "TBD", type: .info)
+                            }
+                            .sectionContainerStyle(.transparent)
                         } else {
                             hSection {
                                 InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
                             }
-                            .padding(.top, 16)
                         }
                     }
                 }
@@ -69,7 +72,7 @@ struct InsuredPeopleNewScreen: View {
             ) { contract in
                 VStack(spacing: 8) {
                     if let contract = contract {
-                        if vm.coInsured.count >= contractNbOfCoinsured {
+                        if vm.coInsuredAdded.count >= contractNbOfCoinsured {
                             LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
                                 /* TODO: SEND MUTATION */
                                 store.send(
@@ -78,7 +81,7 @@ struct InsuredPeopleNewScreen: View {
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
                             }
-                            .disabled((contract.coInsured.count + vm.coInsured.count) < contractNbOfCoinsured)
+                            .disabled((contract.coInsured.count + vm.coInsuredAdded.count) < contractNbOfCoinsured)
                             .padding(.horizontal, 16)
                         }
 
