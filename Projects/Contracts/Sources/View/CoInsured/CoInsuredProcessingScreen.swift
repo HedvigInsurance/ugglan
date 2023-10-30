@@ -22,14 +22,18 @@ struct CoInsuredProcessingScreen: View {
                     successView
                 } else {
                     let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                    let _  = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    let _ = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contracts = contractStore.state
                         contracts.activeContracts.forEach { contract in
-                                if contract.coInsured.count < 2 { /* TODO: CHANGE WHEN REAL DATA */
-                                    let _ = store.send(.coInsuredNavigationAction(action: .openMissingCoInsuredAlert(contractId: contract.id)))
-                                }
+                            if contract.coInsured.count < 2 { /* TODO: CHANGE WHEN REAL DATA */
+                                let _ = store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openMissingCoInsuredAlert(contractId: contract.id)
+                                    )
+                                )
                             }
+                        }
                     }
                 }
             }
@@ -65,10 +69,14 @@ struct CoInsuredProcessingScreen: View {
                         .foregroundColor(hSignalColor.greenElement)
                     VStack(spacing: 0) {
                         hText(L10n.contractAddCoinsuredUpdatedTitle)
-                        hText(L10n.contractAddCoinsuredUpdatedLabel("16 nov 2023"))
-                            .foregroundColor(hTextColor.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 8)
+                        hText(
+                            L10n.contractAddCoinsuredUpdatedLabel(
+                                "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        )
+                        .foregroundColor(hTextColor.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 8)
                     }
                     .padding(.horizontal, 16)
                 }

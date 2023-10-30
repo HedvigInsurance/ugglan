@@ -139,24 +139,30 @@ struct ContractInformationView: View {
     private func upComingCoInsuredView(contract: Contract) -> some View {
         // if....
         hSection {
-            InfoCard(text: L10n.contractCoinsuredUpdateInFuture(3, "16 nov 2023"), type: .info)
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.contractViewCertificateButton,
-                        buttonAction: {
-                            /* TODO: CHANGE */
-                            //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                            let certificateURL = contract.currentAgreement?.certificateUrl
-                            if let url = URL(string: certificateURL) {
-                                store.send(
-                                    .contractDetailNavigationAction(
-                                        action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                    )
+            InfoCard(
+                text: L10n.contractCoinsuredUpdateInFuture(
+                    3,
+                    "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.contractViewCertificateButton,
+                    buttonAction: {
+                        /* TODO: CHANGE */
+                        //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
+                        let certificateURL = contract.currentAgreement?.certificateUrl
+                        if let url = URL(string: certificateURL) {
+                            store.send(
+                                .contractDetailNavigationAction(
+                                    action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
                                 )
-                            }
+                            )
                         }
-                    )
-                ])
+                    }
+                )
+            ])
         }
         .padding(.top, 8)
     }

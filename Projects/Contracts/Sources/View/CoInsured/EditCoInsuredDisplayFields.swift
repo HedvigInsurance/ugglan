@@ -92,7 +92,10 @@ struct CoInsuredField<Content: View>: View {
     @ViewBuilder
     var statusPill: some View {
         VStack {
-            hText(L10n.contractAddCoinsuredActiveFrom("16 nov 2023"), style: .standardSmall)
+            hText(
+                L10n.contractAddCoinsuredActiveFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                style: .standardSmall
+            )
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)

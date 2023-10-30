@@ -72,26 +72,32 @@ extension AppJourney {
                     }
                     /* TODO: FIX WHEN REAL DATA */
                     //else if let index = contractStore.state.activeContracts.first(where: { $0.upcomingChangedAgreement.coInsured }) {
-                    InfoCard(text: L10n.contractCoinsuredUpdateInFuture(3, "16 nov 2023"), type: .info)
-                        .buttons([
-                            .init(
-                                buttonTitle: L10n.contractViewCertificateButton,
-                                buttonAction: {
-                                    /* TODO: CHANGE */
-                                    //                                    let certificateURL = contractStore.state.activeContracts.first?.upcomingChangedAgreement?.certificateUrl
-                                    let certificateURL = contractStore.state.activeContracts.first?.currentAgreement?
-                                        .certificateUrl
-                                    if let url = URL(string: certificateURL) {
-                                        homeStore.send(
-                                            .openContractCertificate(
-                                                url: url,
-                                                title: L10n.myDocumentsInsuranceCertificate
-                                            )
+                    InfoCard(
+                        text: L10n.contractCoinsuredUpdateInFuture(
+                            3,
+                            "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        ),
+                        type: .info
+                    )
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.contractViewCertificateButton,
+                            buttonAction: {
+                                /* TODO: CHANGE */
+                                //                                    let certificateURL = contractStore.state.activeContracts.first?.upcomingChangedAgreement?.certificateUrl
+                                let certificateURL = contractStore.state.activeContracts.first?.currentAgreement?
+                                    .certificateUrl
+                                if let url = URL(string: certificateURL) {
+                                    homeStore.send(
+                                        .openContractCertificate(
+                                            url: url,
+                                            title: L10n.myDocumentsInsuranceCertificate
                                         )
-                                    }
+                                    )
                                 }
-                            )
-                        ])
+                            }
+                        )
+                    ])
                     // }
 
                     ConnectPaymentCardView()

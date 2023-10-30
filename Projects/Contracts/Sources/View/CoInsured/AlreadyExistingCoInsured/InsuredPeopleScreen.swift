@@ -159,9 +159,12 @@ struct InsuredPeopleScreen: View {
                     }
                     hText("159" + " " + L10n.paymentCurrencyOccurrence)
                 }
-                hText(L10n.contractAddCoinsuredStartsFrom("16 nov 2023"), style: .footnote)
-                    .foregroundColor(hTextColor.secondary)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                hText(
+                    L10n.contractAddCoinsuredStartsFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                    style: .footnote
+                )
+                .foregroundColor(hTextColor.secondary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
