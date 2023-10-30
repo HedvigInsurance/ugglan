@@ -30,11 +30,12 @@ struct DeleteAccountView: View {
                 )
             )
         } else {
-            hForm {
-                hSection {
+            hSection {
+                VStack {
+                    Spacer()
                     RetryView(
                         subtitle:
-                            "We can’t delete your account right now. Please contact us in the chat for further assistance.",
+                            L10n.DeleteAccount.deleteNotAvailable,
                         retryTitle: L10n.openChat
                     ) {
                         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -43,21 +44,21 @@ struct DeleteAccountView: View {
                             store.send(.openChat)
                         }
                     }
-                }
-            }
-            .hFormContentPosition(.center)
-            .hDisableScroll
-            .sectionContainerStyle(.transparent)
-            .hFormAttachToBottom {
-                hSection {
-                    hButton.LargeButton(type: .ghost) {
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissScreen)
-                    } content: {
-                        hText(L10n.generalCancelButton)
+                    Spacer()
+                    hSection {
+                        hButton.LargeButton(type: .ghost) {
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissScreen)
+                        } content: {
+                            hText(L10n.generalCancelButton)
+                        }
                     }
                 }
             }
+            .sectionContainerStyle(.transparent)
+            .background(
+                BackgroundView().edgesIgnoringSafeArea(.all)
+            )
         }
     }
 }

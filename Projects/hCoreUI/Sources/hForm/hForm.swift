@@ -193,7 +193,7 @@ public struct hForm<Content: View>: View {
             shouldMergeContent = shouldMerge
         }
 
-        let animated = self.additionalSpaceFromTop == additionalSpaceFromTop
+        let animated = self.additionalSpaceFromTop != additionalSpaceFromTop
         if animated {
             withAnimation {
                 self.additionalSpaceFromTop = additionalSpaceFromTop
