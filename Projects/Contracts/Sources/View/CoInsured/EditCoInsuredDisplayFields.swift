@@ -85,6 +85,7 @@ struct CoInsuredField<Content: View>: View {
             statusPill
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 16)
+                .padding(.top, 5)
         }
         Divider()
     }
