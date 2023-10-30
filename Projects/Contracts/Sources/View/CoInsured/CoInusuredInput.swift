@@ -98,9 +98,12 @@ struct CoInusuredInput: View, KeyboardReadable {
                             masking: Masking(type: .birthDateYYMMDD),
                             value: $SSN,
                             equals: $type,
-                            focusValue: .birthDay,
+                            focusValue: .SSN,
                             placeholder: L10n.contractBirthDate
                         )
+                    }
+                    .onAppear {
+                        keyboardEnabled = false
                     }
                     .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
                         keyboardEnabled = newIsKeyboardEnabled
@@ -238,8 +241,6 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
         switch self {
         case .SSN:
             return .firstName
-        case .birthDay:
-            return .firstName
         case .firstName:
             return .lastName
         case .lastName:
@@ -250,7 +251,6 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
-    case birthDay
 }
 
 protocol KeyboardReadable {
