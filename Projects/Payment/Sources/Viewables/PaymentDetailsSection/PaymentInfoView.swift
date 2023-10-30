@@ -271,7 +271,6 @@ struct PaymentInfoView_Previews: PreviewProvider {
 }
 
 class MyPaymentInfoViewModel: ObservableObject {
-    @Inject var giraffe: hGiraffe
     @PresentableStore var store: PaymentStore
     let urlScheme: String
     @Published var addCodeState = false

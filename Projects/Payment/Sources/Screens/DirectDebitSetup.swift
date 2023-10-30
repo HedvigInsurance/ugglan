@@ -11,7 +11,6 @@ import hGraphQL
 
 struct DirectDebitSetup {
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     let setupType: PaymentSetup.SetupType

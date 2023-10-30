@@ -12,8 +12,6 @@ import hGraphQL
 
 struct AdyenSetup {
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var giraffe: hGiraffe
-    @Inject var octopus: hOctopus
     @Inject var adyenService: AdyenService
 
     let setupType: PaymentSetup.SetupType
