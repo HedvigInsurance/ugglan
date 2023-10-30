@@ -5,6 +5,8 @@ import hCoreUI
 
 struct CoInusuredInput: View, KeyboardReadable {
     @State var fullName: String
+    @State var firstName: String
+    @State var lastName: String
     @State var SSN: String
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
@@ -15,12 +17,14 @@ struct CoInusuredInput: View, KeyboardReadable {
 
     public init(
         isDeletion: Bool,
-        name: String?,
+        fullName: String?,
         personalNumber: String?,
         contractId: String
     ) {
         self.isDeletion = isDeletion
-        self.fullName = name ?? ""
+        self.fullName = fullName ?? ""
+        self.firstName = ""
+        self.lastName = ""
         self.SSN = personalNumber ?? ""
         self.contractId = contractId
     }
@@ -60,19 +64,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                 } else {
                     Group {
-                        hSection {
-                            hFloatingTextField(
-                                masking: Masking(type: .none),
-                                value: $fullName,
-                                equals: $type,
-                                focusValue: .fullName,
-                                placeholder: L10n.fullNameText
-                            )
-                            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                                keyboardEnabled = newIsKeyboardEnabled
-                            }
-                        }
-
                         if noSSN {
                             hSection {
                                 hFloatingTextField(
@@ -80,7 +71,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                                     value: $SSN,
                                     equals: $type,
                                     focusValue: .SSN,
-                                    placeholder: L10n.contractBirthdate
+                                    placeholder: L10n.contractBirthDate
                                 )
                             }
                             .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
@@ -93,13 +84,39 @@ struct CoInusuredInput: View, KeyboardReadable {
                                     value: $SSN,
                                     equals: $type,
                                     focusValue: .SSN,
-                                    placeholder: L10n.TravelCertificate.ssnLabel
+                                    placeholder: L10n.contractPersonalIdentity
                                 )
                             }
                             .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
                                 keyboardEnabled = newIsKeyboardEnabled
                             }
                         }
+
+                        hSection {
+                            HStack(spacing: 4) {
+                                hFloatingTextField(
+                                    masking: Masking(type: .none),
+                                    value: $firstName,
+                                    equals: $type,
+                                    focusValue: .firstName,
+                                    placeholder: L10n.contractFirstName
+                                )
+                                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                                    keyboardEnabled = newIsKeyboardEnabled
+                                }
+                                hFloatingTextField(
+                                    masking: Masking(type: .none),
+                                    value: $lastName,
+                                    equals: $type,
+                                    focusValue: .lastName,
+                                    placeholder: L10n.contractLastName
+                                )
+                                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                                    keyboardEnabled = newIsKeyboardEnabled
+                                }
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
 
                         hSection {
                             Toggle(isOn: $noSSN.animation(.default)) {
@@ -129,7 +146,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                             store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: SSN)
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                         } else {
-                            store.coInsuredViewModel.addCoInsured(name: fullName, personalNumber: SSN)
+                            store.coInsuredViewModel.addCoInsured(name: firstName + " " + lastName, personalNumber: SSN)
                             store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
                     } content: {
@@ -157,14 +174,16 @@ struct CoInusuredInput: View, KeyboardReadable {
 
     var saveIsDisabled: Bool {
         var personalNumberValid = false
-        var fullNameValid = false
+        var firstNameValid = false
+        var lastNameValid = false
         if noSSN {
             personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: SSN)
         } else {
             personalNumberValid = Masking(type: .personalNumber).isValid(text: SSN)
         }
-        fullNameValid = Masking(type: .fullName).isValid(text: fullName)
-        if personalNumberValid && fullNameValid {
+        firstNameValid = Masking(type: .firstName).isValid(text: firstName)
+        lastNameValid = Masking(type: .lastName).isValid(text: lastName)
+        if personalNumberValid && firstNameValid && lastNameValid {
             return false
         }
         return true
@@ -173,13 +192,13 @@ struct CoInusuredInput: View, KeyboardReadable {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, name: "", personalNumber: "", contractId: "")
+        CoInusuredInput(isDeletion: false, fullName: "", personalNumber: "", contractId: "")
     }
 }
 
 enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
-        return CoInsuredInputType.fullName
+        return CoInsuredInputType.SSN
     }
 
     var next: CoInsuredInputType? {
@@ -189,7 +208,8 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
         }
     }
 
-    case fullName
+    case firstName
+    case lastName
     case SSN
 }
 

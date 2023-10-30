@@ -21,6 +21,8 @@ public enum MaskType: String {
     case digits = "Digits"
     case euroBonus = "EuroBonus"
     case fullName = "FullName"
+    case firstName = "FirstName"
+    case lastName = "LastName"
 }
 
 public struct Masking {
@@ -86,6 +88,10 @@ public struct Masking {
             let fullNameRegex = "^[a-zA-Z]+(?:[\\s.]+[a-zA-Z]+)*$"
             let fullNamePredicate = NSPredicate(format: "SELF MATCHES %@", fullNameRegex)
             return fullNamePredicate.evaluate(with: text)
+        case .firstName, .lastName:
+            let nameRegEx = "[(A-Z|Å|Ä|Ö)a-zåäö\\s]*"
+            let namePredicate = NSPredicate(format: "SELF MATCHES %@", nameRegEx)
+            return text.count > 0 && namePredicate.evaluate(with: text)
         }
     }
 
@@ -112,6 +118,7 @@ public struct Masking {
             dateFormatter.dateFormat = "yyddMM"
             guard let date = dateFormatter.date(from: text) else { return text }
             return date.localDateString
+        case .firstName, .lastName: return text
         }
     }
 
@@ -179,6 +186,7 @@ public struct Masking {
         case .address: return .default
         case .disabledSuggestion: return .default
         case .euroBonus: return .default
+        case .firstName, .lastName: return .default
         }
     }
 
@@ -230,6 +238,10 @@ public struct Masking {
             return L10n.TravelCertificate.fullNameLabel
         case .birthDateYYMMDD:
             return L10n.contractBirthdate
+        case .firstName:
+            return L10n.contractFirstName
+        case .lastName:
+            return L10n.contractLastName
         }
     }
 
@@ -265,6 +277,7 @@ public struct Masking {
             return nil
         case .birthDateYYMMDD:
             return nil
+        case .firstName, .lastName: return nil
         }
     }
 
@@ -372,6 +385,7 @@ public struct Masking {
         case .fullName: return text
         case .birthDateYYMMDD:
             return isDigit(maxCount: 6)
+        case .firstName, .lastName: return text
         }
     }
 }

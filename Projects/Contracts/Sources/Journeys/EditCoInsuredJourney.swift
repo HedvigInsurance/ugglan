@@ -88,7 +88,7 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: CoInusuredInput(
                 isDeletion: isDeletion,
-                name: name,
+                fullName: name,
                 personalNumber: personalNumber,
                 contractId: contractId
             ),

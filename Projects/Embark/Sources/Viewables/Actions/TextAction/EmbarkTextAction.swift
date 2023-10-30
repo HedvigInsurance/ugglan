@@ -149,7 +149,7 @@ extension Masking {
         switch type {
         case .personalNumber, .personalNumberCoInsured, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .address, .euroBonus,
-            .fullName:
+            .fullName, .firstName, .lastName:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
             guard let date = text.localDateToDate else { return text }
