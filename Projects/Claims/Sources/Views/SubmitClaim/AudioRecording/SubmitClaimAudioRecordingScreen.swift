@@ -50,44 +50,48 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             ) { audioRecordingStep in
                 if isAudioInput {
-                    ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                        index,
-                        question in
-                        HStack {
-                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColor.primary)
+                    VStack(spacing: 8) {
+                        ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
+                            index,
+                            question in
+                            HStack {
+                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                    .foregroundColor(hTextColor.primary)
+                            }
+                            .padding(16)
+                            .background(
+                                Squircle.default()
+                                    .fill(hFillColor.opaqueOne)
+                            )
+                            .padding(.leading, 16)
+                            .padding(.trailing, 88)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .slideUpAppearAnimation()
                         }
-                        .padding(16)
-                        .background(
-                            Squircle.default()
-                                .fill(hFillColor.opaqueOne)
-                        )
-                        .padding(.vertical, 12)
-                        .padding(.leading, 16)
-                        .padding(.trailing, 88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .slideUpAppearAnimation()
                     }
+                    .padding(.top, 8)
                 } else {
-                    ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                        index,
-                        question in
-                        HStack {
-                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColor.primary)
+                    VStack(spacing: 8) {
+                        ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
+                            index,
+                            question in
+                            HStack {
+                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                    .foregroundColor(hTextColor.primary)
+                            }
+                            .padding(16)
+                            .background(
+                                Squircle.default()
+                                    .fill(hFillColor.opaqueOne)
+                            )
+                            .padding(.leading, 16)
+                            .padding(.trailing, 88)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .slideUpAppearAnimation()
+                            
                         }
-                        .padding(16)
-                        .background(
-                            Squircle.default()
-                                .fill(hFillColor.opaqueOne)
-                        )
-                        .padding(.vertical, 12)
-                        .padding(.leading, 16)
-                        .padding(.trailing, 88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .slideUpAppearAnimation()
-
                     }
+                    .padding(.top, 8)
                 }
             }
         }
