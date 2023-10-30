@@ -22,13 +22,11 @@ struct DeleteAccountView: View {
                     text: L10n.openChat, style: .primary,
                     action: {
                         let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissScreen(openChatAfter: false))
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            store.send(.openChat)
-                        }
+                        store.send(.dismissScreen(openChatAfter: true))
                     }
                 )
             )
+            .hDisableScroll
         } else {
             InfoView(
                 title: L10n.DeleteAccount.confirmationTitle,
@@ -45,6 +43,8 @@ struct DeleteAccountView: View {
                     }
                 )
             )
+            .hDisableScroll
+
         }
     }
 }
