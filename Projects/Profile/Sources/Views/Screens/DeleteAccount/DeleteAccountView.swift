@@ -16,48 +16,34 @@ struct DeleteAccountView: View {
                 description: L10n.profileDeleteAccountFailedLabel,
                 onDismiss: {
                     let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissScreen)
+                    store.send(.dismissScreen(openChatAfter: false))
                 },
                 extraButton: (
                     text: L10n.openChat, style: .primary,
                     action: {
                         let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissScreen)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        store.send(.dismissScreen(openChatAfter: false))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             store.send(.openChat)
                         }
                     }
                 )
             )
         } else {
-            hSection {
-                VStack {
-                    Spacer()
-                    RetryView(
-                        subtitle:
-                            L10n.DeleteAccount.deleteNotAvailable,
-                        retryTitle: L10n.openChat
-                    ) {
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissScreen)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            store.send(.openChat)
-                        }
+            InfoView(
+                title: L10n.DeleteAccount.confirmationTitle,
+                description: L10n.DeleteAccount.deletedDataDescription + "\n\n" + L10n.DeleteAccount.processingFooter,
+                onDismiss: {
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissScreen(openChatAfter: false))
+                },
+                extraButton: (
+                    text: L10n.profileDeleteAccountConfirmDeleteion,
+                    style: .alert,
+                    action: {
+                        viewModel.deleteAccount()
                     }
-                    Spacer()
-                    hSection {
-                        hButton.LargeButton(type: .ghost) {
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissScreen)
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
-            .background(
-                BackgroundView().edgesIgnoringSafeArea(.all)
+                )
             )
         }
     }
@@ -88,14 +74,21 @@ extension DeleteAccountView {
             rootView: DeleteAccountView(
                 viewModel: model
             ),
-            style: model.hasActiveClaims || model.hasActiveContracts
-                ? .detented(.scrollViewContentSize) : .modally(presentationStyle: .overFullScreen),
+            style: .detented(.scrollViewContentSize),
             options: [.blurredBackground]
         ) { action in
             if case let .sendAccountDeleteRequest(memberDetails) = action {
                 sendAccountDeleteRequestJourney(details: memberDetails)
-            } else if case .dismissScreen = action {
+            } else if case let .dismissScreen(openChatAfter) = action {
                 PopJourney()
+                    .onPresent {
+                        if openChatAfter {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
+                                store.send(.openChat)
+                            }
+                        }
+                    }
             }
         }
     }
@@ -103,11 +96,11 @@ extension DeleteAccountView {
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
-            rootView: DeleteRequestLoadingView(screenState: .sendingMessage(details)),
+            rootView: DeleteRequestLoadingView(screenState: .tryToDelete(with: details)),
             style: .modally(presentationStyle: .fullScreen)
         ) { action in
             if case .makeTabActive = action {
-                DismissJourney()
+                PopJourney()
             }
         }
     }
@@ -119,7 +112,7 @@ extension DeleteAccountView {
             style: .modally(presentationStyle: .fullScreen)
         ) { action in
             if case .makeTabActive = action {
-                DismissJourney()
+                PopJourney()
             }
         }
     }

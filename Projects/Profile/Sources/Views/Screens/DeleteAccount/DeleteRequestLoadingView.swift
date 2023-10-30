@@ -9,9 +9,8 @@ struct DeleteRequestLoadingView: View {
     @Inject var octopus: hOctopus
 
     enum ScreenState {
-        case sendingMessage(MemberDetails)
+        case tryToDelete(with: MemberDetails)
         case success
-        case error(errorMessage: String)
     }
 
     @State var screenState: ScreenState
@@ -49,52 +48,46 @@ struct DeleteRequestLoadingView: View {
         }
     }
 
-    @ViewBuilder private func errorState(errorMessage: String) -> some View {
-        VStack {
-            Spacer()
-
-            RetryView(subtitle: errorMessage)
-            Spacer()
-
-            hButton.LargeButtonOutlined {
-                store.send(.makeTabActive(deeplink: .home))
-            } content: {
-                hText(L10n.generalCloseButton, style: .body)
-                    .foregroundColor(.primary)
+    private var notAvailableView: some View {
+        hSection {
+            VStack {
+                Spacer()
+                RetryView(
+                    subtitle:
+                        L10n.DeleteAccount.deleteNotAvailable,
+                    retryTitle: L10n.openChat
+                ) {
+                    store.send(.makeTabActive(deeplink: .home))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        store.send(.dismissScreen(openChatAfter: true))
+                    }
+                }
+                Spacer()
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        store.send(.makeTabActive(deeplink: .home))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            store.send(.dismissScreen(openChatAfter: false))
+                        }
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                }
             }
-            .padding([.top, .horizontal])
-            .padding(.bottom, 40)
         }
+        .sectionContainerStyle(.transparent)
+        .background(
+            BackgroundView().edgesIgnoringSafeArea(.all)
+        )
     }
 
     var body: some View {
         switch screenState {
-        case let .sendingMessage(memberDetails):
-            sendingState
-                .onAppear {
-                    sendSlackMessage(details: memberDetails)
-                }
+        case .tryToDelete:
+            notAvailableView
         case .success:
             successState
-        case let .error(errorMessage):
-            errorState(errorMessage: errorMessage)
         }
-    }
-
-    private func sendSlackMessage(details: MemberDetails) {
-        self.octopus.client
-            .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
-            .onValue { value in
-                if let errorFromGraphQL = value.memberDeletionRequest?.message {
-                    screenState = .error(errorMessage: errorFromGraphQL)
-                } else {
-                    ApolloClient.saveDeleteAccountStatus(for: details.id)
-                    screenState = .success
-                }
-            }
-            .onError { graphQLError in
-                screenState = .error(errorMessage: L10n.General.errorBody)
-            }
     }
 }
 
