@@ -344,13 +344,14 @@ extension View {
     }
 }
 
-struct BackgroundView: UIViewRepresentable {
+public struct BackgroundView: UIViewRepresentable {
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    public init() {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.backgroundColor = .brand(.primaryBackground())
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    public func makeUIView(context: Context) -> some UIView {
         UIView()
     }
 }
