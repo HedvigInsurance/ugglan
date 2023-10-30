@@ -80,10 +80,36 @@ struct MyPaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
             .onAppear {
-                //                let store: PaymentStore = globalPresentableStoreContainer.get()
-                //                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: .init(redeemedCampaigns: []))
-                //                let data = PaymentData(myPaymentQueryData, octopusData: octopusData)
-                //                store.send(.setPaymentData(data: data))
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                let memberData = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember(
+                    activeContracts: [
+                        .init(
+                            id: "id",
+                            currentAgreement: .init(
+                                productVariant: .init(
+                                    typeOfContract: "SE_ACCIDENT",
+                                    displayName: "display name"
+                                )
+                            )
+                        )
+                    ],
+                    redeemedCampaigns: [],
+                    chargeHistory: [
+                        .init(
+                            amount: .init(amount: 100, currencyCode: .sek),
+                            date: "2020-11-10",
+                            status: .success
+                        )
+                    ],
+                    insuranceCost: .init(
+                        monthlyDiscount: .init(amount: 20, currencyCode: .sek),
+                        monthlyGross: .init(amount: 100, currencyCode: .sek),
+                        monthlyNet: .init(amount: 80, currencyCode: .sek)
+                    )
+                )
+                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: memberData)
+                let paymentData = PaymentData(octopusData)
+                store.send(.setPaymentData(data: paymentData))
             }
     }
 }
