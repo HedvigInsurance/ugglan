@@ -17,6 +17,7 @@ struct ContractOwnerField: View {
                 VStack(alignment: .leading) {
                     /* TODO: CHANGE WHEN REAL DATA */
                     hText("Julia Andersson")
+                        .fixedSize()
                     hText("19900101-1111")
                 }
                 .foregroundColor(hTextColor.tertiary)
@@ -61,6 +62,7 @@ struct CoInsuredField<Content: View>: View {
                 VStack(alignment: .leading) {
                     if let coInsured {
                         hText(coInsured.name)
+                            .fixedSize()
                         hText(coInsured.SSN)
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()

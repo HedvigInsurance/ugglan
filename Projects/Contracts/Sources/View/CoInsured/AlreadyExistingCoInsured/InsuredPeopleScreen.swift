@@ -187,6 +187,15 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     }
 
     func removeCoInsured(name: String, personalNumber: String) {
-        coInsuredDeleted.append(CoInsuredModel(name: name, SSN: personalNumber))
+        let removedCoInsured = CoInsuredModel(name: name, SSN: personalNumber)
+        if coInsuredAdded.contains(removedCoInsured) {
+            if let index = coInsuredAdded.firstIndex(where: {
+                ($0.name == removedCoInsured.name && $0.SSN == removedCoInsured.SSN)
+            }) {
+                coInsuredAdded.remove(at: index)
+            }
+        } else {
+            coInsuredDeleted.append(CoInsuredModel(name: name, SSN: personalNumber))
+        }
     }
 }
