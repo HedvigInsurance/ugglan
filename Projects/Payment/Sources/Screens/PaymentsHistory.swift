@@ -29,7 +29,7 @@ public struct PaymentHistory: View {
                             hRow {
                                 hText(element.date)
                                 Spacer()
-                                hText(element.amount.formattedAmount)
+                                hText(element.amount.formattedAbsoluteAmount)
                             }
                         }
                     }
