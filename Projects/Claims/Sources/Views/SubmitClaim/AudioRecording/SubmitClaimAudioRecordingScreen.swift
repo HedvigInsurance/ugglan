@@ -91,6 +91,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             }
         }
+        .hDisableScroll
         .hFormAttachToBottom {
             audioElements
                 .slideUpAppearAnimation()
@@ -147,6 +148,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             }
         }
+        .hDisableScroll
         .hFormAttachToBottom {
             textElements
                 .slideUpAppearAnimation()
@@ -241,7 +243,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .padding(16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
         }
         .environmentObject(audioRecorder)
     }
@@ -309,7 +312,6 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
                 let model = FlowClaimAudioRecordingStepModel(with: graphQL)
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))
             }
-
     }
 }
 
