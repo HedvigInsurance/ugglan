@@ -34,11 +34,11 @@ class DeleteAccountViewModel: ObservableObject {
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
 
-        //        self.hasActiveClaims = activeClaimsSignal.value
-        //        self.hasActiveContracts = activeContractsSignal.value
-        //
-        //        bag += activeClaimsSignal.distinct(on: .main).onValue { self.hasActiveClaims = $0 }
-        //        bag += activeContractsSignal.distinct(on: .main).onValue { self.hasActiveContracts = $0 }
+        self.hasActiveClaims = activeClaimsSignal.value
+        self.hasActiveContracts = activeContractsSignal.value
+
+        bag += activeClaimsSignal.distinct(on: .main).onValue { self.hasActiveClaims = $0 }
+        bag += activeContractsSignal.distinct(on: .main).onValue { self.hasActiveContracts = $0 }
     }
 
     func deleteAccount() {
