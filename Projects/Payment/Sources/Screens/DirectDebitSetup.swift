@@ -284,15 +284,6 @@ extension DirectDebitSetup: Presentable {
 
                     return .allow
                 }
-
-                // if user is closing app in the middle of process make sure to inform backend
-                //                bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
-                //                    .onValue { _ in
-                //                        giraffe.client
-                //                            .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
-                //                            .sink()
-                //                    }
-
                 return DelayedDisposer(bag, delay: 1)
             }
         )
