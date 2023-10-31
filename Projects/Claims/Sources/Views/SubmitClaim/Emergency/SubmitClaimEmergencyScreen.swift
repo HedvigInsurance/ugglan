@@ -22,8 +22,8 @@ public struct SubmitClaimEmergencyScreen: View {
                         state.emergencyStep
                     }
                 ) { emergency in
-                    if emergency?.partners != nil {
-                        ForEach(emergency?.partners ?? [], id: \.id) { partner in
+                    if let partners = emergency?.partners {
+                        ForEach(partners, id: \.id) { partner in
                             ClaimEmergencyContactCard(
                                 imageUrl: partner.imageUrl,
                                 label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
