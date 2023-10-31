@@ -187,6 +187,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         }
                         .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                     }
+                    .padding(.horizontal, 16)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onAppear {
                         self.audioPlayer.url = url
