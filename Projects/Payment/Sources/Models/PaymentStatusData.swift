@@ -4,7 +4,7 @@ import hGraphQL
 
 public struct PaymentStatusData: Codable, Equatable {
     public var status: PayinMethodStatus = .active
-    public var nextChargeDate: String?  //TODO: FIX this
+    public var nextChargeDate: ServerBasedDate?  //TODO: FIX this
     let displayName: String?
     let descriptor: String?
 
@@ -24,19 +24,6 @@ public struct PaymentStatusData: Codable, Equatable {
         self.status = data.currentMember.paymentInformation.status.asPayinMethodStatus
         self.displayName = data.currentMember.paymentInformation.connection?.displayName
         self.descriptor = data.currentMember.paymentInformation.connection?.descriptor
-        let statusOfFirstChargeHistory = data.currentMember.chargeHistory.first?.status
-        //        if statusOfFirstChargeHistory == .failed {
-        //            if let indexOfFirstSuccessCharge = data.currentMember.chargeHistory.firstIndex(where: {
-        //                $0.status == .success
-        //            }) {
-        //                failedCharges = indexOfFirstSuccessCharge
-        //            } else {
-        //                failedCharges = data.currentMember.chargeHistory.count
-        //            }
-        //        } else {
-        //            self.failedCharges = nil
-        //        }
-
         self.nextChargeDate = data.currentMember.upcomingCharge?.date
     }
 }

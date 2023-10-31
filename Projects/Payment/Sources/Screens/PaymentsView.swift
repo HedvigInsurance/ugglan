@@ -9,24 +9,30 @@ public struct PaymentsView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 8) {
-                upcomingPayment
-                hSection {
-                    discounts
-                    paymentHistory
-                    connectedPaymentMethod
+        LoadingViewWithContent(
+            PaymentStore.self,
+            [.getPaymentData, .getPaymentStatus],
+            [.load]
+        ) {
+            hForm {
+                VStack(spacing: 8) {
+                    upcomingPayment
+                    hSection {
+                        discounts
+                        paymentHistory
+                        connectedPaymentMethod
+                    }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
             }
-        }
-        .hDisableScroll
-        .hFormAttachToBottom {
-            bottomPart
-        }
-        .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(.load)
+            .hDisableScroll
+            .hFormAttachToBottom {
+                bottomPart
+            }
+            .onAppear {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                store.send(.load)
+            }
         }
     }
 

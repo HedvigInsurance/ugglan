@@ -50,7 +50,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let paymentData = try await self.paymentService.getPaymentData()
                         callback(.value(.setPaymentData(data: paymentData)))
                     } catch let error {
-                        self.setError(error.localizedDescription, for: .getPaymentData)
+                        self.setError(L10n.General.errorBody, for: .getPaymentData)
                     }
                 }
                 return disposeBag
@@ -63,7 +63,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let statusData = try await self.paymentService.getPaymentStatusData()
                         callback(.value(.setPaymentStatus(data: statusData)))
                     } catch let error {
-                        self.setError(error.localizedDescription, for: .getPaymentStatus)
+                        self.setError(L10n.General.errorBody, for: .getPaymentStatus)
                     }
                 }
                 return disposeBag

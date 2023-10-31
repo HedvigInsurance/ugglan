@@ -20,7 +20,7 @@ public struct ConnectPaymentCardView: View {
                 state.paymentStatusData
             }
         ) { paymentStatusData in
-            if let nextChargeDate = paymentStatusData?.nextChargeDate,
+            if let nextChargeDate = paymentStatusData?.nextChargeDate?.displayDate,
                 paymentStatusData?.status == .needsSetup
             {
                 InfoCard(
