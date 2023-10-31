@@ -4,6 +4,7 @@ import Flow
 import Form
 import Presentation
 import Profile
+import SafariServices
 import UIKit
 import hAnalytics
 import hCore
@@ -131,7 +132,6 @@ extension Chat: Presentable {
 
             return 0
         }
-
         tableKit.view.contentInsetAdjustmentBehavior = .never
         tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
 
@@ -155,9 +155,29 @@ extension Chat: Presentable {
             setSheetInteractionState(true)
         }
 
-        bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, index in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
+            if index.row == tableKit.view.numberOfRows(inSection: 0) - 1 {
+                self.chatState.fetchNext()
+            }
         }
+        bag += tableKit.delegate.didSelect.onValue({ index in
+            let item = tableKit.table[index]
+            if let message = item.left {
+                switch message.type {
+                case let .crossSell(url):
+                    if let url = url {
+                        tableKit.view.viewController?
+                            .present(
+                                SFSafariViewController(url: url),
+                                animated: true
+                            )
+                    }
+                default:
+                    break
+                }
+            }
+        })
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
@@ -210,6 +230,10 @@ extension Chat: Presentable {
                         sectionDelete: .top,
                         rowInsert: .top,
                         rowDelete: .fade
+                    )
+                    tableKit.view.reloadRows(
+                        at: [IndexPath(row: tableKit.view.numberOfRows(inSection: 0) - 1, section: 0)],
+                        with: .automatic
                     )
                     tableKit.set(table, animation: tableAnimation)
                 }

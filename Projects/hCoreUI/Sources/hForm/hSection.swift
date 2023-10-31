@@ -100,7 +100,7 @@ public struct RowViewBuilder {
 
 struct hShadowModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content.shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        content.shadow(color: Color.black.opacity(0.15), radius: 1, x: 0, y: 1)
     }
 }
 

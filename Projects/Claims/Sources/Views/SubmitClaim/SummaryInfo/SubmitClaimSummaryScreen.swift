@@ -34,19 +34,10 @@ public struct SubmitClaimSummaryScreen: View {
             VStack(spacing: 8) {
                 InfoCard(text: L10n.claimsComplementClaim, type: .info)
                     .padding(.bottom, 8)
-                Group {
-                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
-                        store.send(.summaryRequest)
-                    } content: {
-                        hText(L10n.embarkSubmitClaim)
-                    }
-
-                    hButton.LargeButton(type: .ghost) {
-                        store.send(.navigationAction(action: .dismissScreen))
-                    } content: {
-                        hText(L10n.embarkGoBackButton)
-                    }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
+                LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
+                    store.send(.summaryRequest)
+                } content: {
+                    hText(L10n.embarkSubmitClaim)
                 }
             }
             .padding(.horizontal, 16)

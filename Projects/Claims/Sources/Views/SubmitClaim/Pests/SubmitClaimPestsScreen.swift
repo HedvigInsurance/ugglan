@@ -56,6 +56,7 @@ struct SubmitClaimPestsScreen: View {
                     //                            text: L10n.submitClaimGlassDamageWorkshopLabel
                     //                        )
                     //                    }
+                    //                    .animation(.easeOut)
                     //                    .padding(.vertical, 8)
 
                     SupportView()

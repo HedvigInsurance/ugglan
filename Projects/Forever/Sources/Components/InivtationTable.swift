@@ -56,7 +56,10 @@ struct InvitationTable: View {
                 state.foreverData
             }
         ) { foreverData in
-            if let foreverData {
+            if let foreverData,
+                !foreverData.referrals.isEmpty || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
+                    || foreverData.grossAmount.amount != foreverData.netAmount.amount
+            {
                 hSection {
                     if !foreverData.referrals.isEmpty {
                         hRow {
@@ -71,6 +74,7 @@ struct InvitationTable: View {
                     getTotalRow(foreverData)
                 }
                 .sectionContainerStyle(.transparent)
+                .padding(.vertical, 16)
             }
         }
     }

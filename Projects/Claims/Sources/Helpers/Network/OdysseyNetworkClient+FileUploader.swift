@@ -1,11 +1,12 @@
 import Flow
 import Foundation
+import hCore
 
 public protocol FileUploaderClient {
     func upload(flowId: String, file: UploadFile) throws -> Future<UploadFileResponseModel>
 }
 
-extension OdysseyNetworkClient: FileUploaderClient {
+extension NetworkClient: FileUploaderClient {
     public func upload(flowId: String, file: UploadFile) -> Future<UploadFileResponseModel> {
         return Future { [weak self] completion in
             OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest

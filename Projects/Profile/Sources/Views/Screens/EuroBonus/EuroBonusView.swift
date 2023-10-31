@@ -4,9 +4,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct EuroBonusView: View {
+public struct EuroBonusView: View {
     @PresentableStore var store: ProfileStore
-    var body: some View {
+
+    public init() {
+
+    }
+    public var body: some View {
         PresentableStoreLens(
             ProfileStore.self,
             getter: { state in
@@ -71,7 +75,7 @@ struct EuroBonusView_Previews: PreviewProvider {
 }
 
 extension EuroBonusView {
-    static var journey: some JourneyPresentation {
+    public static var journey: some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
             rootView: EuroBonusView()

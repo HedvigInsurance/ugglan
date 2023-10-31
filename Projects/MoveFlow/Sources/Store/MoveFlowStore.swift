@@ -133,7 +133,6 @@ public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
     case dismissAddBuilding
     case openConfirmScreen
     case openProcessingView
-    case openFailureScreen(error: String)
     case openTypeOfBuilding(for: ExtraBuildingType?)
     case dismissTypeOfBuilding
     case goToFreeTextChat

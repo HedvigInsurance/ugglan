@@ -43,7 +43,23 @@ public struct MovingFlowHousingTypeView: View {
         } onLoading: {
             DotsActivityIndicator(.standard).useDarkColor
         } onError: { error in
-            MovingFlowFailure(error: error)
+            ZStack {
+                BackgroundView().ignoresSafeArea()
+                RetryView(
+                    subtitle: error,
+                    retryTitle: L10n.openChat
+                ) {
+                    vm.store.send(.navigation(action: .goToFreeTextChat))
+                }
+                VStack {
+                    Spacer()
+                    hButton.LargeButton(type: .ghost) {
+                        vm.store.send(.navigation(action: .dismissMovingFlow))
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                }
+            }
         }
     }
 }

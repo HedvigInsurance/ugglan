@@ -114,6 +114,14 @@ public enum Environment: Hashable {
         }
     }
 
+    public var botServiceApiURL: URL {
+        switch self {
+        case .staging: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!
+        case .production: return URL(string: "https://gateway.hedvig.com/bot-service/")!
+        case .custom: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!
+        }
+    }
+
     public var giraffeWSEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
@@ -132,14 +140,30 @@ public enum Environment: Hashable {
 
     public var webBaseURL: URL {
         switch self {
-        case .staging: return URL(string: "https://www.dev.hedvigit.com")!
+        case .staging: return URL(string: "https://dev.hedvigit.com")!
         case .production: return URL(string: "https://www.hedvig.com")!
         case let .custom(_, _, _, webBaseURL): return webBaseURL
         }
     }
 
+    public var deepLinkUrl: String {
+        switch self {
+        case .staging: return "https://hedvigtest.page.link"
+        case .production: return "https://hedvig.page.link"
+        case .custom(_, _, _, _): return ""
+        }
+    }
+
     public var appStoreURL: URL {
         return URL(string: "https://apps.apple.com/se/app/hedvig/id1303668531")!
+    }
+
+    public var authUrl: URL {
+        switch self {
+        case .staging: return URL(string: "https://auth.dev.hedvigit.com")!
+        case .production: return URL(string: "https://auth.prod.hedvigit.com")!
+        case let .custom(_, _, _, _): return URL(string: "https://auth.dev.hedvigit.com")!
+        }
     }
 
     public var authEnvironment: AuthEnvironment {

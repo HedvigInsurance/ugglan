@@ -61,10 +61,8 @@ public struct hForm<Content: View>: View {
                                         if bottomAttachedViewHeight == 0 {
                                             self.bottomAttachedViewHeight = height
                                         } else {
-                                            withAnimation {
-                                                self.bottomAttachedViewHeight = height
-                                                recalculateHeight()
-                                            }
+                                            self.bottomAttachedViewHeight = height
+                                            recalculateHeight()
                                         }
                                     }
                             }
@@ -101,16 +99,14 @@ public struct hForm<Content: View>: View {
                     GeometryReader { proxy in
                         Color.clear
                             .onAppear {
-                                withAnimation {
-                                    contentHeight = proxy.size.height
-                                    recalculateHeight()
-                                }
+                                contentHeight = proxy.size.height
+                                recalculateHeight()
+
                             }
                             .onChange(of: proxy.size) { size in
-                                withAnimation {
-                                    contentHeight = size.height
-                                    recalculateHeight()
-                                }
+                                contentHeight = size.height
+                                recalculateHeight()
+
                             }
                     }
                 )
@@ -124,10 +120,9 @@ public struct hForm<Content: View>: View {
                                         if bottomAttachedViewHeight == 0 {
                                             self.bottomAttachedViewHeight = height
                                         } else {
-                                            withAnimation {
-                                                self.bottomAttachedViewHeight = height
-                                                recalculateHeight()
-                                            }
+                                            self.bottomAttachedViewHeight = height
+                                            recalculateHeight()
+
                                         }
                                     }
                             }
@@ -162,16 +157,12 @@ public struct hForm<Content: View>: View {
             GeometryReader { proxy in
                 Color.clear
                     .onAppear {
-                        withAnimation {
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
                     }
                     .onChange(of: proxy.size) { size in
-                        withAnimation {
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
                     }
             }
         )
@@ -183,24 +174,35 @@ public struct hForm<Content: View>: View {
     }
 
     func recalculateHeight() {
-        let maxContentHeight =
-            scrollViewHeight - bottomAttachedViewHeight
+        let maxContentHeight = scrollViewHeight - bottomAttachedViewHeight
+        var additionalSpaceFromTop: CGFloat = 0
         if contentHeight <= maxContentHeight {
-            self.additionalSpaceFromTop = {
+            additionalSpaceFromTop = {
                 switch contentPosition {
                 case .top: return 0
                 case .center: return (maxContentHeight - contentHeight) / 2
                 case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
                 }
             }()
-        } else {
-            additionalSpaceFromTop = 0
         }
 
+        var shouldMergeContent = false
         if mergeBottomWithContentIfNeeded {
             let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight < 0
             scrollView?.bounces = shouldMerge
-            mergeBottomViewWithContent = shouldMerge
+            shouldMergeContent = shouldMerge
+        }
+
+        let animated = self.additionalSpaceFromTop != additionalSpaceFromTop
+        if animated {
+            withAnimation {
+                self.additionalSpaceFromTop = additionalSpaceFromTop
+                self.mergeBottomViewWithContent = shouldMergeContent
+            }
+        } else {
+            self.additionalSpaceFromTop = additionalSpaceFromTop
+            self.mergeBottomViewWithContent = shouldMergeContent
+
         }
     }
 }
@@ -344,13 +346,14 @@ extension View {
     }
 }
 
-struct BackgroundView: UIViewRepresentable {
+public struct BackgroundView: UIViewRepresentable {
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    public init() {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.backgroundColor = .brand(.primaryBackground())
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    public func makeUIView(context: Context) -> some UIView {
         UIView()
     }
 }
