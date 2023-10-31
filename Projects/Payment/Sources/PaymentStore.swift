@@ -11,12 +11,14 @@ public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentConnectionID: String? = nil
+    var schema: String?
     public init() {}
 }
 
 public enum PaymentAction: ActionProtocol {
     case load
     case setPaymentData(data: PaymentData)
+    case setSchema(schema: String)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
     case connectPayments
@@ -33,7 +35,7 @@ public enum LoadingAction: LoadingProtocol {
 }
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
-    @Inject var octopus: hOctopus
+    @Inject var paymentService: hPaymentService
 
     public override func effects(
         _ getState: @escaping () -> PaymentState,
@@ -43,35 +45,27 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .load:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.PaymentDataQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
-                        let paymentData = PaymentData(data)
+                Task {
+                    do {
+                        let paymentData = try await self.paymentService.getPaymentData()
                         callback(.value(.setPaymentData(data: paymentData)))
-                    })
-                    .onError({ error in
+                    } catch let error {
                         self.setError(error.localizedDescription, for: .getPaymentData)
-                    })
+                    }
+                }
                 return disposeBag
             }
         case .fetchPaymentStatus:
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.PaymentInformationQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
-                        let paymentStatus = PaymentStatusData(data: data)
-                        callback(.value(.setPaymentStatus(data: paymentStatus)))
-                    })
-                    .onError({ error in
+                Task {
+                    do {
+                        let statusData = try await self.paymentService.getPaymentStatusData()
+                        callback(.value(.setPaymentStatus(data: statusData)))
+                    } catch let error {
                         self.setError(error.localizedDescription, for: .getPaymentStatus)
-                    })
+                    }
+                }
                 return disposeBag
             }
         default:
@@ -83,6 +77,8 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         var newState = state
 
         switch action {
+        case let .setSchema(schema):
+            newState.schema = schema
         case .load:
             setLoading(for: .getPaymentData)
         case let .setPaymentData(data):

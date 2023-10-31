@@ -47,6 +47,7 @@ struct DeleteAccountView: View {
             )
         }
     }
+
 }
 
 struct ParagraphTextModifier<Color: hColor>: ViewModifier {

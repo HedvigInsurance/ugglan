@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Combine
 
 struct GraphQLError: Error { var errors: [Error] }
 
@@ -11,7 +12,7 @@ extension ApolloClient {
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<Query.Data> {
+    ) -> Flow.Future<Query.Data> {
         Future<Query.Data> { completion in
             let cancellable = self.fetch(
                 query: query,
@@ -33,7 +34,34 @@ extension ApolloClient {
             return Disposer { cancellable.cancel() }
         }
     }
-
+    
+    public func fetch<Query: GraphQLQuery>(
+        query: Query,
+        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+        queue: DispatchQueue = DispatchQueue.main
+    ) async throws -> Query.Data {
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<Query.Data, Error>) -> Void in
+            self.fetch(
+                query: query,
+                cachePolicy: cachePolicy,
+                contextIdentifier: nil,
+                queue: queue
+            ) { result in
+                switch result {
+                case let .success(result):
+                    if let data = result.data {
+                        inCont.resume(returning: data)
+                    } else if let errors = result.errors, let firstError = errors.first {
+                        inCont.resume(throwing: firstError)
+                    }
+                case let .failure(error):
+                    inCont.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     public func refetchOnRefresh<Query: GraphQLQuery>(
         query: Query,
         refreshControl: UIRefreshControl,
@@ -48,7 +76,7 @@ extension ApolloClient {
     public func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<Mutation.Data> {
+    ) -> Flow.Future<Mutation.Data> {
         Future<Mutation.Data> { completion in
             let cancellable = self.perform(
                 mutation: mutation,
@@ -101,7 +129,7 @@ extension ApolloClient {
         operation: Mutation,
         files: [GraphQLFile],
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<Mutation.Data> {
+    ) -> Flow.Future<Mutation.Data> {
         Future { completion in let bag = DisposeBag()
             let cancellable = self.upload(operation: operation, files: files, queue: queue) { result in
                 switch result {
