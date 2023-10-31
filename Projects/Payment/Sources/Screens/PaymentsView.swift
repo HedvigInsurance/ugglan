@@ -12,7 +12,7 @@ public struct PaymentsView: View {
         LoadingViewWithContent(
             PaymentStore.self,
             [.getPaymentData, .getPaymentStatus],
-            [.load]
+            [.load, .fetchPaymentStatus]
         ) {
             hForm {
                 VStack(spacing: 8) {
@@ -32,6 +32,7 @@ public struct PaymentsView: View {
             .onAppear {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 store.send(.load)
+                store.send(.fetchPaymentStatus)
             }
         }
     }

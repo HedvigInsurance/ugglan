@@ -49,7 +49,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     do {
                         let paymentData = try await self.paymentService.getPaymentData()
                         callback(.value(.setPaymentData(data: paymentData)))
-                    } catch let error {
+                    } catch {
                         self.setError(L10n.General.errorBody, for: .getPaymentData)
                     }
                 }
@@ -62,7 +62,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                     do {
                         let statusData = try await self.paymentService.getPaymentStatusData()
                         callback(.value(.setPaymentStatus(data: statusData)))
-                    } catch let error {
+                    } catch {
                         self.setError(L10n.General.errorBody, for: .getPaymentStatus)
                     }
                 }

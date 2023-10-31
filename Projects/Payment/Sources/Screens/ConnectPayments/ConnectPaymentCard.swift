@@ -8,11 +8,7 @@ import hCoreUI
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
 
-    public init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.fetchPaymentStatus)
-    }
-
+    public init() {}
     public var body: some View {
         PresentableStoreLens(
             PaymentStore.self,
@@ -36,16 +32,23 @@ public struct ConnectPaymentCardView: View {
                     )
                 ])
             } else if paymentStatusData?.status == .needsSetup {
-                InfoCard(text: L10n.InfoCardMissingPayment.body, type: .attention)
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.PayInExplainer.buttonText,
-                            buttonAction: {
-                                store.send(.connectPayments)
-                            }
-                        )
-                    ])
+                InfoCard(
+                    text: L10n.InfoCardMissingPayment.body,
+                    type: .attention
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.PayInExplainer.buttonText,
+                        buttonAction: {
+                            store.send(.connectPayments)
+                        }
+                    )
+                ]
+                )
             }
+        }
+        .onAppear {
+            store.send(.fetchPaymentStatus)
         }
     }
 }

@@ -18,7 +18,7 @@ public class hPaymentServiceOctopus: hPaymentService {
         )
 
         return .init(
-            upcomingPayment: .init(amount: .init(amount: "", currency: ""), date: ""),
+            upcomingPayment: .init(amount: .init(amount: "100", currency: ""), date: ""),
             previousPaymentStatus: .pending
         )
     }
@@ -32,7 +32,7 @@ public class hPaymentServiceOctopus: hPaymentService {
     }
 }
 
-class hPaymentServiceDemo: hPaymentService {
+public class hPaymentServiceDemo: hPaymentService {
 
     public init() {}
     public func getPaymentData() async throws -> PaymentData {
