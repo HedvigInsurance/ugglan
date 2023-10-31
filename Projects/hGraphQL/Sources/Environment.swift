@@ -140,7 +140,7 @@ public enum Environment: Hashable {
 
     public var webBaseURL: URL {
         switch self {
-        case .staging: return URL(string: "https://www.dev.hedvigit.com")!
+        case .staging: return URL(string: "https://dev.hedvigit.com")!
         case .production: return URL(string: "https://www.hedvig.com")!
         case let .custom(_, _, _, webBaseURL): return webBaseURL
         }
@@ -156,6 +156,14 @@ public enum Environment: Hashable {
 
     public var appStoreURL: URL {
         return URL(string: "https://apps.apple.com/se/app/hedvig/id1303668531")!
+    }
+
+    public var authUrl: URL {
+        switch self {
+        case .staging: return URL(string: "https://auth.dev.hedvigit.com")!
+        case .production: return URL(string: "https://auth.prod.hedvigit.com")!
+        case let .custom(_, _, _, _): return URL(string: "https://auth.dev.hedvigit.com")!
+        }
     }
 
     public var authEnvironment: AuthEnvironment {

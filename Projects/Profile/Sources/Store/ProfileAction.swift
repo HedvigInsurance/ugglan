@@ -34,7 +34,7 @@ public enum ProfileAction: ActionProtocol {
     case makeTabActive(deeplink: DeepLink)
 
     case openChat
-    case dismissScreen
+    case dismissScreen(openChatAfter: Bool)
     case logout
 
     case setPushNotificationStatus(status: Int?)

@@ -10,7 +10,7 @@ public final class NetworkClient {
 
     public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T? where T: Decodable {
         if error != nil {
-            throw OdysseyNetworkError.networkError(message: L10n.General.errorBody)
+            throw NetworkError.networkError(message: L10n.General.errorBody)
         }
 
         guard let httpResponse = response as? HTTPURLResponse,
@@ -18,9 +18,9 @@ public final class NetworkClient {
         else {
             if let data {
                 let responseError = try? JSONDecoder().decode(ResponseError.self, from: data)
-                throw OdysseyNetworkError.badRequest(message: responseError?.message)
+                throw NetworkError.badRequest(message: responseError?.message)
             }
-            throw OdysseyNetworkError.badRequest(message: nil)
+            throw NetworkError.badRequest(message: nil)
         }
 
         guard let responseData = data else {
@@ -31,19 +31,19 @@ public final class NetworkClient {
             let response = try JSONDecoder().decode(T.self, from: responseData)
             return response
         } catch let error {
-            throw OdysseyNetworkError.parsingError(message: error.localizedDescription)
+            throw NetworkError.parsingError(message: error.localizedDescription)
         }
     }
 }
 
-enum OdysseyNetworkError: Error {
+public enum NetworkError: Error {
     case networkError(message: String)
     case badRequest(message: String?)
     case parsingError(message: String)
 }
 
-extension OdysseyNetworkError: LocalizedError {
-    var errorDescription: String? {
+extension NetworkError: LocalizedError {
+    public var errorDescription: String? {
         switch self {
         case .networkError(let message):
             return message

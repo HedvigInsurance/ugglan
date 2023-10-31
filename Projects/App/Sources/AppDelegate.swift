@@ -1,5 +1,3 @@
-import Adyen
-import AdyenActions
 import Apollo
 import Authentication
 import Claims
@@ -133,10 +131,6 @@ import hGraphQL
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
             authenticationStore.send(.loginFailure(message: nil))
         }
-
-        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-
-        if adyenRedirect { return adyenRedirect }
 
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
@@ -343,6 +337,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
             }
             .toVoid()
     }

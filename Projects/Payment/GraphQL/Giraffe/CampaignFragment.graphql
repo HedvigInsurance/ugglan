@@ -1,7 +1,0 @@
-fragment CampaignFragment on Campaign {
-    code
-    incentive {
-        ...IncentiveFragmentGiraffe
-    }
-    displayValue(locale: $locale)
-}
