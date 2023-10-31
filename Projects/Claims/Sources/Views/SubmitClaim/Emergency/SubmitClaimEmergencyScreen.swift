@@ -1,10 +1,15 @@
+import Home
 import Kingfisher
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimEmergencyScreen: View {
-    var body: some View {
+public struct SubmitClaimEmergencyScreen: View {
+
+    public init() {}
+
+    public var body: some View {
         hForm {
             VStack(spacing: 8) {
                 hSection {
@@ -17,14 +22,35 @@ struct SubmitClaimEmergencyScreen: View {
                         state.emergencyStep
                     }
                 ) { emergency in
-                    ForEach(emergency?.partners ?? [], id: \.id) { partner in
-                        ClaimEmergencyContactCard(
-                            imageUrl: partner.imageUrl,
-                            label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                            phoneNumber: partner.phoneNumber,
-                            cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                            footnote: L10n.submitClaimGlobalAssistanceFootnote
-                        )
+                    if emergency?.partners != nil {
+                        ForEach(emergency?.partners ?? [], id: \.id) { partner in
+                            ClaimEmergencyContactCard(
+                                imageUrl: partner.imageUrl,
+                                label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                                phoneNumber: partner.phoneNumber,
+                                cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                                footnote: L10n.submitClaimGlobalAssistanceFootnote
+                            )
+                        }
+                    } else {
+                        PresentableStoreLens(
+                            HomeStore.self,
+                            getter: { state in
+                                state.commonClaims
+                            }
+                        ) { commonClaims in
+                            if let index = commonClaims.firstIndex(where: {
+                                $0.layout.emergency?.emergencyNumber != nil
+                            }) {
+                                ClaimEmergencyContactCard(
+                                    image: hCoreUIAssets.hedvigBigLogo.image,
+                                    label: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                                    phoneNumber: commonClaims[index].layout.emergency?.emergencyNumber,
+                                    cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                                    footnote: L10n.submitClaimGlobalAssistanceFootnote
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -38,27 +64,34 @@ struct SubmitClaimEmergencyScreen: View {
                 .padding(.top, 16)
                 .sectionContainerStyle(.transparent)
 
-                //                VStack(spacing: 4) {
-                //                    InfoExpandableView(
-                //                        title: L10n.submitClaimWhatCostTitle,
-                //                        text: L10n.submitClaimGlassDamageWhatCostLabel
-                //                    )
-                //                    InfoExpandableView(
-                //                        title: L10n.submitClaimHospitalTitle,
-                //                        text: L10n.submitClaimGlassDamageWhatCostLabel
-                //                    )
-                //                    InfoExpandableView(
-                //                        title: L10n.submitClaimRebookTitle,
-                //                        text: L10n.submitClaimGlassDamageWorkshopLabel
-                //                    )
-                //
-                //                    InfoExpandableView(
-                //                        title: L10n.changeAddressQa,
-                //                        text: L10n.submitClaimGlassDamageWorkshopLabel
-                //                    )
-                //                }
-                //                .animation(.easeOut)
-                //                .padding(.top, 16)
+                VStack(spacing: 4) {
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq1Title,
+                        text: L10n.submitClaimEmergencyFaq1Label
+                    )
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq2Title,
+                        text: L10n.submitClaimEmergencyFaq2Label
+                    )
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq3Title,
+                        text: L10n.submitClaimEmergencyFaq3Label
+                    )
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq4Title,
+                        text: L10n.submitClaimEmergencyFaq4Label
+                    )
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq5Title,
+                        text: L10n.submitClaimEmergencyFaq5Label
+                    )
+                    InfoExpandableView(
+                        title: L10n.submitClaimEmergencyFaq6Title,
+                        text: L10n.submitClaimEmergencyFaq6Label
+                    )
+                }
+                .animation(.easeOut)
+                .padding(.top, 16)
 
                 SupportView()
                     .padding(.vertical, 56)
@@ -72,18 +105,21 @@ struct ClaimEmergencyContactCard: View {
     @PresentableStore var store: SubmitClaimStore
     var cardTitle: String?
     var footnote: String?
-    var imageUrl: String
+    var imageUrl: String?
+    var image: UIImage?
     var label: String
     var phoneNumber: String?
 
     init(
-        imageUrl: String,
+        imageUrl: String? = nil,
+        image: UIImage? = nil,
         label: String,
         phoneNumber: String? = nil,
         cardTitle: String? = nil,
         footnote: String? = nil
     ) {
         self.imageUrl = imageUrl
+        self.image = image
         self.label = label
         self.phoneNumber = phoneNumber
         self.cardTitle = cardTitle
@@ -93,15 +129,21 @@ struct ClaimEmergencyContactCard: View {
     var body: some View {
         hSection {
             VStack(spacing: 16) {
-                if let imageUrl = URL(string: imageUrl) {
-                    KFImage(imageUrl)
-                        .setProcessor(SVGImageProcessor())
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 80)
-                        .foregroundColor(hTextColor.negative)
-                        .padding(.vertical, 8)
+                Group {
+                    if let imageUrl = URL(string: imageUrl) {
+                        KFImage(imageUrl)
+                            .setProcessor(SVGImageProcessor())
+                            .resizable()
+                    } else if let image {
+                        Image(uiImage: image)
+                            .resizable()
+                    }
                 }
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 80)
+                .foregroundColor(hTextColor.negative)
+                .colorScheme(.light)
+                .padding(.vertical, 8)
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
@@ -109,7 +151,8 @@ struct ClaimEmergencyContactCard: View {
                     }
                     hText(label)
                         .foregroundColor(hTextColor.tertiary)
-                        .padding(.horizontal, 18)
+                        .colorScheme(.light)
+                        .padding(.horizontal, 24)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.center)
                 }
@@ -132,12 +175,30 @@ struct ClaimEmergencyContactCard: View {
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColor.tertiary)
+                        .colorScheme(.light)
                 }
             }
             .padding(.vertical, 24)
         }
         .sectionContainerStyle(.black)
 
+    }
+}
+
+extension SubmitClaimEmergencyScreen {
+    public static var journey: some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimEmergencyScreen(),
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar, .blurredBackground]
+        ) { action in
+            if case .dissmissNewClaimFlow = action {
+                DismissJourney()
+            }
+        }
+        .configureTitle(L10n.commonClaimEmergencyTitle)
+        .withJourneyDismissButton
     }
 }
 
