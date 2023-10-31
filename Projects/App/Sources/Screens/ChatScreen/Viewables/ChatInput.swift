@@ -96,6 +96,8 @@ extension ChatInput: Viewable {
 
                         if attachGIFPaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
@@ -141,6 +143,8 @@ extension ChatInput: Viewable {
 
                         if attachFilePaneIsOpen {
                             isHidden = true
+                        } else if currentMessage == nil {
+                            isHidden = false
                         } else if currentMessage?.richTextCompatible == true {
                             isHidden = false
                         } else {
@@ -188,9 +192,7 @@ extension ChatInput: Viewable {
 
         bag += chatState.currentMessageSignal.animated(style: SpringAnimationStyle.lightBounce()) { message in
             guard let message = message else {
-                inputBar.alpha = 0
-                singleSelectContainer.alpha = 0
-                audioContainer.alpha = 0
+                inputBar.alpha = 1
                 return
             }
 

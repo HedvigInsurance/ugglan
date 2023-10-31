@@ -9,6 +9,8 @@ public struct TextView {
     public let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
     public let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
     public let enabledSignal: ReadWriteSignal<Bool>
+    public let resignFirstResponderSignal: ReadWriteSignal<Bool> = ReadWriteSignal(false)
+
     public let shouldReturn = Delegate<(String, UITextField), Bool>()
     public let insets: UIEdgeInsets
 
@@ -83,6 +85,11 @@ extension TextView: Viewable {
                 textView.reloadInputViews()
             }
 
+        bag += resignFirstResponderSignal.onValue({ [weak textView] value in
+            if value {
+                textView?.resignFirstResponder()
+            }
+        })
         textView.snp.remakeConstraints { make in make.height.equalTo(34) }
 
         view.snp.makeConstraints { make in make.height.equalTo(40) }
