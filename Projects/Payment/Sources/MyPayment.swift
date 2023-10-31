@@ -82,17 +82,6 @@ struct MyPaymentsView_Previews: PreviewProvider {
             .onAppear {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 let memberData = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember(
-                    activeContracts: [
-                        .init(
-                            id: "id",
-                            currentAgreement: .init(
-                                productVariant: .init(
-                                    typeOfContract: "SE_ACCIDENT",
-                                    displayName: "display name"
-                                )
-                            )
-                        )
-                    ],
                     redeemedCampaigns: [],
                     chargeHistory: [
                         .init(

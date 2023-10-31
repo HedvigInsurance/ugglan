@@ -12,7 +12,7 @@ public struct PaymentData: Codable, Equatable {
     init(_ data: OctopusGraphQL.PaymentDataQuery.Data) {
         let currentMember = data.currentMember
         nextPayment = NextPayment(currentMember.upcomingCharge)
-        contracts = currentMember.activeContracts.map({ .init($0) })
+        contracts = currentMember.upcomingCharge?.contractsChargeBreakdown.map({ .init($0.contract) })
         insuranceCost = MonetaryStack(currentMember.insuranceCost)
         chargeEstimation = MonetaryStack(currentMember.upcomingCharge)
         paymentHistory = currentMember.chargeHistory.map({ PaymentHistory($0) })
@@ -36,7 +36,9 @@ public struct PaymentData: Codable, Equatable {
         let name: String
         let amount: MonetaryAmount?
 
-        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.ActiveContract) {
+        init(
+            _ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge.ContractsChargeBreakdown.Contract
+        ) {
             self.id = data.id
             self.name = data.currentAgreement.productVariant.displayName
             self.type =
