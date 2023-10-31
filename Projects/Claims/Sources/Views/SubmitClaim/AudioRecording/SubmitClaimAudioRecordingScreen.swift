@@ -88,7 +88,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             .padding(.trailing, 88)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .slideUpAppearAnimation()
-                            
+
                         }
                     }
                     .padding(.top, 8)

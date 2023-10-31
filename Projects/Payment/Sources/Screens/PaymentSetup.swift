@@ -26,34 +26,19 @@ public struct PaymentSetup {
 }
 
 extension PaymentSetup: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, AdyenOptions>>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, Bool>>) {
         switch hAnalyticsExperiment.paymentType {
         case .trustly:
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
             return (viewController, result.map { .left($0) })
         case .adyen:
-            if case let .preOnboarding(monthlyNetCost) = setupType, let monthlyNetCost = monthlyNetCost {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(.setMonthlyNetCost(cost: monthlyNetCost))
-            }
-
-            let (viewController, result) = AdyenPayInSync(setupType: setupType, urlScheme: urlScheme).materialize()
-            return (
-                viewController,
-                result.map { adyenPayInResult in
-                    if let options = adyenPayInResult.left {
-                        return .right(options)
-                    }
-
-                    return .left(true)
-                }
-            )
+            let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
+            return (viewController, result.map { .left($0) })
         }
     }
 }
 
 extension PaymentSetup {
-
     public func journey<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
@@ -65,11 +50,8 @@ extension PaymentSetup {
             let store: PaymentStore = globalPresentableStoreContainer.get()
             if let success = result.left {
                 next(success, store.state.paymentConnectionID)
-            } else if let options = result.right {
-                Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
-                    next(success, store.state.paymentConnectionID)
-                }
-                .withJourneyDismissButton
+            } else if let success = result.right {
+                next(success, store.state.paymentConnectionID)
             }
         }
     }

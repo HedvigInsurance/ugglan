@@ -140,8 +140,7 @@ extension Toast: Viewable {
         stackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview()
-            make.trailing.lessThanOrEqualToSuperview()
+            make.leading.trailing.equalToSuperview()
         }
 
         if symbol != nil {

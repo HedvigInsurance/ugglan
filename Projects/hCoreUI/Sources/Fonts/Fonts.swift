@@ -54,7 +54,7 @@ public enum Fonts {
 
             return UIFont(descriptor: fontDescriptor, size: size)
         }
-        
+
         switch style {
         case .title1, .title:
             return getFont(hedvigLettersBig)

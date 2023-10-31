@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
+struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<ChatUploadFileResponseModel>>() }
 
 extension FilePickerHeader: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (FilePickerHeader) -> Disposable) {
