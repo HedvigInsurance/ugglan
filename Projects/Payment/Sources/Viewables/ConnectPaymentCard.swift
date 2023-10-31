@@ -22,7 +22,7 @@ public struct ConnectPaymentCardView: View {
                 ) { state in
                     if let failedCharges = state.paymentStatusData?.failedCharges,
                         let nextChargeDate = state.paymentStatusData?.nextChargeDate,
-                        state.activePaymentData == nil,
+                        state.paymentStatusData == nil,
                         failedCharges > 0
                     {
                         InfoCard(
@@ -37,7 +37,7 @@ public struct ConnectPaymentCardView: View {
                                 }
                             )
                         ])
-                    } else if state.activePaymentData == nil {
+                    } else if state.paymentStatusData == nil {
                         InfoCard(text: L10n.InfoCardMissingPayment.body, type: .attention)
                             .buttons([
                                 .init(
@@ -88,12 +88,7 @@ public struct ConnectPaymentCardView: View {
             }
         }
         .onAppear {
-            switch hAnalyticsExperiment.paymentType {
-            case .adyen:
-                store.send(.fetchActivePayment)
-            case .trustly:
-                store.send(.fetchPayInMethodStatus)
-            }
+            store.send(.fetchPaymentStatus)
         }
     }
 }

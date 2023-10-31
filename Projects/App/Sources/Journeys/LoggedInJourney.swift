@@ -118,14 +118,6 @@ extension AppJourney {
                         .journeyThenDismiss
                     } else if case .openHistory = action {
                         PaymentHistory.journey
-                    } else if case let .openPayoutBankAccount(options) = action {
-                        AdyenPayOut(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
-                            .journey({ _ in
-                                DismissJourney()
-                            })
-                            .setStyle(.detented(.medium, .large))
-                            .setOptions([.defaults, .allowSwipeDismissAlways])
-                            .withJourneyDismissButton
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)

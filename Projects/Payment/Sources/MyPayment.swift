@@ -1,5 +1,3 @@
-import Adyen
-import AdyenDropIn
 import Apollo
 import Flow
 import Form
@@ -20,12 +18,11 @@ public struct MyPaymentsView: View {
         self.paymentType = hAnalyticsExperiment.paymentType
     }
     public var body: some View {
-        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getActivePayment], vm.getActionsToSendToStore()) {
+        LoadingViewWithContent(PaymentStore.self, [.getPaymentData, .getPaymentStatus], [.load]) {
             hForm {
                 PaymentInfoView(urlScheme: vm.urlScheme)
                     .padding(.top, 8)
                 PaymentView(paymentType: paymentType)
-                PayoutView(paymentType: paymentType)
                 bottomButtonView
             }
             .sectionContainerStyle(.transparent)
@@ -37,19 +34,18 @@ public struct MyPaymentsView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentData
+                state.paymentStatusData
             }
-        ) { paymentData in
+        ) { statusData in
             hSection {
                 hButton.LargeButton(type: .primary) {
                     vm.openConnectCard()
                 } content: {
                     hText(
-                        paymentData?.status == .needsSetup
+                        statusData?.status == .needsSetup
                             ? L10n.myPaymentDirectDebitButton : L10n.myPaymentDirectDebitReplaceButton
                     )
                 }
-                .trackLoading(PaymentStore.self, action: .getAdyenAvailableMethods)
             }
             .padding(.vertical, 16)
         }
@@ -59,38 +55,23 @@ public struct MyPaymentsView: View {
 
 class MyPaymentsViewModel: ObservableObject {
     @PresentableStore var store: PaymentStore
+    @Inject var adyenService: AdyenService
     let urlScheme: String
     let paymentType: PaymentType
     public init(urlScheme: String, paymentType: PaymentType) {
         self.urlScheme = urlScheme
         let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.load)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            store.send(.load)
+            store.send(.fetchPaymentStatus)
+        }
         self.paymentType = paymentType
-        for action in getActionsToSendToStore() {
-            store.send(action)
-        }
     }
-
-    func getActionsToSendToStore() -> [PaymentAction] {
-        var actions = [PaymentAction]()
-        actions.append(.load)
-        switch paymentType {
-        case .adyen:
-            store.send(.fetchActivePayment)
-            store.send(.fetchActivePayout)
-        case .trustly:
-            break
-        }
-        return actions
-    }
-
     func openConnectCard() {
-        switch paymentType {
-        case .adyen:
-            store.send(.fetchAdyenAvailableMethods)
-        case .trustly:
-            store.send(.openConnectBankAccount)
-        }
+        store.send(.openConnectBankAccount)
+    }
+
+    private func getPayment() {
 
     }
 }
@@ -100,24 +81,24 @@ struct MyPaymentsView_Previews: PreviewProvider {
         MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
             .onAppear {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
-                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
-                    nextChargeDate: "May 26th 2023",
-                    payinMethodStatus: .pending,
-                    redeemedCampaigns: [.init(code: "CODE")],
-                    balance: .init(currentBalance: .init(amount: "20", currency: "SEK")),
-                    chargeHistory: [.init(amount: .init(amount: "2220", currency: "SEKF"), date: "DATE 1")],
-                    chargeEstimation: .init(
-                        charge: .init(amount: "20", currency: "SEK"),
-                        discount: .init(amount: "20", currency: "SEK"),
-                        subscription: .init(amount: "20", currency: "SEK")
-                    ),
-                    activeContractBundles: [
-                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "name")])
-                    ]
+                let memberData = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember(
+                    redeemedCampaigns: [],
+                    chargeHistory: [
+                        .init(
+                            amount: .init(amount: 100, currencyCode: .sek),
+                            date: "2020-11-10",
+                            status: .success
+                        )
+                    ],
+                    insuranceCost: .init(
+                        monthlyDiscount: .init(amount: 20, currencyCode: .sek),
+                        monthlyGross: .init(amount: 100, currencyCode: .sek),
+                        monthlyNet: .init(amount: 80, currencyCode: .sek)
+                    )
                 )
-                let data = PaymentData(myPaymentQueryData)
-                store.send(.setPaymentData(data: data))
+                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: memberData)
+                let paymentData = PaymentData(octopusData)
+                store.send(.setPaymentData(data: paymentData))
             }
     }
 }
