@@ -188,6 +188,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var SSNError: String?
     @Published var nameFetchedFromSSN: Bool = false
     @Published var isLoading: Bool = false
+    @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
 
     var resetCoInsured: Void {
@@ -248,6 +249,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         } catch let exception {
             withAnimation {
                 self.SSNError = exception.localizedDescription
+                store.send(.coInsuredNavigationAction(action: .openInputErrorScreen))
             }
         }
         withAnimation {

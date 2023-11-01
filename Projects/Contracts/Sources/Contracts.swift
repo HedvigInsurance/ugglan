@@ -136,7 +136,7 @@ extension Contracts {
                         }
                     }
                 } else {
-                    EditCoInsuredJourney.openErrorScreen()
+                    EditCoInsuredJourney.openGenericErrorScreen()
                 }
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
                 EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)

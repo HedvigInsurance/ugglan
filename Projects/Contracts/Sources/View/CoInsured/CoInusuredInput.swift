@@ -31,6 +31,11 @@ struct CoInusuredInput: View, KeyboardReadable {
     }
 
     var body: some View {
+        mainView
+    }
+    
+    @ViewBuilder
+    var mainView: some View {
         hForm {
             VStack(spacing: 4) {
                 if isDeletion {
@@ -67,7 +72,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                 }
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !isDeletion)
-
+                
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
