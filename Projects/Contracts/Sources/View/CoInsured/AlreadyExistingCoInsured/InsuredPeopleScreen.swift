@@ -215,7 +215,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         await withCheckedContinuation { continuation in
             let SSNinput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
             self.octopus.client
-                .fetch(query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput))
+                .fetch(query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput), cachePolicy: .fetchIgnoringCacheCompletely)
                 .onValue { value in
                     if let data = value.personalInformation {
                         self.firstName = value.personalInformation?.firstName ?? ""

@@ -6,6 +6,13 @@ import UIKit
 
 struct GraphQLError: Error { var errors: [Error] }
 
+extension GraphQLError: LocalizedError {
+    var errorDescription: String? {
+        let message = errors.map { $0.localizedDescription }
+        return ""
+    }
+}
+
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
         query: Query,
@@ -21,10 +28,10 @@ extension ApolloClient {
             ) { result in
                 switch result {
                 case let .success(result):
-                    if let data = result.data {
-                        completion(.success(data))
-                    } else if let errors = result.errors {
+                    if let errors = result.errors {
                         completion(.failure(GraphQLError(errors: errors)))
+                    } else if let data = result.data {
+                        completion(.success(data))
                     }
                 case let .failure(error): completion(.failure(error))
                 }
