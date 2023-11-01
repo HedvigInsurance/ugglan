@@ -41,15 +41,8 @@ struct CoInusuredInput: View, KeyboardReadable {
                 hSection {
                     hButton.LargeButton(type: .primary) {
                         if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
-                            Task { [weak vm] in
-                                withAnimation {
-                                    vm?.SSNError = nil
-                                    vm?.isLoading = true
-                                }
-                                try await vm?.getNameFromSSN(SSN: SSN)
-                                withAnimation {
-                                    vm?.isLoading = false
-                                }
+                            Task {
+                                await vm.getNameFromSSN(SSN: SSN)
                             }
                         } else if isDeletion {
                             store.coInsuredViewModel.removeCoInsured(

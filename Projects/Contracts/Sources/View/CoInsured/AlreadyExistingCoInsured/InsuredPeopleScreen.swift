@@ -211,24 +211,52 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         }
     }
 
-    func getNameFromSSN(SSN: String) async throws {
-        await withCheckedContinuation { continuation in
+    @MainActor
+    func getNameFromSSN(SSN: String) async {
+        withAnimation {
+            self.SSNError = nil
+            self.isLoading = true
+        }
+        do {
+            let data = try await fetchNameFromSSN(SSN: SSN)
+            withAnimation {
+                self.firstName = data.firstName
+                self.lastName = data.lastName
+                self.nameFetchedFromSSN = true
+            }
+
+        } catch let exception {
+            withAnimation {
+                self.SSNError = exception.localizedDescription
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
+
+    private func fetchNameFromSSN(
+        SSN: String
+    ) async throws -> OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation {
+        try await withCheckedThrowingContinuation {
+            (
+                continuation: CheckedContinuation<
+                    OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                >
+            ) -> Void in
             let SSNinput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
             self.octopus.client
-                .fetch(query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput), cachePolicy: .fetchIgnoringCacheCompletely)
+                .fetch(
+                    query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput),
+                    cachePolicy: .fetchIgnoringCacheCompletely
+                )
                 .onValue { value in
                     if let data = value.personalInformation {
-                        self.firstName = data.firstName 
-                        self.lastName = data.lastName 
-                        self.nameFetchedFromSSN = true
-                    } else {
-                        self.SSNError = "Couldn't find SSN"
+                        continuation.resume(with: .success(data))
                     }
-                    continuation.resume()
                 }
                 .onError { graphQLError in
-                    self.SSNError = graphQLError.localizedDescription
-                    continuation.resume()
+                    continuation.resume(throwing: graphQLError)
                 }
         }
     }

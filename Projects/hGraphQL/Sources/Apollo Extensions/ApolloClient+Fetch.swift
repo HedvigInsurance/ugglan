@@ -8,8 +8,8 @@ struct GraphQLError: Error { var errors: [Error] }
 
 extension GraphQLError: LocalizedError {
     var errorDescription: String? {
-        let message = errors.map { $0.localizedDescription }
-        return ""
+        let messages = errors.map { $0.localizedDescription }
+        return messages.joined(separator: " ")
     }
 }
 
