@@ -13,7 +13,7 @@ public struct ImportantMessage: Codable, Equatable {
 }
 
 public struct UpcomingRenewal: Codable, Equatable {
-    let renewalDate: String?
+    let renewalDate: String
     let draftCertificateUrl: String?
 
     public init?(

@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct PaymentStatusData: Codable, Equatable {
@@ -26,6 +27,19 @@ public struct PaymentStatusData: Codable, Equatable {
         }
 
         self.nextChargeDate = data.currentMember.upcomingCharge?.date
+    }
+
+    var getNeedSetupInfoMessage: String? {
+        if status == .needsSetup {
+            if let failedCharges = self.failedCharges,
+                let nextChargeDate = self.nextChargeDate
+            {
+                return L10n.paymentsLatePaymentsMessage(failedCharges, nextChargeDate)
+            } else {
+                return L10n.InfoCardMissingPayment.body
+            }
+        }
+        return nil
     }
 }
 
