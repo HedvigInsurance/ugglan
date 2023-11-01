@@ -80,7 +80,14 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 }
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
-    case openCoInsuredInput(isDeletion: Bool, name: String?, personalNumber: String?, title: String, contractId: String)
+    case openCoInsuredInput(
+        isDeletion: Bool,
+        firstName: String?,
+        lastName: String?,
+        personalNumber: String?,
+        title: String,
+        contractId: String
+    )
     case openCoInsuredProcessScreen(showSuccess: Bool)
     case dismissEdit
     case dismissEditCoInsuredFlow

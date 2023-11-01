@@ -94,7 +94,7 @@ struct ContractInformationView: View {
 
             ForEach(contract.coInsured, id: \.self) { coInsured in
                 VStack(alignment: .leading) {
-                    hText(coInsured.name)
+                    hText(coInsured.fullName)
                     hText(coInsured.SSN, style: .footnote)
                         .foregroundColor(hTextColor.secondary)
                 }

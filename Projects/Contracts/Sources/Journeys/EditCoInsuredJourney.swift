@@ -24,12 +24,13 @@ public class EditCoInsuredJourney {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
                 openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
-            } else if case let .openCoInsuredInput(isDeletion, name, personalNumber, title, contractId) =
+            } else if case let .openCoInsuredInput(isDeletion, firstName, lastName, personalNumber, title, contractId) =
                 navigationAction
             {
                 openCoInsuredInput(
                     isDeletion: isDeletion,
-                    name: name,
+                    firstName: firstName,
+                    lastName: lastName,
                     personalNumber: personalNumber,
                     title: title,
                     contractId: contractId
@@ -79,7 +80,8 @@ public class EditCoInsuredJourney {
     @JourneyBuilder
     public static func openCoInsuredInput(
         isDeletion: Bool,
-        name: String?,
+        firstName: String?,
+        lastName: String?,
         personalNumber: String?,
         title: String,
         contractId: String
@@ -88,7 +90,8 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: CoInusuredInput(
                 isDeletion: isDeletion,
-                fullName: name,
+                firstName: firstName,
+                lastName: lastName,
                 SSN: personalNumber,
                 contractId: contractId
             ),
@@ -225,7 +228,7 @@ public class EditCoInsuredJourney {
             rootView: CheckboxPickerScreen<CoInsuredModel>(
                 items: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    return contractStore.state.fetchAllCoInsured.compactMap { ((object: $0, displayName: $0.name)) }
+                    return contractStore.state.fetchAllCoInsured.compactMap { ((object: $0, displayName: $0.fullName)) }
                 }(),
                 preSelectedItems: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -239,7 +242,8 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedContract in
                     let store: ContractStore = globalPresentableStoreContainer.get()
                     store.coInsuredViewModel.addCoInsured(
-                        name: selectedContract.first?.name ?? "",
+                        firstName: selectedContract.first?.firstName ?? "",
+                        lastName: selectedContract.first?.lastName ?? "",
                         personalNumber: selectedContract.first?.SSN ?? ""
                     )
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -255,7 +259,8 @@ public class EditCoInsuredJourney {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 isDeletion: false,
-                                name: nil,
+                                firstName: nil,
+                                lastName: nil,
                                 personalNumber: nil,
                                 title: L10n.contractAddCoinsured,
                                 contractId: contractId

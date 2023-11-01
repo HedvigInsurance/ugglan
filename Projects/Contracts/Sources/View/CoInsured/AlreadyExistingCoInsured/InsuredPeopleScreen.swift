@@ -2,6 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
@@ -57,7 +58,8 @@ struct InsuredPeopleScreen: View {
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             isDeletion: false,
-                                            name: nil,
+                                            firstName: nil,
+                                            lastName: nil,
                                             personalNumber: nil,
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
@@ -93,7 +95,8 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: true,
-                            name: coInsured.name,
+                            firstName: coInsured.firstName,
+                            lastName: coInsured.lastName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -112,7 +115,8 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: true,
-                            name: coInsured.name,
+                            firstName: coInsured.firstName,
+                            lastName: coInsured.lastName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -175,27 +179,57 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
+    @Published var firstName = ""
+    @Published var lastName = ""
+
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
+    @Published var noSSN = false
+    @Published var SSNError: String?
+    @Published var nameFetchedFromSSN: Bool = false
+    @Published var isLoading: Bool = false
+    @Inject var octopus: hOctopus
 
     var resetCoInsured: Void {
         coInsuredAdded = []
     }
 
-    func addCoInsured(name: String, personalNumber: String) {
-        coInsuredAdded.append(CoInsuredModel(name: name, SSN: personalNumber))
+    func addCoInsured(firstName: String, lastName: String, personalNumber: String) {
+        coInsuredAdded.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
     }
 
-    func removeCoInsured(name: String, personalNumber: String) {
-        let removedCoInsured = CoInsuredModel(name: name, SSN: personalNumber)
+    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
+        let removedCoInsured = CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber)
         if coInsuredAdded.contains(removedCoInsured) {
             if let index = coInsuredAdded.firstIndex(where: {
-                ($0.name == removedCoInsured.name && $0.SSN == removedCoInsured.SSN)
+                ($0.fullName == removedCoInsured.fullName && $0.SSN == removedCoInsured.SSN)
             }) {
                 coInsuredAdded.remove(at: index)
             }
         } else {
-            coInsuredDeleted.append(CoInsuredModel(name: name, SSN: personalNumber))
+            coInsuredDeleted.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
+        }
+    }
+
+    func getNameFromSSN(SSN: String) async throws {
+        await withCheckedContinuation { continuation in
+            let SSNinput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+            self.octopus.client
+                .fetch(query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput))
+                .onValue { value in
+                    if let data = value.personalInformation {
+                        self.firstName = value.personalInformation?.firstName ?? ""
+                        self.lastName = value.personalInformation?.lastName ?? ""
+                        self.nameFetchedFromSSN = true
+                    } else {
+                        self.SSNError = "Couldn't find SSN"
+                    }
+                    continuation.resume()
+                }
+                .onError { graphQLError in
+                    self.SSNError = graphQLError.localizedDescription
+                    continuation.resume()
+                }
         }
     }
 }
