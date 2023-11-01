@@ -54,7 +54,6 @@ struct ContractInformationView: View {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
-
                             }
                             displayTerminationButton
                         }
@@ -68,76 +67,96 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        hSection {
-            HStack {
-                hText(L10n.changeAddressCoInsuredLabel)
-                Spacer()
-                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                    .foregroundColor(hTextColor.secondary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
+        let nbOfMissingCoInsured = 2 - contract.coInsured.count
+        VStack(spacing: 0) {
+            hSection {
+                hRow {
+                    VStack {
+                        HStack {
+                            hText(L10n.changeAddressCoInsuredLabel)
+                            Spacer()
+                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                                .foregroundColor(hTextColor.secondary)
+                        }
 
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    hText("Julia Andersson")
-                    hText("SSN", style: .footnote)
-                        .foregroundColor(hTextColor.secondary)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                hText("Julia Andersson")
+                                hText("SSN", style: .footnote)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .foregroundColor(hTextColor.tertiary)
+                        }
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Spacer()
-                Image(uiImage: hCoreUIAssets.lockSmall.image)
-                    .foregroundColor(hTextColor.tertiary)
-            }
-            .padding(16)
-            hRowDivider()
 
-            ForEach(contract.coInsured, id: \.self) { coInsured in
-                VStack(alignment: .leading) {
-                    hText(coInsured.name)
-                    hText(coInsured.SSN, style: .footnote)
-                        .foregroundColor(hTextColor.secondary)
+                ForEach(Array(contract.coInsured.enumerated()), id: \.offset) { offset, coInsured in
+                    hRow {
+                        VStack(alignment: .leading) {
+                            hText(coInsured.name)
+                            hText(coInsured.SSN, style: .footnote)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    if offset < contract.coInsured.count - 1 {
+                        hRowDivider()
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
-                hRowDivider()
-            }
 
-            /* TODO: CHANGE WHEN REAL DATA */
-            let nbOfMissingCoInsured = 2 - contract.coInsured.count
-            ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                addMissingCoInsuredView
+                /* TODO: CHANGE WHEN REAL DATA */
+                ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                    hRow {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading) {
+                                hText(L10n.contractCoinsured)
+                                hText(L10n.contractNoInformation, style: .footnote)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.warningSmall.image)
+                                .foregroundColor(hSignalColor.amberElement)
+                        }
+                    }
+                    if index < nbOfMissingCoInsured - 1 {
+                        hRowDivider()
+                    }
+                }
             }
-
-            if nbOfMissingCoInsured != 0 {
-                CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
-                    .padding(.horizontal, 16)
+            .withoutHorizontalPadding
+            hSection {
+                if nbOfMissingCoInsured != 0 {
+                    CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
+                        .padding(.bottom, 16)
+                }
             }
         }
-        .withoutHorizontalPadding
-        .padding(.bottom, 16)
     }
 
     @ViewBuilder
     private var addMissingCoInsuredView: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading) {
-                hText(L10n.contractCoinsured)
-                hText(L10n.contractNoInformation, style: .footnote)
-                    .foregroundColor(hTextColor.secondary)
+        hRow {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    hText(L10n.contractCoinsured)
+                    hText(L10n.contractNoInformation, style: .footnote)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                Image(uiImage: hCoreUIAssets.warningSmall.image)
+                    .foregroundColor(hSignalColor.amberElement)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            Spacer()
-            Image(uiImage: hCoreUIAssets.warningSmall.image)
-                .foregroundColor(hSignalColor.amberElement)
         }
-        .padding(16)
-        hRowDivider()
     }
 
     @ViewBuilder
     private func upComingCoInsuredView(contract: Contract) -> some View {
-        // if....
+        // TODO: ADD PROPER DATA
         hSection {
             InfoCard(
                 text: L10n.contractCoinsuredUpdateInFuture(
