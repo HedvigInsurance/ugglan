@@ -91,7 +91,7 @@ class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDelegate 
         self.cardWidth = UIScreen.main.bounds.width * zoomFactor
         self.numberOfItems = CGFloat(itemsCount)
         self.cardWithSpacing = cardWidth + spacing
-        self.scrollViewHeight = 100
+        self.scrollViewHeight = itemsCount == 0 ? 0 : 100
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
