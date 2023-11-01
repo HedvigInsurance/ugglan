@@ -218,7 +218,27 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try await fetchNameFromSSN(SSN: SSN)
+            let data = try await withCheckedThrowingContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    >
+                ) -> Void in
+                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+                self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { value in
+                        if let data = value.personalInformation {
+                            continuation.resume(with: .success(data))
+                        }
+                    }
+                    .onError { graphQLError in
+                        continuation.resume(throwing: graphQLError)
+                    }
+            }
             withAnimation {
                 self.firstName = data.firstName
                 self.lastName = data.lastName
@@ -232,32 +252,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         }
         withAnimation {
             self.isLoading = false
-        }
-    }
-
-    private func fetchNameFromSSN(
-        SSN: String
-    ) async throws -> OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation {
-        try await withCheckedThrowingContinuation {
-            (
-                continuation: CheckedContinuation<
-                    OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
-                >
-            ) -> Void in
-            let SSNinput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
-            self.octopus.client
-                .fetch(
-                    query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput),
-                    cachePolicy: .fetchIgnoringCacheCompletely
-                )
-                .onValue { value in
-                    if let data = value.personalInformation {
-                        continuation.resume(with: .success(data))
-                    }
-                }
-                .onError { graphQLError in
-                    continuation.resume(throwing: graphQLError)
-                }
         }
     }
 }
