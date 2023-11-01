@@ -55,7 +55,11 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 .CommonClaimDescription.Layout
         ) {
             if let emergency = layout.asCommonClaimLayoutEmergency {
-                self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)
+                self.emergency = Emergency(
+                    title: emergency.title,
+                    color: emergency.color.rawValue,
+                    emergencyNumber: emergency.emergencyNumber
+                )
             } else if let content = layout.asCommonClaimLayoutTitleAndBulletPoints {
                 let bulletPoints: [TitleAndBulletPoints.BulletPoint] = content.bulletPoints.map {
                     TitleAndBulletPoints.BulletPoint(
@@ -112,13 +116,16 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         public struct Emergency: Codable, Hashable, Equatable {
             public let title: String
             public let color: String
+            public let emergencyNumber: String?
 
             public init(
                 title: String,
-                color: String
+                color: String,
+                emergencyNumber: String? = nil
             ) {
                 self.title = title
                 self.color = color
+                self.emergencyNumber = emergencyNumber
             }
 
             public var isAlert: Bool {

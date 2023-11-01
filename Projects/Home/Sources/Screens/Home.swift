@@ -237,6 +237,8 @@ extension HomeView {
                 resultJourney(.startMovingFlow)
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
+            } else if case .openEmergency = action {
+                resultJourney(.openEmergency)
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if !fromOtherService {
                     Journey(
@@ -277,6 +279,7 @@ public enum HomeResult {
     case startNewClaim
     case openTravelInsurance
     case openCrossSells
+    case openEmergency
 }
 
 struct Active_Preview: PreviewProvider {
