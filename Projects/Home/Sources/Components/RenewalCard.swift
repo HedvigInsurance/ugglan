@@ -15,35 +15,6 @@ public struct RenewalCardView: View {
 
     public init() {}
 
-    public var hasActiveInfoCard: Bool {
-        if RenewalCardModel().showRenewalCard {
-            return true
-        }
-        return false
-    }
-
-    struct RenewalCardModel {
-        var showRenewalCard: Bool = false
-        var renewalDate: Date = Date()
-        var contracts: [Contract]
-
-        init() {
-            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-            let contracts = homeStore.state.upcomingRenewalContracts
-
-            self.contracts = contracts
-
-            if contracts.count > 1,
-                contracts.allSatisfy({ contract in
-                    contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
-                }), let renewalDate = contracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
-            {
-                self.showRenewalCard = true
-                self.renewalDate = renewalDate
-            }
-        }
-    }
-
     private func buildSheetButtons(contracts: [Contract]) -> [ActionSheet.Button] {
         var buttons = contracts.map { contract in
             ActionSheet.Button.default(Text(contract.displayName)) {
@@ -73,32 +44,40 @@ public struct RenewalCardView: View {
     }
 
     public var body: some View {
-        VStack {
-            if RenewalCardModel().showRenewalCard {
-                InfoCard(
-                    text: L10n.dashboardMultipleRenewalsPrompterBody(
-                        dateComponents(from: RenewalCardModel().renewalDate).day ?? 0
-                    ),
-                    type: .info
-                )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                        buttonAction: {
-                            showMultipleAlert = true
-                        }
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.upcomingRenewalContracts
+            }
+        ) { upcomingRenewalContracts in
+            if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
+                VStack {
+                    InfoCard(
+                        text: L10n.dashboardMultipleRenewalsPrompterBody(
+                            dateComponents(from: upcomingRenewalContract.upcomingRenewal!.renewalDate.localDateToDate!)
+                                .day ?? 0
+                        ),
+                        type: .info
                     )
-                ])
-                .actionSheet(isPresented: $showMultipleAlert) {
-                    ActionSheet(
-                        title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                        buttons: buildSheetButtons(contracts: RenewalCardModel().contracts)
-                    )
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                            buttonAction: {
+                                showMultipleAlert = true
+                            }
+                        )
+                    ])
+                    .actionSheet(isPresented: $showMultipleAlert) {
+                        ActionSheet(
+                            title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
+                            buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
+                        )
+                    }
                 }
             } else {
                 VStack(spacing: 16) {
-                    ForEach(RenewalCardModel().contracts, id: \.displayName) { contract in
-                        let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
+                    ForEach(upcomingRenewalContracts, id: \.displayName) { contract in
+                        let renewalDate = contract.upcomingRenewal?.renewalDate.localDateToDate ?? Date()
                         InfoCard(
                             text: L10n.dashboardRenewalPrompterBody(
                                 dateComponents(from: renewalDate).day ?? 0

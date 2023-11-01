@@ -7,10 +7,6 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
-
-    public var hasActiveInfoCard: Bool {
-        return store.state.paymentStatusData?.status == .needsSetup
-    }
     public init() {}
     public var body: some View {
         PresentableStoreLens(

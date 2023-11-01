@@ -99,54 +99,13 @@ extension HomeView {
         }
     }
 
-    private var showInfoCardsScrollView: some View {
-        var items: [InfoCardView] = []
-
-        let paymentView = ConnectPaymentCardView()
-        if paymentView.hasActiveInfoCard {
-            items.append(InfoCardView(type: .payment))
-        }
-
-        let renewalView = RenewalCardView()
-        if renewalView.hasActiveInfoCard {
-            items.append(InfoCardView(type: .renewal))
-        }
-
-        let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        if members.contains(memberId) {
-            items.append(InfoCardView(type: .deletedView))
-        }
-
-        let importantMessageView = ImportantMessagesView()
-        if importantMessageView.hasActiveInfoCard {
-            items.append(InfoCardView(type: .importantMessage))
-        }
-
-        return InfoCardScrollView(
-            spacing: 16,
-            items: items,
-            content: { content in
-                switch content.type {
-                case .payment:
-                    paymentView
-                case .renewal:
-                    renewalView
-                case .deletedView:
-                    deletedInfoView
-                case .importantMessage:
-                    importantMessageView
-                }
-            }
-        )
-    }
-
     private var bottomContent: some View {
         hSection {
             VStack(spacing: 0) {
                 switch vm.memberStateData.state {
                 case .active:
                     VStack(spacing: 16) {
-                        showInfoCardsScrollView
+                        HomeBottomScrollView(memberId: memberId)
                         VStack(spacing: 8) {
                             startAClaimButton
                             openOtherServices
