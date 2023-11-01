@@ -218,8 +218,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 .fetch(query: OctopusGraphQL.PersonalInformationQuery(input: SSNinput), cachePolicy: .fetchIgnoringCacheCompletely)
                 .onValue { value in
                     if let data = value.personalInformation {
-                        self.firstName = value.personalInformation?.firstName ?? ""
-                        self.lastName = value.personalInformation?.lastName ?? ""
+                        self.firstName = data.firstName 
+                        self.lastName = data.lastName 
                         self.nameFetchedFromSSN = true
                     } else {
                         self.SSNError = "Couldn't find SSN"
