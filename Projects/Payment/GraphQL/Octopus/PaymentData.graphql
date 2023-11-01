@@ -1,0 +1,51 @@
+query PaymentData {
+  currentMember {
+    redeemedCampaigns {
+      code
+      description
+      id
+    }
+    chargeHistory {
+      amount {
+        ...MoneyFragment
+      }
+      date
+      status
+    }
+    insuranceCost {
+      freeUntil
+      monthlyDiscount {
+        ...MoneyFragment
+      }
+      monthlyGross {
+        ...MoneyFragment
+      }
+      monthlyNet {
+        ...MoneyFragment
+      }
+    }
+    upcomingCharge {
+      contractsChargeBreakdown {
+        contract {
+          id
+          currentAgreement {
+            productVariant {
+              typeOfContract
+              displayName
+            }
+          }
+        }
+      }
+      gross {
+        ...MoneyFragment
+      }
+      net {
+        ...MoneyFragment
+      }
+      discount {
+        ...MoneyFragment
+      }
+      date
+    }
+  }
+}

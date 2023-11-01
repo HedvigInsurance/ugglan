@@ -48,6 +48,8 @@ extension UIColor {
         case chatTextView
         case alert
         case caution
+        case adyenWebViewBg
+        case adyenWebViewText
         case datePickerSelectionColor
 
         public var color: UIColor {
@@ -162,6 +164,10 @@ extension UIColor {
                     trait.userInterfaceStyle == .dark
                         ? BrandColorBase.grayScale500 : BrandColorBase.grayScale1000
                 })
+            case .adyenWebViewBg:
+                return BrandColorBase.grayScale25
+            case .adyenWebViewText:
+                return BrandColorBase.grayScale1000
             }
         }
         var textStyle: TextStyle {
@@ -191,6 +197,7 @@ extension UIColor {
             case .chatTextView: return Fonts.fontFor(style: .standard)
             case .caution: return Fonts.fontFor(style: .standard)
             case .alert: return Fonts.fontFor(style: .standard)
+            case .adyenWebViewBg, .adyenWebViewText: return Fonts.fontFor(style: .standard)
             case .datePickerSelectionColor: return Fonts.fontFor(style: .standard)
             }
         }

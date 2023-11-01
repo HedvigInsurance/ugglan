@@ -1,0 +1,13 @@
+mutation chatSendText($input: ChatMessageTextInput!) {
+  chatSendText(input: $input) {
+    error {
+      message
+    }
+    message {
+      ... MessageFragment
+    }
+    status {
+      message
+    }
+  }
+}

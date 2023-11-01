@@ -41,6 +41,8 @@ extension AppJourney {
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()
                     }
+                case .openEmergency:
+                    SubmitClaimEmergencyScreen.journey
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
@@ -168,14 +170,6 @@ extension AppJourney {
                         .journeyThenDismiss
                     } else if case .openHistory = action {
                         PaymentHistory.journey
-                    } else if case let .openPayoutBankAccount(options) = action {
-                        AdyenPayOut(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
-                            .journey({ _ in
-                                DismissJourney()
-                            })
-                            .setStyle(.detented(.medium, .large))
-                            .setOptions([.defaults, .allowSwipeDismissAlways])
-                            .withJourneyDismissButton
                     }
                 }
                 .configureTitle(L10n.myPaymentTitle)

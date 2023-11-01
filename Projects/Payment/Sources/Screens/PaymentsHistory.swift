@@ -29,7 +29,7 @@ public struct PaymentHistory: View {
                             hRow {
                                 hText(element.date)
                                 Spacer()
-                                hText(element.amount.formattedAmount)
+                                hText(element.amount.formattedAbsoluteAmount)
                             }
                         }
                     }
@@ -59,30 +59,25 @@ struct PaymentHistory_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .sv_SE
         return PaymentHistory()
             .onAppear {
-
                 let store: PaymentStore = globalPresentableStoreContainer.get()
-                let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                    bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
-                    nextChargeDate: "May 26th 2023",
-                    payinMethodStatus: .active,
-                    redeemedCampaigns: [.init(code: "CODE")],
-                    balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
+                let memberData = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember(
+                    redeemedCampaigns: [],
                     chargeHistory: [
-                        .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
-                        .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
-                        .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
+                        .init(
+                            amount: .init(amount: 100, currencyCode: .sek),
+                            date: "2020-11-10",
+                            status: .success
+                        )
                     ],
-                    chargeEstimation: .init(
-                        charge: .init(amount: "20", currency: "SEKF"),
-                        discount: .init(amount: "20", currency: "SEK"),
-                        subscription: .init(amount: "20", currency: "SEK")
-                    ),
-                    activeContractBundles: [
-                        .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
-                    ]
+                    insuranceCost: .init(
+                        monthlyDiscount: .init(amount: 20, currencyCode: .sek),
+                        monthlyGross: .init(amount: 100, currencyCode: .sek),
+                        monthlyNet: .init(amount: 80, currencyCode: .sek)
+                    )
                 )
-                let data = PaymentData(myPaymentQueryData)
-                store.send(.setPaymentData(data: data))
+                let octopusData = OctopusGraphQL.PaymentDataQuery.Data(currentMember: memberData)
+                let paymentData = PaymentData(octopusData)
+                store.send(.setPaymentData(data: paymentData))
             }
     }
 }

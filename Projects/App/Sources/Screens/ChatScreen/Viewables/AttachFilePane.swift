@@ -25,27 +25,9 @@ struct FileUpload {
     let mimeType: String
     let fileName: String
 
-    func upload() -> Future<(key: String, bucket: String)> {
-        let giraffe: hGiraffe = Dependencies.shared.resolve()
-
-        let file = GraphQLFile(fieldName: "file", originalName: fileName, mimeType: mimeType, data: data)
-
-        return Future { completion in
-            giraffe.client
-                .upload(
-                    operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
-                    files: [file],
-                    queue: DispatchQueue.global(qos: .background)
-                )
-                .onValue { data in let key = data.uploadFile.key
-                    let bucket = data.uploadFile.bucket
-                    completion(.success((key, bucket)))
-                }
-                .onError({ error in
-                    completion(.failure(error))
-                })
-                .disposable
-        }
+    func upload() throws -> Future<ChatUploadFileResponseModel> {
+        let client: ChatFileUploaderClient = Dependencies.shared.resolve()
+        return try client.upload(file: UploadFile(data: data, name: fileName, mimeType: mimeType))
     }
 }
 
@@ -82,11 +64,11 @@ extension AttachFilePane: Viewable {
             return CGSize(width: height, height: height)
         }
 
-        func uploadFile(_ fileUpload: FileUpload) -> Future<(key: String, bucket: String)> {
-            let future = fileUpload.upload()
+        func uploadFile(_ fileUpload: FileUpload) -> Future<ChatUploadFileResponseModel> {
+            let future = try! fileUpload.upload()
 
-            future.onValue { key, _ in
-                self.chatState.sendChatFileResponseMutation(key: key, mimeType: fileUpload.mimeType)
+            future.onValue { value in
+                self.chatState.sendChatFileResponseMutation(key: value.uploadToken)
                 self.isOpenSignal.value = false
             }
             .onError { error in
@@ -98,7 +80,7 @@ extension AttachFilePane: Viewable {
 
         let header = FilePickerHeader()
 
-        bag += header.uploadFileDelegate.set { fileUpload -> Future<(key: String, bucket: String)> in
+        bag += header.uploadFileDelegate.set { fileUpload -> Future<ChatUploadFileResponseModel> in
             uploadFile(fileUpload)
         }
 
@@ -121,7 +103,7 @@ extension AttachFilePane: Viewable {
         bag += collectionKit.onValueDisposePrevious { table in
             DisposeBag(
                 table.map { asset -> Disposable in
-                    asset.uploadFileDelegate.set { data -> Future<(key: String, bucket: String)> in
+                    asset.uploadFileDelegate.set { data -> Future<ChatUploadFileResponseModel> in
                         uploadFile(data)
                     }
                 }

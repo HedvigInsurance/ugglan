@@ -18,7 +18,7 @@ struct InfoExpandableView: View {
         hSection {
             hRow {
                 hText(title)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .withCustomAccessory({
                 Spacer()

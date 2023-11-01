@@ -111,7 +111,8 @@ extension ApolloClient {
                     } else if let errors = result.errors {
                         completion(.failure(GraphQLError(errors: errors)))
                     }
-                case let .failure(error): completion(.failure(error))
+                case let .failure(error):
+                    completion(.failure(error))
                 }
             }
 
