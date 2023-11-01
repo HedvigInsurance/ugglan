@@ -1,6 +1,7 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
 import hGraphQL
 
 enum OdysseyRequest {

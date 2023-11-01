@@ -1,3 +1,0 @@
-mutation SendChatTextResponse($globalId: ID!, $text: String!) {
-    sendChatTextResponse(input: { globalId: $globalId, body: { text: $text }})
-}

@@ -21,49 +21,26 @@ struct PaymentView: View {
 
     @ViewBuilder
     private var paymentRowHeader: some View {
-        switch paymentType {
-        case .trustly:
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentData
-                }
-            ) { paymentData in
-                if let status = paymentData?.status,
-                    status != .needsSetup,
-                    paymentData?.bankAccount != nil
-                {
-                    hRow {
-                        hText(L10n.PaymentDetails.NavigationBar.title)
-                    }
-                } else if paymentData?.paymentHistory?.count ?? 0 > 0 {
-                    hRow {
-                        hText(L10n.PaymentDetails.NavigationBar.title)
-                    }
-                }
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state
             }
-        case .adyen:
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state
+        ) { state in
+            if state.paymentStatusData?.status != .needsSetup,
+                state.paymentStatusData?.displayName != nil
+            {
+                hRow {
+                    hText(L10n.PaymentDetails.NavigationBar.title)
                 }
-            ) { state in
-                if let activePaymentData = state.activePaymentData,
-                    activePaymentData.rowTitle != nil,
-                    activePaymentData.rowValue != nil
-                {
-                    hRow {
-                        hText(L10n.PaymentDetails.NavigationBar.title)
-                    }
-                } else if state.paymentData?.paymentHistory?.count ?? 0 > 0 {
-                    hRow {
-                        hText(L10n.PaymentDetails.NavigationBar.title)
-                    }
+            } else if state.paymentData?.paymentHistory?.count ?? 0 > 0 {
+                hRow {
+                    hText(L10n.PaymentDetails.NavigationBar.title)
                 }
             }
         }
     }
+
     @ViewBuilder
     private var paymentRow: some View {
         switch paymentType {
@@ -71,21 +48,20 @@ struct PaymentView: View {
             PresentableStoreLens(
                 PaymentStore.self,
                 getter: { state in
-                    state.paymentData
+                    state.paymentStatusData
                 }
-            ) { paymentData in
-                if let status = paymentData?.status,
-                    status != .needsSetup,
-                    let bankAccount = paymentData?.bankAccount
+            ) { paymentStatusData in
+                if let statusData = paymentStatusData,
+                    statusData.status != .needsSetup
                 {
                     hRow {
                         HStack(spacing: 24) {
                             Image(uiImage: HCoreUIAsset.payments.image)
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                            hText(bankAccount.name ?? "")
+                            hText(statusData.displayName ?? "")
                             Spacer()
-                            hText(bankAccount.descriptor ?? "").foregroundColor(hTextColor.secondary)
+                            hText(statusData.descriptor ?? "").foregroundColor(hTextColor.secondary)
                         }
                     }
                 }
@@ -94,12 +70,12 @@ struct PaymentView: View {
             PresentableStoreLens(
                 PaymentStore.self,
                 getter: { state in
-                    state.activePaymentData
+                    state.paymentStatusData
                 }
-            ) { activePaymentData in
-                if let activePaymentData = activePaymentData,
-                    let title = activePaymentData.rowTitle,
-                    let subtitle = activePaymentData.rowValue
+            ) { paymentStatusData in
+                if let paymentStatusData = paymentStatusData,
+                    let title = paymentStatusData.displayName,
+                    let subtitle = paymentStatusData.descriptor
                 {
                     hRow {
                         hText(title)
@@ -138,10 +114,10 @@ struct PaymentView: View {
                 PresentableStoreLens(
                     PaymentStore.self,
                     getter: { state in
-                        state.paymentData
+                        state.paymentStatusData
                     }
-                ) { paymentData in
-                    if let status = paymentData?.status,
+                ) { statusData in
+                    if let status = statusData?.status,
                         status == .pending
                     {
                         hSection {

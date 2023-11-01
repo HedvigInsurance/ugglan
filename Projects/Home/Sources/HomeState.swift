@@ -92,6 +92,7 @@ public enum HomeAction: ActionProtocol {
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
     case openCoInsured(contractIds: [String])
+    case openEmergency
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
@@ -331,5 +332,4 @@ extension CommonClaim {
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }()
-
 }

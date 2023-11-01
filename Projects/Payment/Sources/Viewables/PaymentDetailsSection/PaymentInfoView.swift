@@ -218,7 +218,7 @@ struct PaymentInfoView: View {
                 state.paymentData
             }
         ) { paymentData in
-            if let amount = paymentData?.chargeEstimation?.gross?.formattedAmountWithoutDecimal {
+            if let amount = paymentData?.chargeEstimation?.net?.formattedAmountWithoutDecimal {
                 hText(amount, style: .standardExtraExtraLarge)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
@@ -237,34 +237,18 @@ struct PaymentInfoView_Previews: PreviewProvider {
             PaymentInfoView(urlScheme: "")
                 .onAppear {
                     let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let myPaymentQueryData = GiraffeGraphQL.MyPaymentQuery.Data(
-                        bankAccount: .init(bankName: "NAME", descriptor: "hyehe"),
-                        nextChargeDate: "May 26th 2023",
-                        payinMethodStatus: .active,
-                        redeemedCampaigns: [
-                            .init(code: "CODE", displayValue: "CODE DISPLAY VALUE VALUE CODE DISPLAY VALUE VALUE ")
-                        ],
-                        balance: .init(currentBalance: .init(amount: "100", currency: "SEK")),
-                        chargeHistory: [
-                            .init(amount: .init(amount: "2220", currency: "SEK"), date: "2023-10-12"),
-                            .init(amount: .init(amount: "222", currency: "SEK"), date: "2023-11-12"),
-                            .init(amount: .init(amount: "2120", currency: "SEK"), date: "2023-12-12"),
-                        ],
-                        insuranceCost: .init(
-                            monthlyDiscount: .init(amount: "100", currency: "SEK"),
-                            monthlyGross: .init(amount: "100", currency: "SEK"),
-                            monthlyNet: .init(amount: "90", currency: "SEK")
-                        ),
-                        chargeEstimation: .init(
-                            charge: .init(amount: "200", currency: "SEKF"),
-                            discount: .init(amount: "20", currency: "SEK"),
-                            subscription: .init(amount: "180", currency: "SEK")
-                        ),
-                        activeContractBundles: [
-                            .init(id: "1", contracts: [.init(id: "1", typeOfContract: .seHouse, displayName: "NAME")])
-                        ]
+                    let octopusData = OctopusGraphQL.PaymentDataQuery.Data(
+                        currentMember: .init(
+                            redeemedCampaigns: [],
+                            chargeHistory: [],
+                            insuranceCost: .init(
+                                monthlyDiscount: .init(amount: 200, currencyCode: .sek),
+                                monthlyGross: .init(amount: 500, currencyCode: .sek),
+                                monthlyNet: .init(amount: 300, currencyCode: .sek)
+                            )
+                        )
                     )
-                    let paymentData = PaymentData(myPaymentQueryData)
+                    let paymentData = PaymentData(octopusData)
                     store.send(.setPaymentData(data: paymentData))
                 }
             Spacer()
@@ -274,7 +258,6 @@ struct PaymentInfoView_Previews: PreviewProvider {
 }
 
 class MyPaymentInfoViewModel: ObservableObject {
-    @Inject var giraffe: hGiraffe
     @PresentableStore var store: PaymentStore
     let urlScheme: String
     @Published var addCodeState = false
@@ -298,32 +281,33 @@ class MyPaymentInfoViewModel: ObservableObject {
 
     func submitDiscount() async throws {
         try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
-            self.giraffe.client
+            self.store.octopus.client
                 .perform(
-                    mutation: GiraffeGraphQL.RedeemCodeMutation(
-                        code: discountText,
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
+                    mutation: OctopusGraphQL.RedeemCodeMutation(code: discountText)
                 )
                 .onValue { [weak self] data in
-                    guard data.redeemCodeV2.asSuccessfulRedeemResult != nil else {
-                        inCont.resume(throwing: AddDiscountError.missing)
-                        return
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                        self?.store.send(.load)
-                    }
-                    DispatchQueue.main.async {
-                        Toasts.shared.displayToast(
-                            toast: Toast(
-                                symbol: .icon(hCoreUIAssets.campaignSmall.image),
-                                body: L10n.discountRedeemSuccess,
-                                subtitle: L10n.discountRedeemSuccessBody
+                    if let userError = data.memberCampaignsRedeem.userError {
+                        if let errorMessage = userError.message {
+                            inCont.resume(throwing: AddDiscountError.error(message: errorMessage))
+                        } else {
+                            inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))
+                        }
+                    } else {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                            self?.store.send(.load)
+                        }
+                        DispatchQueue.main.async {
+                            Toasts.shared.displayToast(
+                                toast: Toast(
+                                    symbol: .icon(hCoreUIAssets.campaignSmall.image),
+                                    body: L10n.discountRedeemSuccess,
+                                    subtitle: L10n.discountRedeemSuccessBody
+                                )
                             )
-                        )
-                    }
-                    inCont.resume()
+                        }
+                        inCont.resume()
 
+                    }
                 }
                 .onError { error in
                     inCont.resume(throwing: AddDiscountError.error(message: L10n.General.errorBody))

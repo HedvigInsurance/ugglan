@@ -11,7 +11,8 @@ import hGraphQL
 
 struct DirectDebitSetup {
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
+
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -135,10 +136,10 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-
-            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
+            let mutation = OctopusGraphQL.RegisterDirectDebitMutation()
+            bag += octopus.client.perform(mutation: mutation)
                 .onValue({ data in
-                    if let url = URL(string: data.startDirectDebitRegistration) {
+                    if let url = URL(string: data.registerDirectDebit2.url) {
                         let request = URLRequest(
                             url: url,
                             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
@@ -186,7 +187,7 @@ extension DirectDebitSetup: Presentable {
                     shouldDismissViewSignal
                     .filter(predicate: { $0 })
                     .onValue({ _ in
-                        paymentStore.send(.fetchPayInMethodStatus)
+                        paymentStore.send(.fetchPaymentStatus)
                         callback(.value(true))
                     })
 
@@ -231,13 +232,6 @@ extension DirectDebitSetup: Presentable {
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
-                                giraffe.client
-                                    .perform(
-                                        mutation:
-                                            GiraffeGraphQL
-                                            .CancelDirectDebitRequestMutation()
-                                    )
-                                    .sink()
                                 callback(.value(true))
                             }
                         }
@@ -254,14 +248,7 @@ extension DirectDebitSetup: Presentable {
 
                     switch type {
                     case .success:
-                        giraffe.client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
-                            .onValue { _ in
-                                giraffe.client.store.update(
-                                    query: GiraffeGraphQL.PayInMethodStatusQuery()
-                                ) { (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
-                                    data.payinMethodStatus = .pending
-                                }
-                            }
+                        paymentStore.send(.fetchPaymentStatus)
                         ClearDirectDebitStatus.clear()
                     case .failure: break
                     }
@@ -273,7 +260,7 @@ extension DirectDebitSetup: Presentable {
                             }
                         }
                         .onValue { success in
-                            paymentStore.send(.fetchPayInMethodStatus)
+                            paymentStore.send(.fetchPaymentStatus)
                             callback(.value(success))
                         }
                         .onError { _ in
@@ -297,15 +284,6 @@ extension DirectDebitSetup: Presentable {
 
                     return .allow
                 }
-
-                // if user is closing app in the middle of process make sure to inform backend
-                bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
-                    .onValue { _ in
-                        giraffe.client
-                            .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
-                            .sink()
-                    }
-
                 return DelayedDisposer(bag, delay: 1)
             }
         )

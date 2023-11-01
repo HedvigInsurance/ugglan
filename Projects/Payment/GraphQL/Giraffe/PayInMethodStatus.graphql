@@ -1,7 +1,0 @@
-query PayInMethodStatus {
-    payinMethodStatus
-    nextChargeDate
-    balance {
-        failedCharges
-    }
-}

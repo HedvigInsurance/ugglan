@@ -9,7 +9,7 @@ import hCoreUI
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
-    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<ChatUploadFileResponseModel>>()
 
     enum AssetType { case image, video }
 
@@ -53,7 +53,7 @@ struct AttachFileAsset: Reusable {
 
                         let button = Button(
                             title: L10n.chatUploadPresend,
-                            type: .standardSmall(
+                            type: .normal(
                                 backgroundColor: .brand(.primaryBackground()),
                                 textColor: .brand(.primaryText())
                             )
@@ -73,6 +73,11 @@ struct AttachFileAsset: Reusable {
                                             false
                                         sendOverlayBag.dispose()
                                     }
+                                    .onError({ error in
+                                        loadableButton.isLoadingSignal.value =
+                                            false
+                                        sendOverlayBag.dispose()
+                                    })
                             }
                         }
 

@@ -2,7 +2,6 @@ import Foundation
 import ProjectDescription
 
 public enum ExternalDependencies: CaseIterable {
-    case adyen
     case kingfisher
     case apollo
     case flow
@@ -27,7 +26,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isDevDependency: Bool { false }
 
-    public var isResourceBundledDependency: Bool { self == .adyen }
+    public var isResourceBundledDependency: Bool { false }
 
     public var isAppDependency: Bool { self == .datadog }
 
@@ -37,7 +36,6 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .exact("4.7.2"))]
         case .runtime:
             return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
@@ -110,11 +108,6 @@ public enum ExternalDependencies: CaseIterable {
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
-        case .adyen:
-            return [
-                .package(product: "Adyen"), .package(product: "AdyenCard"),
-                .package(product: "AdyenDropIn"),
-            ]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
         case .flow: return [.package(product: "Flow")]
