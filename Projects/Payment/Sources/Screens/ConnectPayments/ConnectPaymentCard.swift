@@ -27,7 +27,7 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            store.send(.connectPayments)
+                            store.send(.navigation(to: .openConnectPayments))
                         }
                     )
                 ])
@@ -40,7 +40,7 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            store.send(.connectPayments)
+                            store.send(.navigation(to: .openConnectPayments))
                         }
                     )
                 ]

@@ -52,7 +52,7 @@ public struct PaymentsView: View {
                                 HStack(alignment: .center, spacing: 8) {
                                     hText(L10n.paymentsUpcomingPayment)
                                     Spacer()
-                                    hText(upcomingPayment.amount.formattedAmount)
+                                    hText(upcomingPayment.net.formattedAmount)
                                     Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -160,7 +160,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            store.send(.connectPayments)
+                            store.send(.navigation(to: .openConnectPayments))
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }

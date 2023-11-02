@@ -107,17 +107,19 @@ extension AppJourney {
                         PaymentStore.self,
                         rootView: PaymentsView()
                     ) { action in
-                        if case .openConnectBankAccount = action {
-                            let store: PaymentStore = globalPresentableStoreContainer.get()
-                            let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                                .contains(store.state.paymentStatusData?.status ?? .active)
-                            ConnectBankAccount(
-                                setupType: hasAlreadyConnected ? .replacement : .initial,
-                                urlScheme: Bundle.main.urlScheme ?? ""
-                            )
-                            .journeyThenDismiss
-                        } else if case .openHistory = action {
-                            PaymentHistory.journey
+                        if case let .navigation(navigateTo) = action {
+                            if case .openConnectBankAccount = navigateTo {
+                                let store: PaymentStore = globalPresentableStoreContainer.get()
+                                let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                                    .contains(store.state.paymentStatusData?.status ?? .active)
+                                ConnectBankAccount(
+                                    setupType: hasAlreadyConnected ? .replacement : .initial,
+                                    urlScheme: Bundle.main.urlScheme ?? ""
+                                )
+                                .journeyThenDismiss
+                            } else if case .openHistory = navigateTo {
+                                PaymentHistory.journey
+                            }
                         }
                     }
                     .configureTitle(L10n.myPaymentTitle)
@@ -244,8 +246,10 @@ extension JourneyPresentation {
 
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
-            if case .connectPayments = action {
-                PaymentSetup(setupType: .initial).journeyThenDismiss
+            if case let .navigation(navigateTo) = action {
+                if case .openConnectPayments = navigateTo {
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
             }
         }
     }

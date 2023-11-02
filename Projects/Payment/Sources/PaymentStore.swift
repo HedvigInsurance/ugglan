@@ -21,11 +21,16 @@ public enum PaymentAction: ActionProtocol {
     case setSchema(schema: String)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
-    case connectPayments
     case setConnectionID(id: String)
+    case navigation(to: PaymentNavigation)
+}
+
+public enum PaymentNavigation: ActionProtocol {
+    case openUrl
     case openHistory
     case openConnectBankAccount
-    case openUrl
+    case openConnectPayments
+    case openPaymentDetails(data: PaymentData)
     case goBack
 }
 
