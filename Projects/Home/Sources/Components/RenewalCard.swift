@@ -50,39 +50,40 @@ public struct RenewalCardView: View {
                 state.upcomingRenewalContracts
             }
         ) { upcomingRenewalContracts in
-            if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
-                VStack {
-                    if let renewalDate = upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate {
-                        InfoCard(
-                            text: L10n.dashboardMultipleRenewalsPrompterBody(
-                                dateComponents(from: renewalDate)
-                                    .day ?? 0
-                            ),
-                            type: .info
-                        )
-                        .buttons([
-                            .init(
-                                buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                                buttonAction: {
-                                    showMultipleAlert = true
-                                }
-                            )
-                        ])
-                        .actionSheet(isPresented: $showMultipleAlert) {
-                            ActionSheet(
-                                title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                                buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
-                            )
+            /* TODO: CHANGE WHEN WE HAVE REAL DATA */
+            if let upcomingRenewal = upcomingRenewalContracts.first(where: { $0.upcomingRenewal != nil }) {
+                InfoCard(
+                    text: L10n.contractCoinsuredUpdateInFuture(
+                        3,
+                        upcomingRenewal.upcomingRenewal?.renewalDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.contractViewCertificateButton,
+                        buttonAction: {
+                            /* TODO: CHANGE */
+                            let certificateURL = upcomingRenewal.upcomingRenewal?.draftCertificateUrl
+                            if let url = URL(string: certificateURL) {
+                                store.send(
+                                    .openContractCertificate(
+                                        url: url,
+                                        title: L10n.myDocumentsInsuranceCertificate
+                                    )
+                                )
+                            }
                         }
-                    }
-                }
+                    )
+                ])
             } else {
-                VStack(spacing: 16) {
-                    ForEach(upcomingRenewalContracts, id: \.displayName) { contract in
-                        if let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate {
+                if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
+                    VStack {
+                        if let renewalDate = upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate {
                             InfoCard(
-                                text: L10n.dashboardRenewalPrompterBody(
-                                    dateComponents(from: renewalDate).day ?? 0
+                                text: L10n.dashboardMultipleRenewalsPrompterBody(
+                                    dateComponents(from: renewalDate)
+                                        .day ?? 0
                                 ),
                                 type: .info
                             )
@@ -90,10 +91,37 @@ public struct RenewalCardView: View {
                                 .init(
                                     buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
                                     buttonAction: {
-                                        openDocument(contract)
+                                        showMultipleAlert = true
                                     }
                                 )
                             ])
+                            .actionSheet(isPresented: $showMultipleAlert) {
+                                ActionSheet(
+                                    title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
+                                    buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    VStack(spacing: 16) {
+                        ForEach(upcomingRenewalContracts, id: \.displayName) { contract in
+                            if let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate {
+                                InfoCard(
+                                    text: L10n.dashboardRenewalPrompterBody(
+                                        dateComponents(from: renewalDate).day ?? 0
+                                    ),
+                                    type: .info
+                                )
+                                .buttons([
+                                    .init(
+                                        buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                                        buttonAction: {
+                                            openDocument(contract)
+                                        }
+                                    )
+                                ])
+                            }
                         }
                     }
                 }

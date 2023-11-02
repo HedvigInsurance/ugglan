@@ -26,35 +26,6 @@ struct HomeBottomScrollView: View {
                     ConnectPaymentCardView()
                 case .renewal:
                     RenewalCardView()
-
-                /* TODO: FIX WHEN REAL DATA */
-                //else if let index = contractStore.state.activeContracts.first(where: { $0.upcomingChangedAgreement.coInsured }) {
-                //                        InfoCard(
-                //                            text: L10n.contractCoinsuredUpdateInFuture(
-                //                                3,
-                //                                "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                //                            ),
-                //                            type: .info
-                //                        )
-                //                        .buttons([
-                //                            .init(
-                //                                buttonTitle: L10n.contractViewCertificateButton,
-                //                                buttonAction: {
-                //                                    /* TODO: CHANGE */
-                //                                    //                                    let certificateURL = contractStore.state.activeContracts.first?.upcomingChangedAgreement?.certificateUrl
-                //                                    let certificateURL = contractStore.state.activeContracts.first?.currentAgreement?
-                //                                        .certificateUrl
-                //                                    if let url = URL(string: certificateURL) {
-                //                                        homeStore.send(
-                //                                            .openContractCertificate(
-                //                                                url: url,
-                //                                                title: L10n.myDocumentsInsuranceCertificate
-                //                                            )
-                //                                        )
-                //                                    }
-                //                                }
-                //                            )
-                //                        ])
                 case .deletedView:
                     InfoCard(
                         text: L10n.hometabAccountDeletionNotification,
@@ -152,17 +123,15 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleMissingCoInsured() {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        //        contractStore.stateSignal.plain()
-        //            .map({ $0.activeContracts.first { contract in
-        //                contract.coInsured.contains(CoInsuredModel(name: nil, SSN: nil))
-        //            } })
-        //            .distinct()
-        //            .publisher
-        //            .receive(on: RunLoop.main)
-        //            .sink(receiveValue: { [weak self] show in
-        //                self?.handleItem(.missingCoInsured, with: show)
-        //            })
-        //            .store(in: &cancellables)
+        contractStore.stateSignal.plain()
+            .map({ $0.activeContracts.map { $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil)) } })
+            .distinct()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleItem(.missingCoInsured, with: show[1])
+            })
+            .store(in: &cancellables)
         let show = contractStore.state.activeContracts.contains(where: {
             $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil))
         })
