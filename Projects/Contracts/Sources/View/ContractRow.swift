@@ -173,8 +173,6 @@ struct ContractRow_Previews: PreviewProvider {
                                 perils: [],
                                 insurableLimits: [],
                                 documents: [],
-                                highlights: [],
-                                FAQ: nil,
                                 displayName: ""
                             )
                     ),
@@ -194,8 +192,6 @@ struct ContractRow_Previews: PreviewProvider {
                                 perils: [],
                                 insurableLimits: [],
                                 documents: [],
-                                highlights: [],
-                                FAQ: nil,
                                 displayName: ""
                             )
                     ),
