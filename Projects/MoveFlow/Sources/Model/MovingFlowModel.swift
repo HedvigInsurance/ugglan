@@ -112,7 +112,6 @@ struct Quote: Codable, Equatable, Hashable {
     let premium: MonetaryAmount
     let startDate: String
     let displayName: String
-    let highlights: [Highlight]
     let insurableLimits: [InsurableLimits]
     let perils: [Perils]
     let documents: [InsuranceDocument]
@@ -127,7 +126,6 @@ struct Quote: Codable, Equatable, Hashable {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         displayName = productVariantFragment.displayName
         exposureName = data.exposureName
-        highlights = productVariantFragment.highlights.compactMap({ .init($0) })
         insurableLimits = productVariantFragment.insurableLimits.compactMap({
             .init(label: $0.label, limit: $0.limit, description: $0.description)
         })

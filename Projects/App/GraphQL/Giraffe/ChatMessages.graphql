@@ -1,5 +1,0 @@
-query ChatMessages {
-messages {
-...MessageData
-}
-}

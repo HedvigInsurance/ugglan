@@ -41,17 +41,14 @@ extension AppJourney {
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()
                     }
+                case .openEmergency:
+                    SubmitClaimEmergencyScreen.journey
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
                             AppJourney.webRedirect(url: url)
                         }
                     }
-                }
-            } statusCard: {
-                VStack(spacing: 8) {
-                    ConnectPaymentCardView()
-                    RenewalCardView()
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in

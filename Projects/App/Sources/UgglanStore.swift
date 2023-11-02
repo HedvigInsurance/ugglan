@@ -25,8 +25,6 @@ enum UgglanAction: ActionProtocol {
 }
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {
-    @Inject var giraffe: hGiraffe
-
     override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction

@@ -24,7 +24,6 @@ struct ActiveSectionView<Claims: View>: View {
                     .fixedSize(horizontal: false, vertical: true)
                 claimsContent
             }
-            .slideUpFadeAppearAnimation()
             .sectionContainerStyle(.transparent)
         }
     }

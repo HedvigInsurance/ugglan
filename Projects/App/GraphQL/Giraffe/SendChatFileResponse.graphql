@@ -1,9 +1,0 @@
-mutation SendChatFileResponse($globalID: ID!, $key: String!, $mimeType: String!) {
-    sendChatFileResponse(input: {
-        globalId: $globalID
-        body: {
-            key: $key
-            mimeType: $mimeType
-        }
-    })
-}

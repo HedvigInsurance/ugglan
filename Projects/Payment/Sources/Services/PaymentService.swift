@@ -39,9 +39,9 @@ public class hPaymentServiceDemo: hPaymentService {
         return PaymentData(
             upcomingPayment: .init(
                 amount: .sek(200),
-                date: "2023-11-30"
+                date: "2023-11-29"
             ),
-            previousPaymentStatus: .failed(from: "2023-10-10", to: "2023-10-11", until: "2023-11-29")
+            previousPaymentStatus: .failed(from: "2023-10-10", to: "2023-11-10", until: "2023-11-29")
         )
     }
 

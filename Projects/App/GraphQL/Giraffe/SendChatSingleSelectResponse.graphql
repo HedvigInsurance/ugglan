@@ -1,3 +1,0 @@
-mutation SendChatSingleSelectResponse($globalId: ID!, $selectedValue: ID!) {
-    sendChatSingleSelectResponse(input: { globalId: $globalId, body: { selectedValue: $selectedValue }})
-}

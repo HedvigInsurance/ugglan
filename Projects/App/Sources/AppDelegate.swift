@@ -87,7 +87,9 @@ import hGraphQL
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        self.handleDeepLink(url)
+        if let rootVC = window.rootViewController {
+            self.handleDeepLink(url, fromVC: rootVC)
+        }
         return true
     }
 
@@ -330,13 +332,13 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
-                let odysseyNetworkClient = OdysseyNetworkClient()
-                let paymentNetworkClient = PaymentNetworkClient()
                 let paymentService = hPaymentServiceDemo()
+                let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in odysseyNetworkClient })
-                Dependencies.shared.add(module: Module { () -> AdyenService in paymentNetworkClient })
+                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
             }
             .toVoid()
