@@ -1,0 +1,34 @@
+fragment AgreementFragment on Agreement {
+    activeFrom
+    activeTo
+    certificateUrl
+    creationCause
+    displayItems {
+        ...AgreementDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+    displayTitle
+    displayValue
+}
+
+fragment ContractFragment on Contract {
+      currentAgreement {
+        ...AgreementFragment
+      }
+      exposureDisplayName
+      id
+      masterInceptionDate
+      supportsMoving
+      terminationDate
+      upcomingChangedAgreement {
+         ...AgreementFragment
+      }
+}

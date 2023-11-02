@@ -225,7 +225,9 @@ public class EditCoInsuredJourney {
             rootView: CheckboxPickerScreen<CoInsuredModel>(
                 items: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    return contractStore.state.fetchAllCoInsured.compactMap { ((object: $0, displayName: $0.name)) }
+                    return contractStore.state.fetchAllCoInsured.compactMap {
+                        ((object: $0, displayName: $0.name ?? ""))
+                    }
                 }(),
                 preSelectedItems: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()

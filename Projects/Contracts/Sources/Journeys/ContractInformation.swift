@@ -96,8 +96,8 @@ struct ContractInformationView: View {
                 ForEach(Array(contract.coInsured.enumerated()), id: \.offset) { offset, coInsured in
                     hRow {
                         VStack(alignment: .leading) {
-                            hText(coInsured.name)
-                            hText(coInsured.SSN, style: .footnote)
+                            hText(coInsured.name ?? "")
+                            hText(coInsured.SSN ?? "", style: .footnote)
                                 .foregroundColor(hTextColor.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -3,6 +3,7 @@ import Combine
 import Flow
 import Form
 import Foundation
+import Payment
 import Presentation
 import SafariServices
 import SwiftUI
@@ -11,21 +12,18 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Content: View, Claims: View>: View {
+public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
     @State var toolbarOptionTypes: [ToolbarOptionType] = []
     @StateObject var vm = HomeVM()
-    var statusCard: Content?
 
     var claimsContent: Claims
     var memberId: String
 
     public init(
         claimsContent: Claims,
-        statusCard: (() -> Content)?,
         memberId: @escaping () -> String
     ) {
-        self.statusCard = statusCard?()
         self.claimsContent = claimsContent
         self.memberId = memberId()
         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -66,7 +64,9 @@ extension HomeView {
             self.toolbarOptionTypes = store.state.toolbarOptionTypes
         }
         .hFormAttachToBottom {
-            bottomContent
+            VStack(spacing: 0) {
+                bottomContent
+            }
         }
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
@@ -91,10 +91,8 @@ extension HomeView {
                 )
             case .future:
                 hText(L10n.hedvigNameText, style: .title)
-                    .slideUpFadeAppearAnimation()
             case .terminated:
                 TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
-                    .slideUpFadeAppearAnimation()
             case .loading:
                 EmptyView()
             }
@@ -103,14 +101,16 @@ extension HomeView {
 
     private var bottomContent: some View {
         hSection {
-            VStack(spacing: 8) {
+            VStack(spacing: 0) {
                 switch vm.memberStateData.state {
                 case .active:
-                    ImportantMessagesView()
-                    statusCard
-                    deletedInfoView
-                    startAClaimButton
-                    openOtherServices
+                    VStack(spacing: 16) {
+                        HomeBottomScrollView(memberId: memberId)
+                        VStack(spacing: 8) {
+                            startAClaimButton
+                            openOtherServices
+                        }
+                    }
                 case .future:
                     ImportantMessagesView()
                     FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
@@ -130,13 +130,10 @@ extension HomeView {
 
     @ViewBuilder
     private var deletedInfoView: some View {
-        let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        if members.contains(memberId) {
-            InfoCard(
-                text: L10n.hometabAccountDeletionNotification,
-                type: .attention
-            )
-        }
+        InfoCard(
+            text: L10n.hometabAccountDeletionNotification,
+            type: .attention
+        )
     }
 
     private var startAClaimButton: some View {
@@ -181,14 +178,12 @@ extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
         claimsContent: Claims,
         memberId: @escaping () -> String,
-        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
-        statusCard: (() -> Content)?
+        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
             rootView: HomeView(
                 claimsContent: claimsContent,
-                statusCard: statusCard,
                 memberId: memberId
             ),
             options: [
@@ -199,14 +194,6 @@ extension HomeView {
                 resultJourney(.openFreeTextChat)
             } else if case .openMovingFlow = action {
                 resultJourney(.startMovingFlow)
-            } else if case let .openCoInsured(contractIds) = action {
-                resultJourney(.startCoInsuredFlow(contractIds: contractIds))
-            } else if case let .openContractCertificate(url, title) = action {
-                Journey(
-                    Document(url: url, title: title),
-                    style: .detented(.large)
-                )
-                .withDismissButton
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
             } else if case .openEmergency = action {
@@ -233,6 +220,8 @@ extension HomeView {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
                 resultJourney(.openCrossSells)
+            } else if case let .openCoInsured(contractIds) = action {
+                resultJourney(.startCoInsuredFlow(contractIds: contractIds))
             }
         }
         .configureTabBarItem(
@@ -251,19 +240,20 @@ public enum HomeResult {
     case startNewClaim
     case openTravelInsurance
     case openCrossSells
-    case startCoInsuredFlow(contractIds: [String])
     case openEmergency
+    case startCoInsuredFlow(contractIds: [String])
 }
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
 
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -281,11 +271,12 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -304,11 +295,12 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -326,11 +318,12 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
@@ -348,11 +341,12 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView(claimsContent: Text("")) {
-            Text("")
-        } memberId: {
-            "ID"
-        }
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
             let store: HomeStore = globalPresentableStoreContainer.get()

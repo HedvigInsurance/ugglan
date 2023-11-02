@@ -61,9 +61,9 @@ struct CoInsuredField<Content: View>: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     if let coInsured {
-                        hText(coInsured.name)
+                        hText(coInsured.name ?? "")
                             .fixedSize()
-                        hText(coInsured.SSN)
+                        hText(coInsured.SSN ?? "")
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     } else {

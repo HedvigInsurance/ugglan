@@ -25,6 +25,11 @@ public struct UpcomingRenewal: Codable, Equatable {
     }
 }
 
+enum RenewalType {
+    case regular
+    case coInsured
+}
+
 public struct Contract: Codable, Equatable {
     var upcomingRenewal: UpcomingRenewal?
     var displayName: String
