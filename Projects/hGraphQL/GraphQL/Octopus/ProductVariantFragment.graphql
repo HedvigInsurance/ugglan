@@ -15,14 +15,6 @@ fragment ProductVariantFragment on ProductVariant {
         description
         type
     }
-    highlights {
-        title
-        description
-    }
-    faq {
-        headline
-        body
-    }
 }
 
 fragment CrossSellFragment on Member {

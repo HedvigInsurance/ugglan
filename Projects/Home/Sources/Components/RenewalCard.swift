@@ -51,49 +51,45 @@ public struct RenewalCardView: View {
             }
         ) { upcomingRenewalContracts in
             if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
-                VStack {
-                    InfoCard(
-                        text: L10n.dashboardMultipleRenewalsPrompterBody(
-                            dateComponents(from: upcomingRenewalContract.upcomingRenewal!.renewalDate.localDateToDate!)
-                                .day ?? 0
-                        ),
-                        type: .info
+                InfoCard(
+                    text: L10n.dashboardRenewalPrompterBody(
+                        dateComponents(from: upcomingRenewalContract.upcomingRenewal!.renewalDate.localDateToDate!)
+                            .day ?? 0
+                    ),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                        buttonAction: {
+                            openDocument(upcomingRenewalContract)
+                        }
                     )
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                            buttonAction: {
-                                showMultipleAlert = true
-                            }
-                        )
-                    ])
-                    .actionSheet(isPresented: $showMultipleAlert) {
-                        ActionSheet(
-                            title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                            buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
-                        )
-                    }
+                ])
+            } else if upcomingRenewalContracts.count > 1,
+                let renewalDate = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate.localDateToDate
+            {
+                InfoCard(
+                    text: L10n.dashboardMultipleRenewalsPrompterBody(
+                        dateComponents(from: renewalDate).day ?? 0
+                    ),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
+                        buttonAction: {
+                            showMultipleAlert = true
+                        }
+                    )
+                ])
+                .actionSheet(isPresented: $showMultipleAlert) {
+                    ActionSheet(
+                        title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
+                        buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
+                    )
                 }
-            } else {
-                VStack(spacing: 16) {
-                    ForEach(upcomingRenewalContracts, id: \.displayName) { contract in
-                        let renewalDate = contract.upcomingRenewal?.renewalDate.localDateToDate ?? Date()
-                        InfoCard(
-                            text: L10n.dashboardRenewalPrompterBody(
-                                dateComponents(from: renewalDate).day ?? 0
-                            ),
-                            type: .info
-                        )
-                        .buttons([
-                            .init(
-                                buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                                buttonAction: {
-                                    openDocument(contract)
-                                }
-                            )
-                        ])
-                    }
-                }
+
             }
         }
         .alert(isPresented: $showFailedToOpenUrlAlert) {
@@ -127,9 +123,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                             termsVersion: "",
                             documents: [],
                             displayName: "dispaly name",
-                            insurableLimits: [],
-                            highlights: [],
-                            faq: []
+                            insurableLimits: []
                         )
                     ),
                     exposureDisplayName: "exposure dispay name",
@@ -148,9 +142,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                             termsVersion: "",
                             documents: [],
                             displayName: "display name",
-                            insurableLimits: [],
-                            highlights: [],
-                            faq: []
+                            insurableLimits: []
                         )
                     )
                 )

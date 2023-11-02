@@ -62,9 +62,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                                 termsVersion: "i",
                                 documents: [],
                                 displayName: "dis name",
-                                insurableLimits: [],
-                                highlights: [],
-                                faq: []
+                                insurableLimits: []
                             )
                         ),
                         exposureDisplayName: "DISPLAY NAME",
