@@ -121,6 +121,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                     }
                 } else {
                     hButton.LargeButton(type: .primary) {
+                        vm.showErrorView = false
                     } content: {
                         hText(L10n.generalRetry)
                     }
