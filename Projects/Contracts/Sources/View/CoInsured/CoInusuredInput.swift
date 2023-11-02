@@ -9,25 +9,25 @@ struct CoInusuredInput: View {
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
     @PresentableStore var store: ContractStore
-    let isDeletion: Bool
+    let actionType: CoInsuredAction
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
 
     public init(
-        isDeletion: Bool,
-        firstName: String? = nil,
-        lastName: String? = nil,
+        actionType: CoInsuredAction,
+        fullName: String? = nil,
         SSN: String?,
         contractId: String
     ) {
-        self.isDeletion = isDeletion
+        self.actionType = actionType
         self.SSN = SSN ?? ""
         self.contractId = contractId
 
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
-        vm.firstName = firstName ?? ""
-        vm.lastName = lastName ?? ""
+        vm.previousName = vm.fullName
+        vm.previousSSN = SSN ?? ""
+        vm.fullName = fullName ?? ""
         vm.SSNError = nil
         vm.nameFetchedFromSSN = false
         vm.noSSN = false
@@ -40,12 +40,12 @@ struct CoInusuredInput: View {
             mainView
         }
     }
-
+    
     @ViewBuilder
     var mainView: some View {
         hForm {
             VStack(spacing: 4) {
-                if isDeletion {
+                if actionType == .delete {
                     deleteCoInsuredFields
                 } else {
                     addCoInsuredFields
@@ -56,19 +56,26 @@ struct CoInusuredInput: View {
                             Task {
                                 await vm.getNameFromSSN(SSN: SSN)
                             }
-                        } else if isDeletion {
+                        } else if actionType == .delete {
                             store.coInsuredViewModel.removeCoInsured(
-                                firstName: vm.firstName,
-                                lastName: vm.lastName,
+                                fullName: vm.fullName,
                                 personalNumber: SSN
                             )
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
-                            store.coInsuredViewModel.addCoInsured(
-                                firstName: vm.firstName,
-                                lastName: vm.lastName,
-                                personalNumber: SSN
-                            )
+                            vm.fullName = vm.firstName + " " + vm.lastName
+                            
+                            if actionType == .edit {
+                                store.coInsuredViewModel.editCoInsured(
+                                    fullName: vm.fullName,
+                                    personalNumber: SSN
+                                )
+                            } else {
+                                store.coInsuredViewModel.addCoInsured(
+                                    fullName: vm.fullName,
+                                    personalNumber: SSN
+                                )
+                            }
                             store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
                     } content: {
@@ -78,8 +85,8 @@ struct CoInusuredInput: View {
                     .hButtonIsLoading(vm.isLoading)
                 }
                 .padding(.top, 12)
-                .disabled(buttonIsDisabled && !isDeletion)
-
+                .disabled(buttonIsDisabled && !(actionType == .delete))
+                
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
@@ -90,14 +97,14 @@ struct CoInusuredInput: View {
             }
         }
     }
-
+    
     @ViewBuilder
     var errorView: some View {
         hForm {
             VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                     .foregroundColor(hSignalColor.amberElement)
-
+                
                 VStack {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColor.primaryTranslucent)
@@ -130,14 +137,14 @@ struct CoInusuredInput: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-
+                
             }
             .padding(16)
         }
     }
-
+    
     var buttonDisplayText: String {
-        if isDeletion {
+        if actionType == .delete {
             return L10n.removeConfirmationButton
         } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
@@ -147,11 +154,10 @@ struct CoInusuredInput: View {
             return L10n.generalSaveButton
         }
     }
-
+    
     @ViewBuilder
     var addCoInsuredFields: some View {
         Group {
-            //<<<<<<< ours
             if vm.noSSN {
                 hSection {
                     hFloatingTextField(
@@ -182,7 +188,7 @@ struct CoInusuredInput: View {
                     vm.nameFetchedFromSSN = false
                 }
             }
-
+            
             if vm.nameFetchedFromSSN || vm.noSSN {
                 hSection {
                     HStack(spacing: 4) {
@@ -205,7 +211,7 @@ struct CoInusuredInput: View {
                 .disabled(vm.nameFetchedFromSSN)
                 .sectionContainerStyle(.transparent)
             }
-
+            
             hSection {
                 Toggle(isOn: $vm.noSSN.animation(.default)) {
                     VStack(alignment: .leading, spacing: 0) {
@@ -227,7 +233,7 @@ struct CoInusuredInput: View {
         }
         .hFieldSize(.small)
     }
-
+    
     @ViewBuilder
     var deleteCoInsuredFields: some View {
         if vm.firstName != "" && vm.lastName != "" && SSN != "" {
@@ -244,7 +250,7 @@ struct CoInusuredInput: View {
             }
             .disabled(true)
             .sectionContainerStyle(.transparent)
-
+            
             hSection {
                 hFloatingField(
                     value: SSN,
@@ -260,7 +266,7 @@ struct CoInusuredInput: View {
             .sectionContainerStyle(.transparent)
         }
     }
-
+    
     var buttonIsDisabled: Bool {
         var personalNumberValid = false
         if vm.noSSN {
@@ -282,7 +288,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, SSN: "", contractId: "")
+        CoInusuredInput(actionType: .add, SSN: "", contractId: "")
     }
 }
 

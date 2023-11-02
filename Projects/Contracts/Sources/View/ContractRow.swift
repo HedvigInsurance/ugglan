@@ -174,7 +174,8 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 exposureDisplayName: "",
                 masterInceptionDate: "",
@@ -193,7 +194,8 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 upcomingRenewal:
                     ContractRenewal(

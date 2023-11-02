@@ -126,7 +126,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts.map {
-                    $0.coInsured.contains(CoInsuredModel(firstName: nil, lastName: nil, SSN: nil))
+                    $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
                 }
             })
             .distinct()
@@ -137,7 +137,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             })
             .store(in: &cancellables)
         let show = contractStore.state.activeContracts.contains(where: {
-            $0.coInsured.contains(CoInsuredModel(firstName: nil, lastName: nil, SSN: nil))
+            $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
         })
         handleItem(.missingCoInsured, with: show)
     }

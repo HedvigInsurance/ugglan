@@ -67,7 +67,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        let nbOfMissingCoInsured = 2 - contract.coInsured.count
+        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
         VStack(spacing: 0) {
             hSection {
                 hRow {
@@ -75,7 +75,7 @@ struct ContractInformationView: View {
                         HStack {
                             hText(L10n.changeAddressCoInsuredLabel)
                             Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                            hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
                                 .foregroundColor(hTextColor.secondary)
                         }
 
@@ -92,15 +92,14 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                ForEach(contract.coInsured, id: \.self) { coInsured in
+                ForEach(contract.currentAgreement?.coInsured ?? [], id: \.self) { coInsured in
                     VStack(alignment: .leading) {
-                        hText(coInsured.fullName)
+                        hText(coInsured.fullName ?? "")
                         hText(coInsured.SSN ?? "", style: .footnote)
                             .foregroundColor(hTextColor.secondary)
                     }
                 }
 
-                /* TODO: CHANGE WHEN REAL DATA */
                 ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
                     hRow {
                         HStack(alignment: .top) {

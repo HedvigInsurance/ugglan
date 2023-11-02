@@ -85,12 +85,6 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
-    public var coInsured: [CoInsuredModel] = [
-        //        CoInsuredModel(name: "Julia", SSN: "000000000"),
-        //        CoInsuredModel(name: "Test", SSN: "11111111"),
-        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
-        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
-    ] /* TODO: MOVE INITIAIZATION AND CHANGE TO LET */
 
     public var showEditInfo: Bool {
         return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
@@ -135,7 +129,8 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement = .init(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
+            coInsured: []
         )
         masterInceptionDate = nil
         terminationDate = nil
@@ -453,7 +448,8 @@ public struct Agreement: Codable, Hashable {
         activeTo: String,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
+        coInsured: [CoInsuredModel]
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -461,6 +457,7 @@ public struct Agreement: Codable, Hashable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.coInsured = coInsured
     }
 
     public let certificateUrl: String?
@@ -469,11 +466,16 @@ public struct Agreement: Codable, Hashable {
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
+    public var coInsured: [CoInsuredModel]
+    public var nbOfMissingCoInsured: Int {
+        coInsured.filter({ $0.needsMissingInfo }).count
+    }
 
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
+        coInsured: [CoInsuredModel]
     ) {
         self.premium = premium
         self.displayItems = displayItems
@@ -481,6 +483,7 @@ public struct Agreement: Codable, Hashable {
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
+        self.coInsured = coInsured
     }
 
     init?(
@@ -495,6 +498,7 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
+        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment ) }) ?? []
     }
 
 }

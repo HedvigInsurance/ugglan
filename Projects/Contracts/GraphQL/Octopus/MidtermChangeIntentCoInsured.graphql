@@ -1,0 +1,20 @@
+mutation MidtermChangeIntentCoInsured($contractId: ID!, $input: MidtermChangeIntentCoInsuredInput!) {
+  midtermChangeIntentCoInsured(contractId: $contractId, input: $input) {
+    intent {
+      id
+      currentPremium {
+        amount
+        currencyCode
+      }
+      newPremium {
+        amount
+        currencyCode
+      }
+      activationDate
+      state
+    }
+    userError {
+      message
+    }
+  }
+}

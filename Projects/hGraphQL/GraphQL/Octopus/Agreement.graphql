@@ -2,6 +2,9 @@ fragment AgreementFragment on Agreement {
     activeFrom
     activeTo
     certificateUrl
+    coInsured {
+        ...CoInsuredFragment
+    }
     creationCause
     displayItems {
         ...AgreementDisplayItemFragment
@@ -31,4 +34,11 @@ fragment ContractFragment on Contract {
       upcomingChangedAgreement {
          ...AgreementFragment
       }
+}
+
+fragment CoInsuredFragment on AgreementCoInsured {
+    birthdate
+    fullName
+    needsMissingInfo
+    ssn
 }

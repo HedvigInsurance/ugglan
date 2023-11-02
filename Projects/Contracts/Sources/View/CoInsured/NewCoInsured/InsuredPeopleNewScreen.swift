@@ -6,7 +6,6 @@ import hCoreUI
 struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
-    @State var contractNbOfCoinsured = 2 /* TODO: CHANGE WHEN WE HAVE REAL DATA */
     @ObservedObject var vm: InsuredPeopleNewScreenModel
 
     public init(
@@ -28,7 +27,9 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
+                        if let coInsured = contract.currentAgreement?.coInsured {
+                            ContractOwnerField(coInsured: coInsured)
+                        }
 
                         hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
                             CoInsuredField(
@@ -38,8 +39,9 @@ struct InsuredPeopleNewScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
 
-                        if vm.coInsuredAdded.count < contractNbOfCoinsured {
-                            let nbOfFields = contractNbOfCoinsured - vm.coInsuredAdded.count
+                        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
+                        if vm.coInsuredAdded.count < nbOfMissingCoInsured  {
+                            let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                             hSection {
                                 ForEach((1...nbOfFields), id: \.self) { index in
                                     CoInsuredField(
@@ -72,7 +74,8 @@ struct InsuredPeopleNewScreen: View {
             ) { contract in
                 VStack(spacing: 8) {
                     if let contract = contract {
-                        if vm.coInsuredAdded.count >= contractNbOfCoinsured {
+                        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
+                        if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                             LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
                                 /* TODO: SEND MUTATION */
                                 store.send(
@@ -81,7 +84,7 @@ struct InsuredPeopleNewScreen: View {
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
                             }
-                            .disabled((contract.coInsured.count + vm.coInsuredAdded.count) < contractNbOfCoinsured)
+                            .disabled(((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count) < nbOfMissingCoInsured)
                             .padding(.horizontal, 16)
                         }
 
@@ -104,9 +107,8 @@ struct InsuredPeopleNewScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: false,
-                            firstName: coInsured.firstName,
-                            lastName: coInsured.lastName,
+                            actionType: .edit,
+                            fullName: coInsured.fullName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractAddConisuredInfo,
                             contractId: contractId
@@ -139,9 +141,8 @@ struct InsuredPeopleNewScreen: View {
                     store.send(
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
-                                isDeletion: false,
-                                firstName: nil,
-                                lastName: nil,
+                                actionType: .add,
+                                fullName: nil,
                                 personalNumber: nil,
                                 title: L10n.contractAddConisuredInfo,
                                 contractId: contractId

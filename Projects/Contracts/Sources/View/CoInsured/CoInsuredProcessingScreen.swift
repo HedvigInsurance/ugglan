@@ -26,14 +26,16 @@ struct CoInsuredProcessingScreen: View {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contracts = contractStore.state
                         for contract in contracts.activeContracts {
-                            if contract.coInsured.count < 2 { /* TODO: CHANGE WHEN REAL DATA */
-                                store.send(
-                                    .coInsuredNavigationAction(
-                                        action: .openMissingCoInsuredAlert(contractId: contract.id)
+                            contract.currentAgreement?.coInsured.forEach({ coInsured in
+                                if coInsured.needsMissingInfo {
+                                    store.send(
+                                        .coInsuredNavigationAction(
+                                            action: .openMissingCoInsuredAlert(contractId: contract.id)
+                                        )
                                     )
-                                )
-                                break
-                            }
+                                    return
+                                }
+                            })
                         }
                     }
                 }

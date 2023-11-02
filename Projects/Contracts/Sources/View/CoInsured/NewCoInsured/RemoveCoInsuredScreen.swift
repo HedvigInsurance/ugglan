@@ -28,37 +28,37 @@ struct RemoveCoInsuredScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
-                        let missingCoInsured = contract.coInsured.filter {
-                            $0 == CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)
-                        }
-                        let exisistingCoInsured = contract.coInsured.filter {
-                            $0 != CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)
-                        }
-                        hSection {
-                            ForEach(exisistingCoInsured, id: \.self) { coInsured in
-                                CoInsuredField(
-                                    coInsured: coInsured,
-                                    accessoryView: accessoryView(
-                                        firstName: coInsured.firstName,
-                                        lastName: coInsured.lastName,
-                                        SSN: coInsured.SSN
+                        if let coInsured = contract.currentAgreement?.coInsured {
+                            ContractOwnerField(coInsured: coInsured)
+                            let missingCoInsured = coInsured.filter {
+                                $0 == CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)
+                            }
+                            let exisistingCoInsured = coInsured.filter {
+                                $0 != CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)
+                            }
+                            hSection {
+                                ForEach(exisistingCoInsured, id: \.self) { coInsured in
+                                    CoInsuredField(
+                                        coInsured: coInsured,
+                                        accessoryView: accessoryView(
+                                            fullName: coInsured.fullName,
+                                            SSN: coInsured.SSN
+                                        )
                                     )
-                                )
+                                }
+                                ForEach(missingCoInsured, id: \.self) { missingCoInsured in
+                                    CoInsuredField(
+                                        accessoryView: accessoryView(
+                                            fullName: nil,
+                                            SSN: nil
+                                        ),
+                                        title: L10n.contractCoinsured,
+                                        subTitle: L10n.contractNoInformation
+                                    )
+                                }
                             }
-                            ForEach(missingCoInsured, id: \.self) { missingCoInsured in
-                                CoInsuredField(
-                                    accessoryView: accessoryView(
-                                        firstName: nil,
-                                        lastName: nil,
-                                        SSN: nil
-                                    ),
-                                    title: L10n.contractCoinsured,
-                                    subTitle: L10n.contractNoInformation
-                                )
-                            }
+                            .sectionContainerStyle(.transparent)
                         }
-                        .sectionContainerStyle(.transparent)
                     }
                 }
             }
@@ -66,16 +66,15 @@ struct RemoveCoInsuredScreen: View {
     }
 
     @ViewBuilder
-    func accessoryView(firstName: String?, lastName: String?, SSN: String?) -> some View {
+    func accessoryView(fullName: String?, SSN: String?) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
-                            firstName: firstName,
-                            lastName: lastName,
+                            actionType: .delete,
+                            fullName: fullName,
                             personalNumber: SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId

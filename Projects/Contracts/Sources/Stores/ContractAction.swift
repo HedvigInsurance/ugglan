@@ -81,9 +81,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredInput(
-        isDeletion: Bool,
-        firstName: String?,
-        lastName: String?,
+        actionType: CoInsuredAction,
+        fullName: String?,
         personalNumber: String?,
         title: String,
         contractId: String
@@ -99,4 +98,10 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openMissingCoInsuredAlert(contractId: String)
     case openErrorScreen
     case openSelectInsuranceScreen(contractIds: [String])
+}
+
+public enum CoInsuredAction: Codable {
+    case delete
+    case edit
+    case add
 }

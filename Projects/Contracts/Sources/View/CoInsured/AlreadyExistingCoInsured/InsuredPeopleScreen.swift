@@ -28,9 +28,10 @@ struct InsuredPeopleScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
+                        let coInsured = contract.currentAgreement?.coInsured ?? []
+                        ContractOwnerField(coInsured: coInsured)
                         hSection {
-                            ForEach(contract.coInsured, id: \.self) { coInsured in
+                            ForEach(coInsured, id: \.self) { coInsured in
                                 if !vm.coInsuredDeleted.contains(coInsured) {
                                     CoInsuredField(
                                         coInsured: coInsured,
@@ -57,9 +58,8 @@ struct InsuredPeopleScreen: View {
                                 store.send(
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
-                                            isDeletion: false,
-                                            firstName: nil,
-                                            lastName: nil,
+                                            actionType: .add,
+                                            fullName: nil,
                                             personalNumber: nil,
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
@@ -94,9 +94,8 @@ struct InsuredPeopleScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
-                            firstName: coInsured.firstName,
-                            lastName: coInsured.lastName,
+                            actionType: .delete,
+                            fullName: coInsured.fullName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -114,9 +113,8 @@ struct InsuredPeopleScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
-                            firstName: coInsured.firstName,
-                            lastName: coInsured.lastName,
+                            actionType: .delete,
+                            fullName: coInsured.fullName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -182,6 +180,9 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var firstName = ""
     @Published var lastName = ""
+    var fullName: String = ""
+    @Published var previousName: String = ""
+    @Published var previousSSN: String = ""
 
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
@@ -198,12 +199,12 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded = []
     }
 
-    func addCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        coInsuredAdded.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
+    func addCoInsured(fullName: String, personalNumber: String) {
+        coInsuredAdded.append(CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false))
     }
 
-    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        let removedCoInsured = CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber)
+    func removeCoInsured(fullName: String, personalNumber: String) {
+        let removedCoInsured = CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false)
         if coInsuredAdded.contains(removedCoInsured) {
             if let index = coInsuredAdded.firstIndex(where: {
                 ($0.fullName == removedCoInsured.fullName && $0.SSN == removedCoInsured.SSN)
@@ -211,8 +212,18 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 coInsuredAdded.remove(at: index)
             }
         } else {
-            coInsuredDeleted.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
+            coInsuredDeleted.append(CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false))
         }
+    }
+    
+    func editCoInsured(fullName: String, personalNumber: String) {
+        let previousValue = CoInsuredModel(fullName: previousName, SSN: previousSSN, needsMissingInfo: false)
+        if let index = coInsuredAdded.firstIndex(where: {
+            ($0.fullName == previousValue.fullName && $0.SSN == previousValue.SSN)
+        }) {
+            coInsuredAdded.remove(at: index)
+        }
+        addCoInsured(fullName: fullName, personalNumber: personalNumber)
     }
 
     @MainActor

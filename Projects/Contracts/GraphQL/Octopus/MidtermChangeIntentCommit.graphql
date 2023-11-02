@@ -1,0 +1,20 @@
+mutation MidtermChangeIntentCommit($midtermChangeIntentCommitId: ID!) {
+  midtermChangeIntentCommit(id: $midtermChangeIntentCommitId) {
+    intent {
+      id
+      currentPremium {
+        amount
+        currencyCode
+      }
+      newPremium {
+        amount
+        currencyCode
+      }
+      activationDate
+      state
+    }
+    userError {
+      message
+    }
+  }
+}

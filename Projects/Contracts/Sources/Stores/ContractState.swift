@@ -19,8 +19,8 @@ public struct ContractState: StateProtocol {
     public var fetchAllCoInsured: [CoInsuredModel] {
         var coInsuredList: [CoInsuredModel] = []
         activeContracts.forEach { contract in
-            if !contract.coInsured.contains(CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)) {
-                coInsuredList.append(contentsOf: contract.coInsured)
+            if !(contract.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false) {
+                coInsuredList.append(contentsOf: contract.currentAgreement?.coInsured ?? [])
             }
         }
         return coInsuredList
