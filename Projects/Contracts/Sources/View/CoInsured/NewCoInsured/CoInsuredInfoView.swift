@@ -22,7 +22,7 @@ struct CoInsuredInfoView: View {
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
                         store.send(
-                            .openEditCoInsured(contractId: contractId, hasCoInsuredData: false, fromInfoCard: true)
+                            .openEditCoInsured(contractId: contractId, fromInfoCard: true)
                         )
                     }
                 )

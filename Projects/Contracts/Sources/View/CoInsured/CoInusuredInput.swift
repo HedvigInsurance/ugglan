@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CoInusuredInput: View, KeyboardReadable {
+struct CoInusuredInput: View {
     @State var fullName: String
     @State var firstName: String
     @State var lastName: String
@@ -105,9 +105,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                     .onAppear {
                         keyboardEnabled = false
                     }
-                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                        keyboardEnabled = newIsKeyboardEnabled
-                    }
                 } else {
                     hSection {
                         hFloatingTextField(
@@ -117,9 +114,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                             focusValue: .SSN,
                             placeholder: L10n.contractPersonalIdentity
                         )
-                    }
-                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                        keyboardEnabled = newIsKeyboardEnabled
                     }
                 }
             }
@@ -134,9 +128,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                             focusValue: .firstName,
                             placeholder: L10n.contractFirstName
                         )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
                         hFloatingTextField(
                             masking: Masking(type: .lastName),
                             value: $lastName,
@@ -144,9 +135,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                             focusValue: .lastName,
                             placeholder: L10n.contractLastName
                         )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -251,23 +239,4 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
-}
-
-protocol KeyboardReadable {
-    var keyboardPublisher: AnyPublisher<Bool, Never> { get }
-}
-
-extension KeyboardReadable {
-    var keyboardPublisher: AnyPublisher<Bool, Never> {
-        Publishers.Merge(
-            NotificationCenter.default
-                .publisher(for: UIResponder.keyboardWillShowNotification)
-                .map { _ in true },
-
-            NotificationCenter.default
-                .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in false }
-        )
-        .eraseToAnyPublisher()
-    }
 }

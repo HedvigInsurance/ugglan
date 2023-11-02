@@ -1,14 +1,14 @@
 import Foundation
 import Presentation
-import hCoreUI
 import SwiftUI
 import hCore
+import hCoreUI
 
 struct RemoveCoInsuredScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    
+
     public init(
         contractId: String
     ) {
@@ -17,7 +17,7 @@ struct RemoveCoInsuredScreen: View {
         vm = store.coInsuredViewModel
         vm.resetCoInsured
     }
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -29,10 +29,12 @@ struct RemoveCoInsuredScreen: View {
                 ) { contract in
                     if let contract = contract {
                         ContractOwnerField(coInsured: contract.coInsured)
-                        let missingCoInsured = 2 - contract.coInsured.count /* TODO: CHANGE WHEN WE HAVE REAL DATA */
-                        
+                        let missingCoInsured = contract.coInsured.filter { $0 == CoInsuredModel(name: nil, SSN: nil) }
+                        let exisistingCoInsured = contract.coInsured.filter {
+                            $0 != CoInsuredModel(name: nil, SSN: nil)
+                        }
                         hSection {
-                            ForEach(contract.coInsured, id: \.self) { coInsured in
+                            ForEach(exisistingCoInsured, id: \.self) { coInsured in
                                 CoInsuredField(
                                     coInsured: coInsured,
                                     accessoryView: accessoryView(
@@ -41,7 +43,7 @@ struct RemoveCoInsuredScreen: View {
                                     )
                                 )
                             }
-                            ForEach(0..<missingCoInsured, id: \.self) { missingCoInsured in
+                            ForEach(missingCoInsured, id: \.self) { missingCoInsured in
                                 CoInsuredField(
                                     accessoryView: accessoryView(name: nil, SSN: nil),
                                     title: L10n.contractCoinsured,
@@ -55,7 +57,7 @@ struct RemoveCoInsuredScreen: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func accessoryView(name: String?, SSN: String?) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
