@@ -45,8 +45,6 @@ public class EditCoInsuredJourney {
                 openMissingCoInsuredAlert(contractId: contractId)
             } else if case .openErrorScreen = navigationAction {
                 openGenericErrorScreen()
-            } else if case .openInputErrorScreen = navigationAction {
-                openInputErrorScreen()
             }
         }
     }
@@ -157,23 +155,6 @@ public class EditCoInsuredJourney {
             rootView: CoInsuredErrorScreen()
         ) { action in
             getScreen(for: action)
-        }
-    }
-    
-    
-    @JourneyBuilder
-    public static func openInputErrorScreen() -> some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: CoInsuredInputErrorScreen(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .coInsuredNavigationAction(action: .dismissError) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
         }
     }
 

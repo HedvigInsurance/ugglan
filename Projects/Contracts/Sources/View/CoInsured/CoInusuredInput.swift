@@ -28,10 +28,17 @@ struct CoInusuredInput: View, KeyboardReadable {
         vm = store.coInsuredViewModel
         vm.firstName = firstName ?? ""
         vm.lastName = lastName ?? ""
+        vm.SSNError = nil
+        vm.nameFetchedFromSSN = false
+        vm.noSSN = false
     }
 
     var body: some View {
-        mainView
+        if vm.showErrorView {
+            errorView
+        } else {
+            mainView
+        }
     }
     
     @ViewBuilder
@@ -82,10 +89,49 @@ struct CoInusuredInput: View, KeyboardReadable {
                 .padding(.top, 4)
             }
         }
-        .onAppear {
-            vm.SSNError = nil
-            vm.nameFetchedFromSSN = false
-            vm.noSSN = false
+    }
+    
+    @ViewBuilder
+    var errorView: some View {
+        hForm {
+            VStack(spacing: 16) {
+                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .foregroundColor(hSignalColor.amberElement)
+                
+                VStack {
+                    hText(L10n.somethingWentWrong)
+                        .foregroundColor(hTextColor.primaryTranslucent)
+                    hText(vm.SSNError?.localizedDescription ?? "")
+                        .foregroundColor(hTextColor.secondaryTranslucent)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            .padding(.bottom, 32)
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                if vm.enterManually {
+                    hButton.LargeButton(type: .primary) {
+                        vm.showErrorView = false
+                        vm.noSSN = true
+                        SSN = ""
+                    } content: {
+                        hText(L10n.coinsuredEnterManuallyButton)
+                    }
+                } else {
+                    hButton.LargeButton(type: .primary) {
+                    } content: {
+                        hText(L10n.generalRetry)
+                    }
+                }
+                hButton.LargeButton(type: .ghost) {
+                } content: {
+                    hText(L10n.generalCancelButton)
+                }
+                
+            }
+            .padding(16)
         }
     }
 
@@ -128,8 +174,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                         value: $SSN,
                         equals: $type,
                         focusValue: .SSN,
-                        placeholder: L10n.contractPersonalIdentity,
-                        error: $vm.SSNError
+                        placeholder: L10n.contractPersonalIdentity
                     )
                 }
                 .disabled(vm.isLoading)

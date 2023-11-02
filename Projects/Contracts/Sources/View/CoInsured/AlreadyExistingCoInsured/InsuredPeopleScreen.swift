@@ -185,9 +185,11 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
-    @Published var SSNError: String?
+    @Published var SSNError: Error?
     @Published var nameFetchedFromSSN: Bool = false
     @Published var isLoading: Bool = false
+    @Published var showErrorView: Bool = false
+    @Published var enterManually: Bool = false
     @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
 
@@ -237,6 +239,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                         }
                     }
                     .onError { graphQLError in
+                        
                         continuation.resume(throwing: graphQLError)
                     }
             }
@@ -247,9 +250,17 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             }
 
         } catch let exception {
+            if let exception = exception as? GraphQLError {
+                switch exception {
+                case .graphQLError:
+                    self.enterManually = true
+                case .otherError:
+                    self.enterManually = false
+                }
+            }
             withAnimation {
-                self.SSNError = exception.localizedDescription
-                store.send(.coInsuredNavigationAction(action: .openInputErrorScreen))
+                self.SSNError = exception
+                self.showErrorView = true
             }
         }
         withAnimation {
