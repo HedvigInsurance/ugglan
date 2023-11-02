@@ -61,7 +61,6 @@ struct EditContract: View {
                                         store.send(
                                             .openEditCoInsured(
                                                 contractId: contract?.id ?? "",
-                                                hasCoInsuredData: false,
                                                 fromInfoCard: false
                                             )
                                         )
@@ -69,7 +68,6 @@ struct EditContract: View {
                                         store.send(
                                             .openEditCoInsured(
                                                 contractId: contract?.id ?? "",
-                                                hasCoInsuredData: true,
                                                 fromInfoCard: false
                                             )
                                         )

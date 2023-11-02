@@ -15,11 +15,13 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
-    
+
     public var fetchAllCoInsured: [CoInsuredModel] {
         var coInsuredList: [CoInsuredModel] = []
         activeContracts.forEach { contract in
-            coInsuredList.append(contentsOf: contract.coInsured)
+            if !contract.coInsured.contains(CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)) {
+                coInsuredList.append(contentsOf: contract.coInsured)
+            }
         }
         return coInsuredList
     }

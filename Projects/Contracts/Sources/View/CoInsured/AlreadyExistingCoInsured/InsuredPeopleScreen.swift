@@ -154,6 +154,7 @@ struct InsuredPeopleScreen: View {
                     hText("159" + " " + L10n.paymentCurrencyOccurrence)
                 }
                 hText(
+                    //TODO: set proper date
                     L10n.contractAddCoinsuredStartsFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
                     style: .footnote
                 )
@@ -239,7 +240,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                         }
                     }
                     .onError { graphQLError in
-                        
+
                         continuation.resume(throwing: graphQLError)
                     }
             }

@@ -29,10 +29,14 @@ struct RemoveCoInsuredScreen: View {
                 ) { contract in
                     if let contract = contract {
                         ContractOwnerField(coInsured: contract.coInsured)
-                        let missingCoInsured = 2 - contract.coInsured.count /* TODO: CHANGE WHEN WE HAVE REAL DATA */
-
+                        let missingCoInsured = contract.coInsured.filter {
+                            $0 == CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)
+                        }
+                        let exisistingCoInsured = contract.coInsured.filter {
+                            $0 != CoInsuredModel(firstName: nil, lastName: nil, SSN: nil)
+                        }
                         hSection {
-                            ForEach(contract.coInsured, id: \.self) { coInsured in
+                            ForEach(exisistingCoInsured, id: \.self) { coInsured in
                                 CoInsuredField(
                                     coInsured: coInsured,
                                     accessoryView: accessoryView(
@@ -42,7 +46,7 @@ struct RemoveCoInsuredScreen: View {
                                     )
                                 )
                             }
-                            ForEach(0..<missingCoInsured, id: \.self) { missingCoInsured in
+                            ForEach(missingCoInsured, id: \.self) { missingCoInsured in
                                 CoInsuredField(
                                     accessoryView: accessoryView(
                                         firstName: nil,

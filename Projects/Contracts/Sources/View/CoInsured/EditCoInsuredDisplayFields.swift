@@ -63,7 +63,7 @@ struct CoInsuredField<Content: View>: View {
                     if let coInsured {
                         hText(coInsured.fullName)
                             .fixedSize()
-                        hText(coInsured.SSN)
+                        hText(coInsured.SSN ?? "")
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     } else {
@@ -96,6 +96,7 @@ struct CoInsuredField<Content: View>: View {
     var statusPill: some View {
         VStack {
             hText(
+                //TODO: Set proper data
                 L10n.contractAddCoinsuredActiveFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
                 style: .standardSmall
             )

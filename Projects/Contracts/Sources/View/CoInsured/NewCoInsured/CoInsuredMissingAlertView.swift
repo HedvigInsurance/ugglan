@@ -27,7 +27,7 @@ struct CoInsuredMissingAlertView: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                    store.send(.openEditCoInsured(contractId: contractId, hasCoInsuredData: false, fromInfoCard: true))
+                    store.send(.openEditCoInsured(contractId: contractId, fromInfoCard: true))
                 } content: {
                     hText(L10n.contractCoinsuredMissingAddInfo)
                 }

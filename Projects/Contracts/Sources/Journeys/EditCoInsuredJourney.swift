@@ -6,18 +6,6 @@ import hCoreUI
 
 public class EditCoInsuredJourney {
     @JourneyBuilder
-    public static func getScreenForAction(
-        for action: ContractAction,
-        withHidesBack: Bool = false
-    ) -> some JourneyPresentation {
-        if withHidesBack {
-            getScreen(for: action).hidesBackButton
-        } else {
-            getScreen(for: action).showsBackButton
-        }
-    }
-
-    @JourneyBuilder
     private static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
             if case let .openInsuredPeopleScreen(contractId) = navigationAction {
@@ -45,12 +33,14 @@ public class EditCoInsuredJourney {
                 openMissingCoInsuredAlert(contractId: contractId)
             } else if case .openErrorScreen = navigationAction {
                 openGenericErrorScreen()
+            } else if case let .openSelectInsuranceScreen(contractIds) = navigationAction {
+                openSelectInsurance(contractIds: contractIds)
             }
         }
     }
 
     @JourneyBuilder
-    public static func openInsuredPeopleScreen(id: String) -> some JourneyPresentation {
+    static func openInsuredPeopleScreen(id: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: InsuredPeopleScreen(contractId: id),
@@ -78,7 +68,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openCoInsuredInput(
+    static func openCoInsuredInput(
         isDeletion: Bool,
         firstName: String?,
         lastName: String?,
@@ -129,7 +119,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
+    static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
@@ -139,7 +129,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
+    static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: RemoveCoInsuredScreen(contractId: id)
@@ -149,7 +139,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openGenericErrorScreen() -> some JourneyPresentation {
+    static func openGenericErrorScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredErrorScreen()
@@ -159,7 +149,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+    static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredMissingAlertView(contractId: contractId),
@@ -222,7 +212,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
+    static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CheckboxPickerScreen<CoInsuredModel>(
@@ -279,5 +269,16 @@ public class EditCoInsuredJourney {
             }
         }
         .configureTitle(L10n.contractAddConisuredInfo)
+    }
+
+    static func openInitialScreen(contractIds: [String]) {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        if contractIds.count > 1 {
+            store.send(.coInsuredNavigationAction(action: .openSelectInsuranceScreen(contractIds: contractIds)))
+        } else {
+            store.send(
+                .coInsuredNavigationAction(action: .openInsuredPeopleNewScreen(contractId: contractIds.first ?? ""))
+            )
+        }
     }
 }

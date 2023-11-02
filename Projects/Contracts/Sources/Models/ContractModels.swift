@@ -19,8 +19,6 @@ public struct ProductVariant: Codable, Hashable {
     let perils: [Perils]
     let insurableLimits: [InsurableLimits]
     let documents: [InsuranceTerm]
-    let highlights: [Highlight]
-    let FAQ: [FAQ]?
     let displayName: String
 
     init(
@@ -30,8 +28,6 @@ public struct ProductVariant: Codable, Hashable {
         perils: [Perils],
         insurableLimits: [InsurableLimits],
         documents: [InsuranceTerm],
-        highlights: [Highlight],
-        FAQ: [FAQ]?,
         displayName: String
     ) {
         self.termsVersion = termsVersion
@@ -40,8 +36,6 @@ public struct ProductVariant: Codable, Hashable {
         self.perils = perils
         self.insurableLimits = insurableLimits
         self.documents = documents
-        self.highlights = highlights
-        self.FAQ = FAQ
         self.displayName = displayName
     }
 
@@ -55,8 +49,6 @@ public struct ProductVariant: Codable, Hashable {
         self.perils = data.perils.map({ .init(fragment: $0) })
         self.insurableLimits = data.insurableLimits.map({ .init($0) })
         self.documents = data.documents.map({ .init($0) })
-        self.highlights = data.highlights.map({ .init($0) })
-        self.FAQ = data.faq.map({ .init($0) })
     }
 
 }
@@ -96,6 +88,8 @@ public struct Contract: Codable, Hashable, Equatable {
     public var coInsured: [CoInsuredModel] = [
         //        CoInsuredModel(name: "Julia", SSN: "000000000"),
         //        CoInsuredModel(name: "Test", SSN: "11111111"),
+        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
+        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
     ] /* TODO: MOVE INITIAIZATION AND CHANGE TO LET */
 
     public var showEditInfo: Bool {

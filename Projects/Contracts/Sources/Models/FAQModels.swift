@@ -12,11 +12,4 @@ public struct FAQ: Codable, Equatable, Hashable {
         self.title = title
         self.description = description
     }
-
-    public init(
-        _ data: OctopusGraphQL.ProductVariantFragment.Faq
-    ) {
-        self.title = data.headline
-        self.description = data.body
-    }
 }

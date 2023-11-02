@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CoInusuredInput: View, KeyboardReadable {
+struct CoInusuredInput: View {
     @State var SSN: String
     @State var type: CoInsuredInputType?
     @State var keyboardEnabled: Bool = false
@@ -40,7 +40,7 @@ struct CoInusuredInput: View, KeyboardReadable {
             mainView
         }
     }
-    
+
     @ViewBuilder
     var mainView: some View {
         hForm {
@@ -79,7 +79,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                 }
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !isDeletion)
-                
+
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
@@ -90,14 +90,14 @@ struct CoInusuredInput: View, KeyboardReadable {
             }
         }
     }
-    
+
     @ViewBuilder
     var errorView: some View {
         hForm {
             VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                     .foregroundColor(hSignalColor.amberElement)
-                
+
                 VStack {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColor.primaryTranslucent)
@@ -130,7 +130,7 @@ struct CoInusuredInput: View, KeyboardReadable {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                
+
             }
             .padding(16)
         }
@@ -151,6 +151,7 @@ struct CoInusuredInput: View, KeyboardReadable {
     @ViewBuilder
     var addCoInsuredFields: some View {
         Group {
+            //<<<<<<< ours
             if vm.noSSN {
                 hSection {
                     hFloatingTextField(
@@ -162,9 +163,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                     )
                 }
                 .sectionContainerStyle(.transparent)
-                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                    keyboardEnabled = newIsKeyboardEnabled
-                }
                 .onAppear {
                     vm.nameFetchedFromSSN = false
                 }
@@ -180,9 +178,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                 }
                 .disabled(vm.isLoading)
                 .sectionContainerStyle(.transparent)
-                .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                    keyboardEnabled = newIsKeyboardEnabled
-                }
                 .onChange(of: SSN) { newValue in
                     vm.nameFetchedFromSSN = false
                 }
@@ -198,9 +193,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                             focusValue: .firstName,
                             placeholder: L10n.contractFirstName
                         )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
                         hFloatingTextField(
                             masking: Masking(type: .lastName),
                             value: $vm.lastName,
@@ -208,9 +200,6 @@ struct CoInusuredInput: View, KeyboardReadable {
                             focusValue: .lastName,
                             placeholder: L10n.contractLastName
                         )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
                     }
                 }
                 .disabled(vm.nameFetchedFromSSN)
@@ -316,23 +305,4 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
-}
-
-protocol KeyboardReadable {
-    var keyboardPublisher: AnyPublisher<Bool, Never> { get }
-}
-
-extension KeyboardReadable {
-    var keyboardPublisher: AnyPublisher<Bool, Never> {
-        Publishers.Merge(
-            NotificationCenter.default
-                .publisher(for: UIResponder.keyboardWillShowNotification)
-                .map { _ in true },
-
-            NotificationCenter.default
-                .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in false }
-        )
-        .eraseToAnyPublisher()
-    }
 }

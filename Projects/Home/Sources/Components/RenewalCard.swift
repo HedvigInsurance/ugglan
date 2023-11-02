@@ -44,17 +44,59 @@ public struct RenewalCardView: View {
     }
 
     public var body: some View {
-        VStack {
-            PresentableStoreLens(
-                HomeStore.self,
-                getter: { state in
-                    state.upcomingRenewalContracts
-                }
-            ) { contracts in
-                if contracts.count > 1,
-                    contracts.allSatisfy({ contract in
-                        contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
-                    }), let renewalDate = contracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.upcomingRenewalContracts
+            }
+        ) { upcomingRenewalContracts in
+            /* TODO: CHANGE WHEN WE HAVE REAL DATA */
+            if let upcomingRenewal = upcomingRenewalContracts.first(where: { $0.upcomingRenewal != nil }) {
+                InfoCard(
+                    text: L10n.contractCoinsuredUpdateInFuture(
+                        3,
+                        upcomingRenewal.upcomingRenewal?.renewalDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.contractViewCertificateButton,
+                        buttonAction: {
+                            /* TODO: CHANGE */
+                            let certificateURL = upcomingRenewal.upcomingRenewal?.draftCertificateUrl
+                            if let url = URL(string: certificateURL) {
+                                store.send(
+                                    .openContractCertificate(
+                                        url: url,
+                                        title: L10n.myDocumentsInsuranceCertificate
+                                    )
+                                )
+                            }
+                        }
+                    )
+                ])
+            } else {
+                if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
+                    InfoCard(
+                        text: L10n.dashboardRenewalPrompterBody(
+                            dateComponents(
+                                from: upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate! ?? Date()
+                            )
+                            .day ?? 0
+                        ),
+                        type: .info
+                    )
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                            buttonAction: {
+                                openDocument(upcomingRenewalContract)
+                            }
+                        )
+                    ])
+                } else if upcomingRenewalContracts.count > 1,
+                    let renewalDate = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
                 {
                     InfoCard(
                         text: L10n.dashboardMultipleRenewalsPrompterBody(
@@ -73,43 +115,23 @@ public struct RenewalCardView: View {
                     .actionSheet(isPresented: $showMultipleAlert) {
                         ActionSheet(
                             title: Text(L10n.dashboardMultipleRenewalsPrompterButton),
-                            buttons: buildSheetButtons(contracts: contracts)
+                            buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
                         )
                     }
-                } else {
-                    VStack(spacing: 16) {
-                        ForEach(contracts, id: \.displayName) { contract in
-                            let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
-                            InfoCard(
-                                text: L10n.dashboardRenewalPrompterBody(
-                                    dateComponents(from: renewalDate).day ?? 0
-                                ),
-                                type: .info
-                            )
-                            .buttons([
-                                .init(
-                                    buttonTitle: L10n.dashboardMultipleRenewalsPrompterButton,
-                                    buttonAction: {
-                                        openDocument(contract)
-                                    }
-                                )
-                            ])
-                        }
-                    }
-                }
 
-            }
-            .alert(isPresented: $showFailedToOpenUrlAlert) {
-                Alert(
-                    title: Text("Failed to open new insurance terms"),
-                    message: Text("Try again, or write to us in the chat."),
-                    dismissButton: .default(Text("OK"))
-                )
+                }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .alert(isPresented: $showFailedToOpenUrlAlert) {
+            Alert(
+                title: Text(L10n.renewalOpenInsuranceTermsErrorTitle),
+                message: Text(L10n.renewalOpenInsuranceTermsErrorBody),
+                dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
+            )
+        }
     }
 }
+
 struct RenewalCardView_Previews: PreviewProvider {
     @PresentableStore static var store: HomeStore
 
@@ -131,14 +153,13 @@ struct RenewalCardView_Previews: PreviewProvider {
                             termsVersion: "",
                             documents: [],
                             displayName: "dispaly name",
-                            insurableLimits: [],
-                            highlights: [],
-                            faq: []
+                            insurableLimits: []
                         )
                     ),
+                    exposureDisplayName: "exposure dispay name",
                     id: "",
                     masterInceptionDate: "",
-                    exposureDisplayName: "exposure dispay name",
+                    supportsMoving: true,
                     upcomingChangedAgreement: .init(
                         activeFrom: "2023-12-10",
                         activeTo: "2024-12-10",
@@ -151,9 +172,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                             termsVersion: "",
                             documents: [],
                             displayName: "display name",
-                            insurableLimits: [],
-                            highlights: [],
-                            faq: []
+                            insurableLimits: []
                         )
                     )
                 )

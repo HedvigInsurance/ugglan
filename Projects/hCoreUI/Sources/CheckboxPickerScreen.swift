@@ -13,7 +13,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let actionOnAddedOption: (() -> Void)?
     @State var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
-    
+
     public init(
         items: [(object: T, displayName: String)],
         preSelectedItems: @escaping () -> [T],
@@ -33,7 +33,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.attachToBottom = attachToBottom
         self.actionOnAddedOption = actionOnAddedOption
     }
-    
+
     public var body: some View {
         if attachToBottom {
             hForm {}
@@ -58,7 +58,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
     }
-    
+
     @ViewBuilder
     var content: some View {
         VStack(spacing: 4) {
@@ -68,20 +68,20 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .disabled(isLoading)
             }
-            if actionOnAddedOption != nil {
+            if let actionOnAddedOption {
                 hButton.LargeButton(type: .ghost) {
-                    actionOnAddedOption?()
+                    actionOnAddedOption()
                 } content: {
                     HStack(alignment: .center) {
                         Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        hText("Add new")
+                        hText(L10n.generalAddNew)
                     }
                 }
                 .padding(.top, 4)
             }
         }
     }
-    
+
     var bottomContent: some View {
         hSection {
             VStack(spacing: 8) {
@@ -102,7 +102,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         .sectionContainerStyle(.transparent)
         .padding(.top, 16)
     }
-    
+
     var sendSelectedItems: Void {
         if selectedItems.count > 1 {
             onSelected(selectedItems.map({ $0 }))
@@ -112,7 +112,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
     }
-    
+
     @ViewBuilder
     func getCell(item: (object: T, displayName: String)) -> some View {
         if showDividers ?? false {
@@ -135,7 +135,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
     }
-    
+
     @ViewBuilder
     func displayContentFor(_ item: T) -> some View {
         let isSelected = selectedItems.first(where: { $0 == item }) != nil
@@ -153,7 +153,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 .frame(width: 28, height: 28)
         }
     }
-    
+
     func onTapExecuteFor(_ item: T) {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0)) {
@@ -170,7 +170,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
     }
-    
+
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
@@ -179,7 +179,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hFillColor.opaqueOne
         }
     }
-    
+
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
@@ -190,7 +190,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 struct CheckboxPickerScreen_Previews: PreviewProvider {
-    
+
     struct ModelForPreview: Equatable, Hashable {
         let id: String
         let name: String
@@ -202,14 +202,14 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                     ModelForPreview(id: "id", name: "name"),
                     ModelForPreview(id: "id2", name: "name2"),
                 ]
-                    .compactMap({ (object: $0, displayName: $0.name) })
+                .compactMap({ (object: $0, displayName: $0.name) })
             }(),
             preSelectedItems: { [] },
             onSelected: { selectedLocation in
-                
+
             },
             onCancel: {
-                
+
             },
             singleSelect: true
         )
