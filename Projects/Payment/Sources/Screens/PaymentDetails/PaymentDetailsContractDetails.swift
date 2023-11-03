@@ -48,7 +48,7 @@ struct ContractDetails: View {
                 hRow {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
-                            hText(period.from.displayDateShort)
+                            hText(period.fromToDate)
                                 .foregroundColor(getColor(hTextColor.primary, isOutstanding: period.isOutstanding))
                             Spacer()
                             hText(period.amount.formattedAmount)

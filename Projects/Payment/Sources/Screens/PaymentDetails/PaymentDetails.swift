@@ -46,8 +46,10 @@ struct PaymentDetails: View {
                         description: L10n.paymentsDiscountInfoDescription
                     )
                 }
+                .padding(.bottom, -16)
             }
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, -16)
         }
     }
 
@@ -95,29 +97,49 @@ struct PaymentDetails: View {
     @ViewBuilder
     private var paymentDetails: some View {
         if let paymentDetails = data.paymentDetails {
-            hSection(paymentDetails.getDisplayList, id: \.key) { item in
-                hRow {
-                    HStack {
-                        hText(item.key)
-                        Spacer()
-                        hText(item.value)
-                    }
-                }
-                .noHorizontalPadding()
+            hSection(getListForPaymentDetails(for: paymentDetails), id: \.id) { item in
+                item.view
             }
-            .withHeader {
-                HStack {
-                    hText(L10n.PaymentDetails.NavigationBar.title)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsPaymentDetailsInfoTitle,
-                        description: L10n.paymentsPaymentDetailsInfoDescription
-                    )
-                }
-            }
-            .dividerInsets(.all, 0)
             .sectionContainerStyle(.transparent)
         }
+    }
+
+    private func getListForPaymentDetails(
+        for paymentDetails: PaymentData.PaymentDetails
+    ) -> [(id: String, view: AnyView)] {
+        var list: [(id: String, view: AnyView)] = []
+        list.append(("header", AnyView(paymentDetailsHeaderView)))
+
+        for item in paymentDetails.getDisplayList {
+            let view = hRow {
+                HStack {
+                    hText(item.key)
+                    Spacer()
+                    hText(item.value)
+                }
+            }
+            .noHorizontalPadding()
+            .dividerInsets(.all, 0)
+
+            list.append((item.key, AnyView(view)))
+        }
+        return list
+    }
+
+    private var paymentDetailsHeaderView: some View {
+        hRow {
+            HStack {
+                hText(L10n.PaymentDetails.NavigationBar.title)
+                Spacer()
+                InfoViewHolder(
+                    title: L10n.paymentsPaymentDetailsInfoTitle,
+                    description: L10n.paymentsPaymentDetailsInfoDescription
+                )
+                .foregroundColor(hTextColor.secondary)
+            }
+        }
+        .noHorizontalPadding()
+        .dividerInsets(.all, 0)
     }
 }
 
