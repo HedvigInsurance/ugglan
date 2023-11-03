@@ -39,9 +39,12 @@ struct PaymentDetails: View {
             }
             .withHeader {
                 HStack {
-                    hText("Discounts")
+                    hText(L10n.paymentsDiscountsSectionTitle)
                     Spacer()
-                    InfoViewHolder(title: "Title", description: "Description")
+                    InfoViewHolder(
+                        title: L10n.paymentsDiscountInfoTitle,
+                        description: L10n.paymentsDiscountInfoDescription
+                    )
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -53,7 +56,7 @@ struct PaymentDetails: View {
         hSection {
             hRowDivider()
             hRow {
-                hText("Total")
+                hText(L10n.PaymentDetails.ReceiptCard.total)
             }
             .withCustomAccessory {
                 HStack {
@@ -73,7 +76,7 @@ struct PaymentDetails: View {
             hRow {
                 VStack(spacing: 16) {
                     HStack {
-                        hText("Payment due")
+                        hText(L10n.paymentsPaymentDue)
                         Spacer()
                         hText(data.payment.date.displayDate)
                             .foregroundColor(hTextColor.secondary)
@@ -104,9 +107,12 @@ struct PaymentDetails: View {
             }
             .withHeader {
                 HStack {
-                    hText("Payment details")
+                    hText(L10n.PaymentDetails.NavigationBar.title)
                     Spacer()
-                    InfoViewHolder(title: "Title", description: "Description")
+                    InfoViewHolder(
+                        title: L10n.paymentsPaymentDetailsInfoTitle,
+                        description: L10n.paymentsPaymentDetailsInfoDescription
+                    )
                 }
             }
             .dividerInsets(.all, 0)

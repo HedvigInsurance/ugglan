@@ -14,7 +14,7 @@ struct PaymentStatusView: View {
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.greenElement)
-                hText("Payment successful", style: .standardSmall)
+                hText(L10n.paymentsPaymentSuccessful, style: .standardSmall)
                     .foregroundColor(hSignalColor.greenText)
                 Spacer()
             }
@@ -32,7 +32,7 @@ struct PaymentStatusView: View {
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.blueFill)
 
-                hText("Payment in progress", style: .standardSmall)
+                hText(L10n.paymentsInProgress, style: .standardSmall)
                     .foregroundColor(hSignalColor.blueText)
                 Spacer()
             }
@@ -45,18 +45,18 @@ struct PaymentStatusView: View {
         case let .failedForPrevious(from, to):
             InfoCard(
                 text:
-                    "Your payment from period \(from.displayDateShort) – \(to.displayDateShort) didn’t go through as expected. The amount has been added to this payment.",
+                    L10n.paymentsMissedPayment(from.displayDateShort, to.displayDateShort),
                 type: .error
             )
         case let .addedtoFuture(date, id):
             InfoCard(
-                text: "This payment failed and was added to your payment on \(date.displayDate).",
+                text: L10n.paymentsPaymentFailed(date.displayDate),
                 type: .error
             )
             .buttons(
                 [
                     .init(
-                        buttonTitle: "View payment",
+                        buttonTitle: L10n.paymentsViewPayment,
                         buttonAction: {
                             onAction(.viewPayment(withId: id))
                         }

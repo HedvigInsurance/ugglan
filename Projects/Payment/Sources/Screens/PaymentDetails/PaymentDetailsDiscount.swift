@@ -27,7 +27,7 @@ struct PaymentDetailsDiscount: View {
                         hText(discount.title, style: .standardSmall)
                         Spacer()
                         if let validUntil = discount.validUntil {
-                            hText("Valid until \(validUntil.displayDate)", style: .standardSmall)
+                            hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .standardSmall)
                         }
                     }
                     VStack(alignment: .leading, spacing: 0) {

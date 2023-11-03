@@ -56,7 +56,7 @@ struct ContractDetails: View {
 
                         }
                         if period.isOutstanding {
-                            hText("Outstanding payment", style: .standardSmall)
+                            hText(L10n.paymentsOutstandingPayment, style: .standardSmall)
                                 .foregroundColor(getColor(hTextColor.primary, isOutstanding: period.isOutstanding))
 
                         }
@@ -65,7 +65,7 @@ struct ContractDetails: View {
                 .withEmptyAccessory
                 if contract.periods.count - 1 == offset {
                     hRow {
-                        hText("Sub. total")
+                        hText(L10n.paymentsSubtotal)
                         Spacer()
                         hText(contract.amount.formattedAmount)
                     }

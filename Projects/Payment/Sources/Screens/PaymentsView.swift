@@ -65,6 +65,7 @@ public struct PaymentsView: View {
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }
+                        .withEmptyAccessory
                         .onTap {
                             store.send(
                                 .navigation(
