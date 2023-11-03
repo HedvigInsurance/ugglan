@@ -1,9 +1,9 @@
 import Apollo
+import Combine
 import Flow
 import Foundation
 import Presentation
 import UIKit
-import Combine
 
 struct GraphQLError: Error { var errors: [Error] }
 
@@ -34,7 +34,7 @@ extension ApolloClient {
             return Disposer { cancellable.cancel() }
         }
     }
-    
+
     public func fetch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
@@ -61,7 +61,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     public func refetchOnRefresh<Query: GraphQLQuery>(
         query: Query,
         refreshControl: UIRefreshControl,
