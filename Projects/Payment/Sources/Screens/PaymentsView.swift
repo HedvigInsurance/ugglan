@@ -81,13 +81,12 @@ public struct PaymentsView: View {
                         hSection {
                             InfoCard(text: L10n.paymentsInProgress, type: .info)
                         }
-                    } else if case let .failed(from, to, until) = previousPaymentStatus {
+                    } else if case let .failed(from, to) = previousPaymentStatus {
                         hSection {
                             InfoCard(
                                 text: L10n.paymentsMissedPayment(
                                     from.displayDateShort,
-                                    to.displayDateShort,
-                                    until.displayDate
+                                    to.displayDateShort
                                 ),
                                 type: .error
                             )

@@ -15,6 +15,6 @@ public struct PaymentData: Codable, Equatable {
     enum PreviousPaymentStatus: Codable, Equatable {
         case success
         case pending
-        case failed(from: ServerBasedDate, to: ServerBasedDate, until: ServerBasedDate)
+        case failed(from: ServerBasedDate, to: ServerBasedDate)
     }
 }
