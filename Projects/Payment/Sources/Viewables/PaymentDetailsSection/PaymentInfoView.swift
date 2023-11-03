@@ -75,7 +75,7 @@ struct PaymentInfoView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentData?.insuranceCost?.discount
+                state.paymentData?.chargeEstimation?.discount
             }
         ) { discount in
             if let discount, discount.floatAmount > 0 {
@@ -188,21 +188,21 @@ struct PaymentInfoView: View {
                 Spacer()
                 VStack(alignment: .trailing) {
                     HStack {
-                        if paymentData?.insuranceCost?.gross != paymentData?.insuranceCost?.net {
+                        if paymentData?.chargeEstimation?.gross != paymentData?.chargeEstimation?.net {
                             if #available(iOS 15.0, *) {
                                 Text(
                                     vm.attributedString(
-                                        paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? ""
+                                        paymentData?.chargeEstimation?.gross?.formattedAmount.addPerMonth ?? ""
                                     )
                                 )
                                 .foregroundColor(hTextColor.secondary)
                                 .modifier(hFontModifier(style: .standard))
                             } else {
-                                hText(paymentData?.insuranceCost?.gross?.formattedAmount.addPerMonth ?? "")
+                                hText(paymentData?.chargeEstimation?.gross?.formattedAmount.addPerMonth ?? "")
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }
-                        hText(paymentData?.insuranceCost?.net?.formattedAmount.addPerMonth ?? "")
+                        hText(paymentData?.chargeEstimation?.net?.formattedAmount.addPerMonth ?? "")
                     }
                     hText("", style: .standardSmall)
                         .foregroundColor(hTextColor.secondary)
