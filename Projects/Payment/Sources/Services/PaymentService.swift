@@ -12,10 +12,6 @@ public class hPaymentServiceOctopus: hPaymentService {
 
     public init() {}
     public func getPaymentData() async throws -> PaymentData {
-        //        let data = try await octopus.client.fetch(
-        //            query: OctopusGraphQL.PaymentDataQuery(),
-        //            cachePolicy: .fetchIgnoringCacheCompletely
-        //        )
         return .init(
             payment: .init(gross: .sek(100), net: .sek(80), date: "2023-11-29"),
             previousPaymentStatus: .pending,
