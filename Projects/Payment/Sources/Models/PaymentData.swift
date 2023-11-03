@@ -60,9 +60,9 @@ public struct PaymentData: Codable, Equatable {
 
         var getDisplayList: [KeyValue] {
             var list: [KeyValue] = []
-            list.append(("Payment method", paymentMethod))
-            list.append(("Account", account))
-            list.append(("Bank", bank))
+            list.append((L10n.paymentsPaymentMethod, paymentMethod))
+            list.append((L10n.paymentsAccount, account))
+            list.append((L10n.myPaymentBankRowLabel, bank))
 
             return list
         }
