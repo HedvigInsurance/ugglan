@@ -4,42 +4,82 @@ import hCore
 import hGraphQL
 
 public struct PaymentData: Codable, Equatable {
-    let upcomingPayment: UpcomingPayment?
-    let previousPaymentStatus: PreviousPaymentStatus?
+    let payment: PaymentStack
+    let previousPaymentStatus: PaymentStatus?
     let contracts: [ContractPaymentDetails]
-    let discounts: [Discounts]
+    let discounts: [Discount]
+    let paymentDetails: PaymentDetails?
 
-    struct UpcomingPayment: Codable, Equatable {
+    struct PaymentStack: Codable, Equatable {
         let gross: MonetaryAmount
         let net: MonetaryAmount
         let date: ServerBasedDate
     }
 
-    enum PreviousPaymentStatus: Codable, Equatable {
+    enum PaymentStatus: Codable, Equatable {
         case success
         case pending
-        case failed(from: ServerBasedDate, to: ServerBasedDate, until: ServerBasedDate)
+        case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
+        case addedtoFuture(date: ServerBasedDate, withId: String)
+
+        enum PaymentStatusAction: Codable, Equatable {
+            static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
+                return false
+            }
+            case viewPayment(withId: String)
+        }
     }
 
-    struct ContractPaymentDetails: Codable, Equatable {
+    struct ContractPaymentDetails: Codable, Equatable, Identifiable {
+        let id: String
         let title: String
         let subtitle: String
         let amount: MonetaryAmount
-        let perions: [PeriodInfo]
+        let periods: [PeriodInfo]
     }
 
-    struct PeriodInfo: Codable, Equatable {
+    struct PeriodInfo: Codable, Equatable, Identifiable {
+        let id: String
         let from: ServerBasedDate
         let to: ServerBasedDate
         let amount: MonetaryAmount
         let isOutstanding: Bool
     }
+
+    struct PaymentDetails: Codable, Equatable {
+        typealias KeyValue = (key: String, value: String)
+        private let paymentMethod: String
+        private let account: String
+        private let bank: String
+
+        init(paymentMethod: String, account: String, bank: String) {
+            self.paymentMethod = paymentMethod
+            self.account = account
+            self.bank = bank
+        }
+
+        var getDisplayList: [KeyValue] {
+            var list: [KeyValue] = []
+            list.append(("Payment method", paymentMethod))
+            list.append(("Account", account))
+            list.append(("Bank", bank))
+
+            return list
+        }
+    }
 }
 
-public struct Discounts: Codable, Equatable {
+public struct Discount: Codable, Equatable, Identifiable {
+    public let id: String
     let code: String
     let amount: MonetaryAmount
     let title: String
-    let subtitle: String?
-    let validUntil: ServerBasedDate
+    let listOfAffectedInsurances: [AffectedInsurance]
+    let validUntil: ServerBasedDate?
+    let isValid: Bool
+}
+
+public struct AffectedInsurance: Codable, Equatable, Identifiable {
+    public let id: String
+    let displayName: String
 }

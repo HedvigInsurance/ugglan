@@ -103,26 +103,7 @@ extension AppJourney {
             ProfileView.journey { result in
                 switch result {
                 case .openPayment:
-                    HostingJourney(
-                        PaymentStore.self,
-                        rootView: PaymentsView()
-                    ) { action in
-                        if case let .navigation(navigateTo) = action {
-                            if case .openConnectBankAccount = navigateTo {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
-                                let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                                    .contains(store.state.paymentStatusData?.status ?? .active)
-                                ConnectBankAccount(
-                                    setupType: hasAlreadyConnected ? .replacement : .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                )
-                                .journeyThenDismiss
-                            } else if case .openHistory = navigateTo {
-                                PaymentHistory.journey
-                            }
-                        }
-                    }
-                    .configureTitle(L10n.myPaymentTitle)
+                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
                 case .resetAppLanguage:
                     ContinueJourney()
                         .onPresent {

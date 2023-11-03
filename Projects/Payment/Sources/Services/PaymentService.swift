@@ -12,23 +12,26 @@ public class hPaymentServiceOctopus: hPaymentService {
 
     public init() {}
     public func getPaymentData() async throws -> PaymentData {
-        let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.PaymentDataQuery(),
-            cachePolicy: .fetchIgnoringCacheCompletely
-        )
+        //        let data = try await octopus.client.fetch(
+        //            query: OctopusGraphQL.PaymentDataQuery(),
+        //            cachePolicy: .fetchIgnoringCacheCompletely
+        //        )
         return .init(
-            upcomingPayment: .init(gross: .sek(100), net: .sek(80), date: "2023-11-29"),
+            payment: .init(gross: .sek(100), net: .sek(80), date: "2023-11-29"),
             previousPaymentStatus: .pending,
             contracts: [],
             discounts: [
                 .init(
+                    id: "CODE",
                     code: "CODE",
                     amount: .sek(100),
                     title: "15% off for 1 year",
-                    subtitle: "Car Insurance * ABH 234",
-                    validUntil: "2023-12-10"
+                    listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
+                    validUntil: "2023-12-10",
+                    isValid: true
                 )
-            ]
+            ],
+            paymentDetails: nil
         )
     }
 
@@ -46,18 +49,37 @@ public class hPaymentServiceDemo: hPaymentService {
     public init() {}
     public func getPaymentData() async throws -> PaymentData {
         return .init(
-            upcomingPayment: .init(gross: .sek(100), net: .sek(80), date: "2023-11-29"),
-            previousPaymentStatus: .pending,
-            contracts: [],
+            payment: .init(gross: .sek(100), net: .sek(80), date: "2023-11-29"),
+            previousPaymentStatus: .failedForPrevious(from: "2023-10-11", to: "2023-10-27"),
+            contracts: [
+                .init(
+                    id: "id",
+                    title: "title",
+                    subtitle: "subtitle",
+                    amount: .sek(100),
+                    periods: [
+                        .init(
+                            id: "id",
+                            from: "2023-11-10",
+                            to: "2023-11-23",
+                            amount: .sek(200),
+                            isOutstanding: false
+                        )
+                    ]
+                )
+            ],
             discounts: [
                 .init(
+                    id: "CODE",
                     code: "CODE",
                     amount: .sek(100),
                     title: "15% off for 1 year",
-                    subtitle: "Car Insurance * ABH 234",
-                    validUntil: "2023-12-10"
+                    listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
+                    validUntil: "2023-12-10",
+                    isValid: true
                 )
-            ]
+            ],
+            paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank")
         )
     }
 
