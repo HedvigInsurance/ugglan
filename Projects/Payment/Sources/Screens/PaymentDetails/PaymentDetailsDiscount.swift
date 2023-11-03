@@ -6,7 +6,6 @@ struct PaymentDetailsDiscount: View {
     let discount: Discount
 
     var body: some View {
-
         hRow {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -42,6 +41,7 @@ struct PaymentDetailsDiscount: View {
         .noHorizontalPadding()
         .dividerInsets(.all, 0)
     }
+
 }
 
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
@@ -53,8 +53,7 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
                 amount: .sek(100),
                 title: "",
                 listOfAffectedInsurances: [],
-                validUntil: nil,
-                isValid: true
+                validUntil: nil
             )
         )
     }

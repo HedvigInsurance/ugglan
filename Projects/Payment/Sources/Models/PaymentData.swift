@@ -80,7 +80,18 @@ public struct Discount: Codable, Equatable, Identifiable {
     let title: String
     let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?
-    let isValid: Bool
+
+    var isValid: Bool {
+        if let validUntil = validUntil?.localDateToDate {
+            let components = Calendar.current.dateComponents(
+                [.day],
+                from: Date(),
+                to: validUntil
+            )
+            return components.day ?? 0 > 0
+        }
+        return true
+    }
 }
 
 public struct AffectedInsurance: Codable, Equatable, Identifiable {

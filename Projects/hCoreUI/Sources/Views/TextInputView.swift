@@ -91,17 +91,18 @@ public class TextInputViewModel: ObservableObject {
         self.dismiss = dismiss
     }
 
+    @MainActor
     func save() async {
-        DispatchQueue.main.async { [weak self] in
-            self?.type = nil
-            self?.error = nil
-            self?.isLoading = true
+        withAnimation {
+            self.type = nil
+            self.error = nil
+            self.isLoading = true
         }
         do {
             try await onSave?(input)
         } catch let error {
-            DispatchQueue.main.async { [weak self] in
-                self?.error = error.localizedDescription
+            withAnimation {
+                self.error = error.localizedDescription
             }
         }
     }

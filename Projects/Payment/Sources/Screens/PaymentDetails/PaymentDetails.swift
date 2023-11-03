@@ -207,8 +207,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "1", displayName: "Car 15%")
                     ],
-                    validUntil: "2023-11-20",
-                    isValid: true
+                    validUntil: "2023-11-20"
                 ),
                 .init(
                     id: "CODE2",
@@ -218,8 +217,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "2", displayName: "House 15%")
                     ],
-                    validUntil: "2023-11-22",
-                    isValid: true
+                    validUntil: "2023-11-22"
                 ),
                 .init(
                     id: "FRIENDS",
@@ -227,8 +225,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     amount: .sek(30),
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    isValid: true
+                    validUntil: nil
                 ),
             ],
             paymentDetails: nil
@@ -301,8 +298,7 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "1", displayName: "Car 15%")
                     ],
-                    validUntil: "2023-11-20",
-                    isValid: true
+                    validUntil: "2023-11-20"
                 ),
                 .init(
                     id: "CODE2",
@@ -312,8 +308,7 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "2", displayName: "House 15%")
                     ],
-                    validUntil: "2023-11-22",
-                    isValid: true
+                    validUntil: "2023-11-22"
                 ),
                 .init(
                     id: "FRIENDS",
@@ -321,8 +316,7 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                     amount: .sek(30),
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    isValid: true
+                    validUntil: nil
                 ),
             ],
             paymentDetails: .init(
