@@ -17,13 +17,30 @@ public struct PaymentsView: View {
             hForm {
                 VStack(spacing: 8) {
                     upcomingPayment
-                    hSection {
-                        discounts
-                        paymentHistory
-                        connectedPaymentMethod
+                    PresentableStoreLens(
+                        PaymentStore.self,
+                        getter: { state in
+                            state.paymentStatusData
+                        }
+                    ) { statusData in
+                        if let displayName = statusData?.displayName, let descriptor = statusData?.descriptor {
+                            hSection {
+                                discounts
+                                paymentHistory
+                                connectedPaymentMethod(displayName: displayName, descriptor: descriptor)
+                            }
+                        } else {
+                            hSection {
+                                discounts
+                                paymentHistory
+                            }
+                        }
+
                     }
                     .sectionContainerStyle(.transparent)
+
                 }
+                .padding(.vertical, 16)
             }
             .hDisableScroll
             .hFormAttachToBottom {
@@ -107,6 +124,9 @@ public struct PaymentsView: View {
             hText(L10n.paymentsDiscountsSectionTitle)
         }
         .withChevronAccessory
+        .noHorizontalPadding()
+        .dividerInsets(.all, 0)
+
     }
 
     private var paymentHistory: some View {
@@ -119,30 +139,26 @@ public struct PaymentsView: View {
             hText(L10n.paymentsPaymentHistoryButtonLabel)
         }
         .withChevronAccessory
+        .noHorizontalPadding()
+        .dividerInsets(.all, 0)
     }
 
-    private var connectedPaymentMethod: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData
-            }
-        ) { statusData in
-            if let title = statusData?.displayName, let desc = statusData?.descriptor {
-                hRow {
-                    Image(uiImage: hCoreUIAssets.payments.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(hTextColor.primary)
-                    hText(title)
-                }
-                .withCustomAccessory {
-                    Spacer()
-                    hText(desc).foregroundColor(hTextColor.secondary)
-                }
-            }
+    @ViewBuilder
+    private func connectedPaymentMethod(displayName: String, descriptor: String) -> some View {
+        hRow {
+            Image(uiImage: hCoreUIAssets.payments.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .foregroundColor(hTextColor.primary)
+            hText(displayName)
         }
+        .withCustomAccessory {
+            Spacer()
+            hText(descriptor).foregroundColor(hTextColor.secondary)
+        }
+        .noHorizontalPadding()
+        .dividerInsets(.all, 0)
     }
 
     private var bottomPart: some View {
