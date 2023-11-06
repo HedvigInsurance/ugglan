@@ -8,16 +8,18 @@ struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-
+    @ObservedObject var intentVm: IntentViewModel
+    
     public init(
         contractId: String
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        intentVm = store.intentViewModel
         self.contractId = contractId
         vm.resetCoInsured
     }
-
+    
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -28,20 +30,42 @@ struct InsuredPeopleScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        let coInsured = contract.currentAgreement?.coInsured ?? []
-                        ContractOwnerField(coInsured: coInsured)
-                        hSection {
-                            ForEach(coInsured, id: \.self) { coInsured in
-                                if !vm.coInsuredDeleted.contains(coInsured) {
-                                    CoInsuredField(
-                                        coInsured: coInsured,
-                                        accessoryView: existingAccessoryView(coInsured: coInsured)
-                                    )
+                        let coInsured = contract.currentAgreement?.coInsured
+                        ContractOwnerField(coInsured: coInsured ?? [], contractId: contractId)
+                        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
+                            hSection {
+                                ForEach(upcomingCoInsured, id: \.self) { upcomingCoInsured in
+                                    if let index = (coInsured ?? []).first(where: { vm.isEqualTo(coInsured: $0, coInsuredCompare: upcomingCoInsured)}) {
+                                        CoInsuredField(
+                                            coInsured: upcomingCoInsured,
+                                            accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
+                                        )
+                                    } else {
+                                        CoInsuredField(
+                                            coInsured: upcomingCoInsured,
+                                            accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
+                                            includeStatusPill: true
+                                        )
+                                    }
                                 }
                             }
+                            .sectionContainerStyle(.transparent)
+                            
+                        } else {
+                            hSection {
+                                ForEach(coInsured ?? [], id: \.self) { coInsured in
+                                    if vm.coInsuredDeleted.first(where: { vm.isEqualTo(coInsured: $0, coInsuredCompare: coInsured) }) == nil {
+                                        CoInsuredField(
+                                            coInsured: coInsured,
+                                            accessoryView: existingAccessoryView(coInsured: coInsured)
+                                        )
+                                    }
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
                         }
-                        .sectionContainerStyle(.transparent)
-
+                        
+                        // adding locally added ones
                         hSection {
                             ForEach(vm.coInsuredAdded, id: \.self) { coInsured in
                                 CoInsuredField(
@@ -52,14 +76,15 @@ struct InsuredPeopleScreen: View {
                             }
                         }
                         .sectionContainerStyle(.transparent)
-
+                        
                         hSection {
                             hButton.LargeButton(type: .secondary) {
                                 store.send(
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             actionType: .add,
-                                            fullName: nil,
+                                            firstName: nil,
+                                            lastName: nil,
                                             personalNumber: nil,
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
@@ -78,14 +103,14 @@ struct InsuredPeopleScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
-                    confirmChangesView
+                    ConfirmChangesView()
                 }
-                cancelButton
+                CancelButton()
                     .padding(.horizontal, 16)
             }
         }
     }
-
+    
     @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
@@ -95,8 +120,9 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            fullName: coInsured.fullName,
-                            personalNumber: coInsured.SSN,
+                            firstName: coInsured.firstName,
+                            lastName: coInsured.lastName,
+                            personalNumber: coInsured.SSN ?? coInsured.birthDate,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )
@@ -104,7 +130,7 @@ struct InsuredPeopleScreen: View {
                 )
             }
     }
-
+    
     @ViewBuilder
     func existingAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
@@ -114,7 +140,8 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            fullName: coInsured.fullName,
+                            firstName: coInsured.firstName,
+                            lastName: coInsured.lastName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -123,8 +150,12 @@ struct InsuredPeopleScreen: View {
                 )
             }
     }
+}
 
-    var cancelButton: some View {
+struct CancelButton: View {
+    @PresentableStore var store: ContractStore
+    
+    var body: some View {
         hButton.LargeButton(type: .ghost) {
             store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
         } content: {
@@ -132,40 +163,50 @@ struct InsuredPeopleScreen: View {
         }
         .padding(.horizontal, 16)
     }
+}
 
-    var confirmChangesView: some View {
+struct ConfirmChangesView: View {
+    @PresentableStore var store: ContractStore
+    @ObservedObject var intentVm: IntentViewModel
+    
+    public init() {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        intentVm = store.intentViewModel
+    }
+    
+    var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: 2) {
                 HStack(spacing: 8) {
                     hText(L10n.contractAddCoinsuredTotal)
                     Spacer()
-
+                    
                     if #available(iOS 16.0, *) {
-                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
+                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
                             .strikethrough()
                             .foregroundColor(hTextColor.secondary)
                     } else {
-                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
+                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
                             .foregroundColor(hTextColor.secondary)
-
+                        
                     }
-                    hText("159" + " " + L10n.paymentCurrencyOccurrence)
+                    hText(intentVm.newPremium.formattedAmount + L10n.perMonth)
                 }
                 hText(
-                    //TODO: set proper date
-                    L10n.contractAddCoinsuredStartsFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                    L10n.contractAddCoinsuredStartsFrom(intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
                     style: .footnote
                 )
                 .foregroundColor(hTextColor.secondary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
-
-            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
-                /* TODO: SEND MUTATION */
+            
+            hButton.LargeButton(type: .primary) {
+                store.send(.performCoInsuredChanges(commitId: intentVm.id))
                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
             }
+            .hButtonIsLoading(intentVm.isLoading)
         }
         .padding(.horizontal, 16)
     }
@@ -180,10 +221,17 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var firstName = ""
     @Published var lastName = ""
-    var fullName: String = ""
+    var fullName: String {
+        return firstName + " " + lastName
+    }
+    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
+        return coInsured.fullName == coInsuredCompare.fullName && (coInsured.SSN == coInsuredCompare.SSN || coInsured.birthDate == coInsuredCompare.birthDate)
+    }
+    
+    @Published var SSN: String = ""
     @Published var previousName: String = ""
     @Published var previousSSN: String = ""
-
+    
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
@@ -194,38 +242,51 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var enterManually: Bool = false
     @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
-
+    
     var resetCoInsured: Void {
         coInsuredAdded = []
+        coInsuredDeleted = []
     }
-
-    func addCoInsured(fullName: String, personalNumber: String) {
-        coInsuredAdded.append(CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false))
-    }
-
-    func removeCoInsured(fullName: String, personalNumber: String) {
-        let removedCoInsured = CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false)
-        if coInsuredAdded.contains(removedCoInsured) {
-            if let index = coInsuredAdded.firstIndex(where: {
-                ($0.fullName == removedCoInsured.fullName && $0.SSN == removedCoInsured.SSN)
-            }) {
-                coInsuredAdded.remove(at: index)
-            }
+    
+    func addCoInsured(firstName: String, lastName: String, personalNumber: String) {
+        if personalNumber.count == 6 {
+            coInsuredAdded.append(CoInsuredModel(firstName: firstName, lastName: lastName, birthDate: personalNumber, needsMissingInfo: false))
         } else {
-            coInsuredDeleted.append(CoInsuredModel(fullName: fullName, SSN: personalNumber, needsMissingInfo: false))
+            coInsuredAdded.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber, needsMissingInfo: false))
         }
     }
     
-    func editCoInsured(fullName: String, personalNumber: String) {
+    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
+        var removedCoInsured: CoInsuredModel {
+            if personalNumber.count == 6 {
+                return CoInsuredModel(firstName: firstName, lastName: lastName, birthDate: personalNumber, needsMissingInfo: false)
+            } else {
+                return CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber, needsMissingInfo: false)
+            }
+        }
+        if let index = coInsuredAdded.firstIndex(where: {
+            isEqualTo(coInsured: $0, coInsuredCompare: removedCoInsured)
+        }) {
+            coInsuredAdded.remove(at: index)
+        } else {
+            if personalNumber.count == 6 {
+                coInsuredDeleted.append(CoInsuredModel(firstName: firstName, lastName: lastName, birthDate: personalNumber, needsMissingInfo: false))
+            } else {
+                coInsuredDeleted.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber, needsMissingInfo: false))
+            }
+        }
+    }
+    
+    func editCoInsured(firstName: String, lastName: String, personalNumber: String) {
         let previousValue = CoInsuredModel(fullName: previousName, SSN: previousSSN, needsMissingInfo: false)
         if let index = coInsuredAdded.firstIndex(where: {
             ($0.fullName == previousValue.fullName && $0.SSN == previousValue.SSN)
         }) {
             coInsuredAdded.remove(at: index)
         }
-        addCoInsured(fullName: fullName, personalNumber: personalNumber)
+        addCoInsured(firstName: firstName, lastName: lastName, personalNumber: personalNumber)
     }
-
+    
     @MainActor
     func getNameFromSSN(SSN: String) async {
         withAnimation {
@@ -236,7 +297,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             let data = try await withCheckedThrowingContinuation {
                 (
                     continuation: CheckedContinuation<
-                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
                     >
                 ) -> Void in
                 let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
@@ -251,7 +312,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                         }
                     }
                     .onError { graphQLError in
-
+                        
                         continuation.resume(throwing: graphQLError)
                     }
             }
@@ -260,7 +321,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 self.lastName = data.lastName
                 self.nameFetchedFromSSN = true
             }
-
+            
         } catch let exception {
             if let exception = exception as? GraphQLError {
                 switch exception {

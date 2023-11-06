@@ -25,8 +25,7 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                changeAddressInfo(contract)
-                upComingCoInsuredView(contract: contract)
+                upatedContractView(contract)
                 VStack(spacing: 0) {
                     if let displayItems = contract.currentAgreement?.displayItems {
                         hSection(displayItems, id: \.displayValue) { item in
@@ -67,21 +66,27 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
+        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
+            var coInsuredDisplayList: [CoInsuredModel] {
+                if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
+                    return upcomingCoInsured
+                } else {
+                   return contract.currentAgreement?.coInsured ?? []
+                }
+            }
             hSection {
                 hRow {
                     VStack {
                         HStack {
                             hText(L10n.changeAddressCoInsuredLabel)
                             Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
+                            hText(L10n.changeAddressYouPlus(contract.upcomingChangedAgreement?.coInsured.count ?? contract.currentAgreement?.coInsured.count ?? 0))
                                 .foregroundColor(hTextColor.secondary)
                         }
-
                         HStack {
                             VStack(alignment: .leading) {
-                                hText("Julia Andersson")
+                                hText(contract.fullName)
                                 hText("SSN", style: .footnote)
                                     .foregroundColor(hTextColor.secondary)
                             }
@@ -92,28 +97,19 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                ForEach(contract.currentAgreement?.coInsured ?? [], id: \.self) { coInsured in
-                    VStack(alignment: .leading) {
-                        hText(coInsured.fullName ?? "")
-                        hText(coInsured.SSN ?? "", style: .footnote)
-                            .foregroundColor(hTextColor.secondary)
+                ForEach(coInsuredDisplayList, id: \.self) { coInsured in
+                    hRow {
+                        VStack(alignment: .leading) {
+                            hText(coInsured.fullName ?? "")
+                            hText(coInsured.SSN ?? coInsured.birthDate ?? "", style: .footnote)
+                                .foregroundColor(hTextColor.secondary)
+                        }
                     }
+                    hRowDivider()
                 }
 
                 ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                    hRow {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                hText(L10n.contractCoinsured)
-                                hText(L10n.contractNoInformation, style: .footnote)
-                                    .foregroundColor(hTextColor.secondary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.warningSmall.image)
-                                .foregroundColor(hSignalColor.amberElement)
-                        }
-                    }
+                    addMissingCoInsuredView
                     if index < nbOfMissingCoInsured - 1 {
                         hRowDivider()
                     }
@@ -147,52 +143,47 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func upComingCoInsuredView(contract: Contract) -> some View {
-        // TODO: ADD PROPER DATA
-        hSection {
-            InfoCard(
-                text: L10n.contractCoinsuredUpdateInFuture(
-                    3,
-                    "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                ),
-                type: .info
-            )
-            .buttons([
-                .init(
-                    buttonTitle: L10n.contractViewCertificateButton,
-                    buttonAction: {
-                        /* TODO: CHANGE */
-                        //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                        let certificateURL = contract.currentAgreement?.certificateUrl
-                        if let url = URL(string: certificateURL) {
-                            store.send(
-                                .contractDetailNavigationAction(
-                                    action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                )
-                            )
-                        }
-                    }
-                )
-            ])
-        }
-        .padding(.top, 8)
-    }
-
-    @ViewBuilder
-    private func changeAddressInfo(_ contract: Contract) -> some View {
-        if let date = contract.upcomingChangedAgreement?.activeFrom {
+    private func upatedContractView(_ contract: Contract) -> some View {
+        if contract.upcomingChangedAgreement?.coInsured != contract.currentAgreement?.coInsured {
             hSection {
-                InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.InsurancesTab.viewDetails,
-                            buttonAction: {
-                                store.send(
-                                    .contractDetailNavigationAction(action: .openInsuranceUpdate(contract: contract))
-                                )
-                            }
+                HStack {
+                    if contract.upcomingChangedAgreement?.coInsured != contract.currentAgreement?.coInsured {
+                        InfoCard(
+                            text: L10n.contractCoinsuredUpdateInFuture(
+                                contract.upcomingChangedAgreement?.coInsured.count ?? 0,
+                                contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            ),
+                            type: .info
                         )
-                    ])
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.contractViewCertificateButton,
+                                buttonAction: {
+                                    let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
+                                    if let url = URL(string: certificateURL) {
+                                        store.send(
+                                            .contractDetailNavigationAction(
+                                                action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        ])
+                    } else {
+                        InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(contract.upcomingChangedAgreement?.activeFrom ?? ""), type: .info)
+                            .buttons([
+                                .init(
+                                    buttonTitle: L10n.InsurancesTab.viewDetails,
+                                    buttonAction: {
+                                        store.send(
+                                            .contractDetailNavigationAction(action: .openInsuranceUpdate(contract: contract))
+                                        )
+                                    }
+                                )
+                            ])
+                    }
+                }
             }
             .padding(.bottom, 16)
         }

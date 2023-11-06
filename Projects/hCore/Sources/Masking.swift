@@ -8,7 +8,7 @@ public enum MaskType: String {
     case none = "None"
     case disabledSuggestion = "DisabledSuggestion"
     case personalNumber = "PersonalNumber"
-    case personalNumberCoInsured = "PersonalNumberCoInsured"
+    case personalNumber12Digits = "PersonalNumber12Digits"
     case norwegianPersonalNumber = "NorwegianPersonalNumber"
     case danishPersonalNumber = "DanishPersonalNumber"
     case postalCode = "PostalCode"
@@ -64,9 +64,9 @@ public struct Masking {
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15...130 ~= age
-        case .personalNumberCoInsured:
+        case .personalNumber12Digits:
             let age = calculateAge(from: text) ?? 0
-            return text.count > 10 && 0...130 ~= age
+            return text.count > 12 && 0...130 ~= age
         case .birthDate, .birthDateReverse:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
@@ -100,7 +100,7 @@ public struct Masking {
 
     private func unmask(text: String) -> String {
         switch type {
-        case .personalNumber, .personalNumberCoInsured: return text.replacingOccurrences(of: "-", with: "")
+        case .personalNumber, .personalNumber12Digits: return text.replacingOccurrences(of: "-", with: "")
         case .postalCode: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate: return text
         case .birthDateReverse:
@@ -180,7 +180,7 @@ public struct Masking {
 
     public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode,
+        case .birthDate, .birthDateReverse, .personalNumber, .personalNumber12Digits, .norwegianPostalCode,
             .postalCode, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateYYMMDD:
             return .numberPad
@@ -213,7 +213,7 @@ public struct Masking {
         switch type {
         case .none:
             return nil
-        case .personalNumber, .personalNumberCoInsured:
+        case .personalNumber, .personalNumber12Digits:
             return L10n.InsurelySeSsn.assistiveText
         case .norwegianPersonalNumber:
             return L10n.SimpleSignLogin.TextField.helperText
@@ -252,7 +252,7 @@ public struct Masking {
         switch type {
         case .none:
             return nil
-        case .personalNumber, .personalNumberCoInsured:
+        case .personalNumber, .personalNumber12Digits:
             return nil
         case .norwegianPersonalNumber:
             return L10n.SimpleSignLogin.TextField.label
@@ -364,11 +364,16 @@ public struct Masking {
         }
 
         switch type {
-        case .personalNumber, .personalNumberCoInsured:
+        case .personalNumber:
             if text.count > 11, text.prefix(2) == "19" || text.prefix(2) == "20" {
                 return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
             }
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
+        case .personalNumber12Digits:
+            if text.count > 11, text.prefix(2) == "19" || text.prefix(2) == "20" {
+                return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
+            }
+            return text
         case .postalCode: return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
         case .norwegianPostalCode: return delimitedDigits(delimiterPositions: [], maxCount: 4, delimiter: " ")
         case .birthDate: return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")

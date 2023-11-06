@@ -7,6 +7,7 @@ struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var intentVm: IntentViewModel
 
     public init(
         contractId: String
@@ -14,6 +15,7 @@ struct InsuredPeopleNewScreen: View {
         self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        intentVm = store.intentViewModel
         vm.resetCoInsured
     }
 
@@ -28,7 +30,7 @@ struct InsuredPeopleNewScreen: View {
                 ) { contract in
                     if let contract = contract {
                         if let coInsured = contract.currentAgreement?.coInsured {
-                            ContractOwnerField(coInsured: coInsured)
+                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
                         }
 
                         hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
@@ -39,7 +41,7 @@ struct InsuredPeopleNewScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
 
-                        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
+                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
                         if vm.coInsuredAdded.count < nbOfMissingCoInsured  {
                             let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                             hSection {
@@ -74,16 +76,17 @@ struct InsuredPeopleNewScreen: View {
             ) { contract in
                 VStack(spacing: 8) {
                     if let contract = contract {
-                        let nbOfMissingCoInsured = contract.currentAgreement?.nbOfMissingCoInsured ?? 0
+                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
                         if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
-                            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
-                                /* TODO: SEND MUTATION */
+                            hButton.LargeButton(type: .primary){
+                                store.send(.performCoInsuredChanges(commitId: intentVm.id))
                                 store.send(
                                     .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
                                 )
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
                             }
+                            .trackLoading(ContractStore.self, action: .postCoInsured)
                             .disabled(((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count) < nbOfMissingCoInsured)
                             .padding(.horizontal, 16)
                         }
@@ -108,7 +111,8 @@ struct InsuredPeopleNewScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .edit,
-                            fullName: coInsured.fullName,
+                            firstName: coInsured.firstName,
+                            lastName: coInsured.lastName,
                             personalNumber: coInsured.SSN,
                             title: L10n.contractAddConisuredInfo,
                             contractId: contractId
@@ -142,7 +146,8 @@ struct InsuredPeopleNewScreen: View {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 actionType: .add,
-                                fullName: nil,
+                                firstName: nil,
+                                lastName: nil,
                                 personalNumber: nil,
                                 title: L10n.contractAddConisuredInfo,
                                 contractId: contractId

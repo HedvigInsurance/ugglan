@@ -1,5 +1,7 @@
 query ContractBundle {
   currentMember {
+    firstName
+    lastName
     activeContracts {
         ...ContractFragment
     }

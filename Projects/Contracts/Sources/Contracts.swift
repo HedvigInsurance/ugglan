@@ -127,9 +127,8 @@ extension Contracts {
                    canChangeCoInsured
                 {
                     let hasMissingInfo = store.state.activeContracts.first { contract in
-                        contract.currentAgreement?.nbOfMissingCoInsured ?? 0 > 0
+                        contract.nbOfMissingCoInsured > 0
                     }
-                    
                     if let hasMissingInfo {
                         if fromInfoCard {
                             EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)

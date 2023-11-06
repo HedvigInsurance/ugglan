@@ -66,7 +66,7 @@ struct InsuredMemberScreen: View {
     private func ssnField() -> some View {
         hRow {
             hFloatingTextField(
-                masking: .init(type: .personalNumberCoInsured),
+                masking: .init(type: .personalNumber12Digits),
                 value: $vm.personalNumber,
                 equals: $vm.inputType,
                 focusValue: .ssn,
@@ -99,8 +99,8 @@ class InsuredMemberViewModel: ObservableObject {
         self.personalNumber = model?.personalNumber ?? ""
     }
 
-    var personalNumberMaskeing: Masking {
-        Masking(type: .personalNumberCoInsured)
+    var personalNumberMasking: Masking {
+        Masking(type: .personalNumber12Digits)
     }
 
     func submit() {
@@ -126,7 +126,7 @@ class InsuredMemberViewModel: ObservableObject {
 
     private func validate() {
         withAnimation {
-            if !personalNumberMaskeing.isValid(text: personalNumber) {
+            if !personalNumberMasking.isValid(text: personalNumber) {
                 personalNumberError = L10n.TravelCertificate.ssnErrorLabel
             } else {
                 personalNumberError = nil

@@ -3,12 +3,10 @@ mutation MidtermChangeIntentCoInsured($contractId: ID!, $input: MidtermChangeInt
     intent {
       id
       currentPremium {
-        amount
-        currencyCode
+        ...MoneyFragment
       }
       newPremium {
-        amount
-        currencyCode
+        ...MoneyFragment
       }
       activationDate
       state

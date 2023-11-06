@@ -5,19 +5,30 @@ import hCoreUI
 
 struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
-    @State var successViewHidden = true
+    @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: ContractStore
+    
+    init(
+        showSuccessScreen: Bool
+    ){
+        self.showSuccessScreen = showSuccessScreen
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        intentVm = store.intentViewModel
+    }
 
     var body: some View {
         BlurredProgressOverlay {
-            loadingView
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.successViewHidden = false
-                    }
+            PresentableLoadingStoreLens(
+                ContractStore.self,
+                loadingState: .postCoInsured
+            ) {
+                loadingView
+            } error: { error in
+                ZStack {
+                    CoInsuredErrorScreen()
                 }
-            if !successViewHidden {
+            } success: {
                 if showSuccessScreen {
                     successView
                 } else {
@@ -40,16 +51,6 @@ struct CoInsuredProcessingScreen: View {
                     }
                 }
             }
-            //            PresentableLoadingStoreLens(
-            //                ContractStore.self,
-            //                loadingState: .postCoInsured
-            //            ) {
-            //                loadingView
-            //            } error: { error in
-            //                errorView
-            //            } success: {
-            //                successView
-            //            }
         }
         .presentableStoreLensAnimation(.default)
         .onAppear {
@@ -74,7 +75,7 @@ struct CoInsuredProcessingScreen: View {
                         hText(L10n.contractAddCoinsuredUpdatedTitle)
                         hText(
                             L10n.contractAddCoinsuredUpdatedLabel(
-                                "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                                intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                         )
                         .foregroundColor(hTextColor.secondary)
@@ -98,18 +99,7 @@ struct CoInsuredProcessingScreen: View {
 
         }
     }
-
-    private var errorView: some View {
-        ZStack {
-            BackgroundView().ignoresSafeArea()
-            RetryView(
-                subtitle: L10n.General.errorBody
-            ) {
-                //                vm.store.send(.postTravelInsuranceForm)
-            }
-        }
-    }
-
+    
     private var loadingView: some View {
         VStack {
             Spacer()

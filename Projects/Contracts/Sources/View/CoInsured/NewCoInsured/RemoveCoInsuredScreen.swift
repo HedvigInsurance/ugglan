@@ -29,7 +29,7 @@ struct RemoveCoInsuredScreen: View {
                 ) { contract in
                     if let contract = contract {
                         if let coInsured = contract.currentAgreement?.coInsured {
-                            ContractOwnerField(coInsured: coInsured)
+                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
                             let missingCoInsured = coInsured.filter {
                                 $0 == CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)
                             }
@@ -41,17 +41,15 @@ struct RemoveCoInsuredScreen: View {
                                     CoInsuredField(
                                         coInsured: coInsured,
                                         accessoryView: accessoryView(
-                                            fullName: coInsured.fullName,
+                                            firstName: coInsured.firstName,
+                                            lastName: coInsured.lastName,
                                             SSN: coInsured.SSN
                                         )
                                     )
                                 }
                                 ForEach(missingCoInsured, id: \.self) { missingCoInsured in
                                     CoInsuredField(
-                                        accessoryView: accessoryView(
-                                            fullName: nil,
-                                            SSN: nil
-                                        ),
+                                        accessoryView: accessoryView(),
                                         title: L10n.contractCoinsured,
                                         subTitle: L10n.contractNoInformation
                                     )
@@ -63,10 +61,19 @@ struct RemoveCoInsuredScreen: View {
                 }
             }
         }
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
+                    ConfirmChangesView()
+                }
+                CancelButton()
+                    .padding(.horizontal, 16)
+            }
+        }
     }
 
     @ViewBuilder
-    func accessoryView(fullName: String?, SSN: String?) -> some View {
+    func accessoryView(firstName: String? = nil, lastName: String? = nil, SSN: String? = nil) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
@@ -74,7 +81,8 @@ struct RemoveCoInsuredScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            fullName: fullName,
+                            firstName: firstName,
+                            lastName: lastName,
                             personalNumber: SSN,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId

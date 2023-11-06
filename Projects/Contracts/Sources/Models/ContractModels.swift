@@ -63,6 +63,8 @@ public struct Contract: Codable, Hashable, Equatable {
         supportsAddressChange: Bool,
         upcomingChangedAgreement: Agreement,
         upcomingRenewal: ContractRenewal,
+        firstName: String,
+        lastName: String,
         typeOfContract: TypeOfContract
     ) {
         self.id = id
@@ -73,6 +75,8 @@ public struct Contract: Codable, Hashable, Equatable {
         self.supportsAddressChange = supportsAddressChange
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
+        self.firstName = firstName
+        self.lastName = lastName
         self.typeOfContract = typeOfContract
     }
 
@@ -85,6 +89,14 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
+    public let firstName: String
+    public let lastName: String
+    public var fullName: String {
+        return firstName + " " + lastName
+    }
+    public var nbOfMissingCoInsured: Int {
+        upcomingChangedAgreement?.coInsured.filter({ $0.needsMissingInfo}).count ?? 0
+    }
 
     public var showEditInfo: Bool {
         return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
@@ -122,7 +134,9 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     init(
-        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
+        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
+        firstName: String,
+        lastName: String
     ) {
         exposureDisplayName = pendingContract.exposureDisplayName
         id = pendingContract.id
@@ -138,10 +152,14 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
+        self.firstName = firstName
+        self.lastName = lastName
     }
 
     init(
-        contract: OctopusGraphQL.ContractFragment
+        contract: OctopusGraphQL.ContractFragment,
+        firstName: String,
+        lastName: String
     ) {
         id = contract.id
         currentAgreement =
@@ -153,6 +171,8 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
+        self.firstName = firstName
+        self.lastName = lastName
     }
 
     public enum TypeOfContract: String, Codable {
@@ -467,9 +487,6 @@ public struct Agreement: Codable, Hashable {
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
     public var coInsured: [CoInsuredModel]
-    public var nbOfMissingCoInsured: Int {
-        coInsured.filter({ $0.needsMissingInfo }).count
-    }
 
     init(
         premium: MonetaryAmount,

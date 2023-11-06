@@ -12,12 +12,13 @@ public class EditCoInsuredJourney {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
                 openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
-            } else if case let .openCoInsuredInput(actionType, fullName, personalNumber, title, contractId) =
+            } else if case let .openCoInsuredInput(actionType, firstName, lastName, personalNumber, title, contractId) =
                 navigationAction
             {
                 openCoInsuredInput(
                     actionType: actionType,
-                    fullName: fullName,
+                    firstName: firstName,
+                    lastName: lastName,
                     personalNumber: personalNumber,
                     title: title,
                     contractId: contractId
@@ -69,7 +70,8 @@ public class EditCoInsuredJourney {
     @JourneyBuilder
     static func openCoInsuredInput(
         actionType: CoInsuredAction,
-        fullName: String?,
+        firstName: String?,
+        lastName: String?,
         personalNumber: String?,
         title: String,
         contractId: String
@@ -78,7 +80,8 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: CoInusuredInput(
                 actionType: actionType,
-                fullName: fullName,
+                firstName: firstName,
+                lastName: lastName,
                 SSN: personalNumber,
                 contractId: contractId
             ),
@@ -228,9 +231,16 @@ public class EditCoInsuredJourney {
                 },
                 onSelected: { selectedContract in
                     let store: ContractStore = globalPresentableStoreContainer.get()
+                    var personalNumber = ""
+                    if let SSN = selectedContract.first?.SSN {
+                        personalNumber = SSN
+                    } else if let birthDate = selectedContract.first?.birthDate {
+                        personalNumber = birthDate
+                    }
                     store.coInsuredViewModel.addCoInsured(
-                        fullName: selectedContract.first?.fullName ?? "",
-                        personalNumber: selectedContract.first?.SSN ?? ""
+                        firstName: selectedContract.first?.firstName ?? "",
+                        lastName: selectedContract.first?.lastName ?? "",
+                        personalNumber: personalNumber
                     )
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 },
@@ -245,7 +255,8 @@ public class EditCoInsuredJourney {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 actionType: .add,
-                                fullName: nil,
+                                firstName: nil,
+                                lastName: nil,
                                 personalNumber: nil,
                                 title: L10n.contractAddCoinsured,
                                 contractId: contractId

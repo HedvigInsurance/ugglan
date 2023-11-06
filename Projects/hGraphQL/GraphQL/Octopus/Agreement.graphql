@@ -38,7 +38,8 @@ fragment ContractFragment on Contract {
 
 fragment CoInsuredFragment on AgreementCoInsured {
     birthdate
-    fullName
+    firstName
+    lastName
     needsMissingInfo
     ssn
 }

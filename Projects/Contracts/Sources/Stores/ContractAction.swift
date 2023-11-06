@@ -36,6 +36,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     case openEditCoInsured(contractId: String, fromInfoCard: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
+    case performCoInsuredChanges(commitId: String)
 
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
@@ -82,7 +83,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredInput(
         actionType: CoInsuredAction,
-        fullName: String?,
+        firstName: String?,
+        lastName: String?,
         personalNumber: String?,
         title: String,
         contractId: String

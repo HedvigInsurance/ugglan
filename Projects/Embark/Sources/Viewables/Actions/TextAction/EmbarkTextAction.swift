@@ -147,7 +147,7 @@ extension EmbarkTextAction: Viewable {
 extension Masking {
     func maskValueFromStore(text: String) -> String {
         switch type {
-        case .personalNumber, .personalNumberCoInsured, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
+        case .personalNumber, .personalNumber12Digits, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .address, .euroBonus,
             .fullName, .firstName, .lastName:
             return maskValue(text: text, previousText: "")

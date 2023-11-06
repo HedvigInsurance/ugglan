@@ -202,6 +202,8 @@ struct ContractRow_Previews: PreviewProvider {
                         renewalDate: "",
                         draftCertificateUrl: ""
                     ),
+                firstName: "",
+                lastName: "",
                 typeOfContract: .seHouse
             )
             let contracts = [contract]

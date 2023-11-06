@@ -1,24 +1,35 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Presentation
 
 struct ContractOwnerField: View {
     let coInsured: [CoInsuredModel]
+    let contractId: String
 
     init(
-        coInsured: [CoInsuredModel]
+        coInsured: [CoInsuredModel],
+        contractId: String
     ) {
         self.coInsured = coInsured
+        self.contractId = contractId
     }
 
     var body: some View {
         hSection {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    /* TODO: CHANGE WHEN REAL DATA */
-                    hText("Julia Andersson")
-                        .fixedSize()
-                    hText("19900101-1111")
+                    PresentableStoreLens(
+                        ContractStore.self,
+                        getter: { state in
+                            state.contractForId(contractId)
+                        }
+                    ) { contract in
+                        hText(contract?.fullName ?? "")
+                            .fixedSize()
+                        /* TODO: CHANGE WHEN REAL DATA */
+                        hText("19900101-1111")
+                    }
                 }
                 .foregroundColor(hTextColor.tertiary)
                 Spacer()
@@ -41,6 +52,7 @@ struct CoInsuredField<Content: View>: View {
     let includeStatusPill: Bool?
     let title: String?
     let subTitle: String?
+    @ObservedObject var intentVm: IntentViewModel
 
     init(
         coInsured: CoInsuredModel? = nil,
@@ -54,6 +66,8 @@ struct CoInsuredField<Content: View>: View {
         self.includeStatusPill = includeStatusPill
         self.title = title
         self.subTitle = subTitle
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        intentVm = store.intentViewModel
     }
 
     var body: some View {
@@ -63,7 +77,7 @@ struct CoInsuredField<Content: View>: View {
                     if let coInsured {
                         hText(coInsured.fullName ?? "")
                             .fixedSize()
-                        hText(coInsured.SSN ?? "")
+                        hText(coInsured.SSN ?? coInsured.birthDate ?? "")
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     } else {
@@ -96,8 +110,7 @@ struct CoInsuredField<Content: View>: View {
     var statusPill: some View {
         VStack {
             hText(
-                //TODO: Set proper data
-                L10n.contractAddCoinsuredActiveFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                L10n.contractAddCoinsuredActiveFrom(intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
                 style: .standardSmall
             )
         }
@@ -111,6 +124,6 @@ struct CoInsuredField<Content: View>: View {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(coInsured: [])
+        ContractOwnerField(coInsured: [], contractId: "")
     }
 }
