@@ -34,11 +34,11 @@ struct PaymentsDiscountsView: View {
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    hText("Campaigns")
+                    hText(L10n.paymentsCampaigns)
                     Spacer()
                     InfoViewHolder(
-                        title: "",
-                        description: ""
+                        title: L10n.paymentsCampaignsInfoTitle,
+                        description: L10n.paymentsCampaignsInfoDescription
                     )
                 }
                 if data.discounts.count == 0 {
@@ -61,8 +61,8 @@ struct PaymentsDiscountsView: View {
                     hText(L10n.ReferralsInfoSheet.headline)
                     Spacer()
                     InfoViewHolder(
-                        title: "",
-                        description: ""
+                        title: L10n.paymentsReferralsInfoTitle,
+                        description: L10n.paymentsReferralsInfoDescription
                     )
                 }
                 HStack {
@@ -127,7 +127,7 @@ struct PaymentsDiscountsView: View {
 
     private var seeAllInvitesView: some View {
         hRow {
-            hText("See all invites")
+            hText(L10n.referralsSeeAllInvites)
         }
         .noHorizontalPadding()
         .onTap {
