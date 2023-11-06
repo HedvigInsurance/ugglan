@@ -37,6 +37,7 @@ public enum PaymentNavigation: ActionProtocol {
     case openPaymentDetails(data: PaymentData, withTitle: String)
     case openInviteFriends(code: String, amount: String)
     case openChangeCode
+    case openAddCampaing
     case goBack
 }
 

@@ -5,13 +5,14 @@ import hCoreUI
 
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
+    @PresentableStore var store: PaymentStore
     var body: some View {
         hForm {
             VStack(spacing: 8) {
                 discounts
                 hSection {
                     hButton.LargeButton(type: .secondary) {
-
+                        store.send(.navigation(to: .openAddCampaing))
                     } content: {
                         hText("Add campaign code")
                     }
@@ -226,6 +227,8 @@ extension PaymentsDiscountsRootView {
                     PaymentsView.shareSheetJourney(code: code, discount: amount)
                 } else if case .openChangeCode = navigateTo {
                     ChangeCodeView.journey
+                } else if case .openAddCampaing = navigateTo {
+                    AddCampaingCodeView.journey
                 }
             }
         }
