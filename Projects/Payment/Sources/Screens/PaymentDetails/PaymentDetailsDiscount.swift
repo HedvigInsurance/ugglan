@@ -39,7 +39,7 @@ struct PaymentDetailsDiscountView: View {
                         Spacer()
                         if let validUntil = vm.discount.validUntil {
                             if vm.shouldShowExpire {
-                                hText("Expired \(validUntil.displayDate)", style: .standardSmall)
+                                hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .standardSmall)
                                     .foregroundColor(hSignalColor.redElement)
                             } else {
                                 hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .standardSmall)
