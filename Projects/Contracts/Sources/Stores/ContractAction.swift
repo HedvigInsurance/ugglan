@@ -34,8 +34,10 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
+    case openEditCoInsured(contractId: String, fromInfoCard: Bool)
+    case coInsuredNavigationAction(action: CoInsuredNavigationAction)
+
     case hasSeenCrossSells(value: Bool)
-    case closeCrossSellingSigned
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
 
@@ -49,18 +51,13 @@ public enum ContractAction: ActionProtocol, Hashable {
 public enum ContractLoadingAction: LoadingProtocol {
     case fetchContractBundles
     case fetchContracts
+    case postCoInsured
+    case fetchNameFromSSN
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {
     case changeAddress
     case coInsured
-
-    var buttonTitle: String {
-        switch self {
-        case .changeAddress: return L10n.generalContinueButton
-        case .coInsured: return L10n.openChat
-        }
-    }
 
     var title: String {
         switch self {
@@ -80,4 +77,19 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         }
         return editTypes
     }
+}
+
+public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
+    case openCoInsuredInput(isDeletion: Bool, name: String?, personalNumber: String?, title: String, contractId: String)
+    case openCoInsuredProcessScreen(showSuccess: Bool)
+    case dismissEdit
+    case dismissEditCoInsuredFlow
+    case openInsuredPeopleNewScreen(contractId: String)
+    case openInsuredPeopleScreen(contractId: String)
+    case openCoInsuredSelectScreen(contractId: String)
+    case deletionSuccess
+    case addSuccess
+    case openMissingCoInsuredAlert(contractId: String)
+    case openErrorScreen
+    case openSelectInsuranceScreen(contractIds: [String])
 }

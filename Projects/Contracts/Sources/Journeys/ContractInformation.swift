@@ -26,6 +26,7 @@ struct ContractInformationView: View {
         ) { contract in
             if let contract {
                 changeAddressInfo(contract)
+                upComingCoInsuredView(contract: contract)
                 VStack(spacing: 0) {
                     if let displayItems = contract.currentAgreement?.displayItems {
                         hSection(displayItems, id: \.displayValue) { item in
@@ -40,7 +41,10 @@ struct ContractInformationView: View {
                             })
                         }
                         .withoutHorizontalPadding
-                        .padding(.bottom, 16)
+                        hRowDivider()
+
+                        addCoInsuredView(contract: contract)
+
                         VStack(spacing: 8) {
                             if contract.showEditInfo {
                                 hSection {
@@ -50,17 +54,136 @@ struct ContractInformationView: View {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
-
                             }
                             displayTerminationButton
                         }
                         .padding(.bottom, 16)
-
                     }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private func addCoInsuredView(contract: Contract) -> some View {
+        let nbOfMissingCoInsured = 2 - contract.coInsured.count
+        VStack(spacing: 0) {
+            hSection {
+                hRow {
+                    VStack {
+                        HStack {
+                            hText(L10n.changeAddressCoInsuredLabel)
+                            Spacer()
+                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                                .foregroundColor(hTextColor.secondary)
+                        }
+
+                        HStack {
+                            VStack(alignment: .leading) {
+                                hText("Julia Andersson")
+                                hText("SSN", style: .footnote)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .foregroundColor(hTextColor.tertiary)
+                        }
+                    }
+                }
+
+                ForEach(Array(contract.coInsured.enumerated()), id: \.offset) { offset, coInsured in
+                    hRow {
+                        VStack(alignment: .leading) {
+                            hText(coInsured.name ?? "")
+                            hText(coInsured.SSN ?? "", style: .footnote)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    if offset < contract.coInsured.count - 1 {
+                        hRowDivider()
+                    }
+                }
+
+                /* TODO: CHANGE WHEN REAL DATA */
+                ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                    hRow {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading) {
+                                hText(L10n.contractCoinsured)
+                                hText(L10n.contractNoInformation, style: .footnote)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.warningSmall.image)
+                                .foregroundColor(hSignalColor.amberElement)
+                        }
+                    }
+                    if index < nbOfMissingCoInsured - 1 {
+                        hRowDivider()
+                    }
+                }
+            }
+            .withoutHorizontalPadding
+            hSection {
+                if nbOfMissingCoInsured != 0 {
+                    CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
+                        .padding(.bottom, 16)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var addMissingCoInsuredView: some View {
+        hRow {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    hText(L10n.contractCoinsured)
+                    hText(L10n.contractNoInformation, style: .footnote)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                Image(uiImage: hCoreUIAssets.warningSmall.image)
+                    .foregroundColor(hSignalColor.amberElement)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func upComingCoInsuredView(contract: Contract) -> some View {
+        // TODO: ADD PROPER DATA
+        hSection {
+            InfoCard(
+                text: L10n.contractCoinsuredUpdateInFuture(
+                    3,
+                    "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.contractViewCertificateButton,
+                    buttonAction: {
+                        /* TODO: CHANGE */
+                        //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
+                        let certificateURL = contract.currentAgreement?.certificateUrl
+                        if let url = URL(string: certificateURL) {
+                            store.send(
+                                .contractDetailNavigationAction(
+                                    action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+                                )
+                            )
+                        }
+                    }
+                )
+            ])
+        }
+        .padding(.top, 8)
     }
 
     @ViewBuilder

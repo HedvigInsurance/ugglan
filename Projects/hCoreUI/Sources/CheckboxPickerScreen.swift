@@ -10,6 +10,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let singleSelect: Bool?
     let showDividers: Bool?
     let attachToBottom: Bool
+    let actionOnAddedOption: (() -> Void)?
     @State var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
 
@@ -20,7 +21,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
         showDividers: Bool? = false,
-        attachToBottom: Bool = false
+        attachToBottom: Bool = false,
+        actionOnAddedOption: (() -> Void)? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -29,6 +31,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.singleSelect = singleSelect
         self.showDividers = showDividers
         self.attachToBottom = attachToBottom
+        self.actionOnAddedOption = actionOnAddedOption
     }
 
     public var body: some View {
@@ -56,6 +59,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
+    @ViewBuilder
     var content: some View {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
@@ -63,6 +67,17 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     getCell(item: item)
                 }
                 .disabled(isLoading)
+            }
+            if let actionOnAddedOption {
+                hButton.LargeButton(type: .ghost) {
+                    actionOnAddedOption()
+                } content: {
+                    HStack(alignment: .center) {
+                        Image(uiImage: hCoreUIAssets.plusSmall.image)
+                        hText(L10n.generalAddNew)
+                    }
+                }
+                .padding(.top, 4)
             }
         }
     }

@@ -6,8 +6,8 @@ import hCore
 import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
+    let coInsuredViewModel = InsuredPeopleNewScreenModel()
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -81,14 +81,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case let .setActiveContracts(contracts):
-
             newState.activeContracts = contracts
         case let .setTerminatedContracts(contracts):
             newState.terminatedContracts = contracts
         case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
             newState.pendingContracts = contracts
-        case .setCrossSells(let crossSells):
+        case let .setCrossSells(crossSells):
             newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):
             newState.crossSells = newState.crossSells.map { crossSell in

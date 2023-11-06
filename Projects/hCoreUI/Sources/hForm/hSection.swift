@@ -41,7 +41,7 @@ public struct RowViewBuilder {
         return TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle)
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .bottom)
             )
         )
     }
@@ -93,6 +93,48 @@ public struct RowViewBuilder {
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
                 viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
                 viewG.environment(\.hRowPosition, .bottom)
+            )
+        )
+    }
+
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View, I: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E,
+        _ viewF: F,
+        _ viewG: G,
+        _ viewH: H
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
+                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .bottom)
+            )
+        )
+    }
+
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View, I: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E,
+        _ viewF: F,
+        _ viewG: G,
+        _ viewH: H,
+        _ viewI: I
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
+                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .middle),
+                viewI.environment(\.hRowPosition, .bottom)
             )
         )
     }

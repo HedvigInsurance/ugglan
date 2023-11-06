@@ -29,6 +29,10 @@ extension Date {
     public func daysBetween(start: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: self).day!
     }
+
+    public var displayDateDDMMMYYYYFormat: String? {
+        return DateFormatters.displayddMMMyyyy.string(from: self).lowercased()
+    }
 }
 private struct DateFormatters {
     static let localDateStringFormatter: DateFormatter = {
@@ -58,6 +62,12 @@ private struct DateFormatters {
     static let displayddMMMMYYYY: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM dd yyyy"
+        return formatter
+    }()
+
+    static let displayddMMMyyyy: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
         return formatter
     }()
 }

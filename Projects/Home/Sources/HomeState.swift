@@ -13,7 +13,7 @@ public struct ImportantMessage: Codable, Equatable {
 }
 
 public struct UpcomingRenewal: Codable, Equatable {
-    let renewalDate: String
+    let renewalDate: String?
     let draftCertificateUrl: String?
 
     public init?(
@@ -23,6 +23,11 @@ public struct UpcomingRenewal: Codable, Equatable {
         self.renewalDate = upcomingRenewal.activeFrom
         self.draftCertificateUrl = upcomingRenewal.certificateUrl
     }
+}
+
+enum RenewalType {
+    case regular
+    case coInsured
 }
 
 public struct Contract: Codable, Equatable {
@@ -91,12 +96,13 @@ public enum HomeAction: ActionProtocol {
     case openTravelInsurance
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+    case openCoInsured(contractIds: [String])
     case openEmergency
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
     case hideImportantMessage
-
+    case openContractCertificate(url: URL, title: String)
 }
 
 public enum FutureStatus: Codable, Equatable {

@@ -75,8 +75,6 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        highlights: [],
-                        FAQ: [],
                         displayName: ""
                     )
             )

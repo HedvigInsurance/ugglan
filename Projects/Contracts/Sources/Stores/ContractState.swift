@@ -15,10 +15,18 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
-    var currentTerminationContext: String?
-    var terminationContractId: String? = ""
 
-    func contractForId(_ id: String) -> Contract? {
+    public var fetchAllCoInsured: [CoInsuredModel] {
+        var coInsuredList: [CoInsuredModel] = []
+        activeContracts.forEach { contract in
+            if contract.coInsured != CoInsuredModel(name: nil, SSN: nil) {
+                coInsuredList.append(contentsOf: contract.coInsured)
+            }
+        }
+        return coInsuredList
+    }
+
+    public func contractForId(_ id: String) -> Contract? {
         let activeContracts = activeContracts.compactMap({ $0 })
         let terminatedContracts = terminatedContracts.compactMap({ $0 })
         let pendingContracts = pendingContracts.compactMap({ $0 })

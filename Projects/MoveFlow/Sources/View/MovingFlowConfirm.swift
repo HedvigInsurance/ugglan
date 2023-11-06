@@ -349,12 +349,6 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                         insurableLimits: [
                             .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
                             .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
-                        ],
-                        highlights: [],
-                        faq: [
-                            .init(headline: "Headline", body: "Body"),
-                            .init(headline: "Headline 2", body: "Body 2"),
-                            .init(headline: "Headline 3", body: "Body 3"),
                         ]
                     ),
                     displayItems: []
@@ -377,12 +371,6 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                         insurableLimits: [
                             .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
                             .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
-                        ],
-                        highlights: [],
-                        faq: [
-                            .init(headline: "Headline", body: "Body"),
-                            .init(headline: "Headline 2", body: "Body 2"),
-                            .init(headline: "Headline 3", body: "Body 3"),
                         ]
                     ),
                     displayItems: []

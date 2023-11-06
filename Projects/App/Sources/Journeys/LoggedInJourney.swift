@@ -49,6 +49,8 @@ extension AppJourney {
                             AppJourney.webRedirect(url: url)
                         }
                     }
+                case let .startCoInsuredFlow(contractIds):
+                    AppJourney.editCoInsured(contractIds: contractIds)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in

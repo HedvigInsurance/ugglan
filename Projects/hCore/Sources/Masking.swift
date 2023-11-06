@@ -16,9 +16,13 @@ public enum MaskType: String {
     case email = "Email"
     case birthDate = "BirthDate"
     case birthDateReverse = "BirthDateReverse"
+    case birthDateYYMMDD = "BirthDateYYMMDD"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
     case euroBonus = "EuroBonus"
+    case fullName = "FullName"
+    case firstName = "FirstName"
+    case lastName = "LastName"
 }
 
 public struct Masking {
@@ -63,7 +67,7 @@ public struct Masking {
         case .personalNumberCoInsured:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 0...130 ~= age
-        case .birthDate, .birthDateReverse:
+        case .birthDate, .birthDateReverse, .birthDateYYMMDD:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
         case .email:
@@ -80,6 +84,14 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .euroBonus: return text.count > 3
+        case .fullName:
+            let fullNameRegex = "^[a-zA-Z]+(?:[\\s.]+[a-zA-Z]+)*$"
+            let fullNamePredicate = NSPredicate(format: "SELF MATCHES %@", fullNameRegex)
+            return fullNamePredicate.evaluate(with: text)
+        case .firstName, .lastName:
+            let nameRegEx = "[(A-Z|Å|Ä|Ö)a-zåäö\\s]*"
+            let namePredicate = NSPredicate(format: "SELF MATCHES %@", nameRegEx)
+            return text.count > 0 && namePredicate.evaluate(with: text)
         }
     }
 
@@ -100,6 +112,13 @@ public struct Masking {
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
+        case .fullName: return text
+        case .birthDateYYMMDD:
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyddMM"
+            guard let date = dateFormatter.date(from: text) else { return text }
+            return date.localDateString
+        case .firstName, .lastName: return text
         }
     }
 
@@ -143,6 +162,9 @@ public struct Masking {
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else { return nil }
 
             return age
+        case .birthDateYYMMDD:
+            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) { return age }
+            return nil
         default: return nil
         }
     }
@@ -157,13 +179,14 @@ public struct Masking {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateYYMMDD:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
         case .address: return .default
         case .disabledSuggestion: return .default
         case .euroBonus: return .default
+        case .firstName, .lastName: return .default
         }
     }
 
@@ -211,6 +234,14 @@ public struct Masking {
             return nil
         case .euroBonus:
             return nil
+        case .fullName:
+            return L10n.TravelCertificate.fullNameLabel
+        case .birthDateYYMMDD:
+            return L10n.contractBirthdate
+        case .firstName:
+            return L10n.contractFirstName
+        case .lastName:
+            return L10n.contractLastName
         }
     }
 
@@ -242,6 +273,11 @@ public struct Masking {
             return nil
         case .euroBonus:
             return nil
+        case .fullName:
+            return nil
+        case .birthDateYYMMDD:
+            return nil
+        case .firstName, .lastName: return nil
         }
     }
 
@@ -311,6 +347,19 @@ public struct Masking {
             return previousText
         }
 
+        func isDigit(maxCount: Int) -> String {
+            if text.count < previousText.count {
+                return text
+            }
+
+            if text.count <= maxCount {
+                let sanitizedText = String(text.filter { $0.isDigit })
+                return sanitizedText
+            }
+
+            return previousText
+        }
+
         switch type {
         case .personalNumber, .personalNumberCoInsured:
             if text.count > 11, text.prefix(2) == "19" || text.prefix(2) == "20" {
@@ -333,6 +382,10 @@ public struct Masking {
         case .disabledSuggestion: return text
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
+        case .fullName: return text
+        case .birthDateYYMMDD:
+            return isDigit(maxCount: 6)
+        case .firstName, .lastName: return text
         }
     }
 }

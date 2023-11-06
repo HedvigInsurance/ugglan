@@ -1,5 +1,6 @@
 import Apollo
 import Combine
+import Contracts
 import Flow
 import Payment
 import Presentation
@@ -32,6 +33,15 @@ struct HomeBottomScrollView: View {
                     )
                 case .importantMessage:
                     ImportantMessagesView()
+                case .missingCoInsured:
+                    CoInsuredInfoHomeView {
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {
+                            ($0.id)
+                        }
+                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                        homeStore.send(.openCoInsured(contractIds: contractIds))
+                    }
                 }
             }
         )
@@ -44,6 +54,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
+        handleMissingCoInsured()
         handleImportantMessages()
         handleRenewalCardView()
         handleDeleteRequests(memberId: memberId)
@@ -108,7 +119,23 @@ class HomeButtonScrollViewModel: ObservableObject {
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
         handleItem(.deletedView, with: members.contains(memberId))
+    }
 
+    private func handleMissingCoInsured() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.stateSignal.plain()
+            .map({ $0.activeContracts.map { $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil)) } })
+            .distinct()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleItem(.missingCoInsured, with: show[1])
+            })
+            .store(in: &cancellables)
+        let show = contractStore.state.activeContracts.contains(where: {
+            $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil))
+        })
+        handleItem(.missingCoInsured, with: show)
     }
 }
 
@@ -129,6 +156,7 @@ struct InfoCardView: Identifiable, Hashable {
 
 enum InfoCardType: Int {
     case payment
+    case missingCoInsured
     case importantMessage
     case renewal
     case deletedView

@@ -220,6 +220,8 @@ extension HomeView {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
                 resultJourney(.openCrossSells)
+            } else if case let .openCoInsured(contractIds) = action {
+                resultJourney(.startCoInsuredFlow(contractIds: contractIds))
             }
         }
         .configureTabBarItem(
@@ -239,6 +241,7 @@ public enum HomeResult {
     case openTravelInsurance
     case openCrossSells
     case openEmergency
+    case startCoInsuredFlow(contractIds: [String])
 }
 
 struct Active_Preview: PreviewProvider {

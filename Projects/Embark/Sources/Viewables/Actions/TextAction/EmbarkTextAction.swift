@@ -148,13 +148,21 @@ extension Masking {
     func maskValueFromStore(text: String) -> String {
         switch type {
         case .personalNumber, .personalNumberCoInsured, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .address, .euroBonus:
+            .norwegianPersonalNumber, .danishPersonalNumber, .none, .disabledSuggestion, .address, .euroBonus,
+            .fullName, .firstName, .lastName:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
             guard let date = text.localDateToDate else { return text }
 
             let birthDateFormatter = DateFormatter()
             birthDateFormatter.dateFormat = "dd-MM-yyyy"
+
+            return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
+        case .birthDateYYMMDD:
+            guard let date = text.localDateToDate else { return text }
+
+            let birthDateFormatter = DateFormatter()
+            birthDateFormatter.dateFormat = "yyddMM"
 
             return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
         }
