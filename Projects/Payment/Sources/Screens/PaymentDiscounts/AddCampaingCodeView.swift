@@ -11,7 +11,7 @@ struct AddCampaingCodeView: View {
             ZStack(alignment: .center) {
                 textInput
                 hForm {
-                    SuccessScreen(title: "Discount added")
+                    SuccessScreen(title: L10n.paymentsDiscountAdded)
                 }
                 .hFormContentPosition(.center)
                 .hDisableScroll
@@ -55,7 +55,7 @@ class AddCampaingCodeViewModel: ObservableObject {
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: "",
-            title: "Add campaign code",
+            title: L10n.referralAddcouponInputplaceholder,
             dismiss: { [weak store] in
                 store?.send(.navigation(to: .goBack))
             }
@@ -93,7 +93,7 @@ extension AddCampaingCodeView {
                 }
             }
         }
-        .configureTitle("Add campaign")
+        .configureTitle(L10n.paymentsAddCampaignCode)
     }
 }
 

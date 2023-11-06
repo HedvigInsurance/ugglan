@@ -59,15 +59,6 @@ extension ChangeCodeView {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            //            if case .showChangeCodeSuccess = action {
-            //                SuccessScreen.journey(with: L10n.ReferralsChange.codeChanged)
-            //                    .onPresent {
-            //                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            //                            let store: ForeverStore = globalPresentableStoreContainer.get()
-            //                            store.send(.dismissChangeCodeDetail)
-            //                        }
-            //                    }
-            //            }
             if case let .navigation(navigateTo) = action {
                 if case .goBack = navigateTo {
                     PopJourney()

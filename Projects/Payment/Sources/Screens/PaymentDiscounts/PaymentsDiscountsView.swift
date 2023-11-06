@@ -14,7 +14,7 @@ struct PaymentsDiscountsView: View {
                     hButton.LargeButton(type: .secondary) {
                         store.send(.navigation(to: .openAddCampaing))
                     } content: {
-                        hText("Add campaign code")
+                        hText(L10n.paymentsAddCampaignCode)
                     }
                 }
                 Spacing(height: 16)
@@ -42,7 +42,7 @@ struct PaymentsDiscountsView: View {
                     )
                 }
                 if data.discounts.count == 0 {
-                    hText("No campaign code added")
+                    hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.secondary)
                         .padding(.bottom, 16)
                 }
@@ -58,7 +58,7 @@ struct PaymentsDiscountsView: View {
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    hText("Hedvig Forever")
+                    hText(L10n.ReferralsInfoSheet.headline)
                     Spacer()
                     InfoViewHolder(
                         title: "",
