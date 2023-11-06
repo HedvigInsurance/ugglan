@@ -29,7 +29,7 @@ struct PaymentsDiscountsView: View {
 
     private var discounts: some View {
         hSection(data.discounts) { discount in
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount))
+            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .enableRemoving], discount: discount))
         }
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {
@@ -202,15 +202,14 @@ struct PaymentsDiscountsRootView: View {
                 }
             }
         }
-        .onAppear {
-            store.send(.fetchDiscountsData)
-        }
     }
 }
 
 extension PaymentsDiscountsRootView {
     var journey: some JourneyPresentation {
-        HostingJourney(
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        store.send(.fetchDiscountsData)
+        return HostingJourney(
             PaymentStore.self,
             rootView: self
         ) { action in
@@ -223,8 +222,9 @@ extension PaymentsDiscountsRootView {
                     AddCampaingCodeView.journey
                 } else if case .openAllReferrals = navigateTo {
                     ReferralsView.journey
+                } else if case let .openDeleteCampaing(code) = navigateTo {
+                    DeleteCampaignView.journeyWith(code: code)
                 }
-
             }
         }
         .configureTitle(L10n.paymentsDiscountsSectionTitle)

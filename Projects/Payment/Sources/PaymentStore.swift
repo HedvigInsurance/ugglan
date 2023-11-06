@@ -39,6 +39,7 @@ public enum PaymentNavigation: ActionProtocol {
     case openChangeCode
     case openAddCampaing
     case openAllReferrals
+    case openDeleteCampaing(code: String)
     case goBack
 }
 

@@ -72,6 +72,7 @@ struct PaymentDetailsDiscountView: View {
 class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
+    @PresentableStore private var store: PaymentStore
     @Inject private var campaignsService: hCampaignsService
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
@@ -94,21 +95,7 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
     }
 
     func startRemoveCode() {
-        if shouldShowRemove {
-            Task {
-                await removeCode()
-            }
-        }
-    }
-
-    @MainActor
-    private func removeCode() async {
-        do {
-            try await campaignsService.remove(code: discount.code)
-
-        } catch let exc {
-
-        }
+        store.send(.navigation(to: .openDeleteCampaing(code: discount.code)))
     }
 
 }

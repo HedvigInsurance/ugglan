@@ -7,41 +7,23 @@ import hCoreUI
 struct AddCampaingCodeView: View {
     @StateObject var vm = AddCampaingCodeViewModel()
     var body: some View {
-        if vm.codeAdded {
-            ZStack(alignment: .center) {
-                textInput
-                hForm {
-                    SuccessScreen(title: L10n.paymentsDiscountAdded)
-                }
-                .hFormContentPosition(.center)
-                .hDisableScroll
-                .introspectViewController { vc in
-                    vc.view.backgroundColor = .brand(.primaryBackground())
-                    if #available(iOS 16.0, *) {
-                        for i in 1...3 {
-                            if vc.presentingViewController != nil {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 + Double(i) * 0.05) {
-                                    if let vc = vc as UIViewController? {
-                                        vc.sheetPresentationController?.invalidateDetents()
-                                        vc.sheetPresentationController?
-                                            .animateChanges {
-                                                vc.title = nil
-                                                vc.navigationController?.setNavigationBarHidden(true, animated: true)
-                                            }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            textInput
+        ZStack(alignment: .center) {
+            TextInputView(vm: vm.inputVm).opacity(vm.codeAdded ? 0 : 1)
+            SuccessScreen(title: L10n.paymentsDiscountAdded).opacity(vm.codeAdded ? 1 : 0)
+                .offset(y: -32)
         }
-    }
-
-    var textInput: some View {
-        TextInputView(vm: vm.inputVm)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                hText(vm.codeAdded ? "" : L10n.paymentsAddCampaignCode)
+                //                if !vm.codeRemoved{
+                //                    VStack {
+                //                        ForEach(vm.getTitleParts, id: \.self) { element in
+                //                            hText(element)
+                //                        }
+                //                    }
+                //                }
+            }
+        }
     }
 }
 
@@ -50,6 +32,7 @@ class AddCampaingCodeViewModel: ObservableObject {
     var errorMessage: String?
     @Published var codeAdded: Bool = false
     @Inject var campaignsService: hCampaignsService
+    @PresentableStore var store: PaymentStore
     init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
@@ -61,12 +44,13 @@ class AddCampaingCodeViewModel: ObservableObject {
             }
         )
 
-        inputVm.onSave = { [weak self, weak store] text in
+        inputVm.onSave = { [weak self] text in
             try await self?.campaignsService.add(code: text)
-            store?.send(.fetchDiscountsData)
+            self?.store.send(.fetchDiscountsData)
+
             await self?.onSuccessAdd()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak store] in
-                store?.send(.navigation(to: .goBack))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                self?.store.send(.navigation(to: .goBack))
             }
         }
     }
@@ -93,7 +77,7 @@ extension AddCampaingCodeView {
                 }
             }
         }
-        .configureTitle(L10n.paymentsAddCampaignCode)
+        //        .configureTitle(L10n.paymentsAddCampaignCode)
     }
 }
 
