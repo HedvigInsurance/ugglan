@@ -109,17 +109,9 @@ struct PaymentsDiscountsView: View {
         return list
     }
 
-    private func getRefferalView(_ refferal: Referral) -> some View {
+    private func getRefferalView(_ referral: Referral) -> some View {
         hRow {
-            HStack(spacing: 8) {
-                Circle().fill(refferal.statusColor).frame(width: 14, height: 14)
-                VStack(alignment: .leading) {
-                    hText(refferal.name).foregroundColor(hTextColor.primary)
-                }
-                Spacer()
-                hText(refferal.discountLabelText).foregroundColor(refferal.discountLabelColor)
-
-            }
+            ReferralView(referral: referral)
         }
         .noHorizontalPadding()
         .dividerInsets(.all, 0)
@@ -131,7 +123,7 @@ struct PaymentsDiscountsView: View {
         }
         .noHorizontalPadding()
         .onTap {
-
+            store.send(.navigation(to: .openAllReferrals))
         }
         .padding(.horizontal, -16)
     }
@@ -229,7 +221,10 @@ extension PaymentsDiscountsRootView {
                     ChangeCodeView.journey
                 } else if case .openAddCampaing = navigateTo {
                     AddCampaingCodeView.journey
+                } else if case .openAllReferrals = navigateTo {
+                    ReferralsView.journey
                 }
+
             }
         }
         .configureTitle(L10n.paymentsDiscountsSectionTitle)
@@ -289,5 +284,20 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return DiscountCodeSectionView(code: "ASOOJRTW")
+    }
+}
+
+struct ReferralView: View {
+    let referral: Referral
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle().fill(referral.statusColor).frame(width: 14, height: 14)
+            VStack(alignment: .leading) {
+                hText(referral.name).foregroundColor(hTextColor.primary)
+            }
+            Spacer()
+            hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
+
+        }
     }
 }
