@@ -88,7 +88,8 @@ public struct Discount: Codable, Equatable, Identifiable {
                 from: Date(),
                 to: validUntil
             )
-            return components.day ?? 0 > 0
+            let isValid = components.day ?? 0 >= 0
+            return isValid
         }
         return true
     }

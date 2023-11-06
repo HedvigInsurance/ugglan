@@ -6,13 +6,20 @@ import hCoreUI
 struct ChangeCodeView: View {
     @StateObject var vm = ChangeCodeViewModel()
     var body: some View {
-        TextInputView(vm: vm.inputVm)
+        if vm.codeChanged {
+            hForm {
+                SuccessScreen(title: L10n.ReferralsChange.codeChanged)
+            }
+        } else {
+            TextInputView(vm: vm.inputVm)
+        }
     }
 }
 
 class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     var errorMessage: String?
+    @Published var codeChanged: Bool = false
     @Inject var hForeverCodeService: hForeverCodeService
     init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
@@ -29,7 +36,17 @@ class ChangeCodeViewModel: ObservableObject {
             try await self?.hForeverCodeService.chageCode(new: text)
             let store: PaymentStore = globalPresentableStoreContainer.get()
             store.send(.fetchDiscountsData)
-            store.send(.navigation(to: .goBack))
+            await self?.onSuccessSave()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak store] in
+                store?.send(.navigation(to: .goBack))
+            }
+        }
+    }
+
+    @MainActor
+    func onSuccessSave() async {
+        withAnimation {
+            codeChanged = true
         }
     }
 }

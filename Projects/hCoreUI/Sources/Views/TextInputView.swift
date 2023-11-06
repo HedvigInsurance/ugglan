@@ -41,14 +41,16 @@ public struct TextInputView: View {
                         } content: {
                             hText(L10n.generalSaveButton, style: .body)
                         }
+                        .hButtonIsLoading(vm.isLoading)
                         hButton.LargeButton(type: .ghost) {
                             vm.dismiss()
                         } content: {
                             hText(L10n.generalCancelButton, style: .body)
                         }
+                        .disabled(vm.isLoading)
                     }
                 }
-                .hButtonIsLoading(vm.isLoading)
+
                 .padding(.vertical, 16)
             }
         }
