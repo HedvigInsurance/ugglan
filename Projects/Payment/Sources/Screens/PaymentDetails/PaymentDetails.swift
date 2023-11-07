@@ -56,7 +56,9 @@ struct PaymentDetails: View {
     @ViewBuilder
     private var total: some View {
         hSection {
-            hRowDivider()
+            if !data.discounts.isEmpty {
+                hRowDivider()
+            }
             hRow {
                 hText(L10n.PaymentDetails.ReceiptCard.total)
             }
@@ -82,6 +84,16 @@ struct PaymentDetails: View {
                         Spacer()
                         hText(data.payment.date.displayDate)
                             .foregroundColor(hTextColor.secondary)
+                    }
+                    if data.status != .upcoming {
+                        PaymentStatusView(status: data.status) { action in
+                            switch action {
+                            case .viewAddedToPayment:
+                                if let nextPayment = data.addedToThePayment?.first {
+                                    store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
+                                }
+                            }
+                        }
                     }
                     if let previousPaymentStatus = data.previousPaymentStatus {
                         PaymentStatusView(status: previousPaymentStatus) { _ in }
@@ -151,6 +163,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                 net: .sek(180),
                 date: "2022-10-30"
             ),
+            status: .upcoming,
             previousPaymentStatus: nil,
             contracts: [
                 .init(
@@ -228,110 +241,15 @@ struct PaymentDetails_Previews: PreviewProvider {
                     validUntil: nil
                 ),
             ],
-            paymentDetails: nil
-        )
-        return PaymentDetails(data: data)
-    }
-}
-
-struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = PaymentData(
-            payment: .init(
-                gross: .sek(200),
-                net: .sek(180),
-                date: "2022-10-30"
-            ),
-            previousPaymentStatus: .failedForPrevious(from: "2023-09-11", to: "2023-10-11"),
-            contracts: [
-                .init(
-                    id: "id1",
-                    title: "title",
-                    subtitle: "subtitle",
-                    amount: .sek(200),
-                    periods: [
-                        .init(
-                            id: "1",
-                            from: "2023-11-10",
-                            to: "2023-11-23",
-                            amount: .sek(100),
-                            isOutstanding: false
-                        ),
-                        .init(
-                            id: "2",
-                            from: "2023-11-23",
-                            to: "2023-11-30",
-                            amount: .sek(80),
-                            isOutstanding: true
-                        ),
-                    ]
-                ),
-                .init(
-                    id: "id2",
-                    title: "title 2",
-                    subtitle: "subtitle 2",
-                    amount: .sek(300),
-                    periods: [
-                        .init(
-                            id: "1",
-                            from: "2023-11-10",
-                            to: "2023-11-23",
-                            amount: .sek(100),
-                            isOutstanding: false
-                        ),
-                        .init(
-                            id: "2",
-                            from: "2023-11-23",
-                            to: "2023-11-30",
-                            amount: .sek(80),
-                            isOutstanding: true
-                        ),
-                    ]
-                ),
-            ],
-            discounts: [
-                .init(
-                    id: "CODE",
-                    code: "CODE",
-                    amount: .sek(100),
-                    title: "Title",
-                    listOfAffectedInsurances: [
-                        .init(id: "1", displayName: "Car 15%")
-                    ],
-                    validUntil: "2023-11-20"
-                ),
-                .init(
-                    id: "CODE2",
-                    code: "CODE2",
-                    amount: .sek(99),
-                    title: "Title1",
-                    listOfAffectedInsurances: [
-                        .init(id: "2", displayName: "House 15%")
-                    ],
-                    validUntil: "2023-11-22"
-                ),
-                .init(
-                    id: "FRIENDS",
-                    code: "MY CODE",
-                    amount: .sek(30),
-                    title: "3 friends invited",
-                    listOfAffectedInsurances: [],
-                    validUntil: nil
-                ),
-            ],
-            paymentDetails: .init(
-                paymentMethod: "Method",
-                account: "Account",
-                bank: "Bank"
-            )
-
+            paymentDetails: nil,
+            addedToThePayment: nil
         )
         return PaymentDetails(data: data)
     }
 }
 
 extension PaymentDetails {
-    static func journey(with paymentData: PaymentData, and title: String) -> some JourneyPresentation {
+    static func journey(with paymentData: PaymentData) -> some JourneyPresentation {
         HostingJourney(
             PaymentStore.self,
             rootView: PaymentDetails(data: paymentData)
@@ -339,9 +257,11 @@ extension PaymentDetails {
             if case let .navigation(navigateTo) = action {
                 if case .goBack = navigateTo {
                     PopJourney()
+                } else if case let .openPaymentDetails(data) = navigateTo {
+                    PaymentDetails.journey(with: data)
                 }
             }
         }
-        .configureTitle(title)
+        .configureTitleView(paymentData)
     }
 }

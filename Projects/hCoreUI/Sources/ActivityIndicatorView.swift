@@ -107,7 +107,11 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         self.showLoading = showLoading
         self.retryActions = retryActions
         let store: StoreType = globalPresentableStoreContainer.get()
-        handle(allActions: store.loadingSignal.value)
+        if let state = handle(allActions: store.loadingSignal.value) {
+            _isLoading = State(initialValue: state.isLoading)
+            _error = State(initialValue: state.error ?? "")
+            _presentError = State(initialValue: state.presentError)
+        }
     }
 
     public var body: some View {
@@ -134,11 +138,15 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         }
     }
 
-    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+    @discardableResult
+    private func handle(
+        allActions: [StoreType.Loading: LoadingState<String>]
+    ) -> LoadingViewWithContent.ChangeStateValue? {
         let actions = allActions.filter({ self.actions.contains($0.key) })
+        var state: LoadingViewWithContent.ChangeStateValue?
         if actions.count > 0 {
             if actions.filter({ $0.value == .loading }).count > 0 {
-                changeState(to: true, presentError: false)
+                state = .init(isLoading: true, presentError: false, error: nil)
             } else {
                 var tempError = ""
                 for action in actions {
@@ -149,23 +157,27 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                         break
                     }
                 }
-                changeState(to: false, presentError: true, error: tempError)
+                state = .init(isLoading: false, presentError: true, error: tempError)
             }
         } else {
-            changeState(to: false, presentError: false, error: nil)
+            state = .init(isLoading: false, presentError: false, error: nil)
         }
+        if let state {
+            changeState(to: state)
+        }
+        return state
     }
-    private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
+    private func changeState(to state: LoadingViewWithContent.ChangeStateValue) {
         if let animation {
             withAnimation(animation) {
-                self.error = error ?? ""
-                self.isLoading = isLoading
-                self.presentError = presentError
+                self.error = state.error ?? ""
+                self.isLoading = state.isLoading
+                self.presentError = state.presentError
             }
         } else {
-            self.error = error ?? ""
-            self.isLoading = isLoading
-            self.presentError = presentError
+            self.error = state.error ?? ""
+            self.isLoading = state.isLoading
+            self.presentError = state.presentError
         }
     }
 
@@ -178,6 +190,12 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         .background(hBackgroundColor.primary.opacity(0.01))
         .edgesIgnoringSafeArea(.top)
         .useDarkColor
+    }
+
+    private struct ChangeStateValue {
+        let isLoading: Bool
+        let presentError: Bool
+        let error: String?
     }
 }
 

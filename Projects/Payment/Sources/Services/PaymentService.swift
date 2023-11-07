@@ -6,6 +6,8 @@ public protocol hPaymentService {
     func getPaymentData() async throws -> PaymentData
     func getPaymentStatusData() async throws -> PaymentStatusData
     func getPaymentDiscountsData() async throws -> PaymentDiscountsData
+    func getPaymentHistoryData() async throws -> [PaymentHistoryListData]
+
 }
 
 public class hPaymentServiceDemo: hPaymentService {
@@ -14,7 +16,8 @@ public class hPaymentServiceDemo: hPaymentService {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return .init(
             payment: .init(gross: .sek(460), net: .sek(400), date: "2023-11-30"),
-            previousPaymentStatus: nil,  //.failedForPrevious(from: "2023-10-11", to: "2023-10-27"),
+            status: .upcoming,
+            previousPaymentStatus: nil,
             contracts: [
                 .init(
                     id: "id",
@@ -72,7 +75,8 @@ public class hPaymentServiceDemo: hPaymentService {
                     validUntil: "2023-11-03"
                 ),
             ],
-            paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank")
+            paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank"),
+            addedToThePayment: nil
         )
     }
 
@@ -127,4 +131,116 @@ public class hPaymentServiceDemo: hPaymentService {
         )
     }
 
+    public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        let item = PaymentHistoryListData(
+            id: "2023",
+            year: "2023",
+            valuesPerMonth: [
+                .init(
+                    id: "1",
+                    date: "2023-03-31",
+                    amount: .sek(1531),
+                    paymentData: .init(
+                        payment: .init(gross: .sek(200), net: .sek(100), date: "2023-10-11"),
+                        status: .addedtoFuture(date: "2023-10-01", withId: "Id", isUpcoming: false),
+                        previousPaymentStatus: nil,
+                        contracts: [
+                            .init(
+                                id: "ContractId",
+                                title: "Contract",
+                                subtitle: "Subtitle",
+                                amount: .sek(200),
+                                periods: [
+                                    .init(
+                                        id: "periodId",
+                                        from: "2023-10-11",
+                                        to: "2023-10-12",
+                                        amount: .sek(200),
+                                        isOutstanding: false
+                                    ),
+                                    .init(
+                                        id: "periodId2",
+                                        from: "2023-10-11",
+                                        to: "2023-10-12",
+                                        amount: .sek(200),
+                                        isOutstanding: false
+                                    ),
+                                ]
+                            )
+                        ],
+                        discounts: [
+                            .init(
+                                id: "discount1",
+                                code: "CODE",
+                                amount: .sek(200),
+                                title: "TItle",
+                                listOfAffectedInsurances: [.init(id: "Id1", displayName: "CarInsurance")],
+                                validUntil: "2023-10-11"
+                            )
+                        ],
+                        paymentDetails: .init(paymentMethod: "Autogyro", account: "****123123", bank: "SEB"),
+                        addedToThePayment: [
+                            .init(
+                                payment: .init(gross: .sek(200), net: .sek(100), date: "2023-10-11"),
+                                status: .success,
+                                previousPaymentStatus: nil,
+                                contracts: [
+                                    .init(
+                                        id: "ContractId",
+                                        title: "Contract",
+                                        subtitle: "Subtitle",
+                                        amount: .sek(200),
+                                        periods: [
+                                            .init(
+                                                id: "periodId",
+                                                from: "2023-10-11",
+                                                to: "2023-10-12",
+                                                amount: .sek(200),
+                                                isOutstanding: false
+                                            ),
+                                            .init(
+                                                id: "periodId2",
+                                                from: "2023-10-11",
+                                                to: "2023-10-12",
+                                                amount: .sek(200),
+                                                isOutstanding: false
+                                            ),
+                                        ]
+                                    )
+                                ],
+                                discounts: [
+                                    .init(
+                                        id: "discount1",
+                                        code: "CODE",
+                                        amount: .sek(200),
+                                        title: "TItle",
+                                        listOfAffectedInsurances: [.init(id: "Id1", displayName: "CarInsurance")],
+                                        validUntil: "2023-10-11"
+                                    )
+                                ],
+                                paymentDetails: .init(paymentMethod: "Autogyro", account: "****123123", bank: "SEB"),
+                                addedToThePayment: nil
+                            )
+                        ]
+                    )
+                ),
+                .init(
+                    id: "2",
+                    date: "2023-04-30",
+                    amount: .sek(1531),
+                    paymentData: .init(
+                        payment: .init(gross: .sek(200), net: .sek(100), date: "2023-10-11"),
+                        status: .success,
+                        previousPaymentStatus: nil,
+                        contracts: [],
+                        discounts: [],
+                        paymentDetails: nil,
+                        addedToThePayment: nil
+                    )
+                ),
+            ]
+        )
+        return [item]
+    }
 }
