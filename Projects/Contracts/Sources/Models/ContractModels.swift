@@ -88,8 +88,8 @@ public struct Contract: Codable, Hashable, Equatable {
     public var coInsured: [CoInsuredModel] = [
         //        CoInsuredModel(name: "Julia", SSN: "000000000"),
         //        CoInsuredModel(name: "Test", SSN: "11111111"),
-        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
-        CoInsuredModel(firstName: nil, lastName: nil, SSN: nil),
+        CoInsuredModel(),
+        CoInsuredModel(),
     ] /* TODO: MOVE INITIAIZATION AND CHANGE TO LET */
 
     public var showEditInfo: Bool {

@@ -126,9 +126,9 @@ extension Contracts {
                 if let canChangeCoInsured = store.state.contractForId(contractId)?.canChangeCoInsured,
                     canChangeCoInsured
                 {
-                    if let a = store.state.activeContracts.first(where: {
-                        $0.coInsured.contains(CoInsuredModel(firstName: nil, lastName: nil, SSN: nil))
-                    }) {
+                    if store.state.activeContracts.first(where: { $0.id == contractId })?.coInsured
+                        .filter({ $0.hasMissingData }).count ?? 0 > 0
+                    {
                         if fromInfoCard {
                             EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
                         } else {

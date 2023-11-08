@@ -33,11 +33,9 @@ struct CoInusuredInput: View {
                                 await vm.getNameFromSSN(SSN: vm.SSN)
                             }
                         } else if vm.isDeletion {
-                            store.coInsuredViewModel.removeCoInsured(
-                                firstName: vm.firstName,
-                                lastName: vm.lastName,
-                                personalNumber: vm.SSN
-                            )
+                            if let coInsured = vm.coInsuredModel {
+                                store.coInsuredViewModel.removeCoInsured(coInsured)
+                            }
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
                             store.coInsuredViewModel.addCoInsured(
@@ -257,7 +255,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(vm: .init(coInsuredModel: .init(), isDeletion: false, contractId: ""))
+        CoInusuredInput(vm: .init(coInsuredModel: CoInsuredModel(), isDeletion: false, contractId: ""))
     }
 }
 
@@ -295,6 +293,7 @@ class CoInusuredInputViewModel: ObservableObject {
     @Published var type: CoInsuredInputType?
     let isDeletion: Bool
     let contractId: String
+    let coInsuredModel: CoInsuredModel?
     @Inject var octopus: hOctopus
 
     init(
@@ -302,6 +301,7 @@ class CoInusuredInputViewModel: ObservableObject {
         isDeletion: Bool,
         contractId: String
     ) {
+        self.coInsuredModel = coInsuredModel
         self.firstName = coInsuredModel.firstName ?? ""
         self.lastName = coInsuredModel.lastName ?? ""
         self.SSN = coInsuredModel.SSN ?? ""

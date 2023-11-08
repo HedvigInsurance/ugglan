@@ -58,7 +58,7 @@ struct InsuredPeopleScreen: View {
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             isDeletion: false,
-                                            coInsuredModel: .init(),
+                                            coInsuredModel: CoInsuredModel(),
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
                                         )
@@ -186,16 +186,11 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded.append(coInsuredModel)
     }
 
-    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        let removedCoInsured = CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber)
-        if coInsuredAdded.contains(removedCoInsured) {
-            if let index = coInsuredAdded.firstIndex(where: {
-                ($0.fullName == removedCoInsured.fullName && $0.SSN == removedCoInsured.SSN)
-            }) {
-                coInsuredAdded.remove(at: index)
-            }
+    func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
+        if coInsuredAdded.contains(coInsuredModel) {
+            coInsuredAdded.removeAll(where: { $0 == coInsuredModel })
         } else {
-            coInsuredDeleted.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
+            coInsuredDeleted.append(coInsuredModel)
         }
     }
 }
