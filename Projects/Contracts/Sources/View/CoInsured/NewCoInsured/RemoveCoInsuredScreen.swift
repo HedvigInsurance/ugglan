@@ -40,22 +40,18 @@ struct RemoveCoInsuredScreen: View {
                                 ForEach(exisistingCoInsured, id: \.self) { coInsured in
                                     CoInsuredField(
                                         coInsured: coInsured,
-                                        accessoryView: accessoryView(
-                                            firstName: coInsured.firstName,
-                                            lastName: coInsured.lastName,
-                                            SSN: coInsured.SSN
-                                        )
+                                        accessoryView: accessoryView(coInsured)
                                     )
                                 }
                                 ForEach(missingCoInsured, id: \.self) { missingCoInsured in
                                     CoInsuredField(
-                                        accessoryView: accessoryView(),
+                                        accessoryView: accessoryView(.init()),
                                         title: L10n.contractCoinsured,
                                         subTitle: L10n.contractNoInformation
                                     )
                                 }
+                                .sectionContainerStyle(.transparent)
                             }
-                            .sectionContainerStyle(.transparent)
                         }
                     }
                 }
@@ -73,7 +69,7 @@ struct RemoveCoInsuredScreen: View {
     }
 
     @ViewBuilder
-    func accessoryView(firstName: String? = nil, lastName: String? = nil, SSN: String? = nil) -> some View {
+    func accessoryView(_ coInsuredModel: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
@@ -81,9 +77,7 @@ struct RemoveCoInsuredScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            firstName: firstName,
-                            lastName: lastName,
-                            personalNumber: SSN,
+                            coInsuredModel: coInsuredModel,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )

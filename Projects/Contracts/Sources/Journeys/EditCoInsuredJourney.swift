@@ -12,14 +12,10 @@ public class EditCoInsuredJourney {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
                 openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
-            } else if case let .openCoInsuredInput(actionType, firstName, lastName, personalNumber, title, contractId) =
-                navigationAction
-            {
+            } else if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
                 openCoInsuredInput(
                     actionType: actionType,
-                    firstName: firstName,
-                    lastName: lastName,
-                    personalNumber: personalNumber,
+                    coInsuredModel: coInsuredModel,
                     title: title,
                     contractId: contractId
                 )
@@ -70,20 +66,14 @@ public class EditCoInsuredJourney {
     @JourneyBuilder
     static func openCoInsuredInput(
         actionType: CoInsuredAction,
-        firstName: String?,
-        lastName: String?,
-        personalNumber: String?,
+        coInsuredModel: CoInsuredModel,
         title: String,
         contractId: String
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInusuredInput(
-                actionType: actionType,
-                firstName: firstName,
-                lastName: lastName,
-                SSN: personalNumber,
-                contractId: contractId
+                vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
             ),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
@@ -230,20 +220,19 @@ public class EditCoInsuredJourney {
                         return []
                     }
                 },
-                onSelected: { selectedContract in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    var personalNumber = ""
-                    if let SSN = selectedContract.first?.SSN {
-                        personalNumber = SSN
-                    } else if let birthDate = selectedContract.first?.birthDate {
-                        personalNumber = birthDate
+                onSelected: { selectedContracts in
+                    if let selectedContract = selectedContracts.first {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.coInsuredViewModel.addCoInsured(
+                            .init(
+                                firstName: selectedContract.firstName,
+                                lastName: selectedContract.lastName,
+                                SSN: selectedContract.SSN,
+                                needsMissingInfo: false
+                            )
+                        )
+                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
                     }
-                    store.coInsuredViewModel.addCoInsured(
-                        firstName: selectedContract.first?.firstName ?? "",
-                        lastName: selectedContract.first?.lastName ?? "",
-                        personalNumber: personalNumber
-                    )
-                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 },
                 onCancel: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -256,9 +245,7 @@ public class EditCoInsuredJourney {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 actionType: .add,
-                                firstName: nil,
-                                lastName: nil,
-                                personalNumber: nil,
+                                coInsuredModel: .init(),
                                 title: L10n.contractAddCoinsured,
                                 contractId: contractId
                             )

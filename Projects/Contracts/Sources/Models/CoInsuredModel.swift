@@ -8,7 +8,16 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-    
+
+    public init() {
+        needsMissingInfo = true
+        fullName = nil
+        firstName = nil
+        lastName = nil
+        birthDate = nil
+        SSN = nil
+    }
+
     public init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {
@@ -40,7 +49,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.SSN = SSN
         self.needsMissingInfo = needsMissingInfo
     }
-    
+
     var formattedSSN: String? {
         return SSN?.replacingOccurrences(of: "-", with: "")
     }

@@ -95,9 +95,7 @@ struct InsuredPeopleScreen: View {
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             actionType: .add,
-                                            firstName: nil,
-                                            lastName: nil,
-                                            personalNumber: nil,
+                                            coInsuredModel: .init(),
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
                                         )
@@ -132,9 +130,7 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            firstName: coInsured.firstName,
-                            lastName: coInsured.lastName,
-                            personalNumber: coInsured.SSN ?? coInsured.birthDate,
+                            coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )
@@ -152,9 +148,7 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             actionType: .delete,
-                            firstName: coInsured.firstName,
-                            lastName: coInsured.lastName,
-                            personalNumber: coInsured.SSN,
+                            coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )
@@ -285,21 +279,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         SSNError = nil
     }
 
-    func addCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        if personalNumber.count == 6 {
-            coInsuredAdded.append(
-                CoInsuredModel(
-                    firstName: firstName,
-                    lastName: lastName,
-                    birthDate: personalNumber,
-                    needsMissingInfo: false
-                )
-            )
-        } else {
-            coInsuredAdded.append(
-                CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber, needsMissingInfo: false)
-            )
-        }
+    func addCoInsured(_ coInsuredModel: CoInsuredModel) {
+        coInsuredAdded.append(coInsuredModel)
     }
 
     func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
@@ -374,14 +355,14 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         }
     }
 
-    func editCoInsured(firstName: String, lastName: String, personalNumber: String) {
+    func editCoInsured(_ coInsuredModel: CoInsuredModel) {
         let previousValue = CoInsuredModel(fullName: previousName, SSN: previousSSN, needsMissingInfo: false)
         if let index = coInsuredAdded.firstIndex(where: {
             ($0.fullName == previousValue.fullName && $0.SSN == previousValue.SSN)
         }) {
             coInsuredAdded.remove(at: index)
         }
-        addCoInsured(firstName: firstName, lastName: lastName, personalNumber: personalNumber)
+        addCoInsured(coInsuredModel)
     }
 
     @MainActor

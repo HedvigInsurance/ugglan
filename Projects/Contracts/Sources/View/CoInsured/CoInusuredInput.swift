@@ -10,24 +10,14 @@ struct CoInusuredInput: View {
     @ObservedObject var intentVm: IntentViewModel
     @PresentableStore var store: ContractStore
     @ObservedObject var vm: CoInusuredInputViewModel
+
     public init(
-        actionType: CoInsuredAction,
-        firstName: String? = "",
-        lastName: String? = "",
-        SSN: String?,
-        contractId: String
+        vm: CoInusuredInputViewModel
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
-        self.vm = .init(
-            firstName: firstName,
-            lastName: lastName,
-            SSN: SSN,
-            actionType: actionType,
-            contractId: contractId,
-            noSSN: false
-        )
+        self.vm = vm
     }
 
     var body: some View {
@@ -83,23 +73,23 @@ struct CoInusuredInput: View {
                                 if !intentVm.showErrorView {
                                     if vm.actionType == .edit {
                                         store.coInsuredViewModel.editCoInsured(
-                                            firstName: vm.firstName,
-                                            lastName: vm.lastName,
-                                            personalNumber: vm.SSN
+                                            .init(
+                                                firstName: vm.firstName,
+                                                lastName: vm.lastName,
+                                                SSN: vm.SSN,
+                                                needsMissingInfo: false
+                                            )
                                         )
                                     } else {
                                         store.coInsuredViewModel.addCoInsured(
-                                            firstName: vm.firstName,
-                                            lastName: vm.lastName,
-                                            personalNumber: vm.SSN
+                                            .init(
+                                                firstName: vm.firstName,
+                                                lastName: vm.lastName,
+                                                SSN: vm.SSN,
+                                                needsMissingInfo: false
+                                            )
                                         )
                                     }
-                                    print(
-                                        "list: ",
-                                        insuredPeopleVm.completeList,
-                                        " count ",
-                                        insuredPeopleVm.completeList.count
-                                    )
                                     await intentVm.getIntent(
                                         contractId: vm.contractId,
                                         coInsured: insuredPeopleVm.completeList
@@ -328,7 +318,9 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(actionType: .add, SSN: "", contractId: "")
+        CoInusuredInput(
+            vm: .init(coInsuredModel: CoInsuredModel(needsMissingInfo: true), actionType: .add, contractId: "")
+        )
     }
 }
 
@@ -377,19 +369,15 @@ class CoInusuredInputViewModel: ObservableObject {
     }
 
     init(
-        firstName: String?,
-        lastName: String?,
-        SSN: String?,
+        coInsuredModel: CoInsuredModel,
         actionType: CoInsuredAction,
-        contractId: String,
-        noSSN: Bool?
+        contractId: String
     ) {
-        self.firstName = firstName ?? ""
-        self.lastName = lastName ?? ""
-        self.SSN = SSN ?? ""
-        self.noSSN = noSSN ?? false
-        self.contractId = contractId
+        self.firstName = coInsuredModel.firstName ?? ""
+        self.lastName = coInsuredModel.lastName ?? ""
+        self.SSN = coInsuredModel.SSN ?? ""
         self.actionType = actionType
+        self.contractId = contractId
     }
 
     @MainActor

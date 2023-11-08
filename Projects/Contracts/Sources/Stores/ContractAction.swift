@@ -83,9 +83,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredInput(
         actionType: CoInsuredAction,
-        firstName: String?,
-        lastName: String?,
-        personalNumber: String?,
+        coInsuredModel: CoInsuredModel,
         title: String,
         contractId: String
     )
