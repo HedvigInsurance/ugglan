@@ -8,14 +8,12 @@ struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
 
     public init(
         contractId: String
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
         self.contractId = contractId
         vm.resetCoInsured
         vm.existingCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured ?? []
@@ -194,7 +192,6 @@ struct ConfirmChangesView: View {
                 HStack(spacing: 8) {
                     hText(L10n.contractAddCoinsuredTotal)
                     Spacer()
-
                     if #available(iOS 16.0, *) {
                         hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
                             .strikethrough()
@@ -222,7 +219,7 @@ struct ConfirmChangesView: View {
             } content: {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
             }
-            .hButtonIsLoading(intentVm.isLoading)
+            .hButtonIsLoading(intentVm.isLoading) /* TODO: CORRECT? */
         }
         .padding(.horizontal, 16)
     }
@@ -235,6 +232,9 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
+
+    init() {}
+
     @Published var firstName = ""
     @Published var lastName = ""
     var fullName: String {
@@ -244,7 +244,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         return coInsured.fullName == coInsuredCompare.fullName
             && (coInsured.SSN == coInsuredCompare.SSN || coInsured.birthDate == coInsuredCompare.birthDate)
     }
-
     @Published var SSN: String = ""
     @Published var previousName: String = ""
     @Published var previousSSN: String = ""

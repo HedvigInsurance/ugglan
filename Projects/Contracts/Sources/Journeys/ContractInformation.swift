@@ -118,6 +118,7 @@ struct ContractInformationView: View {
                     }
                 }
                 .padding(.leading, 16)
+
                 ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
                     addMissingCoInsuredView
                     if index < nbOfMissingCoInsured - 1 {
@@ -143,6 +144,7 @@ struct ContractInformationView: View {
             title: L10n.contractCoinsured,
             subTitle: L10n.contractNoInformation
         )
+        .padding(.horizontal, 16)
     }
 
     @ViewBuilder
@@ -274,7 +276,9 @@ private class ContractsInformationViewModel: ObservableObject {
                             && (currentCoInsured.formattedSSN != upcoming.formattedSSN
                                 || currentCoInsured.birthDate != upcoming.birthDate)
                         {
-                            returnValue.append(upcoming)
+                            if !returnValue.contains(upcoming) {
+                                returnValue.append(upcoming)
+                            }
                         }
                     }
             }
@@ -297,7 +301,7 @@ private class ContractsInformationViewModel: ObservableObject {
                     }
             }
         } else {
-            returnValue = contract.currentAgreement?.coInsured ?? []
+            returnValue = contract.currentAgreement?.coInsured.filter({ !$0.needsMissingInfo }) ?? []
         }
         return returnValue
     }
@@ -307,13 +311,13 @@ private class ContractsInformationViewModel: ObservableObject {
         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
             contract.currentAgreement?.coInsured
                 .forEach { currentCoInsured in
-                    if let index = upcomingCoInsured.first(where: { upComing in
-                        currentCoInsured.fullName == upComing.fullName
-                            && (currentCoInsured.formattedSSN == upComing.formattedSSN
-                                || currentCoInsured.birthDate == upComing.birthDate)
-                    }) {
-
-                    } else {
+                    if !currentCoInsured.needsMissingInfo
+                        && upcomingCoInsured.first(where: { upComing in
+                            currentCoInsured.fullName == upComing.fullName
+                                && (currentCoInsured.formattedSSN == upComing.formattedSSN
+                                    || currentCoInsured.birthDate == upComing.birthDate)
+                        }) == nil
+                    {
                         returnValue.append(currentCoInsured)
                     }
                 }

@@ -12,10 +12,10 @@ struct InsuredPeopleNewScreen: View {
     public init(
         contractId: String
     ) {
-        self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
+        self.contractId = contractId
         vm.resetCoInsured
     }
 
@@ -42,7 +42,7 @@ struct InsuredPeopleNewScreen: View {
                         .sectionContainerStyle(.transparent)
 
                         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
-                        if vm.coInsuredAdded.count < nbOfMissingCoInsured  {
+                        if vm.coInsuredAdded.count < nbOfMissingCoInsured {
                             let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                             hSection {
                                 ForEach((1...nbOfFields), id: \.self) { index in
@@ -78,7 +78,7 @@ struct InsuredPeopleNewScreen: View {
                     if let contract = contract {
                         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
                         if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
-                            hButton.LargeButton(type: .primary){
+                            hButton.LargeButton(type: .primary) {
                                 store.send(.performCoInsuredChanges(commitId: intentVm.id))
                                 store.send(
                                     .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
@@ -87,7 +87,10 @@ struct InsuredPeopleNewScreen: View {
                                 hText(L10n.generalSaveChangesButton)
                             }
                             .trackLoading(ContractStore.self, action: .postCoInsured)
-                            .disabled(((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count) < nbOfMissingCoInsured)
+                            .disabled(
+                                ((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count)
+                                    < nbOfMissingCoInsured
+                            )
                             .padding(.horizontal, 16)
                         }
 

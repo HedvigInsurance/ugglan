@@ -53,7 +53,6 @@ struct CoInsuredField<Content: View>: View {
     let date: String?
     let title: String?
     let subTitle: String?
-    @ObservedObject var intentVm: IntentViewModel
 
     init(
         coInsured: CoInsuredModel? = nil,
@@ -69,8 +68,6 @@ struct CoInsuredField<Content: View>: View {
         self.date = date
         self.title = title
         self.subTitle = subTitle
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
     }
 
     var body: some View {
@@ -114,7 +111,7 @@ struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? date ?? "")
+                    .text(date: date ?? "")
                     ?? "",
                 style: .standardSmall
             )

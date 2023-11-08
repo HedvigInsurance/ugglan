@@ -36,9 +36,10 @@ struct HomeBottomScrollView: View {
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {
-                            ($0.id)
+                        let missingContracts = contractStore.state.activeContracts.filter {
+                            $0.nbOfMissingCoInsured != 0
                         }
+                        let contractIds = missingContracts.compactMap({ $0.id })
                         let homeStore: HomeStore = globalPresentableStoreContainer.get()
                         homeStore.send(.openCoInsured(contractIds: contractIds))
                     }
@@ -126,7 +127,8 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts.map {
-                    $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
+                    $0.currentAgreement?.coInsured
+                        .contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
                 }
             })
             .distinct()
@@ -137,7 +139,8 @@ class HomeButtonScrollViewModel: ObservableObject {
             })
             .store(in: &cancellables)
         let show = contractStore.state.activeContracts.contains(where: {
-            $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
+            $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true))
+                ?? false
         })
         handleItem(.missingCoInsured, with: show)
     }

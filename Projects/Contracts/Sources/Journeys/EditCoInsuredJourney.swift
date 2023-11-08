@@ -211,14 +211,15 @@ public class EditCoInsuredJourney {
         }
     }
 
-    @JourneyBuilder
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CheckboxPickerScreen<CoInsuredModel>(
                 items: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    return contractStore.state.fetchAllCoInsured.compactMap { ((object: $0, displayName: $0.fullName ?? "")) }
+                    return contractStore.state.fetchAllCoInsured.compactMap {
+                        ((object: $0, displayName: $0.fullName ?? ""))
+                    }
                 }(),
                 preSelectedItems: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -277,14 +278,13 @@ public class EditCoInsuredJourney {
         .configureTitle(L10n.contractAddConisuredInfo)
     }
 
-    static func openInitialScreen(contractIds: [String]) {
+    @JourneyBuilder
+    public static func openInitialScreen(contractIds: [String]) -> some JourneyPresentation {
         let store: ContractStore = globalPresentableStoreContainer.get()
         if contractIds.count > 1 {
-            store.send(.coInsuredNavigationAction(action: .openSelectInsuranceScreen(contractIds: contractIds)))
+            EditCoInsuredJourney.openSelectInsurance(contractIds: contractIds)
         } else {
-            store.send(
-                .coInsuredNavigationAction(action: .openInsuredPeopleNewScreen(contractId: contractIds.first ?? ""))
-            )
+            EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractIds.first ?? "")
         }
     }
 }

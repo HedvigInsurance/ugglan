@@ -6,14 +6,10 @@ import hCoreUI
 import hGraphQL
 
 struct CoInusuredInput: View {
-    @State var type: CoInsuredInputType?
-    @State var keyboardEnabled: Bool = false
-    @PresentableStore var store: ContractStore
-    let actionType: CoInsuredAction
-    let contractId: String
-    @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
-
+    @PresentableStore var store: ContractStore
+    @ObservedObject var vm: CoInusuredInputViewModel
     public init(
         actionType: CoInsuredAction,
         firstName: String? = "",
@@ -21,21 +17,17 @@ struct CoInusuredInput: View {
         SSN: String?,
         contractId: String
     ) {
-        self.actionType = actionType
-        self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
-        vm = store.coInsuredViewModel
+        insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
-        vm.previousName = vm.fullName
-        vm.previousSSN = SSN ?? ""
-        vm.SSN = SSN ?? ""
-        vm.firstName = firstName ?? ""
-        vm.lastName = lastName ?? ""
-        vm.SSNError = nil
-        vm.showErrorView = false
-        intentVm.showErrorView = false
-        vm.nameFetchedFromSSN = false
-        vm.noSSN = false
+        self.vm = .init(
+            firstName: firstName,
+            lastName: lastName,
+            SSN: SSN,
+            actionType: actionType,
+            contractId: contractId,
+            noSSN: false
+        )
     }
 
     var body: some View {
@@ -50,7 +42,7 @@ struct CoInusuredInput: View {
     var mainView: some View {
         hForm {
             VStack(spacing: 4) {
-                if actionType == .delete {
+                if vm.actionType == .delete {
                     deleteCoInsuredFields
                 } else {
                     addCoInsuredFields
@@ -61,15 +53,18 @@ struct CoInusuredInput: View {
                             Task {
                                 await vm.getNameFromSSN(SSN: vm.SSN)
                             }
-                        } else if actionType == .delete {
+                        } else if vm.actionType == .delete {
                             Task {
                                 store.coInsuredViewModel.removeCoInsured(
                                     firstName: vm.firstName,
                                     lastName: vm.lastName,
                                     personalNumber: vm.SSN
                                 )
-                                if vm.coInsuredDeleted.count > 0 {
-                                    await intentVm.getIntent(contractId: contractId, coInsured: vm.completeList)
+                                if insuredPeopleVm.coInsuredDeleted.count > 0 {
+                                    await intentVm.getIntent(
+                                        contractId: vm.contractId,
+                                        coInsured: insuredPeopleVm.completeList
+                                    )
                                 }
                                 if !intentVm.showErrorView {
                                     store.send(.coInsuredNavigationAction(action: .deletionSuccess))
@@ -86,7 +81,7 @@ struct CoInusuredInput: View {
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
                             Task {
                                 if !intentVm.showErrorView {
-                                    if actionType == .edit {
+                                    if vm.actionType == .edit {
                                         store.coInsuredViewModel.editCoInsured(
                                             firstName: vm.firstName,
                                             lastName: vm.lastName,
@@ -99,8 +94,16 @@ struct CoInusuredInput: View {
                                             personalNumber: vm.SSN
                                         )
                                     }
-                                    print("list: ", vm.completeList, " count ", vm.completeList.count)
-                                    await intentVm.getIntent(contractId: contractId, coInsured: vm.completeList)
+                                    print(
+                                        "list: ",
+                                        insuredPeopleVm.completeList,
+                                        " count ",
+                                        insuredPeopleVm.completeList.count
+                                    )
+                                    await intentVm.getIntent(
+                                        contractId: vm.contractId,
+                                        coInsured: insuredPeopleVm.completeList
+                                    )
                                     if !intentVm.showErrorView {
                                         store.send(.coInsuredNavigationAction(action: .addSuccess))
                                     } else {
@@ -120,7 +123,7 @@ struct CoInusuredInput: View {
                     .hButtonIsLoading(vm.isLoading || intentVm.isLoading)
                 }
                 .padding(.top, 12)
-                .disabled(buttonIsDisabled && !(actionType == .delete))
+                .disabled(buttonIsDisabled && !(vm.actionType == .delete))
 
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -171,7 +174,6 @@ struct CoInusuredInput: View {
                 }
                 hButton.LargeButton(type: .ghost) {
                     vm.showErrorView = false
-                    intentVm.showErrorView = false
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -182,7 +184,7 @@ struct CoInusuredInput: View {
     }
 
     var buttonDisplayText: String {
-        if actionType == .delete {
+        if vm.actionType == .delete {
             return L10n.removeConfirmationButton
         } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
@@ -201,7 +203,7 @@ struct CoInusuredInput: View {
                     hFloatingTextField(
                         masking: Masking(type: .birthDate),
                         value: $vm.SSN,
-                        equals: $type,
+                        equals: $vm.type,
                         focusValue: .SSN,
                         placeholder: L10n.contractBirthDate
                     )
@@ -215,7 +217,7 @@ struct CoInusuredInput: View {
                     hFloatingTextField(
                         masking: Masking(type: .personalNumber12Digits),
                         value: $vm.SSN,
-                        equals: $type,
+                        equals: $vm.type,
                         focusValue: .SSN,
                         placeholder: L10n.contractPersonalIdentity
                     )
@@ -233,14 +235,14 @@ struct CoInusuredInput: View {
                         hFloatingTextField(
                             masking: Masking(type: .firstName),
                             value: $vm.firstName,
-                            equals: $type,
+                            equals: $vm.type,
                             focusValue: .firstName,
                             placeholder: L10n.contractFirstName
                         )
                         hFloatingTextField(
                             masking: Masking(type: .lastName),
                             value: $vm.lastName,
-                            equals: $type,
+                            equals: $vm.type,
                             focusValue: .lastName,
                             placeholder: L10n.contractLastName
                         )
@@ -349,6 +351,106 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
+}
+
+class CoInusuredInputViewModel: ObservableObject {
+    @Published var firstName: String
+    @Published var lastName: String
+    @Published var noSSN = false
+    @Published var SSNError: String?
+    @Published var nameFetchedFromSSN: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var showErrorView: Bool = false
+    @Published var enterManually: Bool = false
+    @Published var SSN: String
+    @Published var type: CoInsuredInputType?
+    @Published var actionType: CoInsuredAction
+    let contractId: String
+    @Inject var octopus: hOctopus
+
+    var fullName: String {
+        return firstName + " " + lastName
+    }
+    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
+        return coInsured.fullName == coInsuredCompare.fullName
+            && (coInsured.SSN == coInsuredCompare.SSN || coInsured.birthDate == coInsuredCompare.birthDate)
+    }
+
+    init(
+        firstName: String?,
+        lastName: String?,
+        SSN: String?,
+        actionType: CoInsuredAction,
+        contractId: String,
+        noSSN: Bool?
+    ) {
+        self.firstName = firstName ?? ""
+        self.lastName = lastName ?? ""
+        self.SSN = SSN ?? ""
+        self.noSSN = noSSN ?? false
+        self.contractId = contractId
+        self.actionType = actionType
+    }
+
+    @MainActor
+    func getNameFromSSN(SSN: String) async {
+        withAnimation {
+            self.SSNError = nil
+            self.isLoading = true
+        }
+        do {
+            let data = try await withCheckedThrowingContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    >
+                ) -> Void in
+                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+                self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { value in
+                        if let data = value.personalInformation {
+                            continuation.resume(with: .success(data))
+                        }
+                    }
+                    .onError { graphQLError in
+                        continuation.resume(throwing: graphQLError)
+                    }
+            }
+            withAnimation {
+                self.firstName = data.firstName
+                self.lastName = data.lastName
+                self.nameFetchedFromSSN = true
+            }
+
+        } catch let exception {
+            if let exception = exception as? GraphQLError {
+                switch exception {
+                case .graphQLError:
+                    self.enterManually = true
+                case .otherError:
+                    self.enterManually = false
+                }
+            }
+            withAnimation {
+                if let exception = exception as? GraphQLError {
+                    switch exception {
+                    case .graphQLError:
+                        self.SSNError = exception.localizedDescription
+                    case .otherError:
+                        self.SSNError = L10n.General.errorBody
+                    }
+                }
+                self.showErrorView = true
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
 }
 
 public class IntentViewModel: ObservableObject {

@@ -95,7 +95,11 @@ public struct Contract: Codable, Hashable, Equatable {
         return firstName + " " + lastName
     }
     public var nbOfMissingCoInsured: Int {
-        upcomingChangedAgreement?.coInsured.filter({ $0.needsMissingInfo }).count ?? 0
+        if let upcomingChangedAgreement {
+            return upcomingChangedAgreement.coInsured.filter({ $0.needsMissingInfo }).count
+        } else {
+            return currentAgreement?.coInsured.filter({ $0.needsMissingInfo }).count ?? 0
+        }
     }
 
     public var showEditInfo: Bool {
