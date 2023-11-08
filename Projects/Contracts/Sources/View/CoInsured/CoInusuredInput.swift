@@ -43,12 +43,16 @@ struct CoInusuredInput: View {
                             Task {
                                 await vm.getNameFromSSN(SSN: vm.SSN)
                             }
+                            //<<<<<<< HEAD
                         } else if vm.actionType == .delete {
                             Task {
                                 store.coInsuredViewModel.removeCoInsured(
-                                    firstName: vm.firstName,
-                                    lastName: vm.lastName,
-                                    personalNumber: vm.SSN
+                                    .init(
+                                        firstName: vm.firstName,
+                                        lastName: vm.lastName,
+                                        SSN: vm.SSN,
+                                        needsMissingInfo: false
+                                    )
                                 )
                                 if insuredPeopleVm.coInsuredDeleted.count > 0 {
                                     await intentVm.getIntent(
@@ -61,13 +65,23 @@ struct CoInusuredInput: View {
                                 } else {
                                     // add back
                                     store.coInsuredViewModel.undoDeleted(
-                                        firstName: vm.firstName,
-                                        lastName: vm.lastName,
-                                        personalNumber: vm.SSN
+                                        .init(
+                                            firstName: vm.firstName,
+                                            lastName: vm.lastName,
+                                            SSN: vm.SSN,
+                                            needsMissingInfo: false
+                                        )
                                     )
                                 }
                             }
 
+                            //=======
+                            //                        } else if vm.isDeletion {
+                            //                            if let coInsured = vm.coInsuredModel {
+                            //                                store.coInsuredViewModel.removeCoInsured(coInsured)
+                            //                            }
+                            //                            store.send(.coInsuredNavigationAction(action: .deletionSuccess))
+                            //>>>>>>> feature/edit-coinsured/fetch-name-from-ssn
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
                             Task {
                                 if !intentVm.showErrorView {
@@ -98,9 +112,15 @@ struct CoInusuredInput: View {
                                         store.send(.coInsuredNavigationAction(action: .addSuccess))
                                     } else {
                                         store.coInsuredViewModel.removeCoInsured(
-                                            firstName: vm.firstName,
-                                            lastName: vm.lastName,
-                                            personalNumber: vm.SSN
+                                            .init(
+                                                firstName: vm.firstName,
+                                                lastName: vm.lastName,
+                                                SSN: vm.SSN,
+                                                needsMissingInfo: false
+                                            )
+                                            //                                            firstName: vm.firstName,
+                                            //                                            lastName: vm.lastName,
+                                            //                                            personalNumber: vm.SSN
                                         )
                                     }
                                 }
@@ -318,9 +338,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(
-            vm: .init(coInsuredModel: CoInsuredModel(needsMissingInfo: true), actionType: .add, contractId: "")
-        )
+        CoInusuredInput(vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""))
     }
 }
 
@@ -358,6 +376,7 @@ class CoInusuredInputViewModel: ObservableObject {
     @Published var type: CoInsuredInputType?
     @Published var actionType: CoInsuredAction
     let contractId: String
+    let coInsuredModel: CoInsuredModel?
     @Inject var octopus: hOctopus
 
     var fullName: String {
@@ -373,6 +392,7 @@ class CoInusuredInputViewModel: ObservableObject {
         actionType: CoInsuredAction,
         contractId: String
     ) {
+        self.coInsuredModel = coInsuredModel
         self.firstName = coInsuredModel.firstName ?? ""
         self.lastName = coInsuredModel.lastName ?? ""
         self.SSN = coInsuredModel.SSN ?? ""

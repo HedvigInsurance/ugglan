@@ -73,8 +73,13 @@ struct CoInsuredField<Content: View>: View {
         VStack(spacing: 4) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    if let coInsured {
-                        hText(coInsured.fullName ?? "")
+                    //<<<<<<< HEAD
+                    //                    if let coInsured {
+                    //                        hText(coInsured.fullName ?? "")
+                    //=======
+                    if let coInsured = coInsured, let fullName = coInsured.fullName {
+                        hText(fullName)
+                            //>>>>>>> feature/edit-coi´nsured/fetch-name-from-ssn
                             .fixedSize()
                         hText(coInsured.SSN ?? coInsured.birthDate ?? "", style: .standardSmall)
                             .foregroundColor(hTextColor.secondary)

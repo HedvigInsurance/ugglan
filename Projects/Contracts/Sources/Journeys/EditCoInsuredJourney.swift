@@ -50,7 +50,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openNewInsuredPeopleScreen(id: String) -> some JourneyPresentation {
+    static func openNewInsuredPeopleScreen(id: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: InsuredPeopleNewScreen(contractId: id),
@@ -158,7 +158,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openSelectInsurance(contractIds: [String]) -> some JourneyPresentation {
+    static func openSelectInsurance(contractIds: [String]) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CheckboxPickerScreen<Contract>(
@@ -223,12 +223,18 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedContracts in
                     if let selectedContract = selectedContracts.first {
                         let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.coInsuredViewModel.addCoInsured(
-                            .init(
-                                firstName: selectedContract.firstName,
-                                lastName: selectedContract.lastName,
-                                SSN: selectedContract.SSN,
-                                needsMissingInfo: false
+                        //<<<<<<< HEAD
+                        //                        store.coInsuredViewModel.addCoInsured(
+                        //                            .init(
+                        //                                firstName: selectedContract.firstName,
+                        //                                lastName: selectedContract.lastName,
+                        //                                SSN: selectedContract.SSN,
+                        //                                needsMissingInfo: false
+                        //=======
+                        store.send(
+                            .coInsuredNavigationAction(
+                                action: .openInsuredPeopleNewScreen(contractId: selectedContract.id)
+                                //>>>>>>> feature/edit-coinsured/fetch-name-from-ssn
                             )
                         )
                         store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -267,11 +273,10 @@ public class EditCoInsuredJourney {
 
     @JourneyBuilder
     public static func openInitialScreen(contractIds: [String]) -> some JourneyPresentation {
-        let store: ContractStore = globalPresentableStoreContainer.get()
         if contractIds.count > 1 {
-            EditCoInsuredJourney.openSelectInsurance(contractIds: contractIds)
-        } else {
-            EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractIds.first ?? "")
+            openSelectInsurance(contractIds: contractIds)
+        } else if let contractId = contractIds.first {
+            openNewInsuredPeopleScreen(id: contractId)
         }
     }
 }

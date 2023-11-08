@@ -2,32 +2,25 @@ import Foundation
 import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
+    let id: String
     public let SSN: String?
     public let needsMissingInfo: Bool
-    public var fullName: String?
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-
-    public init() {
-        needsMissingInfo = true
-        fullName = nil
-        firstName = nil
-        lastName = nil
-        birthDate = nil
-        SSN = nil
+    var fullName: String? {
+        guard let firstName, let lastName else { return nil }
+        return firstName + " " + lastName
     }
 
     public init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {
+        self.id = UUID().uuidString
         self.SSN = data.ssn
         self.birthDate = data.birthdate
         self.firstName = data.firstName
         self.lastName = data.lastName
-        if let firstName, let lastName {
-            self.fullName = firstName + " " + lastName
-        }
         self.needsMissingInfo = data.needsMissingInfo
     }
 
@@ -37,14 +30,11 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         lastName: String? = nil,
         SSN: String? = nil,
         birthDate: String? = nil,
-        needsMissingInfo: Bool
+        needsMissingInfo: Bool = true
     ) {
-        self.fullName = fullName
+        self.id = UUID().uuidString
         self.firstName = firstName
         self.lastName = lastName
-        if let firstName, let lastName {
-            self.fullName = firstName + " " + lastName
-        }
         self.birthDate = birthDate
         self.SSN = SSN
         self.needsMissingInfo = needsMissingInfo
@@ -52,6 +42,10 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
 
     var formattedSSN: String? {
         return SSN?.replacingOccurrences(of: "-", with: "")
+    }
+
+    public var hasMissingData: Bool {
+        return fullName == nil
     }
 }
 

@@ -36,10 +36,11 @@ struct HomeBottomScrollView: View {
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let missingContracts = contractStore.state.activeContracts.filter {
-                            $0.nbOfMissingCoInsured != 0
-                        }
-                        let contractIds = missingContracts.compactMap({ $0.id })
+                        let contractIds: [String] = contractStore.state.activeContracts
+                            .filter({ $0.canChangeCoInsured })
+                            .compactMap {
+                                ($0.id)
+                            }
                         let homeStore: HomeStore = globalPresentableStoreContainer.get()
                         homeStore.send(.openCoInsured(contractIds: contractIds))
                     }
@@ -126,22 +127,24 @@ class HomeButtonScrollViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal.plain()
             .map({
-                $0.activeContracts.map {
-                    $0.currentAgreement?.coInsured
-                        .contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)) ?? false
-                }
+                $0.activeContracts
+                    .filter { contract in
+                        contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                    }
+                    .isEmpty
             })
             .distinct()
             .publisher
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingCoInsured, with: show[1])
+                self?.handleItem(.missingCoInsured, with: show)
             })
             .store(in: &cancellables)
-        let show = contractStore.state.activeContracts.contains(where: {
-            $0.currentAgreement?.coInsured.contains(CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true))
-                ?? false
-        })
+        let show = contractStore.state.activeContracts
+            .filter { contract in
+                contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+            }
+            .isEmpty
         handleItem(.missingCoInsured, with: show)
     }
 }

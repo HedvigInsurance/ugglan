@@ -31,10 +31,10 @@ struct RemoveCoInsuredScreen: View {
                         if let coInsured = contract.currentAgreement?.coInsured {
                             ContractOwnerField(coInsured: coInsured, contractId: contractId)
                             let missingCoInsured = coInsured.filter {
-                                $0 == CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)
+                                $0.hasMissingData
                             }
                             let exisistingCoInsured = coInsured.filter {
-                                $0 != CoInsuredModel(fullName: nil, SSN: nil, needsMissingInfo: true)
+                                !$0.hasMissingData
                             }
                             hSection {
                                 ForEach(exisistingCoInsured, id: \.self) { coInsured in

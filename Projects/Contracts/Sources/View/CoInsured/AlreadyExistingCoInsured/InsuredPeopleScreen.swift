@@ -95,7 +95,7 @@ struct InsuredPeopleScreen: View {
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             actionType: .add,
-                                            coInsuredModel: .init(),
+                                            coInsuredModel: CoInsuredModel(),
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
                                         )
@@ -283,69 +283,86 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded.append(coInsuredModel)
     }
 
-    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        var removedCoInsured: CoInsuredModel {
-            if personalNumber.count == 6 {
-                return CoInsuredModel(
-                    firstName: firstName,
-                    lastName: lastName,
-                    birthDate: personalNumber,
-                    needsMissingInfo: false
-                )
-            } else {
-                return CoInsuredModel(
-                    firstName: firstName,
-                    lastName: lastName,
-                    SSN: personalNumber,
-                    needsMissingInfo: false
-                )
-            }
-        }
-        if let index = coInsuredAdded.firstIndex(where: {
-            isEqualTo(coInsured: $0, coInsuredCompare: removedCoInsured)
-        }) {
-            // delete locally added
-            coInsuredAdded.remove(at: index)
+    //<<<<<<< HEAD
+    //    func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {
+    //        var removedCoInsured: CoInsuredModel {
+    //            if personalNumber.count == 6 {
+    //                return CoInsuredModel(
+    //                    firstName: firstName,
+    //                    lastName: lastName,
+    //                    birthDate: personalNumber,
+    //                    needsMissingInfo: false
+    //                )
+    //            } else {
+    //                return CoInsuredModel(
+    //                    firstName: firstName,
+    //                    lastName: lastName,
+    //                    SSN: personalNumber,
+    //                    needsMissingInfo: false
+    //                )
+    //            }
+    //        }
+    //        if let index = coInsuredAdded.firstIndex(where: {
+    //            isEqualTo(coInsured: $0, coInsuredCompare: removedCoInsured)
+    //        }) {
+    //            // delete locally added
+    //            coInsuredAdded.remove(at: index)
+    //        } else {
+    //            if personalNumber.count == 6 {
+    //                coInsuredDeleted.append(
+    //                    CoInsuredModel(
+    //                        firstName: firstName,
+    //                        lastName: lastName,
+    //                        birthDate: personalNumber,
+    //                        needsMissingInfo: false
+    //                    )
+    //                )
+    //            } else {
+    //                coInsuredDeleted.append(
+    //                    CoInsuredModel(
+    //                        firstName: firstName,
+    //                        lastName: lastName,
+    //                        SSN: personalNumber,
+    //                        needsMissingInfo: false
+    //                    )
+    //                )
+    //            }
+    //        }
+    //    }
+
+    //    =======
+    func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
+        if coInsuredAdded.contains(coInsuredModel) {
+            coInsuredAdded.removeAll(where: { $0 == coInsuredModel })
         } else {
-            if personalNumber.count == 6 {
-                coInsuredDeleted.append(
-                    CoInsuredModel(
-                        firstName: firstName,
-                        lastName: lastName,
-                        birthDate: personalNumber,
-                        needsMissingInfo: false
-                    )
-                )
-            } else {
-                coInsuredDeleted.append(
-                    CoInsuredModel(
-                        firstName: firstName,
-                        lastName: lastName,
-                        SSN: personalNumber,
-                        needsMissingInfo: false
-                    )
-                )
-            }
+            coInsuredDeleted.append(coInsuredModel)
         }
     }
+    //    >>>>>>> feature/edit-coinsured/fetch-name-from-ssn
 
-    func undoDeleted(firstName: String, lastName: String, personalNumber: String) {
+    func undoDeleted(_ coInsuredModel: CoInsuredModel) {
         var removedCoInsured: CoInsuredModel {
-            if personalNumber.count == 6 {
-                return CoInsuredModel(
-                    firstName: firstName,
-                    lastName: lastName,
-                    birthDate: personalNumber,
+            //            if personalNumber.count == 6 {
+            return
+                .init(
+                    firstName: coInsuredModel.firstName,
+                    lastName: coInsuredModel.lastName,
+                    SSN: coInsuredModel.SSN,
                     needsMissingInfo: false
                 )
-            } else {
-                return CoInsuredModel(
-                    firstName: firstName,
-                    lastName: lastName,
-                    SSN: personalNumber,
-                    needsMissingInfo: false
-                )
-            }
+            //                    firstName: firstName,
+            //                    lastName: lastName,
+            //                    birthDate: personalNumber,
+            //                    needsMissingInfo: false
+
+            //            } else {
+            //                return CoInsuredModel(
+            //                    firstName: firstName,
+            //                    lastName: lastName,
+            //                    SSN: personalNumber,
+            //                    needsMissingInfo: false
+            //                )
+            //            }
         }
 
         if let index = coInsuredDeleted.firstIndex(where: {

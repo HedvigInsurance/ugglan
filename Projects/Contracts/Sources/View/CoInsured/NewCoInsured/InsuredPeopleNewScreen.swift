@@ -146,8 +146,13 @@ struct InsuredPeopleNewScreen: View {
                     store.send(
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
+                                //<<<<<<< HEAD
+                                //                                actionType: .add,
+                                //                                coInsuredModel: .init(),
+                                //=======
                                 actionType: .add,
-                                coInsuredModel: .init(),
+                                coInsuredModel: CoInsuredModel(),
+                                //>>>>>>> feature/edit-coinsured/fetch-name-from-ssn
                                 title: L10n.contractAddConisuredInfo,
                                 contractId: contractId
                             )
