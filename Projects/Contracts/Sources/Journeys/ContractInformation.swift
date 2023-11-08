@@ -81,7 +81,7 @@ struct ContractInformationView: View {
                         HStack {
                             VStack(alignment: .leading) {
                                 hText(contract.fullName)
-                                hText("SSN", style: .footnote)
+                                hText(contract.ssn ?? "", style: .footnote)
                                     .foregroundColor(hTextColor.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)

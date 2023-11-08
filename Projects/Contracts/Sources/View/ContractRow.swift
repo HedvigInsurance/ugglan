@@ -204,6 +204,7 @@ struct ContractRow_Previews: PreviewProvider {
                     ),
                 firstName: "",
                 lastName: "",
+                ssn: nil,
                 typeOfContract: .seHouse
             )
             let contracts = [contract]

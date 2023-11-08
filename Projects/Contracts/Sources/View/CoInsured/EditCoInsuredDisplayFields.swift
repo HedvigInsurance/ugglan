@@ -27,8 +27,7 @@ struct ContractOwnerField: View {
                     ) { contract in
                         hText(contract?.fullName ?? "")
                             .fixedSize()
-                        /* TODO: CHANGE WHEN REAL DATA */
-                        hText("19900101-1111")
+                        hText(contract?.ssn ?? "")
                     }
                 }
                 .foregroundColor(hTextColor.tertiary)
@@ -77,13 +76,12 @@ struct CoInsuredField<Content: View>: View {
                     if let coInsured {
                         hText(coInsured.fullName ?? "")
                             .fixedSize()
-                        hText(coInsured.SSN ?? coInsured.birthDate ?? "")
+                        hText(coInsured.SSN ?? coInsured.birthDate ?? "", style: .standardSmall)
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     } else {
                         hText(title ?? "")
-                        hText(subTitle ?? "")
-                            .foregroundColor(hTextColor.secondary)
+                        hText(subTitle ?? "", style: .standardSmall)
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
                     }

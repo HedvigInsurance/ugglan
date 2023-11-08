@@ -39,11 +39,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                     .onValue { contracts in
                         let firstName = contracts.currentMember.firstName
                         let lastName = contracts.currentMember.lastName
+                        let ssn = contracts.currentMember.ssn
                         let activeContracts = contracts.currentMember.activeContracts.map { contract in
                             Contract(
                                 contract: contract.fragments.contractFragment,
                                 firstName: firstName,
-                                lastName: lastName
+                                lastName: lastName,
+                                ssn: ssn
                             )
                         }
                         callback(.value(.setActiveContracts(contracts: activeContracts)))
@@ -52,7 +54,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             Contract(
                                 contract: contract.fragments.contractFragment,
                                 firstName: firstName,
-                                lastName: lastName
+                                lastName: lastName,
+                                ssn: ssn
                             )
                         }
                         callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
@@ -61,7 +64,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             Contract(
                                 pendingContract: contract,
                                 firstName: firstName,
-                                lastName: lastName
+                                lastName: lastName,
+                                ssn: ssn
                             )
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))

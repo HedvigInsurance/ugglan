@@ -65,6 +65,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingRenewal: ContractRenewal,
         firstName: String,
         lastName: String,
+        ssn: String?,
         typeOfContract: TypeOfContract
     ) {
         self.id = id
@@ -77,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
         self.lastName = lastName
+        self.ssn = ssn
         self.typeOfContract = typeOfContract
     }
 
@@ -91,6 +93,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
     public let firstName: String
     public let lastName: String
+    public let ssn: String?
     public var fullName: String {
         return firstName + " " + lastName
     }
@@ -140,7 +143,8 @@ public struct Contract: Codable, Hashable, Equatable {
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
         firstName: String,
-        lastName: String
+        lastName: String,
+        ssn: String?
     ) {
         exposureDisplayName = pendingContract.exposureDisplayName
         id = pendingContract.id
@@ -158,12 +162,14 @@ public struct Contract: Codable, Hashable, Equatable {
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
         self.firstName = firstName
         self.lastName = lastName
+        self.ssn = ssn
     }
 
     init(
         contract: OctopusGraphQL.ContractFragment,
         firstName: String,
-        lastName: String
+        lastName: String,
+        ssn: String?
     ) {
         id = contract.id
         currentAgreement =
@@ -177,6 +183,7 @@ public struct Contract: Codable, Hashable, Equatable {
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
         self.firstName = firstName
         self.lastName = lastName
+        self.ssn = ssn
     }
 
     public enum TypeOfContract: String, Codable {
