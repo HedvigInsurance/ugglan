@@ -221,14 +221,18 @@ public class EditCoInsuredJourney {
                         return []
                     }
                 },
-                onSelected: { selectedContract in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.coInsuredViewModel.addCoInsured(
-                        firstName: selectedContract.first?.firstName ?? "",
-                        lastName: selectedContract.first?.lastName ?? "",
-                        personalNumber: selectedContract.first?.SSN ?? ""
-                    )
-                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                onSelected: { selectedContracts in
+                    if let selectedContract = selectedContracts.first {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.coInsuredViewModel.addCoInsured(
+                            .init(
+                                firstName: selectedContract.firstName,
+                                lastName: selectedContract.lastName,
+                                SSN: selectedContract.SSN
+                            )
+                        )
+                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                    }
                 },
                 onCancel: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()

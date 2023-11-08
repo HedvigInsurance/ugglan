@@ -182,8 +182,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded = []
     }
 
-    func addCoInsured(firstName: String, lastName: String, personalNumber: String) {
-        coInsuredAdded.append(CoInsuredModel(firstName: firstName, lastName: lastName, SSN: personalNumber))
+    func addCoInsured(_ coInsuredModel: CoInsuredModel) {
+        coInsuredAdded.append(coInsuredModel)
     }
 
     func removeCoInsured(firstName: String, lastName: String, personalNumber: String) {

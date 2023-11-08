@@ -41,9 +41,7 @@ struct CoInusuredInput: View {
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
                             store.coInsuredViewModel.addCoInsured(
-                                firstName: vm.firstName,
-                                lastName: vm.lastName,
-                                personalNumber: vm.SSN
+                                .init(firstName: vm.firstName, lastName: vm.lastName, SSN: vm.SSN)
                             )
                             store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
