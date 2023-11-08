@@ -29,23 +29,22 @@ struct RemoveCoInsuredScreen: View {
                 ) { contract in
                     if let contract = contract {
                         ContractOwnerField(coInsured: contract.coInsured)
-                        let missingCoInsured = contract.coInsured.filter { $0 == CoInsuredModel(name: nil, SSN: nil) }
+                        let missingCoInsured = contract.coInsured.filter {
+                            $0.hasMissingData
+                        }
                         let exisistingCoInsured = contract.coInsured.filter {
-                            $0 != CoInsuredModel(name: nil, SSN: nil)
+                            !$0.hasMissingData
                         }
                         hSection {
                             ForEach(exisistingCoInsured, id: \.self) { coInsured in
                                 CoInsuredField(
                                     coInsured: coInsured,
-                                    accessoryView: accessoryView(
-                                        name: coInsured.name,
-                                        SSN: coInsured.SSN
-                                    )
+                                    accessoryView: accessoryView(coInsured)
                                 )
                             }
                             ForEach(missingCoInsured, id: \.self) { missingCoInsured in
                                 CoInsuredField(
-                                    accessoryView: accessoryView(name: nil, SSN: nil),
+                                    accessoryView: accessoryView(.init()),
                                     title: L10n.contractCoinsured,
                                     subTitle: L10n.contractNoInformation
                                 )
@@ -59,7 +58,7 @@ struct RemoveCoInsuredScreen: View {
     }
 
     @ViewBuilder
-    func accessoryView(name: String?, SSN: String?) -> some View {
+    func accessoryView(_ coInsuredModel: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
@@ -67,8 +66,7 @@ struct RemoveCoInsuredScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: true,
-                            name: name,
-                            personalNumber: SSN,
+                            coInsuredModel: coInsuredModel,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )

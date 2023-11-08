@@ -1,68 +1,56 @@
 import Combine
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct CoInusuredInput: View {
-    @State var fullName: String
-    @State var firstName: String
-    @State var lastName: String
-    @State var SSN: String
-    @State var type: CoInsuredInputType?
-    @State var keyboardEnabled: Bool = false
-    @State var nameFetchedFromSSN: Bool = false
     @PresentableStore var store: ContractStore
-    let isDeletion: Bool
-    let contractId: String
-    @State var noSSN = false
-
-    public init(
-        isDeletion: Bool,
-        fullName: String?,
-        SSN: String?,
-        contractId: String
-    ) {
-        self.isDeletion = isDeletion
-        self.fullName = fullName ?? ""
-        self.firstName = ""
-        self.lastName = ""
-        self.SSN = SSN ?? ""
-        self.contractId = contractId
-    }
+    @ObservedObject var vm: CoInusuredInputViewModel
 
     var body: some View {
+        if vm.showErrorView {
+            errorView
+        } else {
+            mainView
+        }
+    }
+
+    @ViewBuilder
+    var mainView: some View {
         hForm {
             VStack(spacing: 4) {
-                if isDeletion {
+                if vm.isDeletion {
                     deleteCoInsuredFields
                 } else {
                     addCoInsuredFields
                 }
                 hSection {
-                    LoadingButtonWithContent(ContractStore.self, .fetchNameFromSSN) {
-                        if !(buttonIsDisabled || nameFetchedFromSSN || noSSN) {
-                            /* TODO: FETCH SSN MUTATION*/
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                                //on success - show name field
-                                // else show error
-                                nameFetchedFromSSN = true
-                                firstName = "Hedvig"
-                                lastName = "AB"
+                    hButton.LargeButton(type: .primary) {
+                        if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
+                            Task {
+                                await vm.getNameFromSSN(SSN: vm.SSN)
                             }
-                        } else if isDeletion {
-                            store.coInsuredViewModel.removeCoInsured(name: fullName, personalNumber: SSN)
+                        } else if vm.isDeletion {
+                            if let coInsured = vm.coInsuredModel {
+                                store.coInsuredViewModel.removeCoInsured(coInsured)
+                            }
                             store.send(.coInsuredNavigationAction(action: .deletionSuccess))
-                        } else if nameFetchedFromSSN || noSSN {
-                            store.coInsuredViewModel.addCoInsured(name: firstName + " " + lastName, personalNumber: SSN)
+                        } else if vm.nameFetchedFromSSN || vm.noSSN {
+                            store.coInsuredViewModel.addCoInsured(
+                                .init(firstName: vm.firstName, lastName: vm.lastName, SSN: vm.SSN)
+                            )
                             store.send(.coInsuredNavigationAction(action: .addSuccess))
                         }
                     } content: {
                         hText(buttonDisplayText)
                             .transition(.opacity.animation(.easeOut))
                     }
+                    .hButtonIsLoading(vm.isLoading)
                 }
                 .padding(.top, 12)
-                .disabled(buttonIsDisabled && !isDeletion)
+                .disabled(buttonIsDisabled && !vm.isDeletion)
 
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -75,73 +63,124 @@ struct CoInusuredInput: View {
         }
     }
 
+    @ViewBuilder
+    var errorView: some View {
+        hForm {
+            VStack(spacing: 16) {
+                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .foregroundColor(hSignalColor.amberElement)
+
+                VStack {
+                    hText(L10n.somethingWentWrong)
+                        .foregroundColor(hTextColor.primaryTranslucent)
+                    hText(vm.SSNError?.localizedDescription ?? "")
+                        .foregroundColor(hTextColor.secondaryTranslucent)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            .padding(.bottom, 32)
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                if vm.enterManually {
+                    hButton.LargeButton(type: .primary) {
+                        vm.showErrorView = false
+                        vm.noSSN = true
+                        vm.SSN = ""
+                    } content: {
+                        hText(L10n.coinsuredEnterManuallyButton)
+                    }
+                } else {
+                    hButton.LargeButton(type: .primary) {
+                        vm.showErrorView = false
+                    } content: {
+                        hText(L10n.generalRetry)
+                    }
+                }
+                hButton.LargeButton(type: .ghost) {
+
+                } content: {
+                    hText(L10n.generalCancelButton)
+                }
+
+            }
+            .padding(16)
+        }
+    }
+
     var buttonDisplayText: String {
-        if isDeletion {
+        if vm.isDeletion {
             return L10n.removeConfirmationButton
-        } else if nameFetchedFromSSN {
+        } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
-        } else if Masking(type: .personalNumber).isValid(text: SSN) {
+        } else if Masking(type: .personalNumber).isValid(text: vm.SSN) && !vm.noSSN {
             return L10n.contractSsnFetchInfo
-        } else if buttonIsDisabled || noSSN {
+        } else {
             return L10n.generalSaveButton
         }
-        return ""
     }
 
     @ViewBuilder
     var addCoInsuredFields: some View {
         Group {
-            ZStack {
-                if noSSN {
-                    hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .birthDateYYMMDD),
-                            value: $SSN,
-                            equals: $type,
-                            focusValue: .SSN,
-                            placeholder: L10n.contractBirthDate
-                        )
-                    }
-                    .onAppear {
-                        keyboardEnabled = false
-                    }
-                } else {
-                    hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .personalNumber),
-                            value: $SSN,
-                            equals: $type,
-                            focusValue: .SSN,
-                            placeholder: L10n.contractPersonalIdentity
-                        )
-                    }
+            //<<<<<<< ours
+            if vm.noSSN {
+                hSection {
+                    hFloatingTextField(
+                        masking: Masking(type: .birthDateYYMMDD),
+                        value: $vm.SSN,
+                        equals: $vm.type,
+                        focusValue: .SSN,
+                        placeholder: L10n.contractBirthDate
+                    )
+                }
+                .sectionContainerStyle(.transparent)
+                .onAppear {
+                    vm.nameFetchedFromSSN = false
+                }
+            } else {
+                hSection {
+                    hFloatingTextField(
+                        masking: Masking(type: .personalNumber),
+                        value: $vm.SSN,
+                        equals: $vm.type,
+                        focusValue: .SSN,
+                        placeholder: L10n.contractPersonalIdentity
+                    )
+                }
+                .disabled(vm.isLoading)
+                .sectionContainerStyle(.transparent)
+                .onChange(of: vm.SSN) { newValue in
+                    vm.nameFetchedFromSSN = false
                 }
             }
 
-            if nameFetchedFromSSN || noSSN {
+            if vm.nameFetchedFromSSN || vm.noSSN {
                 hSection {
                     HStack(spacing: 4) {
                         hFloatingTextField(
                             masking: Masking(type: .firstName),
-                            value: $firstName,
-                            equals: $type,
+                            value: $vm.firstName,
+                            equals: $vm.type,
                             focusValue: .firstName,
                             placeholder: L10n.contractFirstName
                         )
                         hFloatingTextField(
                             masking: Masking(type: .lastName),
-                            value: $lastName,
-                            equals: $type,
+                            value: $vm.lastName,
+                            equals: $vm.type,
                             focusValue: .lastName,
                             placeholder: L10n.contractLastName
                         )
                     }
                 }
+                .disabled(vm.nameFetchedFromSSN)
                 .sectionContainerStyle(.transparent)
             }
 
             hSection {
-                Toggle(isOn: $noSSN.animation(.default)) {
+                Toggle(isOn: $vm.noSSN.animation(.default)) {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(L10n.contractAddCoinsuredNoSsn, style: .body)
                             .foregroundColor(hTextColor.secondary)
@@ -151,7 +190,7 @@ struct CoInusuredInput: View {
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation {
-                        noSSN.toggle()
+                        vm.noSSN.toggle()
                     }
                 }
                 .padding(.vertical, 12)
@@ -164,10 +203,10 @@ struct CoInusuredInput: View {
 
     @ViewBuilder
     var deleteCoInsuredFields: some View {
-        if fullName != "" && SSN != "" {
+        if vm.firstName != "" && vm.lastName != "" && vm.SSN != "" {
             hSection {
                 hFloatingField(
-                    value: fullName,
+                    value: vm.firstName + vm.lastName,
                     placeholder: L10n.fullNameText,
                     onTap: {}
                 )
@@ -181,7 +220,7 @@ struct CoInusuredInput: View {
 
             hSection {
                 hFloatingField(
-                    value: SSN,
+                    value: vm.SSN,
                     placeholder: L10n.TravelCertificate.personalNumber,
                     onTap: {}
                 )
@@ -197,15 +236,15 @@ struct CoInusuredInput: View {
 
     var buttonIsDisabled: Bool {
         var personalNumberValid = false
-        if noSSN {
-            personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: SSN)
-            let firstNameValid = Masking(type: .firstName).isValid(text: firstName)
-            let lastNameValid = Masking(type: .lastName).isValid(text: lastName)
+        if vm.noSSN {
+            personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: vm.SSN)
+            let firstNameValid = Masking(type: .firstName).isValid(text: vm.firstName)
+            let lastNameValid = Masking(type: .lastName).isValid(text: vm.lastName)
             if personalNumberValid && firstNameValid && lastNameValid {
                 return false
             }
         } else {
-            personalNumberValid = Masking(type: .personalNumber).isValid(text: SSN)
+            personalNumberValid = Masking(type: .personalNumber).isValid(text: vm.SSN)
             if personalNumberValid {
                 return false
             }
@@ -216,7 +255,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, fullName: "", SSN: "", contractId: "")
+        CoInusuredInput(vm: .init(coInsuredModel: CoInsuredModel(), isDeletion: false, contractId: ""))
     }
 }
 
@@ -239,4 +278,88 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
+}
+
+class CoInusuredInputViewModel: ObservableObject {
+    @Published var firstName: String
+    @Published var lastName: String
+    @Published var noSSN = false
+    @Published var SSNError: Error?
+    @Published var nameFetchedFromSSN: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var showErrorView: Bool = false
+    @Published var enterManually: Bool = false
+    @Published var SSN: String
+    @Published var type: CoInsuredInputType?
+    let isDeletion: Bool
+    let contractId: String
+    let coInsuredModel: CoInsuredModel?
+    @Inject var octopus: hOctopus
+
+    init(
+        coInsuredModel: CoInsuredModel,
+        isDeletion: Bool,
+        contractId: String
+    ) {
+        self.coInsuredModel = coInsuredModel
+        self.firstName = coInsuredModel.firstName ?? ""
+        self.lastName = coInsuredModel.lastName ?? ""
+        self.SSN = coInsuredModel.SSN ?? ""
+        self.isDeletion = isDeletion
+        self.contractId = contractId
+    }
+
+    @MainActor
+    func getNameFromSSN(SSN: String) async {
+        withAnimation {
+            self.SSNError = nil
+            self.isLoading = true
+        }
+        do {
+            let data = try await withCheckedThrowingContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    >
+                ) -> Void in
+                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+                self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { value in
+                        if let data = value.personalInformation {
+                            continuation.resume(with: .success(data))
+                        }
+                    }
+                    .onError { graphQLError in
+
+                        continuation.resume(throwing: graphQLError)
+                    }
+            }
+            withAnimation {
+                self.firstName = data.firstName
+                self.lastName = data.lastName
+                self.nameFetchedFromSSN = true
+            }
+
+        } catch let exception {
+            if let exception = exception as? GraphQLError {
+                switch exception {
+                case .graphQLError:
+                    self.enterManually = true
+                case .otherError:
+                    self.enterManually = false
+                }
+            }
+            withAnimation {
+                self.SSNError = exception
+                self.showErrorView = true
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
 }

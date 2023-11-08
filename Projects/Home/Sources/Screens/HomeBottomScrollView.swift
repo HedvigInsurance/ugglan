@@ -36,9 +36,11 @@ struct HomeBottomScrollView: View {
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractIds: [String] = contractStore.state.activeContracts.compactMap {
-                            ($0.id)
-                        }
+                        let contractIds: [String] = contractStore.state.activeContracts
+                            .filter({ $0.canChangeCoInsured })
+                            .compactMap {
+                                ($0.id)
+                            }
                         let homeStore: HomeStore = globalPresentableStoreContainer.get()
                         homeStore.send(.openCoInsured(contractIds: contractIds))
                     }
@@ -124,17 +126,25 @@ class HomeButtonScrollViewModel: ObservableObject {
     private func handleMissingCoInsured() {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal.plain()
-            .map({ $0.activeContracts.map { $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil)) } })
+            .map({
+                $0.activeContracts
+                    .filter { contract in
+                        contract.coInsured.filter({ $0.hasMissingData }).isEmpty
+                    }
+                    .isEmpty
+            })
             .distinct()
             .publisher
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingCoInsured, with: show[1])
+                self?.handleItem(.missingCoInsured, with: show)
             })
             .store(in: &cancellables)
-        let show = contractStore.state.activeContracts.contains(where: {
-            $0.coInsured.contains(CoInsuredModel(name: nil, SSN: nil))
-        })
+        let show = contractStore.state.activeContracts
+            .filter { contract in
+                contract.coInsured.filter({ $0.hasMissingData }).isEmpty
+            }
+            .isEmpty
         handleItem(.missingCoInsured, with: show)
     }
 }

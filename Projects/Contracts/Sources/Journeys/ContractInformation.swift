@@ -92,18 +92,11 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-
-                ForEach(Array(contract.coInsured.enumerated()), id: \.offset) { offset, coInsured in
-                    hRow {
-                        VStack(alignment: .leading) {
-                            hText(coInsured.name ?? "")
-                            hText(coInsured.SSN ?? "", style: .footnote)
-                                .foregroundColor(hTextColor.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    if offset < contract.coInsured.count - 1 {
-                        hRowDivider()
+                ForEach(contract.coInsured, id: \.self) { coInsured in
+                    VStack(alignment: .leading) {
+                        hText(coInsured.fullName ?? "")
+                        hText(coInsured.SSN ?? "", style: .footnote)
+                            .foregroundColor(hTextColor.secondary)
                     }
                 }
 

@@ -60,8 +60,8 @@ struct CoInsuredField<Content: View>: View {
         VStack(spacing: 4) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    if let coInsured {
-                        hText(coInsured.name ?? "")
+                    if let coInsured = coInsured, let fullName = coInsured.fullName {
+                        hText(fullName)
                             .fixedSize()
                         hText(coInsured.SSN ?? "")
                             .foregroundColor(hTextColor.secondary)

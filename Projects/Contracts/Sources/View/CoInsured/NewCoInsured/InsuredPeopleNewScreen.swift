@@ -105,8 +105,7 @@ struct InsuredPeopleNewScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: false,
-                            name: coInsured.name,
-                            personalNumber: coInsured.SSN,
+                            coInsuredModel: coInsured,
                             title: L10n.contractAddConisuredInfo,
                             contractId: contractId
                         )
@@ -139,8 +138,7 @@ struct InsuredPeopleNewScreen: View {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 isDeletion: false,
-                                name: nil,
-                                personalNumber: nil,
+                                coInsuredModel: CoInsuredModel(),
                                 title: L10n.contractAddConisuredInfo,
                                 contractId: contractId
                             )

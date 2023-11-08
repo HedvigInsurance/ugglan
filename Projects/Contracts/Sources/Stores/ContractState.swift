@@ -17,13 +17,7 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        var coInsuredList: [CoInsuredModel] = []
-        activeContracts.forEach { contract in
-            if contract.coInsured != CoInsuredModel(name: nil, SSN: nil) {
-                coInsuredList.append(contentsOf: contract.coInsured)
-            }
-        }
-        return coInsuredList
+        activeContracts.flatMap({ $0.coInsured }).filter({ !$0.hasMissingData })
     }
 
     public func contractForId(_ id: String) -> Contract? {

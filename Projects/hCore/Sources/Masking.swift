@@ -67,9 +67,12 @@ public struct Masking {
         case .personalNumberCoInsured:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 0...130 ~= age
-        case .birthDate, .birthDateReverse, .birthDateYYMMDD:
+        case .birthDate, .birthDateReverse:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
+        case .birthDateYYMMDD:
+            let age = calculateAge(from: text) ?? 0
+            return 15...130 ~= age && text.count == 6
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)

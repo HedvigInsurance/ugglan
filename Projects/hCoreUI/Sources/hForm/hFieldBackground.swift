@@ -93,7 +93,7 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hSignalColor.amberText
+            hColorScheme(light: hSignalColor.amberText, dark: hTextColor.secondary)
         } else if animate {
             hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled {

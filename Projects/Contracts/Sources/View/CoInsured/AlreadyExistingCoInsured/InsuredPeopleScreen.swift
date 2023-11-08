@@ -2,6 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
@@ -57,8 +58,7 @@ struct InsuredPeopleScreen: View {
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
                                             isDeletion: false,
-                                            name: nil,
-                                            personalNumber: nil,
+                                            coInsuredModel: CoInsuredModel(),
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
                                         )
@@ -93,8 +93,7 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: true,
-                            name: coInsured.name,
-                            personalNumber: coInsured.SSN,
+                            coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )
@@ -112,8 +111,7 @@ struct InsuredPeopleScreen: View {
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
                             isDeletion: true,
-                            name: coInsured.name,
-                            personalNumber: coInsured.SSN,
+                            coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
                         )
@@ -176,6 +174,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
+
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
 
@@ -183,20 +182,15 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded = []
     }
 
-    func addCoInsured(name: String, personalNumber: String) {
-        coInsuredAdded.append(CoInsuredModel(name: name, SSN: personalNumber))
+    func addCoInsured(_ coInsuredModel: CoInsuredModel) {
+        coInsuredAdded.append(coInsuredModel)
     }
 
-    func removeCoInsured(name: String, personalNumber: String) {
-        let removedCoInsured = CoInsuredModel(name: name, SSN: personalNumber)
-        if coInsuredAdded.contains(removedCoInsured) {
-            if let index = coInsuredAdded.firstIndex(where: {
-                ($0.name == removedCoInsured.name && $0.SSN == removedCoInsured.SSN)
-            }) {
-                coInsuredAdded.remove(at: index)
-            }
+    func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
+        if coInsuredAdded.contains(coInsuredModel) {
+            coInsuredAdded.removeAll(where: { $0 == coInsuredModel })
         } else {
-            coInsuredDeleted.append(CoInsuredModel(name: name, SSN: personalNumber))
+            coInsuredDeleted.append(coInsuredModel)
         }
     }
 }
