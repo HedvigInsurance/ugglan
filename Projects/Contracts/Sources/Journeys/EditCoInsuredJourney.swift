@@ -12,14 +12,12 @@ public class EditCoInsuredJourney {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
                 openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
-            } else if case let .openCoInsuredInput(isDeletion, firstName, lastName, personalNumber, title, contractId) =
+            } else if case let .openCoInsuredInput(isDeletion, coInsuredModel, title, contractId) =
                 navigationAction
             {
                 openCoInsuredInput(
                     isDeletion: isDeletion,
-                    firstName: firstName,
-                    lastName: lastName,
-                    personalNumber: personalNumber,
+                    coInsuredModel: coInsuredModel,
                     title: title,
                     contractId: contractId
                 )
@@ -70,20 +68,14 @@ public class EditCoInsuredJourney {
     @JourneyBuilder
     static func openCoInsuredInput(
         isDeletion: Bool,
-        firstName: String?,
-        lastName: String?,
-        personalNumber: String?,
+        coInsuredModel: CoInsuredModel,
         title: String,
         contractId: String
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInusuredInput(
-                isDeletion: isDeletion,
-                firstName: firstName,
-                lastName: lastName,
-                SSN: personalNumber,
-                contractId: contractId
+                vm: .init(coInsuredModel: coInsuredModel, isDeletion: isDeletion, contractId: contractId)
             ),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
@@ -249,9 +241,7 @@ public class EditCoInsuredJourney {
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
                                 isDeletion: false,
-                                firstName: nil,
-                                lastName: nil,
-                                personalNumber: nil,
+                                coInsuredModel: .init(),
                                 title: L10n.contractAddCoinsured,
                                 contractId: contractId
                             )

@@ -8,21 +8,6 @@ import hGraphQL
 struct CoInusuredInput: View {
     @PresentableStore var store: ContractStore
     @ObservedObject var vm: CoInusuredInputViewModel
-    public init(
-        isDeletion: Bool,
-        firstName: String? = nil,
-        lastName: String? = nil,
-        SSN: String?,
-        contractId: String
-    ) {
-        self.vm = .init(
-            firstName: firstName,
-            lastName: lastName,
-            SSN: SSN,
-            isDeletion: isDeletion,
-            contractId: contractId
-        )
-    }
 
     var body: some View {
         if vm.showErrorView {
@@ -274,7 +259,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(isDeletion: false, SSN: "", contractId: "")
+        CoInusuredInput(vm: .init(coInsuredModel: .init(), isDeletion: false, contractId: ""))
     }
 }
 
@@ -315,15 +300,13 @@ class CoInusuredInputViewModel: ObservableObject {
     @Inject var octopus: hOctopus
 
     init(
-        firstName: String?,
-        lastName: String?,
-        SSN: String?,
+        coInsuredModel: CoInsuredModel,
         isDeletion: Bool,
         contractId: String
     ) {
-        self.firstName = firstName ?? ""
-        self.lastName = lastName ?? ""
-        self.SSN = SSN ?? ""
+        self.firstName = coInsuredModel.firstName ?? ""
+        self.lastName = coInsuredModel.lastName ?? ""
+        self.SSN = coInsuredModel.SSN ?? ""
         self.isDeletion = isDeletion
         self.contractId = contractId
     }
