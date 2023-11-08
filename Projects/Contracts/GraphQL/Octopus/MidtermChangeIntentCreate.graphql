@@ -1,5 +1,5 @@
-mutation MidtermChangeIntentCoInsured($contractId: ID!, $input: MidtermChangeIntentCoInsuredInput!) {
-  midtermChangeIntentCoInsured(contractId: $contractId, input: $input) {
+mutation MidtermChangeIntentCreate($contractId: ID!, $input: MidtermChangeIntentCreateInput!) {
+  midtermChangeIntentCreate(contractId: $contractId, input: $input) {
     intent {
       id
       currentPremium {

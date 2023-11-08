@@ -16,7 +16,6 @@ public enum MaskType: String {
     case email = "Email"
     case birthDate = "BirthDate"
     case birthDateReverse = "BirthDateReverse"
-    case birthDateYYMMDD = "BirthDateYYMMDD"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
     case euroBonus = "EuroBonus"
@@ -70,9 +69,6 @@ public struct Masking {
         case .birthDate, .birthDateReverse:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
-        case .birthDateYYMMDD:
-            let age = calculateAge(from: text) ?? 0
-            return 15...130 ~= age && text.count == 6
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -116,11 +112,6 @@ public struct Masking {
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         case .fullName: return text
-        case .birthDateYYMMDD:
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyddMM"
-            guard let date = dateFormatter.date(from: text) else { return text }
-            return date.localDateString
         case .firstName, .lastName: return text
         }
     }
@@ -165,8 +156,6 @@ public struct Masking {
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else { return nil }
 
             return age
-        case .birthDateYYMMDD:
-            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) { return age }
             return nil
         default: return nil
         }
@@ -182,7 +171,7 @@ public struct Masking {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .personalNumber12Digits, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateYYMMDD:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -239,8 +228,6 @@ public struct Masking {
             return nil
         case .fullName:
             return L10n.TravelCertificate.fullNameLabel
-        case .birthDateYYMMDD:
-            return L10n.contractBirthdate
         case .firstName:
             return L10n.contractFirstName
         case .lastName:
@@ -277,8 +264,6 @@ public struct Masking {
         case .euroBonus:
             return nil
         case .fullName:
-            return nil
-        case .birthDateYYMMDD:
             return nil
         case .firstName, .lastName: return nil
         }
@@ -391,8 +376,6 @@ public struct Masking {
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
         case .fullName: return text
-        case .birthDateYYMMDD:
-            return isDigit(maxCount: 6)
         case .firstName, .lastName: return text
         }
     }

@@ -85,20 +85,20 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             .emitEachThenEnd
         case let .performCoInsuredChanges(commitId):
             self.setLoading(for: .postCoInsured)
-            return FiniteSignal { [weak self] callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-                let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(midtermChangeIntentCommitId: commitId)
-                disposeBag += self?.octopus.client.perform(mutation: mutation)
+                let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
+                disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
                         if let graphQLError = data.midtermChangeIntentCommit.userError {
-                            self?.setError(graphQLError.message ?? "", for: .postCoInsured)
+                            self.setError(graphQLError.message ?? "", for: .postCoInsured)
                         } else {
-                            self?.removeLoading(for: .postCoInsured)
+                            self.removeLoading(for: .postCoInsured)
                             callback(.end)
                         }
                     }
                     .onError({ error in
-                        self?.setError(error.localizedDescription, for: .postCoInsured)
+                        self.setError(error.localizedDescription, for: .postCoInsured)
                     })
                 return disposeBag
             }

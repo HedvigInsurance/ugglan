@@ -158,13 +158,6 @@ extension Masking {
             birthDateFormatter.dateFormat = "dd-MM-yyyy"
 
             return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
-        case .birthDateYYMMDD:
-            guard let date = text.localDateToDate else { return text }
-
-            let birthDateFormatter = DateFormatter()
-            birthDateFormatter.dateFormat = "yyddMM"
-
-            return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
         }
     }
 }

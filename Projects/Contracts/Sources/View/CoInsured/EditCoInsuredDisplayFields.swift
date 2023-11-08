@@ -1,7 +1,7 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct ContractOwnerField: View {
     let coInsured: [CoInsuredModel]
@@ -49,7 +49,8 @@ struct ContractOwnerField: View {
 struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
     let accessoryView: Content
-    let includeStatusPill: Bool?
+    let includeStatusPill: StatusPillType?
+    let date: String?
     let title: String?
     let subTitle: String?
     @ObservedObject var intentVm: IntentViewModel
@@ -57,13 +58,15 @@ struct CoInsuredField<Content: View>: View {
     init(
         coInsured: CoInsuredModel? = nil,
         accessoryView: Content,
-        includeStatusPill: Bool? = false,
+        includeStatusPill: StatusPillType? = nil,
+        date: String? = nil,
         title: String? = nil,
         subTitle: String? = nil
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
         self.includeStatusPill = includeStatusPill
+        self.date = date
         self.title = title
         self.subTitle = subTitle
         let store: ContractStore = globalPresentableStoreContainer.get()
@@ -95,9 +98,9 @@ struct CoInsuredField<Content: View>: View {
                 }
             }
         }
-        .padding(.vertical, (includeStatusPill ?? false) ? 0 : 16)
-        .padding(.top, (includeStatusPill ?? false) ? 16 : 0)
-        if includeStatusPill ?? false, let coInsured {
+        .padding(.vertical, (includeStatusPill != nil) ? 0 : 16)
+        .padding(.top, (includeStatusPill != nil) ? 16 : 0)
+        if let includeStatusPill, let coInsured {
             statusPill
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 16)
@@ -110,15 +113,51 @@ struct CoInsuredField<Content: View>: View {
     var statusPill: some View {
         VStack {
             hText(
-                L10n.contractAddCoinsuredActiveFrom(intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                includeStatusPill?
+                    .text(date: intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? date ?? "")
+                    ?? "",
                 style: .standardSmall
             )
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .foregroundColor(hSignalColor.amberText)
-        .background(hSignalColor.amberFill)
+        .foregroundColor(includeStatusPill?.textColor)
+        .background(includeStatusPill?.backgroundColor)
         .cornerRadius(8)
+    }
+}
+
+enum StatusPillType {
+    case added
+    case deleted
+
+    func text(date: String) -> String {
+        switch self {
+        case .added:
+            return L10n.contractAddCoinsuredActiveFrom(date)
+        case .deleted:
+            return L10n.contractAddCoinsuredActiveUntil(date)
+        }
+    }
+
+    @hColorBuilder
+    var textColor: some hColor {
+        switch self {
+        case .added:
+            hSignalColor.amberText
+        case .deleted:
+            hSignalColor.redText
+        }
+    }
+
+    @hColorBuilder
+    var backgroundColor: some hColor {
+        switch self {
+        case .added:
+            hSignalColor.amberFill
+        case .deleted:
+            hSignalColor.redFill
+        }
     }
 }
 

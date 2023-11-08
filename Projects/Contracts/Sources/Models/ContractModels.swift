@@ -95,7 +95,7 @@ public struct Contract: Codable, Hashable, Equatable {
         return firstName + " " + lastName
     }
     public var nbOfMissingCoInsured: Int {
-        upcomingChangedAgreement?.coInsured.filter({ $0.needsMissingInfo}).count ?? 0
+        upcomingChangedAgreement?.coInsured.filter({ $0.needsMissingInfo }).count ?? 0
     }
 
     public var showEditInfo: Bool {
@@ -515,9 +515,8 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment ) }) ?? []
+        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
     }
-
 }
 
 public struct AgreementDisplayItem: Codable, Hashable {

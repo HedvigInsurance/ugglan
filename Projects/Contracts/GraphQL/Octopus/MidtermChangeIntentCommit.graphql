@@ -1,14 +1,12 @@
-mutation MidtermChangeIntentCommit($midtermChangeIntentCommitId: ID!) {
-  midtermChangeIntentCommit(id: $midtermChangeIntentCommitId) {
+mutation MidtermChangeIntentCommit($intentId: ID!) {
+  midtermChangeIntentCommit(intentId: $intentId) {
     intent {
       id
       currentPremium {
-        amount
-        currencyCode
+        ...MoneyFragment
       }
       newPremium {
-        amount
-        currencyCode
+        ...MoneyFragment
       }
       activationDate
       state

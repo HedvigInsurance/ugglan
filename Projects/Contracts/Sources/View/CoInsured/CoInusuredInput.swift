@@ -32,6 +32,8 @@ struct CoInusuredInput: View {
         vm.firstName = firstName ?? ""
         vm.lastName = lastName ?? ""
         vm.SSNError = nil
+        vm.showErrorView = false
+        intentVm.showErrorView = false
         vm.nameFetchedFromSSN = false
         vm.noSSN = false
     }
@@ -43,7 +45,7 @@ struct CoInusuredInput: View {
             mainView
         }
     }
-    
+
     @ViewBuilder
     var mainView: some View {
         hForm {
@@ -61,20 +63,28 @@ struct CoInusuredInput: View {
                             }
                         } else if actionType == .delete {
                             Task {
-                                await intentVm.getIntent(contractId: contractId, coInsured: vm.coInsuredAdded)
-                                if !vm.showErrorView {
-                                    store.coInsuredViewModel.removeCoInsured(
+                                store.coInsuredViewModel.removeCoInsured(
+                                    firstName: vm.firstName,
+                                    lastName: vm.lastName,
+                                    personalNumber: vm.SSN
+                                )
+                                if vm.coInsuredDeleted.count > 0 {
+                                    await intentVm.getIntent(contractId: contractId, coInsured: vm.completeList)
+                                }
+                                if !intentVm.showErrorView {
+                                    store.send(.coInsuredNavigationAction(action: .deletionSuccess))
+                                } else {
+                                    // add back
+                                    store.coInsuredViewModel.undoDeleted(
                                         firstName: vm.firstName,
                                         lastName: vm.lastName,
                                         personalNumber: vm.SSN
                                     )
-                                    store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                                 }
                             }
-                            
+
                         } else if vm.nameFetchedFromSSN || vm.noSSN {
                             Task {
-                                await intentVm.getIntent(contractId: contractId, coInsured: vm.coInsuredAdded)
                                 if !intentVm.showErrorView {
                                     if actionType == .edit {
                                         store.coInsuredViewModel.editCoInsured(
@@ -89,7 +99,17 @@ struct CoInusuredInput: View {
                                             personalNumber: vm.SSN
                                         )
                                     }
-                                    store.send(.coInsuredNavigationAction(action: .addSuccess))
+                                    print("list: ", vm.completeList, " count ", vm.completeList.count)
+                                    await intentVm.getIntent(contractId: contractId, coInsured: vm.completeList)
+                                    if !intentVm.showErrorView {
+                                        store.send(.coInsuredNavigationAction(action: .addSuccess))
+                                    } else {
+                                        store.coInsuredViewModel.removeCoInsured(
+                                            firstName: vm.firstName,
+                                            lastName: vm.lastName,
+                                            personalNumber: vm.SSN
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -101,7 +121,7 @@ struct CoInusuredInput: View {
                 }
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !(actionType == .delete))
-                
+
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                 } content: {
@@ -112,7 +132,7 @@ struct CoInusuredInput: View {
             }
         }
     }
-    
+
     @ViewBuilder
     var errorView: some View {
         hForm {
@@ -123,7 +143,7 @@ struct CoInusuredInput: View {
                 VStack {
                     hText(L10n.somethingWentWrong)
                         .foregroundColor(hTextColor.primaryTranslucent)
-                    hText(vm.SSNError?.localizedDescription ?? intentVm.errorMessage ?? "")
+                    hText(vm.SSNError ?? intentVm.errorMessage ?? "")
                         .foregroundColor(hTextColor.secondaryTranslucent)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
@@ -144,6 +164,7 @@ struct CoInusuredInput: View {
                 } else {
                     hButton.LargeButton(type: .primary) {
                         vm.showErrorView = false
+                        intentVm.showErrorView = false
                     } content: {
                         hText(L10n.generalRetry)
                     }
@@ -159,26 +180,26 @@ struct CoInusuredInput: View {
             .padding(16)
         }
     }
-    
+
     var buttonDisplayText: String {
         if actionType == .delete {
             return L10n.removeConfirmationButton
         } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
-        } else if Masking(type: .personalNumber12Digits).isValid(text: vm.SSN) && !vm.noSSN {
+        } else if Masking(type: .birthDate).isValid(text: vm.SSN) && !vm.noSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.generalSaveButton
         }
     }
-    
+
     @ViewBuilder
     var addCoInsuredFields: some View {
         Group {
             if vm.noSSN {
                 hSection {
                     hFloatingTextField(
-                        masking: Masking(type: .birthDateYYMMDD),
+                        masking: Masking(type: .birthDate),
                         value: $vm.SSN,
                         equals: $type,
                         focusValue: .SSN,
@@ -205,7 +226,7 @@ struct CoInusuredInput: View {
                     vm.nameFetchedFromSSN = false
                 }
             }
-            
+
             if vm.nameFetchedFromSSN || vm.noSSN {
                 hSection {
                     HStack(spacing: 4) {
@@ -228,7 +249,7 @@ struct CoInusuredInput: View {
                 .disabled(vm.nameFetchedFromSSN)
                 .sectionContainerStyle(.transparent)
             }
-            
+
             hSection {
                 Toggle(isOn: $vm.noSSN.animation(.default)) {
                     VStack(alignment: .leading, spacing: 0) {
@@ -250,7 +271,7 @@ struct CoInusuredInput: View {
         }
         .hFieldSize(.small)
     }
-    
+
     @ViewBuilder
     var deleteCoInsuredFields: some View {
         if vm.firstName != "" && vm.lastName != "" && vm.SSN != "" {
@@ -267,7 +288,7 @@ struct CoInusuredInput: View {
             }
             .disabled(true)
             .sectionContainerStyle(.transparent)
-            
+
             hSection {
                 hFloatingField(
                     value: vm.SSN,
@@ -283,11 +304,11 @@ struct CoInusuredInput: View {
             .sectionContainerStyle(.transparent)
         }
     }
-    
+
     var buttonIsDisabled: Bool {
         var personalNumberValid = false
         if vm.noSSN {
-            personalNumberValid = Masking(type: .birthDateYYMMDD).isValid(text: vm.SSN)
+            personalNumberValid = Masking(type: .birthDate).isValid(text: vm.SSN)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.lastName)
             if personalNumberValid && firstNameValid && lastNameValid {
@@ -330,7 +351,6 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case SSN
 }
 
-
 public class IntentViewModel: ObservableObject {
     @Published var activationDate = ""
     @Published var currentPremium = MonetaryAmount(amount: "", currency: "")
@@ -341,7 +361,7 @@ public class IntentViewModel: ObservableObject {
     @Published var showErrorView = false
     var errorMessage: String?
     @Inject var octopus: hOctopus
-    
+
     @MainActor
     func getIntent(contractId: String, coInsured: [CoInsuredModel]) async {
         withAnimation {
@@ -351,7 +371,7 @@ public class IntentViewModel: ObservableObject {
             let data = try await withCheckedThrowingContinuation {
                 (
                     continuation: CheckedContinuation<
-                    OctopusGraphQL.MidtermChangeIntentCoInsuredMutation.Data.MidtermChangeIntentCoInsured, Error
+                        OctopusGraphQL.MidtermChangeIntentCreateMutation.Data.MidtermChangeIntentCreate, Error
                     >
                 ) -> Void in
                 let coInsuredList = coInsured.map { coIn in
@@ -362,16 +382,21 @@ public class IntentViewModel: ObservableObject {
                         birthdate: coIn.birthDate
                     )
                 }
-                let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCoInsuredInput(coInsured: coInsuredList)
+                print("list; ", coInsuredList)
+                let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.MidtermChangeIntentCoInsuredMutation(contractId: contractId, input: coinsuredInput)
+                        mutation: OctopusGraphQL.MidtermChangeIntentCreateMutation(
+                            contractId: contractId,
+                            input: coinsuredInput
+                        )
                     )
                     .onValue { value in
-                        continuation.resume(with: .success(value.midtermChangeIntentCoInsured))
-                        if let graphQLError = value.midtermChangeIntentCoInsured.userError {
+                        continuation.resume(with: .success(value.midtermChangeIntentCreate))
+                        if let graphQLError = value.midtermChangeIntentCreate.userError {
                             self.errorMessage = graphQLError.message
-                        } else if let intent = value.midtermChangeIntentCoInsured.intent {
+                            self.showErrorView = true
+                        } else if let intent = value.midtermChangeIntentCreate.intent {
                             self.activationDate = intent.activationDate
                             self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
                             self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
@@ -385,7 +410,7 @@ public class IntentViewModel: ObservableObject {
             }
         } catch let exception {
             withAnimation {
-                self.errorMessage = exception.localizedDescription
+                self.errorMessage = L10n.General.errorBody
                 self.showErrorView = true
             }
         }

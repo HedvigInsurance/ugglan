@@ -8,10 +8,10 @@ struct CoInsuredProcessingScreen: View {
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: ContractStore
-    
+
     init(
         showSuccessScreen: Bool
-    ){
+    ) {
         self.showSuccessScreen = showSuccessScreen
         let store: ContractStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
@@ -25,9 +25,7 @@ struct CoInsuredProcessingScreen: View {
             ) {
                 loadingView
             } error: { error in
-                ZStack {
-                    CoInsuredErrorScreen()
-                }
+                errorView
             } success: {
                 if showSuccessScreen {
                     successView
@@ -37,16 +35,17 @@ struct CoInsuredProcessingScreen: View {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contracts = contractStore.state
                         for contract in contracts.activeContracts {
-                            contract.currentAgreement?.coInsured.forEach({ coInsured in
-                                if coInsured.needsMissingInfo {
-                                    store.send(
-                                        .coInsuredNavigationAction(
-                                            action: .openMissingCoInsuredAlert(contractId: contract.id)
+                            contract.currentAgreement?.coInsured
+                                .forEach({ coInsured in
+                                    if coInsured.needsMissingInfo {
+                                        store.send(
+                                            .coInsuredNavigationAction(
+                                                action: .openMissingCoInsuredAlert(contractId: contract.id)
+                                            )
                                         )
-                                    )
-                                    return
-                                }
-                            })
+                                        return
+                                    }
+                                })
                         }
                     }
                 }
@@ -96,10 +95,43 @@ struct CoInsuredProcessingScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-
         }
     }
-    
+
+    private var errorView: some View {
+        ZStack(alignment: .bottom) {
+            BackgroundView().ignoresSafeArea()
+            VStack {
+                Spacer()
+                Spacer()
+                VStack(spacing: 16) {
+                    Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                        .foregroundColor(hSignalColor.amberElement)
+                    VStack(spacing: 0) {
+                        hText(L10n.somethingWentWrong)
+                            .foregroundColor(hTextColor.primaryTranslucent)
+                        hText(L10n.General.errorBody)
+                            .foregroundColor(hTextColor.secondaryTranslucent)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 8)
+                    }
+                    .padding(.horizontal, 16)
+                }
+                Spacer()
+                Spacer()
+                Spacer()
+            }
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                } content: {
+                    hText(L10n.generalCancelButton)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
     private var loadingView: some View {
         VStack {
             Spacer()
