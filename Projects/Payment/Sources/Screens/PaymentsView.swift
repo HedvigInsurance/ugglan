@@ -1,3 +1,4 @@
+import Flow
 import Presentation
 import SwiftUI
 import hCore
@@ -62,14 +63,14 @@ public struct PaymentsView: View {
             }
         ) { state in
             VStack(spacing: 8) {
-                if let upcomingPayment = state.paymentData?.upcomingPayment {
+                if let upcomingPayment = state.paymentData {
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: 0) {
                                 HStack(alignment: .center, spacing: 8) {
                                     hText(L10n.paymentsUpcomingPayment)
                                     Spacer()
-                                    hText(upcomingPayment.amount.formattedAmount)
+                                    hText(upcomingPayment.payment.net.formattedAmount)
                                     Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -77,9 +78,20 @@ public struct PaymentsView: View {
                                         .foregroundColor(hTextColor.secondary)
                                 }
                                 .foregroundColor(.primary)
-                                hText(L10n.General.due(upcomingPayment.date.displayDate))
+                                hText(L10n.General.due(upcomingPayment.payment.date.displayDate))
                                     .foregroundColor(hTextColor.secondary)
                             }
+                        }
+                        .withEmptyAccessory
+                        .onTap {
+                            store.send(
+                                .navigation(
+                                    to: .openPaymentDetails(
+                                        data: upcomingPayment,
+                                        withTitle: L10n.paymentsUpcomingPayment
+                                    )
+                                )
+                            )
                         }
                     }
                 } else {
@@ -94,19 +106,9 @@ public struct PaymentsView: View {
                 }
                 ConnectPaymentCardView().padding(.horizontal, 16)
                 if let previousPaymentStatus = state.paymentData?.previousPaymentStatus {
-                    if case .pending = previousPaymentStatus {
-                        hSection {
-                            InfoCard(text: L10n.paymentsInProgress, type: .info)
-                        }
-                    } else if case let .failed(from, to) = previousPaymentStatus {
-                        hSection {
-                            InfoCard(
-                                text: L10n.paymentsMissedPayment(
-                                    from.displayDateShort,
-                                    to.displayDateShort
-                                ),
-                                type: .error
-                            )
+                    hSection {
+                        PaymentStatusView(status: previousPaymentStatus) { _ in
+
                         }
                     }
                 }
@@ -175,7 +177,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            store.send(.connectPayments)
+                            store.send(.navigation(to: .openConnectPayments))
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }
@@ -193,5 +195,32 @@ struct PaymentsView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         Dependencies.shared.add(module: Module { () -> hPaymentService in hPaymentServiceDemo() })
         return PaymentsView()
+    }
+}
+
+extension PaymentsView {
+    public func journey(schema: String) -> some JourneyPresentation {
+        HostingJourney(
+            PaymentStore.self,
+            rootView: self
+        ) { action in
+            if case let .navigation(navigateTo) = action {
+                if case .openConnectBankAccount = navigateTo {
+                    let store: PaymentStore = globalPresentableStoreContainer.get()
+                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                        .contains(store.state.paymentStatusData?.status ?? .active)
+                    ConnectBankAccount(
+                        setupType: hasAlreadyConnected ? .replacement : .initial,
+                        urlScheme: schema
+                    )
+                    .journeyThenDismiss
+                } else if case .openHistory = navigateTo {
+                    PaymentHistory.journey
+                } else if case let .openPaymentDetails(details, title) = navigateTo {
+                    PaymentDetails.journey(with: details, and: title)
+                }
+            }
+        }
+        .configureTitle(L10n.myPaymentTitle)
     }
 }

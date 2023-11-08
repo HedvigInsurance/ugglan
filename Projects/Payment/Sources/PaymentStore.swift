@@ -17,15 +17,20 @@ public struct PaymentState: StateProtocol {
 
 public enum PaymentAction: ActionProtocol {
     case load
-    case setPaymentData(data: PaymentData)
+    case setPaymentData(data: PaymentData?)
     case setSchema(schema: String)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
-    case connectPayments
     case setConnectionID(id: String)
+    case navigation(to: PaymentNavigation)
+}
+
+public enum PaymentNavigation: ActionProtocol {
+    case openUrl
     case openHistory
     case openConnectBankAccount
-    case openUrl
+    case openConnectPayments
+    case openPaymentDetails(data: PaymentData, withTitle: String)
     case goBack
 }
 

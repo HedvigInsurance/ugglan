@@ -22,8 +22,10 @@ extension PaymentHistory {
             PaymentStore.self,
             rootView: PaymentHistory()
         ) { action in
-            if case .goBack = action {
-                PopJourney()
+            if case let .navigation(navigateTo) = action {
+                if case .goBack = navigateTo {
+                    PopJourney()
+                }
             }
         }
         .configureTitle(L10n.paymentHistoryTitle)
