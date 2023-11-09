@@ -220,7 +220,8 @@ struct PaymentDetails_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "1", displayName: "Car 15%")
                     ],
-                    validUntil: "2023-11-20"
+                    validUntil: "2023-11-20",
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "CODE2",
@@ -230,7 +231,8 @@ struct PaymentDetails_Previews: PreviewProvider {
                     listOfAffectedInsurances: [
                         .init(id: "2", displayName: "House 15%")
                     ],
-                    validUntil: "2023-11-22"
+                    validUntil: "2023-11-22",
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "FRIENDS",
@@ -238,7 +240,9 @@ struct PaymentDetails_Previews: PreviewProvider {
                     amount: .sek(30),
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
-                    validUntil: nil
+                    validUntil: nil,
+                    canBeDeleted: false
+
                 ),
             ],
             paymentDetails: nil,

@@ -92,6 +92,7 @@ public struct Discount: Codable, Equatable, Identifiable {
     let title: String
     let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?
+    let canBeDeleted: Bool
 
     var isValid: Bool {
         if let validUntil = validUntil?.localDateToDate {

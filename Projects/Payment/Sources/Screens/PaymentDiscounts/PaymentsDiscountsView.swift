@@ -142,7 +142,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         listOfAffectedInsurances: [
                             .init(id: "id1", displayName: "name")
                         ],
-                        validUntil: "2023-11-10"
+                        validUntil: "2023-11-10",
+                        canBeDeleted: true
                     ),
                     .init(
                         id: "id2",
@@ -152,7 +153,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         listOfAffectedInsurances: [
                             .init(id: "id21", displayName: "name 2")
                         ],
-                        validUntil: "2023-11-03"
+                        validUntil: "2023-11-03",
+                        canBeDeleted: false
                     ),
                 ],
                 referralsData: .init(

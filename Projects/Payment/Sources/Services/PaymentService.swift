@@ -64,7 +64,8 @@ public class hPaymentServiceDemo: hPaymentService {
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
-                    validUntil: "2023-12-10"
+                    validUntil: "2023-12-10",
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "CODE 2",
@@ -72,7 +73,8 @@ public class hPaymentServiceDemo: hPaymentService {
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
-                    validUntil: "2023-11-03"
+                    validUntil: "2023-11-03",
+                    canBeDeleted: false
                 ),
             ],
             paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank"),
@@ -95,7 +97,8 @@ public class hPaymentServiceDemo: hPaymentService {
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
-                    validUntil: "2023-12-10"
+                    validUntil: "2023-12-10",
+                    canBeDeleted: true
                 ),
                 .init(
                     id: "CODE 2",
@@ -103,7 +106,8 @@ public class hPaymentServiceDemo: hPaymentService {
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
-                    validUntil: "2023-11-03"
+                    validUntil: "2023-11-03",
+                    canBeDeleted: false
                 ),
             ],
             referralsData: .init(

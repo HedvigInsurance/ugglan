@@ -61,7 +61,7 @@ struct PaymentDetailsDiscountView: View {
 
     @hColorBuilder
     private var getCodeTextColor: some hColor {
-        if !vm.discount.isValid && vm.options.contains(.showExpire) {
+        if vm.shouldShowExpire {
             hTextColor.secondary
         } else {
             hTextColor.primary
@@ -91,11 +91,13 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
     }
 
     var shouldShowRemove: Bool {
-        options.contains(.enableRemoving) && discount.isValid
+        options.contains(.enableRemoving) && discount.isValid && discount.canBeDeleted
     }
 
     func startRemoveCode() {
-        store.send(.navigation(to: .openDeleteCampaing(code: discount.code)))
+        if shouldShowRemove {
+            store.send(.navigation(to: .openDeleteCampaing(code: discount.code)))
+        }
     }
 
 }
@@ -109,7 +111,8 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             amount: .sek(100),
             title: "23",
             listOfAffectedInsurances: [],
-            validUntil: "2023-11-06"
+            validUntil: "2023-11-06",
+            canBeDeleted: false
         )
         return PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount))
     }
