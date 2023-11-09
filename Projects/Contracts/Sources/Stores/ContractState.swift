@@ -17,14 +17,32 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        activeContracts.flatMap({
-            $0.currentAgreement?.coInsured ?? []
-        })
-        .filter({ !$0.hasMissingData })
-            + activeContracts.flatMap({
+        let upComingCoInsured =
+            activeContracts.flatMap({
                 $0.upcomingChangedAgreement?.coInsured ?? []
             })
             .filter({ !$0.hasMissingData })
+
+        let currentCoInsured =
+            activeContracts.flatMap({
+                $0.currentAgreement?.coInsured ?? []
+            })
+            .filter({ !$0.hasMissingData })
+
+        return currentCoInsured
+            + upComingCoInsured.filter({ upComing in
+                if currentCoInsured.count > 0 {
+                    if currentCoInsured.first(where: {
+                        upComing.fullName != $0.fullName
+                    }) != nil {
+                        return true
+                    } else {
+                        return false
+                    }
+                } else {
+                    return true
+                }
+            })
     }
 
     public func contractForId(_ id: String) -> Contract? {

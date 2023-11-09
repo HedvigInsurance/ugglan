@@ -112,7 +112,9 @@ public class EditCoInsuredJourney {
     static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
+            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
@@ -122,7 +124,9 @@ public class EditCoInsuredJourney {
     static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: RemoveCoInsuredScreen(contractId: id)
+            rootView: RemoveCoInsuredScreen(contractId: id),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
@@ -132,7 +136,9 @@ public class EditCoInsuredJourney {
     static func openGenericErrorScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CoInsuredErrorScreen()
+            rootView: CoInsuredErrorScreen(),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
@@ -207,6 +213,7 @@ public class EditCoInsuredJourney {
             rootView: CheckboxPickerScreen<CoInsuredModel>(
                 items: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    print("fetch all coInsured: ", contractStore.state.fetchAllCoInsured)
                     return contractStore.state.fetchAllCoInsured.compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
@@ -223,18 +230,12 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedContracts in
                     if let selectedContract = selectedContracts.first {
                         let store: ContractStore = globalPresentableStoreContainer.get()
-                        //<<<<<<< HEAD
-                        //                        store.coInsuredViewModel.addCoInsured(
-                        //                            .init(
-                        //                                firstName: selectedContract.firstName,
-                        //                                lastName: selectedContract.lastName,
-                        //                                SSN: selectedContract.SSN,
-                        //                                needsMissingInfo: false
-                        //=======
-                        store.send(
-                            .coInsuredNavigationAction(
-                                action: .openInsuredPeopleNewScreen(contractId: selectedContract.id)
-                                //>>>>>>> feature/edit-coinsured/fetch-name-from-ssn
+                        store.coInsuredViewModel.addCoInsured(
+                            .init(
+                                firstName: selectedContract.firstName,
+                                lastName: selectedContract.lastName,
+                                SSN: selectedContract.SSN,
+                                needsMissingInfo: false
                             )
                         )
                         store.send(.coInsuredNavigationAction(action: .dismissEdit))

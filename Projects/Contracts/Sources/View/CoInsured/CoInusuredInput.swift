@@ -18,6 +18,12 @@ struct CoInusuredInput: View {
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm
+        insuredPeopleVm.previousValue = CoInsuredModel(
+            firstName: vm.firstName,
+            lastName: vm.lastName,
+            SSN: vm.SSN,
+            needsMissingInfo: false
+        )
     }
 
     var body: some View {
@@ -43,28 +49,21 @@ struct CoInusuredInput: View {
                             Task {
                                 await vm.getNameFromSSN(SSN: vm.SSN)
                             }
-                            //<<<<<<< HEAD
                         } else if vm.actionType == .delete {
                             Task {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: vm.firstName,
-                                        lastName: vm.lastName,
-                                        SSN: vm.SSN,
-                                        needsMissingInfo: false
+                                if vm.firstName == "" && vm.SSN == "" {
+                                    store.coInsuredViewModel.removeCoInsured(.init())
+                                } else if vm.SSN.count == 10 {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: vm.firstName,
+                                            lastName: vm.lastName,
+                                            birthDate: vm.SSN,
+                                            needsMissingInfo: false
+                                        )
                                     )
-                                )
-                                if insuredPeopleVm.coInsuredDeleted.count > 0 {
-                                    await intentVm.getIntent(
-                                        contractId: vm.contractId,
-                                        coInsured: insuredPeopleVm.completeList
-                                    )
-                                }
-                                if !intentVm.showErrorView {
-                                    store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                                 } else {
-                                    // add back
-                                    store.coInsuredViewModel.undoDeleted(
+                                    store.coInsuredViewModel.removeCoInsured(
                                         .init(
                                             firstName: vm.firstName,
                                             lastName: vm.lastName,
@@ -73,29 +72,27 @@ struct CoInusuredInput: View {
                                         )
                                     )
                                 }
-                            }
-
-                            //=======
-                            //                        } else if vm.isDeletion {
-                            //                            if let coInsured = vm.coInsuredModel {
-                            //                                store.coInsuredViewModel.removeCoInsured(coInsured)
-                            //                            }
-                            //                            store.send(.coInsuredNavigationAction(action: .deletionSuccess))
-                            //>>>>>>> feature/edit-coinsured/fetch-name-from-ssn
-                        } else if vm.nameFetchedFromSSN || vm.noSSN {
-                            Task {
+                                if insuredPeopleVm.coInsuredDeleted.count > 0 {
+                                    await intentVm.getIntent(
+                                        contractId: vm.contractId,
+                                        coInsured: insuredPeopleVm.completeList(contractId: vm.contractId)
+                                    )
+                                }
                                 if !intentVm.showErrorView {
-                                    if vm.actionType == .edit {
-                                        store.coInsuredViewModel.editCoInsured(
+                                    store.send(.coInsuredNavigationAction(action: .deletionSuccess))
+                                } else {
+                                    // add back
+                                    if vm.noSSN {
+                                        store.coInsuredViewModel.undoDeleted(
                                             .init(
                                                 firstName: vm.firstName,
                                                 lastName: vm.lastName,
-                                                SSN: vm.SSN,
+                                                birthDate: vm.SSN,
                                                 needsMissingInfo: false
                                             )
                                         )
                                     } else {
-                                        store.coInsuredViewModel.addCoInsured(
+                                        store.coInsuredViewModel.undoDeleted(
                                             .init(
                                                 firstName: vm.firstName,
                                                 lastName: vm.lastName,
@@ -104,9 +101,55 @@ struct CoInusuredInput: View {
                                             )
                                         )
                                     }
+                                }
+                            }
+                        } else if vm.nameFetchedFromSSN || vm.noSSN {
+                            Task {
+                                if !intentVm.showErrorView {
+                                    if vm.actionType == .edit {
+                                        if vm.noSSN {
+                                            store.coInsuredViewModel.editCoInsured(
+                                                .init(
+                                                    firstName: vm.firstName,
+                                                    lastName: vm.lastName,
+                                                    birthDate: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        } else {
+                                            store.coInsuredViewModel.editCoInsured(
+                                                .init(
+                                                    firstName: vm.firstName,
+                                                    lastName: vm.lastName,
+                                                    SSN: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        }
+                                    } else {
+                                        if vm.noSSN {
+                                            store.coInsuredViewModel.addCoInsured(
+                                                .init(
+                                                    firstName: vm.firstName,
+                                                    lastName: vm.lastName,
+                                                    birthDate: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        } else {
+                                            store.coInsuredViewModel.addCoInsured(
+                                                .init(
+                                                    firstName: vm.firstName,
+                                                    lastName: vm.lastName,
+                                                    SSN: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        }
+                                    }
                                     await intentVm.getIntent(
                                         contractId: vm.contractId,
-                                        coInsured: insuredPeopleVm.completeList
+                                        coInsured: insuredPeopleVm.completeList(contractId: vm.contractId)
                                     )
                                     if !intentVm.showErrorView {
                                         store.send(.coInsuredNavigationAction(action: .addSuccess))
@@ -118,9 +161,6 @@ struct CoInusuredInput: View {
                                                 SSN: vm.SSN,
                                                 needsMissingInfo: false
                                             )
-                                            //                                            firstName: vm.firstName,
-                                            //                                            lastName: vm.lastName,
-                                            //                                            personalNumber: vm.SSN
                                         )
                                     }
                                 }
@@ -198,7 +238,7 @@ struct CoInusuredInput: View {
             return L10n.removeConfirmationButton
         } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
-        } else if Masking(type: .birthDate).isValid(text: vm.SSN) && !vm.noSSN {
+        } else if Masking(type: .personalNumber12Digits).isValid(text: vm.SSN) && !vm.noSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.generalSaveButton
@@ -211,7 +251,7 @@ struct CoInusuredInput: View {
             if vm.noSSN {
                 hSection {
                     hFloatingTextField(
-                        masking: Masking(type: .birthDate),
+                        masking: Masking(type: .birthDateCoInsured),
                         value: $vm.SSN,
                         equals: $vm.type,
                         focusValue: .SSN,
@@ -320,7 +360,7 @@ struct CoInusuredInput: View {
     var buttonIsDisabled: Bool {
         var personalNumberValid = false
         if vm.noSSN {
-            personalNumberValid = Masking(type: .birthDate).isValid(text: vm.SSN)
+            personalNumberValid = Masking(type: .birthDateCoInsured).isValid(text: vm.SSN)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.lastName)
             if personalNumberValid && firstNameValid && lastNameValid {
@@ -395,7 +435,7 @@ class CoInusuredInputViewModel: ObservableObject {
         self.coInsuredModel = coInsuredModel
         self.firstName = coInsuredModel.firstName ?? ""
         self.lastName = coInsuredModel.lastName ?? ""
-        self.SSN = coInsuredModel.SSN ?? ""
+        self.SSN = coInsuredModel.SSN ?? coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
     }

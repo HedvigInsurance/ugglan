@@ -27,7 +27,7 @@ struct ContractOwnerField: View {
                     ) { contract in
                         hText(contract?.fullName ?? "")
                             .fixedSize()
-                        hText(contract?.ssn ?? "")
+                        hText(contract?.ssn ?? "", style: .standardSmall)
                     }
                 }
                 .foregroundColor(hTextColor.tertiary)
@@ -73,13 +73,8 @@ struct CoInsuredField<Content: View>: View {
         VStack(spacing: 4) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    //<<<<<<< HEAD
-                    //                    if let coInsured {
-                    //                        hText(coInsured.fullName ?? "")
-                    //=======
                     if let coInsured = coInsured, let fullName = coInsured.fullName {
                         hText(fullName)
-                            //>>>>>>> feature/edit-coi´nsured/fetch-name-from-ssn
                             .fixedSize()
                         hText(coInsured.SSN ?? coInsured.birthDate ?? "", style: .standardSmall)
                             .foregroundColor(hTextColor.secondary)
@@ -114,7 +109,7 @@ struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: date ?? "")
+                    .text(date: date?.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
                     ?? "",
                 style: .standardSmall
             )

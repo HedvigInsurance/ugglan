@@ -15,6 +15,7 @@ public enum MaskType: String {
     case address = "Address"
     case email = "Email"
     case birthDate = "BirthDate"
+    case birthDateCoInsured = "BirthDateCoInsured"
     case birthDateReverse = "BirthDateReverse"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
@@ -69,6 +70,9 @@ public struct Masking {
         case .birthDate, .birthDateReverse:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
+        case .birthDateCoInsured:
+            let age = calculateAge(from: text) ?? 0
+            return 0...130 ~= age
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -113,6 +117,7 @@ public struct Masking {
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         case .fullName: return text
         case .firstName, .lastName: return text
+        case .birthDateCoInsured: return text
         }
     }
 
@@ -171,7 +176,7 @@ public struct Masking {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .personalNumber12Digits, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .fullName:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateCoInsured:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -212,7 +217,7 @@ public struct Masking {
             return nil
         case .email:
             return L10n.emailPlaceholder
-        case .birthDate:
+        case .birthDate, .birthDateCoInsured:
             return nil
         case .birthDateReverse:
             return nil
@@ -249,7 +254,7 @@ public struct Masking {
             return nil
         case .email:
             return L10n.emailRowTitle
-        case .birthDate:
+        case .birthDate, .birthDateCoInsured:
             return nil
         case .birthDateReverse:
             return nil
@@ -361,7 +366,8 @@ public struct Masking {
             return text
         case .postalCode: return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
         case .norwegianPostalCode: return delimitedDigits(delimiterPositions: [], maxCount: 4, delimiter: " ")
-        case .birthDate: return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
+        case .birthDate, .birthDateCoInsured:
+            return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
         case .birthDateReverse:
             return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
         case .digits: return text.filter { $0.isDigit }

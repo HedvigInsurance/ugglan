@@ -67,7 +67,6 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
-
         VStack(spacing: 0) {
             hSection {
                 hRow {
@@ -103,8 +102,7 @@ struct ContractInformationView: View {
                             coInsured: coInsured,
                             accessoryView: EmptyView(),
                             includeStatusPill: StatusPillType.deleted,
-                            date: contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?
-                                .displayDateDDMMMYYYYFormat
+                            date: contract.upcomingChangedAgreement?.activeFrom
                         )
                     }
                     ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
@@ -112,8 +110,7 @@ struct ContractInformationView: View {
                             coInsured: coInsured,
                             accessoryView: EmptyView(),
                             includeStatusPill: StatusPillType.added,
-                            date: contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?
-                                .displayDateDDMMMYYYYFormat
+                            date: contract.upcomingChangedAgreement?.activeFrom
                         )
                     }
                 }
@@ -289,16 +286,20 @@ private class ContractsInformationViewModel: ObservableObject {
     func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
         var returnValue: [CoInsuredModel] = []
         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-            upcomingCoInsured.forEach { upcoming in
-                contract.currentAgreement?.coInsured
-                    .forEach { currentCoInsured in
-                        if !(currentCoInsured.fullName != upcoming.fullName
-                            && (currentCoInsured.formattedSSN != upcoming.formattedSSN
-                                || currentCoInsured.birthDate != upcoming.birthDate))
-                        {
-                            returnValue.append(upcoming)
+            if upcomingCoInsured.first(where: { upcoming in
+                upcoming.hasMissingData
+            }) == nil {
+                upcomingCoInsured.forEach { upcoming in
+                    contract.currentAgreement?.coInsured
+                        .forEach { currentCoInsured in
+                            if !(currentCoInsured.fullName != upcoming.fullName
+                                && (currentCoInsured.formattedSSN != upcoming.formattedSSN
+                                    || currentCoInsured.birthDate != upcoming.birthDate))
+                            {
+                                returnValue.append(upcoming)
+                            }
                         }
-                    }
+                }
             }
         } else {
             returnValue = contract.currentAgreement?.coInsured.filter({ !$0.needsMissingInfo }) ?? []

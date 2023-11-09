@@ -33,19 +33,20 @@ struct CoInsuredProcessingScreen: View {
                     let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
                     let _ = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contracts = contractStore.state
-                        for contract in contracts.activeContracts {
-                            contract.currentAgreement?.coInsured
-                                .forEach({ coInsured in
-                                    if coInsured.needsMissingInfo {
-                                        store.send(
-                                            .coInsuredNavigationAction(
-                                                action: .openMissingCoInsuredAlert(contractId: contract.id)
+                        for contract in contractStore.state.activeContracts {
+                            if contract.upcomingChangedAgreement == nil {
+                                contract.currentAgreement?.coInsured
+                                    .forEach({
+                                        if $0.needsMissingInfo {
+                                            store.send(
+                                                .coInsuredNavigationAction(
+                                                    action: .openMissingCoInsuredAlert(contractId: contract.id)
+                                                )
                                             )
-                                        )
-                                        return
-                                    }
-                                })
+                                            return
+                                        }
+                                    })
+                            }
                         }
                     }
                 }

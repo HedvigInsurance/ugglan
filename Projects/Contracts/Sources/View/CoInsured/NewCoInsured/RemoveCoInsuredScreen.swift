@@ -43,15 +43,16 @@ struct RemoveCoInsuredScreen: View {
                                         accessoryView: accessoryView(coInsured)
                                     )
                                 }
-                                ForEach(missingCoInsured, id: \.self) { missingCoInsured in
+                                let nbOfMissingoInsured = missingCoInsured.count - vm.coInsuredDeleted.count
+                                ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
                                     CoInsuredField(
                                         accessoryView: accessoryView(.init()),
                                         title: L10n.contractCoinsured,
                                         subTitle: L10n.contractNoInformation
                                     )
                                 }
-                                .sectionContainerStyle(.transparent)
                             }
+                            .sectionContainerStyle(.transparent)
                         }
                     }
                 }

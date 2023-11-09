@@ -37,7 +37,7 @@ struct HomeBottomScrollView: View {
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contractIds: [String] = contractStore.state.activeContracts
-                            .filter({ $0.canChangeCoInsured })
+                            .filter({ $0.nbOfMissingCoInsured > 0 })
                             .compactMap {
                                 ($0.id)
                             }
@@ -129,7 +129,11 @@ class HomeButtonScrollViewModel: ObservableObject {
             .map({
                 $0.activeContracts
                     .filter { contract in
-                        contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                        if let upcoming = contract.upcomingChangedAgreement {
+                            return upcoming.coInsured.filter({ $0.hasMissingData }).isEmpty
+                        } else {
+                            return contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                        }
                     }
                     .isEmpty
             })
@@ -142,7 +146,11 @@ class HomeButtonScrollViewModel: ObservableObject {
             .store(in: &cancellables)
         let show = contractStore.state.activeContracts
             .filter { contract in
-                contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                if let upcoming = contract.upcomingChangedAgreement {
+                    return upcoming.coInsured.filter({ $0.needsMissingInfo }).isEmpty
+                } else {
+                    return contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                }
             }
             .isEmpty
         handleItem(.missingCoInsured, with: show)

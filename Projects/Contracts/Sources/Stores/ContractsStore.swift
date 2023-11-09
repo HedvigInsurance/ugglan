@@ -98,6 +98,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                             self.setError(graphQLError.message ?? "", for: .postCoInsured)
                         } else {
                             self.removeLoading(for: .postCoInsured)
+                            callback(.value(.fetchContracts))
                             callback(.end)
                         }
                     }
