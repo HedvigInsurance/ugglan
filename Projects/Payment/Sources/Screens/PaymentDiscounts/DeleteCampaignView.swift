@@ -12,42 +12,41 @@ struct DeleteCampaignView: View {
 
     var body: some View {
         ZStack {
-            hForm {
-                hSection {
-                    hFloatingField(value: vm.code, placeholder: L10n.referralAddcouponInputplaceholder) {
+            hForm {}
+                .opacity(vm.codeRemoved ? 0 : 1)
+                .hFormAttachToBottom {
+                    hSection {
+                        VStack(spacing: 16) {
+                            hFloatingField(value: vm.code, placeholder: L10n.referralAddcouponInputplaceholder) {
 
-                    }
-                    .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lockSmall.image)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hTextColor.primary)
+                            }
+                            .hFieldTrailingView {
+                                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(hTextColor.primary)
 
+                            }
+                            VStack(spacing: 8) {
+                                hButton.LargeButton(type: .primary) {
+                                    vm.confirmRemove()
+                                } content: {
+                                    hText(L10n.paymentsConfirmCodeRemove)
+                                }
+                                .hButtonIsLoading(vm.isLoading)
+
+                                hButton.LargeButton(type: .ghost) {
+                                    vm.cancel()
+                                } content: {
+                                    hText(L10n.generalCancelButton)
+                                }
+                                .disabled(vm.isLoading)
+                            }
+
+                        }
+                        .padding(.bottom, 16)
                     }
                 }
-            }
-            .opacity(vm.codeRemoved ? 0 : 1)
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 16) {
-                        hButton.LargeButton(type: .primary) {
-                            vm.confirmRemove()
-                        } content: {
-                            hText(L10n.paymentsConfirmCodeRemove)
-                        }
-                        .hButtonIsLoading(vm.isLoading)
-
-                        hButton.LargeButton(type: .ghost) {
-                            vm.cancel()
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
-                        .disabled(vm.isLoading)
-
-                    }
-                    .padding(.vertical, 16)
-                }
-            }
             SuccessScreen(title: L10n.paymentsCodeRemoved).opacity(vm.codeRemoved ? 1 : 0)
                 .offset(y: -32)
         }
@@ -135,7 +134,7 @@ extension DeleteCampaignView {
             PaymentStore.self,
             rootView: DeleteCampaignView(vm: .init(code: code)),
             style: .detented(.scrollViewContentSize),
-            options: .largeNavigationBar
+            options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case let .navigation(navigateTo) = action {
                 if case .goBack = navigateTo {
