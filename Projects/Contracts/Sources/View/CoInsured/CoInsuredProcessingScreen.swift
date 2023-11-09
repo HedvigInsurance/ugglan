@@ -33,20 +33,24 @@ struct CoInsuredProcessingScreen: View {
                     let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
                     let _ = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        for contract in contractStore.state.activeContracts {
-                            if contract.upcomingChangedAgreement == nil {
-                                contract.currentAgreement?.coInsured
-                                    .forEach({
-                                        if $0.needsMissingInfo {
-                                            store.send(
-                                                .coInsuredNavigationAction(
-                                                    action: .openMissingCoInsuredAlert(contractId: contract.id)
-                                                )
-                                            )
-                                            return
-                                        }
-                                    })
+
+                        let missingContract = contractStore.state.activeContracts.first { contract in
+                            if contract.upcomingChangedAgreement != nil {
+                                return false
+                            } else {
+                                return contract.currentAgreement?.coInsured
+                                    .first(where: { coInsured in
+                                        coInsured.needsMissingInfo
+                                    }) != nil
                             }
+                        }
+
+                        if missingContract != nil {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
+                                )
+                            )
                         }
                     }
                 }
