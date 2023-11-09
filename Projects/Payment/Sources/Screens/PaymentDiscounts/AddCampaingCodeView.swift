@@ -14,14 +14,7 @@ struct AddCampaingCodeView: View {
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
-                hText(vm.codeAdded ? "" : L10n.paymentsAddCampaignCode)
-                //                if !vm.codeRemoved{
-                //                    VStack {
-                //                        ForEach(vm.getTitleParts, id: \.self) { element in
-                //                            hText(element)
-                //                        }
-                //                    }
-                //                }
+                hText(vm.hideTitle ? "" : L10n.paymentsAddCampaignCode)
             }
         }
     }
@@ -31,6 +24,8 @@ class AddCampaingCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     var errorMessage: String?
     @Published var codeAdded: Bool = false
+    @Published var hideTitle: Bool = false
+
     @Inject var campaignsService: hCampaignsService
     @PresentableStore var store: PaymentStore
     init() {
@@ -57,6 +52,7 @@ class AddCampaingCodeViewModel: ObservableObject {
 
     @MainActor
     func onSuccessAdd() async {
+        hideTitle = true
         withAnimation(.easeInOut(duration: 0.2)) {
             codeAdded = true
         }
@@ -77,7 +73,6 @@ extension AddCampaingCodeView {
                 }
             }
         }
-        //        .configureTitle(L10n.paymentsAddCampaignCode)
     }
 }
 
