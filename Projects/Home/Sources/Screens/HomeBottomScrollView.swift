@@ -128,14 +128,17 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts
-                    .filter { contract in
-                        if let upcoming = contract.upcomingChangedAgreement {
-                            return upcoming.coInsured.filter({ $0.hasMissingData }).isEmpty
+                    .first(where: { contract in
+                        if contract.upcomingChangedAgreement != nil {
+                            return false
                         } else {
-                            return contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                            return contract.currentAgreement?.coInsured
+                                .filter({
+                                    $0.hasMissingData
+                                })
+                                .isEmpty == false
                         }
-                    }
-                    .isEmpty
+                    }) != nil
             })
             .distinct()
             .publisher
@@ -144,15 +147,19 @@ class HomeButtonScrollViewModel: ObservableObject {
                 self?.handleItem(.missingCoInsured, with: show)
             })
             .store(in: &cancellables)
-        let show = contractStore.state.activeContracts
-            .filter { contract in
-                if let upcoming = contract.upcomingChangedAgreement {
-                    return upcoming.coInsured.filter({ $0.needsMissingInfo }).isEmpty
+
+        let show =
+            contractStore.state.activeContracts.first(where: { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
                 } else {
-                    return contract.currentAgreement?.coInsured.filter({ $0.hasMissingData }).isEmpty ?? false
+                    return contract.currentAgreement?.coInsured
+                        .filter({
+                            $0.hasMissingData
+                        })
+                        .isEmpty == false
                 }
-            }
-            .isEmpty
+            }) != nil
         handleItem(.missingCoInsured, with: show)
     }
 }
