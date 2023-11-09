@@ -24,7 +24,7 @@ public struct PaymentStatusData: Codable, Equatable {
         self.status = data.currentMember.paymentInformation.status.asPayinMethodStatus
         self.displayName = data.currentMember.paymentInformation.connection?.displayName
         self.descriptor = data.currentMember.paymentInformation.connection?.descriptor
-        self.nextChargeDate = data.currentMember.upcomingCharge?.date
+        self.nextChargeDate = data.currentMember.futureCharge?.date
     }
 }
 

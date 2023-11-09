@@ -14,7 +14,9 @@ public class hPaymentServiceOctopus: hPaymentService {
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        try await hPaymentServiceDemo().getPaymentStatusData()
+        let query = OctopusGraphQL.PaymentInformationQuery()
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return PaymentStatusData(data: data)
     }
 
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
