@@ -9,6 +9,7 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
+    var paymentDiscountsData: PaymentDiscountsData?
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentConnectionID: String? = nil
     var schema: String?
@@ -21,6 +22,8 @@ public enum PaymentAction: ActionProtocol {
     case setSchema(schema: String)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
+    case fetchDiscountsData
+    case setDiscountsData(data: PaymentDiscountsData)
     case setConnectionID(id: String)
     case navigation(to: PaymentNavigation)
 }
@@ -28,15 +31,22 @@ public enum PaymentAction: ActionProtocol {
 public enum PaymentNavigation: ActionProtocol {
     case openUrl
     case openHistory
+    case openDiscounts
     case openConnectBankAccount
     case openConnectPayments
     case openPaymentDetails(data: PaymentData, withTitle: String)
+    case openInviteFriends(code: String, amount: String)
+    case openChangeCode
+    case openAddCampaing
+    case openAllReferrals
+    case openDeleteCampaing(code: String)
     case goBack
 }
 
 public enum LoadingAction: LoadingProtocol {
     case getPaymentData
     case getPaymentStatus
+    case getDiscountsData
 }
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
@@ -73,6 +83,19 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 }
                 return disposeBag
             }
+        case .fetchDiscountsData:
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
+                let disposeBag = DisposeBag()
+                Task {
+                    do {
+                        let data = try await self.paymentService.getPaymentDiscountsData()
+                        callback(.value(.setDiscountsData(data: data)))
+                    } catch {
+                        self.setError(L10n.General.errorBody, for: .getDiscountsData)
+                    }
+                }
+                return disposeBag
+            }
         default:
             return nil
         }
@@ -96,6 +119,11 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setPaymentStatus(data):
             removeLoading(for: .getPaymentStatus)
             newState.paymentStatusData = data
+        case .fetchDiscountsData:
+            setLoading(for: .getDiscountsData)
+        case let .setDiscountsData(data):
+            removeLoading(for: .getDiscountsData)
+            newState.paymentDiscountsData = data
         default:
             break
         }

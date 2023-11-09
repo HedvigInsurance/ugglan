@@ -7,6 +7,7 @@ import UIKit
 
 struct GraphQLError: Error { var errors: [Error] }
 
+
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
         query: Query,
@@ -95,6 +96,29 @@ extension ApolloClient {
             )
 
             return Disposer { cancellable.cancel() }
+        }
+    }
+    
+    public func perform<Mutation: GraphQLMutation>(
+        mutation: Mutation,
+        queue: DispatchQueue = DispatchQueue.main
+    ) async throws -> Mutation.Data  {
+        return try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<Mutation.Data, Error>) -> Void in
+            self.perform(
+                mutation: mutation,
+                queue: queue) { result in
+                    switch result {
+                    case let .success(result):
+                        if let data = result.data {
+                            inCont.resume(with: .success(data))
+                        } else if let errors = result.errors, let firstError = errors.first {
+                            inCont.resume(throwing: firstError)
+                        }
+                    case let .failure(error):
+                        inCont.resume(throwing: error)
+                    }
+                }
         }
     }
 

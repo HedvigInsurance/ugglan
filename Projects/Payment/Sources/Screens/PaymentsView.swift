@@ -12,7 +12,7 @@ public struct PaymentsView: View {
     public var body: some View {
         LoadingViewWithContent(
             PaymentStore.self,
-            [.getPaymentData, .getPaymentStatus],
+            [.getPaymentData],
             [.load, .fetchPaymentStatus]
         ) {
             hForm {
@@ -47,11 +47,11 @@ public struct PaymentsView: View {
             .hFormAttachToBottom {
                 bottomPart
             }
-            .onAppear {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(.load)
-                store.send(.fetchPaymentStatus)
-            }
+        }
+        .onAppear {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(.load)
+            store.send(.fetchPaymentStatus)
         }
     }
 
@@ -127,6 +127,9 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .noHorizontalPadding()
+        .onTap {
+            store.send(.navigation(to: .openDiscounts))
+        }
         .dividerInsets(.all, 0)
 
     }
@@ -218,9 +221,23 @@ extension PaymentsView {
                     PaymentHistory.journey
                 } else if case let .openPaymentDetails(details, title) = navigateTo {
                     PaymentDetails.journey(with: details, and: title)
+                } else if case .openDiscounts = navigateTo {
+                    PaymentsDiscountsRootView().journey
                 }
             }
         }
         .configureTitle(L10n.myPaymentTitle)
+    }
+
+    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
+        let url =
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+        let message = L10n.referralSmsMessage(discount, url)
+        return HostingJourney(
+            rootView: ActivityViewController(activityItems: [
+                message
+            ]),
+            style: .activityView
+        )
     }
 }

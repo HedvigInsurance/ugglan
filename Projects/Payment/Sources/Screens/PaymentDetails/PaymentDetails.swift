@@ -35,7 +35,7 @@ struct PaymentDetails: View {
     private var discounts: some View {
         if data.discounts.count > 0 {
             hSection(data.discounts) { discount in
-                PaymentDetailsDiscount(discount: discount)
+                PaymentDetailsDiscountView(vm: .init(options: [], discount: discount))
             }
             .withHeader {
                 HStack {
@@ -208,7 +208,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                         .init(id: "1", displayName: "Car 15%")
                     ],
                     validUntil: "2023-11-20",
-                    isValid: true
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "CODE2",
@@ -219,7 +219,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                         .init(id: "2", displayName: "House 15%")
                     ],
                     validUntil: "2023-11-22",
-                    isValid: true
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "FRIENDS",
@@ -228,7 +228,8 @@ struct PaymentDetails_Previews: PreviewProvider {
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    isValid: true
+                    canBeDeleted: false
+
                 ),
             ],
             paymentDetails: nil
@@ -302,7 +303,7 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                         .init(id: "1", displayName: "Car 15%")
                     ],
                     validUntil: "2023-11-20",
-                    isValid: true
+                    canBeDeleted: false
                 ),
                 .init(
                     id: "CODE2",
@@ -313,7 +314,8 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                         .init(id: "2", displayName: "House 15%")
                     ],
                     validUntil: "2023-11-22",
-                    isValid: true
+                    canBeDeleted: false
+
                 ),
                 .init(
                     id: "FRIENDS",
@@ -322,7 +324,8 @@ struct PaymentDetailsFailedPrevious_Previews: PreviewProvider {
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    isValid: true
+                    canBeDeleted: false
+
                 ),
             ],
             paymentDetails: .init(
