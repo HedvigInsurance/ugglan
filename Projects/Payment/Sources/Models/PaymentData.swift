@@ -21,7 +21,6 @@ public struct PaymentData: Codable, Equatable {
         case pending
         case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
         case addedtoFuture(date: ServerBasedDate, withId: String)
-
         enum PaymentStatusAction: Codable, Equatable {
             static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
                 return false

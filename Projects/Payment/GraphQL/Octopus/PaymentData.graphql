@@ -1,51 +1,57 @@
 query PaymentData {
-  currentMember {
-    redeemedCampaigns {
-      code
-      description
-      id
+    currentMember {
+        futureCharge {
+            ...MemberChargeFragment
+            includedInFutureCharge {
+                ...MemberChargeFragment
+            }
+            includingPreviousCharges {
+                ...MemberChargeFragment
+            }
+        }
     }
-    chargeHistory {
-      amount {
-        ...MoneyFragment
-      }
-      date
-      status
-    }
-    insuranceCost {
-      freeUntil
-      monthlyDiscount {
-        ...MoneyFragment
-      }
-      monthlyGross {
-        ...MoneyFragment
-      }
-      monthlyNet {
-        ...MoneyFragment
-      }
-    }
-    upcomingCharge {
+}
+
+
+fragment MemberChargeFragment on MemberCharge{
       contractsChargeBreakdown {
+        gross {
+          ...MoneyFragment
+        }
+        periods {
+          fromDate
+          toDate
+          amount {
+            ...MoneyFragment
+          }
+          isPreviouslyFailedCharge
+        }
         contract {
-          id
+          exposureDisplayName
           currentAgreement {
             productVariant {
-              typeOfContract
               displayName
             }
           }
         }
       }
-      gross {
-        ...MoneyFragment
-      }
-      net {
-        ...MoneyFragment
-      }
+      date
       discount {
         ...MoneyFragment
       }
-      date
-    }
-  }
+      discountBreakdown {
+        code
+        discount {
+        ...MoneyFragment
+        }
+      }
+      gross {
+        ...MoneyFragment
+      }
+      id
+      net {
+        ...MoneyFragment
+      }
+      status
+      
 }

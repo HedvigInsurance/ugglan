@@ -7,8 +7,10 @@ public class hPaymentServiceOctopus: hPaymentService {
 
     public init() {}
 
-    public func getPaymentData() async throws -> PaymentData {
-        try await hPaymentServiceDemo().getPaymentData()
+    public func getPaymentData() async throws -> PaymentData? {
+        let query = OctopusGraphQL.PaymentDataQuery()
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return PaymentData(with: data)
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
@@ -78,5 +80,75 @@ extension OctopusGraphQL.MemberReferralStatus {
         case .__unknown:
             return .unknown
         }
+    }
+}
+
+extension PaymentData {
+    init?(with data: OctopusGraphQL.PaymentDataQuery.Data) {
+        guard let futureCharge = data.currentMember.futureCharge else { return nil }
+        let chargeFragment = futureCharge.fragments.memberChargeFragment
+        payment = .init(with: chargeFragment)
+        previousPaymentStatus = PaymentData.PaymentStatus.getValue(with: futureCharge)
+        contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        discounts = chargeFragment.discountBreakdown.compactMap({ .init(with: $0) })
+        paymentDetails = nil
+    }
+}
+
+extension PaymentData.PaymentStatus {
+    static func getValue(
+        with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.FutureCharge
+    ) -> PaymentData.PaymentStatus? {
+        if let includedInFutureCharge = data.includedInFutureCharge {
+            return .addedtoFuture(date: includedInFutureCharge.date, withId: includedInFutureCharge.id)
+        }
+        let includingPreviousCharges = data.includingPreviousCharges
+        if includingPreviousCharges.count > 0 {
+            return .failedForPrevious(
+                from: includingPreviousCharges.first?.date ?? "",
+                to: includingPreviousCharges.last?.date ?? ""
+            )
+        }
+        return nil
+    }
+}
+
+extension PaymentData.PaymentStack {
+    init(with data: OctopusGraphQL.MemberChargeFragment) {
+        gross = .init(fragment: data.gross.fragments.moneyFragment)
+        net = .init(fragment: data.net.fragments.moneyFragment)
+        date = data.date
+    }
+}
+
+extension PaymentData.ContractPaymentDetails {
+    init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown) {
+        id = data.gross.amount.description
+        title = data.contract.currentAgreement.productVariant.displayName
+        subtitle = data.contract.exposureDisplayName
+        amount = .init(fragment: data.gross.fragments.moneyFragment)
+        periods = data.periods.compactMap({ .init(with: $0) })
+    }
+}
+
+extension PaymentData.PeriodInfo {
+    init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period) {
+        id = data.fromDate + data.toDate
+        from = data.fromDate
+        to = data.toDate
+        amount = .init(fragment: data.amount.fragments.moneyFragment)
+        isOutstanding = data.isPreviouslyFailedCharge
+    }
+}
+
+extension Discount {
+    init(with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown) {
+        id = data.code
+        code = data.code
+        amount = .init(fragment: data.discount.fragments.moneyFragment)
+        title = data.code
+        listOfAffectedInsurances = []
+        validUntil = nil
+        canBeDeleted = false
     }
 }

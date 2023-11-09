@@ -2,7 +2,7 @@ import Foundation
 
 public class hPaymentServiceDemo: hPaymentService {
     public init() {}
-    public func getPaymentData() async throws -> PaymentData {
+    public func getPaymentData() async throws -> PaymentData? {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return .init(
             payment: .init(gross: .sek(460), net: .sek(400), date: "2023-11-30"),
