@@ -66,7 +66,7 @@ struct PaymentsDiscountsView: View {
                     )
                 }
                 HStack {
-                    hText(data.referralsData.code)
+                    hText(data.referralsData.code, style: .standardSmall)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
@@ -162,7 +162,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                     discountPerMember: .sek(10),
                     discount: .sek(30),
                     referrals: [
-                        .init(id: "a1", name: "Mark", activeDiscount: .sek(10), status: .active),
+                        .init(id: "a1", name: "Mark", activeDiscount: .sek(10), status: .active, invitedYou: true),
                         .init(id: "a2", name: "Idris", activeDiscount: .sek(10), status: .active),
                         .init(id: "a3", name: "Atotio", activeDiscount: .sek(10), status: .active),
                         .init(id: "a4", name: "Mark", activeDiscount: .sek(10), status: .pending),
@@ -224,8 +224,8 @@ extension PaymentsDiscountsRootView {
                     AddCampaingCodeView.journey
                 } else if case .openAllReferrals = navigateTo {
                     ReferralsView.journey
-                } else if case let .openDeleteCampaing(code) = navigateTo {
-                    DeleteCampaignView.journeyWith(code: code)
+                } else if case let .openDeleteCampaing(discount) = navigateTo {
+                    DeleteCampaignView.journeyWith(discount: discount)
                 }
             }
         }
@@ -292,14 +292,22 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
 struct ReferralView: View {
     let referral: Referral
     var body: some View {
-        HStack(spacing: 8) {
-            Circle().fill(referral.statusColor).frame(width: 14, height: 14)
-            VStack(alignment: .leading) {
-                hText(referral.name).foregroundColor(hTextColor.primary)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 8) {
+                Circle().fill(referral.statusColor).frame(width: 14, height: 14)
+                VStack(alignment: .leading) {
+                    hText(referral.name).foregroundColor(hTextColor.primary)
+                }
+                Spacer()
+                hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
             }
-            Spacer()
-            hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
-
+            if referral.invitedYou {
+                HStack(spacing: 8) {
+                    Circle().fill(Color.clear).frame(width: 14, height: 14)
+                    hText(L10n.ReferallsInviteeStates.invitedYou, style: .standardSmall)
+                        .foregroundColor(hTextColor.secondary)
+                }
+            }
         }
     }
 }

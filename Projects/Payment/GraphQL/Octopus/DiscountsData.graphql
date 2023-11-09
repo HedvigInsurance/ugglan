@@ -1,0 +1,31 @@
+query Discounts {
+  currentMember {
+    redeemedCampaigns {
+      code
+      description
+      type
+      id
+      expiresAt
+    }
+    referralInformation {
+      code
+      monthlyDiscountPerReferral {
+        ...MoneyFragment
+      }
+      referrals {
+        ...MemberReferralFragment
+      }
+      referredBy {
+        ...MemberReferralFragment
+      }
+    }
+  }
+}
+
+fragment MemberReferralFragment on MemberReferral {
+        name
+        status
+        activeDiscount {
+          ...MoneyFragment
+        }
+}

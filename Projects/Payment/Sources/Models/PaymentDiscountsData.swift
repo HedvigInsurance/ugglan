@@ -20,23 +20,27 @@ public struct Referral: Equatable, Codable, Identifiable {
     let name: String
     let activeDiscount: MonetaryAmount?
     let status: State
+    let invitedYou: Bool
 
     public init(
         id: String,
         name: String,
         activeDiscount: MonetaryAmount? = nil,
-        status: State
+        status: State,
+        invitedYou: Bool = false
     ) {
         self.id = id
         self.name = name
         self.activeDiscount = activeDiscount
         self.status = status
+        self.invitedYou = invitedYou
     }
 
     public enum State: String, Codable {
         case terminated
         case pending
         case active
+        case unknown
     }
 }
 
@@ -49,6 +53,8 @@ extension Referral {
             hSignalColor.amberElement
         case .terminated:
             hSignalColor.redElement
+        case .unknown:
+            hSignalColor.blueElement
         }
     }
 
@@ -58,6 +64,8 @@ extension Referral {
             hTextColor.secondary
         case .pending, .terminated:
             hTextColor.tertiary
+        case .unknown:
+            hTextColor.tertiary
         }
     }
 
@@ -66,6 +74,8 @@ extension Referral {
         case .active, .pending:
             hTextColor.tertiary
         case .terminated:
+            hTextColor.tertiary
+        case .unknown:
             hTextColor.tertiary
         }
     }
@@ -78,6 +88,8 @@ extension Referral {
             return L10n.referralPendingStatusLabel
         case .terminated:
             return L10n.referralTerminatedStatusLabel
+        case .unknown:
+            return ""
         }
     }
 }

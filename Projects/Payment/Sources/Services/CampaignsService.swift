@@ -3,14 +3,14 @@ import hCore
 import hGraphQL
 
 public protocol hCampaignsService {
-    func remove(code: String) async throws
+    func remove(codeId: String) async throws
     func add(code: String) async throws
 }
 
 public class hCampaignsServiceDemo: hCampaignsService {
 
     public init() {}
-    public func remove(code: String) async throws {
+    public func remove(codeId: String) async throws {
         try await Task.sleep(nanoseconds: 1_000_000_000)
     }
 
@@ -22,9 +22,13 @@ public class hCampaignsServiceDemo: hCampaignsService {
 public class hCampaingsServiceOctopus: hCampaignsService {
     @Inject private var octopus: hOctopus
     public init() {}
-    public func remove(code: String) async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        throw CampaignsError.notImplemented
+    public func remove(codeId: String) async throws {
+        let data = try await octopus.client.perform(
+            mutation: OctopusGraphQL.MemberCampaignsUnredeemMutation(memberCampaignsUnredeemId: codeId)
+        )
+        if let errorMessage = data.memberCampaignsUnredeem.userError?.message {
+            throw CampaignsError.userError(message: errorMessage)
+        }
     }
 
     public func add(code: String) async throws {

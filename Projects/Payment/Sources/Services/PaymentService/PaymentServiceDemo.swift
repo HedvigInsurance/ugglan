@@ -1,12 +1,4 @@
 import Foundation
-import hCore
-import hGraphQL
-
-public protocol hPaymentService {
-    func getPaymentData() async throws -> PaymentData
-    func getPaymentStatusData() async throws -> PaymentStatusData
-    func getPaymentDiscountsData() async throws -> PaymentDiscountsData
-}
 
 public class hPaymentServiceDemo: hPaymentService {
     public init() {}
@@ -14,7 +6,7 @@ public class hPaymentServiceDemo: hPaymentService {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return .init(
             payment: .init(gross: .sek(460), net: .sek(400), date: "2023-11-30"),
-            previousPaymentStatus: nil,  //.failedForPrevious(from: "2023-10-11", to: "2023-10-27"),
+            previousPaymentStatus: nil,
             contracts: [
                 .init(
                     id: "id",
