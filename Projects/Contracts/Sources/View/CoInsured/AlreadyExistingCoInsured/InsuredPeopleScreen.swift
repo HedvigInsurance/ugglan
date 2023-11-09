@@ -301,8 +301,10 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     }
 
     func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if coInsuredAdded.contains(coInsuredModel) {
-            coInsuredAdded.removeAll(where: { $0 == coInsuredModel })
+        if let index = coInsuredAdded.firstIndex(where: { coInsured in
+            isEqualTo(coInsured: coInsured, coInsuredCompare: coInsuredModel)
+        }) {
+            coInsuredAdded.remove(at: index)
         } else {
             coInsuredDeleted.append(coInsuredModel)
         }
@@ -339,6 +341,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     func getNameFromSSN(SSN: String) async {
         withAnimation {
             self.SSNError = nil
+            self.showErrorView = false
             self.isLoading = true
         }
         do {

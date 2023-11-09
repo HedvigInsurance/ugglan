@@ -154,14 +154,28 @@ struct CoInusuredInput: View {
                                     if !intentVm.showErrorView {
                                         store.send(.coInsuredNavigationAction(action: .addSuccess))
                                     } else {
-                                        store.coInsuredViewModel.removeCoInsured(
-                                            .init(
-                                                firstName: vm.firstName,
-                                                lastName: vm.lastName,
-                                                SSN: vm.SSN,
-                                                needsMissingInfo: false
+                                        if vm.noSSN {
+                                            store.coInsuredViewModel.removeCoInsured(
+                                                .init(
+                                                    firstName: vm.firstName,
+                                                    lastName: vm.lastName,
+                                                    birthDate: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
                                             )
-                                        )
+                                        } else {
+                                            if vm.noSSN {
+                                                store.coInsuredViewModel.removeCoInsured(
+                                                    .init(
+                                                        firstName: vm.firstName,
+                                                        lastName: vm.lastName,
+                                                        SSN: vm.SSN,
+                                                        needsMissingInfo: false
+                                                    )
+                                                )
+                                            }
+                                        }
+
                                     }
                                 }
                             }
@@ -224,6 +238,7 @@ struct CoInusuredInput: View {
                 }
                 hButton.LargeButton(type: .ghost) {
                     vm.showErrorView = false
+                    intentVm.showErrorView = false
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -516,6 +531,8 @@ public class IntentViewModel: ObservableObject {
     func getIntent(contractId: String, coInsured: [CoInsuredModel]) async {
         withAnimation {
             self.isLoading = true
+            self.errorMessage = nil
+            self.showErrorView = false
         }
         do {
             let data = try await withCheckedThrowingContinuation {

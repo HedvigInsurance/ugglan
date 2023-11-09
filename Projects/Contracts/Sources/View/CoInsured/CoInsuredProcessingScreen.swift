@@ -44,7 +44,6 @@ struct CoInsuredProcessingScreen: View {
                                     }) != nil
                             }
                         }
-
                         if missingContract != nil {
                             store.send(
                                 .coInsuredNavigationAction(

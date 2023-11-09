@@ -213,7 +213,6 @@ public class EditCoInsuredJourney {
             rootView: CheckboxPickerScreen<CoInsuredModel>(
                 items: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    print("fetch all coInsured: ", contractStore.state.fetchAllCoInsured)
                     return contractStore.state.fetchAllCoInsured.compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
@@ -230,15 +229,56 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedContracts in
                     if let selectedContract = selectedContracts.first {
                         let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.coInsuredViewModel.addCoInsured(
-                            .init(
-                                firstName: selectedContract.firstName,
-                                lastName: selectedContract.lastName,
-                                SSN: selectedContract.SSN,
-                                needsMissingInfo: false
+                        if selectedContract.SSN != nil {
+                            store.coInsuredViewModel.addCoInsured(
+                                .init(
+                                    firstName: selectedContract.firstName,
+                                    lastName: selectedContract.lastName,
+                                    SSN: selectedContract.SSN,
+                                    needsMissingInfo: false
+                                )
                             )
-                        )
-                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                        } else {
+                            store.coInsuredViewModel.addCoInsured(
+                                .init(
+                                    firstName: selectedContract.firstName,
+                                    lastName: selectedContract.lastName,
+                                    birthDate: selectedContract.birthDate,
+                                    needsMissingInfo: false
+                                )
+                            )
+                        }
+
+                        print("id: ", contractId)
+                        Task {
+                            await store.intentViewModel.getIntent(
+                                contractId: contractId,
+                                coInsured: store.coInsuredViewModel.completeList(contractId: contractId)
+                            )
+                        }
+                        if !store.intentViewModel.showErrorView {
+                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                        } else {
+                            if selectedContract.SSN != nil {
+                                store.coInsuredViewModel.removeCoInsured(
+                                    .init(
+                                        firstName: selectedContract.firstName,
+                                        lastName: selectedContract.lastName,
+                                        birthDate: selectedContract.birthDate,
+                                        needsMissingInfo: false
+                                    )
+                                )
+                            } else {
+                                store.coInsuredViewModel.removeCoInsured(
+                                    .init(
+                                        firstName: selectedContract.firstName,
+                                        lastName: selectedContract.lastName,
+                                        birthDate: selectedContract.birthDate,
+                                        needsMissingInfo: false
+                                    )
+                                )
+                            }
+                        }
                     }
                 },
                 onCancel: {

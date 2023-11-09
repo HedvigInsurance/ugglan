@@ -23,22 +23,36 @@ public struct ContractState: StateProtocol {
             })
             .filter({ !$0.hasMissingData })
 
+        var uniqueUpcomingCoInsured: [CoInsuredModel] = []
+        upComingCoInsured.forEach { upComing in
+            if uniqueUpcomingCoInsured.first(where: {
+                $0.fullName == upComing.fullName
+            }) == nil {
+                uniqueUpcomingCoInsured.append(upComing)
+            }
+        }
+
         let currentCoInsured =
             activeContracts.flatMap({
                 $0.currentAgreement?.coInsured ?? []
             })
             .filter({ !$0.hasMissingData })
 
-        return currentCoInsured
-            + upComingCoInsured.filter({ upComing in
-                if currentCoInsured.count > 0 {
-                    if currentCoInsured.first(where: {
+        var uniqueCoInsured: [CoInsuredModel] = []
+        currentCoInsured.forEach { current in
+            if uniqueCoInsured.first(where: {
+                $0.fullName == current.fullName
+            }) == nil {
+                uniqueCoInsured.append(current)
+            }
+        }
+
+        return uniqueCoInsured
+            + uniqueUpcomingCoInsured.filter({ upComing in
+                if uniqueCoInsured.count > 0 {
+                    return uniqueCoInsured.first(where: {
                         upComing.fullName != $0.fullName
-                    }) != nil {
-                        return true
-                    } else {
-                        return false
-                    }
+                    }) != nil
                 } else {
                     return true
                 }
