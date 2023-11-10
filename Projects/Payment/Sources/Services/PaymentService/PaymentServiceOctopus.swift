@@ -20,6 +20,10 @@ public class hPaymentServiceOctopus: hPaymentService {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentDiscountsData.init(with: data)
     }
+
+    public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
+        return []
+    }
 }
 
 extension PaymentDiscountsData {
