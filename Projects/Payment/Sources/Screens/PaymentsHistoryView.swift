@@ -24,34 +24,52 @@ public struct PaymentHistoryView: View {
                     state.paymentHistory
                 }
             ) { history in
-                hForm {
-                    ForEach(history) { item in
-                        hSection(item.valuesPerMonth) { month in
-                            hRow {
-                                HStack {
-                                    hText(month.date.displayDateShort)
-                                    Spacer()
-                                    hText(month.amount.formattedAmount)
-                                }
-                            }
-                            .noHorizontalPadding()
-                            .withChevronAccessory
-                            .onTap {
-                                store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
-                            }
-                            .foregroundColor(
-                                getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
-                            )
-                            .padding(.horizontal, -16)
-
-                        }
-                        .withHeader {
-                            hText(item.year)
-                        }
+                if history.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(hSignalColor.blueElement)
+                        hText(L10n.paymentsNoHistoryData)
+                            .multilineTextAlignment(.center)
                     }
-                    .padding(.vertical, 16)
+                } else {
+                    hForm {
+                        ForEach(history) { item in
+                            hSection(item.valuesPerMonth) { month in
+                                hRow {
+                                    HStack {
+                                        hText(month.date.displayDateShort)
+                                        Spacer()
+                                        hText(month.amount.formattedAmount)
+                                    }
+                                }
+                                .noHorizontalPadding()
+                                .withChevronAccessory
+                                .onTap {
+                                    store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
+                                }
+                                .foregroundColor(
+                                    getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
+                                )
+                                .padding(.horizontal, -16)
+
+                            }
+                            .withHeader {
+                                hText(item.year)
+                            }
+                            .withFooter {
+                                InfoCard(
+                                    text: L10n.paymentsHistoryInfo,
+                                    type: .info
+                                )
+                                .padding(.horizontal, -16)
+                            }
+                        }
+                        .padding(.vertical, 16)
+                    }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
             }
             .presentableStoreLensAnimation(.default)
         }
