@@ -95,9 +95,6 @@ struct PaymentDetails: View {
                             }
                         }
                     }
-                    if let previousPaymentStatus = data.previousPaymentStatus {
-                        PaymentStatusView(status: previousPaymentStatus) { _ in }
-                    }
                 }
             }
             .noHorizontalPadding()
@@ -164,7 +161,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                 date: "2022-10-30"
             ),
             status: .upcoming,
-            previousPaymentStatus: nil,
             contracts: [
                 .init(
                     id: "id1",

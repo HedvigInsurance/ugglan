@@ -104,9 +104,9 @@ public struct PaymentsView: View {
                     .padding(.vertical, 32)
                 }
                 ConnectPaymentCardView().padding(.horizontal, 16)
-                if let previousPaymentStatus = state.paymentData?.previousPaymentStatus {
+                if let status = state.paymentData?.status, status != .upcoming {
                     hSection {
-                        PaymentStatusView(status: previousPaymentStatus) { _ in
+                        PaymentStatusView(status: status) { _ in
 
                         }
                     }

@@ -7,7 +7,6 @@ public class hPaymentServiceDemo: hPaymentService {
         return .init(
             payment: .init(gross: .sek(460), net: .sek(400), date: "2023-11-30"),
             status: .upcoming,
-            previousPaymentStatus: nil,
             contracts: [
                 .init(
                     id: "id",

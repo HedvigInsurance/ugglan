@@ -65,6 +65,8 @@ struct PaymentStatusView: View {
                     )
                 ]
             )
+        case .unknown:
+            EmptyView()
         }
     }
 }

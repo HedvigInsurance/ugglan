@@ -94,28 +94,41 @@ extension PaymentData {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
-        previousPaymentStatus = PaymentData.PaymentStatus.getValue(with: futureCharge)
+        status = PaymentData.PaymentStatus.getStatus(with: futureCharge)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         discounts = chargeFragment.discountBreakdown.compactMap({ .init(with: $0) })
         paymentDetails = nil
+        addedToThePayment = []
     }
 }
 
 extension PaymentData.PaymentStatus {
-    static func getValue(
+    static func getStatus(
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.FutureCharge
-    ) -> PaymentData.PaymentStatus? {
-        if let includedInFutureCharge = data.includedInFutureCharge {
-            return .addedtoFuture(date: includedInFutureCharge.date, withId: includedInFutureCharge.id)
+    ) -> PaymentData.PaymentStatus {
+        switch data.status {
+        case .failed:
+            if let includedInFutureCharge = data.includedInFutureCharge {
+                return .addedtoFuture(
+                    date: includedInFutureCharge.date,
+                    withId: includedInFutureCharge.id,
+                    isUpcoming: includedInFutureCharge.status == .upcoming
+                )
+            } else {
+                return .failedForPrevious(
+                    from: data.includingPreviousCharges.first?.date ?? "",
+                    to: data.includingPreviousCharges.last?.date ?? ""
+                )
+            }
+        case .pending:
+            return .pending
+        case .success:
+            return .success
+        case .upcoming:
+            return .upcoming
+        case .__unknown:
+            return .unknown
         }
-        let includingPreviousCharges = data.includingPreviousCharges
-        if includingPreviousCharges.count > 0 {
-            return .failedForPrevious(
-                from: includingPreviousCharges.first?.date ?? "",
-                to: includingPreviousCharges.last?.date ?? ""
-            )
-        }
-        return nil
     }
 }
 

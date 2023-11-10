@@ -18,7 +18,7 @@ extension PaymentData {
         switch status {
         case .upcoming:
             return L10n.paymentsUpcomingPayment
-        case .pending, .success, .addedtoFuture, .failedForPrevious:
+        case .pending, .success, .addedtoFuture, .failedForPrevious, .unknown:
             return payment.date.displayDate
         }
     }
