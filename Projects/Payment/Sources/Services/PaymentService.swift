@@ -181,7 +181,7 @@ public class hPaymentServiceDemo: hPaymentService {
                                 title: "TItle",
                                 listOfAffectedInsurances: [.init(id: "Id1", displayName: "CarInsurance")],
                                 validUntil: "2023-10-11",
-                                canBeDeleted: false
+                                canBeDeleted: true
                             )
                         ],
                         paymentDetails: .init(paymentMethod: "Autogyro", account: "****123123", bank: "SEB"),
@@ -222,7 +222,7 @@ public class hPaymentServiceDemo: hPaymentService {
                                         title: "TItle",
                                         listOfAffectedInsurances: [.init(id: "Id1", displayName: "CarInsurance")],
                                         validUntil: "2023-10-11",
-                                        canBeDeleted: false
+                                        canBeDeleted: true
                                     )
                                 ],
                                 paymentDetails: .init(paymentMethod: "Autogyro", account: "****123123", bank: "SEB"),
