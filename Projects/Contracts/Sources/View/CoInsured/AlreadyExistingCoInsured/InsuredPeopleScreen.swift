@@ -42,11 +42,16 @@ struct InsuredPeopleScreen: View {
                                             vm.isEqualTo(coInsured: $0, coInsuredCompare: upcomingCoInsured)
                                         })
                                     {
-                                        //remaining
-                                        CoInsuredField(
-                                            coInsured: upcomingCoInsured,
-                                            accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
-                                        )
+                                        //not deleted
+                                        if vm.coInsuredDeleted.first { deleted in
+                                            vm.isEqualTo(coInsured: deleted, coInsuredCompare: upcomingCoInsured)
+                                        } == nil {
+                                            //remaining
+                                            CoInsuredField(
+                                                coInsured: upcomingCoInsured,
+                                                accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
+                                            )
+                                        }
                                     } else {
                                         //added
                                         if vm.coInsuredDeleted.first(where: {
