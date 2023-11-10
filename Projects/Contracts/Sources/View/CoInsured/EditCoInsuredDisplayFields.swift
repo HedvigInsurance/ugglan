@@ -81,6 +81,7 @@ struct CoInsuredField<Content: View>: View {
                             .fixedSize()
                     } else {
                         hText(title ?? "")
+                            .fixedSize()
                         hText(subTitle ?? "", style: .standardSmall)
                             .foregroundColor(hTextColor.secondary)
                             .fixedSize()
