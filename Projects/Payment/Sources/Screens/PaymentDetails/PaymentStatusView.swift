@@ -7,6 +7,8 @@ struct PaymentStatusView: View {
     let onAction: (PaymentData.PaymentStatus.PaymentStatusAction) -> Void
     var body: some View {
         switch status {
+        case .upcoming:
+            InfoCard(text: L10n.paymentsUpcomingPayment, type: .info)
         case .success:
             HStack(spacing: 8) {
                 Spacer()
@@ -48,7 +50,7 @@ struct PaymentStatusView: View {
                     L10n.paymentsMissedPayment(from.displayDateShort, to.displayDateShort),
                 type: .error
             )
-        case let .addedtoFuture(date, id):
+        case let .addedtoFuture(date, id, isUpcooming):
             InfoCard(
                 text: L10n.paymentsPaymentFailed(date.displayDate),
                 type: .error
@@ -58,7 +60,7 @@ struct PaymentStatusView: View {
                     .init(
                         buttonTitle: L10n.paymentsViewPayment,
                         buttonAction: {
-                            onAction(.viewPayment(withId: id))
+                            onAction(.viewAddedToPayment)
                         }
                     )
                 ]
