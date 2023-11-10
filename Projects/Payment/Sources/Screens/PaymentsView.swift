@@ -87,8 +87,7 @@ public struct PaymentsView: View {
                             store.send(
                                 .navigation(
                                     to: .openPaymentDetails(
-                                        data: upcomingPayment,
-                                        withTitle: L10n.paymentsUpcomingPayment
+                                        data: upcomingPayment
                                     )
                                 )
                             )
@@ -145,6 +144,9 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .noHorizontalPadding()
+        .onTap {
+            store.send(.navigation(to: .openHistory))
+        }
         .dividerInsets(.all, 0)
     }
 
@@ -218,9 +220,9 @@ extension PaymentsView {
                     )
                     .journeyThenDismiss
                 } else if case .openHistory = navigateTo {
-                    PaymentHistory.journey
-                } else if case let .openPaymentDetails(details, title) = navigateTo {
-                    PaymentDetails.journey(with: details, and: title)
+                    PaymentHistoryView.journey
+                } else if case let .openPaymentDetails(details) = navigateTo {
+                    PaymentDetails.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }

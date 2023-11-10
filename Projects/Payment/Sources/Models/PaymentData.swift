@@ -5,11 +5,13 @@ import hGraphQL
 
 public struct PaymentData: Codable, Equatable {
     let payment: PaymentStack
+    let status: PaymentStatus
     let previousPaymentStatus: PaymentStatus?
     let contracts: [ContractPaymentDetails]
     let discounts: [Discount]
     let paymentDetails: PaymentDetails?
-
+    //had to add as an array since we can't nest same struct type here
+    let addedToThePayment: [PaymentData]?
     struct PaymentStack: Codable, Equatable {
         let gross: MonetaryAmount
         let net: MonetaryAmount
@@ -17,16 +19,26 @@ public struct PaymentData: Codable, Equatable {
     }
 
     enum PaymentStatus: Codable, Equatable {
+        case upcoming
         case success
         case pending
         case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
-        case addedtoFuture(date: ServerBasedDate, withId: String)
+        case addedtoFuture(date: ServerBasedDate, withId: String, isUpcoming: Bool)
 
         enum PaymentStatusAction: Codable, Equatable {
             static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
                 return false
             }
-            case viewPayment(withId: String)
+            case viewAddedToPayment
+        }
+
+        var hasFailed: Bool {
+            switch self {
+            case .addedtoFuture:
+                return true
+            case .success, .pending, .failedForPrevious, .upcoming:
+                return false
+            }
         }
     }
 
