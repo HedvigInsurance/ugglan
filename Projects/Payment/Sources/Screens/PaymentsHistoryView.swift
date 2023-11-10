@@ -35,35 +35,35 @@ public struct PaymentHistoryView: View {
                     }
                 } else {
                     hForm {
-                        ForEach(history) { item in
-                            hSection(item.valuesPerMonth) { month in
-                                hRow {
-                                    HStack {
-                                        hText(month.date.displayDateShort)
-                                        Spacer()
-                                        hText(month.amount.formattedAmount)
+                        VStack(spacing: 0) {
+                            ForEach(history) { item in
+                                hSection(item.valuesPerMonth) { month in
+                                    hRow {
+                                        HStack {
+                                            hText(month.date.displayDateShort)
+                                            Spacer()
+                                            hText(month.amount.formattedAmount)
+                                        }
                                     }
-                                }
-                                .noHorizontalPadding()
-                                .withChevronAccessory
-                                .onTap {
-                                    store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
-                                }
-                                .foregroundColor(
-                                    getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
-                                )
-                                .padding(.horizontal, -16)
+                                    .noHorizontalPadding()
+                                    .withChevronAccessory
+                                    .onTap {
+                                        store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
+                                    }
+                                    .foregroundColor(
+                                        getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
+                                    )
+                                    .padding(.horizontal, -16)
 
+                                }
+                                .withHeader {
+                                    hText(item.year)
+                                }
                             }
-                            .withHeader {
-                                hText(item.year)
-                            }
-                            .withFooter {
-                                InfoCard(
-                                    text: L10n.paymentsHistoryInfo,
-                                    type: .info
-                                )
-                                .padding(.horizontal, -16)
+                            if history.flatMap({ $0.valuesPerMonth }).count >= 12 {
+                                hSection {
+                                    InfoCard(text: L10n.paymentsHistoryInfo, type: .info)
+                                }
                             }
                         }
                         .padding(.vertical, 16)
