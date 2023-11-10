@@ -6,7 +6,9 @@ import hCoreUI
 extension PaymentData: TitleView {
     public func getTitleView() -> UIView {
         let titleView = hText(self.getTitle).foregroundColor(self.titleColor)
-        return UIHostingController(rootView: titleView).view
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        return view
     }
 }
 
