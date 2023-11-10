@@ -549,7 +549,6 @@ public class IntentViewModel: ObservableObject {
                         birthdate: coIn.birthDate
                     )
                 }
-                print("list; ", coInsuredList)
                 let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
                 self.octopus.client
                     .perform(

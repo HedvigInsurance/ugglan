@@ -248,8 +248,6 @@ public class EditCoInsuredJourney {
                                 )
                             )
                         }
-
-                        print("id: ", contractId)
                         Task {
                             await store.intentViewModel.getIntent(
                                 contractId: contractId,

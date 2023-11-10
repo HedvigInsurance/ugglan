@@ -30,28 +30,7 @@ struct CoInsuredProcessingScreen: View {
                 if showSuccessScreen {
                     successView
                 } else {
-                    let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                    let _ = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-                        let missingContract = contractStore.state.activeContracts.first { contract in
-                            if contract.upcomingChangedAgreement != nil {
-                                return false
-                            } else {
-                                return contract.currentAgreement?.coInsured
-                                    .first(where: { coInsured in
-                                        coInsured.needsMissingInfo
-                                    }) != nil
-                            }
-                        }
-                        if missingContract != nil {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
-                                )
-                            )
-                        }
-                    }
+                    let _ = missingContractAlert()
                 }
             }
         }
@@ -94,6 +73,7 @@ struct CoInsuredProcessingScreen: View {
             hSection {
                 hButton.LargeButton(type: .ghost) {
                     vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                    missingContractAlert()
                 } content: {
                     hText(L10n.generalDoneButton)
                 }
@@ -127,7 +107,7 @@ struct CoInsuredProcessingScreen: View {
             }
             hSection {
                 hButton.LargeButton(type: .ghost) {
-                    vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                    missingContractAlert()
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -149,6 +129,30 @@ struct CoInsuredProcessingScreen: View {
             Spacer()
         }
     }
+
+    private func missingContractAlert() {
+        vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let missingContract = store.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.currentAgreement?.coInsured
+                        .first(where: { coInsured in
+                            coInsured.needsMissingInfo
+                        }) != nil
+                }
+            }
+            if missingContract != nil {
+                vm.store.send(
+                    .coInsuredNavigationAction(
+                        action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
+                    )
+                )
+            }
+        }
+    }
+
 }
 
 class ProcessingViewModel: ObservableObject {
