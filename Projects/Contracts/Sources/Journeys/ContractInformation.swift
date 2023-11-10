@@ -263,18 +263,21 @@ struct ChangePeopleView: View {
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
+    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
+        return coInsured.fullName == coInsuredCompare.fullName
+            && (coInsured.formattedSSN == coInsuredCompare.formattedSSN
+                || coInsured.birthDate == coInsuredCompare.birthDate)
+    }
+
     func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
         var returnValue: [CoInsuredModel] = []
         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-            upcomingCoInsured.forEach { upcoming in
+            upcomingCoInsured.forEach { upComing in
                 contract.currentAgreement?.coInsured
-                    .forEach { currentCoInsured in
-                        if currentCoInsured.fullName != upcoming.fullName
-                            && (currentCoInsured.formattedSSN != upcoming.formattedSSN
-                                || currentCoInsured.birthDate != upcoming.birthDate)
-                        {
-                            if !returnValue.contains(upcoming) {
-                                returnValue.append(upcoming)
+                    .forEach {
+                        if !isEqualTo(coInsured: $0, coInsuredCompare: upComing) {
+                            if !returnValue.contains(upComing) {
+                                returnValue.append(upComing)
                             }
                         }
                     }
@@ -289,14 +292,11 @@ private class ContractsInformationViewModel: ObservableObject {
             if upcomingCoInsured.first(where: { upcoming in
                 upcoming.hasMissingData
             }) == nil {
-                upcomingCoInsured.forEach { upcoming in
+                upcomingCoInsured.forEach { upComing in
                     contract.currentAgreement?.coInsured
-                        .forEach { currentCoInsured in
-                            if !(currentCoInsured.fullName != upcoming.fullName
-                                && (currentCoInsured.formattedSSN != upcoming.formattedSSN
-                                    || currentCoInsured.birthDate != upcoming.birthDate))
-                            {
-                                returnValue.append(upcoming)
+                        .forEach {
+                            if isEqualTo(coInsured: $0, coInsuredCompare: upComing) {
+                                returnValue.append(upComing)
                             }
                         }
                 }
@@ -313,10 +313,8 @@ private class ContractsInformationViewModel: ObservableObject {
             contract.currentAgreement?.coInsured
                 .forEach { currentCoInsured in
                     if !currentCoInsured.needsMissingInfo
-                        && upcomingCoInsured.first(where: { upComing in
-                            currentCoInsured.fullName == upComing.fullName
-                                && (currentCoInsured.formattedSSN == upComing.formattedSSN
-                                    || currentCoInsured.birthDate == upComing.birthDate)
+                        && upcomingCoInsured.first(where: {
+                            isEqualTo(coInsured: currentCoInsured, coInsuredCompare: $0)
                         }) == nil
                     {
                         returnValue.append(currentCoInsured)
