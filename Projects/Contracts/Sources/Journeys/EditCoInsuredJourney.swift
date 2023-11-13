@@ -145,7 +145,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredMissingAlertView(contractId: contractId),

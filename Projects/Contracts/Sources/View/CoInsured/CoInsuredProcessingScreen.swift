@@ -30,7 +30,10 @@ struct CoInsuredProcessingScreen: View {
                 if showSuccessScreen {
                     successView
                 } else {
-                    let _ = missingContractAlert()
+                    loadingView
+                        .onAppear {
+                            missingContractAlert()
+                        }
                 }
             }
         }
