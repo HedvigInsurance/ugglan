@@ -142,7 +142,7 @@ extension PaymentData.PaymentStack {
 
 extension PaymentData.ContractPaymentDetails {
     init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown) {
-        id = data.gross.amount.description
+        id = UUID().uuidString
         title = data.contract.currentAgreement.productVariant.displayName
         subtitle = data.contract.exposureDisplayName
         amount = .init(fragment: data.gross.fragments.moneyFragment)
@@ -152,7 +152,7 @@ extension PaymentData.ContractPaymentDetails {
 
 extension PaymentData.PeriodInfo {
     init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period) {
-        id = data.fromDate + data.toDate
+        id = UUID().uuidString
         from = data.fromDate
         to = data.toDate
         amount = .init(fragment: data.amount.fragments.moneyFragment)
@@ -162,7 +162,7 @@ extension PaymentData.PeriodInfo {
 
 extension Discount {
     init(with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown) {
-        id = data.code
+        id = UUID().uuidString
         code = data.code
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = data.code
