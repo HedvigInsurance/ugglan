@@ -264,57 +264,23 @@ private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
     func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
-        var returnValue: [CoInsuredModel] = []
-        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-            upcomingCoInsured.forEach { upComing in
-                contract.currentAgreement?.coInsured
-                    .forEach {
-                        if $0 != upComing {  // TODO: CHECK
-                            if !returnValue.contains(upComing) {
-                                returnValue.append(upComing)
-                            }
-                        }
-                    }
-            }
-        }
-        return returnValue
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
 
     func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
-        var returnValue: [CoInsuredModel] = []
-        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-            if upcomingCoInsured.first(where: { upcoming in
-                upcoming.hasMissingData
-            }) == nil {
-                upcomingCoInsured.forEach { upComing in
-                    contract.currentAgreement?.coInsured
-                        .forEach {
-                            if $0 == upComing {
-                                returnValue.append(upComing)
-                            }
-                        }
-                }
-            }
-        } else {
-            returnValue = contract.currentAgreement?.coInsured.filter({ !$0.needsMissingInfo }) ?? []
-        }
-        return returnValue
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = current.intersection(upcoming).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
 
     func coInsuredDeletedData(contract: Contract) -> [CoInsuredModel] {
-        var returnValue: [CoInsuredModel] = []
-        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-            contract.currentAgreement?.coInsured
-                .forEach { currentCoInsured in
-                    if !currentCoInsured.needsMissingInfo
-                        && upcomingCoInsured.first(where: {
-                            currentCoInsured == $0
-                        }) == nil
-                    {
-                        returnValue.append(currentCoInsured)
-                    }
-                }
-        }
-        return returnValue
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
 }
