@@ -47,16 +47,19 @@ public struct ContractState: StateProtocol {
             }
         }
 
-        return uniqueCoInsured
+        let totalCoInsured =
+            uniqueCoInsured
             + uniqueUpcomingCoInsured.filter({ upComing in
                 if uniqueCoInsured.count > 0 {
                     return uniqueCoInsured.first(where: {
-                        upComing.fullName != $0.fullName
-                    }) != nil
+                        return upComing.fullName == $0.fullName
+                    }) == nil
                 } else {
                     return true
                 }
             })
+
+        return totalCoInsured
     }
 
     public func contractForId(_ id: String) -> Contract? {
