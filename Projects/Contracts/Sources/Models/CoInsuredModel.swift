@@ -2,7 +2,6 @@ import Foundation
 import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
-    let id: String
     public let SSN: String?
     public let needsMissingInfo: Bool
     public var firstName: String?
@@ -13,10 +12,13 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         return firstName + " " + lastName
     }
 
+    var id: String {
+        return fullName ?? "" + (formattedSSN ?? "") + (birthDate ?? "")
+    }
+
     public init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {
-        self.id = UUID().uuidString
         self.SSN = data.ssn
         self.birthDate = data.birthdate
         self.firstName = data.firstName
@@ -32,7 +34,6 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         birthDate: String? = nil,
         needsMissingInfo: Bool = true
     ) {
-        self.id = UUID().uuidString
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
@@ -46,6 +47,12 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
 
     public var hasMissingData: Bool {
         return fullName == nil
+    }
+
+    public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
+        return lhs.fullName == rhs.fullName
+            && (lhs.formattedSSN == rhs.formattedSSN
+                || lhs.birthDate == rhs.birthDate)
     }
 }
 
