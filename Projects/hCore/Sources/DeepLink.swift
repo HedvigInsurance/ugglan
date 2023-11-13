@@ -7,6 +7,7 @@ public enum DeepLink: String, Codable {
     case insurances
     case home
     case sasEuroBonus = "eurobonus"
+    case editCoInsured = "co-insured"
 }
 
 extension DeepLink {
