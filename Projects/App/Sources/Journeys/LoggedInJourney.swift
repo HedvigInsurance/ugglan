@@ -63,6 +63,7 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
+            .configureContractNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -247,5 +248,17 @@ extension JourneyPresentation {
                 PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
+    }
+    public var configureContractNavigation: some JourneyPresentation {
+        onAction(
+            ContractStore.self,
+            { action in
+                if case let .coInsuredNavigationAction(navAction) = action {
+                    if case let .openMissingCoInsuredAlert(contractId) = navAction {
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+                    }
+                }
+            }
+        )
     }
 }

@@ -18,12 +18,21 @@ struct CoInusuredInput: View {
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm
-        insuredPeopleVm.previousValue = CoInsuredModel(
-            firstName: vm.firstName,
-            lastName: vm.lastName,
-            SSN: vm.SSN,
-            needsMissingInfo: false
-        )
+        if vm.SSN.count > 10 {
+            insuredPeopleVm.previousValue = CoInsuredModel(
+                firstName: vm.firstName,
+                lastName: vm.lastName,
+                SSN: vm.SSN,
+                needsMissingInfo: false
+            )
+        } else {
+            insuredPeopleVm.previousValue = CoInsuredModel(
+                firstName: vm.firstName,
+                lastName: vm.lastName,
+                birthDate: vm.SSN,
+                needsMissingInfo: false
+            )
+        }
     }
 
     var body: some View {
@@ -436,10 +445,6 @@ class CoInusuredInputViewModel: ObservableObject {
 
     var fullName: String {
         return firstName + " " + lastName
-    }
-    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
-        return coInsured.fullName == coInsuredCompare.fullName
-            && (coInsured.SSN == coInsuredCompare.SSN || coInsured.birthDate == coInsuredCompare.birthDate)
     }
 
     init(

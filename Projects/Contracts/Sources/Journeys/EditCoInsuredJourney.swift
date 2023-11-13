@@ -145,7 +145,7 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredMissingAlertView(contractId: contractId),
@@ -253,28 +253,28 @@ public class EditCoInsuredJourney {
                                 contractId: contractId,
                                 coInsured: store.coInsuredViewModel.completeList(contractId: contractId)
                             )
-                        }
-                        if !store.intentViewModel.showErrorView {
-                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                        } else {
-                            if selectedContract.SSN != nil {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: selectedContract.firstName,
-                                        lastName: selectedContract.lastName,
-                                        birthDate: selectedContract.birthDate,
-                                        needsMissingInfo: false
-                                    )
-                                )
+                            if !store.intentViewModel.showErrorView {
+                                store.send(.coInsuredNavigationAction(action: .dismissEdit))
                             } else {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: selectedContract.firstName,
-                                        lastName: selectedContract.lastName,
-                                        birthDate: selectedContract.birthDate,
-                                        needsMissingInfo: false
+                                if selectedContract.SSN != nil {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: selectedContract.firstName,
+                                            lastName: selectedContract.lastName,
+                                            birthDate: selectedContract.birthDate,
+                                            needsMissingInfo: false
+                                        )
                                     )
-                                )
+                                } else {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: selectedContract.firstName,
+                                            lastName: selectedContract.lastName,
+                                            birthDate: selectedContract.birthDate,
+                                            needsMissingInfo: false
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
