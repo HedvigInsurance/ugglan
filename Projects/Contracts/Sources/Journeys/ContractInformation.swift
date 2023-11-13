@@ -263,19 +263,13 @@ struct ChangePeopleView: View {
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
-    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
-        return coInsured.fullName == coInsuredCompare.fullName
-            && (coInsured.formattedSSN == coInsuredCompare.formattedSSN
-                || coInsured.birthDate == coInsuredCompare.birthDate)
-    }
-
     func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
         var returnValue: [CoInsuredModel] = []
         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
             upcomingCoInsured.forEach { upComing in
                 contract.currentAgreement?.coInsured
                     .forEach {
-                        if !isEqualTo(coInsured: $0, coInsuredCompare: upComing) {
+                        if $0 != upComing {  // TODO: CHECK
                             if !returnValue.contains(upComing) {
                                 returnValue.append(upComing)
                             }
@@ -295,7 +289,7 @@ private class ContractsInformationViewModel: ObservableObject {
                 upcomingCoInsured.forEach { upComing in
                     contract.currentAgreement?.coInsured
                         .forEach {
-                            if isEqualTo(coInsured: $0, coInsuredCompare: upComing) {
+                            if $0 == upComing {
                                 returnValue.append(upComing)
                             }
                         }
@@ -314,7 +308,7 @@ private class ContractsInformationViewModel: ObservableObject {
                 .forEach { currentCoInsured in
                     if !currentCoInsured.needsMissingInfo
                         && upcomingCoInsured.first(where: {
-                            isEqualTo(coInsured: currentCoInsured, coInsuredCompare: $0)
+                            currentCoInsured == $0
                         }) == nil
                     {
                         returnValue.append(currentCoInsured)

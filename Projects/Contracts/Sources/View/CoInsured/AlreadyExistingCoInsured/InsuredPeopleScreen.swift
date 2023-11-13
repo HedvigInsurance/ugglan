@@ -39,13 +39,13 @@ struct InsuredPeopleScreen: View {
                                 ForEach(upcomingCoInsured, id: \.self) { upcomingCoInsured in
                                     if let index = (coInsured ?? [])
                                         .first(where: {
-                                            vm.isEqualTo(coInsured: $0, coInsuredCompare: upcomingCoInsured)
+                                            $0 == upcomingCoInsured
                                         })
                                     {
                                         //not deleted
-                                        if vm.coInsuredDeleted.first { deleted in
-                                            vm.isEqualTo(coInsured: deleted, coInsuredCompare: upcomingCoInsured)
-                                        } == nil {
+                                        if vm.coInsuredDeleted.first(where: { deleted in
+                                            deleted == upcomingCoInsured
+                                        }) == nil {
                                             //remaining
                                             CoInsuredField(
                                                 coInsured: upcomingCoInsured,
@@ -55,7 +55,7 @@ struct InsuredPeopleScreen: View {
                                     } else {
                                         //added
                                         if vm.coInsuredDeleted.first(where: {
-                                            vm.isEqualTo(coInsured: $0, coInsuredCompare: upcomingCoInsured)
+                                            $0 == upcomingCoInsured
                                         }) == nil {
                                             CoInsuredField(
                                                 coInsured: upcomingCoInsured,
@@ -75,7 +75,7 @@ struct InsuredPeopleScreen: View {
                             hSection {
                                 ForEach(coInsured ?? [], id: \.self) { coInsured in
                                     if vm.coInsuredDeleted.first(where: {
-                                        vm.isEqualTo(coInsured: $0, coInsuredCompare: coInsured)
+                                        $0 == coInsured
                                     }) == nil {
                                         CoInsuredField(
                                             coInsured: coInsured,
@@ -258,10 +258,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-    func isEqualTo(coInsured: CoInsuredModel, coInsuredCompare: CoInsuredModel) -> Bool {
-        return coInsured.fullName == coInsuredCompare.fullName
-            && (coInsured.SSN == coInsuredCompare.SSN || coInsured.birthDate == coInsuredCompare.birthDate)
-    }
 
     func completeList(contractId: String) -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
@@ -273,7 +269,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 if coInsuredDeleted.count > 0 {
                     var list: [CoInsuredModel] = []
                     let num = (nbOfCoInsured ?? 0) - coInsuredDeleted.count
-                    for i in 1...num {
+                    for _ in 1...num {
                         list.append(CoInsuredModel())
                     }
                     return list
@@ -284,7 +280,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         }
         return filterList.filter { existing in
             if let index = coInsuredDeleted.first(where: { deleted in
-                isEqualTo(coInsured: deleted, coInsuredCompare: existing)
+                deleted == existing
             }) {
                 return false
             } else {
@@ -307,7 +303,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 
     func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
         if let index = coInsuredAdded.firstIndex(where: { coInsured in
-            isEqualTo(coInsured: coInsured, coInsuredCompare: coInsuredModel)
+            coInsured == coInsuredModel
         }) {
             coInsuredAdded.remove(at: index)
         } else {
@@ -327,7 +323,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         }
 
         if let index = coInsuredDeleted.firstIndex(where: {
-            isEqualTo(coInsured: $0, coInsuredCompare: removedCoInsured)
+            $0 == removedCoInsured
         }) {
             coInsuredDeleted.remove(at: index)
         }
@@ -335,7 +331,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 
     func editCoInsured(_ coInsuredModel: CoInsuredModel) {
         if let index = coInsuredAdded.firstIndex(where: {
-            ($0.fullName == previousValue.fullName && $0.SSN == previousValue.SSN)
+            $0 == previousValue
         }) {
             coInsuredAdded.remove(at: index)
         }
