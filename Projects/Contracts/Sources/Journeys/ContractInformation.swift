@@ -146,16 +146,14 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
-        if contract.upcomingChangedAgreement != nil
-            && contract.upcomingChangedAgreement?.coInsured != contract.currentAgreement?.coInsured
-        {
+        if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
                 HStack {
-                    if contract.upcomingChangedAgreement?.coInsured != contract.currentAgreement?.coInsured {
+                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
-                                contract.upcomingChangedAgreement?.coInsured.count ?? 0,
-                                contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?
+                                upcomingChangedAgreement.coInsured.count,
+                                upcomingChangedAgreement.activeFrom?.localDateToDate?
                                     .displayDateDDMMMYYYYFormat ?? ""
                             ),
                             type: .info
@@ -164,7 +162,7 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
+                                    let certificateURL = upcomingChangedAgreement.certificateUrl
                                     if let url = URL(string: certificateURL) {
                                         store.send(
                                             .contractDetailNavigationAction(
@@ -178,7 +176,7 @@ struct ContractInformationView: View {
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                                contract.upcomingChangedAgreement?.activeFrom ?? ""
+                                upcomingChangedAgreement.activeFrom ?? ""
                             ),
                             type: .info
                         )

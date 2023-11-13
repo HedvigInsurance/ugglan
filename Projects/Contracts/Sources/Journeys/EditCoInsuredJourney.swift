@@ -253,28 +253,28 @@ public class EditCoInsuredJourney {
                                 contractId: contractId,
                                 coInsured: store.coInsuredViewModel.completeList(contractId: contractId)
                             )
-                        }
-                        if !store.intentViewModel.showErrorView {
-                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                        } else {
-                            if selectedContract.SSN != nil {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: selectedContract.firstName,
-                                        lastName: selectedContract.lastName,
-                                        birthDate: selectedContract.birthDate,
-                                        needsMissingInfo: false
-                                    )
-                                )
+                            if !store.intentViewModel.showErrorView {
+                                store.send(.coInsuredNavigationAction(action: .dismissEdit))
                             } else {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: selectedContract.firstName,
-                                        lastName: selectedContract.lastName,
-                                        birthDate: selectedContract.birthDate,
-                                        needsMissingInfo: false
+                                if selectedContract.SSN != nil {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: selectedContract.firstName,
+                                            lastName: selectedContract.lastName,
+                                            birthDate: selectedContract.birthDate,
+                                            needsMissingInfo: false
+                                        )
                                     )
-                                )
+                                } else {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: selectedContract.firstName,
+                                            lastName: selectedContract.lastName,
+                                            birthDate: selectedContract.birthDate,
+                                            needsMissingInfo: false
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
