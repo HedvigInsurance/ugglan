@@ -60,7 +60,9 @@ public struct Contract: Codable, Hashable, Equatable {
         exposureDisplayName: String,
         masterInceptionDate: String,
         terminationDate: String?,
+        selfChangeBlockers: String? = nil,
         supportsAddressChange: Bool,
+        supportsCoInsured: Bool,
         upcomingChangedAgreement: Agreement,
         upcomingRenewal: ContractRenewal,
         firstName: String,
@@ -73,6 +75,8 @@ public struct Contract: Codable, Hashable, Equatable {
         self.exposureDisplayName = exposureDisplayName
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
+        self.selfChangeBlockers = selfChangeBlockers
+        self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
@@ -87,7 +91,9 @@ public struct Contract: Codable, Hashable, Equatable {
     public let exposureDisplayName: String
     public let masterInceptionDate: String?
     public let terminationDate: String?
+    public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
+    public let supportsCoInsured: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
@@ -157,8 +163,10 @@ public struct Contract: Codable, Hashable, Equatable {
         masterInceptionDate = nil
         terminationDate = nil
         supportsAddressChange = false
+        supportsCoInsured = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
+        selfChangeBlockers = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
         self.firstName = firstName
         self.lastName = lastName
@@ -177,7 +185,9 @@ public struct Contract: Codable, Hashable, Equatable {
         exposureDisplayName = contract.exposureDisplayName
         masterInceptionDate = contract.masterInceptionDate
         terminationDate = contract.terminationDate
+        selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
+        supportsCoInsured = contract.supportsCoInsured
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
@@ -360,96 +370,6 @@ extension PillowType {
         case travel
         case villa
         case unknown
-    }
-}
-
-extension Contract {
-    /// Does this contract have a co insured concept, i.e covers multiple people, and thus can change that
-    public var canChangeCoInsured: Bool {
-        switch typeOfContract {
-        case .seHouse:
-            return true
-        case .seApartmentBrf:
-            return true
-        case .seApartmentRent:
-            return true
-        case .seApartmentStudentBrf:
-            return true
-        case .seApartmentStudentRent:
-            return true
-        case .seAccident:
-            return true
-        case .seAccidentStudent:
-            return true
-        case .seCarTraffic:
-            return false
-        case .seCarHalf:
-            return false
-        case .seCarFull:
-            return false
-        case .seGroupApartmentRent:
-            return false
-        case .seQasaShortTermRental:
-            return false
-        case .seQasaLongTermRental:
-            return false
-        case .seDogBasic:
-            return false
-        case .seDogStandard:
-            return false
-        case .seDogPremium:
-            return false
-        case .seCatBasic:
-            return false
-        case .seCatStandard:
-            return false
-        case .seCatPremium:
-            return false
-        case .noHouse:
-            return true
-        case .noHomeContentOwn:
-            return true
-        case .noHomeContentRent:
-            return true
-        case .noHomeContentYouthOwn:
-            return true
-        case .noHomeContentYouthRent:
-            return true
-        case .noHomeContentStudentOwn:
-            return true
-        case .noHomeContentStudentRent:
-            return true
-        case .noTravel:
-            return true
-        case .noTravelYouth:
-            return true
-        case .noTravelStudent:
-            return true
-        case .noAccident:
-            return true
-        case .dkHomeContentOwn:
-            return true
-        case .dkHomeContentRent:
-            return true
-        case .dkHomeContentStudentOwn:
-            return true
-        case .dkHomeContentStudentRent:
-            return true
-        case .dkHouse:
-            return true
-        case .dkAccident:
-            return true
-        case .dkAccidentStudent:
-            return true
-        case .dkTravel:
-            return true
-        case .dkTravelStudent:
-            return true
-        case .unknown:
-            return false
-        case .seGroupApartmentBrf:
-            return true
-        }
     }
 }
 

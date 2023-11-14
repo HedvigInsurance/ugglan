@@ -73,7 +73,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
-        if contract.canChangeCoInsured {
+        if contract.supportsCoInsured {
             editTypes.append(.coInsured)
         }
         return editTypes

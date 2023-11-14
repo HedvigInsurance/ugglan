@@ -181,6 +181,7 @@ struct ContractRow_Previews: PreviewProvider {
                 masterInceptionDate: "",
                 terminationDate: "",
                 supportsAddressChange: true,
+                supportsCoInsured: true,
                 upcomingChangedAgreement:
                     Agreement(
                         premium: MonetaryAmount(amount: 0, currency: ""),
