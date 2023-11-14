@@ -205,6 +205,7 @@ struct ButtonFilledBackground: View {
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+    @Environment(\.isEnabled) var enabled
 
     var content: () -> Content
     var color: any hColor
@@ -218,7 +219,7 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if isLoading {
+        if isLoading && enabled {
             if hButtonConfigurationType.useDarkVersion {
                 DotsActivityIndicator(.standard)
                     .useDarkColor
