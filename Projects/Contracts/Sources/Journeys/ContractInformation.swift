@@ -142,6 +142,11 @@ struct ContractInformationView: View {
             subTitle: L10n.contractNoInformation
         )
         .padding(.horizontal, 16)
+        .onTapGesture {
+            store.send(
+                .openEditCoInsured(contractId: id, fromInfoCard: true)
+            )
+        }
     }
 
     @ViewBuilder
@@ -269,6 +274,9 @@ private class ContractsInformationViewModel: ObservableObject {
     }
 
     func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
+        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
+            return contract.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+        }
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
@@ -276,6 +284,7 @@ private class ContractsInformationViewModel: ObservableObject {
     }
 
     func coInsuredDeletedData(contract: Contract) -> [CoInsuredModel] {
+        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else { return [] }
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
