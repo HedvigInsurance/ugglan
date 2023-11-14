@@ -142,6 +142,11 @@ struct ContractInformationView: View {
             subTitle: L10n.contractNoInformation
         )
         .padding(.horizontal, 16)
+        .onTapGesture {
+            store.send(
+                .openEditCoInsured(contractId: id, fromInfoCard: true)
+            )
+        }
     }
 
     @ViewBuilder
