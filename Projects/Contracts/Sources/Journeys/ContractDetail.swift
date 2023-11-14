@@ -57,7 +57,7 @@ class TabControllerContext: ObservableObject {
     var removal: AnyTransition = .move(edge: .trailing)
 }
 
-struct ContractDetail: View {
+public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
     @EnvironmentObject var context: TabControllerContext
 
@@ -84,7 +84,7 @@ struct ContractDetail: View {
         }
     }
 
-    init(
+    public init(
         id: String,
         title: String
     ) {
@@ -114,7 +114,7 @@ struct ContractDetail: View {
             )
     }
 
-    var body: some View {
+    public var body: some View {
         hForm {
             hSection {
                 ContractRow(

@@ -19,7 +19,7 @@ public struct ProductVariant: Codable, Hashable {
     let perils: [Perils]
     let insurableLimits: [InsurableLimits]
     let documents: [InsuranceTerm]
-    let displayName: String
+    public let displayName: String
 
     init(
         termsVersion: String,

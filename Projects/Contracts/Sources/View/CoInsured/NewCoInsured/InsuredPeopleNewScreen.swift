@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct InsuredPeopleNewScreen: View {
+struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
@@ -19,7 +19,7 @@ public struct InsuredPeopleNewScreen: View {
         vm.resetCoInsured
     }
 
-    public var body: some View {
+    var body: some View {
         hForm {
             VStack(spacing: 0) {
                 PresentableStoreLens(
@@ -162,17 +162,5 @@ public struct InsuredPeopleNewScreen: View {
 struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
         InsuredPeopleScreen(contractId: "")
-    }
-}
-
-extension InsuredPeopleNewScreen {
-    public static func journey(contractId: String?) -> some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: InsuredPeopleNewScreen(contractId: contractId ?? "")
-        ) { action in
-            EditCoInsuredJourney.getScreen(for: action)
-        }
-        .configureTitle(L10n.changeAddressCoInsuredLabel)
     }
 }

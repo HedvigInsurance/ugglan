@@ -6,7 +6,7 @@ import hCoreUI
 
 public class EditCoInsuredJourney {
     @JourneyBuilder
-    public static func getScreen(for action: ContractAction) -> some JourneyPresentation {
+    static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
             if case let .openInsuredPeopleScreen(contractId) = navigationAction {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
