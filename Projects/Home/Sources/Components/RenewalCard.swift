@@ -58,7 +58,6 @@ public struct RenewalCardView: View {
                     state.activeContracts
                 }
             ) { contracts in
-                /* TODO: MOVE */
                 if let contract = contracts.first(where: {
                     !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured)
                 }) {

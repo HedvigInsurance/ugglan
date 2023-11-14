@@ -226,28 +226,18 @@ public class EditCoInsuredJourney {
                         return []
                     }
                 },
-                onSelected: { selectedContracts in
-                    if let selectedContract = selectedContracts.first {
+                onSelected: { selectedCoinsured in
+                    if let selectedCoinsured = selectedCoinsured.first {
                         let store: ContractStore = globalPresentableStoreContainer.get()
-                        if selectedContract.SSN != nil {
-                            store.coInsuredViewModel.addCoInsured(
-                                .init(
-                                    firstName: selectedContract.firstName,
-                                    lastName: selectedContract.lastName,
-                                    SSN: selectedContract.SSN,
-                                    needsMissingInfo: false
-                                )
+                        store.coInsuredViewModel.addCoInsured(
+                            .init(
+                                firstName: selectedCoinsured.firstName,
+                                lastName: selectedCoinsured.lastName,
+                                SSN: selectedCoinsured.SSN,
+                                birthDate: selectedCoinsured.birthDate,
+                                needsMissingInfo: false
                             )
-                        } else {
-                            store.coInsuredViewModel.addCoInsured(
-                                .init(
-                                    firstName: selectedContract.firstName,
-                                    lastName: selectedContract.lastName,
-                                    birthDate: selectedContract.birthDate,
-                                    needsMissingInfo: false
-                                )
-                            )
-                        }
+                        )
                         Task {
                             await store.intentViewModel.getIntent(
                                 contractId: contractId,
@@ -256,25 +246,15 @@ public class EditCoInsuredJourney {
                             if !store.intentViewModel.showErrorView {
                                 store.send(.coInsuredNavigationAction(action: .dismissEdit))
                             } else {
-                                if selectedContract.SSN != nil {
-                                    store.coInsuredViewModel.removeCoInsured(
-                                        .init(
-                                            firstName: selectedContract.firstName,
-                                            lastName: selectedContract.lastName,
-                                            birthDate: selectedContract.birthDate,
-                                            needsMissingInfo: false
-                                        )
+                                store.coInsuredViewModel.removeCoInsured(
+                                    .init(
+                                        firstName: selectedCoinsured.firstName,
+                                        lastName: selectedCoinsured.lastName,
+                                        SSN: selectedCoinsured.SSN,
+                                        birthDate: selectedCoinsured.birthDate,
+                                        needsMissingInfo: false
                                     )
-                                } else {
-                                    store.coInsuredViewModel.removeCoInsured(
-                                        .init(
-                                            firstName: selectedContract.firstName,
-                                            lastName: selectedContract.lastName,
-                                            birthDate: selectedContract.birthDate,
-                                            needsMissingInfo: false
-                                        )
-                                    )
-                                }
+                                )
                             }
                         }
                     }
