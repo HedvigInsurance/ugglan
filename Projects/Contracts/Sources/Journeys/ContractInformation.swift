@@ -125,7 +125,7 @@ struct ContractInformationView: View {
             }
             .withoutHorizontalPadding
             hSection {
-                if nbOfMissingCoInsured != 0 {
+                if nbOfMissingCoInsured != 0 && contract.supportsCoInsured && contract.selfChangeBlockers == nil {
                     CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
                         .padding(.bottom, 16)
                 }

@@ -123,7 +123,7 @@ extension Contracts {
                 resultJourney(.movingFlow)
             } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
-                if let canChangeCoInsured = store.state.contractForId(contractId)?.canChangeCoInsured,
+                if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
                     canChangeCoInsured
                 {
                     if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
