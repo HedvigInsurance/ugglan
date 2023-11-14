@@ -86,9 +86,8 @@ public struct RenewalCardView: View {
                             }
                         )
                     ])
-                } else {
-                    if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first
-                    {
+                } else if let upcomingRenewalContract = upcomingRenewalContracts.first {
+                    if upcomingRenewalContracts.count == 1 {
                         InfoCard(
                             text: L10n.dashboardRenewalPrompterBody(
                                 dateComponents(
