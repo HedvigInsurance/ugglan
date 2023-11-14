@@ -446,7 +446,7 @@ class CoInusuredInputViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-
+    var ssnCancel: AnyCancellable? = nil
     init(
         coInsuredModel: CoInsuredModel,
         actionType: CoInsuredAction,
@@ -458,6 +458,26 @@ class CoInusuredInputViewModel: ObservableObject {
         self.SSN = coInsuredModel.SSN ?? coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
+
+        ssnCancel = $noSSN.combineLatest($nameFetchedFromSSN)
+            .delay(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .receive(on: RunLoop.main)
+            .sink { value in
+                if #available(iOS 15.0, *) {
+                    if #available(iOS 16.0, *) {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .animateChanges {
+                                UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                    .invalidateDetents()
+                            }
+                    } else {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .animateChanges {
+
+                            }
+                    }
+                }
+            }
     }
 
     @MainActor
