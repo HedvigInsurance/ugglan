@@ -117,7 +117,7 @@ struct ContractInformationView: View {
                 .padding(.leading, 16)
 
                 ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                    addMissingCoInsuredView
+                    addMissingCoInsuredView(supportsCoInsured: contract.supportsCoInsured)
                     if index < nbOfMissingCoInsured - 1 {
                         hRowDivider()
                     }
@@ -134,7 +134,7 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private var addMissingCoInsuredView: some View {
+    private func addMissingCoInsuredView(supportsCoInsured: Bool) -> some View {
         CoInsuredField(
             accessoryView: Image(uiImage: hCoreUIAssets.warningSmall.image)
                 .foregroundColor(hSignalColor.amberElement),
@@ -143,9 +143,11 @@ struct ContractInformationView: View {
         )
         .padding(.horizontal, 16)
         .onTapGesture {
-            store.send(
-                .openEditCoInsured(contractId: id, fromInfoCard: true)
-            )
+            if supportsCoInsured {
+                store.send(
+                    .openEditCoInsured(contractId: id, fromInfoCard: true)
+                )
+            }
         }
     }
 
