@@ -584,20 +584,22 @@ public class IntentViewModel: ObservableObject {
                     )
                     .onValue { value in
                         continuation.resume(with: .success(value.midtermChangeIntentCreate))
-                        if let graphQLError = value.midtermChangeIntentCreate.userError {
-                            self.errorMessage = graphQLError.message
-                            self.showErrorView = true
-                        } else if let intent = value.midtermChangeIntentCreate.intent {
-                            self.activationDate = intent.activationDate
-                            self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
-                            self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
-                            self.id = intent.id
-                            self.state = intent.state.rawValue
-                        }
                     }
                     .onError { graphQLError in
                         continuation.resume(throwing: graphQLError)
                     }
+            }
+            withAnimation {
+                if let graphQLError = data.userError {
+                    self.errorMessage = graphQLError.message
+                    self.showErrorView = true
+                } else if let intent = data.intent {
+                    self.activationDate = intent.activationDate
+                    self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
+                    self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
+                    self.id = intent.id
+                    self.state = intent.state.rawValue
+                }
             }
         } catch let exception {
             withAnimation {

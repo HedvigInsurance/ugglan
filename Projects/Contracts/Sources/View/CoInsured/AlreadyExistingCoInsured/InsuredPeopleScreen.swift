@@ -264,15 +264,14 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         if !upcomingCoInsured.isEmpty {
             filterList = upcomingCoInsured
         } else {
-            let nbOfCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured.count
-            if existingCoInsured.count == 0 && (nbOfCoInsured ?? 0) > 0 {
+            let nbOfCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured.count ?? 0
+            if existingCoInsured.count == 0 && nbOfCoInsured > 0 {
                 if coInsuredDeleted.count > 0 {
-                    var list: [CoInsuredModel] = []
-                    let num = (nbOfCoInsured ?? 0) - coInsuredDeleted.count
+                    let num = nbOfCoInsured - coInsuredDeleted.count
                     for _ in 1...num {
-                        list.append(CoInsuredModel())
+                        filterList.append(CoInsuredModel())
                     }
-                    return list
+                    return filterList
                 }
             } else {
                 filterList = existingCoInsured
