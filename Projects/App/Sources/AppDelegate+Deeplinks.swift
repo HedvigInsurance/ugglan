@@ -52,24 +52,30 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    self?.deepLinkDisposeBag += contractStore.actionSignal.onValue { action in
-                        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if let contractId {
-                                ugglanStore.send(.makeTabActive(deeplink: .insurances))
-                                contractStore.send(
-                                    .openDetail(
-                                        contractId: contractId,
-                                        title: contractStore.state.contractForId(contractId)?.currentAgreement?
-                                            .productVariant.displayName ?? ""
+                    self?.deepLinkDisposeBag += contractStore.actionSignal
+                        .filter(predicate: { action in
+                            if case .setActiveContracts = action {
+                                return true
+                            }
+                            return false
+                        })
+                        .onValue { _ in
+                            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                if let contractId, let contract = contractStore.state.contractForId(contractId) {
+                                    ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                                    contractStore.send(
+                                        .openDetail(
+                                            contractId: contractId,
+                                            title: contract.currentAgreement?.productVariant.displayName ?? ""
+                                        )
                                     )
-                                )
-                            } else {
-                                ugglanStore.send(.makeTabActive(deeplink: .home))
+                                } else {
+                                    ugglanStore.send(.makeTabActive(deeplink: .home))
+                                }
                             }
                             self?.deepLinkDisposeBag.dispose()
                         }
-                    }
                     contractStore.send(.fetchContracts)
                 }
         } else {
@@ -85,14 +91,15 @@ extension AppDelegate {
     private func getContractId(from url: URL) -> String? {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
-        let items = queryItems as [NSURLQueryItem]
-        if url.scheme == "https",
-            let queryItem = items.first,
-            queryItem.name == "contractId",
-            let contractId = queryItem.value
-        {
-            return String(contractId)
-        }
-        return nil
+        return queryItems.first(where: { $0.name == "contractId" })?.value
+        //        let items = queryItems as [NSURLQueryItem]
+        //        if url.scheme == "https",
+        //            let queryItem = items.first,
+        //            queryItem.name == "contractId",
+        //            let contractId = queryItem.value
+        //        {
+        //            return String(contractId)
+        //        }
+        //        return nil
     }
 }
