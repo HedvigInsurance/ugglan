@@ -88,7 +88,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             ]
             .emitEachThenEnd
         case let .performCoInsuredChanges(commitId):
-            self.setLoading(for: .postCoInsured)
             return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
                 let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
@@ -133,6 +132,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
+        case .performCoInsuredChanges:
+            setLoading(for: .postCoInsured)
         default:
             break
         }
