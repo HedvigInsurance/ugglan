@@ -67,6 +67,13 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         }
     }
 
+    var buttonTitle: String {
+        switch self {
+        case .changeAddress: return L10n.generalContinueButton
+        case .coInsured: return L10n.openChat
+        }
+    }
+
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
