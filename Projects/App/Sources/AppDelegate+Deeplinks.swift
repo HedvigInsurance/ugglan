@@ -92,14 +92,5 @@ extension AppDelegate {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "contractId" })?.value
-        //        let items = queryItems as [NSURLQueryItem]
-        //        if url.scheme == "https",
-        //            let queryItem = items.first,
-        //            queryItem.name == "contractId",
-        //            let contractId = queryItem.value
-        //        {
-        //            return String(contractId)
-        //        }
-        //        return nil
     }
 }
