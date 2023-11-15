@@ -25,6 +25,17 @@ query PaymentData {
       }
     }
     upcomingCharge {
+      contractsChargeBreakdown {
+        contract {
+          id
+          currentAgreement {
+            productVariant {
+              typeOfContract
+              displayName
+            }
+          }
+        }
+      }
       gross {
         ...MoneyFragment
       }
@@ -35,23 +46,6 @@ query PaymentData {
         ...MoneyFragment
       }
       date
-      contractsChargeBreakdown {
-        contract {
-        id
-          exposureDisplayName
-          currentAgreement {
-            productVariant {
-              typeOfContract
-            }
-            premium {
-                ...MoneyFragment
-            }
-          }
-        }
-        gross {
-            ...MoneyFragment
-        }
-      }
     }
   }
 }

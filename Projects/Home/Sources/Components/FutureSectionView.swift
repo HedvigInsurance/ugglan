@@ -62,14 +62,13 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                                 termsVersion: "i",
                                 documents: [],
                                 displayName: "dis name",
-                                insurableLimits: [],
-                                highlights: [],
-                                faq: []
+                                insurableLimits: []
                             )
                         ),
+                        exposureDisplayName: "DISPLAY NAME",
                         id: "id",
                         masterInceptionDate: "2023-11-22",
-                        exposureDisplayName: "DISPLAY NAME"
+                        supportsMoving: true
                     )
 
                     store.send(

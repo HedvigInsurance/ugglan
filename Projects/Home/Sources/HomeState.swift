@@ -13,7 +13,7 @@ public struct ImportantMessage: Codable, Equatable {
 }
 
 public struct UpcomingRenewal: Codable, Equatable {
-    let renewalDate: String?
+    let renewalDate: String
     let draftCertificateUrl: String?
 
     public init?(
@@ -91,6 +91,7 @@ public enum HomeAction: ActionProtocol {
     case openTravelInsurance
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+    case openEmergency
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
@@ -330,5 +331,4 @@ extension CommonClaim {
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }()
-
 }

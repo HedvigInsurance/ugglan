@@ -9,23 +9,23 @@ import hAnalytics
 import hCore
 import hCoreUI
 
-private let fiveMinutes: TimeInterval = 60 * 5
+private let twoMinutes: TimeInterval = 60 * 1
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat { 20 }
 
-    var smallerMarginTop: CGFloat { 2 }
+    var smallerMarginTop: CGFloat { 4 }
 
     var shouldShowTimeStamp: Bool {
-        guard let previous = previous else { return timeStamp < Date().timeIntervalSince1970 - fiveMinutes }
-        return previous.timeStamp < timeStamp - fiveMinutes
+        guard let previous = previous else { return true }
+        return previous.timeStamp < timeStamp - twoMinutes
     }
 
     /// identifies if message belongs logically to the previous message
     var isRelatedToPreviousMessage: Bool {
         guard let previous = previous else { return false }
 
-        if previous.timeStamp < timeStamp - fiveMinutes { return false }
+        if previous.timeStamp < timeStamp - twoMinutes { return false }
 
         return previous.fromMyself == fromMyself
     }
@@ -38,7 +38,7 @@ extension Message: Reusable {
             return false
         }
 
-        if next.timeStamp - fiveMinutes > timeStamp { return false }
+        if next.timeStamp - twoMinutes > timeStamp { return false }
 
         return next.fromMyself == fromMyself
     }
@@ -73,6 +73,28 @@ extension Message: Reusable {
 
             return constantHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
+        if case let .crossSell(url) = type {
+            let data = WebMetaDataProvider.shared.data(for: url!)
+            let title = data?.title ?? ""
+            let attributedString = NSAttributedString(
+                styledText: StyledText(text: title, style: UIColor.brandStyle(.chatMessage))
+            )
+            let size = attributedString.boundingRect(
+                with: CGSize(width: 267.77, height: CGFloat(Int.max)),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+            let imageHeight: CGFloat = {
+                let imageToShow = data?.image ?? hCoreUIAssets.hedvigBigLogo.image
+                let ratio = imageToShow.size.width / imageToShow.size.height
+                return (267.77) / ratio
+            }()
+            if isRelatedToPreviousMessage {
+                return 84 + imageHeight + size.height + smallerMarginTop + extraHeightForTimeStampLabel
+            }
+
+            return 84 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
+        }
 
         let attributedString = NSAttributedString(
             styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
@@ -93,10 +115,10 @@ extension Message: Reusable {
         }()
 
         if isRelatedToPreviousMessage {
-            return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
+            return size.height + extraPadding + extraHeightForTimeStampLabel + smallerMarginTop
         }
 
-        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel + largerMarginTop
+        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
     }
 
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
@@ -210,6 +232,11 @@ extension Message: Reusable {
                     func applySpacing() {
                         if message.type.isVideoOrImageType {
                             contentContainer.layoutMargins = UIEdgeInsets.zero
+                        } else if message.type.isCrossSell {
+                            contentContainer.layoutMargins = UIEdgeInsets(
+                                horizontalInset: 16,
+                                verticalInset: 0
+                            )
                         } else {
                             contentContainer.layoutMargins = UIEdgeInsets(
                                 horizontalInset: 16,
@@ -266,7 +293,7 @@ extension Message: Reusable {
                     let messageTextColor = UIColor.brand(.chatMessage)
 
                     switch message.type {
-                    case .image, .video:
+                    case .image, .video, .gif:
                         bubble.backgroundColor = .clear
                     default:
                         bubble.backgroundColor = UIColor.brand(.messageBackground(message.fromMyself))
@@ -275,7 +302,7 @@ extension Message: Reusable {
                     switch message.type {
                     case let .image(url):
                         let imageViewContainer = UIView()
-
+                        imageViewContainer.isUserInteractionEnabled = false
                         let imageView = UIImageView()
                         imageView.contentMode = .scaleAspectFill
                         imageView.layer.masksToBounds = true
@@ -324,8 +351,16 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
+
+                        let videoTapGestureRecognizer = UITapGestureRecognizer()
+                        bag += contentContainer.install(videoTapGestureRecognizer)
+
+                        bag += videoTapGestureRecognizer.signal(forState: .recognized)
+                            .onValue { _ in
+                                guard let url = url, let vc = imageView.viewController else { return }
+                                bag += vc.present(DocumentPreview(url: url).journey)
+                            }
                     case let .gif(url):
-                        bubble.backgroundColor = .clear
                         let imageViewContainer = UIView()
 
                         let imageView = UIImageView()
@@ -369,6 +404,118 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
+                    case let .crossSell(url):
+                        let crossSaleMainContainer = UIView()
+                        crossSaleMainContainer.backgroundColor = .clear
+                        let crossSaleContainer = UIView()
+                        crossSaleContainer.backgroundColor = .clear
+                        let loadingIndicator = UIActivityIndicatorView(style: .medium)
+                        loadingIndicator.color = UIColor.brand(.chatMessage)
+                        loadingIndicator.hidesWhenStopped = true
+                        crossSaleMainContainer.addSubview(crossSaleContainer)
+                        crossSaleContainer.snp.makeConstraints { make in
+                            make.leading.trailing.top.bottom.equalToSuperview()
+                        }
+                        crossSaleMainContainer.addSubview(loadingIndicator)
+                        loadingIndicator.snp.makeConstraints { make in
+                            make.centerX.centerY.equalToSuperview()
+                        }
+                        crossSaleContainer.isUserInteractionEnabled = true
+                        let imageView = UIImageView()
+                        crossSaleContainer.addSubview(imageView)
+                        imageView.snp.makeConstraints { make in
+                            make.leading.equalToSuperview()
+                            make.trailing.equalToSuperview()
+                            make.top.equalToSuperview().offset(message.shouldShowTimeStamp ? 12 : 12)
+                        }
+
+                        imageView.layer.cornerRadius = 20
+                        imageView.clipsToBounds = true
+                        imageView.contentMode = .scaleAspectFit
+
+                        let textStyle = UIColor.brandStyle(.chatMessage)
+                            .colored(messageTextColor)
+
+                        let text = L10n.chatFileDownload
+
+                        let styledText = StyledText(text: text, style: textStyle)
+
+                        let titleLabel = UILabel(styledText: styledText)
+                        titleLabel.font = Fonts.fontFor(style: .standard)
+                        titleLabel.text = ""
+                        titleLabel.numberOfLines = 2
+                        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+                        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
+                        crossSaleContainer.addSubview(titleLabel)
+                        titleLabel.snp.makeConstraints { make in
+                            make.top.equalTo(imageView.snp.bottom).offset(10)
+                            make.leading.equalToSuperview()
+                            make.trailing.equalToSuperview()
+                        }
+
+                        //button
+                        let button = UIButton(type: .custom)
+                        button.setTitle(L10n.crossSellGetPrice)
+                        button.backgroundColor = UIColor(dynamic: { trait in
+                            hButtonColor.primaryAltDefault
+                                .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
+                        })
+                        button.tintColor = UIColor.brand(.primaryText())
+                        button.setTitleColor(UIColor.black, for: .normal)
+                        button.titleLabel?.textColor = UIColor.black
+                        button.titleLabel?.font = Fonts.fontFor(style: .standard)
+
+                        button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
+                        button.layer.cornerRadius = 12
+                        button.isUserInteractionEnabled = false
+                        crossSaleContainer.addSubview(button)
+                        button.snp.makeConstraints { make in
+                            make.leading.equalToSuperview()
+                            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+                            make.width.equalToSuperview().dividedBy(2)
+                        }
+                        contentContainer.addArrangedSubview(crossSaleMainContainer)
+                        crossSaleContainer.snp.makeConstraints { make in
+                            make.width.equalToSuperview()
+                        }
+
+                        crossSaleContainer.alpha = 0
+
+                        if let data = WebMetaDataProvider.shared.data(for: url!) {
+                            let imageToShow = data.image ?? hCoreUIAssets.hedvigBigLogo.image
+                            crossSaleContainer.alpha = 1
+                            titleLabel.text = data.title
+                            imageView.image = imageToShow
+                            let ratio = imageToShow.size.width / imageToShow.size.height
+                            imageView.snp.makeConstraints { make in
+                                make.width.equalTo(imageView.snp.height).multipliedBy(ratio)
+                            }
+                        } else {
+                            loadingIndicator.startAnimating()
+                            WebMetaDataProvider.shared.data(for: url!) { data in
+                                if let data {
+                                    let imageToShow = data.image ?? hCoreUIAssets.hedvigBigLogo.image
+                                    UIView.animate(withDuration: 0.4) {
+                                        crossSaleContainer.alpha = 1
+                                        titleLabel.text = data.title
+                                        imageView.image = imageToShow
+                                    }
+                                    let ratio = imageToShow.size.width / imageToShow.size.height
+                                    imageView.snp.makeConstraints { make in
+                                        make.width.equalTo(imageView.snp.height).multipliedBy(ratio)
+                                    }
+                                    let superview = containerView.superview?.superview?.superview
+                                    if let superviewCell = superview as? UITableViewCell,
+                                        let table = superviewCell.superview as? UITableView
+                                    {
+                                        table.beginUpdates()
+                                        table.endUpdates()
+                                    }
+                                    loadingIndicator.stopAnimating()
+                                }
+                            }
+                        }
                     case let .file(url):
                         let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
@@ -487,13 +634,19 @@ extension Message: Reusable {
                                 if let url = tappedLink?.url,
                                     ["http", "https"].contains(url.scheme)
                                 {
-                                    label.viewController?
-                                        .present(
-                                            SFSafariViewController(
-                                                url: url
-                                            ),
-                                            animated: true
-                                        )
+                                    if url.absoluteString.isDeepLink {
+                                        if let vc = UIApplication.shared.getTopViewController() {
+                                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                                        }
+                                    } else {
+                                        label.viewController?
+                                            .present(
+                                                SFSafariViewController(
+                                                    url: url
+                                                ),
+                                                animated: true
+                                            )
+                                    }
                                 }
                             }
                     }
