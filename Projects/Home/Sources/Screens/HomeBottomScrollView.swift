@@ -16,7 +16,6 @@ struct HomeBottomScrollView: View {
     }
 
     var body: some View {
-        //        if !vm.items.isEmpty {
         InfoCardScrollView(
             spacing: 16,
             items: vm.items.sorted(by: { $0.id < $1.id }),
@@ -44,7 +43,6 @@ struct HomeBottomScrollView: View {
                 }
             })
         )
-        //        }
     }
 }
 
