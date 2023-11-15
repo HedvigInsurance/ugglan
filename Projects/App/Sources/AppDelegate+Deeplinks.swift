@@ -62,14 +62,18 @@ extension AppDelegate {
                         .onValue { _ in
                             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                if let contractId, let contract = contractStore.state.contractForId(contractId) {
-                                    ugglanStore.send(.makeTabActive(deeplink: .insurances))
-                                    contractStore.send(
-                                        .openDetail(
-                                            contractId: contractId,
-                                            title: contract.currentAgreement?.productVariant.displayName ?? ""
+                                ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                                if let contractId {
+                                    if let contract = contractStore.state.contractForId(contractId) {
+                                        contractStore.send(
+                                            .openDetail(
+                                                contractId: contractId,
+                                                title: contract.currentAgreement?.productVariant.displayName ?? ""
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        contractStore.send(.openContractDetailErrorScreen)
+                                    }
                                 } else {
                                     ugglanStore.send(.makeTabActive(deeplink: .home))
                                 }
