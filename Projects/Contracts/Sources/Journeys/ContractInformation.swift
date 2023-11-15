@@ -117,7 +117,7 @@ struct ContractInformationView: View {
                 .padding(.leading, 16)
 
                 ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                    addMissingCoInsuredView(supportsCoInsured: contract.supportsCoInsured)
+                    addMissingCoInsuredView(contract: contract)
                     if index < nbOfMissingCoInsured - 1 {
                         hRowDivider()
                     }
@@ -125,7 +125,7 @@ struct ContractInformationView: View {
             }
             .withoutHorizontalPadding
             hSection {
-                if nbOfMissingCoInsured != 0 && contract.supportsCoInsured && contract.selfChangeBlockers == nil {
+                if nbOfMissingCoInsured != 0 && contract.supportsCoInsured && contract.terminationDate == nil {
                     CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
                         .padding(.bottom, 16)
                 }
@@ -134,7 +134,7 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func addMissingCoInsuredView(supportsCoInsured: Bool) -> some View {
+    private func addMissingCoInsuredView(contract: Contract) -> some View {
         CoInsuredField(
             accessoryView: Image(uiImage: hCoreUIAssets.warningSmall.image)
                 .foregroundColor(hSignalColor.amberElement),
@@ -143,7 +143,7 @@ struct ContractInformationView: View {
         )
         .padding(.horizontal, 16)
         .onTapGesture {
-            if supportsCoInsured {
+            if contract.supportsCoInsured && contract.terminationDate == nil {
                 store.send(
                     .openEditCoInsured(contractId: id, fromInfoCard: true)
                 )

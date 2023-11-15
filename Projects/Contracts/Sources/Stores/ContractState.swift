@@ -17,11 +17,11 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        var upcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+        let upcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
             con.upcomingChangedAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
 
-        var coInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+        let coInsured: [CoInsuredModel] = activeContracts.flatMap { con in
             con.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
 
