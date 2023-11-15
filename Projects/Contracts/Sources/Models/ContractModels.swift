@@ -112,7 +112,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var showEditInfo: Bool {
-        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
+        return supportsCoInsured && self.terminationDate == nil
     }
 
     public var canTerminate: Bool {

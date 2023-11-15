@@ -138,7 +138,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                         } else {
                             return contract.currentAgreement?.coInsured
                                 .filter({
-                                    $0.hasMissingData
+                                    $0.hasMissingData && contract.terminationDate == nil
                                 })
                                 .isEmpty == false
                         }
@@ -159,7 +159,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                 } else {
                     return contract.currentAgreement?.coInsured
                         .filter({
-                            $0.hasMissingData
+                            $0.hasMissingData && contract.terminationDate == nil
                         })
                         .isEmpty == false
                 }

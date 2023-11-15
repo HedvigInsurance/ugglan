@@ -92,44 +92,48 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                VStack(spacing: 0) {
-                    ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
-                        CoInsuredField(
-                            coInsured: coInsuredd,
-                            accessoryView: EmptyView()
-                        )
+                if hAnalyticsExperiment.editCoinsured {
+                    VStack(spacing: 0) {
+                        ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
+                            CoInsuredField(
+                                coInsured: coInsuredd,
+                                accessoryView: EmptyView()
+                            )
+                        }
+                        ForEach(vm.coInsuredDeletedData(contract: contract), id: \.self) { coInsured in
+                            CoInsuredField(
+                                coInsured: coInsured,
+                                accessoryView: EmptyView(),
+                                includeStatusPill: StatusPillType.deleted,
+                                date: contract.upcomingChangedAgreement?.activeFrom
+                            )
+                        }
+                        ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
+                            CoInsuredField(
+                                coInsured: coInsured,
+                                accessoryView: EmptyView(),
+                                includeStatusPill: StatusPillType.added,
+                                date: contract.upcomingChangedAgreement?.activeFrom
+                            )
+                        }
                     }
-                    ForEach(vm.coInsuredDeletedData(contract: contract), id: \.self) { coInsured in
-                        CoInsuredField(
-                            coInsured: coInsured,
-                            accessoryView: EmptyView(),
-                            includeStatusPill: StatusPillType.deleted,
-                            date: contract.upcomingChangedAgreement?.activeFrom
-                        )
-                    }
-                    ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
-                        CoInsuredField(
-                            coInsured: coInsured,
-                            accessoryView: EmptyView(),
-                            includeStatusPill: StatusPillType.added,
-                            date: contract.upcomingChangedAgreement?.activeFrom
-                        )
-                    }
-                }
-                .padding(.leading, 16)
+                    .padding(.leading, 16)
 
-                ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                    addMissingCoInsuredView(contract: contract)
-                    if index < nbOfMissingCoInsured - 1 {
-                        hRowDivider()
+                    ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                        addMissingCoInsuredView(contract: contract)
+                        if index < nbOfMissingCoInsured - 1 {
+                            hRowDivider()
+                        }
                     }
                 }
             }
             .withoutHorizontalPadding
-            hSection {
-                if nbOfMissingCoInsured != 0 && contract.supportsCoInsured && contract.terminationDate == nil {
-                    CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
-                        .padding(.bottom, 16)
+            if hAnalyticsExperiment.editCoinsured {
+                hSection {
+                    if nbOfMissingCoInsured != 0 && contract.showEditInfo {
+                        CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
+                            .padding(.bottom, 16)
+                    }
                 }
             }
         }
@@ -145,7 +149,7 @@ struct ContractInformationView: View {
         )
         .padding(.horizontal, 16)
         .onTapGesture {
-            if contract.supportsCoInsured && contract.terminationDate == nil {
+            if contract.showEditInfo {
                 store.send(
                     .openEditCoInsured(contractId: id, fromInfoCard: true)
                 )

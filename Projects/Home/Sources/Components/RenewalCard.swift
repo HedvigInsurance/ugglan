@@ -59,9 +59,12 @@ public struct RenewalCardView: View {
                 }
             ) { contracts in
                 if let contract = contracts.first(where: {
-                    !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured)
+                    if $0.upcomingChangedAgreement == nil {
+                        return false
+                    } else {
+                        return !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured)
+                    }
                 }) {
-
                     InfoCard(
                         text: L10n.contractCoinsuredUpdateInFuture(
                             contract.upcomingChangedAgreement?.coInsured.count ?? 0,
