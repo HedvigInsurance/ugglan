@@ -96,7 +96,13 @@ extension PaymentData {
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(with: futureCharge)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
-        discounts = chargeFragment.discountBreakdown.compactMap({ .init(with: $0) })
+        let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
+        discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
+            .init(
+                with: discountBreakdown,
+                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+            )
+        })
         paymentDetails = nil
         addedToThePayment = []
     }
@@ -161,11 +167,14 @@ extension PaymentData.PeriodInfo {
 }
 
 extension Discount {
-    init(with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown) {
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
+    ) {
         id = UUID().uuidString
         code = data.code
         amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = data.code
+        title = discount?.description ?? ""
         listOfAffectedInsurances = []
         validUntil = nil
         canBeDeleted = false
