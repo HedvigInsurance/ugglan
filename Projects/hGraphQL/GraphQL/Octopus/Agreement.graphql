@@ -29,7 +29,13 @@ fragment ContractFragment on Contract {
       exposureDisplayName
       id
       masterInceptionDate
+      selfChangeBlockers {
+        coInsured {
+        reason
+        }
+      }
       supportsMoving
+      supportsCoInsured
       terminationDate
       upcomingChangedAgreement {
          ...AgreementFragment

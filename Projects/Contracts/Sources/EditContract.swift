@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -50,6 +51,7 @@ struct EditContract: View {
                         }
                     }
                 }
+                infoView
                 hSection {
                     VStack(spacing: 4) {
                         if selectedType != nil {
@@ -57,12 +59,16 @@ struct EditContract: View {
                                 store.send(.dismissEditInfo(type: selectedType))
                                 switch selectedType {
                                 case .coInsured:
-                                    store.send(
-                                        .openEditCoInsured(
-                                            contractId: contract?.id ?? "",
-                                            fromInfoCard: false
+                                    if hAnalyticsExperiment.editCoinsured {
+                                        store.send(
+                                            .openEditCoInsured(
+                                                contractId: contract?.id ?? "",
+                                                fromInfoCard: false
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        store.send(.goToFreeTextChat)
+                                    }
                                 case .changeAddress:
                                     store.send(.goToMovingFlow)
                                 case nil:
@@ -75,7 +81,11 @@ struct EditContract: View {
                         hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
-                            hText(L10n.generalCancelButton, style: .standard)
+                            if hAnalyticsExperiment.editCoinsured {
+                                hText(L10n.generalCancelButton, style: .standard)
+                            } else {
+                                hText(selectedType?.buttonTitle ?? "", style: .standard)
+                            }
                         }
                     }
                 }
@@ -102,6 +112,20 @@ struct EditContract: View {
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    var infoView: some View {
+        if selectedType == .coInsured && !hAnalyticsExperiment.editCoinsured {
+            hSection {
+                InfoCard(
+                    text: L10n.InsurancesTab.contactUsToEditCoInsured,
+                    type: .info
+                )
+            }
+            .transition(.opacity)
+            .sectionContainerStyle(.transparent)
         }
     }
 

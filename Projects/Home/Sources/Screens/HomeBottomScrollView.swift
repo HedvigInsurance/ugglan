@@ -5,6 +5,7 @@ import Flow
 import Payment
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -37,7 +38,8 @@ struct HomeBottomScrollView: View {
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contractIds: [String] = contractStore.state.activeContracts
-                            .filter({ $0.nbOfMissingCoInsured > 0 })
+                            .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
+                            )
                             .compactMap {
                                 ($0.id)
                             }
@@ -56,7 +58,9 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
-        handleMissingCoInsured()
+        if hAnalyticsExperiment.editCoinsured {
+            handleMissingCoInsured()
+        }
         handleImportantMessages()
         handleRenewalCardView()
         handleDeleteRequests(memberId: memberId)
@@ -134,7 +138,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                         } else {
                             return contract.currentAgreement?.coInsured
                                 .filter({
-                                    $0.hasMissingData
+                                    $0.hasMissingData && contract.terminationDate == nil
                                 })
                                 .isEmpty == false
                         }
@@ -155,7 +159,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                 } else {
                     return contract.currentAgreement?.coInsured
                         .filter({
-                            $0.hasMissingData
+                            $0.hasMissingData && contract.terminationDate == nil
                         })
                         .isEmpty == false
                 }

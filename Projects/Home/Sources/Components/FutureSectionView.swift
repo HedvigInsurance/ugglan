@@ -68,7 +68,8 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                         exposureDisplayName: "DISPLAY NAME",
                         id: "id",
                         masterInceptionDate: "2023-11-22",
-                        supportsMoving: true
+                        supportsMoving: true,
+                        supportsCoInsured: true
                     )
 
                     store.send(

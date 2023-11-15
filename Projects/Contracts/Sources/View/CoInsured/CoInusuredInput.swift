@@ -446,7 +446,7 @@ class CoInusuredInputViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-
+    var ssnCancel: AnyCancellable? = nil
     init(
         coInsuredModel: CoInsuredModel,
         actionType: CoInsuredAction,
@@ -458,6 +458,26 @@ class CoInusuredInputViewModel: ObservableObject {
         self.SSN = coInsuredModel.SSN ?? coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
+
+        ssnCancel = $noSSN.combineLatest($nameFetchedFromSSN)
+            .delay(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .receive(on: RunLoop.main)
+            .sink { value in
+                if #available(iOS 15.0, *) {
+                    if #available(iOS 16.0, *) {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .animateChanges {
+                                UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                    .invalidateDetents()
+                            }
+                    } else {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .animateChanges {
+
+                            }
+                    }
+                }
+            }
     }
 
     @MainActor
@@ -564,20 +584,22 @@ public class IntentViewModel: ObservableObject {
                     )
                     .onValue { value in
                         continuation.resume(with: .success(value.midtermChangeIntentCreate))
-                        if let graphQLError = value.midtermChangeIntentCreate.userError {
-                            self.errorMessage = graphQLError.message
-                            self.showErrorView = true
-                        } else if let intent = value.midtermChangeIntentCreate.intent {
-                            self.activationDate = intent.activationDate
-                            self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
-                            self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
-                            self.id = intent.id
-                            self.state = intent.state.rawValue
-                        }
                     }
                     .onError { graphQLError in
                         continuation.resume(throwing: graphQLError)
                     }
+            }
+            withAnimation {
+                if let graphQLError = data.userError {
+                    self.errorMessage = graphQLError.message
+                    self.showErrorView = true
+                } else if let intent = data.intent {
+                    self.activationDate = intent.activationDate
+                    self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
+                    self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
+                    self.id = intent.id
+                    self.state = intent.state.rawValue
+                }
             }
         } catch let exception {
             withAnimation {

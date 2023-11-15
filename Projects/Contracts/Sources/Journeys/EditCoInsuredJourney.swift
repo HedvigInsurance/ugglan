@@ -17,7 +17,8 @@ public class EditCoInsuredJourney {
                     actionType: actionType,
                     coInsuredModel: coInsuredModel,
                     title: title,
-                    contractId: contractId
+                    contractId: contractId,
+                    style: .detented(.scrollViewContentSize)
                 )
             } else if case .dismissEditCoInsuredFlow = navigationAction {
                 DismissJourney()
@@ -68,18 +69,19 @@ public class EditCoInsuredJourney {
         actionType: CoInsuredAction,
         coInsuredModel: CoInsuredModel,
         title: String,
-        contractId: String
+        contractId: String,
+        style: PresentationStyle
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInusuredInput(
                 vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
             ),
-            style: .detented(.scrollViewContentSize),
+            style: style,
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
-                PopJourney()
+                DismissJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
                 SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
@@ -210,101 +212,31 @@ public class EditCoInsuredJourney {
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CheckboxPickerScreen<CoInsuredModel>(
-                items: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    return contractStore.state.fetchAllCoInsured.compactMap {
-                        ((object: $0, displayName: $0.fullName ?? ""))
-                    }
-                }(),
-                preSelectedItems: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let preSelectedItem = contractStore.state.fetchAllCoInsured.first
-                    if let preSelectedItem {
-                        return [preSelectedItem]
-                    } else {
-                        return []
-                    }
-                },
-                onSelected: { selectedContracts in
-                    if let selectedContract = selectedContracts.first {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        if selectedContract.SSN != nil {
-                            store.coInsuredViewModel.addCoInsured(
-                                .init(
-                                    firstName: selectedContract.firstName,
-                                    lastName: selectedContract.lastName,
-                                    SSN: selectedContract.SSN,
-                                    needsMissingInfo: false
-                                )
-                            )
-                        } else {
-                            store.coInsuredViewModel.addCoInsured(
-                                .init(
-                                    firstName: selectedContract.firstName,
-                                    lastName: selectedContract.lastName,
-                                    birthDate: selectedContract.birthDate,
-                                    needsMissingInfo: false
-                                )
-                            )
-                        }
-                        Task {
-                            await store.intentViewModel.getIntent(
-                                contractId: contractId,
-                                coInsured: store.coInsuredViewModel.completeList(contractId: contractId)
-                            )
-                            if !store.intentViewModel.showErrorView {
-                                store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                            } else {
-                                if selectedContract.SSN != nil {
-                                    store.coInsuredViewModel.removeCoInsured(
-                                        .init(
-                                            firstName: selectedContract.firstName,
-                                            lastName: selectedContract.lastName,
-                                            birthDate: selectedContract.birthDate,
-                                            needsMissingInfo: false
-                                        )
-                                    )
-                                } else {
-                                    store.coInsuredViewModel.removeCoInsured(
-                                        .init(
-                                            firstName: selectedContract.firstName,
-                                            lastName: selectedContract.lastName,
-                                            birthDate: selectedContract.birthDate,
-                                            needsMissingInfo: false
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                },
-                onCancel: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
-                },
-                singleSelect: true,
-                actionOnAddedOption: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(
-                        .coInsuredNavigationAction(
-                            action: .openCoInsuredInput(
-                                actionType: .add,
-                                coInsuredModel: .init(),
-                                title: L10n.contractAddCoinsured,
-                                contractId: contractId
-                            )
-                        )
-                    )
-                }
-            ),
+            rootView: CoInsuredSelectScreen(contractId: contractId),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
+            } else if case let .coInsuredNavigationAction(navigationAction) = action {
+                if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
+                    openCoInsuredInput(
+                        actionType: actionType,
+                        coInsuredModel: coInsuredModel,
+                        title: title,
+                        contractId: contractId,
+                        style: .detented(.scrollViewContentSize, modally: false)
+                    )
+                } else {
+                    getScreen(for: action)
+                }
             } else {
                 getScreen(for: action)
+            }
+        }
+        .onAction(ContractStore.self) { action in
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
             }
         }
         .configureTitle(L10n.contractAddConisuredInfo)

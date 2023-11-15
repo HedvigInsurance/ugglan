@@ -51,18 +51,27 @@ public struct RenewalCardView: View {
                 state.upcomingRenewalContracts
             }
         ) { upcomingRenewalContracts in
-            
+
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
                     state.activeContracts
                 }
             ) { contracts in
-                /* TODO: MOVE */
-                if let contract = contracts.first(where: { !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured) }) {
-                    
+                if let contract = contracts.first(where: {
+                    if $0.upcomingChangedAgreement == nil {
+                        return false
+                    } else {
+                        return !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured)
+                    }
+                }) {
                     InfoCard(
-                        text: L10n.contractCoinsuredUpdateInFuture(contract.upcomingChangedAgreement?.coInsured.count ?? 0, contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""), type: .info
+                        text: L10n.contractCoinsuredUpdateInFuture(
+                            contract.upcomingChangedAgreement?.coInsured.count ?? 0,
+                            contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat
+                                ?? ""
+                        ),
+                        type: .info
                     )
                     .buttons([
                         .init(
@@ -80,12 +89,13 @@ public struct RenewalCardView: View {
                             }
                         )
                     ])
-                } else {
-                    if upcomingRenewalContracts.count == 1, let upcomingRenewalContract = upcomingRenewalContracts.first {
+                } else if let upcomingRenewalContract = upcomingRenewalContracts.first {
+                    if upcomingRenewalContracts.count == 1 {
                         InfoCard(
                             text: L10n.dashboardRenewalPrompterBody(
                                 dateComponents(
-                                    from: upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate! ?? Date()
+                                    from: upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate!
+                                        ?? Date()
                                 )
                                 .day ?? 0
                             ),
@@ -100,7 +110,7 @@ public struct RenewalCardView: View {
                             )
                         ])
                     } else if upcomingRenewalContracts.count > 1,
-                              let renewalDate = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
+                        let renewalDate = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
                     {
                         InfoCard(
                             text: L10n.dashboardMultipleRenewalsPrompterBody(
@@ -122,7 +132,7 @@ public struct RenewalCardView: View {
                                 buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
                             )
                         }
-                        
+
                     }
                 }
             }
@@ -165,6 +175,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                     id: "",
                     masterInceptionDate: "",
                     supportsMoving: true,
+                    supportsCoInsured: true,
                     upcomingChangedAgreement: .init(
                         activeFrom: "2023-12-10",
                         activeTo: "2024-12-10",

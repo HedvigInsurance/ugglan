@@ -17,27 +17,16 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        let uniqueUpcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
-            con.upcomingChangedAgreement?.coInsured.findUniqueByFullName() ?? []
+        let upcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+            con.upcomingChangedAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
 
-        let uniqueCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
-            con.currentAgreement?.coInsured.findUniqueByFullName() ?? []
+        let coInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+            con.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
 
-        let totalCoInsured =
-            uniqueCoInsured
-            + uniqueUpcomingCoInsured.filter({ upComing in
-                if uniqueCoInsured.count > 0 {
-                    return uniqueCoInsured.first(where: {
-                        return upComing.fullName == $0.fullName
-                    }) == nil
-                } else {
-                    return true
-                }
-            })
-
-        return totalCoInsured
+        let unique = Set(upcomingCoInsured + coInsured)
+        return unique.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
 
     public func contractForId(_ id: String) -> Contract? {
@@ -71,18 +60,5 @@ extension ContractState {
     public var isTravelInsuranceIncluded: Bool {
         return activeContracts.compactMap({ $0 }).contains(where: { $0.hasTravelInsurance })
             && hAnalyticsExperiment.travelInsurance
-    }
-}
-
-extension Sequence where Iterator.Element == CoInsuredModel {
-    func findUniqueByFullName() -> [CoInsuredModel] {
-        var finalList: [CoInsuredModel] = []
-        self.forEach { coInsured in
-            let alreadyAdded = finalList.first(where: { $0 == coInsured }) != nil
-            if !alreadyAdded && !coInsured.hasMissingData {
-                finalList.append(coInsured)
-            }
-        }
-        return finalList
     }
 }
