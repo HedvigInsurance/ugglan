@@ -17,11 +17,11 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        var uniqueUpcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+        let uniqueUpcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
             con.upcomingChangedAgreement?.coInsured.findUniqueByFullName() ?? []
         }
 
-        var uniqueCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+        let uniqueCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
             con.currentAgreement?.coInsured.findUniqueByFullName() ?? []
         }
 
