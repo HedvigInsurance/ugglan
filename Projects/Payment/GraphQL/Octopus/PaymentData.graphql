@@ -3,11 +3,15 @@ query PaymentData {
         ...ReedemCampaignsFragment
         futureCharge {
             ...MemberChargeFragment
-            includedInFutureCharge {
-                ...MemberChargeFragment
-            }
-            includingPreviousCharges {
-                ...MemberChargeFragment
+            pastFailedChargeIds
+        }
+        pastCharges {
+            id
+            contractsChargeBreakdown {
+                periods {
+                    fromDate
+                    toDate
+                }
             }
         }
     }

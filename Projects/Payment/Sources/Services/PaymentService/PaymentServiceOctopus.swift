@@ -94,7 +94,7 @@ extension PaymentData {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
-        status = PaymentData.PaymentStatus.getStatus(with: futureCharge)
+        status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
@@ -110,22 +110,30 @@ extension PaymentData {
 
 extension PaymentData.PaymentStatus {
     static func getStatus(
-        with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.FutureCharge
+        with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) -> PaymentData.PaymentStatus {
-        switch data.status {
+        let charge = data.futureCharge
+        switch charge?.status {
         case .failed:
-            if let includedInFutureCharge = data.includedInFutureCharge {
-                return .addedtoFuture(
-                    date: includedInFutureCharge.date,
-                    withId: includedInFutureCharge.id,
-                    isUpcoming: includedInFutureCharge.status == .upcoming
-                )
-            } else {
-                return .failedForPrevious(
-                    from: data.includingPreviousCharges.first?.date ?? "",
-                    to: data.includingPreviousCharges.last?.date ?? ""
-                )
+            //            if let includedInFutureCharge = data.includedInFutureCharge {
+            //                return .addedtoFuture(
+            //                    date: includedInFutureCharge.date,
+            //                    withId: includedInFutureCharge.id,
+            //                    isUpcoming: includedInFutureCharge.status == .upcoming
+            //                )
+            //            } else {
+            //                return .failedForPrevious(
+            //                    from: data.includingPreviousCharges.first?.date ?? "",
+            //                    to: data.includingPreviousCharges.last?.date ?? ""
+            //                )
+            //            }
+            let previousChargesPeriods = data.pastCharges.map { pastCharge in
+                pastCharge.contractsChargeBreakdown.flatMap({ $0.periods })
             }
+
+            let from = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.fromDate.localDateToDate }).min()
+            let to = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.toDate.localDateToDate }).max()
+            return .failedForPrevious(from: from?.displayDateDDMMMFormat ?? "", to: to?.displayDateDDMMMFormat ?? "")
         case .pending:
             return .pending
         case .success:
@@ -133,6 +141,8 @@ extension PaymentData.PaymentStatus {
         case .upcoming:
             return .upcoming
         case .__unknown:
+            return .unknown
+        case .none:
             return .unknown
         }
     }
@@ -172,7 +182,7 @@ extension Discount {
         discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
     ) {
         id = UUID().uuidString
-        code = data.code
+        code = data.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
         listOfAffectedInsurances = []

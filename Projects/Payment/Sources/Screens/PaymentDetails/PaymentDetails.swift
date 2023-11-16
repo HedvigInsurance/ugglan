@@ -65,13 +65,15 @@ struct PaymentDetails: View {
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    if #available(iOS 16.0, *) {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
-                            .strikethrough()
-                    } else {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
+                    if data.payment.gross.amount != data.payment.net.amount {
+                        if #available(iOS 16.0, *) {
+                            hText(data.payment.gross.formattedAmount)
+                                .foregroundColor(hTextColor.secondary)
+                                .strikethrough()
+                        } else {
+                            hText(data.payment.gross.formattedAmount)
+                                .foregroundColor(hTextColor.secondary)
+                        }
                     }
                     hText(data.payment.net.formattedAmount)
                 }
