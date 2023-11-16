@@ -29,7 +29,7 @@ struct CoInusuredInput: View {
             insuredPeopleVm.previousValue = CoInsuredModel(
                 firstName: vm.firstName,
                 lastName: vm.lastName,
-                birthDate: vm.SSN,
+                birthDate: vm.birthday,
                 needsMissingInfo: false
             )
         }
@@ -67,7 +67,7 @@ struct CoInusuredInput: View {
                                         .init(
                                             firstName: vm.firstName,
                                             lastName: vm.lastName,
-                                            birthDate: vm.SSN,
+                                            birthDate: vm.birthday,
                                             needsMissingInfo: false
                                         )
                                     )
@@ -96,7 +96,7 @@ struct CoInusuredInput: View {
                                             .init(
                                                 firstName: vm.firstName,
                                                 lastName: vm.lastName,
-                                                birthDate: vm.SSN,
+                                                birthDate: vm.birthday,
                                                 needsMissingInfo: false
                                             )
                                         )
@@ -121,7 +121,7 @@ struct CoInusuredInput: View {
                                                 .init(
                                                     firstName: vm.firstName,
                                                     lastName: vm.lastName,
-                                                    birthDate: vm.SSN,
+                                                    birthDate: vm.birthday,
                                                     needsMissingInfo: false
                                                 )
                                             )
@@ -141,7 +141,7 @@ struct CoInusuredInput: View {
                                                 .init(
                                                     firstName: vm.firstName,
                                                     lastName: vm.lastName,
-                                                    birthDate: vm.SSN,
+                                                    birthDate: vm.birthday,
                                                     needsMissingInfo: false
                                                 )
                                             )
@@ -168,7 +168,7 @@ struct CoInusuredInput: View {
                                                 .init(
                                                     firstName: vm.firstName,
                                                     lastName: vm.lastName,
-                                                    birthDate: vm.SSN,
+                                                    birthDate: vm.birthday,
                                                     needsMissingInfo: false
                                                 )
                                             )
@@ -233,7 +233,6 @@ struct CoInusuredInput: View {
                     hButton.LargeButton(type: .primary) {
                         vm.showErrorView = false
                         vm.noSSN = true
-                        vm.SSN = ""
                     } content: {
                         hText(L10n.coinsuredEnterManuallyButton)
                     }
@@ -276,7 +275,7 @@ struct CoInusuredInput: View {
                 hSection {
                     hFloatingTextField(
                         masking: Masking(type: .birthDateCoInsured),
-                        value: $vm.SSN,
+                        value: $vm.birthday,
                         equals: $vm.type,
                         focusValue: .SSN,
                         placeholder: L10n.contractBirthDate
@@ -382,16 +381,15 @@ struct CoInusuredInput: View {
     }
 
     var buttonIsDisabled: Bool {
-        var personalNumberValid = false
         if vm.noSSN {
-            personalNumberValid = Masking(type: .birthDateCoInsured).isValid(text: vm.SSN)
+            let birthdayIsValid = Masking(type: .birthDateCoInsured).isValid(text: vm.birthday)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.lastName)
-            if personalNumberValid && firstNameValid && lastNameValid {
+            if birthdayIsValid && firstNameValid && lastNameValid {
                 return false
             }
         } else {
-            personalNumberValid = Masking(type: .personalNumber12Digits).isValid(text: vm.SSN)
+            let personalNumberValid = Masking(type: .personalNumber12Digits).isValid(text: vm.SSN)
             if personalNumberValid {
                 return false
             }
@@ -415,6 +413,8 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
         switch self {
         case .SSN:
             return .firstName
+        case .birthDay:
+            return .firstName
         case .firstName:
             return .lastName
         case .lastName:
@@ -425,6 +425,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case firstName
     case lastName
     case SSN
+    case birthDay
 }
 
 class CoInusuredInputViewModel: ObservableObject {
@@ -437,6 +438,7 @@ class CoInusuredInputViewModel: ObservableObject {
     @Published var showErrorView: Bool = false
     @Published var enterManually: Bool = false
     @Published var SSN: String
+    @Published var birthday: String
     @Published var type: CoInsuredInputType?
     @Published var actionType: CoInsuredAction
     let contractId: String
@@ -446,7 +448,7 @@ class CoInusuredInputViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-    var ssnCancel: AnyCancellable? = nil
+    var cancellables = Set<AnyCancellable>()
     init(
         coInsuredModel: CoInsuredModel,
         actionType: CoInsuredAction,
@@ -455,14 +457,22 @@ class CoInusuredInputViewModel: ObservableObject {
         self.coInsuredModel = coInsuredModel
         self.firstName = coInsuredModel.firstName ?? ""
         self.lastName = coInsuredModel.lastName ?? ""
-        self.SSN = coInsuredModel.SSN ?? coInsuredModel.birthDate ?? ""
+        self.SSN = coInsuredModel.SSN ?? ""
+        self.birthday = coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
+        if !(coInsuredModel.birthDate ?? "").isEmpty {
+            noSSN = true
+            enterManually = true
+        }
 
-        ssnCancel = $noSSN.combineLatest($nameFetchedFromSSN)
+        if !(coInsuredModel.SSN ?? "").isEmpty {
+            nameFetchedFromSSN = true
+        }
+        $noSSN.combineLatest($nameFetchedFromSSN)
             .delay(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .receive(on: RunLoop.main)
-            .sink { value in
+            .sink { _ in
                 if #available(iOS 15.0, *) {
                     if #available(iOS 16.0, *) {
                         UIApplication.shared.getTopViewController()?.sheetPresentationController?
@@ -478,6 +488,7 @@ class CoInusuredInputViewModel: ObservableObject {
                     }
                 }
             }
+            .store(in: &cancellables)
     }
 
     @MainActor
