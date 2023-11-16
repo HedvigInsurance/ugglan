@@ -47,7 +47,7 @@ extension AppDelegate {
                     }
                     profileStore.send(.fetchMemberDetails)
                 }
-        } else if path == .editCoInsured {
+        } else if path == .contract {
             let contractId = getContractId(from: dynamicLinkUrl)
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
