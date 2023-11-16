@@ -23,6 +23,11 @@ extension AppJourney {
             .onDismiss {
                 chat.chatState.reset()
             }
+            .onAction(UgglanStore.self) { action in
+                if case .closeChat = action {
+                    DismissJourney()
+                }
+            }
             .configureTitle(L10n.chatTitle)
             .setScrollEdgeNavigationBarAppearanceToStandard
         }

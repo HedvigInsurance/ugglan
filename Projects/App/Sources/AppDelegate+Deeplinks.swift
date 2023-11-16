@@ -61,6 +61,7 @@ extension AppDelegate {
                         })
                         .onValue { _ in
                             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                            ugglanStore.send(.closeChat)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 ugglanStore.send(.makeTabActive(deeplink: .insurances))
                                 if let contractId {
