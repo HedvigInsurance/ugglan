@@ -8,14 +8,18 @@ struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var intentVm: IntentViewModel
 
     public init(
         contractId: String
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        intentVm = store.intentViewModel
         self.contractId = contractId
         vm.resetCoInsured
+        vm.existingCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured ?? []
+        vm.upcomingCoInsured = store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
     }
 
     var body: some View {
@@ -28,25 +32,70 @@ struct InsuredPeopleScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
-                        hSection {
-                            ForEach(contract.coInsured, id: \.self) { coInsured in
-                                if !vm.coInsuredDeleted.contains(coInsured) {
-                                    CoInsuredField(
-                                        coInsured: coInsured,
-                                        accessoryView: existingAccessoryView(coInsured: coInsured)
-                                    )
+                        let coInsured = contract.currentAgreement?.coInsured
+                        ContractOwnerField(coInsured: coInsured ?? [], contractId: contractId)
+                        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
+                            hSection {
+                                ForEach(upcomingCoInsured, id: \.self) { upcomingCoInsured in
+                                    if let index = (coInsured ?? [])
+                                        .first(where: {
+                                            $0 == upcomingCoInsured
+                                        })
+                                    {
+                                        //not deleted
+                                        if vm.coInsuredDeleted.first(where: { deleted in
+                                            deleted == upcomingCoInsured
+                                        }) == nil {
+                                            //remaining
+                                            CoInsuredField(
+                                                coInsured: upcomingCoInsured,
+                                                accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
+                                            )
+                                        }
+                                    } else {
+                                        //added
+                                        if vm.coInsuredDeleted.first(where: {
+                                            $0 == upcomingCoInsured
+                                        }) == nil {
+                                            CoInsuredField(
+                                                coInsured: upcomingCoInsured,
+                                                accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
+                                                includeStatusPill: StatusPillType.added,
+                                                date: (intentVm.activationDate != "")
+                                                    ? intentVm.activationDate
+                                                    : contract.upcomingChangedAgreement?.activeFrom
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        .sectionContainerStyle(.transparent)
+                            .sectionContainerStyle(.transparent)
 
+                        } else {
+                            hSection {
+                                ForEach(coInsured ?? [], id: \.self) { coInsured in
+                                    if vm.coInsuredDeleted.first(where: {
+                                        $0 == coInsured
+                                    }) == nil {
+                                        CoInsuredField(
+                                            coInsured: coInsured,
+                                            accessoryView: existingAccessoryView(coInsured: coInsured)
+                                        )
+                                    }
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
+                        }
+
+                        // adding locally added ones
                         hSection {
                             ForEach(vm.coInsuredAdded, id: \.self) { coInsured in
                                 CoInsuredField(
                                     coInsured: coInsured,
                                     accessoryView: localAccessoryView(coInsured: coInsured),
-                                    includeStatusPill: true
+                                    includeStatusPill: StatusPillType.added,
+                                    date: (intentVm.activationDate != "")
+                                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom
                                 )
                             }
                         }
@@ -57,7 +106,7 @@ struct InsuredPeopleScreen: View {
                                 store.send(
                                     .coInsuredNavigationAction(
                                         action: .openCoInsuredInput(
-                                            isDeletion: false,
+                                            actionType: .add,
                                             coInsuredModel: CoInsuredModel(),
                                             title: L10n.contractAddCoinsured,
                                             contractId: contractId
@@ -76,9 +125,9 @@ struct InsuredPeopleScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
-                    confirmChangesView
+                    ConfirmChangesView()
                 }
-                cancelButton
+                CancelButton()
                     .padding(.horizontal, 16)
             }
         }
@@ -92,7 +141,7 @@ struct InsuredPeopleScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
+                            actionType: .delete,
                             coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -110,7 +159,7 @@ struct InsuredPeopleScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
+                            actionType: .delete,
                             coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId
@@ -119,8 +168,12 @@ struct InsuredPeopleScreen: View {
                 )
             }
     }
+}
 
-    var cancelButton: some View {
+struct CancelButton: View {
+    @PresentableStore var store: ContractStore
+
+    var body: some View {
         hButton.LargeButton(type: .ghost) {
             store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
         } content: {
@@ -128,40 +181,51 @@ struct InsuredPeopleScreen: View {
         }
         .padding(.horizontal, 16)
     }
+}
 
-    var confirmChangesView: some View {
+struct ConfirmChangesView: View {
+    @PresentableStore var store: ContractStore
+    @ObservedObject var intentVm: IntentViewModel
+
+    public init() {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        intentVm = store.intentViewModel
+    }
+
+    var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: 2) {
                 HStack(spacing: 8) {
                     hText(L10n.contractAddCoinsuredTotal)
                     Spacer()
-
                     if #available(iOS 16.0, *) {
-                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
+                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
                             .strikethrough()
                             .foregroundColor(hTextColor.secondary)
                     } else {
-                        hText("129" + " " + L10n.paymentCurrencyOccurrence)
+                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
                             .foregroundColor(hTextColor.secondary)
 
                     }
-                    hText("159" + " " + L10n.paymentCurrencyOccurrence)
+                    hText(intentVm.newPremium.formattedAmount + L10n.perMonth)
                 }
                 hText(
-                    //TODO: set proper date
-                    L10n.contractAddCoinsuredStartsFrom("2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                    L10n.contractAddCoinsuredStartsFrom(
+                        intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
                     style: .footnote
                 )
                 .foregroundColor(hTextColor.secondary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
-            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
-                /* TODO: SEND MUTATION */
+            hButton.LargeButton(type: .primary) {
+                store.send(.performCoInsuredChanges(commitId: intentVm.id))
                 store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
             } content: {
                 hText(L10n.contractAddCoinsuredConfirmChanges)
             }
+            .hButtonIsLoading(intentVm.isLoading)
         }
         .padding(.horizontal, 16)
     }
@@ -174,23 +238,163 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
-
+    @Published var firstName = ""
+    @Published var lastName = ""
+    @Published var SSN: String = ""
+    @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
+    @Published var existingCoInsured: [CoInsuredModel] = []
+    @Published var upcomingCoInsured: [CoInsuredModel] = []
+    @Published var noSSN = false
+    @Published var SSNError: String?
+    @Published var nameFetchedFromSSN: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var showErrorView: Bool = false
+    @Published var enterManually: Bool = false
+    @PresentableStore var store: ContractStore
+    @Inject var octopus: hOctopus
+
+    var fullName: String {
+        return firstName + " " + lastName
+    }
+
+    func completeList(contractId: String) -> [CoInsuredModel] {
+        var filterList: [CoInsuredModel] = []
+        if !upcomingCoInsured.isEmpty {
+            filterList = upcomingCoInsured
+        } else {
+            let nbOfCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured.count ?? 0
+            if existingCoInsured.count == 0 && nbOfCoInsured > 0 {
+                if coInsuredDeleted.count > 0 {
+                    let num = nbOfCoInsured - coInsuredDeleted.count
+                    for _ in 1...num {
+                        filterList.append(CoInsuredModel())
+                    }
+                    return filterList
+                }
+            } else {
+                filterList = existingCoInsured
+            }
+        }
+        return filterList.filter { existing in
+            if let index = coInsuredDeleted.first(where: { deleted in
+                deleted == existing
+            }) {
+                return false
+            } else {
+                return true
+            }
+        } + coInsuredAdded
+    }
 
     var resetCoInsured: Void {
         coInsuredAdded = []
+        coInsuredDeleted = []
+        SSNError = nil
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
+        showErrorView = false
+        SSNError = nil
         coInsuredAdded.append(coInsuredModel)
     }
 
     func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if coInsuredAdded.contains(coInsuredModel) {
-            coInsuredAdded.removeAll(where: { $0 == coInsuredModel })
+        if let index = coInsuredAdded.firstIndex(where: { coInsured in
+            coInsured == coInsuredModel
+        }) {
+            coInsuredAdded.remove(at: index)
         } else {
             coInsuredDeleted.append(coInsuredModel)
+        }
+    }
+
+    func undoDeleted(_ coInsuredModel: CoInsuredModel) {
+        var removedCoInsured: CoInsuredModel {
+            return
+                .init(
+                    firstName: coInsuredModel.firstName,
+                    lastName: coInsuredModel.lastName,
+                    SSN: coInsuredModel.SSN,
+                    needsMissingInfo: false
+                )
+        }
+
+        if let index = coInsuredDeleted.firstIndex(where: {
+            $0 == removedCoInsured
+        }) {
+            coInsuredDeleted.remove(at: index)
+        }
+    }
+
+    func editCoInsured(_ coInsuredModel: CoInsuredModel) {
+        if let index = coInsuredAdded.firstIndex(where: {
+            $0 == previousValue
+        }) {
+            coInsuredAdded.remove(at: index)
+        }
+        addCoInsured(coInsuredModel)
+    }
+
+    @MainActor
+    func getNameFromSSN(SSN: String) async {
+        withAnimation {
+            self.SSNError = nil
+            self.showErrorView = false
+            self.isLoading = true
+        }
+        do {
+            let data = try await withCheckedThrowingContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    >
+                ) -> Void in
+                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+                self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { value in
+                        if let data = value.personalInformation {
+                            continuation.resume(with: .success(data))
+                        }
+                    }
+                    .onError { graphQLError in
+                        continuation.resume(throwing: graphQLError)
+                    }
+            }
+            withAnimation {
+                self.firstName = data.firstName
+                self.lastName = data.lastName
+                self.nameFetchedFromSSN = true
+            }
+
+        } catch let exception {
+            if let exception = exception as? GraphQLError {
+                switch exception {
+                case .graphQLError:
+                    self.enterManually = true
+                case .otherError:
+                    self.enterManually = false
+                }
+            }
+            withAnimation {
+                if let exception = exception as? GraphQLError {
+                    switch exception {
+                    case .graphQLError:
+                        self.SSNError = exception.localizedDescription
+                    case .otherError:
+                        self.SSNError = L10n.General.errorBody
+                    }
+                }
+                self.showErrorView = true
+            }
+        }
+        withAnimation {
+            self.isLoading = false
         }
     }
 }

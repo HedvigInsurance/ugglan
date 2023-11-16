@@ -8,6 +8,7 @@ import hGraphQL
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var octopus: hOctopus
     let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let intentViewModel = IntentViewModel()
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -36,19 +37,36 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 let query = OctopusGraphQL.ContractBundleQuery()
                 disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { contracts in
+                        let firstName = contracts.currentMember.firstName
+                        let lastName = contracts.currentMember.lastName
+                        let ssn = contracts.currentMember.ssn
                         let activeContracts = contracts.currentMember.activeContracts.map { contract in
-                            Contract(contract: contract.fragments.contractFragment)
-
+                            Contract(
+                                contract: contract.fragments.contractFragment,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setActiveContracts(contracts: activeContracts)))
 
                         let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
-                            Contract(contract: contract.fragments.contractFragment)
+                            Contract(
+                                contract: contract.fragments.contractFragment,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
 
                         let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
-                            Contract(pendingContract: contract)
+                            Contract(
+                                pendingContract: contract,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))
                         callback(.value(.fetchCompleted))
@@ -69,6 +87,25 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .fetchContracts,
             ]
             .emitEachThenEnd
+        case let .performCoInsuredChanges(commitId):
+            return FiniteSignal { [unowned self] callback in
+                let disposeBag = DisposeBag()
+                let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .onValue { data in
+                        if let graphQLError = data.midtermChangeIntentCommit.userError {
+                            self.setError(graphQLError.message ?? "", for: .postCoInsured)
+                        } else {
+                            self.removeLoading(for: .postCoInsured)
+                            callback(.value(.fetchContracts))
+                            callback(.end)
+                        }
+                    }
+                    .onError({ error in
+                        self.setError(error.localizedDescription, for: .postCoInsured)
+                    })
+                return disposeBag
+            }
         default:
             break
         }
@@ -95,6 +132,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
+        case .performCoInsuredChanges:
+            setLoading(for: .postCoInsured)
         default:
             break
         }

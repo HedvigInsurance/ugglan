@@ -21,8 +21,8 @@ struct CoInsuredErrorScreen: View {
                 } content: {
                     hText(L10n.openChat)
                 }
-
             }
+            .padding(.horizontal, 16)
         }
         .hFormAttachToBottom {
             hButton.LargeButton(type: .ghost) {
@@ -31,6 +31,7 @@ struct CoInsuredErrorScreen: View {
                 hText(L10n.generalCancelButton)
             }
         }
+        .padding(.horizontal, 16)
     }
 }
 

@@ -123,12 +123,10 @@ extension Contracts {
                 resultJourney(.movingFlow)
             } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
-                if let canChangeCoInsured = store.state.contractForId(contractId)?.canChangeCoInsured,
+                if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
                     canChangeCoInsured
                 {
-                    if store.state.activeContracts.first(where: { $0.id == contractId })?.coInsured
-                        .filter({ $0.hasMissingData }).count ?? 0 > 0
-                    {
+                    if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
                         if fromInfoCard {
                             EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
                         } else {

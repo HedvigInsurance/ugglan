@@ -10,9 +10,9 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     let singleSelect: Bool?
     let showDividers: Bool?
     let attachToBottom: Bool
-    let actionOnAddedOption: (() -> Void)?
     @State var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
+    @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
 
     public init(
         items: [(object: T, displayName: String)],
@@ -21,8 +21,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
         showDividers: Bool? = false,
-        attachToBottom: Bool = false,
-        actionOnAddedOption: (() -> Void)? = nil
+        attachToBottom: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -31,7 +30,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.singleSelect = singleSelect
         self.showDividers = showDividers
         self.attachToBottom = attachToBottom
-        self.actionOnAddedOption = actionOnAddedOption
     }
 
     public var body: some View {
@@ -68,34 +66,26 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .disabled(isLoading)
             }
-            if let actionOnAddedOption {
-                hButton.LargeButton(type: .ghost) {
-                    actionOnAddedOption()
-                } content: {
-                    HStack(alignment: .center) {
-                        Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        hText(L10n.generalAddNew)
-                    }
-                }
-                .padding(.top, 4)
-            }
         }
     }
 
     var bottomContent: some View {
         hSection {
             VStack(spacing: 8) {
+                bottomAttachedView
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
                     hText(L10n.generalContinueButton, style: .standard)
                 }
+                .hButtonIsLoading(isLoading)
                 if let onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
                     } content: {
                         hText(L10n.generalCancelButton, style: .standard)
                     }
+                    .disabled(isLoading)
                 }
             }
         }
@@ -213,5 +203,22 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
             },
             singleSelect: true
         )
+    }
+}
+
+private struct EnvironmentHCheckboxPickerBottomAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hCheckboxPickerBottomAttachedView: AnyView? {
+        get { self[EnvironmentHCheckboxPickerBottomAttachedView.self] }
+        set { self[EnvironmentHCheckboxPickerBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hCheckboxPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hCheckboxPickerBottomAttachedView, AnyView(content()))
     }
 }

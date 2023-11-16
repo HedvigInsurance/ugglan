@@ -28,31 +28,43 @@ struct RemoveCoInsuredScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
-                        let missingCoInsured = contract.coInsured.filter {
-                            $0.hasMissingData
-                        }
-                        let exisistingCoInsured = contract.coInsured.filter {
-                            !$0.hasMissingData
-                        }
-                        hSection {
-                            ForEach(exisistingCoInsured, id: \.self) { coInsured in
-                                CoInsuredField(
-                                    coInsured: coInsured,
-                                    accessoryView: accessoryView(coInsured)
-                                )
+                        if let coInsured = contract.currentAgreement?.coInsured {
+                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
+                            let missingCoInsured = coInsured.filter {
+                                $0.hasMissingData
                             }
-                            ForEach(missingCoInsured, id: \.self) { missingCoInsured in
-                                CoInsuredField(
-                                    accessoryView: accessoryView(.init()),
-                                    title: L10n.contractCoinsured,
-                                    subTitle: L10n.contractNoInformation
-                                )
+                            let exisistingCoInsured = coInsured.filter {
+                                !$0.hasMissingData
                             }
+                            hSection {
+                                ForEach(exisistingCoInsured, id: \.self) { coInsured in
+                                    CoInsuredField(
+                                        coInsured: coInsured,
+                                        accessoryView: accessoryView(coInsured)
+                                    )
+                                }
+                                let nbOfMissingoInsured = missingCoInsured.count - vm.coInsuredDeleted.count
+                                ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
+                                    CoInsuredField(
+                                        accessoryView: accessoryView(.init()),
+                                        title: L10n.contractCoinsured,
+                                        subTitle: L10n.contractNoInformation
+                                    )
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
                         }
-                        .sectionContainerStyle(.transparent)
                     }
                 }
+            }
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
+                    ConfirmChangesView()
+                }
+                CancelButton()
+                    .padding(.horizontal, 16)
             }
         }
     }
@@ -65,7 +77,7 @@ struct RemoveCoInsuredScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: true,
+                            actionType: .delete,
                             coInsuredModel: coInsuredModel,
                             title: L10n.contractRemoveCoinsuredConfirmation,
                             contractId: contractId

@@ -5,49 +5,37 @@ import hCoreUI
 
 struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
-    @State var successViewHidden = true
+    @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: ContractStore
 
+    init(
+        showSuccessScreen: Bool
+    ) {
+        self.showSuccessScreen = showSuccessScreen
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        intentVm = store.intentViewModel
+    }
+
     var body: some View {
         BlurredProgressOverlay {
-            loadingView
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.successViewHidden = false
-                    }
-                }
-            if !successViewHidden {
+            PresentableLoadingStoreLens(
+                ContractStore.self,
+                loadingState: .postCoInsured
+            ) {
+                loadingView
+            } error: { error in
+                errorView
+            } success: {
                 if showSuccessScreen {
                     successView
                 } else {
-                    let _ = store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                    let _ = DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contracts = contractStore.state
-                        for contract in contracts.activeContracts {
-                            if contract.coInsured.count < 2 { /* TODO: CHANGE WHEN REAL DATA */
-                                store.send(
-                                    .coInsuredNavigationAction(
-                                        action: .openMissingCoInsuredAlert(contractId: contract.id)
-                                    )
-                                )
-                                break
-                            }
+                    loadingView
+                        .onAppear {
+                            missingContractAlert()
                         }
-                    }
                 }
             }
-            //            PresentableLoadingStoreLens(
-            //                ContractStore.self,
-            //                loadingState: .postCoInsured
-            //            ) {
-            //                loadingView
-            //            } error: { error in
-            //                errorView
-            //            } success: {
-            //                successView
-            //            }
         }
         .presentableStoreLensAnimation(.default)
         .onAppear {
@@ -72,7 +60,7 @@ struct CoInsuredProcessingScreen: View {
                         hText(L10n.contractAddCoinsuredUpdatedTitle)
                         hText(
                             L10n.contractAddCoinsuredUpdatedLabel(
-                                "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                                intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                         )
                         .foregroundColor(hTextColor.secondary)
@@ -88,23 +76,46 @@ struct CoInsuredProcessingScreen: View {
             hSection {
                 hButton.LargeButton(type: .ghost) {
                     vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                    missingContractAlert()
                 } content: {
                     hText(L10n.generalDoneButton)
                 }
             }
             .sectionContainerStyle(.transparent)
-
         }
     }
 
     private var errorView: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
-            RetryView(
-                subtitle: L10n.General.errorBody
-            ) {
-                //                vm.store.send(.postTravelInsuranceForm)
+            VStack {
+                Spacer()
+                Spacer()
+                VStack(spacing: 16) {
+                    Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                        .foregroundColor(hSignalColor.amberElement)
+                    VStack(spacing: 0) {
+                        hText(L10n.somethingWentWrong)
+                            .foregroundColor(hTextColor.primaryTranslucent)
+                        hText(L10n.General.errorBody)
+                            .foregroundColor(hTextColor.secondaryTranslucent)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 8)
+                    }
+                    .padding(.horizontal, 16)
+                }
+                Spacer()
+                Spacer()
+                Spacer()
             }
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    missingContractAlert()
+                } content: {
+                    hText(L10n.generalCancelButton)
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -121,6 +132,30 @@ struct CoInsuredProcessingScreen: View {
             Spacer()
         }
     }
+
+    private func missingContractAlert() {
+        vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let missingContract = store.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.currentAgreement?.coInsured
+                        .first(where: { coInsured in
+                            coInsured.needsMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+            if missingContract != nil {
+                vm.store.send(
+                    .coInsuredNavigationAction(
+                        action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
+                    )
+                )
+            }
+        }
+    }
+
 }
 
 class ProcessingViewModel: ObservableObject {

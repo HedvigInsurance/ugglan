@@ -25,8 +25,7 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                changeAddressInfo(contract)
-                upComingCoInsuredView(contract: contract)
+                upatedContractView(contract)
                 VStack(spacing: 0) {
                     if let displayItems = contract.currentAgreement?.displayItems {
                         hSection(displayItems, id: \.displayValue) { item in
@@ -43,7 +42,9 @@ struct ContractInformationView: View {
                         .withoutHorizontalPadding
                         hRowDivider()
 
-                        addCoInsuredView(contract: contract)
+                        if hAnalyticsExperiment.editCoinsured {
+                            addCoInsuredView(contract: contract)
+                        }
 
                         VStack(spacing: 8) {
                             if contract.showEditInfo {
@@ -67,7 +68,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        let nbOfMissingCoInsured = 2 - contract.coInsured.count
+        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
             hSection {
                 hRow {
@@ -75,14 +76,13 @@ struct ContractInformationView: View {
                         HStack {
                             hText(L10n.changeAddressCoInsuredLabel)
                             Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                            hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
                                 .foregroundColor(hTextColor.secondary)
                         }
-
                         HStack {
                             VStack(alignment: .leading) {
-                                hText("Julia Andersson")
-                                hText("SSN", style: .footnote)
+                                hText(contract.fullName)
+                                hText(contract.ssn ?? "", style: .footnote)
                                     .foregroundColor(hTextColor.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,108 +92,121 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                ForEach(contract.coInsured, id: \.self) { coInsured in
-                    VStack(alignment: .leading) {
-                        hText(coInsured.fullName ?? "")
-                        hText(coInsured.SSN ?? "", style: .footnote)
-                            .foregroundColor(hTextColor.secondary)
-                    }
-                }
-
-                /* TODO: CHANGE WHEN REAL DATA */
-                ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                    hRow {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                hText(L10n.contractCoinsured)
-                                hText(L10n.contractNoInformation, style: .footnote)
-                                    .foregroundColor(hTextColor.secondary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.warningSmall.image)
-                                .foregroundColor(hSignalColor.amberElement)
+                if hAnalyticsExperiment.editCoinsured {
+                    VStack(spacing: 0) {
+                        ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
+                            CoInsuredField(
+                                coInsured: coInsuredd,
+                                accessoryView: EmptyView()
+                            )
+                        }
+                        ForEach(vm.coInsuredDeletedData(contract: contract), id: \.self) { coInsured in
+                            CoInsuredField(
+                                coInsured: coInsured,
+                                accessoryView: EmptyView(),
+                                includeStatusPill: StatusPillType.deleted,
+                                date: contract.upcomingChangedAgreement?.activeFrom
+                            )
+                        }
+                        ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
+                            CoInsuredField(
+                                coInsured: coInsured,
+                                accessoryView: EmptyView(),
+                                includeStatusPill: StatusPillType.added,
+                                date: contract.upcomingChangedAgreement?.activeFrom
+                            )
                         }
                     }
-                    if index < nbOfMissingCoInsured - 1 {
-                        hRowDivider()
+                    .padding(.leading, 16)
+
+                    ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                        addMissingCoInsuredView(contract: contract)
+                        if index < nbOfMissingCoInsured - 1 {
+                            hRowDivider()
+                        }
                     }
                 }
             }
             .withoutHorizontalPadding
-            hSection {
-                if nbOfMissingCoInsured != 0 {
-                    CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
-                        .padding(.bottom, 16)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var addMissingCoInsuredView: some View {
-        hRow {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    hText(L10n.contractCoinsured)
-                    hText(L10n.contractNoInformation, style: .footnote)
-                        .foregroundColor(hTextColor.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Spacer()
-                Image(uiImage: hCoreUIAssets.warningSmall.image)
-                    .foregroundColor(hSignalColor.amberElement)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func upComingCoInsuredView(contract: Contract) -> some View {
-        // TODO: ADD PROPER DATA
-        hSection {
-            InfoCard(
-                text: L10n.contractCoinsuredUpdateInFuture(
-                    3,
-                    "2023-11-16".localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                ),
-                type: .info
-            )
-            .buttons([
-                .init(
-                    buttonTitle: L10n.contractViewCertificateButton,
-                    buttonAction: {
-                        /* TODO: CHANGE */
-                        //                                let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                        let certificateURL = contract.currentAgreement?.certificateUrl
-                        if let url = URL(string: certificateURL) {
-                            store.send(
-                                .contractDetailNavigationAction(
-                                    action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                )
-                            )
-                        }
+            if hAnalyticsExperiment.editCoinsured {
+                hSection {
+                    if nbOfMissingCoInsured != 0 && contract.showEditInfo {
+                        CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
+                            .padding(.bottom, 16)
                     }
-                )
-            ])
+                }
+            }
         }
-        .padding(.top, 8)
     }
 
     @ViewBuilder
-    private func changeAddressInfo(_ contract: Contract) -> some View {
-        if let date = contract.upcomingChangedAgreement?.activeFrom {
+    private func addMissingCoInsuredView(contract: Contract) -> some View {
+        CoInsuredField(
+            accessoryView: Image(uiImage: hCoreUIAssets.warningSmall.image)
+                .foregroundColor(hSignalColor.amberElement),
+            title: L10n.contractCoinsured,
+            subTitle: L10n.contractNoInformation
+        )
+        .padding(.horizontal, 16)
+        .onTapGesture {
+            if contract.showEditInfo {
+                store.send(
+                    .openEditCoInsured(contractId: id, fromInfoCard: true)
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func upatedContractView(_ contract: Contract) -> some View {
+        if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
-                InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.InsurancesTab.viewDetails,
-                            buttonAction: {
-                                store.send(
-                                    .contractDetailNavigationAction(action: .openInsuranceUpdate(contract: contract))
-                                )
-                            }
+                HStack {
+                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured {
+                        InfoCard(
+                            text: L10n.contractCoinsuredUpdateInFuture(
+                                upcomingChangedAgreement.coInsured.count,
+                                upcomingChangedAgreement.activeFrom?.localDateToDate?
+                                    .displayDateDDMMMYYYYFormat ?? ""
+                            ),
+                            type: .info
                         )
-                    ])
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.contractViewCertificateButton,
+                                buttonAction: {
+                                    let certificateURL = upcomingChangedAgreement.certificateUrl
+                                    if let url = URL(string: certificateURL) {
+                                        store.send(
+                                            .contractDetailNavigationAction(
+                                                action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        ])
+                    } else {
+                        InfoCard(
+                            text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
+                                upcomingChangedAgreement.activeFrom ?? ""
+                            ),
+                            type: .info
+                        )
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.InsurancesTab.viewDetails,
+                                buttonAction: {
+                                    store.send(
+                                        .contractDetailNavigationAction(
+                                            action: .openInsuranceUpdate(contract: contract)
+                                        )
+                                    )
+                                }
+                            )
+                        ])
+                    }
+                }
             }
             .padding(.bottom, 16)
         }
@@ -260,4 +273,29 @@ struct ChangePeopleView: View {
 
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
+
+    func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+    }
+
+    func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
+        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
+            return contract.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+        }
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = current.intersection(upcoming).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+    }
+
+    func coInsuredDeletedData(contract: Contract) -> [CoInsuredModel] {
+        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else { return [] }
+        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
+        let current = Set(contract.currentAgreement?.coInsured ?? [])
+        let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
+        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+    }
 }

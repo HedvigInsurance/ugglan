@@ -12,14 +12,13 @@ public class EditCoInsuredJourney {
                 openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
                 openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
-            } else if case let .openCoInsuredInput(isDeletion, coInsuredModel, title, contractId) =
-                navigationAction
-            {
+            } else if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
                 openCoInsuredInput(
-                    isDeletion: isDeletion,
+                    actionType: actionType,
                     coInsuredModel: coInsuredModel,
                     title: title,
-                    contractId: contractId
+                    contractId: contractId,
+                    style: .detented(.scrollViewContentSize)
                 )
             } else if case .dismissEditCoInsuredFlow = navigationAction {
                 DismissJourney()
@@ -57,7 +56,7 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: InsuredPeopleNewScreen(contractId: id),
             style: .modally(presentationStyle: .overFullScreen),
-            options: [.defaults, .withAdditionalSpaceForProgressBar]
+            options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in
             getScreen(for: action)
         }
@@ -67,21 +66,22 @@ public class EditCoInsuredJourney {
 
     @JourneyBuilder
     static func openCoInsuredInput(
-        isDeletion: Bool,
+        actionType: CoInsuredAction,
         coInsuredModel: CoInsuredModel,
         title: String,
-        contractId: String
+        contractId: String,
+        style: PresentationStyle
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInusuredInput(
-                vm: .init(coInsuredModel: coInsuredModel, isDeletion: isDeletion, contractId: contractId)
+                vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
             ),
-            style: .detented(.scrollViewContentSize),
+            style: style,
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
-                PopJourney()
+                DismissJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
                 SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
@@ -114,7 +114,9 @@ public class EditCoInsuredJourney {
     static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
+            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
@@ -124,7 +126,9 @@ public class EditCoInsuredJourney {
     static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: RemoveCoInsuredScreen(contractId: id)
+            rootView: RemoveCoInsuredScreen(contractId: id),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
@@ -134,14 +138,16 @@ public class EditCoInsuredJourney {
     static func openGenericErrorScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CoInsuredErrorScreen()
+            rootView: CoInsuredErrorScreen(),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
     }
 
     @JourneyBuilder
-    static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: CoInsuredMissingAlertView(contractId: contractId),
@@ -203,63 +209,34 @@ public class EditCoInsuredJourney {
         }
     }
 
-    @JourneyBuilder
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CheckboxPickerScreen<CoInsuredModel>(
-                items: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    return contractStore.state.fetchAllCoInsured.compactMap {
-                        ((object: $0, displayName: $0.fullName ?? ""))
-                    }
-                }(),
-                preSelectedItems: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let preSelectedItem = contractStore.state.fetchAllCoInsured.first
-                    if let preSelectedItem {
-                        return [preSelectedItem]
-                    } else {
-                        return []
-                    }
-                },
-                onSelected: { selectedContracts in
-                    if let selectedContract = selectedContracts.first {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(
-                            .coInsuredNavigationAction(
-                                action: .openInsuredPeopleNewScreen(contractId: selectedContract.id)
-                            )
-                        )
-                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                    }
-                },
-                onCancel: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
-                },
-                singleSelect: true,
-                actionOnAddedOption: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(
-                        .coInsuredNavigationAction(
-                            action: .openCoInsuredInput(
-                                isDeletion: false,
-                                coInsuredModel: .init(),
-                                title: L10n.contractAddCoinsured,
-                                contractId: contractId
-                            )
-                        )
-                    )
-                }
-            ),
+            rootView: CoInsuredSelectScreen(contractId: contractId),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
+            } else if case let .coInsuredNavigationAction(navigationAction) = action {
+                if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
+                    openCoInsuredInput(
+                        actionType: actionType,
+                        coInsuredModel: coInsuredModel,
+                        title: title,
+                        contractId: contractId,
+                        style: .detented(.scrollViewContentSize, modally: false)
+                    )
+                } else {
+                    getScreen(for: action)
+                }
             } else {
                 getScreen(for: action)
+            }
+        }
+        .onAction(ContractStore.self) { action in
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
             }
         }
         .configureTitle(L10n.contractAddConisuredInfo)

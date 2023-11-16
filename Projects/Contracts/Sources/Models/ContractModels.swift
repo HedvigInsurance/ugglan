@@ -60,9 +60,14 @@ public struct Contract: Codable, Hashable, Equatable {
         exposureDisplayName: String,
         masterInceptionDate: String,
         terminationDate: String?,
+        selfChangeBlockers: String? = nil,
         supportsAddressChange: Bool,
+        supportsCoInsured: Bool,
         upcomingChangedAgreement: Agreement,
         upcomingRenewal: ContractRenewal,
+        firstName: String,
+        lastName: String,
+        ssn: String?,
         typeOfContract: TypeOfContract
     ) {
         self.id = id
@@ -70,9 +75,14 @@ public struct Contract: Codable, Hashable, Equatable {
         self.exposureDisplayName = exposureDisplayName
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
+        self.selfChangeBlockers = selfChangeBlockers
+        self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
+        self.firstName = firstName
+        self.lastName = lastName
+        self.ssn = ssn
         self.typeOfContract = typeOfContract
     }
 
@@ -81,19 +91,28 @@ public struct Contract: Codable, Hashable, Equatable {
     public let exposureDisplayName: String
     public let masterInceptionDate: String?
     public let terminationDate: String?
+    public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
+    public let supportsCoInsured: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
-    public var coInsured: [CoInsuredModel] = [
-        //        CoInsuredModel(name: "Julia", SSN: "000000000"),
-        //        CoInsuredModel(name: "Test", SSN: "11111111"),
-        CoInsuredModel(),
-        CoInsuredModel(),
-    ] /* TODO: MOVE INITIAIZATION AND CHANGE TO LET */
+    public let firstName: String
+    public let lastName: String
+    public let ssn: String?
+    public var fullName: String {
+        return firstName + " " + lastName
+    }
+    public var nbOfMissingCoInsured: Int {
+        if let upcomingChangedAgreement {
+            return upcomingChangedAgreement.coInsured.filter({ $0.needsMissingInfo }).count
+        } else {
+            return currentAgreement?.coInsured.filter({ $0.needsMissingInfo }).count ?? 0
+        }
+    }
 
     public var showEditInfo: Bool {
-        return !EditType.getTypes(for: self).isEmpty && self.terminationDate == nil
+        return supportsCoInsured && self.terminationDate == nil
     }
 
     public var canTerminate: Bool {
@@ -128,25 +147,37 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     init(
-        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract
+        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
+        firstName: String,
+        lastName: String,
+        ssn: String?
     ) {
         exposureDisplayName = pendingContract.exposureDisplayName
         id = pendingContract.id
         currentAgreement = .init(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
+            coInsured: []
         )
         masterInceptionDate = nil
         terminationDate = nil
         supportsAddressChange = false
+        supportsCoInsured = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
+        selfChangeBlockers = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
+        self.firstName = firstName
+        self.lastName = lastName
+        self.ssn = ssn
     }
 
     init(
-        contract: OctopusGraphQL.ContractFragment
+        contract: OctopusGraphQL.ContractFragment,
+        firstName: String,
+        lastName: String,
+        ssn: String?
     ) {
         id = contract.id
         currentAgreement =
@@ -154,10 +185,15 @@ public struct Contract: Codable, Hashable, Equatable {
         exposureDisplayName = contract.exposureDisplayName
         masterInceptionDate = contract.masterInceptionDate
         terminationDate = contract.terminationDate
+        selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
+        supportsCoInsured = contract.supportsCoInsured
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
+        self.firstName = firstName
+        self.lastName = lastName
+        self.ssn = ssn
     }
 
     public enum TypeOfContract: String, Codable {
@@ -337,96 +373,6 @@ extension PillowType {
     }
 }
 
-extension Contract {
-    /// Does this contract have a co insured concept, i.e covers multiple people, and thus can change that
-    public var canChangeCoInsured: Bool {
-        switch typeOfContract {
-        case .seHouse:
-            return true
-        case .seApartmentBrf:
-            return true
-        case .seApartmentRent:
-            return true
-        case .seApartmentStudentBrf:
-            return true
-        case .seApartmentStudentRent:
-            return true
-        case .seAccident:
-            return true
-        case .seAccidentStudent:
-            return true
-        case .seCarTraffic:
-            return false
-        case .seCarHalf:
-            return false
-        case .seCarFull:
-            return false
-        case .seGroupApartmentRent:
-            return false
-        case .seQasaShortTermRental:
-            return false
-        case .seQasaLongTermRental:
-            return false
-        case .seDogBasic:
-            return false
-        case .seDogStandard:
-            return false
-        case .seDogPremium:
-            return false
-        case .seCatBasic:
-            return false
-        case .seCatStandard:
-            return false
-        case .seCatPremium:
-            return false
-        case .noHouse:
-            return true
-        case .noHomeContentOwn:
-            return true
-        case .noHomeContentRent:
-            return true
-        case .noHomeContentYouthOwn:
-            return true
-        case .noHomeContentYouthRent:
-            return true
-        case .noHomeContentStudentOwn:
-            return true
-        case .noHomeContentStudentRent:
-            return true
-        case .noTravel:
-            return true
-        case .noTravelYouth:
-            return true
-        case .noTravelStudent:
-            return true
-        case .noAccident:
-            return true
-        case .dkHomeContentOwn:
-            return true
-        case .dkHomeContentRent:
-            return true
-        case .dkHomeContentStudentOwn:
-            return true
-        case .dkHomeContentStudentRent:
-            return true
-        case .dkHouse:
-            return true
-        case .dkAccident:
-            return true
-        case .dkAccidentStudent:
-            return true
-        case .dkTravel:
-            return true
-        case .dkTravelStudent:
-            return true
-        case .unknown:
-            return false
-        case .seGroupApartmentBrf:
-            return true
-        }
-    }
-}
-
 public struct ContractRenewal: Codable, Hashable {
     public let renewalDate: String
     public let draftCertificateUrl: String?
@@ -453,7 +399,8 @@ public struct Agreement: Codable, Hashable {
         activeTo: String,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
+        coInsured: [CoInsuredModel]
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -461,6 +408,7 @@ public struct Agreement: Codable, Hashable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.coInsured = coInsured
     }
 
     public let certificateUrl: String?
@@ -469,11 +417,13 @@ public struct Agreement: Codable, Hashable {
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
+    public var coInsured: [CoInsuredModel]
 
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
+        coInsured: [CoInsuredModel]
     ) {
         self.premium = premium
         self.displayItems = displayItems
@@ -481,6 +431,7 @@ public struct Agreement: Codable, Hashable {
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
+        self.coInsured = coInsured
     }
 
     init?(
@@ -495,8 +446,8 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
+        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
     }
-
 }
 
 public struct AgreementDisplayItem: Codable, Hashable {

@@ -17,7 +17,16 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        activeContracts.flatMap({ $0.coInsured }).filter({ !$0.hasMissingData })
+        let upcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+            con.upcomingChangedAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+        }
+
+        let coInsured: [CoInsuredModel] = activeContracts.flatMap { con in
+            con.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+        }
+
+        let unique = Set(upcomingCoInsured + coInsured)
+        return unique.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
 
     public func contractForId(_ id: String) -> Contract? {

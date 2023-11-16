@@ -76,7 +76,8 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         insurableLimits: [],
                         documents: [],
                         displayName: ""
-                    )
+                    ),
+                coInsured: []
             )
         )
     }

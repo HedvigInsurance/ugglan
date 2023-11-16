@@ -6,15 +6,16 @@ import hCoreUI
 struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
     let contractId: String
-    @State var contractNbOfCoinsured = 2 /* TODO: CHANGE WHEN WE HAVE REAL DATA */
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var intentVm: IntentViewModel
 
     public init(
         contractId: String
     ) {
-        self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        intentVm = store.intentViewModel
+        self.contractId = contractId
         vm.resetCoInsured
     }
 
@@ -28,7 +29,9 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        ContractOwnerField(coInsured: contract.coInsured)
+                        if let coInsured = contract.currentAgreement?.coInsured {
+                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
+                        }
 
                         hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
                             CoInsuredField(
@@ -38,8 +41,9 @@ struct InsuredPeopleNewScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
 
-                        if vm.coInsuredAdded.count < contractNbOfCoinsured {
-                            let nbOfFields = contractNbOfCoinsured - vm.coInsuredAdded.count
+                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
+                        if vm.coInsuredAdded.count < nbOfMissingCoInsured {
+                            let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                             hSection {
                                 ForEach((1...nbOfFields), id: \.self) { index in
                                     CoInsuredField(
@@ -72,16 +76,21 @@ struct InsuredPeopleNewScreen: View {
             ) { contract in
                 VStack(spacing: 8) {
                     if let contract = contract {
-                        if vm.coInsuredAdded.count >= contractNbOfCoinsured {
-                            LoadingButtonWithContent(ContractStore.self, .postCoInsured) {
-                                /* TODO: SEND MUTATION */
+                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
+                        if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
+                            hButton.LargeButton(type: .primary) {
+                                store.send(.performCoInsuredChanges(commitId: intentVm.id))
                                 store.send(
                                     .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
                                 )
                             } content: {
                                 hText(L10n.generalSaveChangesButton)
                             }
-                            .disabled((contract.coInsured.count + vm.coInsuredAdded.count) < contractNbOfCoinsured)
+                            .trackLoading(ContractStore.self, action: .postCoInsured)
+                            .disabled(
+                                ((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count)
+                                    < nbOfMissingCoInsured
+                            )
                             .padding(.horizontal, 16)
                         }
 
@@ -104,7 +113,7 @@ struct InsuredPeopleNewScreen: View {
                 store.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(
-                            isDeletion: false,
+                            actionType: .edit,
                             coInsuredModel: coInsured,
                             title: L10n.contractAddConisuredInfo,
                             contractId: contractId
@@ -137,7 +146,7 @@ struct InsuredPeopleNewScreen: View {
                     store.send(
                         .coInsuredNavigationAction(
                             action: .openCoInsuredInput(
-                                isDeletion: false,
+                                actionType: .add,
                                 coInsuredModel: CoInsuredModel(),
                                 title: L10n.contractAddConisuredInfo,
                                 contractId: contractId

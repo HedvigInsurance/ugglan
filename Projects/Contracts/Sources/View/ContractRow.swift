@@ -174,12 +174,14 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 exposureDisplayName: "",
                 masterInceptionDate: "",
                 terminationDate: "",
                 supportsAddressChange: true,
+                supportsCoInsured: true,
                 upcomingChangedAgreement:
                     Agreement(
                         premium: MonetaryAmount(amount: 0, currency: ""),
@@ -193,13 +195,17 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 upcomingRenewal:
                     ContractRenewal(
                         renewalDate: "",
                         draftCertificateUrl: ""
                     ),
+                firstName: "",
+                lastName: "",
+                ssn: nil,
                 typeOfContract: .seHouse
             )
             let contracts = [contract]

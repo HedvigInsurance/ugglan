@@ -36,6 +36,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 
     case openEditCoInsured(contractId: String, fromInfoCard: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
+    case performCoInsuredChanges(commitId: String)
 
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
@@ -66,13 +67,20 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         }
     }
 
+    var buttonTitle: String {
+        switch self {
+        case .changeAddress: return L10n.generalContinueButton
+        case .coInsured: return L10n.openChat
+        }
+    }
+
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
         if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
-        if contract.canChangeCoInsured {
+        if contract.supportsCoInsured {
             editTypes.append(.coInsured)
         }
         return editTypes
@@ -81,7 +89,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredInput(
-        isDeletion: Bool,
+        actionType: CoInsuredAction,
         coInsuredModel: CoInsuredModel,
         title: String,
         contractId: String
@@ -97,4 +105,10 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openMissingCoInsuredAlert(contractId: String)
     case openErrorScreen
     case openSelectInsuranceScreen(contractIds: [String])
+}
+
+public enum CoInsuredAction: Codable {
+    case delete
+    case edit
+    case add
 }

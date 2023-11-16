@@ -5,21 +5,23 @@ import Flow
 import Payment
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
-
+    @State var height: CGFloat = 0
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
     }
 
     var body: some View {
-        return InfoCardScrollView(
+        InfoCardScrollView(
             spacing: 16,
             items: vm.items.sorted(by: { $0.id < $1.id }),
+            previousHeight: height,
             content: { content in
                 switch content.type {
                 case .payment:
@@ -37,7 +39,8 @@ struct HomeBottomScrollView: View {
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contractIds: [String] = contractStore.state.activeContracts
-                            .filter({ $0.canChangeCoInsured })
+                            .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
+                            )
                             .compactMap {
                                 ($0.id)
                             }
@@ -46,6 +49,13 @@ struct HomeBottomScrollView: View {
                     }
                 }
             }
+        )
+        .background(
+            GeometryReader(content: { geo in
+                Color.clear.onReceive(Just(geo.size.height)) { height in
+                    self.height = height
+                }
+            })
         )
     }
 }
@@ -56,7 +66,9 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
-        handleMissingCoInsured()
+        if hAnalyticsExperiment.editCoinsured {
+            handleMissingCoInsured()
+        }
         handleImportantMessages()
         handleRenewalCardView()
         handleDeleteRequests(memberId: memberId)
@@ -128,10 +140,17 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts
-                    .filter { contract in
-                        contract.coInsured.filter({ $0.hasMissingData }).isEmpty
-                    }
-                    .isEmpty
+                    .first(where: { contract in
+                        if contract.upcomingChangedAgreement != nil {
+                            return false
+                        } else {
+                            return contract.currentAgreement?.coInsured
+                                .filter({
+                                    $0.hasMissingData && contract.terminationDate == nil
+                                })
+                                .isEmpty == false
+                        }
+                    }) != nil
             })
             .distinct()
             .publisher
@@ -140,11 +159,19 @@ class HomeButtonScrollViewModel: ObservableObject {
                 self?.handleItem(.missingCoInsured, with: show)
             })
             .store(in: &cancellables)
-        let show = contractStore.state.activeContracts
-            .filter { contract in
-                contract.coInsured.filter({ $0.hasMissingData }).isEmpty
-            }
-            .isEmpty
+
+        let show =
+            contractStore.state.activeContracts.first(where: { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.currentAgreement?.coInsured
+                        .filter({
+                            $0.hasMissingData && contract.terminationDate == nil
+                        })
+                        .isEmpty == false
+                }
+            }) != nil
         handleItem(.missingCoInsured, with: show)
     }
 }
