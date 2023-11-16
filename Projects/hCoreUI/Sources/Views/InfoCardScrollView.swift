@@ -5,14 +5,19 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
     private let content: (cardItem) -> Content
     private let items: [cardItem]
     @ObservedObject private var vm: InfoCardScrollViewModel
-
     public init(
         spacing: CGFloat,
         items: [cardItem],
         zoomFactor: CGFloat = 0.9,
+        previousHeight: CGFloat,
         @ViewBuilder content: @escaping (cardItem) -> Content
     ) {
-        vm = InfoCardScrollViewModel(spacing: spacing, zoomFactor: zoomFactor, itemsCount: items.count)
+        vm = InfoCardScrollViewModel(
+            spacing: spacing,
+            zoomFactor: zoomFactor,
+            previousHeight: previousHeight,
+            itemsCount: items.count
+        )
         self.items = items
         self.content = content
     }
@@ -31,7 +36,6 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
                         },
                         content: content
                     )
-                    .transition(.offset(.zero))
                 }
             }
         }
@@ -85,13 +89,14 @@ class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDelegate 
     init(
         spacing: CGFloat,
         zoomFactor: CGFloat,
+        previousHeight: CGFloat,
         itemsCount: Int
     ) {
         self.spacing = spacing
         self.cardWidth = UIScreen.main.bounds.width * zoomFactor
         self.numberOfItems = CGFloat(itemsCount)
         self.cardWithSpacing = cardWidth + spacing
-        self.scrollViewHeight = itemsCount == 0 ? 0 : 100
+        self.scrollViewHeight = itemsCount == 0 ? 0 : previousHeight
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
