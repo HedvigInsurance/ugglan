@@ -56,7 +56,7 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: InsuredPeopleNewScreen(contractId: id),
             style: .modally(presentationStyle: .overFullScreen),
-            options: [.defaults, .withAdditionalSpaceForProgressBar]
+            options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in
             getScreen(for: action)
         }
