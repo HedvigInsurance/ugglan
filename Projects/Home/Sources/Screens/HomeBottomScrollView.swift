@@ -10,15 +10,16 @@ import hGraphQL
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
-
+    @State var height: CGFloat = 0
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
     }
 
     var body: some View {
-        return InfoCardScrollView(
+        InfoCardScrollView(
             spacing: 16,
             items: vm.items.sorted(by: { $0.id < $1.id }),
+            previousHeight: height,
             content: { content in
                 switch content.type {
                 case .payment:
@@ -34,6 +35,13 @@ struct HomeBottomScrollView: View {
                     ImportantMessagesView()
                 }
             }
+        )
+        .background(
+            GeometryReader(content: { geo in
+                Color.clear.onReceive(Just(geo.size.height)) { height in
+                    self.height = height
+                }
+            })
         )
     }
 }
