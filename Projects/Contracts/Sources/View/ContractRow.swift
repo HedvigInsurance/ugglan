@@ -77,7 +77,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     } else {
                         StatusPill(text: L10n.contractStatusToBeTerminated(terminationDate)).padding(.trailing, 4)
                     }
-                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
+                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom, displayInfoCard(contract: contract) {
                     StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
                 } else if contract.activeInFuture {
                     StatusPill(text: L10n.contractStatusActiveInFuture(contract.masterInceptionDate ?? ""))
@@ -107,6 +107,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .clipShape(Squircle.default())
         .hShadow()
         .contentShape(Rectangle())
+    }
+    
+    public func displayInfoCard(contract: Contract) -> Bool {
+        let currentCoInsured = contract.currentAgreement?.coInsured
+        let upComingCoInsured = contract.upcomingChangedAgreement?.coInsured
+        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false) && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
     }
 }
 

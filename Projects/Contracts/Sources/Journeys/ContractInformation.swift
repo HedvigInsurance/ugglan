@@ -156,13 +156,19 @@ struct ContractInformationView: View {
             }
         }
     }
+    
+    public func displayInfoCard(contract: Contract) -> Bool {
+        let currentCoInsured = contract.currentAgreement?.coInsured
+        let upComingCoInsured = contract.upcomingChangedAgreement?.coInsured
+        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false) && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
+    }
 
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
-        if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
+        if let upcomingChangedAgreement = contract.upcomingChangedAgreement, displayInfoCard(contract: contract) {
             hSection {
                 HStack {
-                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured && !(contract.currentAgreement?.coInsured.contains(CoInsuredModel()) ?? false) {
+                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 upcomingChangedAgreement.coInsured.count,
