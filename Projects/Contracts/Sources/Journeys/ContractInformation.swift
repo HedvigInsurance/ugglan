@@ -162,7 +162,7 @@ struct ContractInformationView: View {
         if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
                 HStack {
-                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured {
+                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured && !(contract.currentAgreement?.coInsured.contains(CoInsuredModel()) ?? false) {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 upcomingChangedAgreement.coInsured.count,
@@ -276,17 +276,31 @@ private class ContractsInformationViewModel: ObservableObject {
 
     func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
-        let current = Set(contract.currentAgreement?.coInsured ?? [])
-        let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        if !upcoming.isEmpty {
+            let current = Set(contract.currentAgreement?.coInsured ?? [])
+            if !current.contains(CoInsuredModel()) {
+                let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
+                return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
     }
 
     func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
         guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
             return contract.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
+        
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
+        
+        guard !current.contains(CoInsuredModel()) else {
+            return upcoming.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        }
+        
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
         return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
