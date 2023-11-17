@@ -262,7 +262,7 @@ struct CoInusuredInput: View {
             return L10n.removeConfirmationButton
         } else if vm.nameFetchedFromSSN {
             return L10n.contractAddCoinsured
-        } else if Masking(type: .personalNumber12Digits).isValid(text: vm.SSN) && !vm.noSSN {
+        } else if Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN) && !vm.noSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.generalSaveButton
@@ -289,7 +289,7 @@ struct CoInusuredInput: View {
             } else {
                 hSection {
                     hFloatingTextField(
-                        masking: Masking(type: .personalNumber12Digits),
+                        masking: Masking(type: .personalNumber),
                         value: $vm.SSN,
                         equals: $vm.type,
                         focusValue: .SSN,
@@ -391,7 +391,7 @@ struct CoInusuredInput: View {
                 return false
             }
         } else {
-            personalNumberValid = Masking(type: .personalNumber12Digits).isValid(text: vm.SSN)
+            personalNumberValid = Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN)
             if personalNumberValid {
                 return false
             }

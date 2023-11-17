@@ -37,7 +37,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
-        self.SSN = SSN
+        self.SSN = SSN?.calculate12DigitSSN
         self.needsMissingInfo = needsMissingInfo
     }
 
@@ -62,4 +62,27 @@ public struct CoInsureIntentdModel: Codable, Hashable, Equatable {
     let currentPremium: MonetaryAmount
     let newPremium: MonetaryAmount
     let state: String
+}
+
+extension String {
+    // converts to a 12 digit personal number
+    var calculate12DigitSSN: String {
+        let formattedSSN = self.replacingOccurrences(of: "-", with: "")
+        if formattedSSN.count == 10 {
+            
+            let ssnLastTwoDigitsOfYear = formattedSSN.prefix(2)
+            let currentYear = Calendar.current.component(.year, from: Date())
+            let firstTwoDigitsOfTheYear = currentYear / 100
+            let lastTwoDigitsOfTheYear = currentYear % 100
+
+            if let ssnLastTwoDigits = Int(ssnLastTwoDigitsOfYear),
+               ssnLastTwoDigits > lastTwoDigitsOfTheYear {
+                return String(firstTwoDigitsOfTheYear - 1) + self
+            } else {
+                return String(firstTwoDigitsOfTheYear) + self
+            }
+        } else {
+            return self
+        }
+    }
 }

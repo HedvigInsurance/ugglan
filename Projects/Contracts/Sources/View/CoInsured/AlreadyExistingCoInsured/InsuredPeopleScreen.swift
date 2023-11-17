@@ -45,16 +45,8 @@ struct InsuredPeopleScreen: View {
                                             )
                                         }
                                     } else {
-                                        
-                                        if let index = (coInsured ?? [])
-                                            .first(where: {
-                                                $0 == upcomingCoInsured
-                                            })
-                                        {
-                                            //not deleted
-                                            if vm.coInsuredDeleted.first(where: { deleted in
-                                                deleted == upcomingCoInsured
-                                            }) == nil {
+                                        if (coInsured ?? []).contains(upcomingCoInsured) {
+                                            if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                                                 //remaining
                                                 CoInsuredField(
                                                     coInsured: upcomingCoInsured,
@@ -62,10 +54,7 @@ struct InsuredPeopleScreen: View {
                                                 )
                                             }
                                         } else {
-                                            //added
-                                            if vm.coInsuredDeleted.first(where: {
-                                                $0 == upcomingCoInsured
-                                            }) == nil {
+                                            if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                                                 CoInsuredField(
                                                     coInsured: upcomingCoInsured,
                                                     accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
