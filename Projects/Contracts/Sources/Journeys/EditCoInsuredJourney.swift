@@ -9,9 +9,9 @@ public class EditCoInsuredJourney {
     private static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
             if case let .openInsuredPeopleScreen(contractId) = navigationAction {
-                openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
+                openInsuredPeopleScreen(id: contractId)
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
-                openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
+                openNewInsuredPeopleScreen(id: contractId)
             } else if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
                 openCoInsuredInput(
                     actionType: actionType,
