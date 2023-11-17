@@ -59,6 +59,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
             case .gif: return true
             case .file: return true
             case .crossSell: return true
+            case .deepLink: return true
             }
         }
 
@@ -98,6 +99,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         case file(url: URL?)
         case gif(url: URL?)
         case crossSell(url: URL?)
+        case deepLink(url: URL)
     }
 
     var hasTypingIndicatorNext: Bool {
@@ -249,6 +251,12 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
                 type = .gif(url: URL(string: text.text))
             } else if text.text.isCrossSell {
                 type = .crossSell(url: URL(string: text.text))
+            } else if text.text.isDeepLink {
+                if let url = URL(string: text.text) {
+                    type = .deepLink(url: url)
+                } else {
+                    type = .text
+                }
             } else {
                 type = .text
             }

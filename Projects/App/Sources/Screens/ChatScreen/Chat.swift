@@ -173,6 +173,10 @@ extension Chat: Presentable {
                                 animated: true
                             )
                     }
+                case let .deepLink(url):
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                    }
                 default:
                     break
                 }
