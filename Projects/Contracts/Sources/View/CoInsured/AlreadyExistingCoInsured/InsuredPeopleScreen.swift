@@ -63,8 +63,6 @@ struct InsuredPeopleScreen: View {
                                             }
                                         } else {
                                             //added
-                                            //kolla så att
-                                            
                                             if vm.coInsuredDeleted.first(where: {
                                                 $0 == upcomingCoInsured
                                             }) == nil {
