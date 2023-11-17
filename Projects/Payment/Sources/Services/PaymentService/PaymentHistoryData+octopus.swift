@@ -1,4 +1,5 @@
 import Foundation
+import Presentation
 import hGraphQL
 
 extension PaymentHistoryListData {
@@ -7,10 +8,22 @@ extension PaymentHistoryListData {
     ) -> [PaymentHistoryListData] {
         var paymentHistoryList: [PaymentHistoryListData] = []
         let reedemCampaingsFragment = data.fragments.reedemCampaignsFragment
-        let charges = data.pastCharges
-            .compactMap({ $0.fragments.memberChargeFragment })
-            .compactMap({ PaymentData(with: $0, campaings: reedemCampaingsFragment) })
-            .compactMap({ PaymentHistory(id: $0.payment.date, paymentData: $0) })
+        var payments = [PaymentData]()
+        var nextPayment: PaymentData?
+        for item in data.pastCharges.enumerated() {
+            if item.offset == data.pastCharges.count {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                nextPayment = store.state.paymentData
+            }
+            let paymentData = PaymentData(
+                with: item.element.fragments.memberChargeFragment,
+                campaings: reedemCampaingsFragment,
+                nextPayment: nextPayment
+            )
+            nextPayment = paymentData
+            payments.append(paymentData)
+        }
+        let charges = payments.compactMap({ PaymentHistory(id: $0.payment.date, paymentData: $0) })
         let groupedPaymenthsByYear = Dictionary(grouping: charges, by: { $0.paymentData.payment.date.year ?? 0 })
 
         for year in groupedPaymenthsByYear.keys.sorted(by: { $0 > $1 }) {
@@ -27,13 +40,15 @@ extension PaymentHistoryListData {
 }
 
 extension PaymentData {
-    init?(
+    init(
         with data: OctopusGraphQL.MemberChargeFragment,
-        campaings: OctopusGraphQL.ReedemCampaignsFragment
+        campaings: OctopusGraphQL.ReedemCampaignsFragment,
+        nextPayment: PaymentData? = nil
     ) {
+        self.id = data.id ?? ""
         let chargeFragment = data
         payment = .init(with: chargeFragment)
-        status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nil)
+        status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = campaings.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
@@ -43,19 +58,26 @@ extension PaymentData {
             )
         })
         paymentDetails = nil
-        addedToThePayment = []
+        if let nextPayment {
+            addedToThePayment = [nextPayment]
+        } else {
+            addedToThePayment = []
+        }
     }
-
 }
 
 extension PaymentData.PaymentStatus {
     static func getStatus(
         with data: OctopusGraphQL.MemberChargeFragment,
-        and next: OctopusGraphQL.MemberChargeFragment?
+        and nextPayment: PaymentData?
     ) -> PaymentData.PaymentStatus {
         switch data.status {
         case .failed:
-            return .addedtoFuture(date: next?.date ?? "", withId: next?.id ?? "", isUpcoming: next?.status == .upcoming)
+            return .addedtoFuture(
+                date: nextPayment?.payment.date ?? "",
+                withId: nextPayment?.id ?? "",
+                isUpcoming: nextPayment == nil
+            )
         case .pending:
             return .pending
         case .success:

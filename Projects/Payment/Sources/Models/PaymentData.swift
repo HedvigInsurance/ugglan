@@ -4,6 +4,7 @@ import hCore
 import hGraphQL
 
 public struct PaymentData: Codable, Equatable {
+    let id: String
     let payment: PaymentStack
     let status: PaymentStatus
     let contracts: [ContractPaymentDetails]

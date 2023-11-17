@@ -3,6 +3,7 @@ import hGraphQL
 
 extension PaymentData {
     init?(with data: OctopusGraphQL.PaymentDataQuery.Data) {
+        self.id = data.currentMember.futureCharge?.id ?? ""
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)

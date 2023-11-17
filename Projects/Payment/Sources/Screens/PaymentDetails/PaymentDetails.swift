@@ -157,6 +157,7 @@ struct PaymentDetails: View {
 struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
         let data = PaymentData(
+            id: "id",
             payment: .init(
                 gross: .sek(200),
                 net: .sek(180),
