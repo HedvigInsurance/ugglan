@@ -250,4 +250,24 @@ public class EditCoInsuredJourney {
             openNewInsuredPeopleScreen(id: contractId)
         }
     }
+
+    @JourneyBuilder
+    public static func handleOpenEditCoInsured(for contractId: String, fromInfoCard: Bool) -> some JourneyPresentation {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
+            canChangeCoInsured
+        {
+            if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
+                if fromInfoCard {
+                    EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
+                } else {
+                    EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
+                }
+            } else {
+                EditCoInsuredJourney.openInsuredPeopleScreen(id: contractId)
+            }
+        } else {
+            EditCoInsuredJourney.openGenericErrorScreen()
+        }
+    }
 }

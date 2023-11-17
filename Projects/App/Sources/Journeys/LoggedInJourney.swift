@@ -257,6 +257,8 @@ extension JourneyPresentation {
                     if case let .openMissingCoInsuredAlert(contractId) = navAction {
                         EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
                     }
+                } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
+                    EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
                 }
             }
         )
