@@ -37,34 +37,46 @@ struct InsuredPeopleScreen: View {
                         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
                             hSection {
                                 ForEach(upcomingCoInsured, id: \.self) { upcomingCoInsured in
-                                    if let index = (coInsured ?? [])
-                                        .first(where: {
-                                            $0 == upcomingCoInsured
-                                        })
-                                    {
-                                        //not deleted
-                                        if vm.coInsuredDeleted.first(where: { deleted in
-                                            deleted == upcomingCoInsured
-                                        }) == nil {
-                                            //remaining
+                                    if coInsured?.contains(CoInsuredModel()) ?? false {
+                                        if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                                             CoInsuredField(
                                                 coInsured: upcomingCoInsured,
                                                 accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
                                             )
                                         }
                                     } else {
-                                        //added
-                                        if vm.coInsuredDeleted.first(where: {
-                                            $0 == upcomingCoInsured
-                                        }) == nil {
-                                            CoInsuredField(
-                                                coInsured: upcomingCoInsured,
-                                                accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
-                                                includeStatusPill: StatusPillType.added,
-                                                date: (intentVm.activationDate != "")
+                                        
+                                        if let index = (coInsured ?? [])
+                                            .first(where: {
+                                                $0 == upcomingCoInsured
+                                            })
+                                        {
+                                            //not deleted
+                                            if vm.coInsuredDeleted.first(where: { deleted in
+                                                deleted == upcomingCoInsured
+                                            }) == nil {
+                                                //remaining
+                                                CoInsuredField(
+                                                    coInsured: upcomingCoInsured,
+                                                    accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
+                                                )
+                                            }
+                                        } else {
+                                            //added
+                                            //kolla så att
+                                            
+                                            if vm.coInsuredDeleted.first(where: {
+                                                $0 == upcomingCoInsured
+                                            }) == nil {
+                                                CoInsuredField(
+                                                    coInsured: upcomingCoInsured,
+                                                    accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
+                                                    includeStatusPill: StatusPillType.added,
+                                                    date: (intentVm.activationDate != "")
                                                     ? intentVm.activationDate
                                                     : contract.upcomingChangedAgreement?.activeFrom
-                                            )
+                                                )
+                                            }
                                         }
                                     }
                                 }
