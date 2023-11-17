@@ -10,7 +10,5 @@ public struct PaymentHistoryListData: Codable, Equatable, Identifiable {
 
 struct PaymentHistory: Codable, Equatable, Identifiable {
     let id: String
-    let date: ServerBasedDate
-    let amount: MonetaryAmount
     let paymentData: PaymentData
 }

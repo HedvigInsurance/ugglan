@@ -9,4 +9,8 @@ extension ServerBasedDate {
     public var displayDateShort: String {
         self.localDateToDate?.displayDateDDMMMFormat ?? ""
     }
+
+    public var year: Int? {
+        Int(self.localDateToDate?.dateYYYYFormat ?? "")
+    }
 }

@@ -1,0 +1,8 @@
+query PaymentHistoryData {
+    currentMember {
+        ...ReedemCampaignsFragment
+        pastCharges {
+            ...MemberChargeFragment
+        }
+    }
+}
