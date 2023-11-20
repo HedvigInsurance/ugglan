@@ -102,16 +102,20 @@ struct InsuredPeopleScreen: View {
 
                         hSection {
                             hButton.LargeButton(type: .secondary) {
-                                store.send(
-                                    .coInsuredNavigationAction(
-                                        action: .openCoInsuredInput(
-                                            actionType: .add,
-                                            coInsuredModel: CoInsuredModel(),
-                                            title: L10n.contractAddCoinsured,
-                                            contractId: contractId
+                                if store.state.fetchAllCoInsuredNotInContract(contractId: contractId).isEmpty  {
+                                    store.send(
+                                        .coInsuredNavigationAction(
+                                            action: .openCoInsuredInput(
+                                                actionType: .add,
+                                                coInsuredModel: CoInsuredModel(),
+                                                title: L10n.contractAddCoinsured,
+                                                contractId: contractId
+                                            )
                                         )
                                     )
-                                )
+                                } else {
+                                    store.send(.coInsuredNavigationAction(action: .openCoInsuredSelectScreen(contractId: contractId)))
+                                }
                             } content: {
                                 hText(L10n.contractAddCoinsured)
                             }

@@ -15,7 +15,7 @@ struct CoInsuredSelectScreen: View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                return contractStore.state.fetchAllCoInsured.compactMap {
+                return contractStore.state.fetchAllCoInsuredNotInContract(contractId: contractId).compactMap {
                     ((object: $0, displayName: $0.fullName ?? ""))
                 }
             }(),
