@@ -19,18 +19,15 @@ struct CoInusuredInput: View {
         intentVm = store.intentViewModel
         self.vm = vm
         
-        if vm.birthday != "" {
-            vm.noSSN = true
-        }
-        
-        if vm.SSN.count > 10 {
+        if vm.SSN != "" {
             insuredPeopleVm.previousValue = CoInsuredModel(
                 firstName: vm.firstName,
                 lastName: vm.lastName,
                 SSN: vm.SSN,
                 needsMissingInfo: false
             )
-        } else {
+        } else if vm.birthday != "" {
+            vm.noSSN = true
             insuredPeopleVm.previousValue = CoInsuredModel(
                 firstName: vm.firstName,
                 lastName: vm.lastName,

@@ -36,7 +36,8 @@ struct InsuredPeopleScreen: View {
                         ContractOwnerField(coInsured: coInsured ?? [], contractId: contractId)
                         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
                             hSection {
-                                ForEach(upcomingCoInsured, id: \.self) { upcomingCoInsured in
+                                let sortedUpcoming = Set(upcomingCoInsured).sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                                ForEach(sortedUpcoming, id: \.self) { upcomingCoInsured in
                                     if coInsured?.contains(CoInsuredModel()) ?? false {
                                         if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                                             CoInsuredField(
@@ -71,8 +72,9 @@ struct InsuredPeopleScreen: View {
                             .sectionContainerStyle(.transparent)
 
                         } else {
+                            let sortedCoInsured = Set(coInsured ?? []).sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
                             hSection {
-                                ForEach(coInsured ?? [], id: \.self) { coInsured in
+                                ForEach(sortedCoInsured, id: \.self) { coInsured in
                                     if vm.coInsuredDeleted.first(where: {
                                         $0 == coInsured
                                     }) == nil {
