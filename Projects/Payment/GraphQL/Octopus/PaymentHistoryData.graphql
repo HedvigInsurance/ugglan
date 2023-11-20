@@ -5,7 +5,7 @@ query PaymentHistoryData {
             ...MemberChargeFragment
         }
         referralInformation {
-            code
+            ...MemberReferralInformationCodeFragment
         }
     }
 }

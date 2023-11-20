@@ -53,12 +53,7 @@ extension PaymentData {
         status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = campaings.redeemedCampaigns
-        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
-            code: referralInfo.code,
-            description: "Referral discount",
-            type: .referral,
-            id: referralInfo.code
-        )
+        let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment.asReedeemedCampaing()
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
