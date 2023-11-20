@@ -241,6 +241,7 @@ public class EditCoInsuredJourney {
                 PopJourney()
             }
         }
+        .hidesBackButton
         .configureTitle(L10n.contractAddConisuredInfo)
     }
 
