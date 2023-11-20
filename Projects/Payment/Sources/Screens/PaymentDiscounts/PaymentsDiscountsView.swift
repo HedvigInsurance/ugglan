@@ -82,7 +82,7 @@ struct PaymentsDiscountsView: View {
                 if data.referralsData.referrals.count == 0 {
                     InfoCard(
                         text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
-                        type: .info
+                        type: .campaign
                     )
                 }
 
@@ -265,7 +265,7 @@ struct DiscountCodeSectionView: View {
                             )
                         )
                     } content: {
-                        hText("Invite friends")
+                        hText(L10n.paymentsInviteFriends)
                     }
 
                     hButton.LargeButton(type: .ghost) {
