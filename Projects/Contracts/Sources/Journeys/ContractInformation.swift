@@ -91,7 +91,8 @@ struct ContractInformationView: View {
                         ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
                             CoInsuredField(
                                 coInsured: coInsuredd,
-                                accessoryView: EmptyView()
+                                accessoryView: EmptyView(),
+                                withoutDivider: true
                             )
                         }
                         ForEach(vm.coInsuredDeletedData(contract: contract), id: \.self) { coInsured in
@@ -99,7 +100,8 @@ struct ContractInformationView: View {
                                 coInsured: coInsured,
                                 accessoryView: EmptyView(),
                                 includeStatusPill: StatusPillType.deleted,
-                                date: contract.upcomingChangedAgreement?.activeFrom
+                                date: contract.upcomingChangedAgreement?.activeFrom,
+                                withoutDivider: true
                             )
                         }
                         ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
@@ -107,7 +109,8 @@ struct ContractInformationView: View {
                                 coInsured: coInsured,
                                 accessoryView: EmptyView(),
                                 includeStatusPill: StatusPillType.added,
-                                date: contract.upcomingChangedAgreement?.activeFrom
+                                date: contract.upcomingChangedAgreement?.activeFrom,
+                                withoutDivider: true
                             )
                         }
                     }
@@ -139,7 +142,8 @@ struct ContractInformationView: View {
             accessoryView: getAccessorytView(contract: contract)
                 .foregroundColor(hSignalColor.amberElement),
             title: L10n.contractCoinsured,
-            subTitle: L10n.contractNoInformation
+            subTitle: L10n.contractNoInformation,
+            withoutDivider: true
         )
         .padding(.horizontal, 16)
         .onTapGesture {
@@ -153,7 +157,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func getAccessorytView(contract: Contract) -> some View {
-        if contract.supportsCoInsured {
+        if contract.showEditInfo {
             Image(uiImage: hCoreUIAssets.warningSmall.image)
         } else {
             EmptyView()

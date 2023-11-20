@@ -69,6 +69,7 @@ struct CoInsuredField<Content: View>: View {
     let date: String?
     let title: String?
     let subTitle: String?
+    let withoutDivider: Bool?
 
     init(
         coInsured: CoInsuredModel? = nil,
@@ -76,7 +77,8 @@ struct CoInsuredField<Content: View>: View {
         includeStatusPill: StatusPillType? = nil,
         date: String? = nil,
         title: String? = nil,
-        subTitle: String? = nil
+        subTitle: String? = nil,
+        withoutDivider: Bool? = false
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
@@ -84,6 +86,7 @@ struct CoInsuredField<Content: View>: View {
         self.date = date
         self.title = title
         self.subTitle = subTitle
+        self.withoutDivider = withoutDivider
     }
 
     var body: some View {
@@ -110,7 +113,9 @@ struct CoInsuredField<Content: View>: View {
                 .padding(.bottom, 16)
                 .padding(.top, 5)
         }
-        Divider()
+        if !(withoutDivider ?? false) {
+            Divider()
+        }
     }
 
     @ViewBuilder
