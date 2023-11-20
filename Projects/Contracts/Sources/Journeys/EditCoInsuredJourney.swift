@@ -133,6 +133,7 @@ public class EditCoInsuredJourney {
         ) { action in
             getScreen(for: action)
         }
+        .configureTitle(L10n.changeAddressCoInsuredLabel)
     }
 
     @JourneyBuilder

@@ -308,7 +308,7 @@ private class ContractsInformationViewModel: ObservableObject {
         let current = Set(contract.currentAgreement?.coInsured ?? [])
 
         guard !current.contains(CoInsuredModel()) else {
-            return upcoming.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
         }
 
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
