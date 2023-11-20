@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 extension PaymentData {
@@ -10,17 +11,12 @@ extension PaymentData {
         status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
-        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
-            code: data.currentMember.referralInformation.code,
-            description: "Referral discount",
-            type: .referral,
-            id: data.currentMember.referralInformation.code
-        )
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
-                //                discount: discountBreakdown.isReferral ? referralDescription : redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) ?? referralDescription
+                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                    ?? data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
             )
         })
         paymentDetails = nil
@@ -97,4 +93,17 @@ extension Discount {
         validUntil = nil
         canBeDeleted = false
     }
+}
+
+extension OctopusGraphQL.MemberReferralInformationCodeFragment {
+    func asReedeemedCampaing() -> OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign {
+        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
+            code: self.code,
+            description: L10n.paymentsReferralDiscount,
+            type: .referral,
+            id: self.code
+        )
+        return referralDescription
+    }
+
 }
