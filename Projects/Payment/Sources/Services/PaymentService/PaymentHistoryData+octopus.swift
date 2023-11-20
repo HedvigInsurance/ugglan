@@ -78,9 +78,7 @@ extension PaymentData.PaymentStatus {
         switch data.status {
         case .failed:
             return .addedtoFuture(
-                date: nextPayment?.payment.date ?? "",
-                withId: nextPayment?.id ?? "",
-                isUpcoming: nextPayment == nil
+                date: nextPayment?.payment.date ?? ""
             )
         case .pending:
             return .pending
