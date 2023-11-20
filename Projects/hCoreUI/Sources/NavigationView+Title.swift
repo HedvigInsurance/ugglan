@@ -20,7 +20,6 @@ struct WithTitle: ViewModifier {
             }
     }
 }
-
 extension View {
     public func withNavigation(title: String) -> some View {
         modifier(WithTitle(title: title))
