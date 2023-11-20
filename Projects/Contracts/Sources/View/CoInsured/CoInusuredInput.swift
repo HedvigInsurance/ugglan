@@ -352,7 +352,7 @@ struct CoInusuredInput: View {
 
     @ViewBuilder
     var deleteCoInsuredFields: some View {
-        if vm.firstName != "" && vm.lastName != "" && vm.SSN != "" {
+        if vm.firstName != "" && vm.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
             hSection {
                 hFloatingField(
                     value: vm.fullName,
