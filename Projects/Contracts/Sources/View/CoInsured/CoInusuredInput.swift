@@ -334,11 +334,9 @@ struct CoInusuredInput: View {
                 }
                 .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        vm.noSSN.toggle()
-                    }
-                }
+                .onChange(of: vm.noSSN, perform: { newValue in
+                        vm.SSN = ""
+                })
                 .padding(.vertical, 12)
                 .padding(.horizontal, 16)
             }
@@ -389,7 +387,7 @@ struct CoInusuredInput: View {
                 return false
             }
         } else {
-            personalNumberValid = Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN)
+            let personalNumberValid = Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN)
             if personalNumberValid {
                 return false
             }
