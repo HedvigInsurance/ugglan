@@ -31,18 +31,20 @@ extension PaymentData.PaymentStatus {
         let charge = data.futureCharge
         switch charge?.status {
         case .failed:
-            let previousChargesPeriods = data.pastCharges.map { pastCharge in
-                pastCharge.contractsChargeBreakdown.flatMap({ $0.periods })
-            }
-
-            let from = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.fromDate.localDateToDate }).min()
-            let to = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.toDate.localDateToDate }).max()
-            return .failedForPrevious(from: from?.displayDateDDMMMFormat ?? "", to: to?.displayDateDDMMMFormat ?? "")
+            return .upcoming
         case .pending:
             return .pending
         case .success:
             return .success
         case .upcoming:
+            let previousChargesPeriods = data.pastCharges.map { pastCharge in
+                pastCharge.contractsChargeBreakdown.flatMap({ $0.periods })
+            }
+            let from = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.fromDate.localDateToDate }).min()
+            let to = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.toDate.localDateToDate }).max()
+            if let from, let to {
+                return .failedForPrevious(from: from.displayDateDDMMMFormat, to: to.displayDateDDMMMFormat)
+            }
             return .upcoming
         case .__unknown:
             return .unknown

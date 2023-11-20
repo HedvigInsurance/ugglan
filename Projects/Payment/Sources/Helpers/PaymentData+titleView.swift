@@ -16,9 +16,9 @@ extension PaymentData {
 
     fileprivate var getTitle: String {
         switch status {
-        case .upcoming:
+        case .upcoming, .failedForPrevious:
             return L10n.paymentsUpcomingPayment
-        case .pending, .success, .addedtoFuture, .failedForPrevious, .unknown:
+        case .pending, .success, .addedtoFuture, .unknown:
             return payment.date.displayDate
         }
     }
