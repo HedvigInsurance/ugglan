@@ -11,8 +11,11 @@ struct ContractDetails: View {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 8) {
-                        hText(contract.title)
-                        Spacer()
+                        HStack {
+                            hText(contract.title)
+                                .multilineTextAlignment(.leading)
+                            Spacer()
+                        }
                         hText(contract.amount.formattedAmount)
                         Image(uiImage: hCoreUIAssets.chevronDown.image)
                             .resizable()
