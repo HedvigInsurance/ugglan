@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
@@ -78,7 +79,7 @@ public class EditCoInsuredJourney {
                 vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
             ),
             style: style,
-            options: [.defaults, .blurredBackground]
+            options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
                 DismissJourney()
@@ -102,7 +103,7 @@ public class EditCoInsuredJourney {
                 getScreen(for: action)
             }
         }
-        .configureTitleView(title)
+        .configureTitle(title)
         .onAction(ContractStore.self) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
