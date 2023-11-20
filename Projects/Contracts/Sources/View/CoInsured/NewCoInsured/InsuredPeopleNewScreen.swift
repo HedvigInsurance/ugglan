@@ -57,7 +57,7 @@ struct InsuredPeopleNewScreen: View {
                             //                            hSection {
                             //                                InfoCard(text: "TBD", type: .info)
                             //                            }
-//                            .sectionContainerStyle(.transparent)
+                            //                            .sectionContainerStyle(.transparent)
                         } else {
                             hSection {
                                 InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
