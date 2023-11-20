@@ -75,7 +75,7 @@ struct PaymentsDiscountsView: View {
 
                         )
                     Spacer()
-                    hText("\(data.referralsData.discount.formattedAmount)\(L10n.perMonth)")
+                    hText("\(data.referralsData.allReferralDiscount.formattedAmount)\(L10n.perMonth)")
                         .foregroundColor(hTextColor.secondary)
                 }
 
@@ -83,6 +83,22 @@ struct PaymentsDiscountsView: View {
                     InfoCard(
                         text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
                         type: .campaign
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: L10n.ImportantMessage.readMore,
+                                buttonAction: {
+                                    InfoViewHolder.showInfoView(
+                                        with: L10n.paymentsReferralsInfoTitle,
+                                        and: L10n.ReferralsInfoSheet.body(
+                                            store.state.paymentDiscountsData?.referralsData.discountPerMember
+                                                .formattedAmount ?? ""
+                                        )
+                                    )
+                                }
+                            )
+                        ]
                     )
                 }
 
