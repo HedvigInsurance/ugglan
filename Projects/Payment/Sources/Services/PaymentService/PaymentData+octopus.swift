@@ -9,10 +9,17 @@ extension PaymentData {
         status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
+        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
+            code: data.currentMember.referralInformation.code,
+            description: "Referral discount",
+            type: .referral,
+            id: data.currentMember.referralInformation.code
+        )
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
-                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                //                discount: discountBreakdown.isReferral ? referralDescription : redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) ?? referralDescription
             )
         })
         paymentDetails = nil
@@ -27,18 +34,6 @@ extension PaymentData.PaymentStatus {
         let charge = data.futureCharge
         switch charge?.status {
         case .failed:
-            //            if let includedInFutureCharge = data.includedInFutureCharge {
-            //                return .addedtoFuture(
-            //                    date: includedInFutureCharge.date,
-            //                    withId: includedInFutureCharge.id,
-            //                    isUpcoming: includedInFutureCharge.status == .upcoming
-            //                )
-            //            } else {
-            //                return .failedForPrevious(
-            //                    from: data.includingPreviousCharges.first?.date ?? "",
-            //                    to: data.includingPreviousCharges.last?.date ?? ""
-            //                )
-            //            }
             let previousChargesPeriods = data.pastCharges.map { pastCharge in
                 pastCharge.contractsChargeBreakdown.flatMap({ $0.periods })
             }
@@ -94,7 +89,7 @@ extension Discount {
         discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
     ) {
         id = UUID().uuidString
-        code = data.code ?? ""
+        code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
         listOfAffectedInsurances = []

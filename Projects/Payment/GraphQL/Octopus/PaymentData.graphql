@@ -1,6 +1,9 @@
 query PaymentData {
     currentMember {
         ...ReedemCampaignsFragment
+        referralInformation {
+            code
+        }
         futureCharge {
             ...MemberChargeFragment
             pastFailedChargeIds
@@ -49,6 +52,7 @@ fragment MemberChargeFragment on MemberCharge{
         discount {
         ...MoneyFragment
         }
+        isReferral
       }
       gross {
         ...MoneyFragment
