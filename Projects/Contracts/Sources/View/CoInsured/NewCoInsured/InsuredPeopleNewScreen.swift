@@ -54,9 +54,9 @@ struct InsuredPeopleNewScreen: View {
                                 }
                             }
                             .sectionContainerStyle(.transparent)
-                            hSection {
-                                InfoCard(text: "TBD", type: .info)
-                            }
+                            //                            hSection {
+                            //                                InfoCard(text: "TBD", type: .info)
+                            //                            }
                             .sectionContainerStyle(.transparent)
                         } else {
                             hSection {
