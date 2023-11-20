@@ -332,9 +332,9 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
-                let paymentService = hPaymentServiceDemo()
+                let paymentService = hPaymentServiceOctopus()
                 let hForeverCodeService = hForeverCodeServiceDemo()
-                let hCampaignsService = hCampaignsServiceDemo()
+                let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })

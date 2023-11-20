@@ -88,7 +88,7 @@ public struct PaymentData: Codable, Equatable {
 public struct Discount: Codable, Equatable, Identifiable {
     public let id: String
     let code: String
-    let amount: MonetaryAmount
+    let amount: MonetaryAmount?
     let title: String
     let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?

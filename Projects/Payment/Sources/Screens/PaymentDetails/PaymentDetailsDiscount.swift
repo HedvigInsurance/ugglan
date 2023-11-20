@@ -31,7 +31,9 @@ struct PaymentDetailsDiscountView: View {
                         vm.startRemoveCode()
                     }
                     Spacer()
-                    hText(vm.discount.amount.formattedAmount)
+                    if let discount = vm.discount.amount {
+                        hText(discount.formattedAmount)
+                    }
                 }
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
@@ -96,7 +98,7 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
 
     func startRemoveCode() {
         if shouldShowRemove {
-            store.send(.navigation(to: .openDeleteCampaing(code: discount.code)))
+            store.send(.navigation(to: .openDeleteCampaing(discount: discount)))
         }
     }
 

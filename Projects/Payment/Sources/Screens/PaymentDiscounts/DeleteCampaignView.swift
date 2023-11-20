@@ -17,7 +17,11 @@ struct DeleteCampaignView: View {
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 16) {
-                            hFloatingField(value: vm.code, placeholder: L10n.referralAddcouponInputplaceholder) {
+                            hFloatingField(
+                                value: vm.discount.code,
+                                placeholder: L10n.referralAddcouponInputplaceholder,
+                                error: $vm.error
+                            ) {
 
                             }
                             .hFieldTrailingView {
@@ -67,15 +71,15 @@ struct DeleteCampaignView: View {
 }
 
 class DeleteCampaignViewModel: ObservableObject {
-    let code: String
+    let discount: Discount
     @Inject private var campaignsService: hCampaignsService
     @PresentableStore private var store: PaymentStore
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil
 
-    init(code: String) {
-        self.code = code
+    init(discount: Discount) {
+        self.discount = discount
     }
 
     func confirmRemove() {
@@ -92,7 +96,7 @@ class DeleteCampaignViewModel: ObservableObject {
 
         do {
             error = nil
-            try await campaignsService.remove(code: code)
+            try await campaignsService.remove(codeId: discount.id)
             store.send(.load)
             store.send(.fetchDiscountsData)
             withAnimation {
@@ -124,15 +128,27 @@ class DeleteCampaignViewModel: ObservableObject {
 
 struct DeleteCampaignView_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteCampaignView(vm: .init(code: "CODE"))
+        DeleteCampaignView(
+            vm: .init(
+                discount: .init(
+                    id: "id",
+                    code: "CODE",
+                    amount: nil,
+                    title: "Title",
+                    listOfAffectedInsurances: [],
+                    validUntil: nil,
+                    canBeDeleted: false
+                )
+            )
+        )
     }
 }
 
 extension DeleteCampaignView {
-    static func journeyWith(code: String) -> some JourneyPresentation {
+    static func journeyWith(discount: Discount) -> some JourneyPresentation {
         HostingJourney(
             PaymentStore.self,
-            rootView: DeleteCampaignView(vm: .init(code: code)),
+            rootView: DeleteCampaignView(vm: .init(discount: discount)),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
