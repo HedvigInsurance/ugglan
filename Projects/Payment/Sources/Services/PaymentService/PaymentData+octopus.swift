@@ -36,11 +36,11 @@ extension PaymentData.PaymentStatus {
         case .success:
             return .success
         case .upcoming:
-            let previousChargesPeriods = data.pastCharges.map { pastCharge in
-                pastCharge.contractsChargeBreakdown.flatMap({ $0.periods })
-            }
-            let from = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.fromDate.localDateToDate }).min()
-            let to = previousChargesPeriods.flatMap({ $0 }).compactMap({ $0.toDate.localDateToDate }).max()
+            let previousChargesPeriods =
+                data.futureCharge?.contractsChargeBreakdown.flatMap({ $0.periods })
+                .filter({ $0.isPreviouslyFailedCharge }) ?? []
+            let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
+            let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
             if let from, let to {
                 return .failedForPrevious(from: from.displayDateDDMMMFormat, to: to.displayDateDDMMMFormat)
             }

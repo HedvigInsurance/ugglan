@@ -8,15 +8,6 @@ query PaymentData {
             ...MemberChargeFragment
             pastFailedChargeIds
         }
-        pastCharges {
-            id
-            contractsChargeBreakdown {
-                periods {
-                    fromDate
-                    toDate
-                }
-            }
-        }
     }
 }
 
