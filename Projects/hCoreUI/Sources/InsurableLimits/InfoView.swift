@@ -18,11 +18,36 @@ public struct InfoViewHolder: View {
         SwiftUI.Button {
             showInfoView()
         } label: {
-            Image(uiImage: hCoreUIAssets.infoIcon.image)
+            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                .foregroundColor(hTextColor.secondary)
         }
     }
 
     private func showInfoView() {
+        let cancelAction = ReferenceAction {}
+        let view = InfoView(title: title, description: description) {
+            cancelAction.execute()
+        }
+        let journey = HostingJourney(
+            rootView: view,
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
+        )
+
+        let calendarJourney = journey.addConfiguration { presenter in
+            cancelAction.execute = {
+                presenter.dismisser(JourneyError.cancelled)
+            }
+        }
+        let vc = UIApplication.shared.getTopViewController()
+        if let vc {
+            disposeBag += vc.present(calendarJourney)
+        }
+    }
+}
+extension InfoViewHolder {
+    public static func showInfoView(with title: String, and description: String) {
+        let disposeBag = DisposeBag()
         let cancelAction = ReferenceAction {}
         let view = InfoView(title: title, description: description) {
             cancelAction.execute()

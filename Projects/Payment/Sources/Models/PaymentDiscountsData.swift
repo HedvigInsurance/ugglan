@@ -14,6 +14,11 @@ public struct ReferralsData: Equatable, Codable {
     let discount: MonetaryAmount
     let referrals: [Referral]
 
+    var allReferralDiscount: MonetaryAmount {
+        let value = referrals.compactMap({ $0.activeDiscount }).compactMap({ $0.value }).reduce(0.0, +)
+        return MonetaryAmount(amount: value, currency: discountPerMember.currency)
+    }
+
 }
 public struct Referral: Equatable, Codable, Identifiable {
     public let id: String
