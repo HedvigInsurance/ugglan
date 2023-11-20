@@ -21,7 +21,7 @@ extension Date {
         return DateFormatters.displayddMMMMYYYY.string(from: self)
     }
 
-    public var displayDateDDMMMFormat: String? {
+    public var displayDateDDMMMFormat: String {
         return DateFormatters.displayddMMM.string(from: self)
     }
 

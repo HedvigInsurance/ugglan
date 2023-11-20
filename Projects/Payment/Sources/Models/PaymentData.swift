@@ -22,7 +22,7 @@ public struct PaymentData: Codable, Equatable {
         case success
         case pending
         case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
-        case addedtoFuture(date: ServerBasedDate, withId: String, isUpcoming: Bool)
+        case addedtoFuture(date: ServerBasedDate)
         case unknown
 
         enum PaymentStatusAction: Codable, Equatable {
