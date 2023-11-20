@@ -67,12 +67,12 @@ struct CoInusuredInput: View {
                             Task {
                                 if vm.firstName == "" && vm.SSN == "" {
                                     store.coInsuredViewModel.removeCoInsured(.init())
-                                } else if vm.SSN.count == 10 {
+                                } else if vm.SSN != "" {
                                     store.coInsuredViewModel.removeCoInsured(
                                         .init(
                                             firstName: vm.firstName,
                                             lastName: vm.lastName,
-                                            birthDate: vm.birthday,
+                                            SSN: vm.SSN,
                                             needsMissingInfo: false
                                         )
                                     )
@@ -81,7 +81,7 @@ struct CoInusuredInput: View {
                                         .init(
                                             firstName: vm.firstName,
                                             lastName: vm.lastName,
-                                            SSN: vm.SSN,
+                                            birthDate: vm.birthday,
                                             needsMissingInfo: false
                                         )
                                     )
@@ -369,7 +369,7 @@ struct CoInusuredInput: View {
 
             hSection {
                 hFloatingField(
-                    value: vm.SSN,
+                    value: vm.SSN != "" ? vm.SSN : vm.birthday,
                     placeholder: L10n.TravelCertificate.personalNumber,
                     onTap: {}
                 )
