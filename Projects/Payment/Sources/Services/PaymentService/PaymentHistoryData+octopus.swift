@@ -18,6 +18,7 @@ extension PaymentHistoryListData {
             let paymentData = PaymentData(
                 with: item.element.fragments.memberChargeFragment,
                 campaings: reedemCampaingsFragment,
+                referralInfo: data.referralInformation,
                 nextPayment: nextPayment
             )
             nextPayment = paymentData
@@ -43,6 +44,7 @@ extension PaymentData {
     init(
         with data: OctopusGraphQL.MemberChargeFragment,
         campaings: OctopusGraphQL.ReedemCampaignsFragment,
+        referralInfo: OctopusGraphQL.PaymentHistoryDataQuery.Data.CurrentMember.ReferralInformation,
         nextPayment: PaymentData? = nil
     ) {
         self.id = data.id ?? ""
@@ -51,10 +53,17 @@ extension PaymentData {
         status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = campaings.redeemedCampaigns
+        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
+            code: referralInfo.code,
+            description: "Referral discount",
+            type: .referral,
+            id: referralInfo.code
+        )
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
-                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                discount: discountBreakdown.isReferral
+                    ? referralDescription : redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
             )
         })
         paymentDetails = nil

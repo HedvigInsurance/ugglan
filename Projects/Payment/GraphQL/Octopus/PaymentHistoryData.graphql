@@ -4,5 +4,8 @@ query PaymentHistoryData {
         pastCharges {
             ...MemberChargeFragment
         }
+        referralInformation {
+            code
+        }
     }
 }
