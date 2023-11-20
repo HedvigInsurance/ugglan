@@ -66,7 +66,7 @@ struct InsuredMemberScreen: View {
     private func ssnField() -> some View {
         hRow {
             hFloatingTextField(
-                masking: .init(type: .personalNumber12Digits),
+                masking: .init(type: .personalNumberCoInsured),
                 value: $vm.personalNumber,
                 equals: $vm.inputType,
                 focusValue: .ssn,
@@ -100,7 +100,7 @@ class InsuredMemberViewModel: ObservableObject {
     }
 
     var personalNumberMasking: Masking {
-        Masking(type: .personalNumber12Digits)
+        Masking(type: .personalNumberCoInsured)
     }
 
     func submit() {

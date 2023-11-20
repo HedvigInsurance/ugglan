@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
@@ -9,9 +10,9 @@ public class EditCoInsuredJourney {
     static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
             if case let .openInsuredPeopleScreen(contractId) = navigationAction {
-                openInsuredPeopleScreen(id: contractId).withJourneyDismissButton
+                openInsuredPeopleScreen(id: contractId)
             } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
-                openNewInsuredPeopleScreen(id: contractId).withJourneyDismissButton
+                openNewInsuredPeopleScreen(id: contractId)
             } else if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
                 openCoInsuredInput(
                     actionType: actionType,
@@ -248,6 +249,26 @@ public class EditCoInsuredJourney {
             openSelectInsurance(contractIds: contractIds)
         } else if let contractId = contractIds.first {
             openNewInsuredPeopleScreen(id: contractId)
+        }
+    }
+
+    @JourneyBuilder
+    public static func handleOpenEditCoInsured(for contractId: String, fromInfoCard: Bool) -> some JourneyPresentation {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
+            canChangeCoInsured
+        {
+            if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
+                if fromInfoCard {
+                    EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
+                } else {
+                    EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
+                }
+            } else {
+                EditCoInsuredJourney.openInsuredPeopleScreen(id: contractId)
+            }
+        } else {
+            EditCoInsuredJourney.openGenericErrorScreen()
         }
     }
 }

@@ -124,22 +124,7 @@ extension Contracts {
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
             } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
-                    canChangeCoInsured
-                {
-                    if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
-                        if fromInfoCard {
-                            EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
-                        } else {
-                            EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
-                        }
-                    } else {
-                        EditCoInsuredJourney.openInsuredPeopleScreen(id: contractId)
-                    }
-                } else {
-                    EditCoInsuredJourney.openGenericErrorScreen()
-                }
+                EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
                 EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
             } else if case let .startTermination(navigationAction) = action {

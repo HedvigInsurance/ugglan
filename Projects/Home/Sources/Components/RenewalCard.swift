@@ -13,8 +13,13 @@ public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
+    let showCoInsured: Bool?
 
-    public init() {}
+    public init(
+        showCoInsured: Bool? = true
+    ) {
+        self.showCoInsured = showCoInsured
+    }
 
     private func buildSheetButtons(contracts: [Contract]) -> [ActionSheet.Button] {
         var buttons = contracts.map { contract in
@@ -62,9 +67,10 @@ public struct RenewalCardView: View {
                     if $0.upcomingChangedAgreement == nil {
                         return false
                     } else {
-                        return !($0.upcomingChangedAgreement?.coInsured == $0.currentAgreement?.coInsured)
+                        let upComingCoInsured = $0.upcomingChangedAgreement?.coInsured ?? []
+                        return upComingCoInsured != $0.currentAgreement?.coInsured && !upComingCoInsured.isEmpty
                     }
-                }) {
+                }), showCoInsured ?? false {
                     InfoCard(
                         text: L10n.contractCoinsuredUpdateInFuture(
                             contract.upcomingChangedAgreement?.coInsured.count ?? 0,
