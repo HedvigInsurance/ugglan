@@ -2,7 +2,7 @@ query PaymentData {
     currentMember {
         ...ReedemCampaignsFragment
         referralInformation {
-            code
+            ...MemberReferralInformationCodeFragment
         }
         futureCharge {
             ...MemberChargeFragment
@@ -18,6 +18,10 @@ query PaymentData {
             }
         }
     }
+}
+
+fragment MemberReferralInformationCodeFragment on MemberReferralInformation {
+    code
 }
 
 
