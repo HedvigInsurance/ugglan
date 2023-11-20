@@ -156,11 +156,12 @@ struct ContractInformationView: View {
             }
         }
     }
-    
+
     public func displayInfoCard(contract: Contract) -> Bool {
         let currentCoInsured = contract.currentAgreement?.coInsured
         let upComingCoInsured = contract.upcomingChangedAgreement?.coInsured
-        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false) && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
+        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false)
+            && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
     }
 
     @ViewBuilder
@@ -299,14 +300,14 @@ private class ContractsInformationViewModel: ObservableObject {
         guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
             return contract.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
         }
-        
+
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
-        
+
         guard !current.contains(CoInsuredModel()) else {
             return upcoming.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
         }
-        
+
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
         return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }

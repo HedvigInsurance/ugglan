@@ -60,8 +60,8 @@ struct InsuredPeopleScreen: View {
                                                     accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
                                                     includeStatusPill: StatusPillType.added,
                                                     date: (intentVm.activationDate != "")
-                                                    ? intentVm.activationDate
-                                                    : contract.upcomingChangedAgreement?.activeFrom
+                                                        ? intentVm.activationDate
+                                                        : contract.upcomingChangedAgreement?.activeFrom
                                                 )
                                             }
                                         }
