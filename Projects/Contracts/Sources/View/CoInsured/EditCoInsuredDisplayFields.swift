@@ -3,44 +3,62 @@ import hCore
 import hCoreUI
 
 struct ContractOwnerField: View {
-    let coInsured: [CoInsuredModel]
     let contractId: String
+    let enabled: Bool?
 
     init(
-        coInsured: [CoInsuredModel],
-        contractId: String
+        contractId: String,
+        enabled: Bool? = false
     ) {
-        self.coInsured = coInsured
         self.contractId = contractId
+        self.enabled = enabled
     }
 
     var body: some View {
-        hSection {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.contractForId(contractId)
+        VStack {
+            VStack(alignment: .leading, spacing: 0) {
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        state.contractForId(contractId)
+                    }
+                ) { contract in
+                    if let contract = contract {
+                        HStack {
+                            hText(contract.fullName)
+                                .foregroundColor(getTitleColor)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .foregroundColor(hTextColor.tertiary)
                         }
-                    ) { contract in
-                        hText(contract?.fullName ?? "")
-                            .fixedSize()
-                        hText(contract?.ssn ?? "", style: .standardSmall)
+                        hText(contract.ssn ?? "", style: .footnote)
+                            .foregroundColor(getSubTitleColor)
                     }
                 }
-                .foregroundColor(hTextColor.tertiary)
-                Spacer()
-                HStack(alignment: .top) {
-                    Image(uiImage: hCoreUIAssets.lockSmall.image)
-                        .foregroundColor(hTextColor.tertiary)
-                        .frame(maxWidth: .infinity, alignment: .topTrailing)
-                }
             }
-            .padding(.vertical, 16)
-            Divider()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if !(enabled ?? false) {
+                Divider()
+            }
         }
-        .sectionContainerStyle(.transparent)
+    }
+
+    @hColorBuilder
+    var getTitleColor: some hColor {
+        if enabled ?? false {
+            hTextColor.primary
+        } else {
+            hTextColor.tertiary
+        }
+    }
+
+    @hColorBuilder
+    var getSubTitleColor: some hColor {
+        if enabled ?? false {
+            hTextColor.secondary
+        } else {
+            hTextColor.tertiary
+        }
     }
 }
 
@@ -69,30 +87,21 @@ struct CoInsuredField<Content: View>: View {
     }
 
     var body: some View {
-        VStack(spacing: 4) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    if let coInsured = coInsured, let fullName = coInsured.fullName {
-                        hText(fullName)
-                            .fixedSize()
-                        hText(coInsured.SSN ?? coInsured.birthDate ?? "", style: .standardSmall)
-                            .foregroundColor(hTextColor.secondary)
-                            .fixedSize()
-                    } else {
-                        hText(title ?? "")
-                            .fixedSize()
-                        hText(subTitle ?? "", style: .standardSmall)
-                            .foregroundColor(hTextColor.secondary)
-                            .fixedSize()
-                    }
-                }
+        let displayTitle = (coInsured?.fullName ?? title) ?? ""
+        let displaySubTitle = coInsured?.SSN ?? coInsured?.birthDate ?? subTitle ?? ""
+
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                hText(displayTitle)
+                    .fixedSize()
                 Spacer()
-                HStack {
-                    Spacer()
-                    accessoryView
-                }
+                accessoryView
             }
+            hText(displaySubTitle, style: .standardSmall)
+                .foregroundColor(hTextColor.secondary)
+                .fixedSize()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, (includeStatusPill != nil) ? 0 : 16)
         .padding(.top, (includeStatusPill != nil) ? 16 : 0)
         if let includeStatusPill, let coInsured {
@@ -158,6 +167,6 @@ enum StatusPillType {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(coInsured: [], contractId: "")
+        ContractOwnerField(contractId: "")
     }
 }

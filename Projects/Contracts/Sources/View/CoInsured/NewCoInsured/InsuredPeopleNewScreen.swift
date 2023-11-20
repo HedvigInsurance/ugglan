@@ -29,9 +29,15 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        if let coInsured = contract.currentAgreement?.coInsured {
-                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
+                        hSection {
+                            hRow {
+                                ContractOwnerField(contractId: contractId)
+                            }
+                            .verticalPadding(0)
+                            .padding(.top, 16)
                         }
+                        .withoutHorizontalPadding
+                        .sectionContainerStyle(.transparent)
 
                         hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
                             CoInsuredField(

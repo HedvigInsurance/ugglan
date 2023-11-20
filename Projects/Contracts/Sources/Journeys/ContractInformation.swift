@@ -79,19 +79,13 @@ struct ContractInformationView: View {
                             hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
                                 .foregroundColor(hTextColor.secondary)
                         }
-                        HStack {
-                            VStack(alignment: .leading) {
-                                hText(contract.fullName)
-                                hText(contract.ssn ?? "", style: .footnote)
-                                    .foregroundColor(hTextColor.secondary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                .foregroundColor(hTextColor.tertiary)
-                        }
                     }
                 }
+
+                hRow {
+                    ContractOwnerField(contractId: contract.id, enabled: true)
+                }
+
                 if hAnalyticsExperiment.editCoinsured {
                     VStack(spacing: 0) {
                         ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
@@ -142,7 +136,7 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func addMissingCoInsuredView(contract: Contract) -> some View {
         CoInsuredField(
-            accessoryView: Image(uiImage: hCoreUIAssets.warningSmall.image)
+            accessoryView: getAccessorytView(contract: contract)
                 .foregroundColor(hSignalColor.amberElement),
             title: L10n.contractCoinsured,
             subTitle: L10n.contractNoInformation
@@ -154,6 +148,15 @@ struct ContractInformationView: View {
                     .openEditCoInsured(contractId: id, fromInfoCard: true)
                 )
             }
+        }
+    }
+
+    @ViewBuilder
+    private func getAccessorytView(contract: Contract) -> some View {
+        if contract.supportsCoInsured {
+            Image(uiImage: hCoreUIAssets.warningSmall.image)
+        } else {
+            EmptyView()
         }
     }
 

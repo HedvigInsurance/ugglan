@@ -33,10 +33,19 @@ struct InsuredPeopleScreen: View {
                 ) { contract in
                     if let contract = contract {
                         let coInsured = contract.currentAgreement?.coInsured
-                        ContractOwnerField(coInsured: coInsured ?? [], contractId: contractId)
+                        hSection {
+                            hRow {
+                                ContractOwnerField(contractId: contractId)
+                            }
+                            .verticalPadding(0)
+                            .padding(.top, 16)
+                        }
+                        .withoutHorizontalPadding
+                        .sectionContainerStyle(.transparent)
                         if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
                             hSection {
-                                let sortedUpcoming = Set(upcomingCoInsured).sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                                let sortedUpcoming = Set(upcomingCoInsured)
+                                    .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
                                 ForEach(sortedUpcoming, id: \.self) { upcomingCoInsured in
                                     if coInsured?.contains(CoInsuredModel()) ?? false {
                                         if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
@@ -72,7 +81,8 @@ struct InsuredPeopleScreen: View {
                             .sectionContainerStyle(.transparent)
 
                         } else {
-                            let sortedCoInsured = Set(coInsured ?? []).sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                            let sortedCoInsured = Set(coInsured ?? [])
+                                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
                             hSection {
                                 ForEach(sortedCoInsured, id: \.self) { coInsured in
                                     if vm.coInsuredDeleted.first(where: {
