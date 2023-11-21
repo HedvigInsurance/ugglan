@@ -29,7 +29,12 @@ struct PaymentsDiscountsView: View {
 
     private var discounts: some View {
         hSection(data.discounts) { discount in
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .enableRemoving], discount: discount))
+            PaymentDetailsDiscountView(
+                vm: .init(
+                    options: [.showExpire],
+                    discount: discount
+                )
+            )
         }
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {

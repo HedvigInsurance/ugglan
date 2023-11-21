@@ -1,4 +1,5 @@
 import Foundation
+import Presentation
 import hGraphQL
 
 extension PaymentDiscountsData {
@@ -11,7 +12,9 @@ extension PaymentDiscountsData {
 
 extension Discount {
     init(with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign) {
-        self.amount = nil
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        let amountFromPaymentData = store.state.paymentData?.discounts.first(where: { $0.code == data.code })?.amount
+        self.amount = amountFromPaymentData
         self.canBeDeleted = true
         self.code = data.code
         self.id = data.id
