@@ -50,10 +50,12 @@ struct RemoveCoInsuredScreen: View {
                             }
                             hSection {
                                 ForEach(exisistingCoInsured, id: \.self) { coInsured in
-                                    CoInsuredField(
-                                        coInsured: coInsured,
-                                        accessoryView: accessoryView(coInsured)
-                                    )
+                                    hRow {
+                                        CoInsuredField(
+                                            coInsured: coInsured,
+                                            accessoryView: accessoryView(coInsured)
+                                        )
+                                    }
                                 }
 
                                 var nbOfMissingoInsured: Int {
@@ -65,13 +67,16 @@ struct RemoveCoInsuredScreen: View {
                                 }
 
                                 ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
-                                    CoInsuredField(
-                                        accessoryView: accessoryView(.init()),
-                                        title: L10n.contractCoinsured,
-                                        subTitle: L10n.contractNoInformation
-                                    )
+                                    hRow {
+                                        CoInsuredField(
+                                            accessoryView: accessoryView(.init()),
+                                            title: L10n.contractCoinsured,
+                                            subTitle: L10n.contractNoInformation
+                                        )
+                                    }
                                 }
                             }
+                            .withoutHorizontalPadding
                             .sectionContainerStyle(.transparent)
                         }
                     }

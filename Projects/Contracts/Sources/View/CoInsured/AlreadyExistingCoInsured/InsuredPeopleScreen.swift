@@ -22,6 +22,15 @@ struct InsuredPeopleScreen: View {
         vm.upcomingCoInsured = store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
     }
 
+    @ViewBuilder
+    func getView(coInsured: CoInsuredListType) -> some View {
+        if coInsured.locallyAdded {
+            localAccessoryView(coInsured: coInsured.coInsured)
+        } else {
+            existingAccessoryView(coInsured: coInsured.coInsured)
+        }
+    }
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -42,74 +51,18 @@ struct InsuredPeopleScreen: View {
                         }
                         .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
-                        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
-                            hSection {
-                                let sortedUpcoming = Set(upcomingCoInsured)
-                                    .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
-                                ForEach(sortedUpcoming, id: \.self) { upcomingCoInsured in
-                                    if coInsured?.contains(CoInsuredModel()) ?? false {
-                                        if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
-                                            CoInsuredField(
-                                                coInsured: upcomingCoInsured,
-                                                accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
-                                            )
-                                        }
-                                    } else {
-                                        if (coInsured ?? []).contains(upcomingCoInsured) {
-                                            if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
-                                                //remaining
-                                                CoInsuredField(
-                                                    coInsured: upcomingCoInsured,
-                                                    accessoryView: existingAccessoryView(coInsured: upcomingCoInsured)
-                                                )
-                                            }
-                                        } else {
-                                            if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
-                                                CoInsuredField(
-                                                    coInsured: upcomingCoInsured,
-                                                    accessoryView: existingAccessoryView(coInsured: upcomingCoInsured),
-                                                    includeStatusPill: StatusPillType.added,
-                                                    date: (intentVm.activationDate != "")
-                                                        ? intentVm.activationDate
-                                                        : contract.upcomingChangedAgreement?.activeFrom
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            .sectionContainerStyle(.transparent)
 
-                        } else {
-                            let sortedCoInsured = Set(coInsured ?? [])
-                                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
-                            hSection {
-                                ForEach(sortedCoInsured, id: \.self) { coInsured in
-                                    if vm.coInsuredDeleted.first(where: {
-                                        $0 == coInsured
-                                    }) == nil {
-                                        CoInsuredField(
-                                            coInsured: coInsured,
-                                            accessoryView: existingAccessoryView(coInsured: coInsured)
-                                        )
-                                    }
-                                }
-                            }
-                            .sectionContainerStyle(.transparent)
-                        }
-
-                        // adding locally added ones
-                        hSection {
-                            ForEach(vm.coInsuredAdded, id: \.self) { coInsured in
+                        hSection(listToDisplay(contract: contract)) { coInsured in
+                            hRow {
                                 CoInsuredField(
-                                    coInsured: coInsured,
-                                    accessoryView: localAccessoryView(coInsured: coInsured),
-                                    includeStatusPill: StatusPillType.added,
-                                    date: (intentVm.activationDate != "")
-                                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom
+                                    coInsured: coInsured.coInsured,
+                                    accessoryView: getView(coInsured: coInsured),
+                                    includeStatusPill: coInsured.type == .added ? .added : nil,
+                                    date: coInsured.date
                                 )
                             }
                         }
+                        .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
 
                         hSection {
@@ -135,7 +88,9 @@ struct InsuredPeopleScreen: View {
                             } content: {
                                 hText(L10n.contractAddCoinsured)
                             }
+                            .padding(.horizontal, 16)
                         }
+                        .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
                     }
                 }
@@ -186,6 +141,72 @@ struct InsuredPeopleScreen: View {
                     )
                 )
             }
+    }
+
+    func listToDisplay(contract: Contract) -> [CoInsuredListType] {
+        var finalList: [CoInsuredListType] = []
+        var addedCoInsured: [CoInsuredListType] = []
+        let coInsured = contract.currentAgreement?.coInsured
+        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
+            let sortedUpcoming = Set(upcomingCoInsured)
+                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            sortedUpcoming.forEach { upcomingCoInsured in
+                if coInsured?.contains(CoInsuredModel()) ?? false {
+                    if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
+                        finalList.append(
+                            CoInsuredListType(coInsured: upcomingCoInsured, type: nil, locallyAdded: false)
+                        )
+                    }
+                } else {
+                    if (coInsured ?? []).contains(upcomingCoInsured) {
+                        if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
+                            //remaining
+                            finalList.append(
+                                CoInsuredListType(coInsured: upcomingCoInsured, type: nil, locallyAdded: false)
+                            )
+                        }
+                    } else {
+                        if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
+                            addedCoInsured.append(
+                                CoInsuredListType(
+                                    coInsured: upcomingCoInsured,
+                                    type: .added,
+                                    date: (intentVm.activationDate != "")
+                                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom,
+                                    locallyAdded: false
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            let sortedCoInsured = Set(coInsured ?? [])
+                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            sortedCoInsured.forEach { coInsured in
+
+                if vm.coInsuredDeleted.first(where: {
+                    $0 == coInsured
+                }) == nil {
+
+                    finalList.append(CoInsuredListType(coInsured: coInsured, type: nil, locallyAdded: false))
+                }
+            }
+        }
+
+        // adding locally added ones
+        vm.coInsuredAdded.forEach { coInsured in
+            addedCoInsured.append(
+                CoInsuredListType(
+                    coInsured: coInsured,
+                    type: .added,
+                    date: (intentVm.activationDate != "")
+                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom,
+                    locallyAdded: true
+                )
+            )
+        }
+        return finalList + addedCoInsured
     }
 }
 
@@ -425,4 +446,14 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             self.isLoading = false
         }
     }
+}
+
+struct CoInsuredListType: Hashable, Identifiable {
+    var id: String {
+        return coInsured.id
+    }
+    var coInsured: CoInsuredModel
+    var type: StatusPillType?
+    var date: String?
+    var locallyAdded: Bool
 }

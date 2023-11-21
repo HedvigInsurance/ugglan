@@ -85,46 +85,36 @@ struct ContractInformationView: View {
                 hRow {
                     ContractOwnerField(contractId: contract.id, enabled: true)
                 }
+                .verticalPadding(0)
+                .padding(.top, 16)
+            }
+            .withoutHorizontalPadding
 
-                if hAnalyticsExperiment.editCoinsured {
-                    VStack(spacing: 0) {
-                        ForEach(vm.coInsuredRemainingData(contract: contract), id: \.self) { coInsuredd in
-                            CoInsuredField(
-                                coInsured: coInsuredd,
-                                accessoryView: EmptyView(),
-                                withoutDivider: true
-                            )
-                        }
-                        ForEach(vm.coInsuredDeletedData(contract: contract), id: \.self) { coInsured in
-                            CoInsuredField(
-                                coInsured: coInsured,
-                                accessoryView: EmptyView(),
-                                includeStatusPill: StatusPillType.deleted,
-                                date: contract.upcomingChangedAgreement?.activeFrom,
-                                withoutDivider: true
-                            )
-                        }
-                        ForEach(vm.coInsuredAddedData(contract: contract), id: \.self) { coInsured in
-                            CoInsuredField(
-                                coInsured: coInsured,
-                                accessoryView: EmptyView(),
-                                includeStatusPill: StatusPillType.added,
-                                date: contract.upcomingChangedAgreement?.activeFrom,
-                                withoutDivider: true
-                            )
-                        }
+            if hAnalyticsExperiment.editCoinsured {
+                let getListsToDisplay =
+                    vm.coInsuredRemainingData(contract: contract) + vm.coInsuredDeletedData(contract: contract)
+                    + vm.coInsuredAddedData(contract: contract)
+
+                hSection(getListsToDisplay) { coInsured in
+
+                    hRow {
+                        CoInsuredField(
+                            coInsured: coInsured.coInsured,
+                            accessoryView: EmptyView(),
+                            includeStatusPill: includeStatusPill(type: coInsured.type),
+                            date: contract.upcomingChangedAgreement?.activeFrom
+                        )
                     }
-                    .padding(.leading, 16)
+                }
+                .withoutHorizontalPadding
 
-                    ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
-                        addMissingCoInsuredView(contract: contract)
-                        if index < nbOfMissingCoInsured - 1 {
-                            hRowDivider()
-                        }
+                ForEach(0..<nbOfMissingCoInsured, id: \.self) { index in
+                    addMissingCoInsuredView(contract: contract)
+                    if index < nbOfMissingCoInsured - 1 {
+                        hRowDivider()
                     }
                 }
             }
-            .withoutHorizontalPadding
             if hAnalyticsExperiment.editCoinsured {
                 hSection {
                     if nbOfMissingCoInsured != 0 && contract.showEditInfo {
@@ -136,16 +126,24 @@ struct ContractInformationView: View {
         }
     }
 
+    private func includeStatusPill(type: StatusPillType?) -> StatusPillType? {
+        if type == nil {
+            return nil
+        } else {
+            return type
+        }
+    }
+
     @ViewBuilder
     private func addMissingCoInsuredView(contract: Contract) -> some View {
-        CoInsuredField(
-            accessoryView: getAccessorytView(contract: contract)
-                .foregroundColor(hSignalColor.amberElement),
-            title: L10n.contractCoinsured,
-            subTitle: L10n.contractNoInformation,
-            withoutDivider: true
-        )
-        .padding(.horizontal, 16)
+        hRow {
+            CoInsuredField(
+                accessoryView: getAccessorytView(contract: contract)
+                    .foregroundColor(hSignalColor.amberElement),
+                title: L10n.contractCoinsured,
+                subTitle: L10n.contractNoInformation
+            )
+        }
         .onTapGesture {
             if contract.showEditInfo {
                 store.send(
@@ -288,13 +286,14 @@ struct ChangePeopleView: View {
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
-    func coInsuredAddedData(contract: Contract) -> [CoInsuredModel] {
+    func coInsuredAddedData(contract: Contract) -> [CoInsuredListType] {
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         if !upcoming.isEmpty {
             let current = Set(contract.currentAgreement?.coInsured ?? [])
             if !current.contains(CoInsuredModel()) {
                 let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
                 return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                    .map { CoInsuredListType(coInsured: $0, type: .added, locallyAdded: false) }
             } else {
                 return []
             }
@@ -303,9 +302,10 @@ private class ContractsInformationViewModel: ObservableObject {
         }
     }
 
-    func coInsuredRemainingData(contract: Contract) -> [CoInsuredModel] {
+    func coInsuredRemainingData(contract: Contract) -> [CoInsuredListType] {
         guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
-            return contract.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+            return contract.currentAgreement?.coInsured.map({ CoInsuredListType(coInsured: $0, locallyAdded: false) })
+                ?? []
         }
 
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
@@ -313,17 +313,24 @@ private class ContractsInformationViewModel: ObservableObject {
 
         guard !current.contains(CoInsuredModel()) else {
             return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                .map({
+                    CoInsuredListType(coInsured: $0, locallyAdded: false)
+                })
         }
 
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
         return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            .map {
+                CoInsuredListType(coInsured: $0, locallyAdded: false)
+            }
     }
 
-    func coInsuredDeletedData(contract: Contract) -> [CoInsuredModel] {
+    func coInsuredDeletedData(contract: Contract) -> [CoInsuredListType] {
         guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else { return [] }
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
         return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            .map { CoInsuredListType(coInsured: $0, type: .deleted, locallyAdded: false) }
     }
 }
