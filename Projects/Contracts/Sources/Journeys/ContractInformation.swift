@@ -74,7 +74,7 @@ struct ContractInformationView: View {
                 hRow {
                     VStack {
                         HStack {
-                            hText(L10n.changeAddressCoInsuredLabel)
+                            hText(L10n.coinsuredEditTitle)
                             Spacer()
                             hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
                                 .foregroundColor(hTextColor.secondary)
