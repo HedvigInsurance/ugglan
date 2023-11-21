@@ -7,7 +7,12 @@ import hGraphQL
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
-    public init() {}
+    public init() {
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        store.send(.load)
+        store.send(.fetchPaymentStatus)
+
+    }
 
     public var body: some View {
         LoadingViewWithContent(
@@ -47,11 +52,6 @@ public struct PaymentsView: View {
             .hFormAttachToBottom {
                 bottomPart
             }
-        }
-        .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(.load)
-            store.send(.fetchPaymentStatus)
         }
     }
 
@@ -229,6 +229,36 @@ extension PaymentsView {
             }
         }
         .configureTitle(L10n.myPaymentTitle)
+    }
+
+    public func detentJourney(schema: String) -> some JourneyPresentation {
+        HostingJourney(
+            PaymentStore.self,
+            rootView: self,
+            style: .detented(.large),
+            options: .largeNavigationBar
+        ) { action in
+            if case let .navigation(navigateTo) = action {
+                if case .openConnectBankAccount = navigateTo {
+                    let store: PaymentStore = globalPresentableStoreContainer.get()
+                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                        .contains(store.state.paymentStatusData?.status ?? .active)
+                    ConnectBankAccount(
+                        setupType: hasAlreadyConnected ? .replacement : .initial,
+                        urlScheme: schema
+                    )
+                    .journeyThenDismiss
+                } else if case .openHistory = navigateTo {
+                    PaymentHistoryView.journey
+                } else if case let .openPaymentDetails(details) = navigateTo {
+                    PaymentDetails.journey(with: details)
+                } else if case .openDiscounts = navigateTo {
+                    PaymentsDiscountsRootView().journey
+                }
+            }
+        }
+        .configureTitle(L10n.myPaymentTitle)
+        .withJourneyDismissButton
     }
 
     static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
