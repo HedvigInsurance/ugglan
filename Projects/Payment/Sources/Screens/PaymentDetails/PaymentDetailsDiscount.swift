@@ -32,7 +32,7 @@ struct PaymentDetailsDiscountView: View {
                     }
                     Spacer()
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedAmount)
+                        hText(discount.formattedNegativeAmount)
                     } else {
                         hText(vm.discount.title)
                     }

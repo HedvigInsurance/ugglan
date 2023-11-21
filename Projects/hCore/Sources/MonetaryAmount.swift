@@ -76,6 +76,17 @@ extension MonetaryAmount {
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
 
+    public var formattedNegativeAmount: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
+        formatter.maximumFractionDigits = 2
+        formatter.locale = currencyLocale
+        let alwaysNegativeAmount = floatAmount < 0 ? floatAmount : -floatAmount
+        return formatter.string(from: NSNumber(value: alwaysNegativeAmount)) ?? ""
+    }
+
     public var formattedAbsoluteAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency

@@ -67,7 +67,10 @@ struct PaymentsDiscountsView: View {
                     Spacer()
                     InfoViewHolder(
                         title: L10n.paymentsReferralsInfoTitle,
-                        description: L10n.paymentsReferralsInfoDescription
+                        description: L10n.ReferralsInfoSheet.body(
+                            store.state.paymentDiscountsData?.referralsData.discountPerMember
+                                .formattedAmount ?? ""
+                        )
                     )
                 }
                 HStack {
@@ -80,8 +83,10 @@ struct PaymentsDiscountsView: View {
 
                         )
                     Spacer()
-                    hText("\(data.referralsData.allReferralDiscount.formattedAmount)\(L10n.perMonth)")
-                        .foregroundColor(hTextColor.secondary)
+                    hText(
+                        "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
+                    )
+                    .foregroundColor(hTextColor.secondary)
                 }
 
                 if data.referralsData.referrals.count == 0 {

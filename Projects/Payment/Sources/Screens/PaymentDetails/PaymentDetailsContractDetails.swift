@@ -10,7 +10,7 @@ struct ContractDetails: View {
         hSection {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
                         HStack {
                             hText(contract.title)
                                 .multilineTextAlignment(.leading)
@@ -24,6 +24,7 @@ struct ContractDetails: View {
                             .rotationEffect(
                                 expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                             )
+                            .padding(.top, 4)
                     }
                     hText(contract.subtitle)
                         .foregroundColor(hTextColor.secondary)

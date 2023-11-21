@@ -39,10 +39,16 @@ public struct PaymentHistoryView: View {
                             ForEach(history) { item in
                                 hSection(item.valuesPerMonth) { month in
                                     hRow {
-                                        HStack {
-                                            hText(month.paymentData.payment.date.displayDateShort)
+                                        HStack(alignment: .center, spacing: 0) {
+                                            VStack(alignment: .leading, spacing: 0) {
+                                                hText(month.paymentData.payment.date.displayDateShort)
+                                                if month.paymentData.status.hasFailed {
+                                                    hText(L10n.paymentsOutstandingPayment)
+                                                }
+                                            }
                                             Spacer()
                                             hText(month.paymentData.payment.net.formattedAmount)
+
                                         }
                                     }
                                     .noHorizontalPadding()
