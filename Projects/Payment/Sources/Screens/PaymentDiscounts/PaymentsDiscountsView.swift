@@ -105,8 +105,8 @@ struct PaymentsDiscountsView: View {
                             )
                         ]
                     )
+                    .padding(.bottom, 8)
                 }
-
             }
             .padding(.bottom, -16)
         }

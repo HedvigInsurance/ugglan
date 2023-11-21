@@ -35,7 +35,7 @@ struct PaymentDetails: View {
     private var discounts: some View {
         if data.discounts.count > 0 {
             hSection(data.discounts) { discount in
-                PaymentDetailsDiscountView(vm: .init(options: [], discount: discount))
+                PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
             }
             .withHeader {
                 HStack {

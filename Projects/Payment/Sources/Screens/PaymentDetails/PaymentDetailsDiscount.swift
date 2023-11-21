@@ -31,13 +31,23 @@ struct PaymentDetailsDiscountView: View {
                         vm.startRemoveCode()
                     }
                     Spacer()
-                    if let discount = vm.discount.amount {
+                    if vm.options.contains(.forPayment), let discount = vm.discount.amount {
                         hText(discount.formattedAmount)
+                    } else {
+                        hText(vm.discount.title)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        hText(vm.discount.title, style: .standardSmall)
+                    HStack(alignment: .top) {
+                        if vm.options.contains(.forPayment) {
+                            hText(vm.discount.title, style: .standardSmall)
+                        } else {
+                            VStack(alignment: .leading, spacing: 0) {
+                                ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
+                                    hText(affectedInsurance.displayName, style: .standardSmall)
+                                }
+                            }
+                        }
                         Spacer()
                         if let validUntil = vm.discount.validUntil {
                             if vm.shouldShowExpire {
@@ -48,9 +58,11 @@ struct PaymentDetailsDiscountView: View {
                             }
                         }
                     }
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                            hText(affectedInsurance.displayName, style: .standardSmall)
+                    if vm.options.contains(.forPayment) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
+                                hText(affectedInsurance.displayName, style: .standardSmall)
+                            }
                         }
                     }
                 }
@@ -86,6 +98,7 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
         let rawValue: UInt
         static let enableRemoving = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
         static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
+        static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 2)
     }
 
     var shouldShowExpire: Bool {
@@ -112,10 +125,13 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             code: "231223",
             amount: .sek(100),
             title: "23",
-            listOfAffectedInsurances: [],
-            validUntil: "2023-11-06",
+            listOfAffectedInsurances: [
+                .init(id: "id 11", displayName: "DISPLAY NAME"),
+                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
+            ],
+            validUntil: "2023-12-06",
             canBeDeleted: false
         )
-        return PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount))
+        return PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount))
     }
 }
