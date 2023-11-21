@@ -35,14 +35,14 @@ public struct PaymentHistoryView: View {
                     }
                 } else {
                     hForm {
-                        VStack(spacing: 0) {
+                        VStack(spacing: 16) {
                             ForEach(history) { item in
                                 hSection(item.valuesPerMonth) { month in
                                     hRow {
                                         HStack {
-                                            hText(month.date.displayDateShort)
+                                            hText(month.paymentData.payment.date.displayDateShort)
                                             Spacer()
-                                            hText(month.amount.formattedAmount)
+                                            hText(month.paymentData.payment.net.formattedAmount)
                                         }
                                     }
                                     .noHorizontalPadding()
@@ -54,10 +54,10 @@ public struct PaymentHistoryView: View {
                                         getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
                                     )
                                     .padding(.horizontal, -16)
-
                                 }
                                 .withHeader {
                                     hText(item.year)
+                                        .padding(.bottom, -16)
                                 }
                             }
                             if history.flatMap({ $0.valuesPerMonth }).count >= 12 {

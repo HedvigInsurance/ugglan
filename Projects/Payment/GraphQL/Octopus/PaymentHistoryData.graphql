@@ -1,0 +1,11 @@
+query PaymentHistoryData {
+    currentMember {
+        ...ReedemCampaignsFragment
+        pastCharges {
+            ...MemberChargeFragment
+        }
+        referralInformation {
+            ...MemberReferralInformationCodeFragment
+        }
+    }
+}
