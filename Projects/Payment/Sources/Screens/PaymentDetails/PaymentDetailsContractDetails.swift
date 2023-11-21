@@ -58,9 +58,9 @@ struct ContractDetails: View {
                                 .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
 
                         }
-                        if period.isOutstanding {
-                            hText(L10n.paymentsOutstandingPayment, style: .standardSmall)
-                                .foregroundColor(getColor(hTextColor.primary, isOutstanding: period.isOutstanding))
+                        if let desciption = period.desciption {
+                            hText(desciption, style: .standardSmall)
+                                .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
 
                         }
                     }

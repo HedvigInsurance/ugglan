@@ -57,6 +57,7 @@ public struct PaymentData: Codable, Equatable {
         let to: ServerBasedDate
         let amount: MonetaryAmount
         let isOutstanding: Bool
+        let desciption: String?
 
         var fromToDate: String {
             return "\(from.displayDateShort) - \(to.displayDateShort)"

@@ -176,14 +176,16 @@ struct PaymentDetails_Previews: PreviewProvider {
                             from: "2023-11-10",
                             to: "2023-11-23",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "2",
                             from: "2023-11-23",
                             to: "2023-11-30",
                             amount: .sek(80),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),
@@ -198,14 +200,16 @@ struct PaymentDetails_Previews: PreviewProvider {
                             from: "2023-11-10",
                             to: "2023-11-23",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "2",
                             from: "2023-11-23",
                             to: "2023-11-30",
                             amount: .sek(80),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),

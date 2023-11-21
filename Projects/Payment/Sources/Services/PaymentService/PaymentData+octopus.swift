@@ -79,6 +79,27 @@ extension PaymentData.PeriodInfo {
         to = data.toDate
         amount = .init(fragment: data.amount.fragments.moneyFragment)
         isOutstanding = data.isPreviouslyFailedCharge
+        if isOutstanding {
+            desciption = L10n.paymentsOutstandingPayment
+        } else {
+            desciption = data.getDescription
+        }
+    }
+}
+
+extension OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period {
+    fileprivate var getDescription: String? {
+        guard let fromDate = fromDate.localDateToDate,
+            let toDate = toDate.localDateToDate
+        else {
+            return nil
+        }
+        if fromDate.isFirstDayOfMonth && toDate.isLastDayOfMonth {
+            return L10n.paymentsPeriodFull
+        } else {
+            let days = toDate.daysBetween(start: fromDate) + 1
+            return L10n.paymentsPeriodDays(String(days))
+        }
     }
 }
 

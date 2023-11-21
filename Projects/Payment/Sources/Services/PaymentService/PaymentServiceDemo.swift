@@ -20,7 +20,8 @@ public class hPaymentServiceDemo: hPaymentService {
                             from: "2023-11-01",
                             to: "2023-11-30",
                             amount: .sek(200),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         )
                     ]
                 ),
@@ -35,14 +36,16 @@ public class hPaymentServiceDemo: hPaymentService {
                             from: "2023-11-01",
                             to: "2023-11-30",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "id12",
                             from: "2023-10-01",
                             to: "2023-10-31",
                             amount: .sek(100),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),
