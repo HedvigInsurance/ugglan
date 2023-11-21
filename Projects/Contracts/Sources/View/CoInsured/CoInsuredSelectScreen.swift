@@ -15,9 +15,10 @@ struct CoInsuredSelectScreen: View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                return contractStore.state.fetchAllCoInsuredNotInContract(contractId: contractId).compactMap {
-                    ((object: $0, displayName: $0.fullName ?? ""))
-                }
+                return contractStore.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+                    .compactMap {
+                        ((object: $0, displayName: $0.fullName ?? ""))
+                    }
             }(),
             preSelectedItems: {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -71,7 +72,8 @@ struct CoInsuredSelectScreen: View {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
-            singleSelect: true
+            singleSelect: true,
+            attachToBottom: true
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
