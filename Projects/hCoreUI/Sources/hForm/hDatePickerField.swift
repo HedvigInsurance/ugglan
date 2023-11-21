@@ -138,17 +138,20 @@ public struct hDatePickerField: View {
         let maxDate: Date?
         let placeholder: String
         let title: String
+        let showAsList: Bool?
 
         public init(
             minDate: Date? = nil,
             maxDate: Date? = nil,
             placeholder: String,
-            title: String
+            title: String,
+            showAsList: Bool? = false
         ) {
             self.minDate = minDate
             self.maxDate = maxDate
             self.placeholder = placeholder
             self.title = title
+            self.showAsList = showAsList
         }
     }
 }
@@ -162,9 +165,18 @@ private struct DatePickerView: View {
     public var body: some View {
         hForm {
             hSection {
-                datePicker
-                    .datePickerStyle(.graphical)
-                    .frame(height: 340)
+                HStack {
+                    if config.showAsList ?? false {
+                        datePicker
+                            .datePickerStyle(.wheel)
+                            .padding(.trailing, 23)
+                            .padding(.bottom, 16)
+                    } else {
+                        datePicker
+                            .datePickerStyle(.graphical)
+                            .frame(height: 340)
+                    }
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -199,7 +211,7 @@ private struct DatePickerView: View {
             ToolbarItem(placement: .principal) {
                 VStack {
                     hText(config.title)
-                    if let subtitle = date.displayDateDotFormat {
+                    if let subtitle = date.displayDateDotFormat, !(config.showAsList ?? false) {
                         hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
