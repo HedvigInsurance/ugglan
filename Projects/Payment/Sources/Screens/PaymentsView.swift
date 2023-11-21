@@ -248,6 +248,11 @@ extension PaymentsView {
                         urlScheme: schema
                     )
                     .journeyThenDismiss
+                } else if case .openConnectPayments = navigateTo {
+                    let store: PaymentStore = globalPresentableStoreContainer.get()
+                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                        .contains(store.state.paymentStatusData?.status ?? .active)
+                    PaymentSetup(setupType: hasAlreadyConnected ? .replacement : .initial).journeyThenDismiss
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
