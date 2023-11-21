@@ -114,7 +114,7 @@ struct InsuredPeopleScreen: View {
 
                         hSection {
                             hButton.LargeButton(type: .secondary) {
-                                if store.state.fetchAllCoInsuredNotInContract(contractId: contractId).isEmpty  {
+                                if store.state.fetchAllCoInsuredNotInContract(contractId: contractId).isEmpty {
                                     store.send(
                                         .coInsuredNavigationAction(
                                             action: .openCoInsuredInput(
@@ -126,7 +126,11 @@ struct InsuredPeopleScreen: View {
                                         )
                                     )
                                 } else {
-                                    store.send(.coInsuredNavigationAction(action: .openCoInsuredSelectScreen(contractId: contractId)))
+                                    store.send(
+                                        .coInsuredNavigationAction(
+                                            action: .openCoInsuredSelectScreen(contractId: contractId)
+                                        )
+                                    )
                                 }
                             } content: {
                                 hText(L10n.contractAddCoinsured)
@@ -280,9 +284,18 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             filterList = upcomingCoInsured
         } else {
             let nbOfCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured.count ?? 0
+
             if existingCoInsured.count == 0 && nbOfCoInsured > 0 {
+                let nbOfUpcomingCoInsured =
+                    store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured.count ?? 0
                 if coInsuredDeleted.count > 0 {
-                    let num = nbOfCoInsured - coInsuredDeleted.count
+                    var num: Int {
+                        if nbOfUpcomingCoInsured < nbOfCoInsured {
+                            return nbOfUpcomingCoInsured - coInsuredDeleted.count
+                        } else {
+                            return nbOfCoInsured - coInsuredDeleted.count
+                        }
+                    }
                     for _ in 1...num {
                         filterList.append(CoInsuredModel())
                     }
