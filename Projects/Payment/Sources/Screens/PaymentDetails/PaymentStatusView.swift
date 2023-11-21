@@ -50,7 +50,7 @@ struct PaymentStatusView: View {
                     L10n.paymentsMissedPayment(from.displayDateShort, to.displayDateShort),
                 type: .error
             )
-        case let .addedtoFuture(date, id, isUpcooming):
+        case let .addedtoFuture(date):
             InfoCard(
                 text: L10n.paymentsPaymentFailed(date.displayDate),
                 type: .error
@@ -65,6 +65,8 @@ struct PaymentStatusView: View {
                     )
                 ]
             )
+        case .unknown:
+            EmptyView()
         }
     }
 }

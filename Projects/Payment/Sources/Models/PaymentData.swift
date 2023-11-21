@@ -6,7 +6,6 @@ import hGraphQL
 public struct PaymentData: Codable, Equatable {
     let payment: PaymentStack
     let status: PaymentStatus
-    let previousPaymentStatus: PaymentStatus?
     let contracts: [ContractPaymentDetails]
     let discounts: [Discount]
     let paymentDetails: PaymentDetails?
@@ -23,7 +22,8 @@ public struct PaymentData: Codable, Equatable {
         case success
         case pending
         case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
-        case addedtoFuture(date: ServerBasedDate, withId: String, isUpcoming: Bool)
+        case addedtoFuture(date: ServerBasedDate)
+        case unknown
 
         enum PaymentStatusAction: Codable, Equatable {
             static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
@@ -36,7 +36,7 @@ public struct PaymentData: Codable, Equatable {
             switch self {
             case .addedtoFuture:
                 return true
-            case .success, .pending, .failedForPrevious, .upcoming:
+            case .success, .pending, .failedForPrevious, .upcoming, .unknown:
                 return false
             }
         }

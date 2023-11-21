@@ -1,12 +1,6 @@
 query Discounts {
   currentMember {
-    redeemedCampaigns {
-      code
-      description
-      type
-      id
-      expiresAt
-    }
+    ...ReedemCampaignsFragment
     referralInformation {
       code
       monthlyDiscountPerReferral {
@@ -28,4 +22,14 @@ fragment MemberReferralFragment on MemberReferral {
         activeDiscount {
           ...MoneyFragment
         }
+}
+
+fragment ReedemCampaignsFragment on Member {
+    redeemedCampaigns {
+      code
+      description
+      type
+      id
+      expiresAt
+    }
 }

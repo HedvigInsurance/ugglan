@@ -65,13 +65,15 @@ struct PaymentDetails: View {
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    if #available(iOS 16.0, *) {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
-                            .strikethrough()
-                    } else {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
+                    if data.payment.gross.amount != data.payment.net.amount {
+                        if #available(iOS 16.0, *) {
+                            hText(data.payment.gross.formattedAmount)
+                                .foregroundColor(hTextColor.secondary)
+                                .strikethrough()
+                        } else {
+                            hText(data.payment.gross.formattedAmount)
+                                .foregroundColor(hTextColor.secondary)
+                        }
                     }
                     hText(data.payment.net.formattedAmount)
                 }
@@ -94,9 +96,6 @@ struct PaymentDetails: View {
                                 }
                             }
                         }
-                    }
-                    if let previousPaymentStatus = data.previousPaymentStatus {
-                        PaymentStatusView(status: previousPaymentStatus) { _ in }
                     }
                 }
             }
@@ -164,7 +163,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                 date: "2022-10-30"
             ),
             status: .upcoming,
-            previousPaymentStatus: nil,
             contracts: [
                 .init(
                     id: "id1",
