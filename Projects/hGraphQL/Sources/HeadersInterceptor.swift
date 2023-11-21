@@ -33,6 +33,7 @@ class HeadersInterceptor: ApolloInterceptor {
             "hedvig-language": acceptLanguageHeader,
             "User-Agent": userAgent,
             "hedvig-device-id": deviceIdentifier,
+            "Hedvig-TimeZone": TimeZone.current.identifier,
         ]
 
         TokenRefresher.shared.refreshIfNeeded()
