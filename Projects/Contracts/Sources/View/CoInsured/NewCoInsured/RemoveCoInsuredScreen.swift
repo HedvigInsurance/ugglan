@@ -39,10 +39,14 @@ struct RemoveCoInsuredScreen: View {
                             .withoutHorizontalPadding
                             .sectionContainerStyle(.transparent)
                             let missingCoInsured = coInsured.filter {
-                                $0.hasMissingData
+                                return $0.hasMissingData
                             }
+
+                            let missingInUpcoming =
+                                contract.upcomingChangedAgreement?.coInsured.filter({ $0.hasMissingData }) ?? []
+
                             let exisistingCoInsured = coInsured.filter {
-                                !$0.hasMissingData
+                                return !$0.hasMissingData
                             }
                             hSection {
                                 ForEach(exisistingCoInsured, id: \.self) { coInsured in
@@ -51,7 +55,15 @@ struct RemoveCoInsuredScreen: View {
                                         accessoryView: accessoryView(coInsured)
                                     )
                                 }
-                                let nbOfMissingoInsured = missingCoInsured.count - vm.coInsuredDeleted.count
+
+                                var nbOfMissingoInsured: Int {
+                                    if missingInUpcoming.count > 0 {
+                                        return missingInUpcoming.count - vm.coInsuredDeleted.count
+                                    } else {
+                                        return missingCoInsured.count - vm.coInsuredDeleted.count
+                                    }
+                                }
+
                                 ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
                                     CoInsuredField(
                                         accessoryView: accessoryView(.init()),
