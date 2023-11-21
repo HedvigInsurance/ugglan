@@ -77,7 +77,8 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: CoInusuredInput(
                 vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
-            ),
+            )
+            .withNavigation(title: title),
             style: style,
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -103,7 +104,6 @@ public class EditCoInsuredJourney {
                 getScreen(for: action)
             }
         }
-        .configureTitle(title)
         .onAction(ContractStore.self) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
