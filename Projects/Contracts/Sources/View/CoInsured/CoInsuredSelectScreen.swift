@@ -20,15 +20,7 @@ struct CoInsuredSelectScreen: View {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
             }(),
-            preSelectedItems: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let preSelectedItem = contractStore.state.fetchAllCoInsured.first
-                if let preSelectedItem {
-                    return [preSelectedItem]
-                } else {
-                    return []
-                }
-            },
+            preSelectedItems: { [] },
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     let store: ContractStore = globalPresentableStoreContainer.get()
@@ -95,7 +87,8 @@ struct CoInsuredSelectScreen: View {
                 }
             }
             .disabled(isLoading)
-            .padding(.top, 4)
+            .padding(.top, -12)
+            .padding(.bottom, -4)
         }
         .hButtonIsLoading(isLoading)
     }
