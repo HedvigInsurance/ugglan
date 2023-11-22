@@ -219,15 +219,25 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if isLoading && enabled {
-            if hButtonConfigurationType.useDarkVersion {
-                DotsActivityIndicator(.standard)
-                    .useDarkColor
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                DotsActivityIndicator(.standard)
-                    .fixedSize(horizontal: false, vertical: true)
+        if isLoading {
+            Group {
+                if hButtonConfigurationType.useDarkVersion {
+                    if enabled {
+                        DotsActivityIndicator(.standard)
+                            .useDarkColor
+                    } else {
+                        DotsActivityIndicator(.standard)
+                    }
+                } else {
+                    if enabled {
+                        DotsActivityIndicator(.standard)
+                    } else {
+                        DotsActivityIndicator(.standard)
+                            .useDarkColor
+                    }
+                }
             }
+            .fixedSize(horizontal: false, vertical: true)
 
         } else {
             content()
