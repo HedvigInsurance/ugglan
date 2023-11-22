@@ -10,13 +10,13 @@ extension PaymentData {
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
-        let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
+        let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
                 discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
                     ?? data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
-                    .asReedeemedCampaing()
+                    .asReedeemedCampaingForPayment()
             )
         })
         paymentDetails = nil
@@ -106,16 +106,19 @@ extension OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period {
 extension Discount {
     init(
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
+        discount: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?
     ) {
         id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
-        listOfAffectedInsurances = []
+        listOfAffectedInsurances =
+            discount?.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) })
+            ?? []
         validUntil = nil
         canBeDeleted = false
     }
+
 }
 
 extension OctopusGraphQL.MemberReferralInformationCodeFragment {
@@ -129,4 +132,13 @@ extension OctopusGraphQL.MemberReferralInformationCodeFragment {
         return referralDescription
     }
 
+    func asReedeemedCampaingForPayment() -> OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign {
+        let referralDescription = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign(
+            code: self.code,
+            description: L10n.paymentsReferralDiscount,
+            type: .referral,
+            id: self.code
+        )
+        return referralDescription
+    }
 }
