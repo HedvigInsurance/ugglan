@@ -409,6 +409,7 @@ struct CoInusuredInput: View {
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
         }
+        .frame(height: 56)
         .sectionContainerStyle(.opaque)
     }
 
