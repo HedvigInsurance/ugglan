@@ -96,7 +96,6 @@ struct ContractInformationView: View {
                     + vm.coInsuredAddedData(contract: contract)
 
                 hSection(getListsToDisplay) { coInsured in
-
                     hRow {
                         CoInsuredField(
                             coInsured: coInsured.coInsured,
@@ -304,7 +303,8 @@ private class ContractsInformationViewModel: ObservableObject {
 
     func coInsuredRemainingData(contract: Contract) -> [CoInsuredListType] {
         guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
-            return contract.currentAgreement?.coInsured.map({ CoInsuredListType(coInsured: $0, locallyAdded: false) })
+            return contract.currentAgreement?.coInsured.filter { !$0.hasMissingData }
+                .map({ CoInsuredListType(coInsured: $0, locallyAdded: false) })
                 ?? []
         }
 
