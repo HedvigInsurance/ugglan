@@ -219,6 +219,7 @@ struct CoInusuredInput: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
+                .padding(.bottom, 16)
             }
         }
     }
