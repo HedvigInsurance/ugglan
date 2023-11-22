@@ -51,9 +51,7 @@ public struct hDatePickerField: View {
                     error: $error,
                     shouldMoveLabel: shouldMoveLabel
                 )
-                if (selectedDate?.displayDateDotFormat) != nil {
-                    getValueLabel()
-                }
+                getValueLabel()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
@@ -87,9 +85,19 @@ public struct hDatePickerField: View {
 
     private func getValueLabel() -> some View {
         HStack {
-            Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
-                .modifier(hFontModifier(style: .title3))
-                .foregroundColor(hTextColor.primary)
+            Group {
+                if config.dateFormatter == .dotFormat {
+                    if (selectedDate?.displayDateDotFormat) != nil {
+                        Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                    }
+                } else if config.dateFormatter == .birthDate {
+                    if (selectedDate?.displayDateYYMMDDFormat) != nil {
+                        Text((selectedDate?.displayDateYYMMDDFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                    }
+                }
+            }
+            .modifier(hFontModifier(style: .title3))
+            .foregroundColor(hTextColor.primary)
             Spacer()
         }
     }
@@ -139,19 +147,22 @@ public struct hDatePickerField: View {
         let placeholder: String
         let title: String
         let showAsList: Bool?
+        let dateFormatter: DateFormatter?
 
         public init(
             minDate: Date? = nil,
             maxDate: Date? = nil,
             placeholder: String,
             title: String,
-            showAsList: Bool? = false
+            showAsList: Bool? = false,
+            dateFormatter: DateFormatter? = .dotFormat
         ) {
             self.minDate = minDate
             self.maxDate = maxDate
             self.placeholder = placeholder
             self.title = title
             self.showAsList = showAsList
+            self.dateFormatter = dateFormatter
         }
     }
 }
@@ -274,4 +285,9 @@ class ReferenceAction {
     ) {
         self.execute = execute
     }
+}
+
+public enum DateFormatter {
+    case dotFormat
+    case birthDate
 }

@@ -315,8 +315,8 @@ struct CoInusuredInput: View {
 
             hSection {
                 hFloatingField(
-                    value: vm.SSN != "" ? vm.SSN : vm.birthday,
-                    placeholder: L10n.TravelCertificate.personalNumber,
+                    value: vm.SSN != "" ? vm.SSN : vm.birthday.birtDateDisplayFormat,
+                    placeholder: vm.SSN != "" ? L10n.TravelCertificate.personalNumber : L10n.contractBirthDate,
                     onTap: {}
                 )
             }
@@ -336,11 +336,12 @@ struct CoInusuredInput: View {
                     maxDate: Date(),
                     placeholder: L10n.contractBirthDate,
                     title: L10n.contractBirthDate,
-                    showAsList: true
+                    showAsList: true,
+                    dateFormatter: .birthDate
                 ),
-                selectedDate: vm.birthday.localDateToDate
+                selectedDate: vm.birthday.localYYMMDDDateToDate
             ) { date in
-                vm.birthday = date.localDateString
+                vm.birthday = date.displayDateYYMMDDFormat ?? ""
             }
         }
         .sectionContainerStyle(.transparent)
@@ -613,7 +614,7 @@ public class IntentViewModel: ObservableObject {
                         firstName: coIn.firstName,
                         lastName: coIn.lastName,
                         ssn: coIn.formattedSSN,
-                        birthdate: coIn.birthDate
+                        birthdate: coIn.birthDate?.calculate10DigitBirthDate
                     )
                 }
                 let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)

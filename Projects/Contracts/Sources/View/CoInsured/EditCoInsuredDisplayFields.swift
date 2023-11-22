@@ -91,7 +91,7 @@ struct CoInsuredField<Content: View>: View {
 
     var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
-        let displaySubTitle = coInsured?.SSN ?? coInsured?.birthDate ?? subTitle ?? ""
+        let displaySubTitle = coInsured?.SSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -123,7 +123,7 @@ struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: date?.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
+                    .text(date: date?.calculate10DigitBirthDate ?? "")
                     ?? "",
                 style: .standardSmall
             )
