@@ -37,9 +37,7 @@ struct ContractOwnerField: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            if !(enabled ?? false) {
-                Divider()
-            }
+            Divider()
         }
     }
 
@@ -69,7 +67,6 @@ struct CoInsuredField<Content: View>: View {
     let date: String?
     let title: String?
     let subTitle: String?
-    let withoutDivider: Bool?
 
     init(
         coInsured: CoInsuredModel? = nil,
@@ -77,8 +74,7 @@ struct CoInsuredField<Content: View>: View {
         includeStatusPill: StatusPillType? = nil,
         date: String? = nil,
         title: String? = nil,
-        subTitle: String? = nil,
-        withoutDivider: Bool? = false
+        subTitle: String? = nil
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
@@ -86,35 +82,29 @@ struct CoInsuredField<Content: View>: View {
         self.date = date
         self.title = title
         self.subTitle = subTitle
-        self.withoutDivider = withoutDivider
     }
 
     var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
         let displaySubTitle = coInsured?.SSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                hText(displayTitle)
+        VStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    hText(displayTitle)
+                        .fixedSize()
+                    Spacer()
+                    accessoryView
+                }
+                hText(displaySubTitle, style: .standardSmall)
+                    .foregroundColor(hTextColor.secondary)
                     .fixedSize()
-                Spacer()
-                accessoryView
             }
-            hText(displaySubTitle, style: .standardSmall)
-                .foregroundColor(hTextColor.secondary)
-                .fixedSize()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, (includeStatusPill != nil) ? 0 : 16)
-        .padding(.top, (includeStatusPill != nil) ? 16 : 0)
-        if let includeStatusPill, let coInsured {
-            statusPill
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, 16)
-                .padding(.top, 5)
-        }
-        if !(withoutDivider ?? false) {
-            Divider()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if let includeStatusPill, let coInsured {
+                statusPill
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 

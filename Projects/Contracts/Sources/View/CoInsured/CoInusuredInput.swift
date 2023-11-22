@@ -286,11 +286,9 @@ struct CoInusuredInput: View {
             } else {
                 ssnField
             }
-
             if vm.nameFetchedFromSSN || vm.noSSN {
                 nameFields
             }
-
             toggleField
         }
         .hFieldSize(.small)
