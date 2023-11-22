@@ -13,6 +13,9 @@ extension String {
 
     var localYYMMDDDateToDate: Date? {
         let formatter = DateFormatter()
+        if self == "" {
+            return nil
+        }
         formatter.dateFormat = "yyMMdd"
         return formatter.date(from: self)
     }

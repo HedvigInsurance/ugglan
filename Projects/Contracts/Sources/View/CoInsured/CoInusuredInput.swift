@@ -332,6 +332,7 @@ struct CoInusuredInput: View {
             hDatePickerField(
                 config: .init(
                     maxDate: Date(),
+                    initialySelectedValue: Date(timeInterval: -60 * 60 * 24 * 365 * 20, since: Date()),
                     placeholder: L10n.contractBirthDate,
                     title: L10n.contractBirthDate,
                     showAsList: true,

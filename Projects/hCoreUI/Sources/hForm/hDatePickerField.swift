@@ -114,6 +114,9 @@ public struct hDatePickerField: View {
     private func showDatePicker() {
         let continueAction = ReferenceAction {}
         let cancelAction = ReferenceAction {}
+        if let initialySelectedValue = config.initialySelectedValue, selectedDate == nil {
+            date = initialySelectedValue
+        }
         let view = DatePickerView(
             continueAction: continueAction,
             cancelAction: cancelAction,
@@ -144,6 +147,7 @@ public struct hDatePickerField: View {
     public struct HDatePickerFieldConfig {
         let minDate: Date?
         let maxDate: Date?
+        let initialySelectedValue: Date?
         let placeholder: String
         let title: String
         let showAsList: Bool?
@@ -152,6 +156,7 @@ public struct hDatePickerField: View {
         public init(
             minDate: Date? = nil,
             maxDate: Date? = nil,
+            initialySelectedValue: Date? = nil,
             placeholder: String,
             title: String,
             showAsList: Bool? = false,
@@ -159,6 +164,7 @@ public struct hDatePickerField: View {
         ) {
             self.minDate = minDate
             self.maxDate = maxDate
+            self.initialySelectedValue = initialySelectedValue
             self.placeholder = placeholder
             self.title = title
             self.showAsList = showAsList
