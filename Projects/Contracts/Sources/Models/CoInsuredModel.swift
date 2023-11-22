@@ -69,7 +69,6 @@ extension String {
     var calculate12DigitSSN: String {
         let formattedSSN = self.replacingOccurrences(of: "-", with: "")
         if formattedSSN.count == 10 {
-
             let ssnLastTwoDigitsOfYear = formattedSSN.prefix(2)
             let currentYear = Calendar.current.component(.year, from: Date())
             let firstTwoDigitsOfTheYear = currentYear / 100
@@ -85,5 +84,23 @@ extension String {
         } else {
             return self
         }
+    }
+
+    var calculate10DigitBirthDate: String {
+        if self.localDateToDate != nil {
+            return self.localDateToDate?.localDateString ?? ""
+        } else if self.localYYMMDDDateToDate != nil {
+            return self.localYYMMDDDateToDate?.localDateString ?? ""
+        }
+        return ""
+    }
+
+    var birtDateDisplayFormat: String {
+        if self.localDateToDate != nil {
+            return self.localDateToDate?.localBirthDateString ?? ""
+        } else if self.localYYMMDDDateToDate != nil {
+            return self.localYYMMDDDateToDate?.localBirthDateString ?? ""
+        }
+        return ""
     }
 }

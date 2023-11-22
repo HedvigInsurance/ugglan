@@ -5,6 +5,10 @@ extension Date {
         return DateFormatters.localDateStringFormatter.string(from: self)
     }
 
+    public var localBirthDateString: String {
+        return DateFormatters.localbirthDateStringFormatter.string(from: self)
+    }
+
     public var localDateStringDayFirst: String? {
         return DateFormatters.localDateStringDayFirstFormatter.string(from: self)
     }
@@ -15,6 +19,10 @@ extension Date {
 
     public var displayDateDotFormat: String? {
         return DateFormatters.displayDateDotFormatFormatter.string(from: self)
+    }
+
+    public var displayDateYYMMDDFormat: String? {
+        return DateFormatters.displayDateYYMMDDFormatFormatter.string(from: self)
     }
 
     public var displayDateMMMDDYYYYFormat: String? {
@@ -41,6 +49,12 @@ private struct DateFormatters {
         return formatter
     }()
 
+    static let localbirthDateStringFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyMMDD"
+        return formatter
+    }()
+
     static let localDateStringDayFirstFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
@@ -56,6 +70,12 @@ private struct DateFormatters {
     static let displayDateDotFormatFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy.MM.dd"
+        return formatter
+    }()
+
+    static let displayDateYYMMDDFormatFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyMMdd"
         return formatter
     }()
 

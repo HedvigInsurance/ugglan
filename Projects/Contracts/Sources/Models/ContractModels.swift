@@ -10,6 +10,15 @@ extension String {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.date(from: self)
     }
+
+    var localYYMMDDDateToDate: Date? {
+        let formatter = DateFormatter()
+        if self == "" {
+            return nil
+        }
+        formatter.dateFormat = "yyMMdd"
+        return formatter.date(from: self)
+    }
 }
 
 public struct ProductVariant: Codable, Hashable {

@@ -209,8 +209,6 @@ struct CoInusuredInput: View {
                 }
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !(vm.actionType == .delete))
-                //                    }
-                //                }
 
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
@@ -285,77 +283,14 @@ struct CoInusuredInput: View {
     var addCoInsuredFields: some View {
         Group {
             if vm.noSSN {
-                hSection {
-                    hFloatingTextField(
-                        masking: Masking(type: .birthDateCoInsured),
-                        value: $vm.birthday,
-                        equals: $vm.type,
-                        focusValue: .SSN,
-                        placeholder: L10n.contractBirthDate
-                    )
-                }
-                .sectionContainerStyle(.transparent)
-                .onAppear {
-                    vm.nameFetchedFromSSN = false
-                }
+                datePickerField
             } else {
-                hSection {
-                    hFloatingTextField(
-                        masking: Masking(type: .personalNumber),
-                        value: $vm.SSN,
-                        equals: $vm.type,
-                        focusValue: .SSN,
-                        placeholder: L10n.contractPersonalIdentity
-                    )
-                }
-                .disabled(vm.isLoading)
-                .sectionContainerStyle(.transparent)
-                .onChange(of: vm.SSN) { newValue in
-                    vm.nameFetchedFromSSN = false
-                }
+                ssnField
             }
-
             if vm.nameFetchedFromSSN || vm.noSSN {
-                hSection {
-                    HStack(spacing: 4) {
-                        hFloatingTextField(
-                            masking: Masking(type: .firstName),
-                            value: $vm.firstName,
-                            equals: $vm.type,
-                            focusValue: .firstName,
-                            placeholder: L10n.contractFirstName
-                        )
-                        hFloatingTextField(
-                            masking: Masking(type: .lastName),
-                            value: $vm.lastName,
-                            equals: $vm.type,
-                            focusValue: .lastName,
-                            placeholder: L10n.contractLastName
-                        )
-                    }
-                }
-                .sectionContainerStyle(.transparent)
+                nameFields
             }
-
-            hSection {
-                Toggle(isOn: $vm.noSSN.animation(.default)) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(L10n.contractAddCoinsuredNoSsn, style: .body)
-                            .foregroundColor(hTextColor.secondary)
-                    }
-                }
-                .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-                .contentShape(Rectangle())
-                .onChange(
-                    of: vm.noSSN,
-                    perform: { newValue in
-                        vm.SSN = ""
-                    }
-                )
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-            }
-            .sectionContainerStyle(.opaque)
+            toggleField
         }
         .hFieldSize(.small)
     }
@@ -379,8 +314,8 @@ struct CoInusuredInput: View {
 
             hSection {
                 hFloatingField(
-                    value: vm.SSN != "" ? vm.SSN : vm.birthday,
-                    placeholder: L10n.TravelCertificate.personalNumber,
+                    value: vm.SSN != "" ? vm.SSN : vm.birthday.birtDateDisplayFormat,
+                    placeholder: vm.SSN != "" ? L10n.TravelCertificate.personalNumber : L10n.contractBirthDate,
                     onTap: {}
                 )
             }
@@ -391,6 +326,90 @@ struct CoInusuredInput: View {
             .disabled(true)
             .sectionContainerStyle(.transparent)
         }
+    }
+
+    var datePickerField: some View {
+        hSection {
+            hDatePickerField(
+                config: .init(
+                    maxDate: Date(),
+                    initialySelectedValue: Date(timeInterval: -60 * 60 * 24 * 365 * 20, since: Date()),
+                    placeholder: L10n.contractBirthDate,
+                    title: L10n.contractBirthDate,
+                    showAsList: true,
+                    dateFormatter: .birthDate
+                ),
+                selectedDate: vm.birthday.localYYMMDDDateToDate
+            ) { date in
+                vm.birthday = date.displayDateYYMMDDFormat ?? ""
+            }
+        }
+        .sectionContainerStyle(.transparent)
+        .onAppear {
+            vm.nameFetchedFromSSN = false
+        }
+    }
+
+    var ssnField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .personalNumber),
+                value: $vm.SSN,
+                equals: $vm.type,
+                focusValue: .SSN,
+                placeholder: L10n.contractPersonalIdentity
+            )
+        }
+        .disabled(vm.isLoading)
+        .sectionContainerStyle(.transparent)
+        .onChange(of: vm.SSN) { newValue in
+            vm.nameFetchedFromSSN = false
+        }
+    }
+
+    var nameFields: some View {
+        hSection {
+            HStack(spacing: 4) {
+                hFloatingTextField(
+                    masking: Masking(type: .firstName),
+                    value: $vm.firstName,
+                    equals: $vm.type,
+                    focusValue: .firstName,
+                    placeholder: L10n.contractFirstName
+                )
+                hFloatingTextField(
+                    masking: Masking(type: .lastName),
+                    value: $vm.lastName,
+                    equals: $vm.type,
+                    focusValue: .lastName,
+                    placeholder: L10n.contractLastName
+                )
+            }
+        }
+        .disabled(vm.nameFetchedFromSSN)
+        .sectionContainerStyle(.transparent)
+    }
+
+    var toggleField: some View {
+        hSection {
+            Toggle(isOn: $vm.noSSN.animation(.default)) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.contractAddCoinsuredNoSsn, style: .body)
+                        .foregroundColor(hTextColor.secondary)
+                }
+            }
+            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+            .contentShape(Rectangle())
+            .onChange(
+                of: vm.noSSN,
+                perform: { newValue in
+                    vm.SSN = ""
+                }
+            )
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+        }
+        .sectionContainerStyle(.opaque)
     }
 
     var buttonIsDisabled: Bool {
@@ -595,7 +614,7 @@ public class IntentViewModel: ObservableObject {
                         firstName: coIn.firstName,
                         lastName: coIn.lastName,
                         ssn: coIn.formattedSSN,
-                        birthdate: coIn.birthDate
+                        birthdate: coIn.birthDate?.calculate10DigitBirthDate
                     )
                 }
                 let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)

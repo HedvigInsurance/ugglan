@@ -69,7 +69,7 @@ public struct Masking {
             return 15...130 ~= age
         case .birthDateCoInsured:
             let age = calculateAge(from: text) ?? 0
-            return 0...130 ~= age && text.count == 10
+            return 0...130 ~= age && text.count == 6
         case .personalNumberCoInsured:
             let age = calculateAge(from: text) ?? 0
             if text.prefix(2) == "19" || text.prefix(2) == "20" {
