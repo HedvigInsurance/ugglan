@@ -18,7 +18,7 @@ struct CoInsuredMissingAlertView: View {
                     hText(L10n.contractCoinsuredMissingInformationLabel)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.secondaryTranslucent)
-                        .padding(.horizontal, 8)
+                        .padding(.horizontal, 16)
                 }
             }
             .padding(.bottom, 32)
