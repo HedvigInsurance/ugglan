@@ -96,9 +96,20 @@ extension Message: Reusable {
             return 84 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
         }
 
-        let attributedString = NSAttributedString(
-            styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
-        )
+        let attributedString: NSAttributedString = {
+            switch type {
+            case let .deepLink(url):
+                return DeepLink.getType(from: url)?.title
+                    ?? NSAttributedString(
+                        styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
+                    )
+            default:
+                return NSAttributedString(
+                    styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
+                )
+
+            }
+        }()
 
         let size = attributedString.boundingRect(
             with: CGSize(width: 267.77, height: CGFloat(Int.max)),
@@ -592,25 +603,33 @@ extension Message: Reusable {
                                         options: []
                                     )
                             }
-                    case .text:
+                    case .text, .deepLink:
                         let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
-                        let attributedString = NSMutableAttributedString(
+
+                        let textAttributedString = NSMutableAttributedString(
                             text: message.body,
                             style: textStyle
                         )
-
-                        message.body.links.forEach { linkRange in
-                            attributedString.addAttributes(
-                                [
-                                    NSAttributedString.Key.underlineStyle:
-                                        NSUnderlineStyle.single.rawValue,
-                                    NSAttributedString.Key.underlineColor:
-                                        messageTextColor,
-                                ],
-                                range: linkRange.range
-                            )
-                        }
+                        let attributedString: NSMutableAttributedString = {
+                            switch message.type {
+                            case let .deepLink(url):
+                                return DeepLink.getType(from: url)?.title ?? textAttributedString
+                            default:
+                                message.body.links.forEach { linkRange in
+                                    textAttributedString.addAttributes(
+                                        [
+                                            NSAttributedString.Key.underlineStyle:
+                                                NSUnderlineStyle.single.rawValue,
+                                            NSAttributedString.Key.underlineColor:
+                                                messageTextColor,
+                                        ],
+                                        range: linkRange.range
+                                    )
+                                }
+                                return textAttributedString
+                            }
+                        }()
 
                         let label = UILabel()
                         label.attributedText = attributedString
