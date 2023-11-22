@@ -333,7 +333,6 @@ struct CoInusuredInput: View {
                         )
                     }
                 }
-                .disabled(vm.nameFetchedFromSSN)
                 .sectionContainerStyle(.transparent)
             }
 
