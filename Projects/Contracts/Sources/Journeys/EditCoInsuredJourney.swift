@@ -83,7 +83,7 @@ public class EditCoInsuredJourney {
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
-                DismissJourney()
+                PopJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
                 SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
