@@ -97,12 +97,6 @@ extension MonetaryAmount {
     }
 }
 
-extension GiraffeGraphQL.MonetaryAmountFragmentGiraffe {
-    public var monetaryAmount: MonetaryAmount {
-        .init(amount: amount, currency: currency)
-    }
-}
-
 extension String {
     public var addPerMonth: String {
         return self + "/" + L10n.monthAbbreviationLabel
