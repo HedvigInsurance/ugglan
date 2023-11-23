@@ -388,6 +388,7 @@ struct CoInusuredInput: View {
             }
         }
         .disabled(vm.nameFetchedFromSSN)
+        .hWithoutDisabledColor
         .sectionContainerStyle(.transparent)
     }
 
