@@ -40,9 +40,11 @@ struct InsuredPeopleScreen: View {
                 ) { contract in
                     if let contract = contract {
                         let coInsured = contract.currentAgreement?.coInsured
+                        let listToDisplay = listToDisplay(contract: contract)
                         hSection {
                             hRow {
-                                ContractOwnerField(contractId: contractId)
+                                let hasContentBelow = !listToDisplay.isEmpty
+                                ContractOwnerField(contractId: contractId, hasContentBelow: hasContentBelow)
                             }
                             .verticalPadding(0)
                             .padding(.top, 16)
@@ -50,7 +52,7 @@ struct InsuredPeopleScreen: View {
                         .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
 
-                        hSection(listToDisplay(contract: contract)) { coInsured in
+                        hSection(listToDisplay) { coInsured in
                             hRow {
                                 CoInsuredField(
                                     coInsured: coInsured.coInsured,
@@ -460,4 +462,5 @@ struct CoInsuredListType: Hashable, Identifiable {
     var type: StatusPillType?
     var date: String?
     var locallyAdded: Bool
+    var isContractOwner: Bool? = nil
 }

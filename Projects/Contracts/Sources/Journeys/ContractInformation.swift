@@ -70,6 +70,11 @@ struct ContractInformationView: View {
     private func addCoInsuredView(contract: Contract) -> some View {
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
+
+            let getListsToDisplay =
+                vm.coInsuredRemainingData(contract: contract) + vm.coInsuredDeletedData(contract: contract)
+                + vm.coInsuredAddedData(contract: contract)
+
             hSection {
                 hRow {
                     VStack {
@@ -81,19 +86,18 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-
-                hRow {
-                    ContractOwnerField(contractId: contract.id, enabled: true)
+                if hAnalyticsExperiment.editCoinsured {
+                    hRow {
+                        let hasContentBelow = !getListsToDisplay.isEmpty || nbOfMissingCoInsured > 0
+                        ContractOwnerField(contractId: contract.id, enabled: true, hasContentBelow: hasContentBelow)
+                    }
+                    .verticalPadding(0)
+                    .padding(.top, 16)
                 }
-                .verticalPadding(0)
-                .padding(.top, 16)
             }
             .withoutHorizontalPadding
 
             if hAnalyticsExperiment.editCoinsured {
-                let getListsToDisplay =
-                    vm.coInsuredRemainingData(contract: contract) + vm.coInsuredDeletedData(contract: contract)
-                    + vm.coInsuredAddedData(contract: contract)
 
                 hSection(getListsToDisplay) { coInsured in
                     hRow {
