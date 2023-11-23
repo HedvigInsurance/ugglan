@@ -43,9 +43,10 @@ fragment ContractFragment on Contract {
 }
 
 fragment CoInsuredFragment on AgreementCoInsured {
+    id
     birthdate
     firstName
     lastName
-    needsMissingInfo
+    hasMissingInfo
     ssn
 }

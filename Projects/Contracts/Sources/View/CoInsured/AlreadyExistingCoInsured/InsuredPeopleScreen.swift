@@ -449,7 +449,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 }
 
 struct CoInsuredListType: Hashable, Identifiable {
-    var id: String {
+    var id: String? {
         return coInsured.id
     }
     var coInsured: CoInsuredModel

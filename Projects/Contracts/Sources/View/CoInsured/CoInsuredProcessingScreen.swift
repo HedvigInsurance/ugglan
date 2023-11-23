@@ -143,7 +143,7 @@ struct CoInsuredProcessingScreen: View {
                 } else {
                     return contract.currentAgreement?.coInsured
                         .first(where: { coInsured in
-                            coInsured.needsMissingInfo && contract.terminationDate == nil
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
                         }) != nil
                 }
             }
