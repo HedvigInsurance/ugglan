@@ -71,15 +71,9 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                if let terminationDate = contract.terminationDate {
-                    if contract.terminatedToday {
-                        StatusPill(text: L10n.contractStatusTerminatedToday).padding(.trailing, 4)
-                    } else {
-                        StatusPill(text: L10n.contractStatusToBeTerminated(terminationDate)).padding(.trailing, 4)
-                    }
-                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom,
-                    displayInfoCard(contract: contract)
-                {
+                if let terminationMessage = contract.terminationMessage {
+                    StatusPill(text: terminationMessage).padding(.trailing, 4)
+                } else if let activeFrom = contract.upcomingChangedAgreement?.activeFrom {
                     StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
                 } else if contract.activeInFuture {
                     StatusPill(text: L10n.contractStatusActiveInFuture(contract.masterInceptionDate ?? ""))
