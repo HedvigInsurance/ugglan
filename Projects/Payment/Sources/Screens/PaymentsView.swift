@@ -46,7 +46,7 @@ public struct PaymentsView: View {
                     .sectionContainerStyle(.transparent)
 
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, 8)
             }
             .hDisableScroll
             .hFormAttachToBottom {

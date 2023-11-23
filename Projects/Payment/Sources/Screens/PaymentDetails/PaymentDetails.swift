@@ -19,7 +19,7 @@ struct PaymentDetails: View {
                 total
                 paymentDetails
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 8)
         }
     }
 

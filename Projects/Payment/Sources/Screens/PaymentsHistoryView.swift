@@ -39,20 +39,35 @@ public struct PaymentHistoryView: View {
                             ForEach(history) { item in
                                 hSection(item.valuesPerMonth) { month in
                                     hRow {
-                                        HStack(alignment: .center, spacing: 0) {
+                                        HStack(
+                                            alignment: month.paymentData.status.hasFailed ? .top : .center,
+                                            spacing: 0
+                                        ) {
                                             VStack(alignment: .leading, spacing: 0) {
                                                 hText(month.paymentData.payment.date.displayDateShort)
                                                 if month.paymentData.status.hasFailed {
-                                                    hText(L10n.paymentsOutstandingPayment)
+                                                    hText(L10n.paymentsOutstandingPayment, style: .standardSmall)
                                                 }
                                             }
                                             Spacer()
                                             hText(month.paymentData.payment.net.formattedAmount)
-
                                         }
                                     }
                                     .noHorizontalPadding()
-                                    .withChevronAccessory
+                                    .withCustomAccessory {
+                                        VStack(spacing: 0) {
+                                            if month.paymentData.status.hasFailed {
+                                                Spacing(height: 4)
+                                                    .fixedSize()
+
+                                            }
+                                            Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                                                .foregroundColor(hTextColor.secondary)
+                                            if month.paymentData.status.hasFailed {
+                                                Spacer()
+                                            }
+                                        }
+                                    }
                                     .onTap {
                                         store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
                                     }

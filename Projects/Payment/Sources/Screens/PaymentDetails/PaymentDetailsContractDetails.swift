@@ -17,7 +17,7 @@ struct ContractDetails: View {
                             Spacer()
                         }
                         hText(contract.amount.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronDown.image)
+                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(hTextColor.secondary)
