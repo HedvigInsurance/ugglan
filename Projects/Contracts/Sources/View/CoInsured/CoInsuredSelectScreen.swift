@@ -7,6 +7,7 @@ struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    let alreadyAddedCoinsuredMembers: [CoInsuredModel]
 
     public init(
         contractId: String
@@ -14,6 +15,11 @@ struct CoInsuredSelectScreen: View {
         self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        alreadyAddedCoinsuredMembers =
+            store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+            .filter({
+                !store.coInsuredViewModel.coInsuredAdded.contains($0)
+            })
     }
 
     var body: some View {
@@ -23,11 +29,8 @@ struct CoInsuredSelectScreen: View {
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                return contractStore.state.fetchAllCoInsuredNotInContract(contractId: contractId)
-                    .filter({
-                        !vm.coInsuredAdded.contains($0)
-                    })
+                return
+                    alreadyAddedCoinsuredMembers
                     .compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
@@ -99,6 +102,7 @@ struct CoInsuredSelectScreen: View {
                 }
             }
             .disabled(isLoading)
+            .hButtonDontShowLoadingWhenDisabled(true)
             .padding(.top, -12)
             .padding(.bottom, -4)
         }

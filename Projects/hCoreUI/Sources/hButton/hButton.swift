@@ -206,6 +206,7 @@ struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     @Environment(\.isEnabled) var enabled
+    @Environment(\.hButtonDontShowLoadingWhenDisabled) var dontShowLoadingWhenDisabled
 
     var content: () -> Content
     var color: any hColor
@@ -219,7 +220,7 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if isLoading {
+        if isLoading && !dontShowLoadingWhenDisabled {
             Group {
                 if hButtonConfigurationType.useDarkVersion {
                     if enabled {
@@ -259,6 +260,23 @@ extension EnvironmentValues {
 extension View {
     public func hButtonIsLoading(_ isLoading: Bool) -> some View {
         self.environment(\.hButtonIsLoading, isLoading)
+    }
+}
+
+private struct EnvironmentHButtonDontShowLoadingWhenDisabled: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var hButtonDontShowLoadingWhenDisabled: Bool {
+        get { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] }
+        set { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] = newValue }
+    }
+}
+
+extension View {
+    public func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
+        self.environment(\.hButtonDontShowLoadingWhenDisabled, show)
     }
 }
 
