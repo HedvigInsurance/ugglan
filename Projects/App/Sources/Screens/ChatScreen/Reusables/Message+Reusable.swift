@@ -471,6 +471,17 @@ extension Message: Reusable {
                         button.layer.cornerRadius = 10
                         button.isUserInteractionEnabled = false
                         crossSaleContainer.addSubview(button)
+                        bag += button.applyShadow { trait in
+                            return .init(
+                                opacity: 1,
+                                offset: .init(width: 0, height: 1),
+                                blurRadius: 2,
+                                color: UIColor.black.withAlphaComponent(0.15),
+                                path: nil,
+                                radius: 12,
+                                corners: .allCorners
+                            )
+                        }
                         button.snp.makeConstraints { make in
                             make.leading.equalToSuperview().offset(16)
                             make.trailing.equalToSuperview().offset(-16)
