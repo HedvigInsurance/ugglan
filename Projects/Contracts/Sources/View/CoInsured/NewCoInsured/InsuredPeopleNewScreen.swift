@@ -29,17 +29,18 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
+                        let listToDisplay = listToDisplay(contract: contract)
+                        let hasContentBelow = !listToDisplay.isEmpty
+
                         hSection {
                             hRow {
-                                ContractOwnerField(contractId: contractId)
+                                ContractOwnerField(contractId: contractId, hasContentBelow: hasContentBelow)
                             }
                             .verticalPadding(0)
                             .padding(.top, 16)
                         }
                         .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
-
-                        let listToDisplay = listToDisplay(contract: contract)
 
                         hSection {
                             ForEach(Array(listToDisplay.enumerated()), id: \.0) {

@@ -29,15 +29,6 @@ struct RemoveCoInsuredScreen: View {
                 ) { contract in
                     if let contract = contract {
                         if let coInsured = contract.currentAgreement?.coInsured {
-                            hSection {
-                                hRow {
-                                    ContractOwnerField(contractId: contractId)
-                                }
-                                .verticalPadding(0)
-                                .padding(.top, 16)
-                            }
-                            .withoutHorizontalPadding
-                            .sectionContainerStyle(.transparent)
                             let missingCoInsured = coInsured.filter {
                                 return $0.hasMissingData
                             }
@@ -48,6 +39,27 @@ struct RemoveCoInsuredScreen: View {
                             let exisistingCoInsured = coInsured.filter {
                                 return !$0.hasMissingData
                             }
+
+                            var nbOfMissingoInsured: Int {
+                                if missingInUpcoming.count > 0 {
+                                    return missingInUpcoming.count - vm.coInsuredDeleted.count
+                                } else {
+                                    return missingCoInsured.count - vm.coInsuredDeleted.count
+                                }
+                            }
+
+                            let hasContentBelow = !exisistingCoInsured.isEmpty || nbOfMissingoInsured > 0
+
+                            hSection {
+                                hRow {
+                                    ContractOwnerField(contractId: contractId, hasContentBelow: hasContentBelow)
+                                }
+                                .verticalPadding(0)
+                                .padding(.top, 16)
+                            }
+                            .withoutHorizontalPadding
+                            .sectionContainerStyle(.transparent)
+
                             hSection {
                                 ForEach(exisistingCoInsured, id: \.self) { coInsured in
                                     hRow {
@@ -55,14 +67,6 @@ struct RemoveCoInsuredScreen: View {
                                             coInsured: coInsured,
                                             accessoryView: accessoryView(coInsured)
                                         )
-                                    }
-                                }
-
-                                var nbOfMissingoInsured: Int {
-                                    if missingInUpcoming.count > 0 {
-                                        return missingInUpcoming.count - vm.coInsuredDeleted.count
-                                    } else {
-                                        return missingCoInsured.count - vm.coInsuredDeleted.count
                                     }
                                 }
 

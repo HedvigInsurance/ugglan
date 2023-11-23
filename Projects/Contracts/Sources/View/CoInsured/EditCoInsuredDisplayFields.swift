@@ -5,13 +5,16 @@ import hCoreUI
 struct ContractOwnerField: View {
     let contractId: String
     let enabled: Bool?
+    let hasContentBelow: Bool
 
     init(
         contractId: String,
-        enabled: Bool? = false
+        enabled: Bool? = false,
+        hasContentBelow: Bool
     ) {
         self.contractId = contractId
         self.enabled = enabled
+        self.hasContentBelow = hasContentBelow
     }
 
     var body: some View {
@@ -37,7 +40,9 @@ struct ContractOwnerField: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Divider()
+            if hasContentBelow {
+                Divider()
+            }
         }
     }
 
@@ -162,6 +167,6 @@ enum StatusPillType {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(contractId: "")
+        ContractOwnerField(contractId: "", hasContentBelow: true)
     }
 }
