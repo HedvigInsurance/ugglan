@@ -457,7 +457,7 @@ extension Message: Reusable {
 
                         //button
                         let button = UIButton(type: .custom)
-                        button.setTitle(L10n.crossSellGetPrice)
+                        button.setTitle(L10n.buttonLabelGetPrice)
                         button.backgroundColor = UIColor(dynamic: { trait in
                             hButtonColor.primaryAltDefault
                                 .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
