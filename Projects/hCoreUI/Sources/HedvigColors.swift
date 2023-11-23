@@ -41,6 +41,7 @@ extension UIColor {
         case navigationButton
         case chatTimeStamp
         case chatMessage
+        case chatMessageImportant
         case toasterBackground
         case toasterBorder
         case toasterTitle
@@ -123,6 +124,11 @@ extension UIColor {
                     trait.userInterfaceStyle == .dark
                         ? BrandColorBase.grayScale1000 : BrandColorBase.grayScale1000
                 })
+            case .chatMessageImportant:
+                return UIColor(dynamic: { trait -> UIColor in
+                    hSignalColor.blueElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
             case .toasterBackground:
                 return UIColor(dynamic: { trait -> UIColor in
                     hSignalColor.greenFill.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
@@ -189,7 +195,7 @@ extension UIColor {
             case .messageBackground: return Fonts.fontFor(style: .headline)
             case .navigationButton: return Fonts.fontFor(style: .standard)
             case .chatTimeStamp: return Fonts.fontFor(style: .standardExtraSmall)
-            case .chatMessage: return Fonts.fontFor(style: .standard)
+            case .chatMessage, .chatMessageImportant: return Fonts.fontFor(style: .standard)
             case .toasterBackground: return Fonts.fontFor(style: .title1)
             case .toasterBorder: return Fonts.fontFor(style: .body)
             case .toasterTitle: return Fonts.fontFor(style: .standardSmall)

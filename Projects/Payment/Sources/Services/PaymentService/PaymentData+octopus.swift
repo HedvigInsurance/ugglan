@@ -10,13 +10,13 @@ extension PaymentData {
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
-        let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
+        let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             .init(
                 with: discountBreakdown,
                 discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
                     ?? data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
-                    .asReedeemedCampaing()
+                    .asReedeemedCampaingForPayment()
             )
         })
         paymentDetails = nil
@@ -79,22 +79,46 @@ extension PaymentData.PeriodInfo {
         to = data.toDate
         amount = .init(fragment: data.amount.fragments.moneyFragment)
         isOutstanding = data.isPreviouslyFailedCharge
+        if isOutstanding {
+            desciption = L10n.paymentsOutstandingPayment
+        } else {
+            desciption = data.getDescription
+        }
+    }
+}
+
+extension OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period {
+    fileprivate var getDescription: String? {
+        guard let fromDate = fromDate.localDateToDate,
+            let toDate = toDate.localDateToDate
+        else {
+            return nil
+        }
+        if fromDate.isFirstDayOfMonth && toDate.isLastDayOfMonth {
+            return L10n.paymentsPeriodFull
+        } else {
+            let days = toDate.daysBetween(start: fromDate) + 1
+            return L10n.paymentsPeriodDays(String(days))
+        }
     }
 }
 
 extension Discount {
     init(
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
+        discount: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?
     ) {
         id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
-        listOfAffectedInsurances = []
+        listOfAffectedInsurances =
+            discount?.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) })
+            ?? []
         validUntil = nil
         canBeDeleted = false
     }
+
 }
 
 extension OctopusGraphQL.MemberReferralInformationCodeFragment {
@@ -108,4 +132,13 @@ extension OctopusGraphQL.MemberReferralInformationCodeFragment {
         return referralDescription
     }
 
+    func asReedeemedCampaingForPayment() -> OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign {
+        let referralDescription = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign(
+            code: self.code,
+            description: L10n.paymentsReferralDiscount,
+            type: .referral,
+            id: self.code
+        )
+        return referralDescription
+    }
 }

@@ -10,20 +10,21 @@ struct ContractDetails: View {
         hSection {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
                         HStack {
                             hText(contract.title)
                                 .multilineTextAlignment(.leading)
                             Spacer()
                         }
                         hText(contract.amount.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronDown.image)
+                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(hTextColor.secondary)
                             .rotationEffect(
                                 expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                             )
+                            .padding(.top, 4)
                     }
                     hText(contract.subtitle)
                         .foregroundColor(hTextColor.secondary)
@@ -58,9 +59,9 @@ struct ContractDetails: View {
                                 .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
 
                         }
-                        if period.isOutstanding {
-                            hText(L10n.paymentsOutstandingPayment, style: .standardSmall)
-                                .foregroundColor(getColor(hTextColor.primary, isOutstanding: period.isOutstanding))
+                        if let desciption = period.desciption {
+                            hText(desciption, style: .standardSmall)
+                                .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
 
                         }
                     }

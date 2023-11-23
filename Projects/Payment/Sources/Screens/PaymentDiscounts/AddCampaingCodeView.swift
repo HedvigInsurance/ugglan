@@ -41,6 +41,7 @@ class AddCampaingCodeViewModel: ObservableObject {
 
         inputVm.onSave = { [weak self] text in
             try await self?.campaignsService.add(code: text)
+            self?.store.send(.load)
             self?.store.send(.fetchDiscountsData)
 
             await self?.onSuccessAdd()

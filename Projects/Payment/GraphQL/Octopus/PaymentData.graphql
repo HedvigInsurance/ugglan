@@ -1,6 +1,12 @@
 query PaymentData {
     currentMember {
         ...ReedemCampaignsFragment
+        redeemedCampaigns {
+            onlyApplicableToContracts {
+                exposureDisplayName
+                id
+            }
+        }
         referralInformation {
             ...MemberReferralInformationCodeFragment
         }

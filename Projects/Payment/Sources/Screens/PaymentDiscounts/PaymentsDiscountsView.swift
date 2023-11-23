@@ -29,7 +29,12 @@ struct PaymentsDiscountsView: View {
 
     private var discounts: some View {
         hSection(data.discounts) { discount in
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .enableRemoving], discount: discount))
+            PaymentDetailsDiscountView(
+                vm: .init(
+                    options: [.showExpire],
+                    discount: discount
+                )
+            )
         }
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {
@@ -62,7 +67,10 @@ struct PaymentsDiscountsView: View {
                     Spacer()
                     InfoViewHolder(
                         title: L10n.paymentsReferralsInfoTitle,
-                        description: L10n.paymentsReferralsInfoDescription
+                        description: L10n.ReferralsInfoSheet.body(
+                            store.state.paymentDiscountsData?.referralsData.discountPerMember
+                                .formattedAmount ?? ""
+                        )
                     )
                 }
                 HStack {
@@ -75,8 +83,10 @@ struct PaymentsDiscountsView: View {
 
                         )
                     Spacer()
-                    hText("\(data.referralsData.allReferralDiscount.formattedAmount)\(L10n.perMonth)")
-                        .foregroundColor(hTextColor.secondary)
+                    hText(
+                        "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
+                    )
+                    .foregroundColor(hTextColor.secondary)
                 }
 
                 if data.referralsData.referrals.count == 0 {
@@ -100,8 +110,8 @@ struct PaymentsDiscountsView: View {
                             )
                         ]
                     )
+                    .padding(.bottom, 8)
                 }
-
             }
             .padding(.bottom, -16)
         }

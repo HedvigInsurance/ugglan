@@ -70,6 +70,22 @@ extension PaymentData {
     }
 }
 
+extension Discount {
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
+    ) {
+        id = UUID().uuidString
+        code = data.code ?? discount?.code ?? ""
+        amount = .init(fragment: data.discount.fragments.moneyFragment)
+        title = discount?.description ?? ""
+        listOfAffectedInsurances = []
+        validUntil = nil
+        canBeDeleted = false
+    }
+
+}
+
 extension PaymentData.PaymentStatus {
     static func getStatus(
         with data: OctopusGraphQL.MemberChargeFragment,

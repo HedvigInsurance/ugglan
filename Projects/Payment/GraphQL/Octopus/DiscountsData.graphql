@@ -1,6 +1,12 @@
 query Discounts {
   currentMember {
     ...ReedemCampaignsFragment
+    redeemedCampaigns {
+        onlyApplicableToContracts {
+            exposureDisplayName
+            id
+        }
+    }
     referralInformation {
       code
       monthlyDiscountPerReferral {

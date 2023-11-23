@@ -80,25 +80,36 @@ extension Message: Reusable {
                 styledText: StyledText(text: title, style: UIColor.brandStyle(.chatMessage))
             )
             let size = attributedString.boundingRect(
-                with: CGSize(width: 267.77, height: CGFloat(Int.max)),
+                with: CGSize(width: 300 - 32, height: CGFloat(Int.max)),
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
                 context: nil
             )
             let imageHeight: CGFloat = {
                 let imageToShow = data?.image ?? hCoreUIAssets.hedvigBigLogo.image
                 let ratio = imageToShow.size.width / imageToShow.size.height
-                return (267.77) / ratio
+                return (300) / ratio
             }()
             if isRelatedToPreviousMessage {
-                return 84 + imageHeight + size.height + smallerMarginTop + extraHeightForTimeStampLabel
+                return 89 + imageHeight + size.height + smallerMarginTop + extraHeightForTimeStampLabel
             }
 
-            return 84 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
+            return 89 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
         }
 
-        let attributedString = NSAttributedString(
-            styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
-        )
+        let attributedString: NSAttributedString = {
+            switch type {
+            case let .deepLink(url):
+                return DeepLink.getType(from: url)?.title
+                    ?? NSAttributedString(
+                        styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
+                    )
+            default:
+                return NSAttributedString(
+                    styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
+                )
+
+            }
+        }()
 
         let size = attributedString.boundingRect(
             with: CGSize(width: 267.77, height: CGFloat(Int.max)),
@@ -234,7 +245,7 @@ extension Message: Reusable {
                             contentContainer.layoutMargins = UIEdgeInsets.zero
                         } else if message.type.isCrossSell {
                             contentContainer.layoutMargins = UIEdgeInsets(
-                                horizontalInset: 16,
+                                horizontalInset: 0,
                                 verticalInset: 0
                             )
                         } else {
@@ -413,6 +424,8 @@ extension Message: Reusable {
                         loadingIndicator.color = UIColor.brand(.chatMessage)
                         loadingIndicator.hidesWhenStopped = true
                         crossSaleMainContainer.addSubview(crossSaleContainer)
+                        crossSaleContainer.clipsToBounds = true
+                        crossSaleContainer.layer.cornerRadius = 12
                         crossSaleContainer.snp.makeConstraints { make in
                             make.leading.trailing.top.bottom.equalToSuperview()
                         }
@@ -426,10 +439,9 @@ extension Message: Reusable {
                         imageView.snp.makeConstraints { make in
                             make.leading.equalToSuperview()
                             make.trailing.equalToSuperview()
-                            make.top.equalToSuperview().offset(message.shouldShowTimeStamp ? 12 : 12)
+                            make.top.equalToSuperview()
                         }
 
-                        imageView.layer.cornerRadius = 20
                         imageView.clipsToBounds = true
                         imageView.contentMode = .scaleAspectFit
 
@@ -449,9 +461,9 @@ extension Message: Reusable {
 
                         crossSaleContainer.addSubview(titleLabel)
                         titleLabel.snp.makeConstraints { make in
-                            make.top.equalTo(imageView.snp.bottom).offset(10)
-                            make.leading.equalToSuperview()
-                            make.trailing.equalToSuperview()
+                            make.top.equalTo(imageView.snp.bottom).offset(16)
+                            make.leading.equalToSuperview().offset(16)
+                            make.trailing.equalToSuperview().offset(-16)
                         }
 
                         //button
@@ -466,14 +478,25 @@ extension Message: Reusable {
                         button.titleLabel?.textColor = UIColor.black
                         button.titleLabel?.font = Fonts.fontFor(style: .standard)
 
-                        button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
-                        button.layer.cornerRadius = 12
+                        button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 8)
+                        button.layer.cornerRadius = 10
                         button.isUserInteractionEnabled = false
                         crossSaleContainer.addSubview(button)
+                        bag += button.applyShadow { trait in
+                            return .init(
+                                opacity: 1,
+                                offset: .init(width: 0, height: 1),
+                                blurRadius: 2,
+                                color: UIColor.black.withAlphaComponent(0.15),
+                                path: nil,
+                                radius: 12,
+                                corners: .allCorners
+                            )
+                        }
                         button.snp.makeConstraints { make in
-                            make.leading.equalToSuperview()
-                            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-                            make.width.equalToSuperview().dividedBy(2)
+                            make.leading.equalToSuperview().offset(16)
+                            make.trailing.equalToSuperview().offset(-16)
+                            make.top.equalTo(titleLabel.snp.bottom).offset(16)
                         }
                         contentContainer.addArrangedSubview(crossSaleMainContainer)
                         crossSaleContainer.snp.makeConstraints { make in
@@ -592,25 +615,33 @@ extension Message: Reusable {
                                         options: []
                                     )
                             }
-                    case .text:
+                    case .text, .deepLink:
                         let textStyle = UIColor.brandStyle(.chatMessage)
                             .colored(messageTextColor)
-                        let attributedString = NSMutableAttributedString(
+
+                        let textAttributedString = NSMutableAttributedString(
                             text: message.body,
                             style: textStyle
                         )
-
-                        message.body.links.forEach { linkRange in
-                            attributedString.addAttributes(
-                                [
-                                    NSAttributedString.Key.underlineStyle:
-                                        NSUnderlineStyle.single.rawValue,
-                                    NSAttributedString.Key.underlineColor:
-                                        messageTextColor,
-                                ],
-                                range: linkRange.range
-                            )
-                        }
+                        let attributedString: NSMutableAttributedString = {
+                            switch message.type {
+                            case let .deepLink(url):
+                                return DeepLink.getType(from: url)?.title ?? textAttributedString
+                            default:
+                                message.body.links.forEach { linkRange in
+                                    textAttributedString.addAttributes(
+                                        [
+                                            NSAttributedString.Key.underlineStyle:
+                                                NSUnderlineStyle.single.rawValue,
+                                            NSAttributedString.Key.underlineColor:
+                                                messageTextColor,
+                                        ],
+                                        range: linkRange.range
+                                    )
+                                }
+                                return textAttributedString
+                            }
+                        }()
 
                         let label = UILabel()
                         label.attributedText = attributedString

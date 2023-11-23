@@ -20,7 +20,8 @@ public class hPaymentServiceDemo: hPaymentService {
                             from: "2023-11-01",
                             to: "2023-11-30",
                             amount: .sek(200),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         )
                     ]
                 ),
@@ -35,14 +36,16 @@ public class hPaymentServiceDemo: hPaymentService {
                             from: "2023-11-01",
                             to: "2023-11-30",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "id12",
                             from: "2023-10-01",
                             to: "2023-10-31",
                             amount: .sek(100),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),
@@ -125,6 +128,42 @@ public class hPaymentServiceDemo: hPaymentService {
         )
     }
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
-        return []
+        let success = PaymentHistoryListData(
+            id: "2023",
+            year: "2023",
+            valuesPerMonth: [
+                .init(
+                    id: "id1",
+                    paymentData: .init(
+                        id: "idI1",
+                        payment: .init(gross: .sek(20), net: .sek(18), date: "2023-11-11"),
+                        status: .success,
+                        contracts: [],
+                        discounts: [],
+                        paymentDetails: nil,
+                        addedToThePayment: nil
+                    )
+                )
+            ]
+        )
+        let failed = PaymentHistoryListData(
+            id: "2023",
+            year: "2023",
+            valuesPerMonth: [
+                .init(
+                    id: "id1",
+                    paymentData: .init(
+                        id: "idI1",
+                        payment: .init(gross: .sek(20), net: .sek(18), date: "2023-11-11"),
+                        status: .addedtoFuture(date: "2023-12-12"),
+                        contracts: [],
+                        discounts: [],
+                        paymentDetails: nil,
+                        addedToThePayment: nil
+                    )
+                )
+            ]
+        )
+        return [success, failed]
     }
 }

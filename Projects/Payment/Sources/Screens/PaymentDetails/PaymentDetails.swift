@@ -19,7 +19,7 @@ struct PaymentDetails: View {
                 total
                 paymentDetails
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 8)
         }
     }
 
@@ -35,7 +35,7 @@ struct PaymentDetails: View {
     private var discounts: some View {
         if data.discounts.count > 0 {
             hSection(data.discounts) { discount in
-                PaymentDetailsDiscountView(vm: .init(options: [], discount: discount))
+                PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
             }
             .withHeader {
                 HStack {
@@ -176,14 +176,16 @@ struct PaymentDetails_Previews: PreviewProvider {
                             from: "2023-11-10",
                             to: "2023-11-23",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "2",
                             from: "2023-11-23",
                             to: "2023-11-30",
                             amount: .sek(80),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),
@@ -198,14 +200,16 @@ struct PaymentDetails_Previews: PreviewProvider {
                             from: "2023-11-10",
                             to: "2023-11-23",
                             amount: .sek(100),
-                            isOutstanding: false
+                            isOutstanding: false,
+                            desciption: nil
                         ),
                         .init(
                             id: "2",
                             from: "2023-11-23",
                             to: "2023-11-30",
                             amount: .sek(80),
-                            isOutstanding: true
+                            isOutstanding: true,
+                            desciption: nil
                         ),
                     ]
                 ),
