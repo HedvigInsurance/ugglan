@@ -241,7 +241,7 @@ public struct Contract: Codable, Hashable, Equatable {
 
         public var showValidUntilInsteadOfTerminatedAt: Bool {
             switch self {
-            case .seCarTrialFull, .seCarTrialHalf:
+            case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
                 return true
             default:
                 return false
