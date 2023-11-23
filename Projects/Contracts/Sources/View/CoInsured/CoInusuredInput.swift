@@ -183,16 +183,14 @@ struct CoInusuredInput: View {
                                                         )
                                                     )
                                                 } else {
-                                                    if vm.noSSN {
-                                                        store.coInsuredViewModel.removeCoInsured(
-                                                            .init(
-                                                                firstName: vm.firstName,
-                                                                lastName: vm.lastName,
-                                                                SSN: vm.SSN,
-                                                                needsMissingInfo: false
-                                                            )
+                                                    store.coInsuredViewModel.removeCoInsured(
+                                                        .init(
+                                                            firstName: vm.firstName,
+                                                            lastName: vm.lastName,
+                                                            SSN: vm.SSN,
+                                                            needsMissingInfo: false
                                                         )
-                                                    }
+                                                    )
                                                 }
 
                                             }
