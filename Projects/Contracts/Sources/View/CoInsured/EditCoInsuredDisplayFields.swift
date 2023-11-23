@@ -113,7 +113,7 @@ struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: date?.calculate10DigitBirthDate ?? "")
+                    .text(date: date?.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
                     ?? "",
                 style: .standardSmall
             )
