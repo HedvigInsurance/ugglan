@@ -301,8 +301,9 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 
     func completeList(contractId: String) -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
-        if !upcomingCoInsured.isEmpty {
-            filterList = upcomingCoInsured
+        let upComingList = store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured
+        if !(upComingList?.isEmpty ?? true) {
+            filterList = upComingList ?? []
         } else {
             let nbOfCoInsured = store.state.contractForId(contractId)?.currentAgreement?.coInsured.count ?? 0
 
