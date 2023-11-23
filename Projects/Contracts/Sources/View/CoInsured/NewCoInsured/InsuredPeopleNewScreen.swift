@@ -39,15 +39,23 @@ struct InsuredPeopleNewScreen: View {
                         .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
 
-                        hSection(listToDisplay(contract: contract)) { coInsured in
-                            hRow {
+                        let listToDisplay = listToDisplay(contract: contract)
 
-                                CoInsuredField(
-                                    coInsured: coInsured.coInsured,
-                                    accessoryView: getAccView(coInsured: coInsured),
-                                    title: coInsured.coInsured.hasMissingData ? L10n.contractCoinsured : nil,
-                                    subTitle: coInsured.coInsured.hasMissingData ? L10n.contractNoInformation : nil
-                                )
+                        hSection {
+                            ForEach(Array(listToDisplay.enumerated()), id: \.0) {
+                                index,
+                                coInsured in
+                                hRow {
+                                    CoInsuredField(
+                                        coInsured: coInsured.coInsured,
+                                        accessoryView: getAccView(coInsured: coInsured),
+                                        title: coInsured.coInsured.hasMissingData ? L10n.contractCoinsured : nil,
+                                        subTitle: coInsured.coInsured.hasMissingData ? L10n.contractNoInformation : nil
+                                    )
+                                }
+                                if index != listToDisplay.count - 1 {
+                                    hRowDivider()
+                                }
                             }
                         }
                         .withoutHorizontalPadding

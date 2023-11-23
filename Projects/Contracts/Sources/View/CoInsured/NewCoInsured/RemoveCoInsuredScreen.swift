@@ -74,6 +74,9 @@ struct RemoveCoInsuredScreen: View {
                                             subTitle: L10n.contractNoInformation
                                         )
                                     }
+                                    if missingCoInsured < nbOfMissingoInsured - 1 {
+                                        hRowDivider()
+                                    }
                                 }
                             }
                             .withoutHorizontalPadding
