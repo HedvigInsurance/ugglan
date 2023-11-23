@@ -298,18 +298,18 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     func completeList(contractId: String) -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
         let upComingList = store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
-        if !(upComingList.isEmpty) {
+        if !(upComingList.isEmpty) && !upComingList.contains(CoInsuredModel()) {
             filterList = upComingList
         } else {
             let existingList = store.state.contractForId(contractId)?.currentAgreement?.coInsured ?? []
             let nbOfCoInsured = existingList.count
 
-            if nbOfCoInsured == 0 && nbOfCoInsured > 0 {
+            if nbOfCoInsured > 0 {
                 let nbOfUpcomingCoInsured =
                     upComingList.count
                 if coInsuredDeleted.count > 0 {
                     var num: Int {
-                        if nbOfUpcomingCoInsured < nbOfCoInsured {
+                        if nbOfUpcomingCoInsured < nbOfCoInsured && !upComingList.isEmpty {
                             return nbOfUpcomingCoInsured - coInsuredDeleted.count
                         } else {
                             return nbOfCoInsured - coInsuredDeleted.count
