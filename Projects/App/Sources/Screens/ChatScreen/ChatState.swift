@@ -57,10 +57,17 @@ class ChatState {
                 self.askForPermissionsSignal.value = true
             case .denied:
                 func createToast() -> Toast {
+                    let schema = UITraitCollection.current.userInterfaceStyle
                     return Toast(
-                        symbol: .icon(hCoreUIAssets.chatQuickNav.image),
-                        body: L10n.pushNotificationsAlertTitle,
-                        subtitle: L10n.chatToastPushNotificationsSubtitle,
+                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                        body: L10n.chatToastPushNotificationsTitle,
+                        infoText: L10n.pushNotificationsAlertActionOk,
+                        textColor: hSignalColor.blueText.colorFor(schema == .dark ? .dark : .light, .base).color
+                            .uiColor(),
+                        backgroundColor: hSignalColor.blueFill.colorFor(schema == .dark ? .dark : .light, .base).color
+                            .uiColor(),
+                        symbolColor: hSignalColor.blueElement.colorFor(schema == .dark ? .dark : .light, .base).color
+                            .uiColor(),
                         duration: 6
                     )
                 }
