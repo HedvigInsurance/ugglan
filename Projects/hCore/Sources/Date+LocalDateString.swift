@@ -51,7 +51,7 @@ private struct DateFormatters {
 
     static let localbirthDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyMMDD"
+        formatter.dateFormat = "yyMMdd"
         return formatter
     }()
 
