@@ -65,7 +65,10 @@ struct InsuredPeopleScreen: View {
 
                         hSection {
                             hButton.LargeButton(type: .secondary) {
-                                if store.state.fetchAllCoInsuredNotInContract(contractId: contractId).isEmpty {
+                                let hasExistingCoInsured = store.state
+                                    .fetchAllCoInsuredNotInContract(contractId: contractId)
+                                    .filter { !vm.coInsuredAdded.contains($0) }
+                                if hasExistingCoInsured.isEmpty {
                                     store.send(
                                         .coInsuredNavigationAction(
                                             action: .openCoInsuredInput(

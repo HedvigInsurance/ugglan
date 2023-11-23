@@ -6,6 +6,15 @@ import hCoreUI
 struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
+    @ObservedObject var vm: InsuredPeopleNewScreenModel
+
+    public init(
+        contractId: String
+    ) {
+        self.contractId = contractId
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        vm = store.coInsuredViewModel
+    }
 
     var body: some View {
         picker
@@ -16,6 +25,9 @@ struct CoInsuredSelectScreen: View {
             items: {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 return contractStore.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+                    .filter({
+                        !vm.coInsuredAdded.contains($0)
+                    })
                     .compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }

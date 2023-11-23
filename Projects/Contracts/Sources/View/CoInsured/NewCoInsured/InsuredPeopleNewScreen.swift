@@ -140,7 +140,8 @@ struct InsuredPeopleNewScreen: View {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
             }
             .onTapGesture {
-                if !contract.fetchAllCoInsured.isEmpty {
+                let hasExistingCoInsured = contract.fetchAllCoInsured.filter { !vm.coInsuredAdded.contains($0) }
+                if !hasExistingCoInsured.isEmpty {
                     store.send(
                         .coInsuredNavigationAction(
                             action: .openCoInsuredSelectScreen(contractId: contractId)
@@ -177,7 +178,7 @@ struct InsuredPeopleNewScreen: View {
                 finalList.append(CoInsuredListType(coInsured: CoInsuredModel(), type: nil, locallyAdded: false))
             }
         }
-        return finalList + addedCoInsured
+        return addedCoInsured + finalList
     }
 }
 
