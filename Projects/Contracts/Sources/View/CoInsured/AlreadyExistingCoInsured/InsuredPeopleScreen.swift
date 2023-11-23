@@ -326,15 +326,18 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 filterList = existingCoInsured
             }
         }
-        return filterList.filter { existing in
-            if let index = coInsuredDeleted.first(where: { deleted in
-                deleted == existing
-            }) {
-                return false
-            } else {
-                return true
-            }
-        } + coInsuredAdded
+        let finalList =
+            filterList.filter { existing in
+                if let index = coInsuredDeleted.first(where: { deleted in
+                    deleted == existing
+                }) {
+                    return false
+                } else {
+                    return true
+                }
+            } + coInsuredAdded
+
+        return finalList
     }
 
     var resetCoInsured: Void {

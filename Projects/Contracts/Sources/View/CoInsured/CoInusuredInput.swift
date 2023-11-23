@@ -23,6 +23,7 @@ struct CoInusuredInput: View {
         intentVm.showErrorView = false
 
         if vm.SSN != "" {
+            vm.noSSN = false
             insuredPeopleVm.previousValue = CoInsuredModel(
                 firstName: vm.firstName,
                 lastName: vm.lastName,
