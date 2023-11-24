@@ -6,6 +6,21 @@ import hCoreUI
 struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
+    @ObservedObject var vm: InsuredPeopleNewScreenModel
+    let alreadyAddedCoinsuredMembers: [CoInsuredModel]
+
+    public init(
+        contractId: String
+    ) {
+        self.contractId = contractId
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        vm = store.coInsuredViewModel
+        alreadyAddedCoinsuredMembers =
+            store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+            .filter({
+                !store.coInsuredViewModel.coInsuredAdded.contains($0)
+            })
+    }
 
     var body: some View {
         picker
@@ -14,20 +29,13 @@ struct CoInsuredSelectScreen: View {
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                return contractStore.state.fetchAllCoInsured.compactMap {
-                    ((object: $0, displayName: $0.fullName ?? ""))
-                }
+                return
+                    alreadyAddedCoinsuredMembers
+                    .compactMap {
+                        ((object: $0, displayName: $0.fullName ?? ""))
+                    }
             }(),
-            preSelectedItems: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let preSelectedItem = contractStore.state.fetchAllCoInsured.first
-                if let preSelectedItem {
-                    return [preSelectedItem]
-                } else {
-                    return []
-                }
-            },
+            preSelectedItems: { [] },
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     let store: ContractStore = globalPresentableStoreContainer.get()
@@ -71,7 +79,8 @@ struct CoInsuredSelectScreen: View {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
-            singleSelect: true
+            singleSelect: true,
+            attachToBottom: true
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
@@ -93,7 +102,9 @@ struct CoInsuredSelectScreen: View {
                 }
             }
             .disabled(isLoading)
-            .padding(.top, 4)
+            .hButtonDontShowLoadingWhenDisabled(true)
+            .padding(.top, -12)
+            .padding(.bottom, -4)
         }
         .hButtonIsLoading(isLoading)
     }

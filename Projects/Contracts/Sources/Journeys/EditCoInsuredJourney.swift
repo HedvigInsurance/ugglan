@@ -43,11 +43,11 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: InsuredPeopleScreen(contractId: id),
             style: .modally(presentationStyle: .overFullScreen),
-            options: [.defaults, .withAdditionalSpaceForProgressBar]
+            options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in
             getScreen(for: action)
         }
-        .configureTitle(L10n.changeAddressCoInsuredLabel)
+        .configureTitle(L10n.coinsuredEditTitle)
         .withJourneyDismissButton
     }
 
@@ -61,7 +61,7 @@ public class EditCoInsuredJourney {
         ) { action in
             getScreen(for: action)
         }
-        .configureTitle(L10n.changeAddressCoInsuredLabel)
+        .configureTitle(L10n.coinsuredEditTitle)
         .withJourneyDismissButton
     }
 
@@ -77,12 +77,13 @@ public class EditCoInsuredJourney {
             ContractStore.self,
             rootView: CoInusuredInput(
                 vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
-            ),
+            )
+            .withNavigation(title: title),
             style: style,
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .coInsuredNavigationAction(.dismissEdit) = action {
-                DismissJourney()
+                PopJourney()
             } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
                 SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
                     .onPresent {
@@ -103,7 +104,6 @@ public class EditCoInsuredJourney {
                 getScreen(for: action)
             }
         }
-        .configureTitle(title)
         .onAction(ContractStore.self) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
@@ -133,6 +133,7 @@ public class EditCoInsuredJourney {
         ) { action in
             getScreen(for: action)
         }
+        .configureTitle(L10n.coinsuredEditTitle)
     }
 
     @JourneyBuilder
@@ -240,6 +241,7 @@ public class EditCoInsuredJourney {
                 PopJourney()
             }
         }
+        .hidesBackButton
         .configureTitle(L10n.contractAddConisuredInfo)
     }
 

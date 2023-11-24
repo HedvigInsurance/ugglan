@@ -29,7 +29,6 @@ extension AppJourney {
                 }
             }
             .configureTitle(L10n.chatTitle)
-            .setScrollEdgeNavigationBarAppearanceToStandard
         }
     }
 
@@ -53,7 +52,6 @@ extension AppJourney {
                 chat.chatState.reset()
             }
             .configureTitle(L10n.chatTitle)
-            .setScrollEdgeNavigationBarAppearanceToStandard
         }
     }
 

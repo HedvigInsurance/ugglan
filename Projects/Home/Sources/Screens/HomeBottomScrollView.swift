@@ -142,7 +142,11 @@ class HomeButtonScrollViewModel: ObservableObject {
                 $0.activeContracts
                     .first(where: { contract in
                         if contract.upcomingChangedAgreement != nil {
-                            return false
+                            return contract.upcomingChangedAgreement?.coInsured
+                                .filter({
+                                    $0.hasMissingData && contract.terminationDate == nil
+                                })
+                                .isEmpty == false
                         } else {
                             return contract.currentAgreement?.coInsured
                                 .filter({
@@ -163,7 +167,11 @@ class HomeButtonScrollViewModel: ObservableObject {
         let show =
             contractStore.state.activeContracts.first(where: { contract in
                 if contract.upcomingChangedAgreement != nil {
-                    return false
+                    return contract.upcomingChangedAgreement?.coInsured
+                        .filter({
+                            $0.hasMissingData && contract.terminationDate == nil
+                        })
+                        .isEmpty == false
                 } else {
                     return contract.currentAgreement?.coInsured
                         .filter({

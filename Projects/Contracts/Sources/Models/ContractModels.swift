@@ -10,6 +10,15 @@ extension String {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.date(from: self)
     }
+
+    var localYYMMDDDateToDate: Date? {
+        let formatter = DateFormatter()
+        if self == "" {
+            return nil
+        }
+        formatter.dateFormat = "yyMMdd"
+        return formatter.date(from: self)
+    }
 }
 
 public struct ProductVariant: Codable, Hashable {
@@ -105,9 +114,9 @@ public struct Contract: Codable, Hashable, Equatable {
     }
     public var nbOfMissingCoInsured: Int {
         if let upcomingChangedAgreement {
-            return upcomingChangedAgreement.coInsured.filter({ $0.needsMissingInfo }).count
+            return upcomingChangedAgreement.coInsured.filter({ $0.hasMissingInfo }).count
         } else {
-            return currentAgreement?.coInsured.filter({ $0.needsMissingInfo }).count ?? 0
+            return currentAgreement?.coInsured.filter({ $0.hasMissingInfo }).count ?? 0
         }
     }
 
@@ -125,6 +134,26 @@ public struct Contract: Codable, Hashable, Equatable {
         }
         return false
     }
+
+    public var terminationMessage: String? {
+        if let terminationDate {
+            if typeOfContract.showValidUntilInsteadOfTerminatedAt {
+                if terminatedToday {
+                    return L10n.contractsTrialTerminationDateMessageTomorrow
+                } else {
+                    return L10n.contractsTrialTerminationDateMessage(terminationDate)
+                }
+            } else {
+                if terminatedToday {
+                    return L10n.contractStatusTerminatedToday
+                } else {
+                    return L10n.contractStatusToBeTerminated(terminationDate)
+                }
+            }
+        }
+        return nil
+    }
+
     public var activeInFuture: Bool {
         if let inceptionDate = masterInceptionDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate,
@@ -207,6 +236,8 @@ public struct Contract: Codable, Hashable, Equatable {
         case seCarTraffic = "SE_CAR_TRAFFIC"
         case seCarHalf = "SE_CAR_HALF"
         case seCarFull = "SE_CAR_FULL"
+        case seCarTrialFull = "SE_CAR_TRIAL_FULL"
+        case seCarTrialHalf = "SE_CAR_TRIAL_HALF"
         case seGroupApartmentBrf = "SE_GROUP_APARTMENT_BRF"
         case seGroupApartmentRent = "SE_GROUP_APARTMENT_RENT"
         case seQasaShortTermRental = "SE_QASA_SHORT_TERM_RENTAL"
@@ -258,6 +289,15 @@ public struct Contract: Codable, Hashable, Equatable {
             .seApartmentStudentBrf,
             .seApartmentStudentRent,
         ]
+
+        public var showValidUntilInsteadOfTerminatedAt: Bool {
+            switch self {
+            case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     public var hasTravelInsurance: Bool {
@@ -291,6 +331,10 @@ extension Contract.TypeOfContract {
         case .seCarHalf:
             return .car
         case .seCarFull:
+            return .car
+        case .seCarTrialFull:
+            return .car
+        case .seCarTrialHalf:
             return .car
         case .seGroupApartmentRent:
             return .rental

@@ -206,6 +206,7 @@ struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     @Environment(\.isEnabled) var enabled
+    @Environment(\.hButtonDontShowLoadingWhenDisabled) var dontShowLoadingWhenDisabled
 
     var content: () -> Content
     var color: any hColor
@@ -219,15 +220,25 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if isLoading && enabled {
-            if hButtonConfigurationType.useDarkVersion {
-                DotsActivityIndicator(.standard)
-                    .useDarkColor
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                DotsActivityIndicator(.standard)
-                    .fixedSize(horizontal: false, vertical: true)
+        if isLoading && !dontShowLoadingWhenDisabled {
+            Group {
+                if hButtonConfigurationType.useDarkVersion {
+                    if enabled {
+                        DotsActivityIndicator(.standard)
+                            .useDarkColor
+                    } else {
+                        DotsActivityIndicator(.standard)
+                    }
+                } else {
+                    if enabled {
+                        DotsActivityIndicator(.standard)
+                    } else {
+                        DotsActivityIndicator(.standard)
+                            .useDarkColor
+                    }
+                }
             }
+            .fixedSize(horizontal: false, vertical: true)
 
         } else {
             content()
@@ -249,6 +260,23 @@ extension EnvironmentValues {
 extension View {
     public func hButtonIsLoading(_ isLoading: Bool) -> some View {
         self.environment(\.hButtonIsLoading, isLoading)
+    }
+}
+
+private struct EnvironmentHButtonDontShowLoadingWhenDisabled: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var hButtonDontShowLoadingWhenDisabled: Bool {
+        get { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] }
+        set { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] = newValue }
+    }
+}
+
+extension View {
+    public func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
+        self.environment(\.hButtonDontShowLoadingWhenDisabled, show)
     }
 }
 
@@ -288,14 +316,12 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 } else {
                     hTextColor.disabled
                 }
-            case .secondary, .ghost, .secondaryAlt:
+            case .secondary, .ghost, .secondaryAlt, .alert:
                 if isEnabled {
                     hTextColor.primary
                 } else {
                     hTextColor.disabled
                 }
-            case .alert:
-                hTextColor.negative
             }
         }
 

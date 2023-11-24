@@ -29,36 +29,40 @@ struct InsuredPeopleNewScreen: View {
                     }
                 ) { contract in
                     if let contract = contract {
-                        if let coInsured = contract.currentAgreement?.coInsured {
-                            ContractOwnerField(coInsured: coInsured, contractId: contractId)
-                        }
+                        let listToDisplay = listToDisplay(contract: contract)
+                        let hasContentBelow = !listToDisplay.isEmpty
 
-                        hSection(vm.coInsuredAdded, id: \.self) { localCoInsured in
-                            CoInsuredField(
-                                coInsured: localCoInsured,
-                                accessoryView: localAccessoryView(coInsured: localCoInsured)
-                            )
+                        hSection {
+                            hRow {
+                                ContractOwnerField(contractId: contractId, hasContentBelow: hasContentBelow)
+                            }
+                            .verticalPadding(0)
+                            .padding(.top, 16)
                         }
+                        .withoutHorizontalPadding
                         .sectionContainerStyle(.transparent)
 
-                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
-                        if vm.coInsuredAdded.count < nbOfMissingCoInsured {
-                            let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
-                            hSection {
-                                ForEach((1...nbOfFields), id: \.self) { index in
+                        hSection {
+                            ForEach(Array(listToDisplay.enumerated()), id: \.0) {
+                                index,
+                                coInsured in
+                                hRow {
                                     CoInsuredField(
-                                        accessoryView: emptyAccessoryView,
-                                        title: L10n.contractCoinsured,
-                                        subTitle: L10n.contractNoInformation
+                                        coInsured: coInsured.coInsured,
+                                        accessoryView: getAccView(coInsured: coInsured),
+                                        title: coInsured.coInsured.hasMissingData ? L10n.contractCoinsured : nil,
+                                        subTitle: coInsured.coInsured.hasMissingData ? L10n.contractNoInformation : nil
                                     )
                                 }
+                                if index != listToDisplay.count - 1 {
+                                    hRowDivider()
+                                }
                             }
-                            .sectionContainerStyle(.transparent)
-                            //                            hSection {
-                            //                                InfoCard(text: "TBD", type: .info)
-                            //                            }
-                            //                            .sectionContainerStyle(.transparent)
-                        } else {
+                        }
+                        .withoutHorizontalPadding
+                        .sectionContainerStyle(.transparent)
+
+                        if vm.coInsuredAdded.count >= contract.nbOfMissingCoInsured {
                             hSection {
                                 InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
                             }
@@ -107,6 +111,15 @@ struct InsuredPeopleNewScreen: View {
     }
 
     @ViewBuilder
+    func getAccView(coInsured: CoInsuredListType) -> some View {
+        if coInsured.coInsured.hasMissingData {
+            emptyAccessoryView
+        } else {
+            localAccessoryView(coInsured: coInsured.coInsured)
+        }
+    }
+
+    @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         hText(L10n.Claims.Edit.Screen.title)
             .onTapGesture {
@@ -136,7 +149,8 @@ struct InsuredPeopleNewScreen: View {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
             }
             .onTapGesture {
-                if !contract.fetchAllCoInsured.isEmpty {
+                let hasExistingCoInsured = contract.fetchAllCoInsured.filter { !vm.coInsuredAdded.contains($0) }
+                if !hasExistingCoInsured.isEmpty {
                     store.send(
                         .coInsuredNavigationAction(
                             action: .openCoInsuredSelectScreen(contractId: contractId)
@@ -156,6 +170,24 @@ struct InsuredPeopleNewScreen: View {
                 }
             }
         }
+    }
+
+    func listToDisplay(contract: Contract) -> [CoInsuredListType] {
+        var finalList: [CoInsuredListType] = []
+        var addedCoInsured: [CoInsuredListType] = []
+
+        vm.coInsuredAdded.forEach {
+            addedCoInsured.append(CoInsuredListType(coInsured: $0, type: .added, locallyAdded: true))
+        }
+
+        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
+        if vm.coInsuredAdded.count < nbOfMissingCoInsured {
+            let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
+            for _ in 1...nbOfFields {
+                finalList.append(CoInsuredListType(coInsured: CoInsuredModel(), type: nil, locallyAdded: false))
+            }
+        }
+        return addedCoInsured + finalList
     }
 }
 
