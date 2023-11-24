@@ -274,12 +274,10 @@ struct CoInusuredInput: View {
     }
 
     var buttonDisplayText: String {
-        if vm.nameFetchedFromSSN {
-            return L10n.contractAddCoinsured
-        } else if Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN) && !vm.noSSN {
+        if !vm.noSSN {
             return L10n.contractSsnFetchInfo
         } else {
-            return L10n.generalSaveButton
+            return L10n.contractAddCoinsured
         }
     }
 
