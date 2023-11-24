@@ -1,4 +1,0 @@
-fragment MonetaryAmountFragmentGiraffe on MonetaryAmountV2 {
-    amount
-    currency
-}

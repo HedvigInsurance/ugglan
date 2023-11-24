@@ -1,6 +1,5 @@
 import Apollo
 import Contracts
-import Embark
 import Flow
 import Foundation
 import Home

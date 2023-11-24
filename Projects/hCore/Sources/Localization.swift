@@ -39,17 +39,6 @@ public enum Localization {
                 case .dk: return L10n.marketDenmark
                 }
             }
-
-            public var graphQL: GiraffeGraphQL.Market {
-                switch self {
-                case .dk:
-                    return .denmark
-                case .se:
-                    return .sweden
-                case .no:
-                    return .norway
-                }
-            }
         }
 
         public var market: Market {
@@ -125,19 +114,6 @@ public enum Localization {
             case .da_DK: return "da-DK"
             case .en_DK: return "en-DK"
             }
-        }
-    }
-}
-
-extension Localization.Locale {
-    public func asGraphQLLocale() -> hGraphQL.GiraffeGraphQL.Locale {
-        switch self {
-        case .sv_SE: return .svSe
-        case .en_SE: return .enSe
-        case .nb_NO: return .nbNo
-        case .en_NO: return .enNo
-        case .da_DK: return .daDk
-        case .en_DK: return .enDk
         }
     }
 }

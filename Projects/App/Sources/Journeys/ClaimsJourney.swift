@@ -1,6 +1,5 @@
 import Claims
 import Contacts
-import Embark
 import Flow
 import Foundation
 import Home
@@ -30,21 +29,6 @@ extension AppJourney {
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
             honestyPledge(from: origin)
-        } else {
-            claimsJourneyPledgeAndNotificationWrapper { redirect in
-                switch redirect {
-                case .chat:
-                    AppJourney.claimsChat()
-                        .withJourneyDismissButton
-                        .hidesBackButton
-                case .close:
-                    DismissJourney()
-                case .menu:
-                    ContinueJourney()
-                case .mailingList:
-                    DismissJourney()
-                }
-            }
         }
     }
 
@@ -73,17 +57,6 @@ extension AppJourney {
             }
         }
     }
-    @JourneyBuilder
-    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
-        @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
-    ) -> some JourneyPresentation {
-        HonestyPledge.journey(style: .detented(.scrollViewContentSize)) {
-            AppJourney.notificationJourney {
-                let embark = Embark(name: "claims")
-                AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
-            }
-        }
-    }
 }
 
 extension AppJourney {
@@ -106,17 +79,6 @@ extension AppJourney {
     }
 }
 
-extension AppJourney {
-    static func embark<RedirectJourney: JourneyPresentation>(
-        _ embark: Embark,
-        style: PresentationStyle = .default,
-        @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
-    ) -> some JourneyPresentation {
-        Journey(embark, style: style) { redirect in
-            redirectJourney(redirect)
-        }
-    }
-}
 extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
