@@ -20,7 +20,6 @@
 		<string>nb</string>
 		<string>en</string>
 		<string>sv</string>
-		<string>fr</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>

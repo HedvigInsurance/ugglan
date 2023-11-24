@@ -1,6 +1,7 @@
 import Flow
 import Form
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 
@@ -29,8 +30,10 @@ public struct Toast: Equatable {
     let symbol: ToastSymbol?
     let body: String
     let subtitle: String?
+    let infoText: String?
     let textColor: UIColor
     let backgroundColor: UIColor
+    let symbolColor: UIColor
     let borderColor: UIColor
     let duration: TimeInterval
     public var onTap: Signal<Void> {
@@ -44,17 +47,26 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
+        infoText: String? = nil,
         textColor: UIColor = .brand(.toasterTitle),
         backgroundColor: UIColor = UIColor.brand(.toasterBackground),
         borderColor: UIColor = UIColor.brand(.toasterBorder),
+        symbolColor: UIColor = UIColor(dynamic: { trait -> UIColor in
+            UIColor(
+                hSignalColor.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    .color
+            )
+        }),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
         self.body = body
         self.subtitle = subtitle
+        self.infoText = infoText
         self.textColor = textColor
         self.backgroundColor = backgroundColor
         self.borderColor = borderColor
+        self.symbolColor = symbolColor
         self.duration = duration
     }
 }
@@ -70,12 +82,6 @@ extension Toast: Viewable {
         case let .icon(icon):
             let view = UIImageView()
             view.image = icon
-            let symbolColor = UIColor(dynamic: { trait -> UIColor in
-                UIColor(
-                    hSignalColor.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                )
-            })
             view.tintColor = symbolColor
             view.contentMode = .scaleAspectFit
 
@@ -140,7 +146,8 @@ extension Toast: Viewable {
         stackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
         }
 
         if symbol != nil {
@@ -179,22 +186,32 @@ extension Toast: Viewable {
         }
 
         stackView.addArrangedSubview(textContainer)
+        if let infoText {
+            let bodyLabel = UILabel(
+                value: infoText,
+                style: UIColor.brandStyle(.toasterTitle).colored(textColor)
+            )
+            bodyLabel.lineBreakMode = .byWordWrapping
+            bodyLabel.numberOfLines = 0
+            stackView.addArrangedSubview(UIImageView())
+            stackView.addArrangedSubview(bodyLabel)
+        } else {
+            let chevronImageView = UIImageView()
+            chevronImageView.tintColor = textColor
+            chevronImageView.contentMode = .scaleAspectFit
+            chevronImageView.isHidden = true
+            chevronImageView.isUserInteractionEnabled = false
+            chevronImageView.snp.makeConstraints { make in
+                make.width.equalTo(20)
+            }
+            chevronImageView.image = hCoreUIAssets.arrowForward.image
 
-        let chevronImageView = UIImageView()
-        chevronImageView.tintColor = textColor
-        chevronImageView.contentMode = .scaleAspectFit
-        chevronImageView.isHidden = true
-        chevronImageView.isUserInteractionEnabled = false
-        chevronImageView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-        }
-        chevronImageView.image = hCoreUIAssets.arrowForward.image
+            stackView.addArrangedSubview(chevronImageView)
 
-        stackView.addArrangedSubview(chevronImageView)
-
-        bag += stackView.didMoveToWindowSignal.onValue {
-            if !self.onTapCallbacker.isEmpty {
-                chevronImageView.isHidden = false
+            bag += stackView.didMoveToWindowSignal.onValue {
+                if !self.onTapCallbacker.isEmpty {
+                    chevronImageView.isHidden = false
+                }
             }
         }
 
