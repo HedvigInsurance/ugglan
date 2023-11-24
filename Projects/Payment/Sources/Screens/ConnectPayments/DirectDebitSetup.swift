@@ -7,12 +7,11 @@ import UIKit
 import WebKit
 import hAnalytics
 import hCore
-import hCoreUI
 import hGraphQL
 
-struct AdyenSetup {
+struct DirectDebitSetup {
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var adyenService: AdyenService
+    @Inject var octopus: hOctopus
 
     let setupType: PaymentSetup.SetupType
 
@@ -22,12 +21,12 @@ struct AdyenSetup {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandStyle(.adyenWebViewText)
+                style: UIColor.brandStyle(.navigationButton)
             )
         default:
             return UIBarButtonItem(
                 title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandStyle(.adyenWebViewText)
+                style: UIColor.brandStyle(.navigationButton)
             )
         }
     }
@@ -35,26 +34,32 @@ struct AdyenSetup {
     init(setupType: PaymentSetup.SetupType = .initial) { self.setupType = setupType }
 }
 
-extension AdyenSetup: Presentable {
+extension DirectDebitSetup: Presentable {
     func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        configureNavigation(for: viewController)
         viewController.hidesBottomBarWhenPushed = true
+
         viewController.isModalInPresentation = true
 
         switch setupType {
-        case .replacement:
-            viewController.title = L10n.PayInIframeInApp.connectPayment
-        case .postOnboarding, .initial, .preOnboarding:
-            viewController.title = L10n.PayInIframePostSign.title
+        case .replacement: viewController.title = L10n.PayInIframeInApp.connectPayment
+        case .postOnboarding, .initial, .preOnboarding: viewController.title = L10n.PayInIframePostSign.title
         }
 
         let dismissButton = makeDismissButton()
+
+        let userContentController = WKUserContentController()
+
         let webViewConfiguration = WKWebViewConfiguration()
+        webViewConfiguration.userContentController = userContentController
+        webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        webViewConfiguration.addOpenBankIDBehaviour(viewController)
+
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        webView.backgroundColor = .brand(.adyenWebViewBg)
+        webView.backgroundColor = .brand(.secondaryBackground())
         webView.isOpaque = false
+
         bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
             if navigationAction.targetFrame == nil {
                 if let url = navigationAction.request.url {
@@ -65,8 +70,14 @@ extension AdyenSetup: Presentable {
                     )
                 }
             }
+
             return nil
         }
+
+        userContentController.add(
+            TrustlyWKScriptOpenURLScheme(webView: webView),
+            name: TrustlyWKScriptOpenURLScheme.NAME
+        )
 
         viewController.view = webView
 
@@ -96,7 +107,7 @@ extension AdyenSetup: Presentable {
             if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
         }
         let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
-
+        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
         func presentAlert() {
             let alert = Alert(
                 title: L10n.generalError,
@@ -125,24 +136,49 @@ extension AdyenSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-
-            Task {
-                do {
-                    let url = try await adyenService.getAdyenUrl()
-                    urlSignal.value = url
-                    let request = URLRequest(
-                        url: url,
-                        cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-                        timeoutInterval: 10
-                    )
-                    await webView.load(request)
-                } catch {
+            let mutation = OctopusGraphQL.RegisterDirectDebitMutation()
+            bag += octopus.client.perform(mutation: mutation)
+                .onValue({ data in
+                    if let url = URL(string: data.registerDirectDebit2.url) {
+                        let request = URLRequest(
+                            url: url,
+                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                            timeoutInterval: 10
+                        )
+                        urlSignal.value = url
+                        webView.load(request)
+                    } else {
+                        presentAlert()
+                    }
+                })
+                .onError({ error in
                     presentAlert()
-                }
-
-            }
+                })
         }
 
+        bag += combineLatest(Signal(after: 5), webView.isLoadingSignal, urlSignal.future.resultSignal)
+            .onValue { _, isLoading, url in
+                if isLoading {
+                    didFailToLoadWebViewSignal.value = true
+                    if let url = url.value, let urlToOpen = url {
+                        UIApplication.shared.open(urlToOpen)
+                        didFailToLoadWebViewSignal.value = true
+                    } else {
+                        presentAlert()
+                    }
+
+                }
+            }
+
+        bag += combineLatest(
+            didFailToLoadWebViewSignal.future.resultSignal,
+            NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
+        )
+        .onValue { (didFailToLoad, _) in
+            if didFailToLoad.value == true {
+                shouldDismissViewSignal.value = true
+            }
+        }
         startRegistration()
         return (
             viewController,
@@ -190,19 +226,16 @@ extension AdyenSetup: Presentable {
                             ]
                         )
                     case .replacement:
-                        let store: PaymentStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchPaymentStatus)
                         callback(.value(true))
                         return
                     }
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
-                            let store: PaymentStore = globalPresentableStoreContainer.get()
-                            store.send(.fetchPaymentStatus)
                             if shouldDismiss {
                                 callback(.value(true))
                             }
                         }
+
                 }
 
                 func showResultScreen(type: DirectDebitResultType) {
@@ -215,8 +248,9 @@ extension AdyenSetup: Presentable {
 
                     switch type {
                     case .success:
-                        ClearDirectDebitStatus.clear()
-                    case .failure: break
+                        paymentStore.send(.fetchPaymentStatus)
+                    case .failure:
+                        break
                     }
 
                     bag +=
@@ -238,6 +272,7 @@ extension AdyenSetup: Presentable {
                 bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
                     guard let url = navigationAction.request.url else { return .allow }
                     let urlString = String(describing: url)
+
                     if urlString.contains("fail") || urlString.contains("success") {
                         showResultScreen(
                             type: urlString.contains("success")
@@ -252,20 +287,5 @@ extension AdyenSetup: Presentable {
                 return DelayedDisposer(bag, delay: 1)
             }
         )
-    }
-
-    func configureNavigation(for vc: UIViewController) {
-        let appearance = UINavigationBar.appearance().standardAppearance.copy()
-        appearance.titleTextAttributes[NSAttributedString.Key.foregroundColor] = UIColor.brand(.adyenWebViewText)
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = UIColor.brand(.adyenWebViewBg)
-        appearance.shadowColor = nil
-        appearance.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
-        vc.navigationItem.standardAppearance = appearance
-        vc.navigationItem.scrollEdgeAppearance = appearance
-        vc.navigationItem.compactAppearance = appearance
-        if #available(iOS 15.0, *) {
-            vc.navigationItem.compactScrollEdgeAppearance = appearance
-        }
     }
 }

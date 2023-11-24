@@ -21,6 +21,14 @@ extension Date {
         return DateFormatters.displayddMMMMYYYY.string(from: self)
     }
 
+    public var displayDateDDMMMFormat: String {
+        return DateFormatters.displayddMMM.string(from: self)
+    }
+
+    public var dateYYYYFormat: String? {
+        return DateFormatters.YYYYFormat.string(from: self)
+    }
+
     /// A localDate string where a date of today is replaced with `today`
     public var localDateStringWithToday: String? {
         if Calendar.current.isDateInToday(self) { return L10n.startDateToday } else { return localDateString }
@@ -57,7 +65,19 @@ private struct DateFormatters {
 
     static let displayddMMMMYYYY: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM dd yyyy"
+        formatter.dateFormat = "dd MMM yyyy"
+        return formatter
+    }()
+
+    static let displayddMMM: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM"
+        return formatter
+    }()
+
+    static let YYYYFormat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
         return formatter
     }()
 }
