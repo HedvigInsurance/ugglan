@@ -44,6 +44,15 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     var formattedSSN: String? {
         return SSN?.replacingOccurrences(of: "-", with: "")
     }
+    
+    var displayFormatSSN: String? {
+        if let formattedSSN = formattedSSN {
+            let birthDate = formattedSSN.prefix(8)
+            let lastFourDigits = String(formattedSSN.suffix(4))
+            return birthDate + "-" + lastFourDigits
+        }
+        return nil
+    }
 
     public var hasMissingData: Bool {
         return fullName == nil

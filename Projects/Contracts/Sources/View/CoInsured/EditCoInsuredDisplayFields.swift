@@ -91,7 +91,7 @@ struct CoInsuredField<Content: View>: View {
 
     var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
-        let displaySubTitle = coInsured?.SSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
+        let displaySubTitle = coInsured?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
         VStack(spacing: 4) {
             VStack(alignment: .leading, spacing: 0) {
