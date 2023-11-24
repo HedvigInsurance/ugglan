@@ -13,7 +13,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     }
 
     var id: String {
-        return fullName ?? "" + (formattedSSN ?? "") + (birthDate ?? "")
+        return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
     }
 
     public init(
