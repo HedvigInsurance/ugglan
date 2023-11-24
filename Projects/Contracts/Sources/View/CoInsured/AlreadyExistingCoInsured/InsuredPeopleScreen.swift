@@ -309,9 +309,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             let existingList = store.state.contractForId(contractId)?.currentAgreement?.coInsured ?? []
             let nbOfCoInsured = existingList.count
 
-            if nbOfCoInsured > 0 {
-                let nbOfUpcomingCoInsured =
-                    upComingList.count
+            if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()) {
+                let nbOfUpcomingCoInsured = upComingList.count
                 if coInsuredDeleted.count > 0 {
                     var num: Int {
                         if nbOfUpcomingCoInsured < nbOfCoInsured && !upComingList.isEmpty {
