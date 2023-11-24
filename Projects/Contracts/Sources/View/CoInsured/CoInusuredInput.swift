@@ -221,7 +221,9 @@ struct CoInusuredInput: View {
                 .padding(.top, 4)
                 .padding(.bottom, 16)
             }
+            .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
+        .hDisableScroll
     }
 
     @ViewBuilder
@@ -307,6 +309,7 @@ struct CoInusuredInput: View {
                     onTap: {}
                 )
             }
+            .hFieldLockedState
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.lockSmall.image)
                     .foregroundColor(hTextColor.secondary)
@@ -316,11 +319,12 @@ struct CoInusuredInput: View {
 
             hSection {
                 hFloatingField(
-                    value: vm.SSN != "" ? vm.SSN : vm.birthday.birtDateDisplayFormat,
+                    value: vm.SSN != "" ? vm.SSN.displayFormatSSN ?? "" : vm.birthday.birtDateDisplayFormat,
                     placeholder: vm.SSN != "" ? L10n.TravelCertificate.personalNumber : L10n.contractBirthDate,
                     onTap: {}
                 )
             }
+            .hFieldLockedState
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.lockSmall.image)
                     .foregroundColor(hTextColor.secondary)

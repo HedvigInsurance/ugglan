@@ -316,9 +316,15 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 } else {
                     hTextColor.disabled
                 }
-            case .secondary, .ghost, .secondaryAlt, .alert:
+            case .secondary, .ghost, .secondaryAlt:
                 if isEnabled {
                     hTextColor.primary
+                } else {
+                    hTextColor.disabled
+                }
+            case .alert:
+                if isEnabled {
+                    hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
                 } else {
                     hTextColor.disabled
                 }

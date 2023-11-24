@@ -34,7 +34,7 @@ struct ContractOwnerField: View {
                             Image(uiImage: hCoreUIAssets.lockSmall.image)
                                 .foregroundColor(hTextColor.tertiary)
                         }
-                        hText(contract.ssn ?? "", style: .footnote)
+                        hText(contract.ssn?.displayFormatSSN ?? "", style: .footnote)
                             .foregroundColor(getSubTitleColor)
                     }
                 }
@@ -91,7 +91,7 @@ struct CoInsuredField<Content: View>: View {
 
     var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
-        let displaySubTitle = coInsured?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
+        let displaySubTitle = coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
         VStack(spacing: 4) {
             VStack(alignment: .leading, spacing: 0) {
