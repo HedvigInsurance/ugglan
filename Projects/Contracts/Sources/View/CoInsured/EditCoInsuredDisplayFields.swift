@@ -43,7 +43,7 @@ struct ContractOwnerField: View {
             if hasContentBelow {
                 Divider()
             }
-        }
+        }.padding(.bottom, hasContentBelow ? 0 : 16)
     }
 
     @hColorBuilder
