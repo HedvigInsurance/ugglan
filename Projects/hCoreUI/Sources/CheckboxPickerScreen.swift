@@ -86,6 +86,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         hText(L10n.generalCancelButton, style: .standard)
                     }
                     .disabled(isLoading)
+                    .hButtonDontShowLoadingWhenDisabled(true)
                 }
             }
         }
