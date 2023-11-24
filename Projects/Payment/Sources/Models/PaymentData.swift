@@ -1,91 +1,116 @@
 import Contracts
 import Foundation
+import hCore
 import hGraphQL
 
 public struct PaymentData: Codable, Equatable {
-    let nextPayment: NextPayment?
-    let contracts: [ContractInfo]?
-    let insuranceCost: MonetaryStack?
-    let chargeEstimation: MonetaryStack?
-    let paymentHistory: [PaymentHistory]?
-    var reedemCampaigns: [ReedemCampaign]
-    init(_ data: OctopusGraphQL.PaymentDataQuery.Data) {
-        let currentMember = data.currentMember
-        nextPayment = NextPayment(currentMember.upcomingCharge)
-        contracts = currentMember.upcomingCharge?.contractsChargeBreakdown.map({ .init($0.contract) })
-        insuranceCost = MonetaryStack(currentMember.insuranceCost)
-        chargeEstimation = MonetaryStack(currentMember.upcomingCharge)
-        paymentHistory = currentMember.chargeHistory.map({ PaymentHistory($0) })
-        reedemCampaigns = currentMember.redeemedCampaigns.compactMap({ .init($0) })
+    let id: String
+    let payment: PaymentStack
+    let status: PaymentStatus
+    let contracts: [ContractPaymentDetails]
+    let discounts: [Discount]
+    let paymentDetails: PaymentDetails?
+    //had to add as an array since we can't nest same struct type here
+    let addedToThePayment: [PaymentData]?
+    struct PaymentStack: Codable, Equatable {
+        let gross: MonetaryAmount
+        let net: MonetaryAmount
+        let date: ServerBasedDate
     }
 
-    struct NextPayment: Codable, Equatable {
-        let amount: MonetaryAmount?
-        let date: String?
+    enum PaymentStatus: Codable, Equatable {
+        case upcoming
+        case success
+        case pending
+        case failedForPrevious(from: ServerBasedDate, to: ServerBasedDate)
+        case addedtoFuture(date: ServerBasedDate)
+        case unknown
 
-        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge?) {
-            guard let data else { return nil }
-            amount = MonetaryAmount(optionalFragment: data.net.fragments.moneyFragment)
-            date = data.date.localDateToDate?.displayDateMMMDDYYYYFormat
+        enum PaymentStatusAction: Codable, Equatable {
+            static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
+                return false
+            }
+            case viewAddedToPayment
+        }
+
+        var hasFailed: Bool {
+            switch self {
+            case .addedtoFuture:
+                return true
+            case .success, .pending, .failedForPrevious, .upcoming, .unknown:
+                return false
+            }
         }
     }
 
-    struct ContractInfo: Codable, Equatable {
+    struct ContractPaymentDetails: Codable, Equatable, Identifiable {
         let id: String
-        let type: Contract.TypeOfContract
-        let name: String
-        let amount: MonetaryAmount?
-
-        init(
-            _ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge.ContractsChargeBreakdown.Contract
-        ) {
-            self.id = data.id
-            self.name = data.currentAgreement.productVariant.displayName
-            self.type =
-                Contract.TypeOfContract(rawValue: data.currentAgreement.productVariant.typeOfContract)
-                ?? .unknown
-            self.amount = nil
-        }
-    }
-
-    struct PaymentHistory: Codable, Equatable {
+        let title: String
+        let subtitle: String
         let amount: MonetaryAmount
-        let date: String
+        let periods: [PeriodInfo]
+    }
 
-        init(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.ChargeHistory) {
-            amount = MonetaryAmount(fragment: data.amount.fragments.moneyFragment)
-            let localDate = data.date.localDateToDate?.displayDateMMMDDYYYYFormat ?? ""
-            date = localDate
+    struct PeriodInfo: Codable, Equatable, Identifiable {
+        let id: String
+        let from: ServerBasedDate
+        let to: ServerBasedDate
+        let amount: MonetaryAmount
+        let isOutstanding: Bool
+        let desciption: String?
+
+        var fromToDate: String {
+            return "\(from.displayDateShort) - \(to.displayDateShort)"
         }
     }
 
-    struct ReedemCampaign: Codable, Equatable {
-        let code: String?
-        let displayValue: String?
-        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?) {
-            guard let data else { return nil }
-            code = data.code
-            displayValue = data.description
+    struct PaymentDetails: Codable, Equatable {
+        typealias KeyValue = (key: String, value: String)
+        private let paymentMethod: String
+        private let account: String
+        private let bank: String
+
+        init(paymentMethod: String, account: String, bank: String) {
+            self.paymentMethod = paymentMethod
+            self.account = account
+            self.bank = bank
+        }
+
+        var getDisplayList: [KeyValue] {
+            var list: [KeyValue] = []
+            list.append((L10n.paymentsPaymentMethod, paymentMethod))
+            list.append((L10n.paymentsAccount, account))
+            list.append((L10n.myPaymentBankRowLabel, bank))
+
+            return list
         }
     }
+}
 
-    struct MonetaryStack: Codable, Equatable {
-        let gross: MonetaryAmount?
-        let discount: MonetaryAmount?
-        let net: MonetaryAmount?
+public struct Discount: Codable, Equatable, Identifiable {
+    public let id: String
+    let code: String
+    let amount: MonetaryAmount?
+    let title: String
+    let listOfAffectedInsurances: [AffectedInsurance]
+    let validUntil: ServerBasedDate?
+    let canBeDeleted: Bool
 
-        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.UpcomingCharge?) {
-            guard let data else { return nil }
-            self.gross = MonetaryAmount(fragment: data.gross.fragments.moneyFragment)
-            self.discount = MonetaryAmount(fragment: data.discount.fragments.moneyFragment)
-            self.net = MonetaryAmount(fragment: data.net.fragments.moneyFragment)
+    var isValid: Bool {
+        if let validUntil = validUntil?.localDateToDate {
+            let components = Calendar.current.dateComponents(
+                [.day],
+                from: Date(),
+                to: validUntil
+            )
+            let isValid = components.day ?? 0 >= 0
+            return isValid
         }
-
-        init?(_ data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.InsuranceCost) {
-            self.gross = MonetaryAmount(fragment: data.monthlyGross.fragments.moneyFragment)
-            self.discount = MonetaryAmount(fragment: data.monthlyDiscount.fragments.moneyFragment)
-            self.net = MonetaryAmount(fragment: data.monthlyNet.fragments.moneyFragment)
-        }
-
+        return true
     }
+}
+
+public struct AffectedInsurance: Codable, Equatable, Identifiable {
+    public let id: String
+    let displayName: String
 }

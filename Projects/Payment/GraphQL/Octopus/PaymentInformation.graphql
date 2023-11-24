@@ -7,7 +7,7 @@ query PaymentInformation {
       }
       status
     }
-    upcomingCharge {
+    futureCharge {
       date
     }
     chargeHistory {

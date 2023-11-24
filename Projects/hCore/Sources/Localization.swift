@@ -10,21 +10,17 @@ public enum Localization {
         case nb_NO
         case da_DK
         case en_DK
-        case en_FR
-        case fr_FR
 
         public enum Market: String, Codable, CaseIterable {
             case no = "NO"
             case se = "SE"
             case dk = "DK"
-            case fr = "FR"
 
             public var currencyCode: String {
                 switch self {
                 case .no: return "NOK"
                 case .dk: return "DKK"
                 case .se: return "SEK"
-                case .fr: return "EUR"
                 }
             }
 
@@ -33,7 +29,6 @@ public enum Localization {
                 case .no: return [.nb_NO, .en_NO]
                 case .dk: return [.da_DK, .en_DK]
                 case .se: return [.sv_SE, .en_SE]
-                case .fr: return [.fr_FR, .en_FR]
                 }
             }
 
@@ -42,7 +37,6 @@ public enum Localization {
                 case .no: return L10n.marketNorway
                 case .se: return L10n.marketSweden
                 case .dk: return L10n.marketDenmark
-                case .fr: return L10n.marketFrance
                 }
             }
         }
@@ -52,7 +46,6 @@ public enum Localization {
             case .sv_SE, .en_SE: return .se
             case .en_NO, .nb_NO: return .no
             case .da_DK, .en_DK: return .dk
-            case .fr_FR, .en_FR: return .fr
             }
         }
 
@@ -63,11 +56,9 @@ public enum Localization {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en-SE"
             case .en_NO: return "en-NO"
-            case .en_FR: return "en-FR"
             case .nb_NO: return "nb-NO"
             case .da_DK: return "da-DK"
             case .en_DK: return "en-DK"
-            case .fr_FR: return "fr-FR"
             }
         }
 
@@ -79,8 +70,6 @@ public enum Localization {
             case .nb_NO: return "no"
             case .da_DK: return "dk"
             case .en_DK: return "dk-en"
-            case .en_FR: return "fr"
-            case .fr_FR: return "fr-en"
             }
         }
 
@@ -100,8 +89,6 @@ public enum Localization {
             case .nb_NO: return "nb_NO"
             case .da_DK: return "da_DK"
             case .en_DK: return "en_DK"
-            case .fr_FR: return "fr_FR"
-            case .en_FR: return "en_FR"
             }
         }
 
@@ -113,8 +100,6 @@ public enum Localization {
             case .nb_NO: return "Norsk (Bokmål)"
             case .da_DK: return "Dansk"
             case .en_DK: return "English"
-            case .fr_FR: return "Français"
-            case .en_FR: return "English"
             }
         }
 
@@ -128,8 +113,6 @@ public enum Localization {
             case .nb_NO: return "nb-NO"
             case .da_DK: return "da-DK"
             case .en_DK: return "en-DK"
-            case .en_FR: return "en-FR"
-            case .fr_FR: return "fr-FR"
             }
         }
     }

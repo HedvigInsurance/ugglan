@@ -47,7 +47,14 @@ extension AppDelegate {
                     }
                     profileStore.send(.fetchMemberDetails)
                 }
-
+        } else if path == .payments {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
+                    let vc = PaymentsView().detentJourney(schema: Bundle.main.urlScheme ?? "")
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
+                }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in

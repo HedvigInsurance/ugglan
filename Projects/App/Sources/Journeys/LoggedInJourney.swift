@@ -96,56 +96,42 @@ extension AppJourney {
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
-        ProfileView.journey { result in
-            switch result {
-            case .openPayment:
-                HostingJourney(
-                    PaymentStore.self,
-                    rootView: MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
-                ) { action in
-                    if case .openConnectBankAccount = action {
-                        let store: PaymentStore = globalPresentableStoreContainer.get()
-                        let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                            .contains(store.state.paymentStatusData?.status ?? .active)
-                        ConnectBankAccount(
-                            setupType: hasAlreadyConnected ? .replacement : .initial,
-                            urlScheme: Bundle.main.urlScheme ?? ""
-                        )
-                        .journeyThenDismiss
-                    } else if case .openHistory = action {
-                        PaymentHistory.journey
-                    }
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
+        return
+            ProfileView.journey { result in
+                switch result {
+                case .openPayment:
+                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
+                case .resetAppLanguage:
+                    ContinueJourney()
+                        .onPresent {
+                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                                AppJourney.main
+                            )
+                        }
+                case .openChat:
+                    AppJourney.freeTextChat().withDismissButton
+                case .logout:
+                    ContinueJourney()
+                        .onPresent {
+                            UIApplication.shared.appDelegate.logout()
+                        }
+                case .registerForPushNotifications:
+                    ContinueJourney()
+                        .onPresent {
+                            _ = UIApplication.shared.appDelegate
+                                .registerForPushNotifications()
+                        }
                 }
-                .configureTitle(L10n.myPaymentTitle)
-            case .resetAppLanguage:
-                ContinueJourney()
-                    .onPresent {
-                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                            AppJourney.main
-                        )
-                    }
-            case .openChat:
-                AppJourney.freeTextChat().withDismissButton
-            case .logout:
-                ContinueJourney()
-                    .onPresent {
-                        UIApplication.shared.appDelegate.logout()
-                    }
-            case .registerForPushNotifications:
-                ContinueJourney()
-                    .onPresent {
-                        _ = UIApplication.shared.appDelegate
-                            .registerForPushNotifications()
-                    }
             }
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .profile || deepLink == .sasEuroBonus
-            } else {
-                return false
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .profile || deepLink == .sasEuroBonus
+                } else {
+                    return false
+                }
             }
-        }
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -240,8 +226,10 @@ extension JourneyPresentation {
 
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
-            if case .connectPayments = action {
-                PaymentSetup(setupType: .initial).journeyThenDismiss
+            if case let .navigation(navigateTo) = action {
+                if case .openConnectPayments = navigateTo {
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
             }
         }
     }
