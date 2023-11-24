@@ -46,8 +46,8 @@ struct ContractInformationView: View {
                             addCoInsuredView(contract: contract)
                         }
 
-                        VStack(spacing: 8) {
-                            if contract.showEditInfo {
+                        if contract.showEditInfo {
+                            VStack(spacing: 8) {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         store.send(.contractEditInfo(id: id))
@@ -55,10 +55,10 @@ struct ContractInformationView: View {
                                         hText(L10n.contractEditInfoLabel)
                                     }
                                 }
+                                displayTerminationButton
                             }
-                            displayTerminationButton
+                            .padding(.bottom, 16)
                         }
-                        .padding(.bottom, 16)
                     }
                 }
             }
@@ -196,6 +196,7 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
+                        .padding(.top, 8)
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
@@ -215,6 +216,7 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
+                        .padding(.top, 8)
                     }
                 }
             }
