@@ -249,7 +249,7 @@ extension Project {
                 [
                     TestableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
-                        parallelizable: true
+                        parallelizable: false
                     )
                 ],
                 arguments: Arguments(
