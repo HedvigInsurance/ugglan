@@ -16,6 +16,7 @@ public struct hDatePickerField: View {
     @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldSize) var size
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -54,7 +55,10 @@ public struct hDatePickerField: View {
                 getValueLabel()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
+            .padding(
+                .vertical,
+                selectedDate?.localDateString.isEmpty ?? true ? (size == .large ? 0 : 3) : (size == .large ? 10 : 7.5)
+            )
             .onChange(of: selectedDate) { date in
                 if let date {
                     error = nil
@@ -96,7 +100,7 @@ public struct hDatePickerField: View {
                     }
                 }
             }
-            .modifier(hFontModifier(style: .title3))
+            .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
             .foregroundColor(hTextColor.primary)
             Spacer()
         }
@@ -271,7 +275,11 @@ private struct DatePickerView: View {
 }
 
 struct hDatePickerField_Previews: PreviewProvider {
-    @State private static var date: Date?
+    @State private static var dateForSmall: Date?
+    @State private static var dateForSmallWithRealDate: Date? = Date()
+    @State private static var dateForLarge: Date?
+    @State private static var dateForLargeWithRealDate: Date? = Date()
+
     private static let config =
         hDatePickerField
         .HDatePickerFieldConfig(
@@ -279,7 +287,14 @@ struct hDatePickerField_Previews: PreviewProvider {
             title: "Departure date"
         )
     static var previews: some View {
-        hDatePickerField(config: config, selectedDate: date)
+        VStack {
+            hDatePickerField(config: config, selectedDate: dateForSmall)
+                .hFieldSize(.small)
+            hDatePickerField(config: config, selectedDate: dateForSmallWithRealDate)
+                .hFieldSize(.small)
+            hDatePickerField(config: config, selectedDate: dateForLarge)
+            hDatePickerField(config: config, selectedDate: dateForLargeWithRealDate)
+        }
     }
 }
 
