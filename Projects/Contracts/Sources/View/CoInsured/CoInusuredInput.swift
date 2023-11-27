@@ -418,7 +418,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     var next: CoInsuredInputType? {
         switch self {
         case .SSN:
-            return .firstName
+            return nil
         case .birthDay:
             return .firstName
         case .firstName:
