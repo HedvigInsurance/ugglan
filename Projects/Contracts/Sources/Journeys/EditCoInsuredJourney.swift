@@ -76,9 +76,9 @@ public class EditCoInsuredJourney {
         HostingJourney(
             ContractStore.self,
             rootView: CoInusuredInput(
-                vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId)
-            )
-            .withNavigation(title: title),
+                vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId),
+                title: title
+            ),
             style: style,
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in

@@ -10,14 +10,17 @@ struct CoInusuredInput: View {
     @ObservedObject var intentVm: IntentViewModel
     @PresentableStore var store: ContractStore
     @ObservedObject var vm: CoInusuredInputViewModel
+    let title: String
 
     public init(
-        vm: CoInusuredInputViewModel
+        vm: CoInusuredInputViewModel,
+        title: String
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm
+        self.title = title
 
         vm.showErrorView = false
         intentVm.showErrorView = false
@@ -46,6 +49,15 @@ struct CoInusuredInput: View {
             errorView
         } else {
             mainView
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        VStack(alignment: .center) {
+                            ForEach(title.components(separatedBy: "\n"), id: \.self) { title in
+                                hText(title)
+                            }
+                        }
+                    }
+                }
         }
     }
 
@@ -438,7 +450,10 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""))
+        CoInusuredInput(
+            vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
+            title: "title"
+        )
     }
 }
 
