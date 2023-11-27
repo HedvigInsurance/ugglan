@@ -43,7 +43,8 @@ struct ContractOwnerField: View {
             if hasContentBelow {
                 Divider()
             }
-        }.padding(.bottom, hasContentBelow ? 0 : 16)
+        }
+        .padding(.bottom, hasContentBelow ? 0 : 16)
     }
 
     @hColorBuilder
@@ -91,7 +92,8 @@ struct CoInsuredField<Content: View>: View {
 
     var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
-        let displaySubTitle = coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
+        let displaySubTitle =
+            coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
         VStack(spacing: 4) {
             VStack(alignment: .leading, spacing: 0) {
