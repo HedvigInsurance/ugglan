@@ -294,41 +294,38 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 
     func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
-        let upComingList = self.upcomingAgreementCoInsured ?? []
+        let upComingList = self.upcomingAgreementCoInsured
 
-        if !(upComingList.isEmpty) && !upComingList.contains(CoInsuredModel()) {
+        if let upComingList, !upComingList.contains(CoInsuredModel()) {
             filterList = upComingList
+            
         } else {
             let existingList = self.currentAgreementCoInsured
             let nbOfCoInsured = existingList.count
-
+            
             if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()) {
-                let nbOfUpcomingCoInsured = upComingList.count
+                let nbOfUpcomingCoInsured = upComingList?.count
                 if coInsuredDeleted.count > 0 {
                     var num: Int {
-                        if nbOfUpcomingCoInsured < nbOfCoInsured && !upComingList.isEmpty {
-                            return nbOfUpcomingCoInsured - coInsuredDeleted.count
+                        if nbOfUpcomingCoInsured ?? 0 < nbOfCoInsured && !(upComingList?.isEmpty ?? false) {
+                            return nbOfUpcomingCoInsured ?? 0 - coInsuredDeleted.count
                         } else {
                             return nbOfCoInsured - coInsuredDeleted.count
                         }
                     }
-                    for _ in 1...num {
+                    for _ in 0..<num {
                         filterList.append(CoInsuredModel())
                     }
                     return filterList
+                } else if !(upComingList?.isEmpty ?? false) {
+                    filterList = upComingList ?? []
                 }
             }
         }
         let finalList =
-            filterList.filter { existing in
-                if let index = coInsuredDeleted.first(where: { deleted in
-                    deleted == existing
-                }) {
-                    return false
-                } else {
-                    return true
-                }
-            } + coInsuredAdded
+        filterList.filter {
+            !coInsuredDeleted.contains($0)
+        } + coInsuredAdded
 
         return finalList
     }
