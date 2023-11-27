@@ -28,11 +28,11 @@ public struct ContractState: StateProtocol {
         let unique = Set(upcomingCoInsured + coInsured)
         return unique.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
     }
-    
+
     public func fetchAllCoInsuredNotInContract(contractId: String) -> [CoInsuredModel] {
         let currentCoInsured = contractForId(contractId)?.currentAgreement?.coInsured ?? []
         let upcomingCoInsured = contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
-        
+
         let coInsuredNotAdded = fetchAllCoInsured.compactMap {
             if !currentCoInsured.contains($0) && !upcomingCoInsured.contains($0) {
                 return $0
@@ -40,7 +40,7 @@ public struct ContractState: StateProtocol {
                 return nil
             }
         }
-        
+
         return coInsuredNotAdded
     }
 
