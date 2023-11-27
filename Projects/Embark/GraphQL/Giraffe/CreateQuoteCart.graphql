@@ -1,5 +1,0 @@
-mutation CreateQuoteCart($input: CreateOnboardingQuoteCartInput!) {
-  createQuoteCart: onboardingQuoteCart_create(input: $input) {
-    id
-  }
-}

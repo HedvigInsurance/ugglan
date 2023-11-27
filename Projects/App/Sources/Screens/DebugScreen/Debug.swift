@@ -79,7 +79,6 @@ struct Debug: View {
                 }
                 Section {
                     Text("Available locales")
-                    ForceAvailableLocales()
                 }
                 Section {
                     SwiftUI.Button(

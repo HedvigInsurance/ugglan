@@ -75,7 +75,6 @@ let appDependencies: [TargetDependency] = [
             target: "ResourceBundledDependencies",
             path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
         ),
-        .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
     ],
     sdkFrameworks,
 ]
