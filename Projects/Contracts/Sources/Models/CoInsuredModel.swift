@@ -27,7 +27,6 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     }
 
     public init(
-        fullName: String? = nil,
         firstName: String? = nil,
         lastName: String? = nil,
         SSN: String? = nil,
