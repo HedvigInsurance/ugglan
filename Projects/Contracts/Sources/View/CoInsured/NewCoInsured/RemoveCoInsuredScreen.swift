@@ -15,7 +15,7 @@ struct RemoveCoInsuredScreen: View {
         self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
-        vm.resetCoInsured
+        vm.initializeCoInsured(with: contractId)
     }
 
     var body: some View {

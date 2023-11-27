@@ -99,7 +99,7 @@ struct CoInusuredInput: View {
                                     if insuredPeopleVm.coInsuredDeleted.count > 0 {
                                         await intentVm.getIntent(
                                             contractId: vm.contractId,
-                                            coInsured: insuredPeopleVm.completeList(contractId: vm.contractId)
+                                            coInsured: insuredPeopleVm.completeList()
                                         )
                                     }
                                     if !intentVm.showErrorView {
@@ -184,7 +184,7 @@ struct CoInusuredInput: View {
                                             }
                                             await intentVm.getIntent(
                                                 contractId: vm.contractId,
-                                                coInsured: insuredPeopleVm.completeList(contractId: vm.contractId)
+                                                coInsured: insuredPeopleVm.completeList()
                                             )
                                             if !intentVm.showErrorView {
                                                 store.send(.coInsuredNavigationAction(action: .addSuccess))

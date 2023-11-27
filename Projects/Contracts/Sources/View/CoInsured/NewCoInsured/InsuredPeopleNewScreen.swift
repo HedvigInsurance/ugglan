@@ -16,7 +16,7 @@ struct InsuredPeopleNewScreen: View {
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.contractId = contractId
-        vm.resetCoInsured
+        vm.initializeCoInsured(with: contractId)
     }
 
     var body: some View {

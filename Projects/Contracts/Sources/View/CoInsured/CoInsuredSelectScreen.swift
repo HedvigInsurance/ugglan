@@ -68,7 +68,7 @@ struct CoInsuredSelectScreen: View {
                         }
                         await store.intentViewModel.getIntent(
                             contractId: contractId,
-                            coInsured: store.coInsuredViewModel.completeList(contractId: contractId)
+                            coInsured: store.coInsuredViewModel.completeList()
                         )
                         withAnimation {
                             isLoading = false

@@ -17,7 +17,7 @@ struct InsuredPeopleScreen: View {
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.contractId = contractId
-        vm.resetCoInsured
+        vm.initializeCoInsured(with: contractId)
     }
 
     @ViewBuilder
@@ -293,6 +293,10 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var showErrorView: Bool = false
     @Published var enterManually: Bool = false
+    var contractId: String = ""
+    var currentAgreementCoInsured: [CoInsuredModel] = []
+    var upcomingAgreementCoInsured: [CoInsuredModel]? = nil
+
     @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
 
@@ -300,13 +304,14 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         return firstName + " " + lastName
     }
 
-    func completeList(contractId: String) -> [CoInsuredModel] {
+    func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
-        let upComingList = store.state.contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
+        let upComingList = self.upcomingAgreementCoInsured ?? []
+
         if !(upComingList.isEmpty) && !upComingList.contains(CoInsuredModel()) {
             filterList = upComingList
         } else {
-            let existingList = store.state.contractForId(contractId)?.currentAgreement?.coInsured ?? []
+            let existingList = self.currentAgreementCoInsured
             let nbOfCoInsured = existingList.count
 
             if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()) {
@@ -324,8 +329,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                     }
                     return filterList
                 }
-            } else {
-                filterList = existingList
             }
         }
         let finalList =
@@ -342,10 +345,14 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         return finalList
     }
 
-    var resetCoInsured: Void {
+    func initializeCoInsured(with contractId: String) {
         coInsuredAdded = []
         coInsuredDeleted = []
         SSNError = nil
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        let contract = store.state.contractForId(contractId)
+        currentAgreementCoInsured = contract?.currentAgreement?.coInsured ?? []
+        upcomingAgreementCoInsured = contract?.upcomingChangedAgreement?.coInsured
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
