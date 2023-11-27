@@ -343,7 +343,7 @@ struct CoInusuredInput: View {
                     showAsList: true,
                     dateFormatter: .birthDate
                 ),
-                selectedDate: vm.birthday.localYYMMDDDateToDate
+                selectedDate: vm.birthday.localYYMMDDDateToDate ?? vm.birthday.localDateToDate
             ) { date in
                 vm.birthday = date.displayDateYYMMDDFormat ?? ""
             }
