@@ -53,7 +53,7 @@ struct EditContract: View {
                 }
                 infoView
                 hSection {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 8) {
                         if selectedType != nil {
                             hButton.LargeButton(type: .primary) {
                                 store.send(.dismissEditInfo(type: selectedType))
