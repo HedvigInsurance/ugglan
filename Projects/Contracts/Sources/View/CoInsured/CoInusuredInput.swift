@@ -43,7 +43,7 @@ struct CoInusuredInput: View {
 
     var body: some View {
         if vm.showErrorView || intentVm.showErrorView {
-            errorView
+            CoInsuredInputErrorView(vm: vm)
         } else {
             mainView
         }
@@ -224,53 +224,6 @@ struct CoInusuredInput: View {
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
         .hDisableScroll
-    }
-
-    @ViewBuilder
-    var errorView: some View {
-        hForm {
-            VStack(spacing: 16) {
-                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                    .foregroundColor(hSignalColor.amberElement)
-
-                VStack {
-                    hText(L10n.somethingWentWrong)
-                        .foregroundColor(hTextColor.primaryTranslucent)
-                    hText(vm.SSNError ?? intentVm.errorMessage ?? "")
-                        .foregroundColor(hTextColor.secondaryTranslucent)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 16)
-                }
-            }
-            .padding(.bottom, 32)
-        }
-        .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                if vm.enterManually {
-                    hButton.LargeButton(type: .primary) {
-                        vm.showErrorView = false
-                        vm.noSSN = true
-                    } content: {
-                        hText(L10n.coinsuredEnterManuallyButton)
-                    }
-                } else {
-                    hButton.LargeButton(type: .primary) {
-                        vm.showErrorView = false
-                        intentVm.showErrorView = false
-                    } content: {
-                        hText(L10n.generalRetry)
-                    }
-                }
-                hButton.LargeButton(type: .ghost) {
-                    vm.showErrorView = false
-                    intentVm.showErrorView = false
-                } content: {
-                    hText(L10n.generalCancelButton)
-                }
-
-            }
-            .padding(16)
-        }
     }
 
     var buttonDisplayText: String {
@@ -466,7 +419,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case birthDay
 }
 
-class CoInusuredInputViewModel: ObservableObject {
+public class CoInusuredInputViewModel: ObservableObject {
     @Published var firstName: String
     @Published var lastName: String
     @Published var noSSN = false

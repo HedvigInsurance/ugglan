@@ -7,6 +7,7 @@ struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var intentVm: IntentViewModel
     let alreadyAddedCoinsuredMembers: [CoInsuredModel]
 
     public init(
@@ -15,15 +16,28 @@ struct CoInsuredSelectScreen: View {
         self.contractId = contractId
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers =
             store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
             .filter({
                 !store.coInsuredViewModel.coInsuredAdded.contains($0)
             })
+        vm.showErrorView = false
+        intentVm.showErrorView = false
     }
 
     var body: some View {
-        picker
+        if vm.showErrorView || intentVm.showErrorView {
+            CoInsuredInputErrorView(
+                vm: .init(
+                    coInsuredModel: CoInsuredModel(),
+                    actionType: .add,
+                    contractId: contractId
+                )
+            )
+        } else {
+            picker
+        }
     }
 
     var picker: some View {
