@@ -23,6 +23,8 @@ public struct hForm<Content: View>: View {
     @Environment(\.hDisableScroll) var hDisableScroll
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hFormMergeBottomWithContentIfNeeded) var mergeBottomWithContentIfNeeded
+    @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
+
     var content: Content
     @Namespace private var animation
 
@@ -52,28 +54,38 @@ public struct hForm<Content: View>: View {
                         )
                         .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
                         .ignoresSafeArea(.all)
-                    bottomAttachedView
-                        .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
-                        .background(
-                            GeometryReader { geo in
-                                Color.clear
-                                    .onReceive(Just(geo.size.height)) { height in
-                                        if bottomAttachedViewHeight == 0 {
-                                            self.bottomAttachedViewHeight = height
-                                        } else {
-                                            self.bottomAttachedViewHeight = height
-                                            recalculateHeight()
-                                        }
-                                    }
-                            }
-                        )
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                    if self.hFormIgnoreKeyboard {
+                        bottomAttachedViewWithModifier
+                            .ignoresSafeArea(.keyboard)
+                    } else {
+                        bottomAttachedViewWithModifier
+                    }
+
                 }
             }
         }
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
         )
+    }
+
+    private var bottomAttachedViewWithModifier: some View {
+        bottomAttachedView
+            .matchedGeometryEffect(id: AnimationKeys.bottomAnimationKey, in: animation)
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onReceive(Just(geo.size.height)) { height in
+                            if bottomAttachedViewHeight == 0 {
+                                self.bottomAttachedViewHeight = height
+                            } else {
+                                self.bottomAttachedViewHeight = height
+                                recalculateHeight()
+                            }
+                        }
+                }
+            )
+            .frame(maxHeight: .infinity, alignment: .bottom)
     }
 
     func getScrollView() -> some View {
@@ -269,6 +281,23 @@ extension EnvironmentValues {
 extension View {
     public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hFormBottomAttachedView, AnyView(content()))
+    }
+}
+
+private struct EnvironmentHFormIgnoreKeyboard: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hFormIgnoreKeyboard: Bool {
+        get { self[EnvironmentHFormIgnoreKeyboard.self] }
+        set { self[EnvironmentHFormIgnoreKeyboard.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormIgnoreKeyboard() -> some View {
+        self.environment(\.hFormIgnoreKeyboard, true)
     }
 }
 

@@ -108,6 +108,7 @@ struct InsuredPeopleScreen: View {
                     .padding(.horizontal, 16)
             }
         }
+        .hFormIgnoreKeyboard()
     }
 
     @ViewBuilder
