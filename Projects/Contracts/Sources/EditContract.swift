@@ -10,7 +10,6 @@ struct EditContract: View {
     @State var selectedType: EditType?
     @State var editTypes: [EditType] = []
     private let contract: Contract?
-    @State var vc: UIViewController?
     init(id: String) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         contract = store.state.contractForId(id)
@@ -54,30 +53,29 @@ struct EditContract: View {
                 infoView
                 hSection {
                     VStack(spacing: 8) {
-                        if selectedType != nil {
-                            hButton.LargeButton(type: .primary) {
-                                store.send(.dismissEditInfo(type: selectedType))
-                                switch selectedType {
-                                case .coInsured:
-                                    if hAnalyticsExperiment.editCoinsured {
-                                        store.send(
-                                            .openEditCoInsured(
-                                                contractId: contract?.id ?? "",
-                                                fromInfoCard: false
-                                            )
+                        hButton.LargeButton(type: .primary) {
+                            store.send(.dismissEditInfo(type: selectedType))
+                            switch selectedType {
+                            case .coInsured:
+                                if hAnalyticsExperiment.editCoinsured {
+                                    store.send(
+                                        .openEditCoInsured(
+                                            contractId: contract?.id ?? "",
+                                            fromInfoCard: false
                                         )
-                                    } else {
-                                        store.send(.goToFreeTextChat)
-                                    }
-                                case .changeAddress:
-                                    store.send(.goToMovingFlow)
-                                case nil:
-                                    break
+                                    )
+                                } else {
+                                    store.send(.goToFreeTextChat)
                                 }
-                            } content: {
-                                hText(L10n.generalContinueButton, style: .standard)
+                            case .changeAddress:
+                                store.send(.goToMovingFlow)
+                            case nil:
+                                break
                             }
+                        } content: {
+                            hText(L10n.generalContinueButton, style: .standard)
                         }
+                        .disabled(selectedType == nil)
                         hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
@@ -94,25 +92,6 @@ struct EditContract: View {
             }
         }
         .hDisableScroll
-        .introspectViewController { vc in
-            weak var `vc` = vc
-            if self.vc != vc {
-                self.vc = vc
-            }
-        }
-        .onChange(of: selectedType) { newValue in
-            if #available(iOS 16.0, *) {
-                for i in 1...3 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 + Double(i) * 0.05) {
-                        vc?.sheetPresentationController?.invalidateDetents()
-                        vc?.sheetPresentationController?
-                            .animateChanges {
-
-                            }
-                    }
-                }
-            }
-        }
     }
 
     @ViewBuilder
