@@ -103,7 +103,7 @@ extension String {
         }
         return ""
     }
-    
+
     var displayFormatSSN: String? {
         let birthDate = self.prefix(8)
         let lastFourDigits = String(self.suffix(4))
