@@ -566,7 +566,14 @@ public class IntentViewModel: ObservableObject {
     @Published var state = ""
     @Published var isLoading: Bool = false
     @Published var showErrorView = false
+    @Published var firstName = ""
+    @Published var lastName = ""
+    @Published var nameFetchedFromSSN: Bool = false
+    @Published var enterManually: Bool = false
     var errorMessage: String?
+    var fullName: String {
+        return firstName + " " + lastName
+    }
     @Inject var octopus: hOctopus
 
     @MainActor
@@ -621,6 +628,66 @@ public class IntentViewModel: ObservableObject {
         } catch let exception {
             withAnimation {
                 self.errorMessage = L10n.General.errorBody
+                self.showErrorView = true
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
+
+    @MainActor
+    func getNameFromSSN(SSN: String) async {
+        withAnimation {
+            self.showErrorView = false
+            self.isLoading = true
+        }
+        do {
+            let data = try await withCheckedThrowingContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
+                    >
+                ) -> Void in
+                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+                self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { value in
+                        if let data = value.personalInformation {
+                            continuation.resume(with: .success(data))
+                        }
+                    }
+                    .onError { graphQLError in
+                        continuation.resume(throwing: graphQLError)
+                    }
+            }
+            withAnimation {
+                self.firstName = data.firstName
+                self.lastName = data.lastName
+                self.nameFetchedFromSSN = true
+            }
+
+        } catch let exception {
+            if let exception = exception as? GraphQLError {
+                switch exception {
+                case .graphQLError:
+                    self.enterManually = true
+                case .otherError:
+                    self.enterManually = false
+                }
+            }
+            withAnimation {
+                if let exception = exception as? GraphQLError {
+                    switch exception {
+                    case .graphQLError:
+                        self.errorMessage = exception.localizedDescription
+                    case .otherError:
+                        self.errorMessage = L10n.General.errorBody
+                    }
+                }
                 self.showErrorView = true
             }
         }

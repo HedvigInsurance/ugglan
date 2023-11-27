@@ -22,12 +22,11 @@ struct CoInsuredSelectScreen: View {
             .filter({
                 !store.coInsuredViewModel.coInsuredAdded.contains($0)
             })
-        vm.showErrorView = false
         intentVm.showErrorView = false
     }
 
     var body: some View {
-        if vm.showErrorView || intentVm.showErrorView {
+        if intentVm.showErrorView {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),

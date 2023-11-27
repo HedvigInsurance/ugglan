@@ -281,28 +281,16 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
 }
 
 class InsuredPeopleNewScreenModel: ObservableObject {
-    @Published var firstName = ""
-    @Published var lastName = ""
-    @Published var SSN: String = ""
     @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
-    @Published var SSNError: String?
-    @Published var nameFetchedFromSSN: Bool = false
-    @Published var isLoading: Bool = false
-    @Published var showErrorView: Bool = false
-    @Published var enterManually: Bool = false
     var contractId: String = ""
     var currentAgreementCoInsured: [CoInsuredModel] = []
     var upcomingAgreementCoInsured: [CoInsuredModel]? = nil
 
     @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
-
-    var fullName: String {
-        return firstName + " " + lastName
-    }
 
     func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
@@ -348,7 +336,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     func initializeCoInsured(with contractId: String) {
         coInsuredAdded = []
         coInsuredDeleted = []
-        SSNError = nil
         let store: ContractStore = globalPresentableStoreContainer.get()
         let contract = store.state.contractForId(contractId)
         currentAgreementCoInsured = contract?.currentAgreement?.coInsured ?? []
@@ -356,8 +343,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
-        showErrorView = false
-        SSNError = nil
         coInsuredAdded.append(coInsuredModel)
     }
 
@@ -396,67 +381,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             coInsuredAdded.remove(at: index)
         }
         addCoInsured(coInsuredModel)
-    }
-
-    @MainActor
-    func getNameFromSSN(SSN: String) async {
-        withAnimation {
-            self.SSNError = nil
-            self.showErrorView = false
-            self.isLoading = true
-        }
-        do {
-            let data = try await withCheckedThrowingContinuation {
-                (
-                    continuation: CheckedContinuation<
-                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
-                    >
-                ) -> Void in
-                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
-                self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { value in
-                        if let data = value.personalInformation {
-                            continuation.resume(with: .success(data))
-                        }
-                    }
-                    .onError { graphQLError in
-                        continuation.resume(throwing: graphQLError)
-                    }
-            }
-            withAnimation {
-                self.firstName = data.firstName
-                self.lastName = data.lastName
-                self.nameFetchedFromSSN = true
-            }
-
-        } catch let exception {
-            if let exception = exception as? GraphQLError {
-                switch exception {
-                case .graphQLError:
-                    self.enterManually = true
-                case .otherError:
-                    self.enterManually = false
-                }
-            }
-            withAnimation {
-                if let exception = exception as? GraphQLError {
-                    switch exception {
-                    case .graphQLError:
-                        self.SSNError = exception.localizedDescription
-                    case .otherError:
-                        self.SSNError = L10n.General.errorBody
-                    }
-                }
-                self.showErrorView = true
-            }
-        }
-        withAnimation {
-            self.isLoading = false
-        }
     }
 }
 
