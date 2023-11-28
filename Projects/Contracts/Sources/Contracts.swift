@@ -163,9 +163,3 @@ extension Contracts {
         .configureContractsTabBarItem
     }
 }
-
-extension Contract {
-    func asEditCoInsuredConfig() -> InsuredPeopleConfig {
-        InsuredPeopleConfig(contract: self)
-    }
-}

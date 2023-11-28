@@ -23,7 +23,7 @@ struct CoInsuredInfoView: View {
                     buttonAction: {
                         if let contract = store.state.contractForId(contractId) {
                             store.send(
-                                .openEditCoInsured(config: contract.asEditCoInsuredConfig(), fromInfoCard: true)
+                                .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
                             )
                         }
                     }

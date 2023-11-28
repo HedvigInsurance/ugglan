@@ -124,10 +124,9 @@ public class EditCoInsuredJourney {
         }
     }
 
-    static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
+    static func openRemoveCoInsuredScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
         let store: ContractStore = globalPresentableStoreContainer.get()
-        let contract = store.state.contractForId(id)!
-        store.coInsuredViewModel.initializeCoInsured(with: contract.asEditCoInsuredConfig())
+        store.coInsuredViewModel.initializeCoInsured(with: config)
 
         return HostingJourney(
             ContractStore.self,
@@ -262,7 +261,7 @@ public class EditCoInsuredJourney {
             if fromInfoCard {
                 EditCoInsuredJourney.openNewInsuredPeopleScreen(config: config)
             } else {
-                EditCoInsuredJourney.openRemoveCoInsuredScreen(id: config.contractId)
+                EditCoInsuredJourney.openRemoveCoInsuredScreen(config: config)
             }
         } else {
             EditCoInsuredJourney.openInsuredPeopleScreen(with: config)

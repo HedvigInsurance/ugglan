@@ -61,7 +61,7 @@ struct EditContract: View {
                                     if let contract {
                                         store.send(
                                             .openEditCoInsured(
-                                                config: contract.asEditCoInsuredConfig(),
+                                                config: .init(contract: contract),
                                                 fromInfoCard: false
                                             )
                                         )

@@ -16,7 +16,7 @@ struct InsuredPeopleNewScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(contractId: vm.contractId, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(contractId: vm.config.contractId, hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -44,7 +44,7 @@ struct InsuredPeopleNewScreen: View {
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
 
-                if vm.coInsuredAdded.count >= vm.numberOfMissingCoInsured {
+                if vm.coInsuredAdded.count >= vm.config.numberOfMissingCoInsured {
                     hSection {
                         InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
                     }
@@ -55,7 +55,7 @@ struct InsuredPeopleNewScreen: View {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
-                    state.contractForId(vm.contractId)
+                    state.contractForId(vm.config.contractId)
                 }
             ) { contract in
                 VStack(spacing: 8) {
@@ -109,7 +109,7 @@ struct InsuredPeopleNewScreen: View {
                             actionType: .edit,
                             coInsuredModel: coInsured,
                             title: L10n.contractAddConisuredInfo,
-                            contractId: vm.contractId
+                            contractId: vm.config.contractId
                         )
                     )
                 )
@@ -133,7 +133,7 @@ struct InsuredPeopleNewScreen: View {
                 if !hasExistingCoInsured.isEmpty {
                     store.send(
                         .coInsuredNavigationAction(
-                            action: .openCoInsuredSelectScreen(contractId: vm.contractId)
+                            action: .openCoInsuredSelectScreen(contractId: vm.config.contractId)
                         )
                     )
                 } else {
@@ -143,7 +143,7 @@ struct InsuredPeopleNewScreen: View {
                                 actionType: .add,
                                 coInsuredModel: CoInsuredModel(),
                                 title: L10n.contractAddConisuredInfo,
-                                contractId: vm.contractId
+                                contractId: vm.config.contractId
                             )
                         )
                     )
@@ -160,7 +160,7 @@ struct InsuredPeopleNewScreen: View {
             addedCoInsured.append(CoInsuredListType(coInsured: $0, type: .added, locallyAdded: true))
         }
 
-        let nbOfMissingCoInsured = vm.numberOfMissingCoInsured
+        let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsured
         if vm.coInsuredAdded.count < nbOfMissingCoInsured {
             let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
             for _ in 1...nbOfFields {

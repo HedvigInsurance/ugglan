@@ -27,7 +27,7 @@ struct CoInsuredMissingAlertView: View {
                 hButton.LargeButton(type: .primary) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
                     if let contract = store.state.contractForId(contractId) {
-                        store.send(.openEditCoInsured(config: contract.asEditCoInsuredConfig(), fromInfoCard: true))
+                        store.send(.openEditCoInsured(config: .init(contract: contract), fromInfoCard: true))
                     }
                 } content: {
                     hText(L10n.contractCoinsuredMissingAddInfo)

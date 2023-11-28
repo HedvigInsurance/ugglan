@@ -10,11 +10,11 @@ struct RemoveCoInsuredScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                let missingCoInsured = vm.currentAgreementCoInsured.filter {
+                let missingCoInsured = vm.config.currentAgreementCoInsured.filter {
                     return $0.hasMissingData
                 }
-                let missingInUpcoming = vm.upcomingAgreementCoInsured?.filter({ $0.hasMissingData }) ?? []
-                let exisistingCoInsured = vm.currentAgreementCoInsured.filter {
+                let missingInUpcoming = vm.config.upcomingAgreementCoInsured?.filter({ $0.hasMissingData }) ?? []
+                let exisistingCoInsured = vm.config.currentAgreementCoInsured.filter {
                     return !$0.hasMissingData
                 }
 
@@ -30,7 +30,7 @@ struct RemoveCoInsuredScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(contractId: vm.contractId, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(contractId: vm.config.contractId, hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -88,7 +88,7 @@ struct RemoveCoInsuredScreen: View {
                             actionType: .delete,
                             coInsuredModel: coInsuredModel,
                             title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: vm.contractId
+                            contractId: vm.config.contractId
                         )
                     )
                 )
