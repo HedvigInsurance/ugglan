@@ -317,7 +317,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                         filterList.append(CoInsuredModel())
                     }
                     return filterList
-                } else if !(upComingList?.isEmpty ?? false) {
+                } else if !(upComingList?.isEmpty ?? false) && coInsuredAdded.isEmpty {
                     filterList = upComingList ?? []
                 }
             } else if nbOfCoInsured > 0 {
