@@ -38,9 +38,11 @@ public class EditCoInsuredJourney {
     }
 
     static func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some JourneyPresentation {
-        HostingJourney(
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
+        return HostingJourney(
             ContractStore.self,
-            rootView: InsuredPeopleScreen(config: config),
+            rootView: InsuredPeopleScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in

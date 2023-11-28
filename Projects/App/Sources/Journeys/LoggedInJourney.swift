@@ -49,7 +49,7 @@ extension AppJourney {
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
-                    AppJourney.editCoInsured(contractIds: contractIds)
+                    AppJourney.editCoInsured(configs: contractIds)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in

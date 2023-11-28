@@ -3,7 +3,7 @@ import Presentation
 
 extension AppJourney {
     @JourneyBuilder
-    static func editCoInsured(contractIds: [String]) -> some JourneyPresentation {
-        EditCoInsuredJourney.openInitialScreen(contractIds: contractIds)
+    static func editCoInsured(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
+        EditCoInsuredJourney.openInitialScreen(configs: configs)
     }
 }

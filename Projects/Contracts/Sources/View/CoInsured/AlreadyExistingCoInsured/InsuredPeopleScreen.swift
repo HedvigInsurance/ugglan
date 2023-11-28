@@ -9,15 +9,6 @@ struct InsuredPeopleScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
 
-    public init(
-        config: InsuredPeopleConfig
-    ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        vm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
-        vm.initializeCoInsured(with: config)
-    }
-
     @ViewBuilder
     func getView(coInsured: CoInsuredListType) -> some View {
         if coInsured.locallyAdded {
@@ -273,16 +264,18 @@ struct ConfirmChangesView: View {
 
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
-        InsuredPeopleScreen(
-            config: .init(
-                currentAgreementCoInsured: [],
-                upcomingAgreementCoInsured: [],
-                contractId: "id",
-                activeFrom: "2023-11-11",
-                numberOfMissingCoInsured: 0,
-                displayName: "Display name"
-            )
+        let vm = InsuredPeopleNewScreenModel()
+        let intentVm = IntentViewModel()
+        let config = InsuredPeopleConfig(
+            currentAgreementCoInsured: [],
+            upcomingAgreementCoInsured: [],
+            contractId: "id",
+            activeFrom: "2023-11-11",
+            numberOfMissingCoInsured: 0,
+            displayName: "Display name"
         )
+        vm.initializeCoInsured(with: config)
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
     }
 }
 

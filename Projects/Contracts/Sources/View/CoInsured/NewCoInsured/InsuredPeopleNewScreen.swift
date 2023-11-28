@@ -172,15 +172,17 @@ struct InsuredPeopleNewScreen: View {
 
 struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
-        InsuredPeopleScreen(
-            config: .init(
-                currentAgreementCoInsured: [],
-                upcomingAgreementCoInsured: [],
-                contractId: "id",
-                activeFrom: nil,
-                numberOfMissingCoInsured: 0,
-                displayName: "Display name"
-            )
+        let vm = InsuredPeopleNewScreenModel()
+        let intentVm = IntentViewModel()
+        let config = InsuredPeopleConfig(
+            currentAgreementCoInsured: [],
+            upcomingAgreementCoInsured: [],
+            contractId: "id",
+            activeFrom: nil,
+            numberOfMissingCoInsured: 0,
+            displayName: "Display name"
         )
+        vm.initializeCoInsured(with: config)
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
     }
 }

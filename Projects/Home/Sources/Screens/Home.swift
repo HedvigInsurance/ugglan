@@ -1,5 +1,6 @@
 import Apollo
 import Combine
+import Contracts
 import Flow
 import Form
 import Foundation
@@ -220,8 +221,8 @@ extension HomeView {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
                 resultJourney(.openCrossSells)
-            } else if case let .openCoInsured(contractIds) = action {
-                resultJourney(.startCoInsuredFlow(contractIds: contractIds))
+            } else if case let .openCoInsured(configs) = action {
+                resultJourney(.startCoInsuredFlow(configs: configs))
             }
         }
         .configureTabBarItem(
@@ -241,7 +242,7 @@ public enum HomeResult {
     case openTravelInsurance
     case openCrossSells
     case openEmergency
-    case startCoInsuredFlow(contractIds: [String])
+    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
 }
 
 struct Active_Preview: PreviewProvider {
