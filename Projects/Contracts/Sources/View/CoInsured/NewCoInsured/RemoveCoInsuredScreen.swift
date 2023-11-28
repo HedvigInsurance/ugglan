@@ -74,6 +74,7 @@ struct RemoveCoInsuredScreen: View {
                     .padding(.horizontal, 16)
             }
         }
+        .hFormIgnoreKeyboard()
     }
 
     @ViewBuilder
