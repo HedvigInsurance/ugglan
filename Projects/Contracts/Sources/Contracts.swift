@@ -121,8 +121,8 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
-                EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
+            } else if case let .openEditCoInsured(config, fromInfoCard) = action {
+                EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
                 EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
             } else if case let .startTermination(navigationAction) = action {
@@ -161,5 +161,18 @@ extension Contracts {
                 ? L10n.InsurancesTab.cancelledInsurancesTitle : L10n.InsurancesTab.yourInsurances
         )
         .configureContractsTabBarItem
+    }
+}
+
+extension Contract {
+    func asEditCoInsuredConfig() -> InsuredPeopleConfig {
+        InsuredPeopleConfig(
+            currentAgreementCoInsured: self.currentAgreement?.coInsured ?? [],
+            upcomingAgreementCoInsured: self.upcomingChangedAgreement?.coInsured,
+            contractId: self.id,
+            activeFrom: self.upcomingChangedAgreement?.activeFrom,
+            numberOfMissingCoInsured: 0,
+            displayName: currentAgreement?.productVariant.displayName ?? self.exposureDisplayName
+        )
     }
 }

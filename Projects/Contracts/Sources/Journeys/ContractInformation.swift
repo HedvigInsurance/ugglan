@@ -146,7 +146,7 @@ struct ContractInformationView: View {
         .onTapGesture {
             if contract.showEditInfo {
                 store.send(
-                    .openEditCoInsured(contractId: id, fromInfoCard: true)
+                    .openEditCoInsured(config: contract.asEditCoInsuredConfig(), fromInfoCard: true)
                 )
             }
         }

@@ -34,7 +34,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
-    case openEditCoInsured(contractId: String, fromInfoCard: Bool)
+    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
     case performCoInsuredChanges(commitId: String)
 
@@ -97,14 +97,14 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredProcessScreen(showSuccess: Bool)
     case dismissEdit
     case dismissEditCoInsuredFlow
-    case openInsuredPeopleNewScreen(contractId: String)
-    case openInsuredPeopleScreen(contractId: String)
+    case openInsuredPeopleNewScreen(config: InsuredPeopleConfig)
+    case openInsuredPeopleScreen(config: InsuredPeopleConfig)
     case openCoInsuredSelectScreen(contractId: String)
     case deletionSuccess
     case addSuccess
     case openMissingCoInsuredAlert(contractId: String)
     case openErrorScreen
-    case openSelectInsuranceScreen(contractIds: [String])
+    case openSelectInsuranceScreen(configs: [InsuredPeopleConfig])
 }
 
 public enum CoInsuredAction: Codable {

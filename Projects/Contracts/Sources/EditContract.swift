@@ -58,12 +58,14 @@ struct EditContract: View {
                             switch selectedType {
                             case .coInsured:
                                 if hAnalyticsExperiment.editCoinsured {
-                                    store.send(
-                                        .openEditCoInsured(
-                                            contractId: contract?.id ?? "",
-                                            fromInfoCard: false
+                                    if let contract {
+                                        store.send(
+                                            .openEditCoInsured(
+                                                config: contract.asEditCoInsuredConfig(),
+                                                fromInfoCard: false
+                                            )
                                         )
-                                    )
+                                    }
                                 } else {
                                     store.send(.goToFreeTextChat)
                                 }

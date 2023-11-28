@@ -5,7 +5,6 @@ import hCoreUI
 struct CoInsuredMissingAlertView: View {
     let contractId: String
     @PresentableStore var store: ContractStore
-
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -27,7 +26,9 @@ struct CoInsuredMissingAlertView: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                    store.send(.openEditCoInsured(contractId: contractId, fromInfoCard: true))
+                    if let contract = store.state.contractForId(contractId) {
+                        store.send(.openEditCoInsured(config: contract.asEditCoInsuredConfig(), fromInfoCard: true))
+                    }
                 } content: {
                     hText(L10n.contractCoinsuredMissingAddInfo)
                 }
