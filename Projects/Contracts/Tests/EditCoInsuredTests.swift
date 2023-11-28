@@ -29,10 +29,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
             CoInsuredModel.testMemberWithSSN4
         ]
         
-        viewModel.upcomingAgreementCoInsured = [
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
+        viewModel.upcomingAgreementCoInsured = []
         
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
