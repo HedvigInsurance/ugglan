@@ -321,6 +321,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 } else if !(upComingList?.isEmpty ?? false) {
                     filterList = upComingList ?? []
                 }
+            } else if nbOfCoInsured > 0 {
+                filterList = existingList
             }
         }
         let finalList =

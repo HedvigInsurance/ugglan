@@ -239,7 +239,7 @@ struct CoInusuredInput: View {
     }
 
     var buttonDisplayText: String {
-        if !vm.noSSN {
+        if !vm.noSSN && !vm.nameFetchedFromSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.contractAddCoinsured
