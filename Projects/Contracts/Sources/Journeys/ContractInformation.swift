@@ -50,9 +50,22 @@ struct ContractInformationView: View {
                             VStack(spacing: 8) {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
-                                        store.send(.contractEditInfo(id: id))
+                                        if onlyCoInsured(contract) {
+                                            store.send(
+                                                .openEditCoInsured(
+                                                    contractId: contract.id,
+                                                    fromInfoCard: false
+                                                )
+                                            )
+                                        } else {
+                                            store.send(.contractEditInfo(id: id))
+                                        }
                                     } content: {
-                                        hText(L10n.contractEditInfoLabel)
+                                        if onlyCoInsured(contract) {
+                                            hText(L10n.contractEditCoinsured)
+                                        } else {
+                                            hText(L10n.contractEditInfoLabel)
+                                        }
                                     }
                                 }
                                 displayTerminationButton
@@ -64,6 +77,11 @@ struct ContractInformationView: View {
             }
         }
         .sectionContainerStyle(.transparent)
+    }
+    
+    func onlyCoInsured(_ contract: Contract) -> Bool {
+        let editTypes: [EditType] = EditType.getTypes(for: contract)
+        return editTypes.count == 1 && editTypes.first == .coInsured
     }
 
     @ViewBuilder
