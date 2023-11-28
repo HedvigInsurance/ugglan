@@ -8,6 +8,7 @@ struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
+    
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -16,7 +17,7 @@ struct InsuredPeopleNewScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(contractId: vm.config.contractId, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)

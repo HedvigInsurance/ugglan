@@ -84,6 +84,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
+        let _ = store.coInsuredViewModel.initializeCoInsured(with: .init(contract: contract))
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
             hSection {
@@ -101,7 +102,7 @@ struct ContractInformationView: View {
                     hRow {
                         let hasContentBelow =
                             !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                        ContractOwnerField(contractId: contract.id, enabled: true, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(enabled: true, hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -110,7 +111,6 @@ struct ContractInformationView: View {
             .withoutHorizontalPadding
 
             if hAnalyticsExperiment.editCoinsured {
-
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
                     hRow {
                         CoInsuredField(

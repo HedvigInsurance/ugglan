@@ -3,16 +3,14 @@ import hCore
 import hCoreUI
 
 struct ContractOwnerField: View {
-    let contractId: String
     let enabled: Bool?
     let hasContentBelow: Bool
+    @PresentableStore var store: ContractStore
 
     init(
-        contractId: String,
         enabled: Bool? = false,
         hasContentBelow: Bool
     ) {
-        self.contractId = contractId
         self.enabled = enabled
         self.hasContentBelow = hasContentBelow
     }
@@ -20,24 +18,15 @@ struct ContractOwnerField: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        state.contractForId(contractId)
-                    }
-                ) { contract in
-                    if let contract = contract {
                         HStack {
-                            hText(contract.fullName)
+                            hText(store.coInsuredViewModel.config.holderFullName)
                                 .foregroundColor(getTitleColor)
                             Spacer()
                             Image(uiImage: hCoreUIAssets.lockSmall.image)
                                 .foregroundColor(hTextColor.tertiary)
                         }
-                        hText(contract.ssn?.displayFormatSSN ?? "", style: .footnote)
+                hText(store.coInsuredViewModel.config.holderSSN?.displayFormatSSN ?? "", style: .footnote)
                             .foregroundColor(getSubTitleColor)
-                    }
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {
@@ -169,6 +158,6 @@ enum StatusPillType {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(contractId: "", hasContentBelow: true)
+        ContractOwnerField(hasContentBelow: true)
     }
 }

@@ -30,7 +30,7 @@ struct RemoveCoInsuredScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(contractId: vm.config.contractId, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)

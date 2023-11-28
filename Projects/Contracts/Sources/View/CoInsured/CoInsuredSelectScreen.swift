@@ -8,6 +8,7 @@ struct CoInsuredSelectScreen: View {
     @State var isLoading = false
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
+    let alreadyAddedCoinsuredMembers: [CoInsuredModel]
 
     public init(
         contractId: String
@@ -16,6 +17,9 @@ struct CoInsuredSelectScreen: View {
         let store: ContractStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
+        alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
+            !store.coInsuredViewModel.coInsuredAdded.contains($0)
+          })
         intentVm.showErrorView = false
     }
 
@@ -36,11 +40,10 @@ struct CoInsuredSelectScreen: View {
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
-                let alreadyAddedCoinsuredMembers = vm.config.preSelectedCoInsuredList
+                return alreadyAddedCoinsuredMembers
                     .compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
-                return alreadyAddedCoinsuredMembers
             }(),
             preSelectedItems: { [] },
             onSelected: { selectedCoinsured in

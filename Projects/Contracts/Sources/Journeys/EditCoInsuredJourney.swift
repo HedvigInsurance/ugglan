@@ -54,6 +54,7 @@ public class EditCoInsuredJourney {
 
     static func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
         let store: ContractStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
         return HostingJourney(
             ContractStore.self,
             rootView: InsuredPeopleNewScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),

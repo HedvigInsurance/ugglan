@@ -26,7 +26,7 @@ struct InsuredPeopleScreen: View {
                 hSection {
                     hRow {
                         let hasContentBelow = !listToDisplay.isEmpty
-                        ContractOwnerField(contractId: vm.config.contractId, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -357,11 +357,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     func initializeCoInsured(with config: InsuredPeopleConfig) {
         coInsuredAdded = []
         coInsuredDeleted = []
-        self.config.contractId = config.contractId
-        self.config.currentAgreementCoInsured = config.currentAgreementCoInsured
-        self.config.upcomingAgreementCoInsured = config.upcomingAgreementCoInsured
-        self.config.activeFrom = config.activeFrom
-        self.config.numberOfMissingCoInsured = config.numberOfMissingCoInsured
+        self.config = config
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
@@ -428,6 +424,9 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
     let holderFirstName: String
     let holderLastName: String
     let holderSSN: String?
+    var holderFullName: String {
+        return holderFirstName + " " + holderLastName
+    }
     
     public init() {
         self.currentAgreementCoInsured = []
@@ -439,9 +438,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderFirstName = ""
         self.holderLastName = ""
         self.holderSSN = nil
-        
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        self.preSelectedCoInsuredList = store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+        self.preSelectedCoInsuredList = []
     }
     
     public init(
