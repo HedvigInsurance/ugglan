@@ -51,11 +51,9 @@ struct ContractInformationView: View {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         if onlyCoInsured(contract) {
-                                            store.send(
-                                                .openEditCoInsured(
-                                                    contractId: contract.id,
-                                                    fromInfoCard: false
-                                                )
+                                            store.send(.openEditCoInsured(
+                                                config: .init(contract: contract),
+                                                fromInfoCard: false)
                                             )
                                         } else {
                                             store.send(.contractEditInfo(id: id))

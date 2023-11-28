@@ -2,6 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: ContractStore
@@ -174,13 +175,47 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
-        let config = InsuredPeopleConfig(
-            currentAgreementCoInsured: [],
-            upcomingAgreementCoInsured: [],
-            contractId: "id",
-            activeFrom: nil,
-            numberOfMissingCoInsured: 0,
-            displayName: "Display name"
+        let config = InsuredPeopleConfig(contract: Contract(
+            id: "",
+            currentAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []
+            ),
+            exposureDisplayName: "",
+            masterInceptionDate: "",
+            terminationDate: nil,
+            supportsAddressChange: true,
+            supportsCoInsured: true,
+            upcomingChangedAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []
+            ),
+            upcomingRenewal: ContractRenewal(
+                renewalDate: "",
+                draftCertificateUrl: ""
+            ),
+            firstName: "",
+            lastName: "",
+            ssn: "",
+            typeOfContract: .seApartmentBrf)
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)

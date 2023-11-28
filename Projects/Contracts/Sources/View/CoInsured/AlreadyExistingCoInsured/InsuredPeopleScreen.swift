@@ -21,13 +21,6 @@ struct InsuredPeopleScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                //                PresentableStoreLens(
-                //                    ContractStore.self,
-                //                    getter: { state in
-                //                        state.contractForId(contractId)
-                //                    }
-                //                ) { contract in
-                //                    if let contract = contract {
                 let coInsured = vm.currentAgreementCoInsured
                 let listToDisplay = listToDisplay()
                 hSection {
@@ -40,7 +33,7 @@ struct InsuredPeopleScreen: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-
+                
                 hSection(listToDisplay) { coInsured in
                     hRow {
                         CoInsuredField(
@@ -53,7 +46,7 @@ struct InsuredPeopleScreen: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-
+                
                 hSection {
                     hButton.LargeButton(type: .secondary) {
                         let hasExistingCoInsured = store.state
@@ -84,8 +77,6 @@ struct InsuredPeopleScreen: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                //                    }
-                //                }
             }
         }
         .hFormAttachToBottom {
@@ -267,13 +258,46 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
-        let config = InsuredPeopleConfig(
-            currentAgreementCoInsured: [],
-            upcomingAgreementCoInsured: [],
-            contractId: "id",
-            activeFrom: "2023-11-11",
-            numberOfMissingCoInsured: 0,
-            displayName: "Display name"
+        let config = InsuredPeopleConfig(contract: Contract(
+            id: "",
+            currentAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []),
+            exposureDisplayName: "",
+            masterInceptionDate: "",
+            terminationDate: nil,
+            supportsAddressChange: true,
+            supportsCoInsured: true,
+            upcomingChangedAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []
+            ),
+            upcomingRenewal: ContractRenewal(
+                renewalDate: "",
+                draftCertificateUrl: ""
+            ),
+            firstName: "",
+            lastName: "",
+            ssn: "",
+            typeOfContract: .seApartmentBrf)
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
@@ -404,4 +428,15 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
     let activeFrom: String?
     let numberOfMissingCoInsured: Int
     let displayName: String
+    
+    public init(
+        contract: Contract
+    ) {
+        self.currentAgreementCoInsured = contract.currentAgreement?.coInsured ?? []
+        self.upcomingAgreementCoInsured = contract.upcomingChangedAgreement?.coInsured
+        self.contractId = contract.id
+        self.activeFrom = contract.upcomingChangedAgreement?.activeFrom
+        self.numberOfMissingCoInsured = contract.nbOfMissingCoInsured
+        self.displayName = contract.currentAgreement?.productVariant.displayName ?? ""
+    }
 }

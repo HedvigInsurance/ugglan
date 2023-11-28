@@ -166,13 +166,6 @@ extension Contracts {
 
 extension Contract {
     func asEditCoInsuredConfig() -> InsuredPeopleConfig {
-        InsuredPeopleConfig(
-            currentAgreementCoInsured: self.currentAgreement?.coInsured ?? [],
-            upcomingAgreementCoInsured: self.upcomingChangedAgreement?.coInsured,
-            contractId: self.id,
-            activeFrom: self.upcomingChangedAgreement?.activeFrom,
-            numberOfMissingCoInsured: 0,
-            displayName: currentAgreement?.productVariant.displayName ?? self.exposureDisplayName
-        )
+        InsuredPeopleConfig(contract: self)
     }
 }
