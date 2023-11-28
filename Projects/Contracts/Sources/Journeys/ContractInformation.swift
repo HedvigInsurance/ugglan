@@ -83,7 +83,8 @@ struct ContractInformationView: View {
                 }
                 if hAnalyticsExperiment.editCoinsured {
                     hRow {
-                        let hasContentBelow = !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                        let hasContentBelow =
+                            !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
                         ContractOwnerField(contractId: contract.id, enabled: true, hasContentBelow: hasContentBelow)
                     }
                     .verticalPadding(0)
@@ -285,7 +286,7 @@ struct ChangePeopleView: View {
 
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
-    
+
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return coInsuredRemainingData(contract: contract) + coInsuredDeletedData(contract: contract)
             + coInsuredAddedData(contract: contract)
@@ -298,7 +299,14 @@ private class ContractsInformationViewModel: ObservableObject {
             if !current.contains(CoInsuredModel()) {
                 let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
                 return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
-                    .map { CoInsuredListType(coInsured: $0, type: .added, date: contract.upcomingChangedAgreement?.activeFrom, locallyAdded: false) }
+                    .map {
+                        CoInsuredListType(
+                            coInsured: $0,
+                            type: .added,
+                            date: contract.upcomingChangedAgreement?.activeFrom,
+                            locallyAdded: false
+                        )
+                    }
             } else {
                 return []
             }
@@ -337,6 +345,13 @@ private class ContractsInformationViewModel: ObservableObject {
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
         return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
-            .map { CoInsuredListType(coInsured: $0, type: .deleted, date: contract.upcomingChangedAgreement?.activeFrom, locallyAdded: false) }
+            .map {
+                CoInsuredListType(
+                    coInsured: $0,
+                    type: .deleted,
+                    date: contract.upcomingChangedAgreement?.activeFrom,
+                    locallyAdded: false
+                )
+            }
     }
 }
