@@ -308,8 +308,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 let nbOfUpcomingCoInsured = upComingList?.count
                 if coInsuredDeleted.count > 0 {
                     var num: Int {
-                        if nbOfUpcomingCoInsured ?? 0 < nbOfCoInsured && !(upComingList?.isEmpty ?? false) {
-                            return nbOfUpcomingCoInsured ?? 0 - coInsuredDeleted.count
+                        if let nbOfUpcomingCoInsured, nbOfUpcomingCoInsured < nbOfCoInsured, !(upComingList?.isEmpty ?? false) {
+                            return nbOfUpcomingCoInsured - coInsuredDeleted.count
                         } else {
                             return nbOfCoInsured - coInsuredDeleted.count
                         }
@@ -318,7 +318,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                         filterList.append(CoInsuredModel())
                     }
                     return filterList
-                } else if !(upComingList?.isEmpty ?? false) {
+                } else if !(upComingList?.isEmpty ?? false) && coInsuredAdded.isEmpty {
                     filterList = upComingList ?? []
                 }
             } else if nbOfCoInsured > 0 {
