@@ -314,7 +314,7 @@ private class ContractsInformationViewModel: ObservableObject {
             let current = Set(contract.currentAgreement?.coInsured ?? [])
             if !current.contains(CoInsuredModel()) {
                 let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
-                return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                return result.sorted(by: { $0.id > $1.id })
                     .map {
                         CoInsuredListType(
                             coInsured: $0,
@@ -342,14 +342,14 @@ private class ContractsInformationViewModel: ObservableObject {
         let current = Set(contract.currentAgreement?.coInsured ?? [])
 
         guard !current.contains(CoInsuredModel()) else {
-            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.id > $1.id})
                 .map({
                     CoInsuredListType(coInsured: $0, locallyAdded: false)
                 })
         }
 
         let result = current.intersection(upcoming).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        return result.sorted(by: { $0.id > $1.id })
             .map {
                 CoInsuredListType(coInsured: $0, locallyAdded: false)
             }
@@ -360,7 +360,7 @@ private class ContractsInformationViewModel: ObservableObject {
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        return result.sorted(by: { $0.id > $1.id})
             .map {
                 CoInsuredListType(
                     coInsured: $0,

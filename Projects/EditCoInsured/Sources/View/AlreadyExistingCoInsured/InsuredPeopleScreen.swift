@@ -132,7 +132,7 @@ struct InsuredPeopleScreen: View {
         let coInsured = vm.config.currentAgreementCoInsured
         if let upcomingCoInsured = vm.config.upcomingAgreementCoInsured {
             let sortedUpcoming = Set(upcomingCoInsured)
-                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                .sorted(by: { $0.id > $1.id })
             sortedUpcoming.forEach { upcomingCoInsured in
                 if coInsured.contains(CoInsuredModel()) {
                     if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
@@ -165,7 +165,7 @@ struct InsuredPeopleScreen: View {
             }
         } else {
             let sortedCoInsured = Set(coInsured)
-                .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+                .sorted(by: { $0.id > $1.id })
             sortedCoInsured.forEach { coInsured in
 
                 if vm.coInsuredDeleted.first(where: {

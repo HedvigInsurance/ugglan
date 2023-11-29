@@ -255,6 +255,9 @@ extension JourneyPresentation {
             if case .fetchContracts = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
                 store.send(.fetchContracts)
+            } else if case .goToFreeTextChat = action {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.openChat)
             }
         }
     }

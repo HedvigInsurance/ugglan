@@ -27,7 +27,7 @@ public struct ContractState: StateProtocol {
         }
 
         let unique = Set(upcomingCoInsured + coInsured)
-        return unique.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        return unique.sorted(by: { $0.id > $1.id })
     }
 
     public func fetchAllCoInsuredNotInContract(contractId: String) -> [CoInsuredModel] {
