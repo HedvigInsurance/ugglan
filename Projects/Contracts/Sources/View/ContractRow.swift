@@ -1,4 +1,5 @@
 import Combine
+import EditCoInsured
 import Flow
 import Form
 import Foundation
@@ -9,7 +10,6 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import EditCoInsured
 
 private struct StatusPill: View {
     var text: String

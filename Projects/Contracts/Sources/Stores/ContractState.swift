@@ -1,11 +1,11 @@
 import Apollo
+import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
 import hAnalytics
 import hCore
 import hGraphQL
-import EditCoInsured
 
 public struct ContractState: StateProtocol {
 

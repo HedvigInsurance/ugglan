@@ -20,7 +20,7 @@ public struct ContractOwnerField: View {
         self.fullName = fullName
         self.SSN = SSN.displayFormatSSN ?? ""
     }
-    
+
     public init(
         enabled: Bool? = false,
         hasContentBelow: Bool,

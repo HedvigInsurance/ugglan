@@ -389,7 +389,7 @@ public struct CoInsuredListType: Hashable, Identifiable {
         self.locallyAdded = locallyAdded
         self.isContractOwner = isContractOwner
     }
-    
+
     public var id: String? {
         return coInsured.id
     }
@@ -415,7 +415,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
     public var holderFullName: String {
         return holderFirstName + " " + holderLastName
     }
-    
+
     public init() {
         self.currentAgreementCoInsured = []
         self.upcomingAgreementCoInsured = nil
@@ -429,7 +429,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.preSelectedCoInsuredList = []
         self.contractDisplayName = ""
     }
-    
+
     public init(
         currentAgreementCoInsured: [CoInsuredModel],
         upcomingAgreementCoInsured: [CoInsuredModel]?,

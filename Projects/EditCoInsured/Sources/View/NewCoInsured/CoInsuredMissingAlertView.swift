@@ -5,13 +5,13 @@ import hCoreUI
 struct CoInsuredMissingAlertView: View {
     @PresentableStore var store: EditCoInsuredStore
     let config: InsuredPeopleConfig
-    
+
     init(
         config: InsuredPeopleConfig
     ) {
         self.config = config
     }
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -36,7 +36,7 @@ struct CoInsuredMissingAlertView: View {
                 } content: {
                     hText(L10n.contractCoinsuredMissingAddInfo)
                 }
-                
+
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
                 } content: {
@@ -50,6 +50,20 @@ struct CoInsuredMissingAlertView: View {
 
 struct CoInsuredMissingAlertView_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredMissingAlertView(config: InsuredPeopleConfig(currentAgreementCoInsured: [], upcomingAgreementCoInsured: nil, contractId: "", activeFrom: nil, numberOfMissingCoInsured: 0, displayName: "", preSelectedCoInsuredList: [], contractDisplayName: "", holderFirstName: "", holderLastName: "", holderSSN: nil))
+        CoInsuredMissingAlertView(
+            config: InsuredPeopleConfig(
+                currentAgreementCoInsured: [],
+                upcomingAgreementCoInsured: nil,
+                contractId: "",
+                activeFrom: nil,
+                numberOfMissingCoInsured: 0,
+                displayName: "",
+                preSelectedCoInsuredList: [],
+                contractDisplayName: "",
+                holderFirstName: "",
+                holderLastName: "",
+                holderSSN: nil
+            )
+        )
     }
 }

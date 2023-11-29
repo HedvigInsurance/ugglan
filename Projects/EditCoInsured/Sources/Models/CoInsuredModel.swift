@@ -1,6 +1,6 @@
 import Foundation
-import hGraphQL
 import hCore
+import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
     public let SSN: String?

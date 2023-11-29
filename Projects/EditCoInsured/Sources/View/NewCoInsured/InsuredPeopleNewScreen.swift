@@ -67,11 +67,11 @@ struct InsuredPeopleNewScreen: View {
                     .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
                     .disabled(
                         (vm.config.currentAgreementCoInsured.count + vm.coInsuredAdded.count)
-                        < nbOfMissingCoInsured
+                            < nbOfMissingCoInsured
                     )
                     .padding(.horizontal, 16)
                 }
-                
+
                 hButton.LargeButton(type: .ghost) {
                     store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
                 } content: {

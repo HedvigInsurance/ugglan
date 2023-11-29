@@ -1,5 +1,6 @@
 import Claims
 import Contracts
+import EditCoInsured
 import Flow
 import Forever
 import Form
@@ -12,7 +13,6 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import EditCoInsured
 import hAnalytics
 import hCore
 import hCoreUI
@@ -237,7 +237,7 @@ extension JourneyPresentation {
             }
         }
     }
-    
+
     public var configureContractNavigation: some JourneyPresentation {
         onAction(
             EditCoInsuredStore.self,
@@ -261,7 +261,7 @@ extension JourneyPresentation {
             } else if case .checkForAlert = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
                 let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                
+
                 let missingContract = store.state.activeContracts.first { contract in
                     if contract.upcomingChangedAgreement != nil {
                         return false
