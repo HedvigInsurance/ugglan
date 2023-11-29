@@ -13,7 +13,7 @@ struct CoInsuredMissingAlertView: View {
                 VStack {
 //                    let contract = store.state.contractForId(contractId)
 //                    hText(contract?.currentAgreement?.productVariant.displayName ?? "")
-                        .foregroundColor(hTextColor.primaryTranslucent)
+//                        .foregroundColor(hTextColor.primaryTranslucent)
                     hText(L10n.contractCoinsuredMissingInformationLabel)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.secondaryTranslucent)
