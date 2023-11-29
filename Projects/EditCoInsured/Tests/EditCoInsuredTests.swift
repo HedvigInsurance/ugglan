@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 
-@testable import Contracts
+@testable import EditCoInsured
 
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
@@ -11,8 +11,9 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
     func testUpcomingZeroCurrentOneSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
-        viewModel.upcomingAgreementCoInsured = []
-        viewModel.currentAgreementCoInsured = [
+
+        viewModel.config.upcomingAgreementCoInsured = []
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN5
         ]
         viewModel.coInsuredAdded = []
@@ -24,12 +25,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN5,
             CoInsuredModel.testMemberWithSSN4,
         ]
 
-        viewModel.upcomingAgreementCoInsured = []
+        viewModel.config.upcomingAgreementCoInsured = []
 
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
@@ -40,14 +41,14 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
@@ -62,14 +63,14 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN5,
             CoInsuredModel.testMemberWithSSN4,
             CoInsuredModel.testMemberWithSSN3,
@@ -87,12 +88,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testCurrentTwoWithValuesAddingThreeWithValues() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN4,
             CoInsuredModel.testMemberWithSSN5,
         ]
 
-        viewModel.upcomingAgreementCoInsured = []
+        viewModel.config.upcomingAgreementCoInsured = []
 
         viewModel.coInsuredAdded = [
             CoInsuredModel.testMemberWithSSN1,
@@ -107,12 +108,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testCurrentTwoEmptyUpcomingThreeWithValuesAddingOneDeleteingTwo() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN1,
             CoInsuredModel.testMemberWithSSN2,
             CoInsuredModel.testMemberWithSSN3,
@@ -133,12 +134,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testInitialSSNBirthday() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN1,
             CoInsuredModel.testMemberWithBirthdate1,
         ]
@@ -153,12 +154,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testRemovedWithoutDataAddingSSNBirthdate() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.mockMissingData()
         ]
 
@@ -175,12 +176,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testAddCoInsuredToEmptyCurrentUpcomingValues() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.currentAgreementCoInsured = [
+        viewModel.config.currentAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.upcomingAgreementCoInsured = [
+        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.testMemberWithSSN1
         ]
 
