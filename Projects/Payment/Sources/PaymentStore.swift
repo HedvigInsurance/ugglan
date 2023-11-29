@@ -69,9 +69,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let paymentData = try await self.paymentService.getPaymentData()
                         callback(.value(.setPaymentData(data: paymentData)))
                     } catch {
-                        DispatchQueue.main.async {
-                            self.setError(L10n.General.errorBody, for: .getPaymentData)
-                        }
+                        self.setError(L10n.General.errorBody, for: .getPaymentData)
                     }
                 }
                 return disposeBag
@@ -84,9 +82,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let statusData = try await self.paymentService.getPaymentStatusData()
                         callback(.value(.setPaymentStatus(data: statusData)))
                     } catch {
-                        DispatchQueue.main.async {
-                            self.setError(L10n.General.errorBody, for: .getPaymentStatus)
-                        }
+                        self.setError(L10n.General.errorBody, for: .getPaymentStatus)
                     }
                 }
                 return disposeBag
@@ -99,9 +95,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let data = try await self.paymentService.getPaymentDiscountsData()
                         callback(.value(.setDiscountsData(data: data)))
                     } catch {
-                        DispatchQueue.main.async {
-                            self.setError(L10n.General.errorBody, for: .getDiscountsData)
-                        }
+                        self.setError(L10n.General.errorBody, for: .getDiscountsData)
                     }
                 }
                 return disposeBag
@@ -114,9 +108,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                         let data = try await self.paymentService.getPaymentHistoryData()
                         callback(.value(.setHistory(to: data)))
                     } catch {
-                        DispatchQueue.main.async {
-                            self.setError(L10n.General.errorBody, for: .getHistory)
-                        }
+                        self.setError(L10n.General.errorBody, for: .getHistory)
                     }
                 }
                 return disposeBag
