@@ -519,7 +519,7 @@ extension InsuredPeopleConfig {
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
-            preSelectedCoInsuredList: [], //tore.state.fetchAllCoInsuredNotInContract(contractId: contractId),
+            preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn
