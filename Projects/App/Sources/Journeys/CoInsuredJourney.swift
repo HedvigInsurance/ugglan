@@ -1,6 +1,6 @@
 import Contracts
-import Presentation
 import EditCoInsured
+import Presentation
 
 extension AppJourney {
     @JourneyBuilder

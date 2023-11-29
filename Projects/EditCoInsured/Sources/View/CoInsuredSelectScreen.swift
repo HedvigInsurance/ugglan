@@ -20,11 +20,12 @@ struct CoInsuredSelectScreen: View {
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
             !store.coInsuredViewModel.coInsuredAdded.contains($0)
         })
-        intentVm.showErrorView = false
+        intentVm.errorMessageForCoinsuredList = nil
+        intentVm.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentVm.showErrorView {
+        if intentVm.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),
@@ -65,12 +66,13 @@ struct CoInsuredSelectScreen: View {
                         }
                         await store.intentViewModel.getIntent(
                             contractId: contractId,
+                            origin: .coinsuredSelectList,
                             coInsured: store.coInsuredViewModel.completeList()
                         )
                         withAnimation {
                             isLoading = false
                         }
-                        if !store.intentViewModel.showErrorView {
+                        if !store.intentViewModel.showErrorViewForCoInsuredList {
                             store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         } else {
                             store.coInsuredViewModel.removeCoInsured(

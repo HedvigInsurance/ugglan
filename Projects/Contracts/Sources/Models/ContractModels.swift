@@ -1,9 +1,9 @@
+import EditCoInsured
 import Foundation
+import Presentation
 import hCore
 import hCoreUI
 import hGraphQL
-import EditCoInsured
-import Presentation
 
 public struct ProductVariant: Codable, Hashable {
     let termsVersion: String

@@ -22,8 +22,9 @@ struct CoInusuredInput: View {
         self.vm = vm
         self.title = title
 
-        vm.showErrorView = false
-        intentVm.showErrorView = false
+        vm.SSNError = nil
+        intentVm.errorMessageForInput = nil
+        intentVm.errorMessageForCoinsuredList = nil
 
         if vm.SSN != "" {
             vm.noSSN = false
@@ -45,7 +46,7 @@ struct CoInusuredInput: View {
     }
 
     var body: some View {
-        if vm.showErrorView || intentVm.showErrorView {
+        if let error = vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList {
             CoInsuredInputErrorView(vm: vm)
         } else {
             mainView
@@ -99,10 +100,11 @@ struct CoInusuredInput: View {
                                     if insuredPeopleVm.coInsuredDeleted.count > 0 {
                                         await intentVm.getIntent(
                                             contractId: vm.contractId,
+                                            origin: .coinsuredInput,
                                             coInsured: insuredPeopleVm.completeList()
                                         )
                                     }
-                                    if !intentVm.showErrorView {
+                                    if !intentVm.showErrorViewForCoInsuredInput {
                                         store.send(.coInsuredNavigationAction(action: .deletionSuccess))
                                     } else {
                                         // add back
@@ -140,7 +142,7 @@ struct CoInusuredInput: View {
                                     }
                                 } else if vm.nameFetchedFromSSN || vm.noSSN {
                                     Task {
-                                        if !intentVm.showErrorView {
+                                        if !intentVm.showErrorViewForCoInsuredInput {
                                             if vm.actionType == .edit {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.editCoInsured(
@@ -184,9 +186,10 @@ struct CoInusuredInput: View {
                                             }
                                             await intentVm.getIntent(
                                                 contractId: vm.contractId,
+                                                origin: .coinsuredInput,
                                                 coInsured: insuredPeopleVm.completeList()
                                             )
-                                            if !intentVm.showErrorView {
+                                            if !intentVm.showErrorViewForCoInsuredInput {
                                                 store.send(.coInsuredNavigationAction(action: .addSuccess))
                                             } else {
                                                 if vm.noSSN {
@@ -441,7 +444,6 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var SSNError: String?
     @Published var nameFetchedFromSSN: Bool = false
     @Published var isLoading: Bool = false
-    @Published var showErrorView: Bool = false
     @Published var enterManually: Bool = false
     @Published var SSN: String
     @Published var birthday: String
@@ -454,6 +456,11 @@ public class CoInusuredInputViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
+
+    var showErrorView: Bool {
+        SSNError != nil
+    }
+
     var cancellables = Set<AnyCancellable>()
     init(
         coInsuredModel: CoInsuredModel,
@@ -475,22 +482,26 @@ public class CoInusuredInputViewModel: ObservableObject {
         if !(coInsuredModel.SSN ?? "").isEmpty {
             nameFetchedFromSSN = true
         }
-        $noSSN.combineLatest($nameFetchedFromSSN)
-            .delay(for: .milliseconds(300), scheduler: DispatchQueue.main)
+        $noSSN.combineLatest($nameFetchedFromSSN).combineLatest($SSNError)
+            //            .delay(for: .milliseconds(0), scheduler: DispatchQueue.main)
             .receive(on: RunLoop.main)
             .sink { _ in
-                if #available(iOS 15.0, *) {
-                    if #available(iOS 16.0, *) {
-                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                            .animateChanges {
+                for i in 0...10 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
+                        if #available(iOS 15.0, *) {
+                            if #available(iOS 16.0, *) {
                                 UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                    .invalidateDetents()
-                            }
-                    } else {
-                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                            .animateChanges {
+                                    .animateChanges {
+                                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                            .invalidateDetents()
+                                    }
+                            } else {
+                                UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                    .animateChanges {
 
+                                    }
                             }
+                        }
                     }
                 }
             }
@@ -549,7 +560,6 @@ public class CoInusuredInputViewModel: ObservableObject {
                         self.SSNError = L10n.General.errorBody
                     }
                 }
-                self.showErrorView = true
             }
         }
         withAnimation {
@@ -565,23 +575,30 @@ public class IntentViewModel: ObservableObject {
     @Published var id = ""
     @Published var state = ""
     @Published var isLoading: Bool = false
-    @Published var showErrorView = false
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var nameFetchedFromSSN: Bool = false
     @Published var enterManually: Bool = false
-    var errorMessage: String?
+    @Published var errorMessageForInput: String?
+    @Published var errorMessageForCoinsuredList: String?
     var fullName: String {
         return firstName + " " + lastName
     }
     @Inject var octopus: hOctopus
 
+    var showErrorViewForCoInsuredList: Bool {
+        errorMessageForCoinsuredList != nil
+    }
+    var showErrorViewForCoInsuredInput: Bool {
+        errorMessageForInput != nil
+    }
+
     @MainActor
-    func getIntent(contractId: String, coInsured: [CoInsuredModel]) async {
+    func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [CoInsuredModel]) async {
         withAnimation {
             self.isLoading = true
-            self.errorMessage = nil
-            self.showErrorView = false
+            self.errorMessageForInput = nil
+            self.errorMessageForCoinsuredList = nil
         }
         do {
             let data = try await withCheckedThrowingContinuation {
@@ -615,8 +632,12 @@ public class IntentViewModel: ObservableObject {
             }
             withAnimation {
                 if let graphQLError = data.userError {
-                    self.errorMessage = graphQLError.message
-                    self.showErrorView = true
+                    switch origin {
+                    case .coinsuredSelectList:
+                        self.errorMessageForCoinsuredList = graphQLError.message
+                    case .coinsuredInput:
+                        self.errorMessageForInput = graphQLError.message
+                    }
                 } else if let intent = data.intent {
                     self.activationDate = intent.activationDate
                     self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
@@ -627,8 +648,12 @@ public class IntentViewModel: ObservableObject {
             }
         } catch let exception {
             withAnimation {
-                self.errorMessage = L10n.General.errorBody
-                self.showErrorView = true
+                switch origin {
+                case .coinsuredSelectList:
+                    self.errorMessageForCoinsuredList = L10n.General.errorBody
+                case .coinsuredInput:
+                    self.errorMessageForInput = L10n.General.errorBody
+                }
             }
         }
         withAnimation {
@@ -639,7 +664,6 @@ public class IntentViewModel: ObservableObject {
     @MainActor
     func getNameFromSSN(SSN: String) async {
         withAnimation {
-            self.showErrorView = false
             self.isLoading = true
         }
         do {
@@ -683,16 +707,20 @@ public class IntentViewModel: ObservableObject {
                 if let exception = exception as? GraphQLError {
                     switch exception {
                     case .graphQLError:
-                        self.errorMessage = exception.localizedDescription
+                        self.errorMessageForInput = exception.localizedDescription
                     case .otherError:
-                        self.errorMessage = L10n.General.errorBody
+                        self.errorMessageForInput = L10n.General.errorBody
                     }
                 }
-                self.showErrorView = true
             }
         }
         withAnimation {
             self.isLoading = false
         }
+    }
+
+    enum GetIntentOrigin {
+        case coinsuredSelectList
+        case coinsuredInput
     }
 }
