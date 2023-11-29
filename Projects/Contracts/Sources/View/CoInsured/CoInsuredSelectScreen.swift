@@ -19,12 +19,13 @@ struct CoInsuredSelectScreen: View {
         intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
             !store.coInsuredViewModel.coInsuredAdded.contains($0)
-          })
-        intentVm.showErrorView = false
+        })
+        intentVm.errorMessageForInput = nil
+        intentVm.errorMessageForCoinsuredList = nil
     }
-
+    @ViewBuilder
     var body: some View {
-        if intentVm.showErrorView {
+        if intentVm.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),
@@ -40,7 +41,8 @@ struct CoInsuredSelectScreen: View {
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
-                return alreadyAddedCoinsuredMembers
+                return
+                    alreadyAddedCoinsuredMembers
                     .compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
@@ -64,12 +66,13 @@ struct CoInsuredSelectScreen: View {
                         }
                         await store.intentViewModel.getIntent(
                             contractId: contractId,
+                            origin: .coinsuredSelectList,
                             coInsured: store.coInsuredViewModel.completeList()
                         )
                         withAnimation {
                             isLoading = false
                         }
-                        if !store.intentViewModel.showErrorView {
+                        if !store.intentViewModel.showErrorViewForCoInsuredList {
                             store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         } else {
                             store.coInsuredViewModel.removeCoInsured(
@@ -90,7 +93,8 @@ struct CoInsuredSelectScreen: View {
                 contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
             singleSelect: true,
-            attachToBottom: true
+            attachToBottom: true,
+            disableIfNoneSelected: true
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
