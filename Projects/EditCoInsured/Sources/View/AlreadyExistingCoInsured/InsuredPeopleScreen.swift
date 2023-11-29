@@ -265,6 +265,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             numberOfMissingCoInsured: 0,
             displayName: "",
             preSelectedCoInsuredList: [],
+            contractDisplayName: "",
             holderFirstName: "",
             holderLastName: "",
             holderSSN: nil
@@ -407,6 +408,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
     public var numberOfMissingCoInsured: Int
     public let displayName: String
     public let preSelectedCoInsuredList: [CoInsuredModel]
+    public let contractDisplayName: String
     public let holderFirstName: String
     public let holderLastName: String
     public let holderSSN: String?
@@ -425,6 +427,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderLastName = ""
         self.holderSSN = nil
         self.preSelectedCoInsuredList = []
+        self.contractDisplayName = ""
     }
 
     public init(
@@ -435,6 +438,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         numberOfMissingCoInsured: Int,
         displayName: String,
         preSelectedCoInsuredList: [CoInsuredModel],
+        contractDisplayName: String,
         holderFirstName: String,
         holderLastName: String,
         holderSSN: String?
@@ -446,6 +450,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.numberOfMissingCoInsured = numberOfMissingCoInsured
         self.displayName = displayName
         self.preSelectedCoInsuredList = preSelectedCoInsuredList
+        self.contractDisplayName = contractDisplayName
         self.holderFirstName = holderFirstName
         self.holderLastName = holderLastName
         self.holderSSN = holderSSN

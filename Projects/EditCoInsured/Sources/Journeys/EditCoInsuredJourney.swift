@@ -27,8 +27,8 @@ public class EditCoInsuredJourney {
                 openProgress(showSuccess: showSuccess).hidesBackButton
             } else if case let .openCoInsuredSelectScreen(contractId) = navigationAction {
                 openCoInsuredSelectScreen(contractId: contractId)
-            } else if case let .openMissingCoInsuredAlert(contractId) = navigationAction {
-                openMissingCoInsuredAlert(contractId: contractId)
+            } else if case let .openMissingCoInsuredAlert(config) = navigationAction {
+                openMissingCoInsuredAlert(config: config)
             } else if case .openErrorScreen = navigationAction {
                 openGenericErrorScreen()
             } else if case let .openSelectInsuranceScreen(configs) = navigationAction {
@@ -153,10 +153,10 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openMissingCoInsuredAlert(contractId: String) -> some JourneyPresentation {
+    public static func openMissingCoInsuredAlert(config: InsuredPeopleConfig) -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
-            rootView: CoInsuredMissingAlertView(contractId: contractId),
+            rootView: CoInsuredMissingAlertView(config: config),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in

@@ -3,17 +3,23 @@ import hCore
 import hCoreUI
 
 struct CoInsuredMissingAlertView: View {
-    let contractId: String
     @PresentableStore var store: EditCoInsuredStore
+    let config: InsuredPeopleConfig
+
+    init(
+        config: InsuredPeopleConfig
+    ) {
+        self.config = config
+    }
+
     var body: some View {
         hForm {
             VStack(spacing: 16) {
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
                     .foregroundColor(hSignalColor.amberElement)
                 VStack {
-                    //                    let contract = store.state.contractForId(contractId)
-                    //                    hText(contract?.currentAgreement?.productVariant.displayName ?? "")
-                    //                        .foregroundColor(hTextColor.primaryTranslucent)
+                    hText(config.contractDisplayName)
+                        .foregroundColor(hTextColor.primaryTranslucent)
                     hText(L10n.contractCoinsuredMissingInformationLabel)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.secondaryTranslucent)
@@ -26,9 +32,7 @@ struct CoInsuredMissingAlertView: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                    //                    if let contract = store.state.contractForId(contractId) {
-                    //                        store.send(.openEditCoInsured(config: .init(contract: contract), fromInfoCard: true))
-                    //                    }
+                    store.send(.openEditCoInsured(config: config, fromInfoCard: true))
                 } content: {
                     hText(L10n.contractCoinsuredMissingAddInfo)
                 }
@@ -46,6 +50,20 @@ struct CoInsuredMissingAlertView: View {
 
 struct CoInsuredMissingAlertView_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredMissingAlertView(contractId: "")
+        CoInsuredMissingAlertView(
+            config: InsuredPeopleConfig(
+                currentAgreementCoInsured: [],
+                upcomingAgreementCoInsured: nil,
+                contractId: "",
+                activeFrom: nil,
+                numberOfMissingCoInsured: 0,
+                displayName: "",
+                preSelectedCoInsuredList: [],
+                contractDisplayName: "",
+                holderFirstName: "",
+                holderLastName: "",
+                holderSSN: nil
+            )
+        )
     }
 }

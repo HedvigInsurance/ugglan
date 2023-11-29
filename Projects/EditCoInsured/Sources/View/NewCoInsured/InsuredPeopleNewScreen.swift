@@ -175,6 +175,7 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             numberOfMissingCoInsured: 0,
             displayName: "",
             preSelectedCoInsuredList: [],
+            contractDisplayName: "",
             holderFirstName: "",
             holderLastName: "",
             holderSSN: nil

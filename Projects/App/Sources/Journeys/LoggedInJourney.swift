@@ -243,8 +243,8 @@ extension JourneyPresentation {
             EditCoInsuredStore.self,
             { action in
                 if case let .coInsuredNavigationAction(navAction) = action {
-                    if case let .openMissingCoInsuredAlert(contractId) = navAction {
-                        EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+                    if case let .openMissingCoInsuredAlert(config) = navAction {
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
                     }
                 } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                     EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
@@ -272,10 +272,10 @@ extension JourneyPresentation {
                             }) != nil
                     }
                 }
-                if missingContract != nil {
+                if let missingContract {
                     editStore.send(
                         .coInsuredNavigationAction(
-                            action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
+                            action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
                         )
                     )
                 }

@@ -32,7 +32,7 @@ public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openCoInsuredSelectScreen(contractId: String)
     case deletionSuccess
     case addSuccess
-    case openMissingCoInsuredAlert(contractId: String)
+    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
     case openErrorScreen
     case openSelectInsuranceScreen(configs: [InsuredPeopleConfig])
 }

@@ -124,8 +124,8 @@ extension Contracts {
                 resultJourney(.movingFlow)
             } else if case let .openEditCoInsured(config, fromInfoCard) = action {
                 EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
-            } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
-                EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+            } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(config)) = action {
+                EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {

@@ -94,5 +94,5 @@ public enum CoInsuredAction: Codable {
 }
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
-    case openMissingCoInsuredAlert(contractId: String)
+    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
 }
