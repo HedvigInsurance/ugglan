@@ -65,7 +65,32 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func changeAddressInfo(_ contract: Contract) -> some View {
-        if let date = contract.upcomingChangedAgreement?.activeFrom {
+        if let upcomingRenewal = contract.upcomingRenewal,
+            let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date())
+        {
+            hSection {
+                InfoCard(
+                    text: days == 0
+                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                        buttonAction: {
+                            if let url = URL(string: upcomingRenewal.draftCertificateUrl) {
+                                store.send(
+                                    .contractDetailNavigationAction(
+                                        action: .document(url: url, title: L10n.insuranceCertificateTitle)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                ])
+            }
+            .padding(.bottom, 16)
+        } else if let date = contract.upcomingChangedAgreement?.activeFrom {
             hSection {
                 InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(date), type: .info)
                     .buttons([
