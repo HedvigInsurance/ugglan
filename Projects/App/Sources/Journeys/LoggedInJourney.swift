@@ -251,5 +251,11 @@ extension JourneyPresentation {
                 }
             }
         )
+        .onAction(EditCoInsuredStore.self) { action, pre in
+            if case .fetchContracts = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
+        }
     }
 }

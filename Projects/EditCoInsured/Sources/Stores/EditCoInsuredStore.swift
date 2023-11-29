@@ -28,7 +28,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
                             self.setError(graphQLError.message ?? "", for: .postCoInsured)
                         } else {
                             self.removeLoading(for: .postCoInsured)
-                            //                            callback(.value(.fetchContracts))
+                            callback(.value(.fetchContracts))
                             callback(.end)
                         }
                     }

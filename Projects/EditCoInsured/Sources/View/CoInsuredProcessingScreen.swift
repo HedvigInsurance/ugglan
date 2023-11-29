@@ -134,7 +134,7 @@ struct CoInsuredProcessingScreen: View {
     }
 
     private func missingContractAlert() {
-//        vm.store.send(.fetchContracts)
+        vm.store.send(.fetchContracts)
         vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 //            let missingContract = store.state.activeContracts.first { contract in
