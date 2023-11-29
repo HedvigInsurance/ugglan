@@ -6,19 +6,8 @@ import hGraphQL
 
 struct InsuredPeopleScreen: View {
     @PresentableStore var store: ContractStore
-    let contractId: String
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
-
-    public init(
-        contractId: String
-    ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        vm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
-        self.contractId = contractId
-        vm.initializeCoInsured(with: contractId)
-    }
 
     @ViewBuilder
     func getView(coInsured: CoInsuredListType) -> some View {
@@ -32,71 +21,62 @@ struct InsuredPeopleScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        state.contractForId(contractId)
+                let coInsured = vm.config.currentAgreementCoInsured
+                let listToDisplay = listToDisplay()
+                hSection {
+                    hRow {
+                        let hasContentBelow = !listToDisplay.isEmpty
+                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
                     }
-                ) { contract in
-                    if let contract = contract {
-                        let coInsured = contract.currentAgreement?.coInsured
-                        let listToDisplay = listToDisplay(contract: contract)
-                        hSection {
-                            hRow {
-                                let hasContentBelow = !listToDisplay.isEmpty
-                                ContractOwnerField(contractId: contractId, hasContentBelow: hasContentBelow)
-                            }
-                            .verticalPadding(0)
-                            .padding(.top, 16)
-                        }
-                        .withoutHorizontalPadding
-                        .sectionContainerStyle(.transparent)
-
-                        hSection(listToDisplay) { coInsured in
-                            hRow {
-                                CoInsuredField(
-                                    coInsured: coInsured.coInsured,
-                                    accessoryView: getView(coInsured: coInsured),
-                                    includeStatusPill: coInsured.type == .added ? .added : nil,
-                                    date: coInsured.date
-                                )
-                            }
-                        }
-                        .withoutHorizontalPadding
-                        .sectionContainerStyle(.transparent)
-
-                        hSection {
-                            hButton.LargeButton(type: .secondary) {
-                                let hasExistingCoInsured = store.state
-                                    .fetchAllCoInsuredNotInContract(contractId: contractId)
-                                    .filter { !vm.coInsuredAdded.contains($0) }
-                                if hasExistingCoInsured.isEmpty {
-                                    store.send(
-                                        .coInsuredNavigationAction(
-                                            action: .openCoInsuredInput(
-                                                actionType: .add,
-                                                coInsuredModel: CoInsuredModel(),
-                                                title: L10n.contractAddCoinsured,
-                                                contractId: contractId
-                                            )
-                                        )
-                                    )
-                                } else {
-                                    store.send(
-                                        .coInsuredNavigationAction(
-                                            action: .openCoInsuredSelectScreen(contractId: contractId)
-                                        )
-                                    )
-                                }
-                            } content: {
-                                hText(L10n.contractAddCoinsured)
-                            }
-                            .padding(.horizontal, 16)
-                        }
-                        .withoutHorizontalPadding
-                        .sectionContainerStyle(.transparent)
+                    .verticalPadding(0)
+                    .padding(.top, 16)
+                }
+                .withoutHorizontalPadding
+                .sectionContainerStyle(.transparent)
+                
+                hSection(listToDisplay) { coInsured in
+                    hRow {
+                        CoInsuredField(
+                            coInsured: coInsured.coInsured,
+                            accessoryView: getView(coInsured: coInsured),
+                            includeStatusPill: coInsured.type == .added ? .added : nil,
+                            date: coInsured.date
+                        )
                     }
                 }
+                .withoutHorizontalPadding
+                .sectionContainerStyle(.transparent)
+                
+                hSection {
+                    hButton.LargeButton(type: .secondary) {
+                        let hasExistingCoInsured = store.state
+                            .fetchAllCoInsuredNotInContract(contractId: vm.config.contractId)
+                            .filter { !vm.coInsuredAdded.contains($0) }
+                        if hasExistingCoInsured.isEmpty {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openCoInsuredInput(
+                                        actionType: .add,
+                                        coInsuredModel: CoInsuredModel(),
+                                        title: L10n.contractAddCoinsured,
+                                        contractId: vm.config.contractId
+                                    )
+                                )
+                            )
+                        } else {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openCoInsuredSelectScreen(contractId: vm.config.contractId)
+                                )
+                            )
+                        }
+                    } content: {
+                        hText(L10n.contractAddCoinsured)
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .withoutHorizontalPadding
+                .sectionContainerStyle(.transparent)
             }
         }
         .hFormAttachToBottom {
@@ -122,7 +102,7 @@ struct InsuredPeopleScreen: View {
                             actionType: .delete,
                             coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: contractId
+                            contractId: vm.config.contractId
                         )
                     )
                 )
@@ -140,29 +120,29 @@ struct InsuredPeopleScreen: View {
                             actionType: .delete,
                             coInsuredModel: coInsured,
                             title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: contractId
+                            contractId: vm.config.contractId
                         )
                     )
                 )
             }
     }
 
-    func listToDisplay(contract: Contract) -> [CoInsuredListType] {
+    func listToDisplay() -> [CoInsuredListType] {
         var finalList: [CoInsuredListType] = []
         var addedCoInsured: [CoInsuredListType] = []
-        let coInsured = contract.currentAgreement?.coInsured
-        if let upcomingCoInsured = contract.upcomingChangedAgreement?.coInsured {
+        let coInsured = vm.config.currentAgreementCoInsured
+        if let upcomingCoInsured = vm.config.upcomingAgreementCoInsured {
             let sortedUpcoming = Set(upcomingCoInsured)
                 .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
             sortedUpcoming.forEach { upcomingCoInsured in
-                if coInsured?.contains(CoInsuredModel()) ?? false {
+                if coInsured.contains(CoInsuredModel()) {
                     if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                         finalList.append(
                             CoInsuredListType(coInsured: upcomingCoInsured, type: nil, locallyAdded: false)
                         )
                     }
                 } else {
-                    if (coInsured ?? []).contains(upcomingCoInsured) {
+                    if coInsured.contains(upcomingCoInsured) {
                         if !vm.coInsuredDeleted.contains(upcomingCoInsured) {
                             //remaining
                             finalList.append(
@@ -176,7 +156,7 @@ struct InsuredPeopleScreen: View {
                                     coInsured: upcomingCoInsured,
                                     type: .added,
                                     date: (intentVm.activationDate != "")
-                                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom,
+                                    ? intentVm.activationDate : vm.config.activeFrom,
                                     locallyAdded: false
                                 )
                             )
@@ -185,7 +165,7 @@ struct InsuredPeopleScreen: View {
                 }
             }
         } else {
-            let sortedCoInsured = Set(coInsured ?? [])
+            let sortedCoInsured = Set(coInsured)
                 .sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
             sortedCoInsured.forEach { coInsured in
 
@@ -204,8 +184,7 @@ struct InsuredPeopleScreen: View {
                 CoInsuredListType(
                     coInsured: coInsured,
                     type: .added,
-                    date: (intentVm.activationDate != "")
-                        ? intentVm.activationDate : contract.upcomingChangedAgreement?.activeFrom,
+                    date: (intentVm.activationDate != "") ? intentVm.activationDate : vm.config.activeFrom,
                     locallyAdded: true
                 )
             )
@@ -277,7 +256,51 @@ struct ConfirmChangesView: View {
 
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
-        InsuredPeopleScreen(contractId: "")
+        let vm = InsuredPeopleNewScreenModel()
+        let intentVm = IntentViewModel()
+        let config = InsuredPeopleConfig(contract: Contract(
+            id: "",
+            currentAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []),
+            exposureDisplayName: "",
+            masterInceptionDate: "",
+            terminationDate: nil,
+            supportsAddressChange: true,
+            supportsCoInsured: true,
+            upcomingChangedAgreement: Agreement(
+                premium: MonetaryAmount(amount: 0, currency: ""),
+                displayItems: [],
+                productVariant: ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: ""),
+                coInsured: []
+            ),
+            upcomingRenewal: ContractRenewal(
+                renewalDate: "",
+                draftCertificateUrl: ""
+            ),
+            firstName: "",
+            lastName: "",
+            ssn: "",
+            typeOfContract: .seApartmentBrf)
+        )
+        vm.initializeCoInsured(with: config)
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
     }
 }
 
@@ -286,24 +309,22 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
-    var contractId: String = ""
-    var currentAgreementCoInsured: [CoInsuredModel] = []
-    var upcomingAgreementCoInsured: [CoInsuredModel]? = nil
+    var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
     @PresentableStore var store: ContractStore
     @Inject var octopus: hOctopus
 
     func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
-        let upComingList = self.upcomingAgreementCoInsured
+        let upComingList = config.upcomingAgreementCoInsured
 
         if let upComingList, !upComingList.contains(CoInsuredModel()) {
             filterList = upComingList
-            
+
         } else {
-            let existingList = self.currentAgreementCoInsured
+            let existingList = config.currentAgreementCoInsured
             let nbOfCoInsured = existingList.count
-            
+
             if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()) {
                 let nbOfUpcomingCoInsured = upComingList?.count
                 if coInsuredDeleted.count > 0 {
@@ -326,20 +347,17 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             }
         }
         let finalList =
-        filterList.filter {
-            !coInsuredDeleted.contains($0)
-        } + coInsuredAdded
+            filterList.filter {
+                !coInsuredDeleted.contains($0)
+            } + coInsuredAdded
 
         return finalList
     }
 
-    func initializeCoInsured(with contractId: String) {
+    func initializeCoInsured(with config: InsuredPeopleConfig) {
         coInsuredAdded = []
         coInsuredDeleted = []
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        let contract = store.state.contractForId(contractId)
-        currentAgreementCoInsured = contract?.currentAgreement?.coInsured ?? []
-        upcomingAgreementCoInsured = contract?.upcomingChangedAgreement?.coInsured
+        self.config = config
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
@@ -393,4 +411,50 @@ struct CoInsuredListType: Hashable, Identifiable {
     var date: String?
     var locallyAdded: Bool
     var isContractOwner: Bool? = nil
+}
+
+public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
+    var currentAgreementCoInsured: [CoInsuredModel]
+    var upcomingAgreementCoInsured: [CoInsuredModel]?
+    var contractId: String
+    var activeFrom: String?
+    var numberOfMissingCoInsured: Int
+    let displayName: String
+    let preSelectedCoInsuredList: [CoInsuredModel]
+    let holderFirstName: String
+    let holderLastName: String
+    let holderSSN: String?
+    var holderFullName: String {
+        return holderFirstName + " " + holderLastName
+    }
+    
+    public init() {
+        self.currentAgreementCoInsured = []
+        self.upcomingAgreementCoInsured = nil
+        self.contractId = ""
+        self.activeFrom = nil
+        self.numberOfMissingCoInsured = 0
+        self.displayName = ""
+        self.holderFirstName = ""
+        self.holderLastName = ""
+        self.holderSSN = nil
+        self.preSelectedCoInsuredList = []
+    }
+    
+    public init(
+        contract: Contract
+    ) {
+        self.currentAgreementCoInsured = contract.currentAgreement?.coInsured ?? []
+        self.upcomingAgreementCoInsured = contract.upcomingChangedAgreement?.coInsured
+        self.contractId = contract.id
+        self.activeFrom = contract.upcomingChangedAgreement?.activeFrom
+        self.numberOfMissingCoInsured = contract.nbOfMissingCoInsured
+        self.displayName = contract.currentAgreement?.productVariant.displayName ?? ""
+        self.holderFirstName = contract.firstName
+        self.holderLastName = contract.lastName
+        self.holderSSN = contract.ssn
+        
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        self.preSelectedCoInsuredList = store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    }
 }

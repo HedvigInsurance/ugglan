@@ -21,12 +21,15 @@ struct CoInsuredInfoView: View {
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
-                        store.send(
-                            .openEditCoInsured(contractId: contractId, fromInfoCard: true)
-                        )
+                        if let contract = store.state.contractForId(contractId) {
+                            store.send(
+                                .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
+                            )
+                        }
                     }
                 )
-            ])
+            ]
+            )
     }
 }
 

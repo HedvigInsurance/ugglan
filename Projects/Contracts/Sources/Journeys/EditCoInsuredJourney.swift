@@ -9,10 +9,10 @@ public class EditCoInsuredJourney {
     @JourneyBuilder
     private static func getScreen(for action: ContractAction) -> some JourneyPresentation {
         if case let .coInsuredNavigationAction(navigationAction) = action {
-            if case let .openInsuredPeopleScreen(contractId) = navigationAction {
-                openInsuredPeopleScreen(id: contractId)
-            } else if case let .openInsuredPeopleNewScreen(contractId) = navigationAction {
-                openNewInsuredPeopleScreen(id: contractId)
+            if case let .openInsuredPeopleScreen(config) = navigationAction {
+                openInsuredPeopleScreen(with: config)
+            } else if case let .openInsuredPeopleNewScreen(config) = navigationAction {
+                openNewInsuredPeopleScreen(config: config)
             } else if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
                 openCoInsuredInput(
                     actionType: actionType,
@@ -31,17 +31,18 @@ public class EditCoInsuredJourney {
                 openMissingCoInsuredAlert(contractId: contractId)
             } else if case .openErrorScreen = navigationAction {
                 openGenericErrorScreen()
-            } else if case let .openSelectInsuranceScreen(contractIds) = navigationAction {
-                openSelectInsurance(contractIds: contractIds)
+            } else if case let .openSelectInsuranceScreen(configs) = navigationAction {
+                openSelectInsurance(configs: configs)
             }
         }
     }
 
-    @JourneyBuilder
-    static func openInsuredPeopleScreen(id: String) -> some JourneyPresentation {
-        HostingJourney(
+    static func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some JourneyPresentation {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
+        return HostingJourney(
             ContractStore.self,
-            rootView: InsuredPeopleScreen(contractId: id),
+            rootView: InsuredPeopleScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in
@@ -51,11 +52,12 @@ public class EditCoInsuredJourney {
         .withJourneyDismissButton
     }
 
-    @JourneyBuilder
-    static func openNewInsuredPeopleScreen(id: String) -> some JourneyPresentation {
-        HostingJourney(
+    static func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
+        return HostingJourney(
             ContractStore.self,
-            rootView: InsuredPeopleNewScreen(contractId: id),
+            rootView: InsuredPeopleNewScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
         ) { action in
@@ -123,11 +125,13 @@ public class EditCoInsuredJourney {
         }
     }
 
-    @JourneyBuilder
-    static func openRemoveCoInsuredScreen(id: String) -> some JourneyPresentation {
-        HostingJourney(
+    static func openRemoveCoInsuredScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
+
+        return HostingJourney(
             ContractStore.self,
-            rootView: RemoveCoInsuredScreen(contractId: id),
+            rootView: RemoveCoInsuredScreen(vm: store.coInsuredViewModel),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
@@ -168,35 +172,30 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    static func openSelectInsurance(contractIds: [String]) -> some JourneyPresentation {
+    static func openSelectInsurance(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: CheckboxPickerScreen<Contract>(
+            rootView: CheckboxPickerScreen<InsuredPeopleConfig>(
                 items: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let contracts: [Contract] = contractIds.compactMap { id in
-                        contractStore.state.contractForId(id)
-                    }
-                    return contracts.compactMap({
-                        (object: $0, displayName: $0.currentAgreement?.productVariant.displayName ?? "")
+                    return configs.compactMap({
+                        (object: $0, displayName: $0.displayName)
                     })
                 }(),
                 preSelectedItems: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let preSelectedItem = contractStore.state.contractForId(contractIds.first ?? "")
-                    if let preSelectedItem {
-                        return [preSelectedItem]
-                    } else {
-                        return []
+                    if let first = configs.first {
+                        return [first]
                     }
+                    return []
                 },
-                onSelected: { selectedContract in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(
-                        .coInsuredNavigationAction(
-                            action: .openInsuredPeopleNewScreen(contractId: selectedContract.first?.id ?? "")
+                onSelected: { selectedConfigs in
+                    if let selectedConfig = selectedConfigs.first {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(
+                            .coInsuredNavigationAction(
+                                action: .openInsuredPeopleNewScreen(config: selectedConfig)
+                            )
                         )
-                    )
+                    }
                 },
                 onCancel: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -246,31 +245,27 @@ public class EditCoInsuredJourney {
     }
 
     @JourneyBuilder
-    public static func openInitialScreen(contractIds: [String]) -> some JourneyPresentation {
-        if contractIds.count > 1 {
-            openSelectInsurance(contractIds: contractIds)
-        } else if let contractId = contractIds.first {
-            openNewInsuredPeopleScreen(id: contractId)
+    public static func openInitialScreen(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
+        if configs.count > 1 {
+            openSelectInsurance(configs: configs)
+        } else if let config = configs.first {
+            openNewInsuredPeopleScreen(config: config)
         }
     }
 
     @JourneyBuilder
-    public static func handleOpenEditCoInsured(for contractId: String, fromInfoCard: Bool) -> some JourneyPresentation {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        if let canChangeCoInsured = store.state.contractForId(contractId)?.supportsCoInsured,
-            canChangeCoInsured
-        {
-            if store.state.contractForId(contractId)?.nbOfMissingCoInsured ?? 0 > 0 {
-                if fromInfoCard {
-                    EditCoInsuredJourney.openNewInsuredPeopleScreen(id: contractId)
-                } else {
-                    EditCoInsuredJourney.openRemoveCoInsuredScreen(id: contractId)
-                }
+    public static func handleOpenEditCoInsured(
+        for config: InsuredPeopleConfig,
+        fromInfoCard: Bool
+    ) -> some JourneyPresentation {
+        if config.numberOfMissingCoInsured > 0 {
+            if fromInfoCard {
+                EditCoInsuredJourney.openNewInsuredPeopleScreen(config: config)
             } else {
-                EditCoInsuredJourney.openInsuredPeopleScreen(id: contractId)
+                EditCoInsuredJourney.openRemoveCoInsuredScreen(config: config)
             }
         } else {
-            EditCoInsuredJourney.openGenericErrorScreen()
+            EditCoInsuredJourney.openInsuredPeopleScreen(with: config)
         }
     }
 }

@@ -51,11 +51,9 @@ struct ContractInformationView: View {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         if onlyCoInsured(contract) {
-                                            store.send(
-                                                .openEditCoInsured(
-                                                    contractId: contract.id,
-                                                    fromInfoCard: false
-                                                )
+                                            store.send(.openEditCoInsured(
+                                                config: .init(contract: contract),
+                                                fromInfoCard: false)
                                             )
                                         } else {
                                             store.send(.contractEditInfo(id: id))
@@ -103,7 +101,7 @@ struct ContractInformationView: View {
                     hRow {
                         let hasContentBelow =
                             !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                        ContractOwnerField(contractId: contract.id, enabled: true, hasContentBelow: hasContentBelow)
+                        ContractOwnerField(enabled: true, hasContentBelow: hasContentBelow, fullName: contract.fullName, SSN: contract.ssn ?? "")
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -112,7 +110,6 @@ struct ContractInformationView: View {
             .withoutHorizontalPadding
 
             if hAnalyticsExperiment.editCoinsured {
-
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
                     hRow {
                         CoInsuredField(
@@ -164,7 +161,7 @@ struct ContractInformationView: View {
         .onTapGesture {
             if contract.showEditInfo {
                 store.send(
-                    .openEditCoInsured(contractId: id, fromInfoCard: true)
+                    .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
                 )
             }
         }

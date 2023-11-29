@@ -3,41 +3,47 @@ import hCore
 import hCoreUI
 
 struct ContractOwnerField: View {
-    let contractId: String
     let enabled: Bool?
     let hasContentBelow: Bool
+    let fullName: String
+    let SSN: String
+    @PresentableStore var store: ContractStore
 
     init(
-        contractId: String,
         enabled: Bool? = false,
-        hasContentBelow: Bool
+        hasContentBelow: Bool,
+        fullName: String,
+        SSN: String
     ) {
-        self.contractId = contractId
         self.enabled = enabled
         self.hasContentBelow = hasContentBelow
+        self.fullName = fullName
+        self.SSN = SSN.displayFormatSSN ?? ""
+    }
+    
+    init(
+        enabled: Bool? = false,
+        hasContentBelow: Bool,
+        config: InsuredPeopleConfig
+    ) {
+        self.enabled = enabled
+        self.hasContentBelow = hasContentBelow
+        self.fullName = config.holderFullName
+        self.SSN = config.holderSSN?.displayFormatSSN ?? ""
     }
 
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        state.contractForId(contractId)
-                    }
-                ) { contract in
-                    if let contract = contract {
                         HStack {
-                            hText(contract.fullName)
+                            hText(fullName)
                                 .foregroundColor(getTitleColor)
                             Spacer()
                             Image(uiImage: hCoreUIAssets.lockSmall.image)
                                 .foregroundColor(hTextColor.tertiary)
                         }
-                        hText(contract.ssn?.displayFormatSSN ?? "", style: .footnote)
+                hText(SSN, style: .footnote)
                             .foregroundColor(getSubTitleColor)
-                    }
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {
@@ -169,6 +175,6 @@ enum StatusPillType {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(contractId: "", hasContentBelow: true)
+        ContractOwnerField(hasContentBelow: true, fullName: "", SSN: "")
     }
 }
