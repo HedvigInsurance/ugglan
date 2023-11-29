@@ -258,6 +258,27 @@ extension JourneyPresentation {
             } else if case .goToFreeTextChat = action {
                 let store: UgglanStore = globalPresentableStoreContainer.get()
                 store.send(.openChat)
+            } else if case .checkForAlert = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                
+                let missingContract = store.state.activeContracts.first { contract in
+                    if contract.upcomingChangedAgreement != nil {
+                        return false
+                    } else {
+                        return contract.currentAgreement?.coInsured
+                            .first(where: { coInsured in
+                                coInsured.hasMissingInfo && contract.terminationDate == nil
+                            }) != nil
+                    }
+                }
+                if missingContract != nil {
+                    editStore.send(
+                        .coInsuredNavigationAction(
+                            action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
+                        )
+                    )
+                }
             }
         }
     }

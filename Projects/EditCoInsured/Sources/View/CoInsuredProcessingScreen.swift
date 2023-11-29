@@ -137,23 +137,7 @@ struct CoInsuredProcessingScreen: View {
         vm.store.send(.fetchContracts)
         vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//            let missingContract = store.state.activeContracts.first { contract in
-//                if contract.upcomingChangedAgreement != nil {
-//                    return false
-//                } else {
-//                    return contract.currentAgreement?.coInsured
-//                        .first(where: { coInsured in
-//                            coInsured.hasMissingInfo && contract.terminationDate == nil
-//                        }) != nil
-//                }
-//            }
-//            if missingContract != nil {
-//                vm.store.send(
-//                    .coInsuredNavigationAction(
-//                        action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
-//                    )
-//                )
-//            }
+            store.send(.checkForAlert)
         }
     }
 
