@@ -265,6 +265,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             numberOfMissingCoInsured: 0,
             displayName: "",
             preSelectedCoInsuredList: [],
+            contractDisplayName: "",
             holderFirstName: "",
             holderLastName: "",
             holderSSN: nil
@@ -400,20 +401,21 @@ public struct CoInsuredListType: Hashable, Identifiable {
 }
 
 public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
-   public var currentAgreementCoInsured: [CoInsuredModel]
-   public var upcomingAgreementCoInsured: [CoInsuredModel]?
-   public var contractId: String
-   public var activeFrom: String?
-   public var numberOfMissingCoInsured: Int
-   public let displayName: String
-   public let preSelectedCoInsuredList: [CoInsuredModel]
-   public let holderFirstName: String
-   public let holderLastName: String
-   public let holderSSN: String?
-   public var holderFullName: String {
-      return holderFirstName + " " + holderLastName
+    public var currentAgreementCoInsured: [CoInsuredModel]
+    public var upcomingAgreementCoInsured: [CoInsuredModel]?
+    public var contractId: String
+    public var activeFrom: String?
+    public var numberOfMissingCoInsured: Int
+    public let displayName: String
+    public let preSelectedCoInsuredList: [CoInsuredModel]
+    public let contractDisplayName: String
+    public let holderFirstName: String
+    public let holderLastName: String
+    public let holderSSN: String?
+    public var holderFullName: String {
+        return holderFirstName + " " + holderLastName
     }
-
+    
     public init() {
         self.currentAgreementCoInsured = []
         self.upcomingAgreementCoInsured = nil
@@ -425,19 +427,21 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderLastName = ""
         self.holderSSN = nil
         self.preSelectedCoInsuredList = []
+        self.contractDisplayName = ""
     }
     
     public init(
-     currentAgreementCoInsured: [CoInsuredModel],
-     upcomingAgreementCoInsured: [CoInsuredModel]?,
-     contractId: String,
-     activeFrom: String?,
-     numberOfMissingCoInsured: Int,
-     displayName: String,
-     preSelectedCoInsuredList: [CoInsuredModel],
-     holderFirstName: String,
-     holderLastName: String,
-     holderSSN: String?
+        currentAgreementCoInsured: [CoInsuredModel],
+        upcomingAgreementCoInsured: [CoInsuredModel]?,
+        contractId: String,
+        activeFrom: String?,
+        numberOfMissingCoInsured: Int,
+        displayName: String,
+        preSelectedCoInsuredList: [CoInsuredModel],
+        contractDisplayName: String,
+        holderFirstName: String,
+        holderLastName: String,
+        holderSSN: String?
     ) {
         self.currentAgreementCoInsured = currentAgreementCoInsured
         self.upcomingAgreementCoInsured = upcomingAgreementCoInsured
@@ -446,6 +450,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.numberOfMissingCoInsured = numberOfMissingCoInsured
         self.displayName = displayName
         self.preSelectedCoInsuredList = preSelectedCoInsuredList
+        self.contractDisplayName = contractDisplayName
         self.holderFirstName = holderFirstName
         self.holderLastName = holderLastName
         self.holderSSN = holderSSN
