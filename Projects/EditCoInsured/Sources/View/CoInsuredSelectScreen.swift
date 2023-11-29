@@ -22,7 +22,6 @@ struct CoInsuredSelectScreen: View {
         })
         intentVm.errorMessageForCoinsuredList = nil
         intentVm.errorMessageForInput = nil
-
     }
 
     var body: some View {

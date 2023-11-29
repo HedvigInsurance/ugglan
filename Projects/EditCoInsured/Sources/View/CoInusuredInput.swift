@@ -579,8 +579,8 @@ public class IntentViewModel: ObservableObject {
     @Published var lastName = ""
     @Published var nameFetchedFromSSN: Bool = false
     @Published var enterManually: Bool = false
-    var errorMessageForInput: String?
-    var errorMessageForCoinsuredList: String?
+    @Published var errorMessageForInput: String?
+    @Published var errorMessageForCoinsuredList: String?
     var fullName: String {
         return firstName + " " + lastName
     }
