@@ -138,8 +138,11 @@ struct ContractInformationView: View {
             if hAnalyticsExperiment.editCoinsured {
                 hSection {
                     if nbOfMissingCoInsured != 0 && contract.showEditInfo {
-                        CoInsuredInfoView(text: L10n.contractCoinsuredAddPersonalInfo, contractId: contract.id)
-                            .padding(.bottom, 16)
+                        CoInsuredInfoView(
+                            text: L10n.contractCoinsuredAddPersonalInfo,
+                            config: .init(contract: contract)
+                        )
+                        .padding(.bottom, 16)
                     }
                 }
             }

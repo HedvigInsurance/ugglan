@@ -1,22 +1,21 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 public struct CoInsuredInfoView: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     let text: String
-    let contractId: String
 
     public init(
         text: String,
-        contractId: String
+        config: InsuredPeopleConfig
     ) {
         self.text = text
-        self.contractId = contractId
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
+        vm.initializeCoInsured(with: config)
     }
 
     public var body: some View {
@@ -59,6 +58,21 @@ public struct CoInsuredInfoHomeView: View {
 
 struct CoInsuredInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredInfoView(text: "", contractId: "")
+        CoInsuredInfoView(
+            text: "",
+            config: InsuredPeopleConfig(
+                currentAgreementCoInsured: [],
+                upcomingAgreementCoInsured: nil,
+                contractId: "",
+                activeFrom: nil,
+                numberOfMissingCoInsured: 0,
+                displayName: "",
+                preSelectedCoInsuredList: [],
+                contractDisplayName: "",
+                holderFirstName: "",
+                holderLastName: "",
+                holderSSN: nil
+            )
+        )
     }
 }
