@@ -10,6 +10,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import EditCoInsured
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore

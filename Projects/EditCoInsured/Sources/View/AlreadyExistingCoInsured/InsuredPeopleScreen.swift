@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
 
@@ -49,8 +49,7 @@ struct InsuredPeopleScreen: View {
 
                 hSection {
                     hButton.LargeButton(type: .secondary) {
-                        let hasExistingCoInsured = store.state
-                            .fetchAllCoInsuredNotInContract(contractId: vm.config.contractId)
+                        let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
                             .filter { !vm.coInsuredAdded.contains($0) }
                         if hasExistingCoInsured.isEmpty {
                             store.send(
@@ -194,7 +193,7 @@ struct InsuredPeopleScreen: View {
 }
 
 struct CancelButton: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
 
     var body: some View {
         hButton.LargeButton(type: .ghost) {
@@ -207,11 +206,11 @@ struct CancelButton: View {
 }
 
 struct ConfirmChangesView: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var intentVm: IntentViewModel
 
     public init() {
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
     }
 
@@ -259,50 +258,16 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
-            contract: Contract(
-                id: "",
-                currentAgreement: Agreement(
-                    premium: MonetaryAmount(amount: 0, currency: ""),
-                    displayItems: [],
-                    productVariant: ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: ""
-                    ),
-                    coInsured: []
-                ),
-                exposureDisplayName: "",
-                masterInceptionDate: "",
-                terminationDate: nil,
-                supportsAddressChange: true,
-                supportsCoInsured: true,
-                upcomingChangedAgreement: Agreement(
-                    premium: MonetaryAmount(amount: 0, currency: ""),
-                    displayItems: [],
-                    productVariant: ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: ""
-                    ),
-                    coInsured: []
-                ),
-                upcomingRenewal: ContractRenewal(
-                    renewalDate: "",
-                    draftCertificateUrl: ""
-                ),
-                firstName: "",
-                lastName: "",
-                ssn: "",
-                typeOfContract: .seApartmentBrf
-            )
+            currentAgreementCoInsured: [],
+            upcomingAgreementCoInsured: nil,
+            contractId: "",
+            activeFrom: nil,
+            numberOfMissingCoInsured: 0,
+            displayName: "",
+            preSelectedCoInsuredList: [],
+            holderFirstName: "",
+            holderLastName: "",
+            holderSSN: nil
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
@@ -316,7 +281,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @Inject var octopus: hOctopus
 
     func completeList() -> [CoInsuredModel] {
@@ -409,30 +374,44 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     }
 }
 
-struct CoInsuredListType: Hashable, Identifiable {
-    var id: String? {
+public struct CoInsuredListType: Hashable, Identifiable {
+    public init(
+        coInsured: CoInsuredModel,
+        type: StatusPillType? = nil,
+        date: String? = nil,
+        locallyAdded: Bool,
+        isContractOwner: Bool? = nil
+    ) {
+        self.coInsured = coInsured
+        self.type = type
+        self.date = date
+        self.locallyAdded = locallyAdded
+        self.isContractOwner = isContractOwner
+    }
+    
+    public var id: String? {
         return coInsured.id
     }
-    var coInsured: CoInsuredModel
-    var type: StatusPillType?
-    var date: String?
+    public var coInsured: CoInsuredModel
+    public var type: StatusPillType?
+    public var date: String?
     var locallyAdded: Bool
-    var isContractOwner: Bool? = nil
+    var isContractOwner: Bool?
 }
 
 public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
-    var currentAgreementCoInsured: [CoInsuredModel]
-    var upcomingAgreementCoInsured: [CoInsuredModel]?
-    var contractId: String
-    var activeFrom: String?
-    var numberOfMissingCoInsured: Int
-    let displayName: String
-    let preSelectedCoInsuredList: [CoInsuredModel]
-    let holderFirstName: String
-    let holderLastName: String
-    let holderSSN: String?
-    var holderFullName: String {
-        return holderFirstName + " " + holderLastName
+   public var currentAgreementCoInsured: [CoInsuredModel]
+   public var upcomingAgreementCoInsured: [CoInsuredModel]?
+   public var contractId: String
+   public var activeFrom: String?
+   public var numberOfMissingCoInsured: Int
+   public let displayName: String
+   public let preSelectedCoInsuredList: [CoInsuredModel]
+   public let holderFirstName: String
+   public let holderLastName: String
+   public let holderSSN: String?
+   public var holderFullName: String {
+      return holderFirstName + " " + holderLastName
     }
 
     public init() {
@@ -447,21 +426,28 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderSSN = nil
         self.preSelectedCoInsuredList = []
     }
-
+    
     public init(
-        contract: Contract
+     currentAgreementCoInsured: [CoInsuredModel],
+     upcomingAgreementCoInsured: [CoInsuredModel]?,
+     contractId: String,
+     activeFrom: String?,
+     numberOfMissingCoInsured: Int,
+     displayName: String,
+     preSelectedCoInsuredList: [CoInsuredModel],
+     holderFirstName: String,
+     holderLastName: String,
+     holderSSN: String?
     ) {
-        self.currentAgreementCoInsured = contract.currentAgreement?.coInsured ?? []
-        self.upcomingAgreementCoInsured = contract.upcomingChangedAgreement?.coInsured
-        self.contractId = contract.id
-        self.activeFrom = contract.upcomingChangedAgreement?.activeFrom
-        self.numberOfMissingCoInsured = contract.nbOfMissingCoInsured
-        self.displayName = contract.currentAgreement?.productVariant.displayName ?? ""
-        self.holderFirstName = contract.firstName
-        self.holderLastName = contract.lastName
-        self.holderSSN = contract.ssn
-
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        self.preSelectedCoInsuredList = store.state.fetchAllCoInsuredNotInContract(contractId: contractId)
+        self.currentAgreementCoInsured = currentAgreementCoInsured
+        self.upcomingAgreementCoInsured = upcomingAgreementCoInsured
+        self.contractId = contractId
+        self.activeFrom = activeFrom
+        self.numberOfMissingCoInsured = numberOfMissingCoInsured
+        self.displayName = displayName
+        self.preSelectedCoInsuredList = preSelectedCoInsuredList
+        self.holderFirstName = holderFirstName
+        self.holderLastName = holderLastName
+        self.holderSSN = holderSSN
     }
 }

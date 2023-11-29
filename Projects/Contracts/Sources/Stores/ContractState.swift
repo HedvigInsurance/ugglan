@@ -5,6 +5,7 @@ import SwiftUI
 import hAnalytics
 import hCore
 import hGraphQL
+import EditCoInsured
 
 public struct ContractState: StateProtocol {
 

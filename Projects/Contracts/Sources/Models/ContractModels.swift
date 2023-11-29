@@ -2,24 +2,8 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
-
-extension String {
-    // converts a YYYY-MM-DD date-string to a Date
-    var localDateToDate: Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.date(from: self)
-    }
-
-    var localYYMMDDDateToDate: Date? {
-        let formatter = DateFormatter()
-        if self == "" {
-            return nil
-        }
-        formatter.dateFormat = "yyMMdd"
-        return formatter.date(from: self)
-    }
-}
+import EditCoInsured
+import Presentation
 
 public struct ProductVariant: Codable, Hashable {
     let termsVersion: String
@@ -521,4 +505,24 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
     public let displayName: String
     public let url: String
+}
+
+extension InsuredPeopleConfig {
+    public init(
+        contract: Contract
+    ) {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        self.init(
+            currentAgreementCoInsured: contract.currentAgreement?.coInsured ?? [],
+            upcomingAgreementCoInsured: contract.upcomingChangedAgreement?.coInsured,
+            contractId: contract.id,
+            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+            numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
+            displayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            preSelectedCoInsuredList: [], //tore.state.fetchAllCoInsuredNotInContract(contractId: contractId),
+            holderFirstName: contract.firstName,
+            holderLastName: contract.lastName,
+            holderSSN: contract.ssn
+        )
+    }
 }

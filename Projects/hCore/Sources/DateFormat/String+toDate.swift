@@ -12,9 +12,18 @@ extension String {
     }
     public var localDateToIso8601Date: Date? {
         let formatter = ISO8601DateFormatter()
-
+        
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         formatter.timeZone = .current
         return formatter.date(from: self)
     }
+    
+    public var localYYMMDDDateToDate: Date? {
+        let formatter = DateFormatter()
+        if self == "" {
+            return nil
+        }
+        formatter.dateFormat = "yyMMdd"
+        return formatter.date(from: self)
+    }    
 }

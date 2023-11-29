@@ -1,5 +1,6 @@
 import Foundation
 import hGraphQL
+import hCore
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
     public let SSN: String?
@@ -7,7 +8,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-    var fullName: String? {
+    public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
     }

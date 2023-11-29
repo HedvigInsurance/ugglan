@@ -8,7 +8,7 @@ import hGraphQL
 struct CoInusuredInput: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
 
@@ -16,7 +16,7 @@ struct CoInusuredInput: View {
         vm: CoInusuredInputViewModel,
         title: String
     ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm

@@ -14,7 +14,7 @@ struct CoInsuredSelectScreen: View {
         contractId: String
     ) {
         self.contractId = contractId
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
@@ -49,7 +49,7 @@ struct CoInsuredSelectScreen: View {
             preSelectedItems: { [] },
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                     store.coInsuredViewModel.addCoInsured(
                         .init(
                             firstName: selectedCoinsured.firstName,
@@ -87,7 +87,7 @@ struct CoInsuredSelectScreen: View {
                 }
             },
             onCancel: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
             singleSelect: true,
@@ -95,7 +95,7 @@ struct CoInsuredSelectScreen: View {
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 contractStore.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(

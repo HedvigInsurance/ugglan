@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
 
@@ -53,40 +53,31 @@ struct InsuredPeopleNewScreen: View {
             }
         }
         .hFormAttachToBottom {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.contractForId(vm.config.contractId)
-                }
-            ) { contract in
-                VStack(spacing: 8) {
-                    if let contract = contract {
-                        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
-                        if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
-                            hButton.LargeButton(type: .primary) {
-                                store.send(.performCoInsuredChanges(commitId: intentVm.id))
-                                store.send(
-                                    .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
-                                )
-                            } content: {
-                                hText(L10n.generalSaveChangesButton)
-                            }
-                            .trackLoading(ContractStore.self, action: .postCoInsured)
-                            .disabled(
-                                ((contract.currentAgreement?.coInsured.count ?? 0) + vm.coInsuredAdded.count)
-                                    < nbOfMissingCoInsured
-                            )
-                            .padding(.horizontal, 16)
-                        }
-
-                        hButton.LargeButton(type: .ghost) {
-                            store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
-                        .disableOn(ContractStore.self, [.postCoInsured])
+            VStack(spacing: 8) {
+                let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsured
+                if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
+                    hButton.LargeButton(type: .primary) {
+                        store.send(.performCoInsuredChanges(commitId: intentVm.id))
+                        store.send(
+                            .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
+                        )
+                    } content: {
+                        hText(L10n.generalSaveChangesButton)
                     }
+                    .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                    .disabled(
+                        (vm.config.currentAgreementCoInsured.count + vm.coInsuredAdded.count)
+                        < nbOfMissingCoInsured
+                    )
+                    .padding(.horizontal, 16)
                 }
+                
+                hButton.LargeButton(type: .ghost) {
+                    store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                } content: {
+                    hText(L10n.generalCancelButton)
+                }
+                .disableOn(EditCoInsuredStore.self, [.postCoInsured])
             }
         }
     }
@@ -120,7 +111,7 @@ struct InsuredPeopleNewScreen: View {
     @ViewBuilder
     var emptyAccessoryView: some View {
         PresentableStoreLens(
-            ContractStore.self,
+            EditCoInsuredStore.self,
             getter: { state in
                 state
             }
@@ -130,7 +121,7 @@ struct InsuredPeopleNewScreen: View {
                 Image(uiImage: hCoreUIAssets.plusSmall.image)
             }
             .onTapGesture {
-                let hasExistingCoInsured = contract.fetchAllCoInsured.filter { !vm.coInsuredAdded.contains($0) }
+                let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
                 if !hasExistingCoInsured.isEmpty {
                     store.send(
                         .coInsuredNavigationAction(
@@ -177,50 +168,16 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
-            contract: Contract(
-                id: "",
-                currentAgreement: Agreement(
-                    premium: MonetaryAmount(amount: 0, currency: ""),
-                    displayItems: [],
-                    productVariant: ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: ""
-                    ),
-                    coInsured: []
-                ),
-                exposureDisplayName: "",
-                masterInceptionDate: "",
-                terminationDate: nil,
-                supportsAddressChange: true,
-                supportsCoInsured: true,
-                upcomingChangedAgreement: Agreement(
-                    premium: MonetaryAmount(amount: 0, currency: ""),
-                    displayItems: [],
-                    productVariant: ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: ""
-                    ),
-                    coInsured: []
-                ),
-                upcomingRenewal: ContractRenewal(
-                    renewalDate: "",
-                    draftCertificateUrl: ""
-                ),
-                firstName: "",
-                lastName: "",
-                ssn: "",
-                typeOfContract: .seApartmentBrf
-            )
+            currentAgreementCoInsured: [],
+            upcomingAgreementCoInsured: nil,
+            contractId: "",
+            activeFrom: nil,
+            numberOfMissingCoInsured: 0,
+            displayName: "",
+            preSelectedCoInsuredList: [],
+            holderFirstName: "",
+            holderLastName: "",
+            holderSSN: nil
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)

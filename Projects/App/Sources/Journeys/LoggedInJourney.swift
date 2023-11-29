@@ -12,6 +12,7 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
+import EditCoInsured
 import hAnalytics
 import hCore
 import hCoreUI
@@ -236,9 +237,10 @@ extension JourneyPresentation {
             }
         }
     }
+    
     public var configureContractNavigation: some JourneyPresentation {
         onAction(
-            ContractStore.self,
+            EditCoInsuredStore.self,
             { action in
                 if case let .coInsuredNavigationAction(navAction) = action {
                     if case let .openMissingCoInsuredAlert(contractId) = navAction {

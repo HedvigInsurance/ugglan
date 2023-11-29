@@ -50,6 +50,7 @@ extension Date {
         return DateFormatters.displayddMMMyyyy.string(from: self).lowercased()
     }
 }
+
 private struct DateFormatters {
     static let localDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
