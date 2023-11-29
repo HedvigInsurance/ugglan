@@ -5,8 +5,9 @@ import hCore
 import hCoreUI
 
 struct RemoveCoInsuredScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {

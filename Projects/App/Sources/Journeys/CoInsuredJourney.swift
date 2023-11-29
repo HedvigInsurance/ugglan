@@ -1,4 +1,5 @@
 import Contracts
+import EditCoInsured
 import Presentation
 
 extension AppJourney {

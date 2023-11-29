@@ -2,14 +2,14 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ContractOwnerField: View {
+public struct ContractOwnerField: View {
     let enabled: Bool?
     let hasContentBelow: Bool
     let fullName: String
     let SSN: String
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
 
-    init(
+    public init(
         enabled: Bool? = false,
         hasContentBelow: Bool,
         fullName: String,
@@ -20,8 +20,8 @@ struct ContractOwnerField: View {
         self.fullName = fullName
         self.SSN = SSN.displayFormatSSN ?? ""
     }
-    
-    init(
+
+    public init(
         enabled: Bool? = false,
         hasContentBelow: Bool,
         config: InsuredPeopleConfig
@@ -32,18 +32,18 @@ struct ContractOwnerField: View {
         self.SSN = config.holderSSN?.displayFormatSSN ?? ""
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                        HStack {
-                            hText(fullName)
-                                .foregroundColor(getTitleColor)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                .foregroundColor(hTextColor.tertiary)
-                        }
+                HStack {
+                    hText(fullName)
+                        .foregroundColor(getTitleColor)
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.lockSmall.image)
+                        .foregroundColor(hTextColor.tertiary)
+                }
                 hText(SSN, style: .footnote)
-                            .foregroundColor(getSubTitleColor)
+                    .foregroundColor(getSubTitleColor)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {
@@ -72,7 +72,7 @@ struct ContractOwnerField: View {
     }
 }
 
-struct CoInsuredField<Content: View>: View {
+public struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
     let accessoryView: Content
     let includeStatusPill: StatusPillType?
@@ -80,7 +80,7 @@ struct CoInsuredField<Content: View>: View {
     let title: String?
     let subTitle: String?
 
-    init(
+    public init(
         coInsured: CoInsuredModel? = nil,
         accessoryView: Content,
         includeStatusPill: StatusPillType? = nil,
@@ -96,7 +96,7 @@ struct CoInsuredField<Content: View>: View {
         self.subTitle = subTitle
     }
 
-    var body: some View {
+    public var body: some View {
         let displayTitle = (coInsured?.fullName ?? title) ?? ""
         let displaySubTitle =
             coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
@@ -139,7 +139,7 @@ struct CoInsuredField<Content: View>: View {
     }
 }
 
-enum StatusPillType {
+public enum StatusPillType {
     case added
     case deleted
 

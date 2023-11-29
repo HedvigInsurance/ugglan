@@ -7,8 +7,6 @@ import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var octopus: hOctopus
-    let coInsuredViewModel = InsuredPeopleNewScreenModel()
-    let intentViewModel = IntentViewModel()
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -87,25 +85,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 .fetchContracts,
             ]
             .emitEachThenEnd
-        case let .performCoInsuredChanges(commitId):
-            return FiniteSignal { [unowned self] callback in
-                let disposeBag = DisposeBag()
-                let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        if let graphQLError = data.midtermChangeIntentCommit.userError {
-                            self.setError(graphQLError.message ?? "", for: .postCoInsured)
-                        } else {
-                            self.removeLoading(for: .postCoInsured)
-                            callback(.value(.fetchContracts))
-                            callback(.end)
-                        }
-                    }
-                    .onError({ error in
-                        self.setError(error.localizedDescription, for: .postCoInsured)
-                    })
-                return disposeBag
-            }
         default:
             break
         }
@@ -132,8 +111,6 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 newCrossSell.hasBeenSeen = value
                 return newCrossSell
             }
-        case .performCoInsuredChanges:
-            setLoading(for: .postCoInsured)
         default:
             break
         }

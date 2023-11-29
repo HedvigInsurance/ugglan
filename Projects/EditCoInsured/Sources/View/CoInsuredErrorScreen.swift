@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct CoInsuredErrorScreen: View {
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
 
     var body: some View {
         hForm {
@@ -38,13 +38,13 @@ struct CoInsuredErrorScreen: View {
 
 public struct CoInsuredInputErrorView: View {
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
 
     public init(
         vm: CoInusuredInputViewModel
     ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
         self.vm = vm
     }

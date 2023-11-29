@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
@@ -7,12 +8,12 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-    var fullName: String? {
+    public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
     }
 
-    var id: String {
+    public var id: String {
         return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
     }
 
@@ -50,8 +51,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
 
     public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
         return lhs.fullName == rhs.fullName
-        && (lhs.formattedSSN == rhs.formattedSSN
-            || lhs.birthDate == rhs.birthDate)
+            && (lhs.formattedSSN == rhs.formattedSSN
+                || lhs.birthDate == rhs.birthDate)
     }
 }
 
