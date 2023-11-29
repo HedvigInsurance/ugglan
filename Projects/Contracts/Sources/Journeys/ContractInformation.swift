@@ -1,4 +1,5 @@
 import Combine
+import EditCoInsured
 import Flow
 import Form
 import Foundation
@@ -10,7 +11,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import EditCoInsured
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -43,18 +43,18 @@ struct ContractInformationView: View {
                         .withoutHorizontalPadding
                         hRowDivider()
 
-                        if hAnalyticsExperiment.editCoinsured {
-                            addCoInsuredView(contract: contract)
-                        }
+                        addCoInsuredView(contract: contract)
 
                         if contract.showEditInfo {
                             VStack(spacing: 8) {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         if onlyCoInsured(contract) {
-                                            store.send(.openEditCoInsured(
-                                                config: .init(contract: contract),
-                                                fromInfoCard: false)
+                                            store.send(
+                                                .openEditCoInsured(
+                                                    config: .init(contract: contract),
+                                                    fromInfoCard: false
+                                                )
                                             )
                                         } else {
                                             store.send(.contractEditInfo(id: id))
@@ -77,7 +77,7 @@ struct ContractInformationView: View {
         }
         .sectionContainerStyle(.transparent)
     }
-    
+
     func onlyCoInsured(_ contract: Contract) -> Bool {
         let editTypes: [EditType] = EditType.getTypes(for: contract)
         return editTypes.count == 1 && editTypes.first == .coInsured
@@ -102,7 +102,12 @@ struct ContractInformationView: View {
                     hRow {
                         let hasContentBelow =
                             !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                        ContractOwnerField(enabled: true, hasContentBelow: hasContentBelow, fullName: contract.fullName, SSN: contract.ssn ?? "")
+                        ContractOwnerField(
+                            enabled: true,
+                            hasContentBelow: hasContentBelow,
+                            fullName: contract.fullName,
+                            SSN: contract.ssn ?? ""
+                        )
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
@@ -342,7 +347,7 @@ private class ContractsInformationViewModel: ObservableObject {
         let current = Set(contract.currentAgreement?.coInsured ?? [])
 
         guard !current.contains(CoInsuredModel()) else {
-            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.id > $1.id})
+            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.id > $1.id })
                 .map({
                     CoInsuredListType(coInsured: $0, locallyAdded: false)
                 })
@@ -360,7 +365,7 @@ private class ContractsInformationViewModel: ObservableObject {
         let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
         let current = Set(contract.currentAgreement?.coInsured ?? [])
         let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.id > $1.id})
+        return result.sorted(by: { $0.id > $1.id })
             .map {
                 CoInsuredListType(
                     coInsured: $0,
