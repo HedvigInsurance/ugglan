@@ -18,15 +18,15 @@ struct ContractOwnerField: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                        HStack {
-                            hText(store.coInsuredViewModel.config.holderFullName)
-                                .foregroundColor(getTitleColor)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                .foregroundColor(hTextColor.tertiary)
-                        }
+                HStack {
+                    hText(store.coInsuredViewModel.config.holderFullName)
+                        .foregroundColor(getTitleColor)
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.lockSmall.image)
+                        .foregroundColor(hTextColor.tertiary)
+                }
                 hText(store.coInsuredViewModel.config.holderSSN?.displayFormatSSN ?? "", style: .footnote)
-                            .foregroundColor(getSubTitleColor)
+                    .foregroundColor(getSubTitleColor)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {

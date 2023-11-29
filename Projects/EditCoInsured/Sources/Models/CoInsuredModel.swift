@@ -50,8 +50,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
 
     public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
         return lhs.fullName == rhs.fullName
-        && (lhs.formattedSSN == rhs.formattedSSN
-            || lhs.birthDate == rhs.birthDate)
+            && (lhs.formattedSSN == rhs.formattedSSN
+                || lhs.birthDate == rhs.birthDate)
     }
 }
 
