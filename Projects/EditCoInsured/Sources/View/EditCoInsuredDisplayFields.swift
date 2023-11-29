@@ -5,27 +5,44 @@ import hCoreUI
 struct ContractOwnerField: View {
     let enabled: Bool?
     let hasContentBelow: Bool
-    @PresentableStore var store: ContractStore
+    let fullName: String
+    let SSN: String
+    @PresentableStore var store: EditCoInsuredStore
 
     init(
         enabled: Bool? = false,
-        hasContentBelow: Bool
+        hasContentBelow: Bool,
+        fullName: String,
+        SSN: String
     ) {
         self.enabled = enabled
         self.hasContentBelow = hasContentBelow
+        self.fullName = fullName
+        self.SSN = SSN.displayFormatSSN ?? ""
+    }
+    
+    init(
+        enabled: Bool? = false,
+        hasContentBelow: Bool,
+        config: InsuredPeopleConfig
+    ) {
+        self.enabled = enabled
+        self.hasContentBelow = hasContentBelow
+        self.fullName = config.holderFullName
+        self.SSN = config.holderSSN?.displayFormatSSN ?? ""
     }
 
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
-                    hText(store.coInsuredViewModel.config.holderFullName)
+                    hText(fullName)
                         .foregroundColor(getTitleColor)
                     Spacer()
                     Image(uiImage: hCoreUIAssets.lockSmall.image)
                         .foregroundColor(hTextColor.tertiary)
                 }
-                hText(store.coInsuredViewModel.config.holderSSN?.displayFormatSSN ?? "", style: .footnote)
+                hText(SSN, style: .footnote)
                     .foregroundColor(getSubTitleColor)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,6 +175,6 @@ enum StatusPillType {
 
 struct ContractOwnerField_Previews: PreviewProvider {
     static var previews: some View {
-        ContractOwnerField(hasContentBelow: true)
+        ContractOwnerField(hasContentBelow: true, fullName: "", SSN: "")
     }
 }

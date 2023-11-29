@@ -76,7 +76,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(L10n.generalContinueButton, style: .standard)
+                    hText(L10n.generalSaveButton, style: .standard)
                 }
                 .hButtonIsLoading(isLoading)
                 if let onCancel {

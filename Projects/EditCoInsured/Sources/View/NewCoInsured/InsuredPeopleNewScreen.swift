@@ -17,7 +17,7 @@ struct InsuredPeopleNewScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(hasContentBelow: hasContentBelow)
+                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
                     }
                     .verticalPadding(0)
                     .padding(.top, 16)
