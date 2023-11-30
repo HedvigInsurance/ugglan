@@ -140,6 +140,37 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list.count == 1)
         XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
     }
+
+    func testInitialWithOneDeleted() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+        ]
+
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = [CoInsuredModel.mockMissingData()]
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 1)
+        XCTAssert(list[0] == CoInsuredModel.mockMissingData())
+    }
+
+    func testInitialAllDeleted() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+        ]
+
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = [CoInsuredModel.mockMissingData(), CoInsuredModel.mockMissingData()]
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 0)
+    }
 }
 
 extension CoInsuredModel {
