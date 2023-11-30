@@ -5,17 +5,14 @@ import hCoreUI
 
 public struct CoInsuredInfoView: View {
     @PresentableStore var store: EditCoInsuredStore
-    @ObservedObject var vm: InsuredPeopleNewScreenModel
     let text: String
-
+    let config: InsuredPeopleConfig
     public init(
         text: String,
         config: InsuredPeopleConfig
     ) {
         self.text = text
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        vm = store.coInsuredViewModel
-        vm.initializeCoInsured(with: config)
+        self.config = config
     }
 
     public var body: some View {
@@ -25,7 +22,7 @@ public struct CoInsuredInfoView: View {
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
                         store.send(
-                            .openEditCoInsured(config: vm.config, fromInfoCard: true)
+                            .openEditCoInsured(config: config, fromInfoCard: true)
                         )
                     }
                 )
