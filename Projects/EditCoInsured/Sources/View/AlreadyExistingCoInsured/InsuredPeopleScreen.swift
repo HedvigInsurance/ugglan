@@ -247,12 +247,20 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         let nbOfCoInsured = existingList.count
 
         if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()) {
-            if coInsuredDeleted.count > 0 {
-                var num = nbOfCoInsured - coInsuredDeleted.count
+            if coInsuredDeleted.count > 0 || coInsuredAdded.count > 0 {
+                var num: Int {
+                    if coInsuredDeleted.count > 0 {
+                        return nbOfCoInsured - coInsuredDeleted.count
+                    } else {
+                        return nbOfCoInsured - coInsuredAdded.count
+                    }
+                }
                 for _ in 0..<num {
                     filterList.append(CoInsuredModel())
                 }
-                return filterList
+                if coInsuredDeleted.count > 0 {
+                    return filterList
+                }
             } else if nbOfCoInsured > 0 {
                 filterList = existingList
             }
