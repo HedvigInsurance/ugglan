@@ -8,6 +8,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
+    public let activatesOn: String?
+    public let terminatesOn: String?
     public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
@@ -25,6 +27,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.firstName = data.firstName
         self.lastName = data.lastName
         self.hasMissingInfo = data.hasMissingInfo
+        self.activatesOn = data.activatesOn
+        self.terminatesOn = data.terminatesOn
     }
 
     public init(
@@ -32,13 +36,17 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         lastName: String? = nil,
         SSN: String? = nil,
         birthDate: String? = nil,
-        needsMissingInfo: Bool = true
+        needsMissingInfo: Bool = true,
+        activatesOn: String? = nil,
+        terminatesOn: String? = nil
     ) {
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
         self.SSN = SSN?.calculate12DigitSSN
         self.hasMissingInfo = needsMissingInfo
+        self.activatesOn = activatesOn
+        self.terminatesOn = terminatesOn
     }
 
     var formattedSSN: String? {

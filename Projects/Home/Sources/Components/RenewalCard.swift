@@ -67,13 +67,12 @@ public struct RenewalCardView: View {
                     if $0.upcomingChangedAgreement == nil {
                         return false
                     } else {
-                        let upComingCoInsured = $0.upcomingChangedAgreement?.coInsured ?? []
-                        return upComingCoInsured != $0.currentAgreement?.coInsured && !upComingCoInsured.isEmpty
+                        return !$0.coInsured.isEmpty
                     }
                 }), showCoInsured ?? false {
                     InfoCard(
                         text: L10n.contractCoinsuredUpdateInFuture(
-                            contract.upcomingChangedAgreement?.coInsured.count ?? 0,
+                            contract.coInsured.count,
                             contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat
                                 ?? ""
                         ),

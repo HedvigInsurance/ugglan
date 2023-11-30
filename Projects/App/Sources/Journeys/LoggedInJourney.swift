@@ -266,7 +266,7 @@ extension JourneyPresentation {
                     if contract.upcomingChangedAgreement != nil {
                         return false
                     } else {
-                        return contract.currentAgreement?.coInsured
+                        return contract.coInsured
                             .first(where: { coInsured in
                                 coInsured.hasMissingInfo && contract.terminationDate == nil
                             }) != nil

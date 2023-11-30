@@ -90,7 +90,20 @@ public struct CoInsuredField<Content: View>: View {
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
-        self.includeStatusPill = includeStatusPill
+
+        var statusPill: StatusPillType? {
+            if includeStatusPill == nil {
+                if coInsured?.activatesOn != nil {
+                    return .added
+                } else if coInsured?.terminatesOn != nil {
+                    return .deleted
+                }
+            }
+            return nil
+        }
+
+        self.includeStatusPill = includeStatusPill ?? statusPill
+
         self.date = date
         self.title = title
         self.subTitle = subTitle

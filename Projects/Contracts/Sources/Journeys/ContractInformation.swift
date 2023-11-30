@@ -93,7 +93,7 @@ struct ContractInformationView: View {
                         HStack {
                             hText(L10n.coinsuredEditTitle)
                             Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.currentAgreement?.coInsured.count ?? 0))
+                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
                                 .foregroundColor(hTextColor.secondary)
                         }
                     }
@@ -185,22 +185,17 @@ struct ContractInformationView: View {
         }
     }
 
-    public func displayInfoCard(contract: Contract) -> Bool {
-        let currentCoInsured = contract.currentAgreement?.coInsured
-        let upComingCoInsured = contract.upcomingChangedAgreement?.coInsured
-        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false)
-            && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
-    }
-
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
-        if let upcomingChangedAgreement = contract.upcomingChangedAgreement, displayInfoCard(contract: contract) {
+        if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
                 HStack {
-                    if upcomingChangedAgreement.coInsured != contract.currentAgreement?.coInsured {
+                    if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
+                        return ($0.activatesOn != nil || $0.terminatesOn != nil)
+                    }) {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
-                                upcomingChangedAgreement.coInsured.count,
+                                contract.coInsured.count,
                                 upcomingChangedAgreement.activeFrom?.localDateToDate?
                                     .displayDateDDMMMYYYYFormat ?? ""
                             ),
@@ -312,67 +307,11 @@ private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
-        return coInsuredRemainingData(contract: contract) + coInsuredDeletedData(contract: contract)
-            + coInsuredAddedData(contract: contract)
-    }
-
-    func coInsuredAddedData(contract: Contract) -> [CoInsuredListType] {
-        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
-        if !upcoming.isEmpty {
-            let current = Set(contract.currentAgreement?.coInsured ?? [])
-            if !current.contains(CoInsuredModel()) {
-                let result = upcoming.subtracting(current).filter { !$0.hasMissingData }
-                return result.sorted(by: { $0.id > $1.id })
-                    .map {
-                        CoInsuredListType(
-                            coInsured: $0,
-                            type: .added,
-                            date: contract.upcomingChangedAgreement?.activeFrom,
-                            locallyAdded: false
-                        )
-                    }
-            } else {
-                return []
-            }
-        } else {
-            return []
-        }
-    }
-
-    func coInsuredRemainingData(contract: Contract) -> [CoInsuredListType] {
-        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else {
-            return contract.currentAgreement?.coInsured.filter { !$0.hasMissingData }
-                .map({ CoInsuredListType(coInsured: $0, locallyAdded: false) })
-                ?? []
-        }
-
-        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
-        let current = Set(contract.currentAgreement?.coInsured ?? [])
-
-        guard !current.contains(CoInsuredModel()) else {
-            return upcoming.filter { !$0.hasMissingData }.sorted(by: { $0.id > $1.id })
-                .map({
-                    CoInsuredListType(coInsured: $0, locallyAdded: false)
-                })
-        }
-
-        let result = current.intersection(upcoming).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.id > $1.id })
-            .map {
-                CoInsuredListType(coInsured: $0, locallyAdded: false)
-            }
-    }
-
-    func coInsuredDeletedData(contract: Contract) -> [CoInsuredListType] {
-        guard let upcomingHasValues = contract.upcomingChangedAgreement?.coInsured else { return [] }
-        let upcoming = Set(contract.upcomingChangedAgreement?.coInsured ?? [])
-        let current = Set(contract.currentAgreement?.coInsured ?? [])
-        let result = current.subtracting(upcoming).filter { !$0.hasMissingData }
-        return result.sorted(by: { $0.id > $1.id })
+        return contract.coInsured
+            .filter({ !$0.hasMissingData })
             .map {
                 CoInsuredListType(
                     coInsured: $0,
-                    type: .deleted,
                     date: contract.upcomingChangedAgreement?.activeFrom,
                     locallyAdded: false
                 )
