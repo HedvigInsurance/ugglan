@@ -12,28 +12,30 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testUpcomingZeroCurrentOneSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.config.upcomingAgreementCoInsured = []
-        viewModel.config.currentAgreementCoInsured = [
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN5
         ]
+
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
-        assert(list.count == 0)
+        assert(list.count == 1)
     }
 
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.config.currentAgreementCoInsured = [
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN5,
             CoInsuredModel.testMemberWithSSN4,
         ]
 
-        viewModel.config.upcomingAgreementCoInsured = []
-
         viewModel.coInsuredAdded = []
-        viewModel.coInsuredDeleted = []
+        viewModel.coInsuredDeleted = [
+            CoInsuredModel.testMemberWithSSN5,
+            CoInsuredModel.testMemberWithSSN4,
+        ]
+
         let list = viewModel.completeList()
         assert(list.count == 0)
     }
@@ -41,14 +43,8 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.config.currentAgreementCoInsured = [
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
@@ -57,143 +53,60 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
-        assert(list.count == 3)
+        assert(list.count == 4)
     }
 
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.config.currentAgreementCoInsured = [
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
         ]
 
-        viewModel.config.upcomingAgreementCoInsured = [
-            CoInsuredModel.testMemberWithSSN5,
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = [
+            CoInsuredModel.mockMissingData()
+        ]
+
+        let list = viewModel.completeList()
+        assert(list.count == 3)
+    }
+
+    func testCurrentTwoWithValuesAddingThreeWithValues() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN4,
-            CoInsuredModel.testMemberWithSSN3,
-            CoInsuredModel.testMemberWithSSN2,
+            CoInsuredModel.testMemberWithSSN5,
         ]
 
         viewModel.coInsuredAdded = [
-            CoInsuredModel.testMemberWithSSN1
+            CoInsuredModel.testMemberWithSSN1,
+            CoInsuredModel.testMemberWithSSN2,
+            CoInsuredModel.testMemberWithSSN3,
         ]
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
         assert(list.count == 5)
     }
 
-    func testCurrentTwoWithValuesAddingThreeWithValues() {
-        let viewModel = InsuredPeopleNewScreenModel()
-
-        viewModel.config.currentAgreementCoInsured = [
-            CoInsuredModel.testMemberWithSSN4,
-            CoInsuredModel.testMemberWithSSN5,
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = []
-
-        viewModel.coInsuredAdded = [
-            CoInsuredModel.testMemberWithSSN1,
-            CoInsuredModel.testMemberWithSSN2,
-            CoInsuredModel.testMemberWithSSN3,
-        ]
-        viewModel.coInsuredDeleted = []
-        let list = viewModel.completeList()
-        assert(list.count == 3)
-    }
-
-    func testCurrentTwoEmptyUpcomingThreeWithValuesAddingOneDeleteingTwo() {
-        let viewModel = InsuredPeopleNewScreenModel()
-
-        viewModel.config.currentAgreementCoInsured = [
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = [
-            CoInsuredModel.testMemberWithSSN1,
-            CoInsuredModel.testMemberWithSSN2,
-            CoInsuredModel.testMemberWithSSN3,
-        ]
-
-        viewModel.coInsuredAdded = [
-            CoInsuredModel.testMemberWithSSN4
-        ]
-
-        viewModel.coInsuredDeleted = [
-            CoInsuredModel.testMemberWithSSN2,
-            CoInsuredModel.testMemberWithSSN3,
-        ]
-        let list = viewModel.completeList()
-        assert(list.count == 2)
-    }
-
     func testInitialSSNBirthday() {
         let viewModel = InsuredPeopleNewScreenModel()
 
-        viewModel.config.currentAgreementCoInsured = [
+        viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
             CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = [
-            CoInsuredModel.testMemberWithSSN1,
-            CoInsuredModel.testMemberWithBirthdate1,
         ]
 
         viewModel.coInsuredAdded = []
-
         viewModel.coInsuredDeleted = []
+
         let list = viewModel.completeList()
         assert(list.count == 2)
     }
-
-    func testRemovedWithoutDataAddingSSNBirthdate() {
-        let viewModel = InsuredPeopleNewScreenModel()
-
-        viewModel.config.currentAgreementCoInsured = [
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = [
-            CoInsuredModel.mockMissingData()
-        ]
-
-        viewModel.coInsuredAdded = [
-            CoInsuredModel.testMemberWithSSN1,
-            CoInsuredModel.testMemberWithBirthdate1,
-        ]
-
-        viewModel.coInsuredDeleted = []
-        let list = viewModel.completeList()
-        assert(list.count == 2)
-    }
-
-    func testAddCoInsuredToEmptyCurrentUpcomingValues() {
-        let viewModel = InsuredPeopleNewScreenModel()
-
-        viewModel.config.currentAgreementCoInsured = [
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.config.upcomingAgreementCoInsured = [
-            CoInsuredModel.testMemberWithSSN1
-        ]
-
-        viewModel.coInsuredAdded = [
-            CoInsuredModel.testMemberWithBirthdate1
-        ]
-
-        viewModel.coInsuredDeleted = []
-        let list = viewModel.completeList()
-        assert(list.count == 2)
-    }
-
 }
 
 extension CoInsuredModel {
