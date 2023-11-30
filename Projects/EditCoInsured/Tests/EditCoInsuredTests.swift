@@ -19,7 +19,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
-        assert(list.count == 1)
+        XCTAssert(list.count == 1)
     }
 
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
@@ -37,7 +37,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
 
         let list = viewModel.completeList()
-        assert(list.count == 0)
+        XCTAssert(list.count == 0)
     }
 
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
@@ -53,7 +53,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
-        assert(list.count == 4)
+        XCTAssert(list.count == 4)
     }
 
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
@@ -72,7 +72,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
 
         let list = viewModel.completeList()
-        assert(list.count == 3)
+        XCTAssert(list.count == 3)
     }
 
     func testCurrentTwoWithValuesAddingThreeWithValues() {
@@ -90,7 +90,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
         viewModel.coInsuredDeleted = []
         let list = viewModel.completeList()
-        assert(list.count == 5)
+        XCTAssert(list.count == 5)
     }
 
     func testInitialSSNBirthday() {
@@ -105,7 +105,40 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.coInsuredDeleted = []
 
         let list = viewModel.completeList()
-        assert(list.count == 2)
+        XCTAssert(list.count == 2)
+    }
+
+    func testInitialWithTwoAdded() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+        ]
+
+        viewModel.coInsuredAdded = [CoInsuredModel.testMemberWithSSN1, CoInsuredModel.testMemberWithSSN2]
+        viewModel.coInsuredDeleted = []
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 2)
+        XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
+        XCTAssert(list[1] == CoInsuredModel.testMemberWithSSN2)
+
+    }
+    func testInitialWithOneAddedOneDeleted() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+        ]
+
+        viewModel.coInsuredAdded = [CoInsuredModel.testMemberWithSSN1]
+        viewModel.coInsuredDeleted = [CoInsuredModel.mockMissingData()]
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 1)
+        XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
     }
 }
 
