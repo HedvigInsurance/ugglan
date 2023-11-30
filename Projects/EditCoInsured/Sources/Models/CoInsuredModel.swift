@@ -8,8 +8,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-    public let activatesOn: String?
-    public let terminatesOn: String?
+    public let activatesOn: ServerBasedDate?
+    public let terminatesOn: ServerBasedDate?
     public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName

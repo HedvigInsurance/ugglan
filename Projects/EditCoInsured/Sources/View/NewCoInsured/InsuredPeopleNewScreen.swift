@@ -168,7 +168,7 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
-            currentAgreementCoInsured: [],
+            contractCoInsured: [],
             contractId: "",
             activeFrom: nil,
             numberOfMissingCoInsured: 0,

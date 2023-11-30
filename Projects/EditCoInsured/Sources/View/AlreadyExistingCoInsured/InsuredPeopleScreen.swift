@@ -215,7 +215,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
-            currentAgreementCoInsured: [],
+            contractCoInsured: [],
             contractId: "",
             activeFrom: nil,
             numberOfMissingCoInsured: 0,
@@ -369,7 +369,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
     }
 
     public init(
-        currentAgreementCoInsured: [CoInsuredModel],
+        contractCoInsured: [CoInsuredModel],
         contractId: String,
         activeFrom: String?,
         numberOfMissingCoInsured: Int,
@@ -380,7 +380,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         holderLastName: String,
         holderSSN: String?
     ) {
-        self.contractCoInsured = currentAgreementCoInsured
+        self.contractCoInsured = contractCoInsured
         self.contractId = contractId
         self.activeFrom = activeFrom
         self.numberOfMissingCoInsured = numberOfMissingCoInsured

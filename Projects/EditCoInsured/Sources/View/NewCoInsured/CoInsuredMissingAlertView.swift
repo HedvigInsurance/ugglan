@@ -52,7 +52,7 @@ struct CoInsuredMissingAlertView_Previews: PreviewProvider {
     static var previews: some View {
         CoInsuredMissingAlertView(
             config: InsuredPeopleConfig(
-                currentAgreementCoInsured: [],
+                contractCoInsured: [],
                 contractId: "",
                 activeFrom: nil,
                 numberOfMissingCoInsured: 0,
