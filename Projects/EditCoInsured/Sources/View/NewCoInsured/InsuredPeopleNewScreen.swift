@@ -66,7 +66,7 @@ struct InsuredPeopleNewScreen: View {
                     }
                     .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
                     .disabled(
-                        (vm.config.currentAgreementCoInsured.count + vm.coInsuredAdded.count)
+                        (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                             < nbOfMissingCoInsured
                     )
                     .padding(.horizontal, 16)
@@ -169,7 +169,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
             currentAgreementCoInsured: [],
-            upcomingAgreementCoInsured: nil,
             contractId: "",
             activeFrom: nil,
             numberOfMissingCoInsured: 0,

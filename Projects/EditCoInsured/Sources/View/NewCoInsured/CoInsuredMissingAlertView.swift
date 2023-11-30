@@ -53,7 +53,6 @@ struct CoInsuredMissingAlertView_Previews: PreviewProvider {
         CoInsuredMissingAlertView(
             config: InsuredPeopleConfig(
                 currentAgreementCoInsured: [],
-                upcomingAgreementCoInsured: nil,
                 contractId: "",
                 activeFrom: nil,
                 numberOfMissingCoInsured: 0,

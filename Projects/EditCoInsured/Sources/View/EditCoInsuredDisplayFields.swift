@@ -76,7 +76,7 @@ public struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
     let accessoryView: Content
     let includeStatusPill: StatusPillType?
-    let date: String?
+    let date: String
     let title: String?
     let subTitle: String?
 
@@ -104,7 +104,7 @@ public struct CoInsuredField<Content: View>: View {
 
         self.includeStatusPill = includeStatusPill ?? statusPill
 
-        self.date = date
+        self.date = date ?? coInsured?.activatesOn ?? coInsured?.terminatesOn ?? ""
         self.title = title
         self.subTitle = subTitle
     }
@@ -139,7 +139,7 @@ public struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: date?.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
+                    .text(date: date.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
                     ?? "",
                 style: .standardSmall
             )
