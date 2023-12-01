@@ -133,9 +133,7 @@ struct ContractInformationView: View {
                     }
                 }
                 .withoutHorizontalPadding
-            }
 
-            if hAnalyticsExperiment.editCoinsured {
                 hSection {
                     if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditInfo {
                         CoInsuredInfoView(
