@@ -272,7 +272,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
                 !coInsuredDeleted.contains($0)
             } + coInsuredAdded
 
-        return finalList
+        let filteredFinalList = finalList.filter({ !($0.terminatesOn != nil || $0.activatesOn != nil) })
+        return filteredFinalList
     }
 
     func initializeCoInsured(with config: InsuredPeopleConfig) {

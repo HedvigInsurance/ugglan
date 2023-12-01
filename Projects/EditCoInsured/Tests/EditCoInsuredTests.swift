@@ -156,6 +156,22 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         let list = viewModel.completeList()
         XCTAssert(list.count == 0)
     }
+
+    func testRemoveOne() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.testMemberWithSSN1,
+            CoInsuredModel.testMemberWithSSN2,
+            CoInsuredModel.testMemberWithBirthdate2,
+        ]
+
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = [CoInsuredModel.testMemberWithBirthdate2]
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 2)
+    }
 }
 
 extension CoInsuredModel {
