@@ -7,20 +7,20 @@ struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
 
     init(
         showSuccessScreen: Bool
     ) {
         self.showSuccessScreen = showSuccessScreen
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
     }
 
     var body: some View {
         BlurredProgressOverlay {
             PresentableLoadingStoreLens(
-                ContractStore.self,
+                EditCoInsuredStore.self,
                 loadingState: .postCoInsured
             ) {
                 loadingView
@@ -137,23 +137,7 @@ struct CoInsuredProcessingScreen: View {
         vm.store.send(.fetchContracts)
         vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            let missingContract = store.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.currentAgreement?.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-            if missingContract != nil {
-                vm.store.send(
-                    .coInsuredNavigationAction(
-                        action: .openMissingCoInsuredAlert(contractId: missingContract?.id ?? "")
-                    )
-                )
-            }
+            store.send(.checkForAlert)
         }
     }
 
@@ -161,14 +145,14 @@ struct CoInsuredProcessingScreen: View {
 
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
-    @PresentableStore var store: ContractStore
+    @PresentableStore var store: EditCoInsuredStore
 }
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
-                let store: ContractStore = globalPresentableStoreContainer.get()
+                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)
                 store.setError("error", for: .postCoInsured)
             }

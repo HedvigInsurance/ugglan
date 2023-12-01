@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable {
@@ -7,12 +8,18 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var birthDate: String?
-    var fullName: String? {
+    public let activatesOn: ServerBasedDate?
+    public let terminatesOn: ServerBasedDate?
+    public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
     }
 
-    var id: String {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public var id: String {
         return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
     }
 
@@ -24,6 +31,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.firstName = data.firstName
         self.lastName = data.lastName
         self.hasMissingInfo = data.hasMissingInfo
+        self.activatesOn = data.activatesOn
+        self.terminatesOn = data.terminatesOn
     }
 
     public init(
@@ -31,13 +40,17 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         lastName: String? = nil,
         SSN: String? = nil,
         birthDate: String? = nil,
-        needsMissingInfo: Bool = true
+        needsMissingInfo: Bool = true,
+        activatesOn: String? = nil,
+        terminatesOn: String? = nil
     ) {
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
         self.SSN = SSN?.calculate12DigitSSN
         self.hasMissingInfo = needsMissingInfo
+        self.activatesOn = activatesOn
+        self.terminatesOn = terminatesOn
     }
 
     var formattedSSN: String? {
@@ -50,8 +63,8 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
 
     public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
         return lhs.fullName == rhs.fullName
-        && (lhs.formattedSSN == rhs.formattedSSN
-            || lhs.birthDate == rhs.birthDate)
+            && (lhs.formattedSSN == rhs.formattedSSN
+                || lhs.birthDate == rhs.birthDate)
     }
 }
 

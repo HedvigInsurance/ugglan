@@ -14,17 +14,18 @@ struct CoInsuredSelectScreen: View {
         contractId: String
     ) {
         self.contractId = contractId
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
             !store.coInsuredViewModel.coInsuredAdded.contains($0)
-          })
-        intentVm.showErrorView = false
+        })
+        intentVm.errorMessageForCoinsuredList = nil
+        intentVm.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentVm.showErrorView {
+        if intentVm.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),
@@ -40,7 +41,8 @@ struct CoInsuredSelectScreen: View {
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
             items: {
-                return alreadyAddedCoinsuredMembers
+                return
+                    alreadyAddedCoinsuredMembers
                     .compactMap {
                         ((object: $0, displayName: $0.fullName ?? ""))
                     }
@@ -48,7 +50,7 @@ struct CoInsuredSelectScreen: View {
             preSelectedItems: { [] },
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                     store.coInsuredViewModel.addCoInsured(
                         .init(
                             firstName: selectedCoinsured.firstName,
@@ -64,12 +66,13 @@ struct CoInsuredSelectScreen: View {
                         }
                         await store.intentViewModel.getIntent(
                             contractId: contractId,
+                            origin: .coinsuredSelectList,
                             coInsured: store.coInsuredViewModel.completeList()
                         )
                         withAnimation {
                             isLoading = false
                         }
-                        if !store.intentViewModel.showErrorView {
+                        if !store.intentViewModel.showErrorViewForCoInsuredList {
                             store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         } else {
                             store.coInsuredViewModel.removeCoInsured(
@@ -86,7 +89,7 @@ struct CoInsuredSelectScreen: View {
                 }
             },
             onCancel: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
             singleSelect: true,
@@ -94,7 +97,7 @@ struct CoInsuredSelectScreen: View {
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 contractStore.send(
                     .coInsuredNavigationAction(
                         action: .openCoInsuredInput(

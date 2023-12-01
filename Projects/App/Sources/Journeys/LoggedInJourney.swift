@@ -1,5 +1,6 @@
 import Claims
 import Contracts
+import EditCoInsured
 import Flow
 import Forever
 import Form
@@ -236,18 +237,49 @@ extension JourneyPresentation {
             }
         }
     }
+
     public var configureContractNavigation: some JourneyPresentation {
         onAction(
-            ContractStore.self,
+            EditCoInsuredStore.self,
             { action in
                 if case let .coInsuredNavigationAction(navAction) = action {
-                    if case let .openMissingCoInsuredAlert(contractId) = navAction {
-                        EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+                    if case let .openMissingCoInsuredAlert(config) = navAction {
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
                     }
                 } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                     EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
                 }
             }
         )
+        .onAction(EditCoInsuredStore.self) { action, pre in
+            if case .fetchContracts = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            } else if case .goToFreeTextChat = action {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.openChat)
+            } else if case .checkForAlert = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
+
+                let missingContract = store.state.activeContracts.first { contract in
+                    if contract.upcomingChangedAgreement != nil {
+                        return false
+                    } else {
+                        return contract.coInsured
+                            .first(where: { coInsured in
+                                coInsured.hasMissingInfo && contract.terminationDate == nil
+                            }) != nil
+                    }
+                }
+                if let missingContract {
+                    editStore.send(
+                        .coInsuredNavigationAction(
+                            action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
+                        )
+                    )
+                }
+            }
+        }
     }
 }

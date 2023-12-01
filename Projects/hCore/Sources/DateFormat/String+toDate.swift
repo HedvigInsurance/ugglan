@@ -17,4 +17,13 @@ extension String {
         formatter.timeZone = .current
         return formatter.date(from: self)
     }
+
+    public var localYYMMDDDateToDate: Date? {
+        let formatter = DateFormatter()
+        if self == "" {
+            return nil
+        }
+        formatter.dateFormat = "yyMMdd"
+        return formatter.date(from: self)
+    }
 }

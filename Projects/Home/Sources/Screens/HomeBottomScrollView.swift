@@ -1,6 +1,7 @@
 import Apollo
 import Combine
 import Contracts
+import EditCoInsured
 import Flow
 import Payment
 import Presentation
@@ -142,21 +143,10 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts
-                    .first(where: { contract in
-                        if contract.upcomingChangedAgreement != nil {
-                            return contract.upcomingChangedAgreement?.coInsured
-                                .filter({
-                                    $0.hasMissingData && contract.terminationDate == nil
-                                })
-                                .isEmpty == false
-                        } else {
-                            return contract.currentAgreement?.coInsured
-                                .filter({
-                                    $0.hasMissingData && contract.terminationDate == nil
-                                })
-                                .isEmpty == false
-                        }
-                    }) != nil
+                    .filter { contract in
+                        contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                    }
+                    .isEmpty == false
             })
             .distinct()
             .publisher
@@ -167,21 +157,11 @@ class HomeButtonScrollViewModel: ObservableObject {
             .store(in: &cancellables)
 
         let show =
-            contractStore.state.activeContracts.first(where: { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return contract.upcomingChangedAgreement?.coInsured
-                        .filter({
-                            $0.hasMissingData && contract.terminationDate == nil
-                        })
-                        .isEmpty == false
-                } else {
-                    return contract.currentAgreement?.coInsured
-                        .filter({
-                            $0.hasMissingData && contract.terminationDate == nil
-                        })
-                        .isEmpty == false
-                }
-            }) != nil
+            contractStore.state.activeContracts
+            .filter { contract in
+                contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+            }
+            .isEmpty == false
         handleItem(.missingCoInsured, with: show)
     }
 }
