@@ -43,7 +43,9 @@ struct ContractInformationView: View {
                         .withoutHorizontalPadding
                         hRowDivider()
 
-                        addCoInsuredView(contract: contract)
+                        if contract.supportsCoInsured {
+                            addCoInsuredView(contract: contract)
+                        }
 
                         if contract.showEditInfo {
                             VStack(spacing: 8) {
