@@ -59,6 +59,7 @@ struct CoInsuredInfoView_Previews: PreviewProvider {
             text: "",
             config: InsuredPeopleConfig(
                 contractCoInsured: [],
+                contractId: "",
                 activeFrom: nil,
                 numberOfMissingCoInsured: 0,
                 displayName: "",
