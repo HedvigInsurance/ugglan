@@ -19,10 +19,6 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         hasher.combine(id)
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
     public var id: String {
         return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
     }
