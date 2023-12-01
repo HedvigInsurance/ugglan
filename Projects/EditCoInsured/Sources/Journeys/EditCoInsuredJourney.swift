@@ -258,7 +258,7 @@ public class EditCoInsuredJourney {
         for config: InsuredPeopleConfig,
         fromInfoCard: Bool
     ) -> some JourneyPresentation {
-        if config.numberOfMissingCoInsured > 0 {
+        if config.numberOfMissingCoInsuredWithoutTermination > 0 {
             if fromInfoCard {
                 EditCoInsuredJourney.openNewInsuredPeopleScreen(config: config)
             } else {

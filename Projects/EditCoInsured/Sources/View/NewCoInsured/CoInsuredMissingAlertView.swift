@@ -56,6 +56,7 @@ struct CoInsuredMissingAlertView_Previews: PreviewProvider {
                 contractId: "",
                 activeFrom: nil,
                 numberOfMissingCoInsured: 0,
+                numberOfMissingCoInsuredWithoutTermination: 0,
                 displayName: "",
                 preSelectedCoInsuredList: [],
                 contractDisplayName: "",

@@ -103,6 +103,10 @@ public struct Contract: Codable, Hashable, Equatable {
         return self.coInsured.filter({ $0.hasMissingInfo }).count
     }
 
+    public var nbOfMissingCoInsuredWithoutTermination: Int {
+        return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
+    }
+
     public var showEditInfo: Bool {
         return supportsCoInsured && self.terminationDate == nil
     }
@@ -514,6 +518,7 @@ extension InsuredPeopleConfig {
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
+            numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",

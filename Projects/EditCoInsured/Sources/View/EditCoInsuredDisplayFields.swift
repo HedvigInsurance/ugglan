@@ -127,7 +127,7 @@ public struct CoInsuredField<Content: View>: View {
                     .fixedSize()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            if let includeStatusPill, let coInsured {
+            if let includeStatusPill {
                 statusPill
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -139,7 +139,7 @@ public struct CoInsuredField<Content: View>: View {
         VStack {
             hText(
                 includeStatusPill?
-                    .text(date: date.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
+                    .text(date: (date.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""))
                     ?? "",
                 style: .standardSmall
             )
