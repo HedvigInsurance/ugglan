@@ -134,8 +134,8 @@ struct ContractInformationView: View {
                 }
                 .withoutHorizontalPadding
 
-                hSection {
-                    if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditInfo {
+                if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditInfo {
+                    hSection {
                         CoInsuredInfoView(
                             text: L10n.contractCoinsuredAddPersonalInfo,
                             config: .init(contract: contract)
