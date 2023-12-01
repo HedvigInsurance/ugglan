@@ -11,23 +11,11 @@ struct RemoveCoInsuredScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                let missingCoInsured = vm.config.currentAgreementCoInsured.filter {
+                let missingCoInsured = vm.config.contractCoInsured.filter {
                     return $0.hasMissingData
                 }
-                let missingInUpcoming = vm.config.upcomingAgreementCoInsured?.filter({ $0.hasMissingData }) ?? []
-                let exisistingCoInsured = vm.config.currentAgreementCoInsured.filter {
-                    return !$0.hasMissingData
-                }
-
-                var nbOfMissingoInsured: Int {
-                    if missingInUpcoming.count > 0 {
-                        return missingInUpcoming.count - vm.coInsuredDeleted.count
-                    } else {
-                        return missingCoInsured.count - vm.coInsuredDeleted.count
-                    }
-                }
-
-                let hasContentBelow = !exisistingCoInsured.isEmpty || nbOfMissingoInsured > 0
+                let nbOfMissingoInsured = missingCoInsured.count - vm.coInsuredDeleted.count
+                let hasContentBelow = nbOfMissingoInsured > 0
 
                 hSection {
                     hRow {
@@ -40,14 +28,6 @@ struct RemoveCoInsuredScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 hSection {
-                    ForEach(exisistingCoInsured, id: \.self) { coInsured in
-                        hRow {
-                            CoInsuredField(
-                                coInsured: coInsured,
-                                accessoryView: accessoryView(coInsured)
-                            )
-                        }
-                    }
 
                     ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
                         hRow {

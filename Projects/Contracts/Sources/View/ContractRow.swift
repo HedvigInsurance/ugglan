@@ -107,10 +107,10 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     public func displayInfoCard(contract: Contract) -> Bool {
-        let currentCoInsured = contract.currentAgreement?.coInsured
-        let upComingCoInsured = contract.upcomingChangedAgreement?.coInsured
-        return !(currentCoInsured?.contains(CoInsuredModel()) ?? false)
-            && !(upComingCoInsured?.contains(CoInsuredModel()) ?? false)
+        let currentCoInsured = contract.coInsured
+        let upComingCoInsured = contract.coInsured
+        return !(currentCoInsured.contains(CoInsuredModel()))
+            && !(upComingCoInsured.contains(CoInsuredModel()))
     }
 }
 
@@ -210,7 +210,8 @@ struct ContractRow_Previews: PreviewProvider {
                 firstName: "",
                 lastName: "",
                 ssn: nil,
-                typeOfContract: .seHouse
+                typeOfContract: .seHouse,
+                coInsured: []
             )
             let contracts = [contract]
             store.send(.setActiveContracts(contracts: contracts))

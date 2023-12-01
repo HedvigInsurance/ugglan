@@ -61,7 +61,8 @@ public struct Contract: Codable, Hashable, Equatable {
         firstName: String,
         lastName: String,
         ssn: String?,
-        typeOfContract: TypeOfContract
+        typeOfContract: TypeOfContract,
+        coInsured: [CoInsuredModel]
     ) {
         self.id = id
         self.currentAgreement = currentAgreement
@@ -77,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.lastName = lastName
         self.ssn = ssn
         self.typeOfContract = typeOfContract
+        self.coInsured = coInsured
     }
 
     public let id: String
@@ -93,15 +95,12 @@ public struct Contract: Codable, Hashable, Equatable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
+    public var coInsured: [CoInsuredModel]
     public var fullName: String {
         return firstName + " " + lastName
     }
     public var nbOfMissingCoInsured: Int {
-        if let upcomingChangedAgreement {
-            return upcomingChangedAgreement.coInsured.filter({ $0.hasMissingInfo }).count
-        } else {
-            return currentAgreement?.coInsured.filter({ $0.hasMissingInfo }).count ?? 0
-        }
+        return self.coInsured.filter({ $0.hasMissingInfo }).count
     }
 
     public var showEditInfo: Bool {
@@ -181,6 +180,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingRenewal = nil
         selfChangeBlockers = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
+        coInsured = []
         self.firstName = firstName
         self.lastName = lastName
         self.ssn = ssn
@@ -204,6 +204,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
+        coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
         self.firstName = firstName
         self.lastName = lastName
         self.ssn = ssn
@@ -436,7 +437,6 @@ public struct Agreement: Codable, Hashable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
-        self.coInsured = coInsured
     }
 
     public let certificateUrl: String?
@@ -445,7 +445,6 @@ public struct Agreement: Codable, Hashable {
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
-    public var coInsured: [CoInsuredModel]
 
     init(
         premium: MonetaryAmount,
@@ -459,7 +458,6 @@ public struct Agreement: Codable, Hashable {
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
-        self.coInsured = coInsured
     }
 
     init?(
@@ -474,7 +472,6 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
     }
 }
 
@@ -513,8 +510,7 @@ extension InsuredPeopleConfig {
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
-            currentAgreementCoInsured: contract.currentAgreement?.coInsured ?? [],
-            upcomingAgreementCoInsured: contract.upcomingChangedAgreement?.coInsured,
+            contractCoInsured: contract.coInsured,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
