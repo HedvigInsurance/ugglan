@@ -333,7 +333,7 @@ extension ApolloClient {
         Self.initClients()
             .onValue { hApollo in
                 let paymentService = hPaymentServiceOctopus()
-                let hForeverCodeService = hForeverCodeServiceDemo()
+                let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })

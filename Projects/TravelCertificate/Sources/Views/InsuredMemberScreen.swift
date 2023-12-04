@@ -99,7 +99,7 @@ class InsuredMemberViewModel: ObservableObject {
         self.personalNumber = model?.personalNumber ?? ""
     }
 
-    var personalNumberMaskeing: Masking {
+    var personalNumberMasking: Masking {
         Masking(type: .personalNumberCoInsured)
     }
 
@@ -126,7 +126,7 @@ class InsuredMemberViewModel: ObservableObject {
 
     private func validate() {
         withAnimation {
-            if !personalNumberMaskeing.isValid(text: personalNumber) {
+            if !personalNumberMasking.isValid(text: personalNumber) {
                 personalNumberError = L10n.TravelCertificate.ssnErrorLabel
             } else {
                 personalNumberError = nil

@@ -127,3 +127,20 @@ extension View {
         self.environment(\.hFieldTrailingView, AnyView(content()))
     }
 }
+
+private struct EnvironmentHFieldLockedState: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hFieldLockedState: Bool {
+        get { self[EnvironmentHFieldLockedState.self] }
+        set { self[EnvironmentHFieldLockedState.self] = newValue }
+    }
+}
+
+extension View {
+    public var hFieldLockedState: some View {
+        self.environment(\.hFieldLockedState, true)
+    }
+}

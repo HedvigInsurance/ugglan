@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -9,7 +10,6 @@ struct EditContract: View {
     @State var selectedType: EditType?
     @State var editTypes: [EditType] = []
     private let contract: Contract?
-    @State var vc: UIViewController?
     init(id: String) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         contract = store.state.contractForId(id)
@@ -52,26 +52,40 @@ struct EditContract: View {
                 }
                 infoView
                 hSection {
-                    VStack(spacing: 4) {
-                        if selectedType != nil {
-                            hButton.LargeButton(type: .primary) {
-                                store.send(.dismissEditInfo(type: selectedType))
-                                switch selectedType {
-                                case .coInsured:
+                    VStack(spacing: 8) {
+                        hButton.LargeButton(type: .primary) {
+                            store.send(.dismissEditInfo(type: selectedType))
+                            switch selectedType {
+                            case .coInsured:
+                                if hAnalyticsExperiment.editCoinsured {
+                                    if let contract {
+                                        store.send(
+                                            .openEditCoInsured(
+                                                config: .init(contract: contract),
+                                                fromInfoCard: false
+                                            )
+                                        )
+                                    }
+                                } else {
                                     store.send(.goToFreeTextChat)
-                                case .changeAddress:
-                                    store.send(.goToMovingFlow)
-                                case nil:
-                                    break
                                 }
-                            } content: {
-                                hText(selectedType?.buttonTitle ?? "", style: .standard)
+                            case .changeAddress:
+                                store.send(.goToMovingFlow)
+                            case nil:
+                                break
                             }
+                        } content: {
+                            hText(L10n.generalContinueButton, style: .standard)
                         }
+                        .disabled(selectedType == nil)
                         hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
-                            hText(L10n.generalCancelButton, style: .standard)
+                            if hAnalyticsExperiment.editCoinsured {
+                                hText(L10n.generalCancelButton, style: .standard)
+                            } else {
+                                hText(selectedType?.buttonTitle ?? "", style: .standard)
+                            }
                         }
                     }
                 }
@@ -80,30 +94,11 @@ struct EditContract: View {
             }
         }
         .hDisableScroll
-        .introspectViewController { vc in
-            weak var `vc` = vc
-            if self.vc != vc {
-                self.vc = vc
-            }
-        }
-        .onChange(of: selectedType) { newValue in
-            if #available(iOS 16.0, *) {
-                for i in 1...3 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 + Double(i) * 0.05) {
-                        vc?.sheetPresentationController?.invalidateDetents()
-                        vc?.sheetPresentationController?
-                            .animateChanges {
-
-                            }
-                    }
-                }
-            }
-        }
     }
 
     @ViewBuilder
     var infoView: some View {
-        if selectedType == .coInsured {
+        if selectedType == .coInsured && !hAnalyticsExperiment.editCoinsured {
             hSection {
                 InfoCard(
                     text: L10n.InsurancesTab.contactUsToEditCoInsured,
@@ -112,7 +107,6 @@ struct EditContract: View {
             }
             .transition(.opacity)
             .sectionContainerStyle(.transparent)
-
         }
     }
 

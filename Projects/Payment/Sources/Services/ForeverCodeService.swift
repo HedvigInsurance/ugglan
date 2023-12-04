@@ -11,9 +11,12 @@ public class hForeverCodeServiceOctopus: hForeverCodeService {
     @Inject private var octopus: hOctopus
     public init() {}
     public func chageCode(new code: String) async throws {
-        _ = try await octopus.client.perform(
+        let data = try await octopus.client.perform(
             mutation: OctopusGraphQL.MemberReferralInformationCodeUpdatePaymentMutation(code: code)
         )
+        if let message = data.memberReferralInformationCodeUpdate.userError?.message {
+            throw NetworkError.badRequest(message: message)
+        }
     }
 }
 

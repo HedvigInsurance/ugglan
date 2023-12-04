@@ -1,9 +1,12 @@
 import Apollo
 import Combine
+import Contracts
+import EditCoInsured
 import Flow
 import Payment
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -33,6 +36,20 @@ struct HomeBottomScrollView: View {
                     )
                 case .importantMessage:
                     ImportantMessagesView()
+                case .missingCoInsured:
+                    CoInsuredInfoHomeView {
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contractIds: [InsuredPeopleConfig] = contractStore.state.activeContracts
+                            .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
+                            )
+                            .compactMap {
+                                InsuredPeopleConfig(
+                                    contract: $0
+                                )
+                            }
+                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                        homeStore.send(.openCoInsured(contractIds: contractIds))
+                    }
                 }
             }
         )
@@ -52,6 +69,9 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
+        if hAnalyticsExperiment.editCoinsured {
+            handleMissingCoInsured()
+        }
         handleImportantMessages()
         handleRenewalCardView()
         handleDeleteRequests(memberId: memberId)
@@ -116,7 +136,33 @@ class HomeButtonScrollViewModel: ObservableObject {
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
         handleItem(.deletedView, with: members.contains(memberId))
+    }
 
+    private func handleMissingCoInsured() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.stateSignal.plain()
+            .map({
+                $0.activeContracts
+                    .filter { contract in
+                        contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                    }
+                    .isEmpty == false
+            })
+            .distinct()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleItem(.missingCoInsured, with: show)
+            })
+            .store(in: &cancellables)
+
+        let show =
+            contractStore.state.activeContracts
+            .filter { contract in
+                contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+            }
+            .isEmpty == false
+        handleItem(.missingCoInsured, with: show)
     }
 }
 
@@ -137,6 +183,7 @@ struct InfoCardView: Identifiable, Hashable {
 
 enum InfoCardType: Int {
     case payment
+    case missingCoInsured
     case importantMessage
     case renewal
     case deletedView

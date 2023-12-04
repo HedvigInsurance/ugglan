@@ -1,5 +1,6 @@
 import Claims
 import Contracts
+import EditCoInsured
 import Flow
 import Forever
 import Form
@@ -48,6 +49,8 @@ extension AppJourney {
                             AppJourney.webRedirect(url: url)
                         }
                     }
+                case let .startCoInsuredFlow(contractIds):
+                    AppJourney.editCoInsured(configs: contractIds)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in
@@ -60,6 +63,7 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
+            .configureContractNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -130,6 +134,14 @@ extension AppJourney {
                     return deepLink == .profile || deepLink == .sasEuroBonus
                 } else {
                     return false
+                }
+            }
+            .onAction(HomeStore.self) { action in
+                if case let .openDocument(url) = action {
+                    Journey(
+                        Document(url: url, title: L10n.insuranceCertificateTitle),
+                        style: .detented(.large)
+                    )
                 }
             }
     }
@@ -229,6 +241,51 @@ extension JourneyPresentation {
             if case let .navigation(navigateTo) = action {
                 if case .openConnectPayments = navigateTo {
                     PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
+            }
+        }
+    }
+
+    public var configureContractNavigation: some JourneyPresentation {
+        onAction(
+            EditCoInsuredStore.self,
+            { action in
+                if case let .coInsuredNavigationAction(navAction) = action {
+                    if case let .openMissingCoInsuredAlert(config) = navAction {
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
+                    }
+                } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
+                    EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
+                }
+            }
+        )
+        .onAction(EditCoInsuredStore.self) { action, pre in
+            if case .fetchContracts = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            } else if case .goToFreeTextChat = action {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.openChat)
+            } else if case .checkForAlert = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
+
+                let missingContract = store.state.activeContracts.first { contract in
+                    if contract.upcomingChangedAgreement != nil {
+                        return false
+                    } else {
+                        return contract.coInsured
+                            .first(where: { coInsured in
+                                coInsured.hasMissingInfo && contract.terminationDate == nil
+                            }) != nil
+                    }
+                }
+                if let missingContract {
+                    editStore.send(
+                        .coInsuredNavigationAction(
+                            action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
+                        )
+                    )
                 }
             }
         }

@@ -1,5 +1,7 @@
 import Apollo
 import Combine
+import Contracts
+import EditCoInsured
 import Flow
 import Form
 import Foundation
@@ -116,24 +118,17 @@ extension HomeView {
                     FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:
-                    deletedInfoView
-                    InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
-                    startAClaimButton
-                    openOtherServices
+                    VStack(spacing: 16) {
+                        InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                        startAClaimButton
+                        openOtherServices
+                    }
                 case .loading:
                     EmptyView()
                 }
             }
         }
         .padding(.bottom, 16)
-    }
-
-    @ViewBuilder
-    private var deletedInfoView: some View {
-        InfoCard(
-            text: L10n.hometabAccountDeletionNotification,
-            type: .attention
-        )
     }
 
     private var startAClaimButton: some View {
@@ -220,6 +215,8 @@ extension HomeView {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
                 resultJourney(.openCrossSells)
+            } else if case let .openCoInsured(configs) = action {
+                resultJourney(.startCoInsuredFlow(configs: configs))
             }
         }
         .configureTabBarItem(
@@ -239,6 +236,7 @@ public enum HomeResult {
     case openTravelInsurance
     case openCrossSells
     case openEmergency
+    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
 }
 
 struct Active_Preview: PreviewProvider {

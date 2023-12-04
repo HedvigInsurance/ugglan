@@ -23,12 +23,32 @@ fragment ContractFragment on Contract {
       currentAgreement {
         ...AgreementFragment
       }
+      coInsured {
+        ...CoInsuredFragment
+        }
       exposureDisplayName
       id
       masterInceptionDate
+      selfChangeBlockers {
+        coInsured {
+        reason
+        }
+      }
       supportsMoving
+      supportsCoInsured
       terminationDate
       upcomingChangedAgreement {
          ...AgreementFragment
       }
+}
+
+fragment CoInsuredFragment on ContractCoInsured {
+    id
+    birthdate
+    firstName
+    lastName
+    hasMissingInfo
+    ssn
+    activatesOn
+    terminatesOn
 }
