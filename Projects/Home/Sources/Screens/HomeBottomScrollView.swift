@@ -143,6 +143,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts
+                    .filter({ $0.supportsCoInsured })
                     .filter { contract in
                         contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
                     }
@@ -158,6 +159,7 @@ class HomeButtonScrollViewModel: ObservableObject {
 
         let show =
             contractStore.state.activeContracts
+            .filter({ $0.supportsCoInsured })
             .filter { contract in
                 contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
             }
