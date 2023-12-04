@@ -71,6 +71,8 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
             CoInsuredModel.mockMissingData()
         ]
 
+        viewModel.config.numberOfMissingCoInsuredWithoutTermination = 4
+
         let list = viewModel.completeList()
         XCTAssert(list.count == 3)
     }
@@ -93,21 +95,6 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list.count == 5)
     }
 
-    func testInitialSSNBirthday() {
-        let viewModel = InsuredPeopleNewScreenModel()
-
-        viewModel.config.contractCoInsured = [
-            CoInsuredModel.mockMissingData(),
-            CoInsuredModel.mockMissingData(),
-        ]
-
-        viewModel.coInsuredAdded = []
-        viewModel.coInsuredDeleted = []
-
-        let list = viewModel.completeList()
-        XCTAssert(list.count == 2)
-    }
-
     func testInitialWithTwoAdded() {
         let viewModel = InsuredPeopleNewScreenModel()
 
@@ -118,6 +105,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
         viewModel.coInsuredAdded = [CoInsuredModel.testMemberWithSSN1, CoInsuredModel.testMemberWithSSN2]
         viewModel.coInsuredDeleted = []
+        viewModel.config.numberOfMissingCoInsuredWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 2)
@@ -136,6 +124,8 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
         viewModel.coInsuredAdded = []
         viewModel.coInsuredDeleted = [CoInsuredModel.mockMissingData()]
+
+        viewModel.config.numberOfMissingCoInsuredWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 1)
@@ -171,6 +161,62 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 2)
+    }
+
+    func testEmptyWithTerminationAndMissingData() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.testMemberEmptyTerminated,
+        ]
+
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = [CoInsuredModel.mockMissingData()]
+        viewModel.config.numberOfMissingCoInsuredWithoutTermination = 2
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 1)
+        XCTAssert(list[0] == CoInsuredModel.mockMissingData())
+    }
+
+    func testEmptyWithTerminationAndAddedData() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.testMemberWithSSN1,
+            CoInsuredModel.testMemberWithBirthdate1,
+            CoInsuredModel.testMemberEmptyTerminated,
+        ]
+
+        viewModel.coInsuredAdded = []
+        viewModel.coInsuredDeleted = []
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 2)
+    }
+
+    func testEmptyWithTerminationAndAddingData() {
+        let viewModel = InsuredPeopleNewScreenModel()
+
+        viewModel.config.contractCoInsured = [
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.mockMissingData(),
+            CoInsuredModel.testMemberEmptyTerminated,
+        ]
+
+        viewModel.coInsuredAdded = [
+            CoInsuredModel.testMemberWithSSN1,
+            CoInsuredModel.testMemberWithBirthdate1,
+        ]
+        viewModel.coInsuredDeleted = []
+        viewModel.config.numberOfMissingCoInsuredWithoutTermination = 2
+
+        let list = viewModel.completeList()
+        XCTAssert(list.count == 2)
+        XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
+        XCTAssert(list[1] == CoInsuredModel.testMemberWithBirthdate1)
     }
 }
 
@@ -223,6 +269,14 @@ extension CoInsuredModel {
         lastName: "Testsson",
         SSN: nil,
         birthDate: "1992-09-01"
+    )
+
+    static let testMemberEmptyTerminated = CoInsuredModel(
+        firstName: nil,
+        lastName: nil,
+        SSN: nil,
+        birthDate: nil,
+        terminatesOn: "2023-12-11"
     )
 
     static func mock(withSSN ssn: String) -> CoInsuredModel {
