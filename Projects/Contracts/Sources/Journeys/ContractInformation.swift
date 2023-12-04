@@ -51,7 +51,7 @@ struct ContractInformationView: View {
                             VStack(spacing: 8) {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
-                                        if onlyCoInsured(contract) {
+                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
                                             store.send(
                                                 .openEditCoInsured(
                                                     config: .init(contract: contract),
@@ -62,7 +62,7 @@ struct ContractInformationView: View {
                                             store.send(.contractEditInfo(id: id))
                                         }
                                     } content: {
-                                        if onlyCoInsured(contract) {
+                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
                                             hText(L10n.contractEditCoinsured)
                                         } else {
                                             hText(L10n.contractEditInfoLabel)
@@ -224,7 +224,7 @@ struct ContractInformationView: View {
                 HStack {
                     if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }) {
+                    }), hAnalyticsExperiment.editCoinsured {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 contract.coInsured.count,
