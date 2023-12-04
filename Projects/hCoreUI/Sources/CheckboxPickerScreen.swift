@@ -3,15 +3,18 @@ import hCore
 
 public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: String)
-    var items: [PickerModel]
-    let preSelectedItems: [T]
-    let onSelected: ([T]) -> Void
-    let onCancel: (() -> Void)?
-    let singleSelect: Bool?
-    let showDividers: Bool?
-    let attachToBottom: Bool
-    @State var selectedItems: [T] = []
+    private var items: [PickerModel]
+    private let preSelectedItems: [T]
+    private let onSelected: ([T]) -> Void
+    private let onCancel: (() -> Void)?
+    private let singleSelect: Bool?
+    private let showDividers: Bool?
+    private let attachToBottom: Bool
+    private let disableIfNoneSelected: Bool
+
+    @State private var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
+    @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
 
     public init(
         items: [(object: T, displayName: String)],
@@ -20,7 +23,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
         showDividers: Bool? = false,
-        attachToBottom: Bool = false
+        attachToBottom: Bool = false,
+        disableIfNoneSelected: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -29,6 +33,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.singleSelect = singleSelect
         self.showDividers = showDividers
         self.attachToBottom = attachToBottom
+        self.disableIfNoneSelected = disableIfNoneSelected
     }
 
     public var body: some View {
@@ -56,6 +61,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
+    @ViewBuilder
     var content: some View {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
@@ -70,17 +76,22 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     var bottomContent: some View {
         hSection {
             VStack(spacing: 8) {
+                bottomAttachedView
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(L10n.generalContinueButton, style: .standard)
+                    hText(L10n.generalSaveButton, style: .standard)
                 }
+                .hButtonIsLoading(isLoading)
+                .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
                 if let onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
                     } content: {
                         hText(L10n.generalCancelButton, style: .standard)
                     }
+                    .disabled(isLoading)
+                    .hButtonDontShowLoadingWhenDisabled(true)
                 }
             }
         }
@@ -198,5 +209,22 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
             },
             singleSelect: true
         )
+    }
+}
+
+private struct EnvironmentHCheckboxPickerBottomAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hCheckboxPickerBottomAttachedView: AnyView? {
+        get { self[EnvironmentHCheckboxPickerBottomAttachedView.self] }
+        set { self[EnvironmentHCheckboxPickerBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hCheckboxPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hCheckboxPickerBottomAttachedView, AnyView(content()))
     }
 }

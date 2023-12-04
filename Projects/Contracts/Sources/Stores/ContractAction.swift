@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
@@ -34,8 +35,9 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
+    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
+
     case hasSeenCrossSells(value: Bool)
-    case closeCrossSellingSigned
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
 
@@ -44,28 +46,31 @@ public enum ContractAction: ActionProtocol, Hashable {
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
     case startTermination(action: TerminationNavigationAction)
+    case coInsuredNavigationAction(action: CoInsuredNavigationAction)
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
     case fetchContractBundles
     case fetchContracts
+    case postCoInsured
+    case fetchNameFromSSN
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {
     case changeAddress
     case coInsured
 
-    var buttonTitle: String {
-        switch self {
-        case .changeAddress: return L10n.generalContinueButton
-        case .coInsured: return L10n.openChat
-        }
-    }
-
     var title: String {
         switch self {
         case .coInsured: return L10n.contractEditCoinsured
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
+        }
+    }
+
+    var buttonTitle: String {
+        switch self {
+        case .changeAddress: return L10n.generalContinueButton
+        case .coInsured: return L10n.openChat
         }
     }
 
@@ -75,9 +80,19 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
-        if contract.canChangeCoInsured {
+        if contract.supportsCoInsured {
             editTypes.append(.coInsured)
         }
         return editTypes
     }
+}
+
+public enum CoInsuredAction: Codable {
+    case delete
+    case edit
+    case add
+}
+
+public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
+    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
 }

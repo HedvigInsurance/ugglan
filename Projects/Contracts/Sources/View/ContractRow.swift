@@ -1,4 +1,5 @@
 import Combine
+import EditCoInsured
 import Flow
 import Form
 import Foundation
@@ -104,6 +105,13 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .hShadow()
         .contentShape(Rectangle())
     }
+
+    public func displayInfoCard(contract: Contract) -> Bool {
+        let currentCoInsured = contract.coInsured
+        let upComingCoInsured = contract.coInsured
+        return !(currentCoInsured.contains(CoInsuredModel()))
+            && !(upComingCoInsured.contains(CoInsuredModel()))
+    }
 }
 
 struct ContractRow: View {
@@ -170,12 +178,14 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 exposureDisplayName: "",
                 masterInceptionDate: "",
                 terminationDate: "",
                 supportsAddressChange: true,
+                supportsCoInsured: true,
                 upcomingChangedAgreement:
                     Agreement(
                         premium: MonetaryAmount(amount: 0, currency: ""),
@@ -189,14 +199,19 @@ struct ContractRow_Previews: PreviewProvider {
                                 insurableLimits: [],
                                 documents: [],
                                 displayName: ""
-                            )
+                            ),
+                        coInsured: []
                     ),
                 upcomingRenewal:
                     ContractRenewal(
                         renewalDate: "",
                         draftCertificateUrl: ""
                     ),
-                typeOfContract: .seHouse
+                firstName: "",
+                lastName: "",
+                ssn: nil,
+                typeOfContract: .seHouse,
+                coInsured: []
             )
             let contracts = [contract]
             store.send(.setActiveContracts(contracts: contracts))

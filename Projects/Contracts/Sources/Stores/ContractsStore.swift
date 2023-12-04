@@ -6,7 +6,6 @@ import hCore
 import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     public override func effects(
@@ -36,19 +35,36 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 let query = OctopusGraphQL.ContractBundleQuery()
                 disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
                     .onValue { contracts in
+                        let firstName = contracts.currentMember.firstName
+                        let lastName = contracts.currentMember.lastName
+                        let ssn = contracts.currentMember.ssn
                         let activeContracts = contracts.currentMember.activeContracts.map { contract in
-                            Contract(contract: contract.fragments.contractFragment)
-
+                            Contract(
+                                contract: contract.fragments.contractFragment,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setActiveContracts(contracts: activeContracts)))
 
                         let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
-                            Contract(contract: contract.fragments.contractFragment)
+                            Contract(
+                                contract: contract.fragments.contractFragment,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
 
                         let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
-                            Contract(pendingContract: contract)
+                            Contract(
+                                pendingContract: contract,
+                                firstName: firstName,
+                                lastName: lastName,
+                                ssn: ssn
+                            )
                         }
                         callback(.value(.setPendingContracts(contracts: pendingContracts)))
                         callback(.value(.fetchCompleted))
@@ -81,14 +97,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             setLoading(for: .fetchContracts)
         case let .setActiveContracts(contracts):
-
             newState.activeContracts = contracts
         case let .setTerminatedContracts(contracts):
             newState.terminatedContracts = contracts
         case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
             newState.pendingContracts = contracts
-        case .setCrossSells(let crossSells):
+        case let .setCrossSells(crossSells):
             newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):
             newState.crossSells = newState.crossSells.map { crossSell in

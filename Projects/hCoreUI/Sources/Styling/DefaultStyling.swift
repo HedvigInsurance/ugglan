@@ -158,13 +158,13 @@ extension DefaultStyling {
         return appearance
     }
 
-    public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
+    public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.brand(.primaryBackground())
         appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundImage = nil
-        appearance.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
+        appearance.backgroundEffect = UIBlurEffect(style: style == .dark ? .dark : .light)
         applyCommonNavigationBarStyling(appearance)
 
         return appearance
@@ -183,23 +183,46 @@ extension DefaultStyling {
 
     public static func setNavigationBarAppearance() {
 
+        UINavigationBar.appearance(for: .init(userInterfaceStyle: .dark)).standardAppearance =
+            standardNavigationBarAppearance(style: .dark)
+        UINavigationBar.appearance(for: .init(userInterfaceStyle: .light)).standardAppearance =
+            standardNavigationBarAppearance(style: .light)
         UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeNavigationBarAppearance()
-        UINavigationBar.appearance().standardAppearance = standardNavigationBarAppearance()
         UINavigationBar.appearance().compactAppearance = compactNavigationBarAppearance()
 
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
             scrollEdgeNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
-            standardNavigationBarAppearance()
+
+        UINavigationBar.appearance(
+            for: .init(userInterfaceStyle: .dark),
+            whenContainedInInstancesOf: [hNavigationController.self]
+        )
+        .standardAppearance =
+            standardNavigationBarAppearance(style: .dark)
+        UINavigationBar.appearance(
+            for: .init(userInterfaceStyle: .light),
+            whenContainedInInstancesOf: [hNavigationController.self]
+        )
+        .standardAppearance =
+            standardNavigationBarAppearance(style: .light)
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
             compactNavigationBarAppearance()
-
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .scrollEdgeAppearance =
             scrollEdgeNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
-            .standardAppearance =
-            standardNavigationBarAppearance()
+
+        UINavigationBar.appearance(
+            for: .init(userInterfaceStyle: .dark),
+            whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self]
+        )
+        .standardAppearance =
+            standardNavigationBarAppearance(style: .dark)
+        UINavigationBar.appearance(
+            for: .init(userInterfaceStyle: .light),
+            whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self]
+        )
+        .standardAppearance =
+            standardNavigationBarAppearance(style: .light)
         UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .compactAppearance =
             compactNavigationBarAppearance()
