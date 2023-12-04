@@ -13,7 +13,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         signedAudioURL: String?,
         type: String,
         memberFreeText: String?,
-        payoutAmount: MonetaryAmount?
+        payoutAmount: MonetaryAmount?,
+        files: [File]
     ) {
         self.id = id
         self.status = status
@@ -25,21 +26,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.subtitle = ""
         self.memberFreeText = memberFreeText
         self.payoutAmount = payoutAmount
-    }
-
-    internal init(
-        claim: OctopusGraphQL.ClaimsQuery.Data.CurrentMember.Claim
-    ) {
-        self.id = claim.id
-        self.status = ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none
-        self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
-        self.submittedAt = claim.submittedAt
-        self.closedAt = claim.closedAt
-        self.signedAudioURL = claim.audioUrl ?? ""
-        self.type = claim.associatedTypeOfContract ?? ""
-        self.subtitle = ""
-        self.memberFreeText = claim.memberFreeText
-        self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
+        self.files = files
     }
 
     public var title: String {
@@ -54,6 +41,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
+    public let files: [File]
     public var statusParagraph: String {
         switch self.status {
         case .submitted:
@@ -144,4 +132,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             }
         }
     }
+}
+
+public struct File: Codable, Equatable, Identifiable, Hashable {
+    public let id: String
+    let url: URL
+    let name: String
+    let size: String
 }
