@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
@@ -15,10 +16,29 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
     public var crossSells: [CrossSell] = []
-    var currentTerminationContext: String?
-    var terminationContractId: String? = ""
 
-    func contractForId(_ id: String) -> Contract? {
+    public var fetchAllCoInsured: [CoInsuredModel] {
+        let coInsuredList = activeContracts.flatMap { coInsured in
+            coInsured.coInsured.filter({ !$0.hasMissingData })
+        }
+        let unique = Set(coInsuredList)
+        return unique.sorted(by: { $0.id > $1.id })
+    }
+
+    public func fetchAllCoInsuredNotInContract(contractId: String) -> [CoInsuredModel] {
+        let contractCoInsured = contractForId(contractId)?.coInsured
+        let coInsuredNotAdded = fetchAllCoInsured.compactMap {
+            if !(contractCoInsured?.contains($0) ?? false) {
+                return $0
+            } else {
+                return nil
+            }
+        }
+
+        return coInsuredNotAdded
+    }
+
+    public func contractForId(_ id: String) -> Contract? {
         let activeContracts = activeContracts.compactMap({ $0 })
         let terminatedContracts = terminatedContracts.compactMap({ $0 })
         let pendingContracts = pendingContracts.compactMap({ $0 })

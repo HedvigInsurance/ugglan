@@ -1,0 +1,9 @@
+query PersonalInformation($input: PersonalInformationInput!) {
+  personalInformation(input: $input) {
+    firstName
+    lastName
+    streetAddress
+    postalNumber
+    city
+  }
+}

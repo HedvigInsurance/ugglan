@@ -71,7 +71,7 @@ public struct ProfileView: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 ConnectPaymentCardView()
-                RenewalCardView()
+                RenewalCardView(showCoInsured: false)
                 NotificationsCardView()
                 hButton.LargeButton(type: .ghost) {
                     showLogoutAlert = true

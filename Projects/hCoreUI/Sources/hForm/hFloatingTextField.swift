@@ -304,6 +304,23 @@ struct hFloatingTextField_Previews: PreviewProvider {
     }
 }
 
+private struct EnvironmentHWithoutDisabledColor: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutDisabledColor: Bool {
+        get { self[EnvironmentHWithoutDisabledColor.self] }
+        set { self[EnvironmentHWithoutDisabledColor.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutDisabledColor: some View {
+        self.environment(\.hWithoutDisabledColor, true)
+    }
+}
+
 private struct EnvironmentHFieldSize: EnvironmentKey {
     static let defaultValue: hFieldSize = .large
 }

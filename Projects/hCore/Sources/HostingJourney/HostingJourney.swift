@@ -67,7 +67,15 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         configure = { presenter in
             presenter.bag += result?
                 .filter(predicate: { _ in
-                    presenter.viewController.view.window != nil
+                    let addedToWindow = presenter.viewController.view.window != nil
+                    let ignoreActionWhenNotOnTop = options.contains(.ignoreActionWhenNotOnTop)
+                    if ignoreActionWhenNotOnTop {
+                        let isPresenting =
+                            (presenter.viewController.presentedViewController
+                                ?? presenter.viewController.navigationController?.presentedViewController) != nil
+                        return addedToWindow && !isPresenting
+                    }
+                    return addedToWindow
                 })
                 .onValue { value in
                     let presentation = content(value)
@@ -163,4 +171,8 @@ extension View {
     public var disposableHostingJourney: HostingJourney<Self, Disposable> {
         HostingJourney(rootView: self)
     }
+}
+
+extension PresentationOptions {
+    public static let ignoreActionWhenNotOnTop = PresentationOptions()
 }

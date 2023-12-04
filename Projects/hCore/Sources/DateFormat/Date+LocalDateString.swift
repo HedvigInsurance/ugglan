@@ -5,6 +5,10 @@ extension Date {
         return DateFormatters.localDateStringFormatter.string(from: self)
     }
 
+    public var localBirthDateString: String {
+        return DateFormatters.localbirthDateStringFormatter.string(from: self)
+    }
+
     public var localDateStringDayFirst: String? {
         return DateFormatters.localDateStringDayFirstFormatter.string(from: self)
     }
@@ -15,6 +19,10 @@ extension Date {
 
     public var displayDateDotFormat: String? {
         return DateFormatters.displayDateDotFormatFormatter.string(from: self)
+    }
+
+    public var displayDateYYMMDDFormat: String? {
+        return DateFormatters.displayDateYYMMDDFormatFormatter.string(from: self)
     }
 
     public var displayDateMMMDDYYYYFormat: String? {
@@ -37,11 +45,22 @@ extension Date {
     public func daysBetween(start: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: self).day!
     }
+
+    public var displayDateDDMMMYYYYFormat: String? {
+        return DateFormatters.displayddMMMyyyy.string(from: self).lowercased()
+    }
 }
+
 private struct DateFormatters {
     static let localDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    static let localbirthDateStringFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyMMdd"
         return formatter
     }()
 
@@ -63,6 +82,12 @@ private struct DateFormatters {
         return formatter
     }()
 
+    static let displayDateYYMMDDFormatFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyMMdd"
+        return formatter
+    }()
+
     static let displayddMMMMYYYY: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
@@ -78,6 +103,12 @@ private struct DateFormatters {
     static let YYYYFormat: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
+        return formatter
+    }()
+
+    static let displayddMMMyyyy: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
         return formatter
     }()
 }

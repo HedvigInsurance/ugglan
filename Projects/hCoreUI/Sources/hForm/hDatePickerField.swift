@@ -16,6 +16,7 @@ public struct hDatePickerField: View {
     @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldSize) var size
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -51,12 +52,13 @@ public struct hDatePickerField: View {
                     error: $error,
                     shouldMoveLabel: shouldMoveLabel
                 )
-                if (selectedDate?.displayDateDotFormat) != nil {
-                    getValueLabel()
-                }
+                getValueLabel()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, selectedDate?.localDateString.isEmpty ?? true ? 0 : 10)
+            .padding(
+                .vertical,
+                selectedDate?.localDateString.isEmpty ?? true ? (size == .large ? 0 : 3) : (size == .large ? 10 : 7.5)
+            )
             .onChange(of: selectedDate) { date in
                 if let date {
                     error = nil
@@ -87,9 +89,19 @@ public struct hDatePickerField: View {
 
     private func getValueLabel() -> some View {
         HStack {
-            Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
-                .modifier(hFontModifier(style: .title3))
-                .foregroundColor(hTextColor.primary)
+            Group {
+                if config.dateFormatter == .dotFormat {
+                    if (selectedDate?.displayDateDotFormat) != nil {
+                        Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                    }
+                } else if config.dateFormatter == .birthDate {
+                    if (selectedDate?.displayDateYYMMDDFormat) != nil {
+                        Text((selectedDate?.displayDateYYMMDDFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                    }
+                }
+            }
+            .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
+            .foregroundColor(hTextColor.primary)
             Spacer()
         }
     }
@@ -106,6 +118,9 @@ public struct hDatePickerField: View {
     private func showDatePicker() {
         let continueAction = ReferenceAction {}
         let cancelAction = ReferenceAction {}
+        if let initialySelectedValue = config.initialySelectedValue, selectedDate == nil {
+            date = initialySelectedValue
+        }
         let view = DatePickerView(
             continueAction: continueAction,
             cancelAction: cancelAction,
@@ -136,19 +151,28 @@ public struct hDatePickerField: View {
     public struct HDatePickerFieldConfig {
         let minDate: Date?
         let maxDate: Date?
+        let initialySelectedValue: Date?
         let placeholder: String
         let title: String
+        let showAsList: Bool?
+        let dateFormatter: DateFormatter?
 
         public init(
             minDate: Date? = nil,
             maxDate: Date? = nil,
+            initialySelectedValue: Date? = nil,
             placeholder: String,
-            title: String
+            title: String,
+            showAsList: Bool? = false,
+            dateFormatter: DateFormatter? = .dotFormat
         ) {
             self.minDate = minDate
             self.maxDate = maxDate
+            self.initialySelectedValue = initialySelectedValue
             self.placeholder = placeholder
             self.title = title
+            self.showAsList = showAsList
+            self.dateFormatter = dateFormatter
         }
     }
 }
@@ -162,9 +186,18 @@ private struct DatePickerView: View {
     public var body: some View {
         hForm {
             hSection {
-                datePicker
-                    .datePickerStyle(.graphical)
-                    .frame(height: 340)
+                HStack {
+                    if config.showAsList ?? false {
+                        datePicker
+                            .datePickerStyle(.wheel)
+                            .padding(.trailing, 23)
+                            .padding(.bottom, 16)
+                    } else {
+                        datePicker
+                            .datePickerStyle(.graphical)
+                            .frame(height: 340)
+                    }
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -199,7 +232,7 @@ private struct DatePickerView: View {
             ToolbarItem(placement: .principal) {
                 VStack {
                     hText(config.title)
-                    if let subtitle = date.displayDateDotFormat {
+                    if let subtitle = date.displayDateDotFormat, !(config.showAsList ?? false) {
                         hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
@@ -242,7 +275,11 @@ private struct DatePickerView: View {
 }
 
 struct hDatePickerField_Previews: PreviewProvider {
-    @State private static var date: Date?
+    @State private static var dateForSmall: Date?
+    @State private static var dateForSmallWithRealDate: Date? = Date()
+    @State private static var dateForLarge: Date?
+    @State private static var dateForLargeWithRealDate: Date? = Date()
+
     private static let config =
         hDatePickerField
         .HDatePickerFieldConfig(
@@ -250,7 +287,14 @@ struct hDatePickerField_Previews: PreviewProvider {
             title: "Departure date"
         )
     static var previews: some View {
-        hDatePickerField(config: config, selectedDate: date)
+        VStack {
+            hDatePickerField(config: config, selectedDate: dateForSmall)
+                .hFieldSize(.small)
+            hDatePickerField(config: config, selectedDate: dateForSmallWithRealDate)
+                .hFieldSize(.small)
+            hDatePickerField(config: config, selectedDate: dateForLarge)
+            hDatePickerField(config: config, selectedDate: dateForLargeWithRealDate)
+        }
     }
 }
 
@@ -262,4 +306,9 @@ class ReferenceAction {
     ) {
         self.execute = execute
     }
+}
+
+public enum DateFormatter {
+    case dotFormat
+    case birthDate
 }

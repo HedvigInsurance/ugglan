@@ -77,6 +77,8 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
+    @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
+    @Environment(\.hFieldLockedState) var isLocked
 
     var body: some View {
         let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
@@ -93,11 +95,13 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hSignalColor.amberText
+            hColorScheme(light: hSignalColor.amberText, dark: hTextColor.secondary)
         } else if animate {
             hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
-        } else if isEnabled {
+        } else if isEnabled || withoutDisabledColor {
             hTextColor.secondary
+        } else if isLocked {
+            hTextColor.tertiary
         } else {
             hTextColor.disabled
         }
