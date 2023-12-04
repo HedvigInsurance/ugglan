@@ -1,17 +1,27 @@
 import Foundation
+import hCore
+import hGraphQL
 
-protocol FetchClaimService {
+public protocol hFetchClaimService {
     func get() async throws -> [ClaimModel]
 }
 
-class FetchClaimServiceDemo: FetchClaimService {
+class FetchClaimServiceDemo: hFetchClaimService {
     func get() async throws -> [ClaimModel] {
         return []
     }
 }
 
-class FetchClaimServiceOctopus: FetchClaimService {
-    func get() async throws -> [ClaimModel] {
-        return []
+public class FetchClaimServiceOctopus: hFetchClaimService {
+    @Inject var octopus: hOctopus
+
+    public init() {}
+    public func get() async throws -> [ClaimModel] {
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.ClaimsQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+        let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
+        return claimData
     }
 }

@@ -335,6 +335,7 @@ extension ApolloClient {
                 let paymentService = hPaymentServiceOctopus()
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
+                let hFetchClaimServiceOctopus = FetchClaimServiceOctopus()
                 let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
@@ -344,6 +345,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                 Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                 Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimServiceOctopus })
 
             }
             .toVoid()
