@@ -8,7 +8,28 @@ public protocol hFetchClaimService {
 
 class FetchClaimServiceDemo: hFetchClaimService {
     func get() async throws -> [ClaimModel] {
-        return []
+        return [
+            ClaimModel(
+                id: "claimId",
+                status: .beingHandled,
+                outcome: .none,
+                submittedAt: "2023-11-11",
+                closedAt: nil,
+                signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
+                type: "associated type",
+                memberFreeText: nil,
+                payoutAmount: nil,
+                files: [
+                    .init(
+                        id: "imageId1",
+                        url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
+                        mimeType: "image/png",
+                        name: "test-image",
+                        size: 52176
+                    )
+                ]
+            )
+        ]
     }
 }
 

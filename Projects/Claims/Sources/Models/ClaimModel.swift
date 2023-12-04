@@ -137,6 +137,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
 public struct File: Codable, Equatable, Identifiable, Hashable {
     public let id: String
     let url: URL
+    let mimeType: String
     let name: String
-    let size: String
+    let size: Double
 }
