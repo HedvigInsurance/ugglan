@@ -40,7 +40,10 @@ struct HomeBottomScrollView: View {
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contractIds: [InsuredPeopleConfig] = contractStore.state.activeContracts
-                            .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
+                            .filter({
+                                $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.supportsCoInsured
+                                    && $0.terminationDate == nil
+                            }
                             )
                             .compactMap {
                                 InsuredPeopleConfig(
