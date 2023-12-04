@@ -73,7 +73,9 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
 
 struct RecordButton_Previews: PreviewProvider {
     static var previews: some View {
-        RecordButton(isRecording: true) {}
-            .environmentObject(AudioRecorder())
+        let tempDir = FileManager.default.temporaryDirectory
+        let path = tempDir.appendingPathComponent("path.m4a")
+        return RecordButton(isRecording: true) {}
+            .environmentObject(AudioRecorder(filePath: path))
     }
 }

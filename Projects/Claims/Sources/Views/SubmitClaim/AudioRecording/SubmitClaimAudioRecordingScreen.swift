@@ -27,7 +27,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
         url: URL?
     ) {
         audioPlayer = AudioPlayer(url: url)
-        audioRecorder = AudioRecorder()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let path = store.state.claimAudioRecordingPath
+        audioRecorder = AudioRecorder(filePath: path)
 
         func myFunc(_: URL) {}
         self.onSubmit = myFunc
