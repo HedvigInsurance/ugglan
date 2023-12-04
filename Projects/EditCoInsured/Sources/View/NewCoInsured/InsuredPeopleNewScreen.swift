@@ -54,7 +54,7 @@ struct InsuredPeopleNewScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
-                let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsured
+                let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                     hButton.LargeButton(type: .primary) {
                         store.send(.performCoInsuredChanges(commitId: intentVm.id))
