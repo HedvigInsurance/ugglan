@@ -326,6 +326,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 }
 
 public struct CoInsuredListType: Hashable, Identifiable {
+    public let id = UUID().uuidString
     public init(
         coInsured: CoInsuredModel,
         type: StatusPillType? = nil,
@@ -342,9 +343,6 @@ public struct CoInsuredListType: Hashable, Identifiable {
         self.isEmpty = isEmpty
     }
 
-    public var id: String? {
-        return coInsured.id
-    }
     public var coInsured: CoInsuredModel
     public var type: StatusPillType?
     public var date: String?
