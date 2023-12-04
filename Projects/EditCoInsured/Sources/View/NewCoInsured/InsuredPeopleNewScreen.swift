@@ -152,7 +152,7 @@ struct InsuredPeopleNewScreen: View {
             addedCoInsured.append(CoInsuredListType(coInsured: $0, type: .added, locallyAdded: true))
         }
 
-        let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsured
+        let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
         if vm.coInsuredAdded.count < nbOfMissingCoInsured {
             let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
             for _ in 1...nbOfFields {
