@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
@@ -34,9 +35,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
-    case openEditCoInsured(contractId: String, fromInfoCard: Bool)
-    case coInsuredNavigationAction(action: CoInsuredNavigationAction)
-    case performCoInsuredChanges(commitId: String)
+    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
 
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
@@ -48,6 +47,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
     case startTermination(action: TerminationNavigationAction)
+    case coInsuredNavigationAction(action: CoInsuredNavigationAction)
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
@@ -88,28 +88,12 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     }
 }
 
-public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
-    case openCoInsuredInput(
-        actionType: CoInsuredAction,
-        coInsuredModel: CoInsuredModel,
-        title: String,
-        contractId: String
-    )
-    case openCoInsuredProcessScreen(showSuccess: Bool)
-    case dismissEdit
-    case dismissEditCoInsuredFlow
-    case openInsuredPeopleNewScreen(contractId: String)
-    case openInsuredPeopleScreen(contractId: String)
-    case openCoInsuredSelectScreen(contractId: String)
-    case deletionSuccess
-    case addSuccess
-    case openMissingCoInsuredAlert(contractId: String)
-    case openErrorScreen
-    case openSelectInsuranceScreen(contractIds: [String])
-}
-
 public enum CoInsuredAction: Codable {
     case delete
     case edit
     case add
+}
+
+public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
+    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
 }

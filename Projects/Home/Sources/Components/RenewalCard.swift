@@ -31,14 +31,6 @@ public struct RenewalCardView: View {
         return buttons
     }
 
-    private func dateComponents(from renewalDate: Date) -> DateComponents {
-        return Calendar.current.dateComponents(
-            [.day],
-            from: Date(),
-            to: renewalDate
-        )
-    }
-
     private func openDocument(_ contract: Contract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
@@ -56,7 +48,6 @@ public struct RenewalCardView: View {
                 state.upcomingRenewalContracts
             }
         ) { upcomingRenewalContracts in
-
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
@@ -67,13 +58,12 @@ public struct RenewalCardView: View {
                     if $0.upcomingChangedAgreement == nil {
                         return false
                     } else {
-                        let upComingCoInsured = $0.upcomingChangedAgreement?.coInsured ?? []
-                        return upComingCoInsured != $0.currentAgreement?.coInsured && !upComingCoInsured.isEmpty
+                        return !$0.coInsured.isEmpty
                     }
                 }), showCoInsured ?? false {
                     InfoCard(
                         text: L10n.contractCoinsuredUpdateInFuture(
-                            contract.upcomingChangedAgreement?.coInsured.count ?? 0,
+                            contract.coInsured.count,
                             contract.upcomingChangedAgreement?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat
                                 ?? ""
                         ),
@@ -95,15 +85,13 @@ public struct RenewalCardView: View {
                             }
                         )
                     ])
-                } else if let upcomingRenewalContract = upcomingRenewalContracts.first {
+                } else if let upcomingRenewalContract = upcomingRenewalContracts.first,
+                    let renewalDate = upcomingRenewalContract.upcomingRenewal?.renewalDate?.localDateToDate
+                {
                     if upcomingRenewalContracts.count == 1 {
                         InfoCard(
                             text: L10n.dashboardRenewalPrompterBody(
-                                dateComponents(
-                                    from: upcomingRenewalContract.upcomingRenewal!.renewalDate?.localDateToDate!
-                                        ?? Date()
-                                )
-                                .day ?? 0
+                                renewalDate.daysBetween(start: Date())
                             ),
                             type: .info
                         )
@@ -116,12 +104,12 @@ public struct RenewalCardView: View {
                             )
                         ])
                     } else if upcomingRenewalContracts.count > 1,
-                        let renewalDate = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate
+                        let days = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate?
+                            .daysBetween(start: Date())
                     {
                         InfoCard(
-                            text: L10n.dashboardMultipleRenewalsPrompterBody(
-                                dateComponents(from: renewalDate).day ?? 0
-                            ),
+                            text: days == 0
+                                ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
                             type: .info
                         )
                         .buttons([
@@ -138,7 +126,6 @@ public struct RenewalCardView: View {
                                 buttons: buildSheetButtons(contracts: upcomingRenewalContracts)
                             )
                         }
-
                     }
                 }
             }

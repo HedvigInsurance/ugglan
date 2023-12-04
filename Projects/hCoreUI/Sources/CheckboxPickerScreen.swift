@@ -3,14 +3,16 @@ import hCore
 
 public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: String)
-    var items: [PickerModel]
-    let preSelectedItems: [T]
-    let onSelected: ([T]) -> Void
-    let onCancel: (() -> Void)?
-    let singleSelect: Bool?
-    let showDividers: Bool?
-    let attachToBottom: Bool
-    @State var selectedItems: [T] = []
+    private var items: [PickerModel]
+    private let preSelectedItems: [T]
+    private let onSelected: ([T]) -> Void
+    private let onCancel: (() -> Void)?
+    private let singleSelect: Bool?
+    private let showDividers: Bool?
+    private let attachToBottom: Bool
+    private let disableIfNoneSelected: Bool
+
+    @State private var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
 
@@ -21,7 +23,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
         showDividers: Bool? = false,
-        attachToBottom: Bool = false
+        attachToBottom: Bool = false,
+        disableIfNoneSelected: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -30,6 +33,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.singleSelect = singleSelect
         self.showDividers = showDividers
         self.attachToBottom = attachToBottom
+        self.disableIfNoneSelected = disableIfNoneSelected
     }
 
     public var body: some View {
@@ -76,9 +80,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(L10n.generalContinueButton, style: .standard)
+                    hText(L10n.generalSaveButton, style: .standard)
                 }
                 .hButtonIsLoading(isLoading)
+                .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
                 if let onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()

@@ -78,6 +78,7 @@ struct hFieldLabel: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
     @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
+    @Environment(\.hFieldLockedState) var isLocked
 
     var body: some View {
         let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
@@ -99,6 +100,8 @@ struct hFieldLabel: View {
             hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
         } else if isEnabled || withoutDisabledColor {
             hTextColor.secondary
+        } else if isLocked {
+            hTextColor.tertiary
         } else {
             hTextColor.disabled
         }

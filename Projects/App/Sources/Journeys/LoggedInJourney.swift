@@ -1,6 +1,6 @@
 import Claims
 import Contracts
-import Embark
+import EditCoInsured
 import Flow
 import Forever
 import Form
@@ -50,7 +50,7 @@ extension AppJourney {
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
-                    AppJourney.editCoInsured(contractIds: contractIds)
+                    AppJourney.editCoInsured(configs: contractIds)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in
@@ -100,56 +100,50 @@ extension AppJourney {
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
-        ProfileView.journey { result in
-            switch result {
-            case .openPayment:
-                HostingJourney(
-                    PaymentStore.self,
-                    rootView: MyPaymentsView(urlScheme: Bundle.main.urlScheme ?? "")
-                ) { action in
-                    if case .openConnectBankAccount = action {
-                        let store: PaymentStore = globalPresentableStoreContainer.get()
-                        let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                            .contains(store.state.paymentStatusData?.status ?? .active)
-                        ConnectBankAccount(
-                            setupType: hasAlreadyConnected ? .replacement : .initial,
-                            urlScheme: Bundle.main.urlScheme ?? ""
-                        )
-                        .journeyThenDismiss
-                    } else if case .openHistory = action {
-                        PaymentHistory.journey
-                    }
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
+        return
+            ProfileView.journey { result in
+                switch result {
+                case .openPayment:
+                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
+                case .resetAppLanguage:
+                    ContinueJourney()
+                        .onPresent {
+                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                                AppJourney.main
+                            )
+                        }
+                case .openChat:
+                    AppJourney.freeTextChat().withDismissButton
+                case .logout:
+                    ContinueJourney()
+                        .onPresent {
+                            UIApplication.shared.appDelegate.logout()
+                        }
+                case .registerForPushNotifications:
+                    ContinueJourney()
+                        .onPresent {
+                            _ = UIApplication.shared.appDelegate
+                                .registerForPushNotifications()
+                        }
                 }
-                .configureTitle(L10n.myPaymentTitle)
-            case .resetAppLanguage:
-                ContinueJourney()
-                    .onPresent {
-                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                            AppJourney.main
-                        )
-                    }
-            case .openChat:
-                AppJourney.freeTextChat().withDismissButton
-            case .logout:
-                ContinueJourney()
-                    .onPresent {
-                        UIApplication.shared.appDelegate.logout()
-                    }
-            case .registerForPushNotifications:
-                ContinueJourney()
-                    .onPresent {
-                        _ = UIApplication.shared.appDelegate
-                            .registerForPushNotifications()
-                    }
             }
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .profile || deepLink == .sasEuroBonus
-            } else {
-                return false
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .profile || deepLink == .sasEuroBonus
+                } else {
+                    return false
+                }
             }
-        }
+            .onAction(HomeStore.self) { action in
+                if case let .openDocument(url) = action {
+                    Journey(
+                        Document(url: url, title: L10n.insuranceCertificateTitle),
+                        style: .detented(.large)
+                    )
+                }
+            }
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -244,23 +238,56 @@ extension JourneyPresentation {
 
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
-            if case .connectPayments = action {
-                PaymentSetup(setupType: .initial).journeyThenDismiss
+            if case let .navigation(navigateTo) = action {
+                if case .openConnectPayments = navigateTo {
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
             }
         }
     }
+
     public var configureContractNavigation: some JourneyPresentation {
         onAction(
-            ContractStore.self,
+            EditCoInsuredStore.self,
             { action in
                 if case let .coInsuredNavigationAction(navAction) = action {
-                    if case let .openMissingCoInsuredAlert(contractId) = navAction {
-                        EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+                    if case let .openMissingCoInsuredAlert(config) = navAction {
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
                     }
                 } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                     EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
                 }
             }
         )
+        .onAction(EditCoInsuredStore.self) { action, pre in
+            if case .fetchContracts = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            } else if case .goToFreeTextChat = action {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.openChat)
+            } else if case .checkForAlert = action {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
+
+                let missingContract = store.state.activeContracts.first { contract in
+                    if contract.upcomingChangedAgreement != nil {
+                        return false
+                    } else {
+                        return contract.coInsured
+                            .first(where: { coInsured in
+                                coInsured.hasMissingInfo && contract.terminationDate == nil
+                            }) != nil
+                    }
+                }
+                if let missingContract {
+                    editStore.send(
+                        .coInsuredNavigationAction(
+                            action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
+                        )
+                    )
+                }
+            }
+        }
     }
 }

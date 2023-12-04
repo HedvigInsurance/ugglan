@@ -10,10 +10,7 @@ let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomai
 
 try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirectories: true, attributes: nil)
 
-let endpoints = [
-    "giraffe": URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-    "octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!,
-]
+let endpoints = ["octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!]
 
 func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }

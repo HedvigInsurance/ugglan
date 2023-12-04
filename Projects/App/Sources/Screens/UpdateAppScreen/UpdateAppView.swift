@@ -10,29 +10,13 @@ import hGraphQL
 
 struct UpdateAppView: View {
     var body: some View {
-        hForm {
-            VStack(spacing: 24) {
-                Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
-                    .padding(.top)
-                L10n.AppUpdateNeeded.title.hText(.title2)
-                L10n.AppUpdateNeeded.body
-                    .hText(.body)
-                    .foregroundColor(hTextColor.secondary)
-                    .multilineTextAlignment(.center)
-                hButton.SmallButton(type: .secondaryAlt) {
-                    if let url = URL(string: L10n.AppUpdateNeeded.hedvigAppStoreLink) {
-                        UIApplication.shared.open(url)
-                    }
-                } content: {
-                    HStack {
-                        L10n.AppUpdateNeeded.appStoreButton.hText()
-                        Image(uiImage: hCoreUIAssets.neArrowSmall.image)
-                            .foregroundColor(hTextColor.negative)
-                    }
-                }
+        RetryView(
+            title: L10n.AppUpdateNeeded.title,
+            subtitle: L10n.AppUpdateNeeded.body,
+            retryTitle: L10n.AppUpdateNeeded.appStoreButton
+        ) {
+            if let url = URL(string: L10n.AppUpdateNeeded.hedvigAppStoreLink) {
+                UIApplication.shared.open(url)
             }
         }
     }
@@ -43,5 +27,11 @@ extension AppJourney {
         HostingJourney(
             rootView: UpdateAppView()
         )
+    }
+}
+
+struct UpdateAppView_Previews: PreviewProvider {
+    static var previews: some View {
+        UpdateAppView()
     }
 }

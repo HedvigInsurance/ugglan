@@ -1,10 +1,15 @@
 import AVFAudio
 import Combine
+import Presentation
 import SwiftUI
 import hCoreUI
 
 class AudioRecorder: ObservableObject {
-    private let filename = "claim-recording.m4a"
+    static let audioFileExtension = "m4a"
+    private let filePath: URL
+    init(filePath: URL) {
+        self.filePath = filePath
+    }
     private(set) var isRecording = false {
         didSet {
             objectWillChange.send(self)
@@ -46,10 +51,10 @@ class AudioRecorder: ObservableObject {
         do {
             try recordingSession.setCategory(.record)
             try recordingSession.setActive(true)
+            try FileManager.default.removeItem(at: filePath)
         } catch {
             print("Failed")
         }
-
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000,
@@ -57,16 +62,11 @@ class AudioRecorder: ObservableObject {
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
         ]
 
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-
-        let audioFilename = documentPath.appendingPathComponent(filename)
-
         do {
-            recorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+            recorder = try AVAudioRecorder(url: filePath, settings: settings)
             decibelScale = []
             recorder?.record()
             recorder?.isMeteringEnabled = true
-
             isRecording = true
         } catch {
             print("Could not start recording")
@@ -82,17 +82,9 @@ class AudioRecorder: ObservableObject {
     private func stopRecording() {
         recorder?.stop()
         isRecording = false
-
-        let fileManager = FileManager.default
-        let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        guard
-            let directoryContents = try? fileManager.contentsOfDirectory(
-                at: documentDirectory,
-                includingPropertiesForKeys: nil
-            )
-        else { return }
-        self.recording = directoryContents.first(where: { $0.absoluteString.contains(filename) })
-            .map { Recording(url: $0, created: Date(), sample: decibelScale) }
+        if FileManager.default.fileExists(atPath: filePath.relativePath) {
+            self.recording = Recording(url: filePath, created: Date(), sample: decibelScale)
+        }
     }
 }
 

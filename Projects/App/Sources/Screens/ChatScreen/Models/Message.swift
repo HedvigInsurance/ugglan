@@ -251,12 +251,8 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
                 type = .gif(url: URL(string: text.text))
             } else if text.text.isCrossSell {
                 type = .crossSell(url: URL(string: text.text))
-            } else if text.text.isDeepLink {
-                if let url = URL(string: text.text) {
-                    type = .deepLink(url: url)
-                } else {
-                    type = .text
-                }
+            } else if text.text.isDeepLink, let url = URL(string: text.text) {
+                type = .deepLink(url: url)
             } else {
                 type = .text
             }

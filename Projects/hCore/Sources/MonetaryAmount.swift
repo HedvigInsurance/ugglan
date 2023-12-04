@@ -76,6 +76,17 @@ extension MonetaryAmount {
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
 
+    public var formattedNegativeAmount: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
+        formatter.maximumFractionDigits = 2
+        formatter.locale = currencyLocale
+        let alwaysNegativeAmount = floatAmount < 0 ? floatAmount : -floatAmount
+        return formatter.string(from: NSNumber(value: alwaysNegativeAmount)) ?? ""
+    }
+
     public var formattedAbsoluteAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -94,12 +105,6 @@ extension MonetaryAmount {
         formatter.maximumFractionDigits = 0
         formatter.locale = currencyLocale
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
-    }
-}
-
-extension GiraffeGraphQL.MonetaryAmountFragmentGiraffe {
-    public var monetaryAmount: MonetaryAmount {
-        .init(amount: amount, currency: currency)
     }
 }
 

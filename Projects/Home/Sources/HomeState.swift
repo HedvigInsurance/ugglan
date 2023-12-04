@@ -1,4 +1,6 @@
 import Apollo
+import Contracts
+import EditCoInsured
 import Flow
 import Foundation
 import Presentation
@@ -96,7 +98,7 @@ public enum HomeAction: ActionProtocol {
     case openTravelInsurance
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
-    case openCoInsured(contractIds: [String])
+    case openCoInsured(contractIds: [InsuredPeopleConfig])
     case openEmergency
 
     case setShowTravelInsurance(show: Bool)

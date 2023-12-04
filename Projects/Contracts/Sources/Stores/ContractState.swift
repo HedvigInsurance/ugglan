@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
@@ -17,30 +18,23 @@ public struct ContractState: StateProtocol {
     public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
-        let upcomingCoInsured: [CoInsuredModel] = activeContracts.flatMap { con in
-            con.upcomingChangedAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
+        let coInsuredList = activeContracts.flatMap { coInsured in
+            coInsured.coInsured.filter({ !$0.hasMissingData })
         }
-
-        let coInsured: [CoInsuredModel] = activeContracts.flatMap { con in
-            con.currentAgreement?.coInsured.filter({ !$0.hasMissingData }) ?? []
-        }
-
-        let unique = Set(upcomingCoInsured + coInsured)
-        return unique.sorted(by: { $0.fullName ?? "" > $1.fullName ?? "" })
+        let unique = Set(coInsuredList)
+        return unique.sorted(by: { $0.id > $1.id })
     }
-    
+
     public func fetchAllCoInsuredNotInContract(contractId: String) -> [CoInsuredModel] {
-        let currentCoInsured = contractForId(contractId)?.currentAgreement?.coInsured ?? []
-        let upcomingCoInsured = contractForId(contractId)?.upcomingChangedAgreement?.coInsured ?? []
-        
+        let contractCoInsured = contractForId(contractId)?.coInsured
         let coInsuredNotAdded = fetchAllCoInsured.compactMap {
-            if !currentCoInsured.contains($0) && !upcomingCoInsured.contains($0) {
+            if !(contractCoInsured?.contains($0) ?? false) {
                 return $0
             } else {
                 return nil
             }
         }
-        
+
         return coInsuredNotAdded
     }
 

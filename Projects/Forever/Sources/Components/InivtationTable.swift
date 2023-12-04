@@ -60,23 +60,28 @@ struct InvitationTable: View {
                 !foreverData.referrals.isEmpty || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
                     || foreverData.grossAmount.amount != foreverData.netAmount.amount
             {
-                hSection {
-                    if !foreverData.referrals.isEmpty {
-                        hRow {
-                            hText(L10n.foreverReferralListLabel)
-                        }
-                        .noHorizontalPadding()
-                        ForEach(foreverData.referrals, id: \.hashValue) { row in
-                            InvitationRow(row: row)
-                        }
-                    }
-                    getOtherDiscountsRow(foreverData)
-                    getTotalRow(foreverData)
+                hSection(getInvitationRows(for: foreverData), id: \.id) { row in
+                    row.view
                 }
+                .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
                 .padding(.vertical, 16)
             }
         }
+    }
+    private func getInvitationRows(for foreverData: ForeverData) -> [(id: String, view: AnyView)] {
+        var list: [(id: String, view: AnyView)] = []
+        if !foreverData.referrals.isEmpty {
+            let headerView = AnyView(hRow { hText(L10n.foreverReferralListLabel) })
+            list.append(("header", headerView))
+            for referral in foreverData.referrals {
+                let view = AnyView(InvitationRow(row: referral))
+                list.append(("\(referral.name)", view))
+            }
+        }
+        list.append(("other", AnyView(getOtherDiscountsRow(foreverData))))
+        list.append(("total", AnyView(getTotalRow(foreverData))))
+        return list
     }
 
     @ViewBuilder

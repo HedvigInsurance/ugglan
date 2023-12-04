@@ -1,6 +1,7 @@
 import Apollo
 import Combine
 import Contracts
+import EditCoInsured
 import Flow
 import Payment
 import Presentation
@@ -38,11 +39,13 @@ struct HomeBottomScrollView: View {
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractIds: [String] = contractStore.state.activeContracts
+                        let contractIds: [InsuredPeopleConfig] = contractStore.state.activeContracts
                             .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
                             )
                             .compactMap {
-                                ($0.id)
+                                InsuredPeopleConfig(
+                                    contract: $0
+                                )
                             }
                         let homeStore: HomeStore = globalPresentableStoreContainer.get()
                         homeStore.send(.openCoInsured(contractIds: contractIds))
@@ -140,21 +143,10 @@ class HomeButtonScrollViewModel: ObservableObject {
         contractStore.stateSignal.plain()
             .map({
                 $0.activeContracts
-                    .first(where: { contract in
-                        if contract.upcomingChangedAgreement != nil {
-                            return contract.upcomingChangedAgreement?.coInsured
-                                .filter({
-                                    $0.hasMissingData && contract.terminationDate == nil
-                                })
-                                .isEmpty == false
-                        } else {
-                            return contract.currentAgreement?.coInsured
-                                .filter({
-                                    $0.hasMissingData && contract.terminationDate == nil
-                                })
-                                .isEmpty == false
-                        }
-                    }) != nil
+                    .filter { contract in
+                        contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                    }
+                    .isEmpty == false
             })
             .distinct()
             .publisher
@@ -165,21 +157,11 @@ class HomeButtonScrollViewModel: ObservableObject {
             .store(in: &cancellables)
 
         let show =
-            contractStore.state.activeContracts.first(where: { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return contract.upcomingChangedAgreement?.coInsured
-                        .filter({
-                            $0.hasMissingData && contract.terminationDate == nil
-                        })
-                        .isEmpty == false
-                } else {
-                    return contract.currentAgreement?.coInsured
-                        .filter({
-                            $0.hasMissingData && contract.terminationDate == nil
-                        })
-                        .isEmpty == false
-                }
-            }) != nil
+            contractStore.state.activeContracts
+            .filter { contract in
+                contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+            }
+            .isEmpty == false
         handleItem(.missingCoInsured, with: show)
     }
 }

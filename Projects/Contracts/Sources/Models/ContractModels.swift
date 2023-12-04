@@ -1,25 +1,9 @@
+import EditCoInsured
 import Foundation
+import Presentation
 import hCore
 import hCoreUI
 import hGraphQL
-
-extension String {
-    // converts a YYYY-MM-DD date-string to a Date
-    var localDateToDate: Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.date(from: self)
-    }
-
-    var localYYMMDDDateToDate: Date? {
-        let formatter = DateFormatter()
-        if self == "" {
-            return nil
-        }
-        formatter.dateFormat = "yyMMdd"
-        return formatter.date(from: self)
-    }
-}
 
 public struct ProductVariant: Codable, Hashable {
     let termsVersion: String
@@ -77,7 +61,8 @@ public struct Contract: Codable, Hashable, Equatable {
         firstName: String,
         lastName: String,
         ssn: String?,
-        typeOfContract: TypeOfContract
+        typeOfContract: TypeOfContract,
+        coInsured: [CoInsuredModel]
     ) {
         self.id = id
         self.currentAgreement = currentAgreement
@@ -93,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.lastName = lastName
         self.ssn = ssn
         self.typeOfContract = typeOfContract
+        self.coInsured = coInsured
     }
 
     public let id: String
@@ -109,15 +95,16 @@ public struct Contract: Codable, Hashable, Equatable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
+    public var coInsured: [CoInsuredModel]
     public var fullName: String {
         return firstName + " " + lastName
     }
     public var nbOfMissingCoInsured: Int {
-        if let upcomingChangedAgreement {
-            return upcomingChangedAgreement.coInsured.filter({ $0.hasMissingInfo }).count
-        } else {
-            return currentAgreement?.coInsured.filter({ $0.hasMissingInfo }).count ?? 0
-        }
+        return self.coInsured.filter({ $0.hasMissingInfo }).count
+    }
+
+    public var nbOfMissingCoInsuredWithoutTermination: Int {
+        return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
     }
 
     public var showEditInfo: Bool {
@@ -197,6 +184,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingRenewal = nil
         selfChangeBlockers = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
+        coInsured = []
         self.firstName = firstName
         self.lastName = lastName
         self.ssn = ssn
@@ -220,6 +208,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
+        coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
         self.firstName = firstName
         self.lastName = lastName
         self.ssn = ssn
@@ -452,7 +441,6 @@ public struct Agreement: Codable, Hashable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
-        self.coInsured = coInsured
     }
 
     public let certificateUrl: String?
@@ -461,7 +449,6 @@ public struct Agreement: Codable, Hashable {
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: ProductVariant
-    public var coInsured: [CoInsuredModel]
 
     init(
         premium: MonetaryAmount,
@@ -475,7 +462,6 @@ public struct Agreement: Codable, Hashable {
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
-        self.coInsured = coInsured
     }
 
     init?(
@@ -490,7 +476,6 @@ public struct Agreement: Codable, Hashable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-        coInsured = agreement.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
     }
 }
 
@@ -521,4 +506,25 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
     public let displayName: String
     public let url: String
+}
+
+extension InsuredPeopleConfig {
+    public init(
+        contract: Contract
+    ) {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        self.init(
+            contractCoInsured: contract.coInsured,
+            contractId: contract.id,
+            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+            numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
+            numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
+            displayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
+            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            holderFirstName: contract.firstName,
+            holderLastName: contract.lastName,
+            holderSSN: contract.ssn
+        )
+    }
 }

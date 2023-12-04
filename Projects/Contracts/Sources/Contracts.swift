@@ -1,3 +1,4 @@
+import EditCoInsured
 import Flow
 import Foundation
 import Introspect
@@ -123,10 +124,10 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
-                EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
-            } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(contractId)) = action {
-                EditCoInsuredJourney.openMissingCoInsuredAlert(contractId: contractId)
+            } else if case let .openEditCoInsured(config, fromInfoCard) = action {
+                EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
+            } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(config)) = action {
+                EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
