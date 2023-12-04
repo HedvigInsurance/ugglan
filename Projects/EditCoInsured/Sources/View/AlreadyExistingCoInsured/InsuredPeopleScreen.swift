@@ -245,7 +245,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
         let existingList = config.contractCoInsured
-        let nbOfCoInsured = existingList.count
+        let nbOfCoInsured = config.numberOfMissingCoInsuredWithoutTermination  //existingList.count
         let allHasMissingInfo = existingList.allSatisfy({ $0.hasMissingInfo })
 
         if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()), allHasMissingInfo {
