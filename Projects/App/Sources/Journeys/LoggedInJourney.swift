@@ -136,6 +136,14 @@ extension AppJourney {
                     return false
                 }
             }
+            .onAction(HomeStore.self) { action in
+                if case let .openDocument(url) = action {
+                    Journey(
+                        Document(url: url, title: L10n.insuranceCertificateTitle),
+                        style: .detented(.large)
+                    )
+                }
+            }
     }
 
     static var loggedIn: some JourneyPresentation {

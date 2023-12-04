@@ -35,9 +35,9 @@ struct PaymentStatusView: View {
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.blueFill)
+                    .foregroundColor(hSignalColor.blueElement)
 
-                hText(L10n.paymentsInProgress, style: .standardSmall)
+                hText(L10n.paymentsPaymentInProgress, style: .standardSmall)
                     .foregroundColor(hSignalColor.blueText)
                 Spacer()
             }
@@ -79,8 +79,13 @@ struct PaymentStatusView: View {
 
 struct PaymentStatusView_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentStatusView(status: .pending) { _ in
-
+        Localization.Locale.currentLocale = .sv_SE
+        return VStack {
+            PaymentStatusView(status: .pending) { _ in }
+            PaymentStatusView(status: .success) { _ in }
+            PaymentStatusView(status: .addedtoFuture(date: "2023-10-11")) { _ in }
+            PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11")) { _ in }
+            Spacer()
         }
     }
 }

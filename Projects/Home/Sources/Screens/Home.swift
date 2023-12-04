@@ -118,24 +118,17 @@ extension HomeView {
                     FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
                         .slideUpFadeAppearAnimation()
                 case .terminated:
-                    deletedInfoView
-                    InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
-                    startAClaimButton
-                    openOtherServices
+                    VStack(spacing: 16) {
+                        InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                        startAClaimButton
+                        openOtherServices
+                    }
                 case .loading:
                     EmptyView()
                 }
             }
         }
         .padding(.bottom, 16)
-    }
-
-    @ViewBuilder
-    private var deletedInfoView: some View {
-        InfoCard(
-            text: L10n.hometabAccountDeletionNotification,
-            type: .attention
-        )
     }
 
     private var startAClaimButton: some View {

@@ -194,7 +194,32 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
-        if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
+        if let upcomingRenewal = contract.upcomingRenewal,
+            let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date())
+        {
+            hSection {
+                InfoCard(
+                    text: days == 0
+                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                        buttonAction: {
+                            if let url = URL(string: upcomingRenewal.draftCertificateUrl) {
+                                store.send(
+                                    .contractDetailNavigationAction(
+                                        action: .document(url: url, title: L10n.insuranceCertificateTitle)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                ])
+            }
+            .padding(.bottom, 16)
+        } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
                 HStack {
                     if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
