@@ -44,7 +44,6 @@ public final class EditCoInsuredStore: LoadingStateStore<
     }
 
     public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
-        var newState = state
         switch action {
         case .performCoInsuredChanges:
             setLoading(for: .postCoInsured)
@@ -52,6 +51,18 @@ public final class EditCoInsuredStore: LoadingStateStore<
             break
         }
 
-        return newState
+        return state
+    }
+}
+
+enum EditCoInsuredError: Error {
+    case error(message: String)
+}
+
+extension EditCoInsuredError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .error(message): return message
+        }
     }
 }
