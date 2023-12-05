@@ -41,9 +41,8 @@ struct ContractInformationView: View {
                             })
                         }
                         .withoutHorizontalPadding
-                        hRowDivider()
-
                         if contract.supportsCoInsured {
+                            hRowDivider()
                             addCoInsuredView(contract: contract)
                         }
 
@@ -84,22 +83,35 @@ struct ContractInformationView: View {
         let editTypes: [EditType] = EditType.getTypes(for: contract)
         return editTypes.count == 1 && editTypes.first == .coInsured
     }
+    
+    func insuredField(contract: Contract) -> some View {
+        VStack {
+            HStack {
+                hText(L10n.coinsuredEditTitle)
+                Spacer()
+                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                    .foregroundColor(hTextColor.secondary)
+            }
+        }
+    }
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
             hSection {
-                hRow {
-                    VStack {
-                        HStack {
-                            hText(L10n.coinsuredEditTitle)
-                            Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                                .foregroundColor(hTextColor.secondary)
+                HStack {
+                    if hAnalyticsExperiment.editCoinsured {
+                        hRow {
+                            insuredField(contract: contract)
                         }
+                    } else {
+                        hRow {
+                            insuredField(contract: contract)
+                        }.hWithoutDivider
                     }
                 }
+                
                 if hAnalyticsExperiment.editCoinsured {
                     hRow {
                         let hasContentBelow =

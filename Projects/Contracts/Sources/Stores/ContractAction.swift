@@ -71,7 +71,11 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     var buttonTitle: String {
         switch self {
         case .changeAddress: return L10n.generalContinueButton
-        case .coInsured: return L10n.openChat
+        case .coInsured:
+            if hAnalyticsExperiment.editCoinsured {
+                return L10n.generalContinueButton
+            }
+            return L10n.openChat
         }
     }
 
