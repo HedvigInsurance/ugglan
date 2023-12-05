@@ -99,15 +99,20 @@ extension Message: Reusable {
         let attributedString: NSAttributedString = {
             switch type {
             case let .deepLink(url):
-                return DeepLink.getType(from: url)?.title
-                    ?? NSAttributedString(
+                let deepLinkType = DeepLink.getType(from: url)
+                guard let deepLinkType else {
+                    return NSAttributedString(
                         styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
                     )
+                }
+                if deepLinkType == .contract {
+                    return deepLinkType.title(displayText: url.contractName ?? deepLinkType.importantText)
+                }
+                return deepLinkType.title(displayText: deepLinkType.importantText)
             default:
                 return NSAttributedString(
                     styledText: StyledText(text: body, style: UIColor.brandStyle(.chatMessage))
                 )
-
             }
         }()
 
@@ -626,7 +631,14 @@ extension Message: Reusable {
                         let attributedString: NSMutableAttributedString = {
                             switch message.type {
                             case let .deepLink(url):
-                                return DeepLink.getType(from: url)?.title ?? textAttributedString
+                                let deepLinkType = DeepLink.getType(from: url)
+                                guard let deepLinkType else { return textAttributedString }
+                                if deepLinkType == .contract {
+                                    return deepLinkType.title(
+                                        displayText: url.contractName ?? deepLinkType.importantText
+                                    )
+                                }
+                                return deepLinkType.title(displayText: deepLinkType.importantText)
                             default:
                                 message.body.links.forEach { linkRange in
                                     textAttributedString.addAttributes(
