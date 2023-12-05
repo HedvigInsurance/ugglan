@@ -75,7 +75,7 @@ struct EditContract: View {
                                 break
                             }
                         } content: {
-                            hText(selectedType?.buttonTitle ?? "", style: .standard)
+                            hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .standard)
                         }
                         .disabled(selectedType == nil)
                         
