@@ -16,7 +16,7 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                 outcome: .none,
                 submittedAt: "2023-11-11",
                 closedAt: nil,
-                signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
+                signedAudioURL: "https://github.com/robovm/apple-ios-samples/blob/master/avTouch/sample.m4a",
                 type: "associated type",
                 memberFreeText: nil,
                 payoutAmount: nil,
