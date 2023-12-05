@@ -23,7 +23,7 @@ class FetchClaimServiceDemo: hFetchClaimService {
                     .init(
                         id: "imageId1",
                         url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
-                        mimeType: "image/png",
+                        mimeType: MimeType.findBy(mimeType: "image/png"),
                         name: "test-image",
                         size: 52176
                     )

@@ -14,4 +14,10 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case openClaimDetails(claim: ClaimModel)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case closeClaimStatus
+    case navigation(action: ClaimsNavigationAction)
+
+}
+
+public enum ClaimsNavigationAction: ActionProtocol, Hashable {
+    case openFile(file: File)
 }
