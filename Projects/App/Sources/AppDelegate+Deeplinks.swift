@@ -8,6 +8,7 @@ import Profile
 import UIKit
 import hAnalytics
 import hCore
+import hGraphQL
 
 extension AppDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL, fromVC: UIViewController) {
@@ -15,6 +16,7 @@ extension AppDelegate {
             return
         }
         guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
+        log.info("Deep link clicked: \(path)", attributes: ["url": dynamicLinkUrl])
 
         if path == .directDebit {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

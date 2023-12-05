@@ -42,15 +42,3 @@ public enum DeepLink: String, Codable {
         return type
     }
 }
-
-extension DeepLink {
-    var deprecatedTrackingName: String {
-        "DEEP_LINK_\(self.rawValue.uppercased())"
-    }
-}
-
-extension DeepLink {
-    var trackingName: String {
-        return "DEEP_LINK"
-    }
-}
