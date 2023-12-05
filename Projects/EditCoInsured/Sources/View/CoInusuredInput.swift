@@ -601,35 +601,20 @@ public class IntentViewModel: ObservableObject {
             self.errorMessageForCoinsuredList = nil
         }
         do {
-            let data = try await withCheckedThrowingContinuation {
-                (
-                    continuation: CheckedContinuation<
-                        OctopusGraphQL.MidtermChangeIntentCreateMutation.Data.MidtermChangeIntentCreate, Error
-                    >
-                ) -> Void in
-                let coInsuredList = coInsured.map { coIn in
-                    OctopusGraphQL.CoInsuredInput(
-                        firstName: coIn.firstName,
-                        lastName: coIn.lastName,
-                        ssn: coIn.formattedSSN,
-                        birthdate: coIn.birthDate?.calculate10DigitBirthDate
-                    )
-                }
-                let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.MidtermChangeIntentCreateMutation(
-                            contractId: contractId,
-                            input: coinsuredInput
-                        )
-                    )
-                    .onValue { value in
-                        continuation.resume(with: .success(value.midtermChangeIntentCreate))
-                    }
-                    .onError { graphQLError in
-                        continuation.resume(throwing: graphQLError)
-                    }
+            let coInsuredList = coInsured.map { coIn in
+                OctopusGraphQL.CoInsuredInput(
+                    firstName: coIn.firstName,
+                    lastName: coIn.lastName,
+                    ssn: coIn.formattedSSN,
+                    birthdate: coIn.birthDate?.calculate10DigitBirthDate
+                )
             }
+            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
+            let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
+                contractId: contractId,
+                input: coinsuredInput
+            )
+            let data = try await octopus.client.perform(mutation: mutation).midtermChangeIntentCreate
             withAnimation {
                 if let graphQLError = data.userError {
                     switch origin {
@@ -650,9 +635,9 @@ public class IntentViewModel: ObservableObject {
             withAnimation {
                 switch origin {
                 case .coinsuredSelectList:
-                    self.errorMessageForCoinsuredList = L10n.General.errorBody
+                    self.errorMessageForCoinsuredList = exception.localizedDescription
                 case .coinsuredInput:
-                    self.errorMessageForInput = L10n.General.errorBody
+                    self.errorMessageForInput = exception.localizedDescription
                 }
             }
         }
@@ -667,26 +652,11 @@ public class IntentViewModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try await withCheckedThrowingContinuation {
-                (
-                    continuation: CheckedContinuation<
-                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
-                    >
-                ) -> Void in
-                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
-                self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { value in
-                        if let data = value.personalInformation {
-                            continuation.resume(with: .success(data))
-                        }
-                    }
-                    .onError { graphQLError in
-                        continuation.resume(throwing: graphQLError)
-                    }
+            let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
+            let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
+            let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+            guard let data = data.personalInformation else {
+                throw EditCoInsuredError.error(message: L10n.General.errorBody)
             }
             withAnimation {
                 self.firstName = data.firstName
