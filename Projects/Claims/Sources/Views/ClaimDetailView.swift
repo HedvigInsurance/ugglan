@@ -88,7 +88,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
             signedAudioURL: "",
             type: "",
             memberFreeText: nil,
-            payoutAmount: nil
+            payoutAmount: nil,
+            files: []
         )
         return ClaimDetailView(claim: claim)
     }
