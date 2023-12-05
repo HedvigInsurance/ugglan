@@ -77,7 +77,10 @@ public struct ClaimDetailView: View {
                             hText(L10n.ClaimStatusDetail.uploadedFiles)
                                 .padding(.leading, 2)
                             Spacer()
-                            InfoViewHolder(title: "Title", description: "Desc")
+                            InfoViewHolder(
+                                title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
+                                description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
+                            )
                         }
                     }
                     .padding(.top, 16)
@@ -100,7 +103,7 @@ public struct ClaimDetailView: View {
                         hButton.LargeButton(type: .primaryAlt) {
 
                         } content: {
-                            hText("Add more files")
+                            hText(L10n.ClaimStatusDetail.addMoreFiles)
                         }
                     }
                     .padding(.vertical, 8)
