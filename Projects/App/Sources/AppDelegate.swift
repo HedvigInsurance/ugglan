@@ -335,17 +335,29 @@ extension ApolloClient {
                 let paymentService = hPaymentServiceOctopus()
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
-                let hFetchClaimServiceOctopus = FetchClaimServiceOctopus()
                 let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
-                Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
-                Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
-                Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimServiceOctopus })
+                switch Environment.current {
+                case .staging:
+                    let hFetchClaimService = FetchClaimServiceDemo()
+                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
+                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
+                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                case .production, .custom:
+                    let hFetchClaimService = FetchClaimServiceOctopus()
+                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
+                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
+                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                }
 
             }
             .toVoid()
