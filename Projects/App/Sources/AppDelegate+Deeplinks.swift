@@ -47,7 +47,6 @@ extension AppDelegate {
                     }
                     profileStore.send(.fetchMemberDetails)
                 }
-            //<<<<<<< HEAD
         } else if path == .contract {
             let contractId = getContractId(from: dynamicLinkUrl)
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
@@ -84,7 +83,6 @@ extension AppDelegate {
                         }
                     contractStore.send(.fetchContracts)
                 }
-            //=======
         } else if path == .payments {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
@@ -92,7 +90,6 @@ extension AppDelegate {
                     let vc = PaymentsView().detentJourney(schema: Bundle.main.urlScheme ?? "")
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
-                    //>>>>>>> main
                 }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

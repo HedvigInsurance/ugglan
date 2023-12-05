@@ -1,10 +1,8 @@
 import AVFoundation
-import Contracts
 import Flow
 import Form
 import Foundation
 import Kingfisher
-import Presentation
 import SafariServices
 import UIKit
 import hAnalytics
@@ -96,27 +94,6 @@ extension Message: Reusable {
             }
 
             return 89 + imageHeight + size.height + largerMarginTop + extraHeightForTimeStampLabel
-        }
-        if case .deepLink = type {
-            let title = "Go to contract"
-            let attributedString = NSAttributedString(
-                styledText: StyledText(text: title, style: UIColor.brandStyle(.chatMessage))
-            )
-            let size = attributedString.boundingRect(
-                with: CGSize(width: 227.77, height: CGFloat(Int.max)),
-                options: [.usesLineFragmentOrigin, .usesFontLeading],
-                context: nil
-            )
-            let imageHeight: CGFloat = {
-                let imageToShow = hCoreUIAssets.pillowHome.image
-                let ratio = imageToShow.size.width / imageToShow.size.height
-                return (227.77) / ratio
-            }()
-            if isRelatedToPreviousMessage {
-                return imageHeight + smallerMarginTop + extraHeightForTimeStampLabel
-            }
-
-            return imageHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
 
         let attributedString: NSAttributedString = {
@@ -703,115 +680,6 @@ extension Message: Reusable {
                                     }
                                 }
                             }
-                    case let .deepLink(url):
-                        let deepLinkMainContainer = UIView()
-                        deepLinkMainContainer.backgroundColor = .clear
-
-                        deepLinkMainContainer.snp.makeConstraints { make in
-                            make.width.equalTo(200)
-                        }
-
-                        let deepLinkContainer = UIView()
-                        deepLinkContainer.backgroundColor = .clear
-                        deepLinkMainContainer.addSubview(deepLinkContainer)
-                        deepLinkContainer.snp.makeConstraints { make in
-                            make.leading.trailing.top.bottom.equalToSuperview()
-                        }
-                        deepLinkContainer.isUserInteractionEnabled = true
-
-                        let imageView = UIImageView()
-                        deepLinkContainer.addSubview(imageView)
-                        imageView.snp.makeConstraints { make in
-                            make.leading.greaterThanOrEqualToSuperview()
-                            make.trailing.lessThanOrEqualToSuperview()
-                            make.width.equalToSuperview().multipliedBy(0.6)
-                            make.top.equalToSuperview().offset(12)
-                            make.centerX.equalToSuperview()
-                        }
-
-                        imageView.frame.size.height = 40
-                        imageView.layer.cornerRadius = 20
-                        imageView.clipsToBounds = true
-                        imageView.contentMode = .scaleAspectFit
-
-                        let titleTextStyle = UIColor.brandStyle(.chatMessage)
-                            .colored(messageTextColor)
-
-                        let text = L10n.chatFileDownload
-
-                        let styledText = StyledText(text: text, style: titleTextStyle)
-
-                        let titleLabel = UILabel(styledText: styledText)
-                        titleLabel.font = Fonts.fontFor(style: .standard)
-                        titleLabel.text = ""
-                        titleLabel.numberOfLines = 2
-                        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-                        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-
-                        deepLinkContainer.addSubview(titleLabel)
-                        titleLabel.snp.makeConstraints { make in
-                            make.top.equalTo(imageView.snp.bottom).offset(10)
-                            make.leading.equalToSuperview()
-                            make.trailing.equalToSuperview()
-                        }
-
-                        //button
-                        let button = UIButton(type: .custom)
-                        button.setTitle("Go")
-                        button.backgroundColor = UIColor(dynamic: { trait in
-                            hButtonColor.primaryAltDefault
-                                .colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base).color.uiColor()
-                        })
-                        button.tintColor = UIColor.brand(.primaryText())
-                        button.setTitleColor(UIColor.black, for: .normal)
-                        button.titleLabel?.textColor = UIColor.black
-                        button.titleLabel?.font = Fonts.fontFor(style: .standard)
-
-                        button.contentEdgeInsets = .init(horizontalInset: 10, verticalInset: 6)
-                        button.layer.cornerRadius = 12
-                        button.isUserInteractionEnabled = false
-
-                        deepLinkContainer.addSubview(button)
-                        button.snp.makeConstraints { make in
-                            make.leading.equalToSuperview()
-                            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-                            make.width.equalToSuperview().dividedBy(2)
-                        }
-                        contentContainer.addArrangedSubview(deepLinkMainContainer)
-                        deepLinkContainer.snp.makeConstraints { make in
-                            make.width.equalToSuperview()
-                        }
-
-                        deepLinkContainer.alpha = 0
-
-                        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                        let queryItems = urlComponents?.queryItems
-                        let contractId = queryItems?.first(where: { $0.name == "contractId" })?.value
-
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-                        if let imageToShow = contractStore.state.contractForId(contractId ?? "")?.pillowType?.bgImage {
-                            imageView.image = imageToShow
-                        } else {
-                            imageView.image = hCoreUIAssets.pillowHome.image
-                        }
-
-                        var imageToShow: UIImage {
-                            if let image = contractStore.state.contractForId(contractId ?? "")?.pillowType?.bgImage {
-                                return image
-                            } else {
-                                return hCoreUIAssets.pillowHome.image
-                            }
-                        }
-
-                        deepLinkContainer.alpha = 1
-                        titleLabel.text = "Go to contract detail"
-                        //                        imageView.image = hCoreUIAssets.pillowHome.image
-                        let ratio = (imageToShow.size.width) / (imageToShow.size.height)
-                        imageView.snp.makeConstraints { make in
-                            make.width.equalTo(imageView.snp.height).multipliedBy(ratio)
-                        }
-                    /***/
                     }
 
                     if !message.type.isRichType {
