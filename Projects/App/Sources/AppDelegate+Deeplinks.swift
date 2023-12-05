@@ -107,3 +107,13 @@ extension AppDelegate {
         return queryItems.first(where: { $0.name == "contractId" })?.value
     }
 }
+
+extension URL {
+    public var contractName: String? {
+        guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        let contractIdString = queryItems.first(where: { $0.name == "contractId" })?.value
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?.productVariant.displayName
+    }
+}
