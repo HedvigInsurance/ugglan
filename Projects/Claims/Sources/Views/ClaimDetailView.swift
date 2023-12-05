@@ -23,11 +23,11 @@ public struct ClaimDetailView: View {
             _player = State(initialValue: AudioPlayer(url: URL(string: signedAudioURL)))
         }
     }
-
+    
     private var statusParagraph: String {
         claim.statusParagraph
     }
-
+    
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
@@ -49,7 +49,7 @@ public struct ClaimDetailView: View {
                         .padding(.bottom, 4)
                     }
                 }
-
+                
                 if let inputText = claim.memberFreeText {
                     hSection {
                         hRow {
@@ -62,7 +62,7 @@ public struct ClaimDetailView: View {
                     }
                     .padding(.top, 16)
                 }
-
+                
                 if claim.showUploadedFiles {
                     hSection {
                         if let player {
@@ -87,7 +87,7 @@ public struct ClaimDetailView: View {
                     hSection {
                         LazyVGrid(columns: adaptiveColumn, spacing: 8) {
                             ForEach(claim.files, id: \.self) { file in
-                                FilePreview(file: file) {
+                                FileView(file: file) {
                                     store.send(.navigation(action: .openFile(file: file)))
                                 }
                                 .aspectRatio(1, contentMode: .fit)
@@ -97,11 +97,11 @@ public struct ClaimDetailView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
-
+                
                 if claim.canAddFiles {
                     hSection {
                         hButton.LargeButton(type: .primaryAlt) {
-
+                            
                         } content: {
                             hText(L10n.ClaimStatusDetail.addMoreFiles)
                         }
@@ -128,77 +128,52 @@ struct ClaimDetailView_Previews: PreviewProvider {
             files: [
                 .init(
                     id: "imageId1",
-                    url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
-                    mimeType: MimeType.findBy(mimeType: "image/png"),
-                    name: "test-image",
-                    size: 52176
+                    fetchedFile: .init(
+                        url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
+                        size: 22332
+                    ),
+                    mimeType: MimeType.PNG,
+                    name: "test-image"
                 ),
                 .init(
                     id: "imageId2",
-                    url: URL(
-                        string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
-                    )!,
-                    mimeType: MimeType.findBy(mimeType: "image/png"),
-                    name: "test-image",
-                    size: 52176
+                    fetchedFile: .init(
+                        url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!,
+                        size: 53443
+                    ),
+                    mimeType: MimeType.PNG,
+                    name: "test-image2"
                 ),
                 .init(
                     id: "imageId3",
-                    url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
-                    mimeType: MimeType.findBy(mimeType: "image/png"),
-                    name: "test-image",
-                    size: 52176
+                    fetchedFile: .init(
+                        url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
+                        size: 52176
+                    ),
+                    mimeType: MimeType.PNG,
+                    name: "test-image3"
                 ),
                 .init(
                     id: "imageId4",
-                    url: URL(string: "https://flif.info/example-images/fish.png")!,
-                    mimeType: MimeType.findBy(mimeType: "image/png"),
-                    name: "test-image",
-                    size: 52176
+                    fetchedFile: .init(
+                        url: URL(string: "https://flif.info/example-images/fish.png")!,
+                        size: 52176
+                    ),
+                    mimeType: MimeType.PNG,
+                    name: "test-image4"
                 ),
                 .init(
                     id: "imageId5",
-                    url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
+                    fetchedFile: .init(
+                        url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
+                        size: 52176
+                    ),
                     mimeType: MimeType.PDF,
-                    name: "test-pdf long name it is possible to have it is long name .pdf",
-                    size: 52176
-                ),
+                    name: "test-pdf long name it is possible to have it is long name .pdf"
+                )
             ]
         )
         return ClaimDetailView(claim: claim)
     }
 }
 
-struct FilePreview: View {
-    let file: File
-    let onTap: () -> Void
-    var body: some View {
-        Group {
-            if file.mimeType.isImage {
-                KFImage(file.url)
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fit)
-            } else {
-                GeometryReader { geometry in
-                    VStack(spacing: 4) {
-                        Image(uiImage: hCoreUIAssets.pdf.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundColor(hTextColor.secondary)
-                            .padding(.horizontal, geometry.size.width / 3)
-                            .padding(.top, geometry.size.height / 5)
-                        hText(file.name, style: .standardExtraExtraSmall)
-                            .foregroundColor(hTextColor.secondary)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
-                    }
-                }
-                .background(hFillColor.opaqueOne)
-            }
-        }
-        .onTapGesture {
-            onTap()
-        }
-    }
-}

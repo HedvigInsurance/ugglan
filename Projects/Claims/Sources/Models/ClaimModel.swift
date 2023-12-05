@@ -14,7 +14,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
-        files: [File]
+        files: [FileWrapper]
     ) {
         self.id = id
         self.status = status
@@ -42,7 +42,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let type: String
-    public let files: [File]
+    public let files: [FileWrapper]
 
     public var statusParagraph: String {
         switch self.status {
@@ -143,13 +143,38 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public struct File: Codable, Equatable, Identifiable, Hashable {
+public struct FileWrapper: Codable, Equatable, Identifiable, Hashable {
     public let id: String
-    let url: URL
+    let fetchedFile: FetchedFile?
+    let localFile: LocalFile?
     let mimeType: MimeType
     let name: String
-    let size: Double
 
+    init(id: String, fetchedFile: FetchedFile, mimeType: MimeType, name: String) {
+        self.id = id
+        self.fetchedFile = fetchedFile
+        self.localFile = nil
+        self.mimeType = mimeType
+        self.name = name
+    }
+
+    init(id: String, localFile: LocalFile?, mimeType: MimeType, name: String) {
+        self.id = id
+        self.fetchedFile = nil
+        self.localFile = localFile
+        self.mimeType = mimeType
+        self.name = name
+    }
+}
+
+public struct FetchedFile: Codable, Equatable, Hashable {
+    let url: URL
+    let size: Double
+}
+
+public struct LocalFile: Codable, Equatable, Hashable {
+    let data: Data
+    let size: Double
 }
 
 enum MimeType: Codable, Equatable, Hashable {
