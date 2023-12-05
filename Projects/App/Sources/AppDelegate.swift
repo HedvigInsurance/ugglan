@@ -338,13 +338,22 @@ extension ApolloClient {
                 let networkClient = NetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
-                Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
-                Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
-
+                switch Environment.current {
+                case .staging:
+                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
+                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
+                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                case .production, .custom:
+                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
+                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
+                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                }
             }
             .toVoid()
     }
