@@ -42,7 +42,8 @@ extension ApolloClient {
                     } else if let data = result.data {
                         completion(.success(data))
                     }
-                case let .failure(error): completion(.failure(GraphQLError.otherError))
+                case let .failure(error):
+                    completion(.failure(GraphQLError.otherError))
                 }
             }
 
@@ -65,13 +66,13 @@ extension ApolloClient {
             ) { result in
                 switch result {
                 case let .success(result):
-                    if let data = result.data {
+                    if let errors = result.errors {
+                        inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
+                    } else if let data = result.data {
                         inCont.resume(returning: data)
-                    } else if let errors = result.errors, let firstError = errors.first {
-                        inCont.resume(throwing: firstError)
                     }
-                case let .failure(error):
-                    inCont.resume(throwing: error)
+                case .failure:
+                    inCont.resume(throwing: GraphQLError.otherError)
                 }
             }
         }
@@ -125,13 +126,13 @@ extension ApolloClient {
             ) { result in
                 switch result {
                 case let .success(result):
-                    if let data = result.data {
-                        inCont.resume(with: .success(data))
-                    } else if let errors = result.errors, let firstError = errors.first {
-                        inCont.resume(throwing: firstError)
+                    if let errors = result.errors {
+                        inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
+                    } else if let data = result.data {
+                        inCont.resume(returning: data)
                     }
-                case let .failure(error):
-                    inCont.resume(throwing: error)
+                case .failure:
+                    inCont.resume(throwing: GraphQLError.otherError)
                 }
             }
         }
