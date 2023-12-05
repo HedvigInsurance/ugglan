@@ -7,10 +7,11 @@ public enum DeepLink: String, Codable {
     case insurances
     case home
     case sasEuroBonus = "eurobonus"
+    case contract = "contract"
     case payments
 
-    public var wholeText: String {
-        return L10n.generalGoTo(importantText)
+    public func wholeText(displayText: String) -> String {
+        return L10n.generalGoTo(displayText)
     }
 
     public var importantText: String {
@@ -29,6 +30,8 @@ public enum DeepLink: String, Codable {
             return L10n.SasIntegration.title
         case .payments:
             return L10n.myPaymentTitle
+        case .contract:
+            return L10n.deepLinkContract
         }
     }
 
@@ -37,17 +40,5 @@ public enum DeepLink: String, Codable {
             return nil
         }
         return type
-    }
-}
-
-extension DeepLink {
-    var deprecatedTrackingName: String {
-        "DEEP_LINK_\(self.rawValue.uppercased())"
-    }
-}
-
-extension DeepLink {
-    var trackingName: String {
-        return "DEEP_LINK"
     }
 }

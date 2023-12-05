@@ -40,7 +40,10 @@ struct HomeBottomScrollView: View {
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
                         let contractIds: [InsuredPeopleConfig] = contractStore.state.activeContracts
-                            .filter({ $0.nbOfMissingCoInsured > 0 && $0.supportsCoInsured && $0.terminationDate == nil }
+                            .filter({
+                                $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.supportsCoInsured
+                                    && $0.terminationDate == nil
+                            }
                             )
                             .compactMap {
                                 InsuredPeopleConfig(
@@ -144,8 +147,14 @@ class HomeButtonScrollViewModel: ObservableObject {
             .map({
                 $0.activeContracts
                     .filter { contract in
-                        contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                        if contract.coInsured.isEmpty {
+                            return false
+                        } else {
+                            return contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil })
+                                .isEmpty
+                        }
                     }
+                    .filter({ $0.supportsCoInsured })
                     .isEmpty == false
             })
             .distinct()
@@ -159,8 +168,13 @@ class HomeButtonScrollViewModel: ObservableObject {
         let show =
             contractStore.state.activeContracts
             .filter { contract in
-                contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                if contract.coInsured.isEmpty {
+                    return false
+                } else {
+                    return contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
+                }
             }
+            .filter({ $0.supportsCoInsured })
             .isEmpty == false
         handleItem(.missingCoInsured, with: show)
     }
