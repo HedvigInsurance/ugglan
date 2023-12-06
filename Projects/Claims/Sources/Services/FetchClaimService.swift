@@ -6,8 +6,9 @@ public protocol hFetchClaimService {
     func get() async throws -> [ClaimModel]
 }
 
-class FetchClaimServiceDemo: hFetchClaimService {
-    func get() async throws -> [ClaimModel] {
+public class FetchClaimServiceDemo: hFetchClaimService {
+    public init() {}
+    public func get() async throws -> [ClaimModel] {
         return [
             ClaimModel(
                 id: "claimId",
@@ -15,7 +16,7 @@ class FetchClaimServiceDemo: hFetchClaimService {
                 outcome: .none,
                 submittedAt: "2023-11-11",
                 closedAt: nil,
-                signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
+                signedAudioURL: "https://github.com/robovm/apple-ios-samples/blob/master/avTouch/sample.m4a",
                 type: "associated type",
                 memberFreeText: nil,
                 payoutAmount: nil,
@@ -23,10 +24,40 @@ class FetchClaimServiceDemo: hFetchClaimService {
                     .init(
                         id: "imageId1",
                         url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
-                        mimeType: "image/png",
+                        mimeType: MimeType.findBy(mimeType: "image/png"),
                         name: "test-image",
                         size: 52176
-                    )
+                    ),
+                    .init(
+                        id: "imageId2",
+                        url: URL(
+                            string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
+                        )!,
+                        mimeType: MimeType.findBy(mimeType: "image/png"),
+                        name: "test-image",
+                        size: 52176
+                    ),
+                    .init(
+                        id: "imageId3",
+                        url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
+                        mimeType: MimeType.findBy(mimeType: "image/png"),
+                        name: "test-image",
+                        size: 52176
+                    ),
+                    .init(
+                        id: "imageId4",
+                        url: URL(string: "https://flif.info/example-images/fish.png")!,
+                        mimeType: MimeType.findBy(mimeType: "image/png"),
+                        name: "test-image",
+                        size: 52176
+                    ),
+                    .init(
+                        id: "imageId5",
+                        url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
+                        mimeType: MimeType.PDF,
+                        name: "test-pdf long name it is possible to have it is long name .pdf",
+                        size: 52176
+                    ),
                 ]
             )
         ]
