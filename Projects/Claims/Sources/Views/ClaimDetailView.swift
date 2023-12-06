@@ -10,11 +10,7 @@ public struct ClaimDetailView: View {
     @State var claim: ClaimModel
     @PresentableStore var store: ClaimsStore
     @State var player: AudioPlayer?
-    private let adaptiveColumn = [
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
-    ]
+
     public init(
         claim: ClaimModel
     ) {
@@ -85,15 +81,7 @@ public struct ClaimDetailView: View {
                     }
                     .padding(.top, 16)
                     hSection {
-                        LazyVGrid(columns: adaptiveColumn, spacing: 8) {
-                            ForEach(claim.files, id: \.self) { file in
-                                FileView(file: file) {
-                                    store.send(.navigation(action: .openFile(file: file)))
-                                }
-                                .aspectRatio(1, contentMode: .fit)
-                                .cornerRadius(12)
-                            }
-                        }
+                        FilesGridView(files: claim.files, options: [])
                     }
                     .sectionContainerStyle(.transparent)
                 }
@@ -101,7 +89,7 @@ public struct ClaimDetailView: View {
                 if claim.canAddFiles {
                     hSection {
                         hButton.LargeButton(type: .primaryAlt) {
-                            
+                            store.send(.navigation(action: .openFilesFor(claim: claim)))
                         } content: {
                             hText(L10n.ClaimStatusDetail.addMoreFiles)
                         }
@@ -125,53 +113,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
             type: "associated type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [
-                .init(
-                    id: "imageId1",
-                    fetchedFile: .init(
-                        url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
-                        size: 22332
-                    ),
-                    mimeType: MimeType.PNG,
-                    name: "test-image"
-                ),
-                .init(
-                    id: "imageId2",
-                    fetchedFile: .init(
-                        url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!,
-                        size: 53443
-                    ),
-                    mimeType: MimeType.PNG,
-                    name: "test-image2"
-                ),
-                .init(
-                    id: "imageId3",
-                    fetchedFile: .init(
-                        url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
-                        size: 52176
-                    ),
-                    mimeType: MimeType.PNG,
-                    name: "test-image3"
-                ),
-                .init(
-                    id: "imageId4",
-                    fetchedFile: .init(
-                        url: URL(string: "https://flif.info/example-images/fish.png")!,
-                        size: 52176
-                    ),
-                    mimeType: MimeType.PNG,
-                    name: "test-image4"
-                ),
-                .init(
-                    id: "imageId5",
-                    fetchedFile: .init(
-                        url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
-                        size: 52176
-                    ),
-                    mimeType: MimeType.PDF,
-                    name: "test-pdf long name it is possible to have it is long name .pdf"
-                )
-            ]
+            files: []
         )
         return ClaimDetailView(claim: claim)
     }

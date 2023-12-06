@@ -14,7 +14,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
-        files: [FileWrapper]
+        files: [File]
     ) {
         self.id = id
         self.status = status
@@ -42,7 +42,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let type: String
-    public let files: [FileWrapper]
+    public let files: [File]
 
     public var statusParagraph: String {
         switch self.status {
@@ -143,38 +143,17 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public struct FileWrapper: Codable, Equatable, Identifiable, Hashable {
+public struct File: Codable, Equatable, Identifiable, Hashable {
     public let id: String
-    let fetchedFile: FetchedFile?
-    let localFile: LocalFile?
+    let size: Double
     let mimeType: MimeType
     let name: String
-
-    init(id: String, fetchedFile: FetchedFile, mimeType: MimeType, name: String) {
-        self.id = id
-        self.fetchedFile = fetchedFile
-        self.localFile = nil
-        self.mimeType = mimeType
-        self.name = name
-    }
-
-    init(id: String, localFile: LocalFile?, mimeType: MimeType, name: String) {
-        self.id = id
-        self.fetchedFile = nil
-        self.localFile = localFile
-        self.mimeType = mimeType
-        self.name = name
-    }
+    let source: FileSource
 }
 
-public struct FetchedFile: Codable, Equatable, Hashable {
-    let url: URL
-    let size: Double
-}
-
-public struct LocalFile: Codable, Equatable, Hashable {
-    let data: Data
-    let size: Double
+public enum FileSource: Codable, Equatable, Hashable {
+    case data(data: Data)
+    case url(url: URL)
 }
 
 enum MimeType: Codable, Equatable, Hashable {
@@ -222,34 +201,34 @@ enum MimeType: Codable, Equatable, Hashable {
 
     static func findBy(mimeType: String) -> MimeType {
         switch mimeType {
-        case MimeType.PDF.mimeType: return MimeType.PDF
-        case MimeType.DOCX.mimeType: return MimeType.DOCX
-        case MimeType.PPTX.mimeType: return MimeType.PPTX
-        case MimeType.XLSX.mimeType: return MimeType.XLSX
-        case MimeType.TXT.mimeType: return MimeType.TXT
-        case MimeType.JPEG.mimeType: return MimeType.JPEG
-        case MimeType.JPG.mimeType: return MimeType.JPG
-        case MimeType.PNG.mimeType: return MimeType.PNG
-        case MimeType.GIF.mimeType: return MimeType.GIF
-        case MimeType.BMP.mimeType: return MimeType.BMP
-        case MimeType.SVG.mimeType: return MimeType.SVG
-        case MimeType.MP3.mimeType: return MimeType.MP3
-        case MimeType.WAV.mimeType: return MimeType.WAV
-        case MimeType.FLAC.mimeType: return MimeType.FLAC
-        case MimeType.MP4.mimeType: return MimeType.MP4
-        case MimeType.AVI.mimeType: return MimeType.AVI
-        case MimeType.MKV.mimeType: return MimeType.MKV
-        case MimeType.HTML.mimeType: return MimeType.HTML
-        case MimeType.CSS.mimeType: return MimeType.CSS
-        case MimeType.CSV.mimeType: return MimeType.CSV
-        case MimeType.JSON.mimeType: return MimeType.JSON
+        case MimeType.PDF.mime: return MimeType.PDF
+        case MimeType.DOCX.mime: return MimeType.DOCX
+        case MimeType.PPTX.mime: return MimeType.PPTX
+        case MimeType.XLSX.mime: return MimeType.XLSX
+        case MimeType.TXT.mime: return MimeType.TXT
+        case MimeType.JPEG.mime: return MimeType.JPEG
+        case MimeType.JPG.mime: return MimeType.JPG
+        case MimeType.PNG.mime: return MimeType.PNG
+        case MimeType.GIF.mime: return MimeType.GIF
+        case MimeType.BMP.mime: return MimeType.BMP
+        case MimeType.SVG.mime: return MimeType.SVG
+        case MimeType.MP3.mime: return MimeType.MP3
+        case MimeType.WAV.mime: return MimeType.WAV
+        case MimeType.FLAC.mime: return MimeType.FLAC
+        case MimeType.MP4.mime: return MimeType.MP4
+        case MimeType.AVI.mime: return MimeType.AVI
+        case MimeType.MKV.mime: return MimeType.MKV
+        case MimeType.HTML.mime: return MimeType.HTML
+        case MimeType.CSS.mime: return MimeType.CSS
+        case MimeType.CSV.mime: return MimeType.CSV
+        case MimeType.JSON.mime: return MimeType.JSON
         default:
             return MimeType.other(type: mimeType)
 
         }
     }
 
-    var mimeType: String? {
+    var mime: String {
         switch self {
         case .PDF: return "application/pdf"
         case .DOCX: return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
