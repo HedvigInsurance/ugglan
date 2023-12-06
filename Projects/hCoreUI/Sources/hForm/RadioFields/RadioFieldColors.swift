@@ -9,7 +9,7 @@ struct RadioFieldsColors {
             hBackgroundColor.clear
         }
     }
-    
+
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {

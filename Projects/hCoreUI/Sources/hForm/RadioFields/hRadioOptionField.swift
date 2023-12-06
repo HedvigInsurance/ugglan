@@ -7,16 +7,16 @@ public struct hRadioOptionField: View {
     @State private var animate = false
     private var useAnimation: Bool
     @Binding var error: String?
-    
+
     @State var selected: String = ""
-    
+
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
             get: { !value.isEmpty },
             set: { _ in }
         )
     }
-    
+
     public init(
         value: String,
         placeholder: String? = nil,
@@ -28,7 +28,7 @@ public struct hRadioOptionField: View {
         self._error = error ?? Binding.constant(nil)
         self.useAnimation = useAnimation
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             hFieldLabel(
@@ -38,7 +38,7 @@ public struct hRadioOptionField: View {
                 shouldMoveLabel: shouldMoveLabel
             )
             .padding(.bottom, 13)
-            
+
             HStack(spacing: 16) {
                 getCheckBox(texts: [L10n.General.yes, L10n.General.no])
                 Spacer()
@@ -48,7 +48,7 @@ public struct hRadioOptionField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .padding(.horizontal, 16)
     }
-    
+
     func getCheckBox(texts: [String]) -> some View {
         ForEach(texts, id: \.self) { text in
             HStack(spacing: 8) {
@@ -56,9 +56,12 @@ public struct hRadioOptionField: View {
                     .strokeBorder(
                         RadioFieldsColors().getBorderColor(isSelected: text == selected),
                         lineWidth: text == selected ? 0 : 1.5
-                    )                    .background(Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: text == selected)))
+                    )
+                    .background(
+                        Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: text == selected))
+                    )
                     .frame(width: 24, height: 24)
-                
+
                 Text(text)
             }
             .onTapGesture {
