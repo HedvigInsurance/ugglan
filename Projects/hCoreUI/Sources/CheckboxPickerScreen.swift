@@ -170,7 +170,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
     }
-    
+
     func checkBox(isSelected: Bool) -> some View {
         Group {
             if singleSelect ?? false {
@@ -189,8 +189,9 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         )
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(retColor(isSelected: isSelected)))
-                    
+                                .foregroundColor(retColor(isSelected: isSelected))
+                        )
+
                     if isSelected {
                         Image(uiImage: hCoreUIAssets.tick.image)
                             .foregroundColor(hTextColor.negative)
