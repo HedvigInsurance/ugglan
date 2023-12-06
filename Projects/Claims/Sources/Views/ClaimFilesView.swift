@@ -19,8 +19,9 @@ public struct ClaimFilesView: View {
             }
             .padding(.vertical, 16)
             .sectionContainerStyle(.transparent)
-            
-        }.hFormAttachToBottom {
+
+        }
+        .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primaryAlt) {
@@ -28,14 +29,15 @@ public struct ClaimFilesView: View {
                     } content: {
                         hText(L10n.ClaimStatusDetail.addMoreFiles)
                     }
-                    
+
                     hButton.LargeButton(type: .primary) {
-                        
+
                     } content: {
                         hText(L10n.saveAndContinueButtonLabel)
                     }
                 }
-            }.padding(.vertical, 16)
+            }
+            .padding(.vertical, 16)
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { image in
@@ -51,43 +53,64 @@ public struct ClaimFilesView: View {
         }
         .sheet(isPresented: $showCamera) {
             CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 1) else {return}
-                vm.add(file: .init(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: .JPEG,
-                    name: "image_\(Date())",
-                    source: .data(data: data))
+                guard let data = image.jpegData(compressionQuality: 1) else { return }
+                vm.add(
+                    file: .init(
+                        id: UUID().uuidString,
+                        size: Double(data.count),
+                        mimeType: .JPEG,
+                        name: "image_\(Date())",
+                        source: .data(data: data)
+                    )
                 )
             }
         }
     }
-    
+
     func showAlert() {
         // 1. Create Alert, ActionSheet type
-        let alert = UIAlertController(title: nil,
-                                      message: nil,
-                                      preferredStyle: .actionSheet)
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
 
         // 2. Creeate Actions
-        alert.addAction(UIAlertAction(title: "Photo Library",
-                                      style: .default,
-                                      handler: { _ in
-            showImagePicker = true
-        }))
-        alert.addAction(UIAlertAction(title: "Take Photo",
-                                      style: .default,
-                                      handler: { _ in
-            showCamera = true
-        }))
-        alert.addAction(UIAlertAction(title: "Choose Files",
-                                      style: .default,
-                                      handler: { _
-            in showFilePicker = true
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel",
-                                      style: .cancel,
-                                      handler: { _ in print("Cancel tap") }))
+        alert.addAction(
+            UIAlertAction(
+                title: "Photo Library",
+                style: .default,
+                handler: { _ in
+                    showImagePicker = true
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "Take Photo",
+                style: .default,
+                handler: { _ in
+                    showCamera = true
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "Choose Files",
+                style: .default,
+                handler: {
+                    _
+                    in showFilePicker = true
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel,
+                handler: { _ in print("Cancel tap") }
+            )
+        )
 
         // 3. Show
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
@@ -101,24 +124,24 @@ class ClaimFilesViewModel: ObservableObject {
         self.files = files
         self.options = options
     }
-    
+
     @MainActor
     func add(file: File) {
         withAnimation {
             files.append(file)
         }
     }
-    
+
     @MainActor
     func removeFile(id: String) {
         withAnimation {
-            files.removeAll(where: {$0.id == id})
+            files.removeAll(where: { $0.id == id })
         }
     }
-    
+
     struct ClaimFilesViewOptions: OptionSet {
         let rawValue: UInt
-        
+
         static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
         static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
     }
@@ -133,13 +156,15 @@ class ClaimFilesViewModel: ObservableObject {
             name: "test-image",
             source: .url(url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!)
         ),
-        
+
         .init(
             id: "imageId2",
             size: 53443,
             mimeType: MimeType.PNG,
             name: "test-image2",
-            source: .url(url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!)
+            source: .url(
+                url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!
+            )
         ),
         .init(
             id: "imageId3",
@@ -164,167 +189,4 @@ class ClaimFilesViewModel: ObservableObject {
         ),
     ]
     return ClaimFilesView(files: files)
-}
-
-
-
-import PhotosUI
-
-struct ImagePicker: UIViewControllerRepresentable {
-    let fileSelected: (_ file: File?) -> Void
-
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var config = PHPickerConfiguration()
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
-
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: ImagePicker
-
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            picker.dismiss(animated: true)
-
-            guard let provider = results.first?.itemProvider else { return }
-
-            if provider.canLoadObject(ofClass: UIImage.self) {
-                provider.loadObject(ofClass: UIImage.self) { image, error in
-                    if let image = image as? UIImage, let data = image.jpegData(compressionQuality: 1) {
-                        self.parent.fileSelected(
-                            .init(
-                                id: UUID().uuidString,
-                                size: Double(data.count),
-                                mimeType: .JPEG,
-                                name: "image.name",
-                                source: .data(data: data)
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-import MobileCoreServices
-import UniformTypeIdentifiers
-
-struct FileImporterView: UIViewControllerRepresentable {
-    let imageSelected: (_ fileSelected: File) -> Void
-
-    @Environment(\.presentationMode) var presentationMode
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let mimeTypes:[MimeType] = [.AVI, .CSS, .CSV, .DOCX, .GIF, .JPEG, .JPG, .PNG, .PDF, .PPTX, .TXT, .XLSX]
-        let uttps = mimeTypes.compactMap({$0.mime}).compactMap({UTType(mimeType: $0)})
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: uttps)
-        picker.allowsMultipleSelection = false
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {
-        // No update needed
-    }
-
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let parent: FileImporterView
-
-        init(_ parent: FileImporterView) {
-            self.parent = parent
-        }
-
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            guard let url = urls.first, url.startAccessingSecurityScopedResource() else {
-                 print("Error getting access")
-                 return
-            }
-
-            guard let data = FileManager.default.contents(atPath: url.relativePath)  else { return }
-            let mimeType = MimeType.findBy(mimeType: url.mimeType)
-            parent.imageSelected(
-                .init(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: mimeType,
-                    name: url.lastPathComponent,
-                    source: .data(data: data)
-                )
-            )
-            url.stopAccessingSecurityScopedResource()
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-    }
-}
-
-struct CameraPickerView: UIViewControllerRepresentable {
-    
-    private var sourceType: UIImagePickerController.SourceType = .camera
-    private let onImagePicked: (UIImage) -> Void
-    
-    @Environment(\.presentationMode) private var presentationMode
-    
-    public init(onImagePicked: @escaping (UIImage) -> Void) {
-        self.onImagePicked = onImagePicked
-    }
-    
-    public func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = self.sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    public func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(
-            onDismiss: { self.presentationMode.wrappedValue.dismiss() },
-            onImagePicked: self.onImagePicked
-        )
-    }
-    
-    final public class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        
-        private let onDismiss: () -> Void
-        private let onImagePicked: (UIImage) -> Void
-        
-        init(onDismiss: @escaping () -> Void, onImagePicked: @escaping (UIImage) -> Void) {
-            self.onDismiss = onDismiss
-            self.onImagePicked = onImagePicked
-        }
-        
-        public func imagePickerController(_ picker: UIImagePickerController,
-                                          didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                self.onImagePicked(image)
-            }
-            self.onDismiss()
-        }
-        public func imagePickerControllerDidCancel(_: UIImagePickerController) {
-            self.onDismiss()
-        }
-    }
 }
