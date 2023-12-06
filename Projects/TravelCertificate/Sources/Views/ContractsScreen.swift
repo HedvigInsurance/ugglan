@@ -5,7 +5,7 @@ import hCoreUI
 struct ContractsScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     @State var isLoading: Bool = false
-    
+
     public var body: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
@@ -28,7 +28,7 @@ struct ContractsScreen: View {
                         }(),
                         preSelectedItems: {
                             guard let preSelected = travelInsuranceModels.first else {
-                             return []
+                                return []
                             }
                             return [preSelected]
                         },
