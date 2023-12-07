@@ -203,7 +203,9 @@ class ClaimFilesViewModel: ObservableObject {
                 _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
                     [weak self] progress in
                     DispatchQueue.main.async {
-                        self?.progress = progress
+                        withAnimation {
+                            self?.progress = progress
+                        }
                     }
                 }
                 success = true
