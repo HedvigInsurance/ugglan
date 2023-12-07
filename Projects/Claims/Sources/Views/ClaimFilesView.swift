@@ -7,63 +7,81 @@ public struct ClaimFilesView: View {
     @State var showImagePicker = false
     @State var showFilePicker = false
     @State var showCamera = false
-    public init(files: [File]) {
-        self.vm = .init(files: files, options: [.add, .delete])
+    public init(endPoint: String, files: [File]) {
+        self.vm = .init(endPoint: endPoint, files: files, options: [.add, .delete])
     }
     public var body: some View {
-        hForm {
-            hSection {
-                FilesGridView(files: vm.files, options: vm.options) { file in
-                    vm.removeFile(id: file.id)
-                }
-            }
-            .padding(.vertical, 16)
-            .sectionContainerStyle(.transparent)
-
-        }
-        .hFormAttachToBottom {
-            hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .primaryAlt) {
-                        showAlert()
-                    } content: {
-                        hText(L10n.ClaimStatusDetail.addMoreFiles)
-                    }
-
-                    hButton.LargeButton(type: .primary) {
-
-                    } content: {
-                        hText(L10n.saveAndContinueButtonLabel)
+        Group {
+            if let error = vm.error {
+                RetryView(subtitle: error) {
+                    withAnimation {
+                        vm.error = nil
                     }
                 }
-            }
-            .padding(.vertical, 16)
-        }
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker { image in
-                if let image {
-                    vm.add(file: image)
+            } else {
+                hForm {
+                    hSection {
+                        FilesGridView(files: vm.files, options: vm.options) { file in
+                            vm.removeFile(id: file.id)
+                        }
+                    }
+                    .padding(.vertical, 16)
+
+                }
+                .hFormAttachToBottom {
+                    hSection {
+                        VStack(spacing: 8) {
+                            hButton.LargeButton(type: .primaryAlt) {
+                                showAlert()
+                            } content: {
+                                hText(L10n.ClaimStatusDetail.addMoreFiles)
+                            }
+                            .disabled(vm.isLoading)
+
+                            hButton.LargeButton(type: .primary) {
+                                Task {
+                                    await vm.uploadFiles()
+                                }
+                            } content: {
+                                hText(L10n.saveAndContinueButtonLabel)
+                            }
+                            .hButtonIsLoading(vm.isLoading)
+                            .disabled(vm.files.isEmpty)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                }
+                .sectionContainerStyle(.transparent)
+                .sheet(isPresented: $showImagePicker) {
+                    ImagePicker { image in
+                        if let image {
+                            vm.add(file: image)
+                        }
+                    }
+                }
+                .sheet(isPresented: $showFilePicker) {
+                    FileImporterView { file in
+                        vm.add(file: file)
+                    }
+                }
+                .sheet(isPresented: $showCamera) {
+                    CameraPickerView { image in
+                        guard let data = image.jpegData(compressionQuality: 1) else { return }
+                        vm.add(
+                            file: .init(
+                                id: UUID().uuidString,
+                                size: Double(data.count),
+                                mimeType: .JPEG,
+                                name: "image_\(Date())",
+                                source: .data(data: data)
+                            )
+                        )
+                    }
                 }
             }
         }
-        .sheet(isPresented: $showFilePicker) {
-            FileImporterView { file in
-                vm.add(file: file)
-            }
-        }
-        .sheet(isPresented: $showCamera) {
-            CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 1) else { return }
-                vm.add(
-                    file: .init(
-                        id: UUID().uuidString,
-                        size: Double(data.count),
-                        mimeType: .JPEG,
-                        name: "image_\(Date())",
-                        source: .data(data: data)
-                    )
-                )
-            }
+        .onAppear {
+            showAlert()
         }
     }
 
@@ -119,16 +137,24 @@ public struct ClaimFilesView: View {
 
 class ClaimFilesViewModel: ObservableObject {
     @Published var files: [File] = []
+    @Published var isLoading = false
+    @Published var error: String?
+    private let endPoint: String
     let options: ClaimFilesViewOptions
-    init(files: [File], options: ClaimFilesViewOptions) {
+
+    @Inject var claimFileUploadService: hClaimFileUploadService
+    init(endPoint: String, files: [File], options: ClaimFilesViewOptions) {
+        self.endPoint = endPoint
         self.files = files
         self.options = options
     }
 
     @MainActor
     func add(file: File) {
-        withAnimation {
-            files.append(file)
+        DispatchQueue.main.async { [weak self] in
+            withAnimation {
+                self?.files.append(file)
+            }
         }
     }
 
@@ -137,6 +163,27 @@ class ClaimFilesViewModel: ObservableObject {
         withAnimation {
             files.removeAll(where: { $0.id == id })
         }
+    }
+
+    @MainActor
+    func uploadFiles() async {
+        withAnimation {
+            isLoading = true
+        }
+        do {
+            let filteredFiles = files.filter({ if case .data = $0.source { return true } else { return false } })
+            if !filteredFiles.isEmpty {
+                _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) { progress in }
+            }
+        } catch let ex {
+            withAnimation {
+                error = ex.localizedDescription
+            }
+        }
+        withAnimation {
+            isLoading = false
+        }
+
     }
 
     struct ClaimFilesViewOptions: OptionSet {
@@ -188,5 +235,5 @@ class ClaimFilesViewModel: ObservableObject {
             source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
         ),
     ]
-    return ClaimFilesView(files: files)
+    return ClaimFilesView(endPoint: "", files: files)
 }

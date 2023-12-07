@@ -114,6 +114,14 @@ public enum Environment: Hashable {
         }
     }
 
+    public var claimsApiURL: URL {
+        switch self {
+        case .staging: return URL(string: "https://gateway.dev.hedvigit.com")!
+        case .production: return URL(string: "https://gateway.hedvig.com")!
+        case .custom: return URL(string: "https://gateway.dev.hedvigit.com")!
+        }
+    }
+
     public var botServiceApiURL: URL {
         switch self {
         case .staging: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!

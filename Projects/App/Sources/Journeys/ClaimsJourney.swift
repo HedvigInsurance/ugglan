@@ -28,22 +28,22 @@ extension AppJourney {
         .configureTitle(L10n.claimsYourClaim)
         .hidesBottomBarWhenPushed
     }
-    
+
     private static func openFilesFor(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
-            rootView: ClaimFilesView(files: claim.files)
+            rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: [])
         )
         .configureTitle("Added files")
 
     }
-    
+
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
             honestyPledge(from: origin)
         }
     }
-    
+
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,

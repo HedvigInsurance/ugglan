@@ -78,7 +78,7 @@ struct FileImporterView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let mimeTypes: [MimeType] = [.AVI, .CSS, .CSV, .DOCX, .GIF, .JPEG, .JPG, .PNG, .PDF, .PPTX, .TXT, .XLSX, .HEIC]
+        let mimeTypes: [MimeType] = [.AVI, .JPEG, .JPG, .PNG, .PDF, .TXT, .HEIC, .M4A]
         let uttps = mimeTypes.compactMap({ $0.mime }).compactMap({ UTType(mimeType: $0) })
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: uttps)
         picker.allowsMultipleSelection = false

@@ -100,7 +100,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -123,7 +124,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -146,7 +148,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -169,7 +172,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -192,7 +196,8 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

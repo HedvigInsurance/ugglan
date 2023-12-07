@@ -23,6 +23,7 @@ public enum MimeType: Codable, Equatable, Hashable {
     case CSS
     case CSV
     case JSON
+    case M4A
     case other(type: String)
 
     public var isImage: Bool {
@@ -70,6 +71,7 @@ public enum MimeType: Codable, Equatable, Hashable {
         case MimeType.CSS.mime: return MimeType.CSS
         case MimeType.CSV.mime: return MimeType.CSV
         case MimeType.JSON.mime: return MimeType.JSON
+        case MimeType.M4A.mime: return MimeType.M4A
         default:
             return MimeType.other(type: mimeType)
 
@@ -100,6 +102,7 @@ public enum MimeType: Codable, Equatable, Hashable {
         case .CSS: return "text/css"
         case .CSV: return "text/csv"
         case .JSON: return "application/json"
+        case .M4A: return "audio/x-m4a"
         case .other(let type): return type
         }
     }
