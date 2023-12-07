@@ -102,7 +102,7 @@ struct FilesGridView: View {
             source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
         ),
     ]
-    return FilesGridView(files: files, options: [.add, .delete]) { file in
+    return FilesGridView(files: files, options: [.add, .delete]) { _ in
     }
 }
 

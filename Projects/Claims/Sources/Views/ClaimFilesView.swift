@@ -86,17 +86,15 @@ public struct ClaimFilesView: View {
     }
 
     func showAlert() {
-        // 1. Create Alert, ActionSheet type
         let alert = UIAlertController(
             title: nil,
             message: nil,
             preferredStyle: .actionSheet
         )
 
-        // 2. Creeate Actions
         alert.addAction(
             UIAlertAction(
-                title: "Photo Library",
+                title: L10n.fileUploadPhotoLibrary,
                 style: .default,
                 handler: { _ in
                     showImagePicker = true
@@ -105,7 +103,7 @@ public struct ClaimFilesView: View {
         )
         alert.addAction(
             UIAlertAction(
-                title: "Take Photo",
+                title: L10n.fileUploadTakePhoto,
                 style: .default,
                 handler: { _ in
                     showCamera = true
@@ -114,7 +112,7 @@ public struct ClaimFilesView: View {
         )
         alert.addAction(
             UIAlertAction(
-                title: "Choose Files",
+                title: L10n.fileUploadChooseFiles,
                 style: .default,
                 handler: {
                     _
@@ -124,13 +122,12 @@ public struct ClaimFilesView: View {
         )
         alert.addAction(
             UIAlertAction(
-                title: "Cancel",
-                style: .cancel,
-                handler: { _ in print("Cancel tap") }
+                title: L10n.generalCancelButton,
+                style: .destructive,
+                handler: { _ in }
             )
         )
 
-        // 3. Show
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 }

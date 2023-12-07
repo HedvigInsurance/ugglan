@@ -33,7 +33,7 @@ extension AppJourney {
         HostingJourney(
             rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: [])
         )
-        .configureTitle("Added files")
+        .configureTitle(L10n.ClaimStatusDetail.addedFiles)
 
     }
 
