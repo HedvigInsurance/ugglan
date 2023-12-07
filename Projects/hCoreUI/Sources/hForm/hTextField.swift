@@ -7,6 +7,7 @@ import hCore
 public enum hTextFieldOptions: Hashable {
     case showDivider
     case minimumHeight(height: CGFloat)
+    case useLineBreak
 }
 
 extension Set where Element == hTextFieldOptions {
@@ -23,6 +24,10 @@ extension Set where Element == hTextFieldOptions {
 
     var showDivider: Bool {
         self.contains(.showDivider)
+    }
+    
+    var useLineBreak: Bool {
+        self.contains(.useLineBreak)
     }
 }
 
@@ -85,18 +90,34 @@ public struct hTextField: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack {
-                SwiftUI.TextField(placeholder ?? "", text: $innerValue)
-                    .modifier(hFontModifier(style: .body))
-                    .modifier(masking)
-                    .tint(hTextColor.primary)
-                    .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                        if shouldUpdate {
-                            value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                            innerValue = value
-                            previousInnerValue = value
+                if options.useLineBreak, #available(iOS 16.0, *) {
+                    SwiftUI.TextField(placeholder ?? "", text: $innerValue, axis: .vertical)
+                        .lineLimit(5...10)
+                        .modifier(hFontModifier(style: .body))
+                        .modifier(masking)
+                        .tint(hTextColor.primary)
+                        .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                            if shouldUpdate {
+                                value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                                innerValue = value
+                                previousInnerValue = value
+                            }
                         }
-                    }
-                    .frame(minHeight: options.minimumHeight)
+                        .frame(minHeight: options.minimumHeight)
+                } else {
+                    SwiftUI.TextField(placeholder ?? "", text: $innerValue)
+                        .modifier(hFontModifier(style: .body))
+                        .modifier(masking)
+                        .tint(hTextColor.primary)
+                        .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                            if shouldUpdate {
+                                value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                                innerValue = value
+                                previousInnerValue = value
+                            }
+                        }
+                        .frame(minHeight: options.minimumHeight)
+                }
             }
             if options.showDivider {
                 SwiftUI.Divider()

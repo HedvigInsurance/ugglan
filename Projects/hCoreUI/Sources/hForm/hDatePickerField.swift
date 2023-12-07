@@ -10,8 +10,10 @@ public struct hDatePickerField: View {
     private let onShowDatePicker: (() -> Void)?
 
     @State private var animate = false
+    
     @State private var date: Date = Date()
     private var selectedDate: Date?
+    
     @Binding var error: String?
     @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
@@ -205,7 +207,7 @@ private struct DatePickerView: View {
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {
-                    continueAction.execute()
+                    cancelAction.execute()
                 } content: {
                     hText(
                         L10n.generalSaveButton,
