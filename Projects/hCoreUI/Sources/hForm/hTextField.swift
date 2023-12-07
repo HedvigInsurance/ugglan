@@ -25,7 +25,7 @@ extension Set where Element == hTextFieldOptions {
     var showDivider: Bool {
         self.contains(.showDivider)
     }
-    
+
     var useLineBreak: Bool {
         self.contains(.useLineBreak)
     }
