@@ -103,7 +103,7 @@ struct hFieldLabel: View {
         } else if isLocked {
             hTextColor.tertiary
         } else {
-            hTextColor.disabled
+            hTextColor.tertiaryTranslucent
         }
     }
 }
