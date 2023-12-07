@@ -1,7 +1,7 @@
-import SwiftUI
-import Presentation
-import hCore
 import Flow
+import Presentation
+import SwiftUI
+import hCore
 
 public struct hFreeTextInputField: View {
     private var placeholder: String
@@ -19,7 +19,7 @@ public struct hFreeTextInputField: View {
             set: { _ in }
         )
     }
-    
+
     public init(
         selectedValue: String?,
         placeholder: String? = nil,
@@ -34,7 +34,7 @@ public struct hFreeTextInputField: View {
         self.value = ""
         self.infoCardText = infoCardText
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             hFloatingField(value: selectedValue ?? "", placeholder: placeholder) {
@@ -43,25 +43,26 @@ public struct hFreeTextInputField: View {
             .hWithoutFixedHeight
         }
     }
-    
+
     private func showFreeTextField() {
         let continueAction = ReferenceAction {}
         let cancelAction = ReferenceAction {}
-        
+
         value = selectedValue ?? ""
-        
+
         let view = freeTextInputView(
             continueAction: continueAction,
             cancelAction: cancelAction,
             value: $value,
             infoCardText: infoCardText
         )
-        
+
         let journey = HostingJourney(
             rootView: view,
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
-        ).configureTitle(placeholder)
+        )
+        .configureTitle(placeholder)
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
@@ -77,14 +78,14 @@ public struct hFreeTextInputField: View {
             disposeBag += vc.present(freeTextFieldJourney)
         }
     }
-    
+
     private struct freeTextInputView: View {
         fileprivate let continueAction: ReferenceAction
         fileprivate let cancelAction: ReferenceAction
         @Binding fileprivate var value: String
         private let maxCharacters = 140
         private let infoCardText: String?
-        
+
         public init(
             continueAction: ReferenceAction,
             cancelAction: ReferenceAction,
@@ -96,7 +97,7 @@ public struct hFreeTextInputField: View {
             self._value = value
             self.infoCardText = infoCardText
         }
-        
+
         public var body: some View {
             hForm {
                 VStack(spacing: 16) {
@@ -123,7 +124,8 @@ public struct hFreeTextInputField: View {
                     }
                 }
                 .padding(.horizontal, 16)
-            }.hFormAttachToBottom {
+            }
+            .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primary) {
                         continueAction.execute()
@@ -141,7 +143,7 @@ public struct hFreeTextInputField: View {
                 .padding(.vertical, 16)
             }
         }
-        
+
         @hColorBuilder
         var getTextColor: some hColor {
             if value.count < maxCharacters {
@@ -153,7 +155,7 @@ public struct hFreeTextInputField: View {
     }
 }
 
-#Preview {
+#Preview{
     VStack(spacing: 4) {
         hFreeTextInputField(selectedValue: "", placeholder: "Type of damage")
         hFreeTextInputField(selectedValue: "value", placeholder: "placeholder")
