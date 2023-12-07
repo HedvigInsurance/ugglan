@@ -12,7 +12,16 @@ public struct ClaimFilesView: View {
     }
     public var body: some View {
         Group {
-            if let error = vm.error {
+            if vm.isLoading || vm.success {
+                BlurredProgressOverlay {
+                    if vm.isLoading {
+                        loadingView
+                    } else if vm.success {
+                        successView
+                    }
+                }
+                .presentableStoreLensAnimation(.default)
+            } else if let error = vm.error {
                 RetryView(subtitle: error) {
                     withAnimation {
                         vm.error = nil
@@ -85,6 +94,24 @@ public struct ClaimFilesView: View {
         }
     }
 
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            Spacer()
+            hText(L10n.fileUploadIsUploading)
+            ProgressView(value: vm.progress)
+                .tint(hTextColor.primary)
+                .frame(width: UIScreen.main.bounds.width * 0.53)
+            Spacer()
+            Spacer()
+            Spacer()
+        }
+    }
+
+    private var successView: some View {
+        SuccessScreen(title: L10n.fileUploadFilesAdded)
+    }
+
     func showAlert() {
         let alert = UIAlertController(
             title: nil,
@@ -135,11 +162,13 @@ public struct ClaimFilesView: View {
 class ClaimFilesViewModel: ObservableObject {
     @Published var files: [File] = []
     @Published var isLoading = false
+    @Published var success = false
     @Published var error: String?
+    @Published var progress: Double = 0
     private let endPoint: String
     let options: ClaimFilesViewOptions
-
     @Inject var claimFileUploadService: hClaimFileUploadService
+    @PresentableStore var store: ClaimsStore
     init(endPoint: String, files: [File], options: ClaimFilesViewOptions) {
         self.endPoint = endPoint
         self.files = files
@@ -166,11 +195,22 @@ class ClaimFilesViewModel: ObservableObject {
     func uploadFiles() async {
         withAnimation {
             isLoading = true
+            setNavigationBarHidden(true)
         }
         do {
             let filteredFiles = files.filter({ if case .data = $0.source { return true } else { return false } })
             if !filteredFiles.isEmpty {
-                _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) { progress in }
+                _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
+                    [weak self] progress in
+                    DispatchQueue.main.async {
+                        self?.progress = progress
+                    }
+                }
+                success = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                    self?.setNavigationBarHidden(false)
+                    self?.store.send(.navigation(action: .dismissAddFiles))
+                }
             }
         } catch let ex {
             withAnimation {
@@ -179,6 +219,9 @@ class ClaimFilesViewModel: ObservableObject {
         }
         withAnimation {
             isLoading = false
+            if !success {
+                setNavigationBarHidden(false)
+            }
         }
 
     }
@@ -188,6 +231,15 @@ class ClaimFilesViewModel: ObservableObject {
 
         static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
         static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+    }
+
+    private func setNavigationBarHidden(_ hidden: Bool) {
+        let topVC = UIApplication.shared.getTopViewController()
+        if let topVC = topVC as? UITabBarController {
+            if let nav = topVC.selectedViewController as? UINavigationController {
+                nav.setNavigationBarHidden(hidden, animated: true)
+            }
+        }
     }
 }
 
