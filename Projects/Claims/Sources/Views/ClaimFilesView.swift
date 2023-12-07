@@ -168,6 +168,8 @@ class ClaimFilesViewModel: ObservableObject {
     private let endPoint: String
     let options: ClaimFilesViewOptions
     @Inject var claimFileUploadService: hClaimFileUploadService
+    @Inject var fetchClaimService: hFetchClaimService
+
     @PresentableStore var store: ClaimsStore
     init(endPoint: String, files: [File], options: ClaimFilesViewOptions) {
         self.endPoint = endPoint
@@ -209,6 +211,8 @@ class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
+                let claims = try await fetchClaimService.get()
+                store.send(.setClaims(claims: claims))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
                     self?.setNavigationBarHidden(false)
                     self?.store.send(.navigation(action: .dismissAddFiles))

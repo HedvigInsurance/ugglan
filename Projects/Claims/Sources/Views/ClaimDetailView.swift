@@ -8,6 +8,7 @@ import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var claim: ClaimModel
+    @State var files: [File]
     @PresentableStore var store: ClaimsStore
     @State var player: AudioPlayer?
 
@@ -15,11 +16,12 @@ public struct ClaimDetailView: View {
         claim: ClaimModel
     ) {
         self.claim = claim
+        self.files = claim.files
         if let signedAudioURL = claim.signedAudioURL {
             _player = State(initialValue: AudioPlayer(url: URL(string: signedAudioURL)))
         }
-    }
 
+    }
     private var statusParagraph: String {
         claim.statusParagraph
     }
@@ -81,7 +83,7 @@ public struct ClaimDetailView: View {
                     }
                     .padding(.top, 16)
                     hSection {
-                        FilesGridView(files: claim.files, options: [])
+                        FilesGridView(files: files, options: [])
                     }
                     .sectionContainerStyle(.transparent)
                 }
@@ -97,6 +99,9 @@ public struct ClaimDetailView: View {
                     .padding(.vertical, 8)
                 }
             }
+        }
+        .onAppear {
+            self.files = store.state.claims?.first(where: { $0.id == claim.id })?.files ?? []
         }
     }
 }
