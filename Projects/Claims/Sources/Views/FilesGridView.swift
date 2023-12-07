@@ -1,6 +1,5 @@
 import Foundation
 import Kingfisher
-import PDFKit
 import SwiftUI
 import hCore
 import hCoreUI
@@ -112,7 +111,6 @@ struct FileView: View {
 
     @ViewBuilder
     var body: some View {
-        hText("")
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
@@ -128,8 +126,6 @@ struct FileView: View {
                             contentMode: .fit
                         )
                 }
-            } else if file.mimeType == .PDF {
-                PDFKitView(source: file.source.asPDFKitDataSource)
             } else {
                 GeometryReader { geometry in
                     VStack(spacing: 4) {
@@ -151,45 +147,6 @@ struct FileView: View {
         }
         .onTapGesture {
             onTap()
-        }
-    }
-}
-
-struct PDFKitView: UIViewRepresentable {
-    let source: DataSource  // new variable to get the URL of the document
-
-    func makeUIView(context: UIViewRepresentableContext<PDFKitView>) -> PDFView {
-        // Creating a new PDFVIew and adding a document to it
-        let pdfView = PDFView()
-        switch source {
-        case .url(let url):
-            pdfView.document = PDFDocument(url: url)
-        case .data(let data):
-            pdfView.document = PDFDocument(data: data)
-        }
-        pdfView.isUserInteractionEnabled = false
-        pdfView.maxScaleFactor = 1
-        pdfView.autoScales = true
-        return pdfView
-    }
-
-    func updateUIView(_ uiView: PDFView, context: UIViewRepresentableContext<PDFKitView>) {
-        // we will leave this empty as we don't need to update the PDF
-    }
-
-    enum DataSource {
-        case url(url: URL)
-        case data(data: Data)
-    }
-}
-
-extension FileSource {
-    var asPDFKitDataSource: PDFKitView.DataSource {
-        switch self {
-        case .data(let data):
-            return .data(data: data)
-        case .url(let url):
-            return .url(url: url)
         }
     }
 }
