@@ -75,17 +75,15 @@ struct EditContract: View {
                                 break
                             }
                         } content: {
-                            hText(L10n.generalContinueButton, style: .standard)
+                            hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .standard)
                         }
                         .disabled(selectedType == nil)
+                        
+                        
                         hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
-                            if hAnalyticsExperiment.editCoinsured {
-                                hText(L10n.generalCancelButton, style: .standard)
-                            } else {
-                                hText(selectedType?.buttonTitle ?? "", style: .standard)
-                            }
+                           hText(L10n.generalCancelButton)
                         }
                     }
                 }

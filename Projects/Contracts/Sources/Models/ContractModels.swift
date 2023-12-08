@@ -107,8 +107,12 @@ public struct Contract: Codable, Hashable, Equatable {
         return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
     }
 
-    public var showEditInfo: Bool {
+    public var showEditCoInsuredInfo: Bool {
         return supportsCoInsured && self.terminationDate == nil
+    }
+    
+    public var showEditInfo: Bool {
+        return (supportsCoInsured || supportsAddressChange) && self.terminationDate == nil
     }
 
     public var canTerminate: Bool {
