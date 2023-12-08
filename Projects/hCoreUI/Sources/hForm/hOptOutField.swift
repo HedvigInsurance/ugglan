@@ -50,6 +50,7 @@ public struct hOptOutField: View {
                         Spacer()
                         hText(L10n.optoutFieldPlaceholder, style: .body)
                             .foregroundColor(getToggleTextColor)
+                            .fixedSize()
                     }
                 }
                 .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
