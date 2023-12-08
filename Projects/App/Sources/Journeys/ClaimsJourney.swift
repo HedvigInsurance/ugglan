@@ -19,10 +19,22 @@ extension AppJourney {
         ) { action in
             if case .closeClaimStatus = action {
                 PopJourney()
+            } else if case let .navigation(navAction) = action {
+                if case .openFilesFor(claim) = navAction {
+                    openFilesFor(claim: claim)
+                }
             }
         }
         .configureTitle(L10n.claimsYourClaim)
         .hidesBottomBarWhenPushed
+    }
+
+    private static func openFilesFor(claim: ClaimModel) -> some JourneyPresentation {
+        HostingJourney(
+            rootView: ClaimFilesView(files: claim.files)
+        )
+        .configureTitle(L10n.ClaimStatusDetail.addedFiles)
+
     }
 
     @JourneyBuilder

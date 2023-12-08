@@ -23,40 +23,39 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                 files: [
                     .init(
                         id: "imageId1",
-                        url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
-                        mimeType: MimeType.findBy(mimeType: "image/png"),
+                        size: 22332,
+                        mimeType: .PNG,
                         name: "test-image",
-                        size: 52176
+                        source: .url(url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!)
                     ),
+                    
                     .init(
                         id: "imageId2",
-                        url: URL(
-                            string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
-                        )!,
-                        mimeType: MimeType.findBy(mimeType: "image/png"),
-                        name: "test-image",
-                        size: 52176
+                        size: 53443,
+                        mimeType: MimeType.PNG,
+                        name: "test-image2",
+                        source: .url(url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!)
                     ),
                     .init(
                         id: "imageId3",
-                        url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
-                        mimeType: MimeType.findBy(mimeType: "image/png"),
-                        name: "test-image",
-                        size: 52176
+                        size: 52176,
+                        mimeType: MimeType.PNG,
+                        name: "test-image3",
+                        source: .url(url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!)
                     ),
                     .init(
                         id: "imageId4",
-                        url: URL(string: "https://flif.info/example-images/fish.png")!,
-                        mimeType: MimeType.findBy(mimeType: "image/png"),
-                        name: "test-image",
-                        size: 52176
+                        size: 52176,
+                        mimeType: MimeType.PNG,
+                        name: "test-image4",
+                        source: .url(url: URL(string: "https://flif.info/example-images/fish.png")!)
                     ),
                     .init(
                         id: "imageId5",
-                        url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
+                        size: 52176,
                         mimeType: MimeType.PDF,
                         name: "test-pdf long name it is possible to have it is long name .pdf",
-                        size: 52176
+                        source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
                     ),
                 ]
             )
