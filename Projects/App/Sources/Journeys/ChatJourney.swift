@@ -1,6 +1,8 @@
 import Apollo
+import Flow
 import Foundation
 import Presentation
+import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
@@ -29,6 +31,7 @@ extension AppJourney {
                 }
             }
             .configureTitle(L10n.chatTitle)
+            .setScrollEdgeNavigationBarAppearanceToStandardd
         }
     }
 
@@ -52,6 +55,7 @@ extension AppJourney {
                 chat.chatState.reset()
             }
             .configureTitle(L10n.chatTitle)
+            .setScrollEdgeNavigationBarAppearanceToStandardd
         }
     }
 
