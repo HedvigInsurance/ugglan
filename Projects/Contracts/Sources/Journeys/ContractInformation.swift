@@ -41,38 +41,40 @@ struct ContractInformationView: View {
                             })
                         }
                         .withoutHorizontalPadding
-                        hRowDivider()
-
                         if contract.supportsCoInsured {
+                            hRowDivider()
                             addCoInsuredView(contract: contract)
                         }
 
-                        if contract.showEditInfo {
                             VStack(spacing: 8) {
-                                hSection {
-                                    hButton.LargeButton(type: .secondary) {
-                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
-                                            store.send(
-                                                .openEditCoInsured(
-                                                    config: .init(contract: contract),
-                                                    fromInfoCard: false
+                                if contract.showEditInfo {
+                                    hSection {
+                                        hButton.LargeButton(type: .secondary) {
+                                            if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                                store.send(
+                                                    .openEditCoInsured(
+                                                        config: .init(contract: contract),
+                                                        fromInfoCard: false
+                                                    )
                                                 )
-                                            )
-                                        } else {
-                                            store.send(.contractEditInfo(id: id))
-                                        }
-                                    } content: {
-                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
-                                            hText(L10n.contractEditCoinsured)
-                                        } else {
-                                            hText(L10n.contractEditInfoLabel)
+                                            } else {
+                                                store.send(.contractEditInfo(id: id))
+                                            }
+                                        } content: {
+                                            if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                                hText(L10n.contractEditCoinsured)
+                                            } else {
+                                                hText(L10n.contractEditInfoLabel)
+                                            }
                                         }
                                     }
                                 }
-                                displayTerminationButton
+                                if contract.canTerminate {
+                                    displayTerminationButton
+                                }
                             }
                             .padding(.bottom, 16)
-                        }
+//                        }
                     }
                 }
             }
@@ -84,22 +86,35 @@ struct ContractInformationView: View {
         let editTypes: [EditType] = EditType.getTypes(for: contract)
         return editTypes.count == 1 && editTypes.first == .coInsured
     }
+    
+    func insuredField(contract: Contract) -> some View {
+        VStack {
+            HStack {
+                hText(L10n.coinsuredEditTitle)
+                Spacer()
+                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
+                    .foregroundColor(hTextColor.secondary)
+            }
+        }
+    }
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
             hSection {
-                hRow {
-                    VStack {
-                        HStack {
-                            hText(L10n.coinsuredEditTitle)
-                            Spacer()
-                            hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                                .foregroundColor(hTextColor.secondary)
+                HStack {
+                    if hAnalyticsExperiment.editCoinsured {
+                        hRow {
+                            insuredField(contract: contract)
                         }
+                    } else {
+                        hRow {
+                            insuredField(contract: contract)
+                        }.hWithoutDivider
                     }
                 }
+                
                 if hAnalyticsExperiment.editCoinsured {
                     hRow {
                         let hasContentBelow =
@@ -134,7 +149,7 @@ struct ContractInformationView: View {
                 }
                 .withoutHorizontalPadding
 
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditInfo {
+                if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
                     hSection {
                         CoInsuredInfoView(
                             text: L10n.contractCoinsuredAddPersonalInfo,
@@ -175,7 +190,7 @@ struct ContractInformationView: View {
             subTitle: L10n.contractNoInformation
         )
         .onTapGesture {
-            if contract.showEditInfo && coInsured.terminatesOn == nil {
+            if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
                 store.send(
                     .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
                 )
@@ -185,7 +200,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func getAccessorytView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        if contract.showEditInfo && coInsured.terminatesOn == nil {
+        if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
             Image(uiImage: hCoreUIAssets.warningSmall.image)
         } else {
             EmptyView()
