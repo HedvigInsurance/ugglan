@@ -42,9 +42,14 @@ public struct hOptOutField: View {
             .disabled(config.notSure)
 
             HStack(spacing: 16) {
-                hText(displayLabel, style: .title3)
-                    .foregroundColor(getLabelColor)
-                Spacer()
+                ScrollView(.horizontal, showsIndicators: false) {
+                    hText(displayLabel, style: .title3)
+                        .foregroundColor(getLabelColor)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .findScrollView { scrollView in
+                    scrollView.bounces = false
+                }
                 Toggle(isOn: $config.notSure.animation(.default)) {
                     HStack(spacing: 8) {
                         Spacer()
@@ -55,13 +60,13 @@ public struct hOptOutField: View {
                 }
                 .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
                 .contentShape(Rectangle())
+                .fixedSize()
             }
         }
         .padding(.top, 11)
         .padding(.bottom, 10)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
-        .padding(.horizontal, 16)
         .onTapGesture {
             if !config.notSure {
                 showPriceInputView()
