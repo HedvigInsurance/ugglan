@@ -340,7 +340,6 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 switch Environment.current {
                 case .staging:
-                    //                    let hFetchClaimService = FetchClaimServiceDemo()
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
