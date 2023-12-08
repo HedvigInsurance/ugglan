@@ -70,11 +70,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             ForEach(items, id: \.object) { item in
                 hSection {
                     HStack {
-                        if items.count < 3 {
-                            getCell(item: item)
-                                .frame(height: 72)
+                        if items.count > 3 {
+                            getCell(item: item, fieldSize: .small)
                         } else {
-                            getCell(item: item)
+                            getCell(item: item, fieldSize: .large)
                         }
                     }
                 }
@@ -120,7 +119,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: (object: T, displayName: String)) -> some View {
+    func getCell(item: (object: T, displayName: String), fieldSize: hFieldSize) -> some View {
         if showDividers ?? false {
             hRow {
                 displayContentFor(item.object)
@@ -130,6 +129,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
             .hWithoutDivider
         } else {
             hRow {
@@ -139,6 +139,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
         }
     }
 
