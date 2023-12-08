@@ -31,8 +31,15 @@ extension AppJourney {
 
     private static func openFilesFor(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
+            ClaimsStore.self,
             rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: [])
-        )
+        ) { action in
+            if case let .navigation(navAction) = action {
+                if case .dismissAddFiles = navAction {
+                    PopJourney()
+                }
+            }
+        }
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
 
     }

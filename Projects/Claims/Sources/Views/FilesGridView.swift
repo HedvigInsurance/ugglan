@@ -119,7 +119,7 @@ struct FileView: View {
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
                 case .url(let url):
-                    KFImage(url)
+                    KFImage(source: Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)))
                         .resizable()
                         .aspectRatio(
                             1,
