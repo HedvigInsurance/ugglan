@@ -3,29 +3,29 @@ import SwiftUI
 import WebKit
 import hCore
 
-struct DocumentPreview: UIViewRepresentable {
+public struct DocumentPreview: UIViewRepresentable {
     let data: Data?
     let mimeType: String?
     let url: URL?
     let webView = WKWebView()
-    init(data: Data, mimeType: String) {
+    public init(data: Data, mimeType: String) {
         self.data = data
         self.mimeType = mimeType
         url = nil
     }
 
-    init(url: URL) {
+    public init(url: URL) {
         self.data = nil
         self.mimeType = nil
         self.url = url
     }
 
-    func makeUIView(context: Context) -> WKWebView {
+    public func makeUIView(context: Context) -> WKWebView {
         webView.scrollView.backgroundColor = .clear
         return webView
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {
+    public func updateUIView(_ webView: WKWebView, context: Context) {
         webView.backgroundColor = .brand(.primaryBackground())
         webView.viewController?.view.backgroundColor = .brand(.primaryBackground())
         if let data, let mimeType {
@@ -39,7 +39,7 @@ struct DocumentPreview: UIViewRepresentable {
 }
 
 extension DocumentPreview {
-    var journey: some JourneyPresentation {
+    public var journey: some JourneyPresentation {
         return HostingJourney(rootView: self, style: .detented(.large)).withDismissButton
     }
 }

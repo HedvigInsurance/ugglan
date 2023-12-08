@@ -19,11 +19,12 @@ public enum FileSource: Codable, Equatable, Hashable {
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
-    let fileSelected: (_ file: File?) -> Void
+    let filesSelected: (_ file: File) -> Void
 
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
         config.filter = .images
+        config.selectionLimit = 0
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
         return picker
@@ -46,21 +47,21 @@ struct ImagePicker: UIViewControllerRepresentable {
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
+            for provider in results.map({ $0.itemProvider }) {
+                if provider.canLoadObject(ofClass: UIImage.self) {
+                    provider.loadObject(ofClass: UIImage.self) { image, error in
+                        if let image = image as? UIImage, let data = image.jpegData(compressionQuality: 1) {
+                            let file: File =
+                                .init(
+                                    id: UUID().uuidString,
+                                    size: Double(data.count),
+                                    mimeType: .JPEG,
+                                    name: "\(Date().currentTimeMillis).jpeg",
+                                    source: .data(data: data)
+                                )
+                            self.parent.filesSelected(file)
 
-            guard let provider = results.first?.itemProvider else { return }
-
-            if provider.canLoadObject(ofClass: UIImage.self) {
-                provider.loadObject(ofClass: UIImage.self) { image, error in
-                    if let image = image as? UIImage, let data = image.jpegData(compressionQuality: 1) {
-                        self.parent.fileSelected(
-                            .init(
-                                id: UUID().uuidString,
-                                size: Double(data.count),
-                                mimeType: .JPEG,
-                                name: "image.name",
-                                source: .data(data: data)
-                            )
-                        )
+                        }
                     }
                 }
             }
@@ -81,7 +82,7 @@ struct FileImporterView: UIViewControllerRepresentable {
         let mimeTypes: [MimeType] = [.AVI, .JPEG, .JPG, .PNG, .PDF, .TXT, .HEIC, .M4A]
         let uttps = mimeTypes.compactMap({ $0.mime }).compactMap({ UTType(mimeType: $0) })
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: uttps)
-        picker.allowsMultipleSelection = false
+        picker.allowsMultipleSelection = true
         picker.delegate = context.coordinator
         return picker
     }
@@ -98,24 +99,23 @@ struct FileImporterView: UIViewControllerRepresentable {
         }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            guard let url = urls.first, url.startAccessingSecurityScopedResource() else {
-                print("Error getting access")
-                return
-            }
-
-            guard let data = FileManager.default.contents(atPath: url.relativePath) else { return }
-            let mimeType = MimeType.findBy(mimeType: url.mimeType)
-            parent.imageSelected(
-                .init(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: mimeType,
-                    name: url.lastPathComponent,
-                    source: .data(data: data)
+            for url in urls {
+                _ = url.startAccessingSecurityScopedResource()
+                guard let data = FileManager.default.contents(atPath: url.relativePath) else { return }
+                let mimeType = MimeType.findBy(mimeType: url.mimeType)
+                parent.imageSelected(
+                    .init(
+                        id: UUID().uuidString,
+                        size: Double(data.count),
+                        mimeType: mimeType,
+                        name: url.lastPathComponent,
+                        source: .data(data: data)
+                    )
                 )
-            )
-            url.stopAccessingSecurityScopedResource()
+                url.stopAccessingSecurityScopedResource()
+            }
             parent.presentationMode.wrappedValue.dismiss()
+
         }
 
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {

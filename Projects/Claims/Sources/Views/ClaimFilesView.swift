@@ -63,9 +63,7 @@ public struct ClaimFilesView: View {
                 .sectionContainerStyle(.transparent)
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { image in
-                        if let image {
-                            vm.add(file: image)
-                        }
+                        vm.add(file: image)
                     }
                 }
                 .sheet(isPresented: $showFilePicker) {
