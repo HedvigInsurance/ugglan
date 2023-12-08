@@ -70,11 +70,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             ForEach(items, id: \.object) { item in
                 hSection {
                     HStack {
-                        if items.count < 3 {
-                            getCell(item: item)
-                                .frame(height: 72)
+                        if items.count > 3 {
+                            getCell(item: item, fieldSize: .small)
                         } else {
-                            getCell(item: item)
+                            getCell(item: item, fieldSize: .large)
                         }
                     }
                 }
@@ -120,7 +119,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: (object: T, displayName: String)) -> some View {
+    func getCell(item: (object: T, displayName: String), fieldSize: hFieldSize) -> some View {
+
         if showDividers ?? false {
             hRow {
                 displayContentFor(item.object)
@@ -130,6 +130,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
             .hWithoutDivider
         } else {
             hRow {
@@ -139,6 +140,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
         }
     }
 
@@ -224,6 +226,8 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 return [
                     ModelForPreview(id: "id", name: "name"),
                     ModelForPreview(id: "id2", name: "name2"),
+                    ModelForPreview(id: "id3", name: "name3"),
+                    ModelForPreview(id: "id4", name: "name4"),
                 ]
                 .compactMap({ (object: $0, displayName: $0.name) })
             }(),
