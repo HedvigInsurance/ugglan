@@ -4,14 +4,12 @@ import SwiftUI
 import hCore
 
 public struct hOptOutField: View {
-    private var placeholder: String
+    @ObservedObject var config: HOptOutFieldConfig
+    private let onContinue: (_ value: String) -> Void
     @State private var value: String = ""
     @State private var animate = false
     @Binding var error: String?
-    private let onContinue: (_ value: String) -> Void
-
     @State var selected: String = ""
-    @State var notSure = false
     @State private var disposeBag = DisposeBag()
 
     public var shouldMoveLabel: Binding<Bool> {
@@ -22,12 +20,12 @@ public struct hOptOutField: View {
     }
 
     public init(
+        config: HOptOutFieldConfig,
         value: String,
-        placeholder: String? = nil,
         error: Binding<String?>? = nil,
         onContinue: @escaping (_ value: String) -> Void = { _ in }
     ) {
-        self.placeholder = placeholder ?? ""
+        self.config = config
         self.value = value
         self._error = error ?? Binding.constant(nil)
         self.onContinue = onContinue
@@ -35,23 +33,22 @@ public struct hOptOutField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-
             hFieldLabel(
-                placeholder: placeholder,
+                placeholder: config.placeholder,
                 animate: $animate,
                 error: $error,
                 shouldMoveLabel: shouldMoveLabel
             )
-            .disabled(notSure)
+            .disabled(config.notSure)
 
             HStack(spacing: 16) {
                 hText(displayLabel, style: .title3)
                     .foregroundColor(getLabelColor)
                 Spacer()
-                Toggle(isOn: $notSure.animation(.default)) {
+                Toggle(isOn: $config.notSure.animation(.default)) {
                     HStack(spacing: 8) {
                         Spacer()
-                        hText("I don't know", style: .body)
+                        hText(L10n.optoutFieldPlaceholder, style: .body)
                             .foregroundColor(getToggleTextColor)
                     }
                 }
@@ -59,26 +56,29 @@ public struct hOptOutField: View {
                 .contentShape(Rectangle())
             }
         }
+        .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .padding(.top, 11)
         .padding(.bottom, 10)
-        .addFieldBackground(animate: $animate, error: $error)
         .padding(.horizontal, 16)
         .onTapGesture {
-            showPriceInputView()
+            if !config.notSure {
+                showPriceInputView()
+            }
         }
     }
 
     var displayLabel: String {
-        if notSure {
-            return "Unknown"
+        if config.notSure {
+            return L10n.genericUnknown
         } else {
-            return value != "" ? value : "Enter here"
+            return value != "" ? value : L10n.optoutFieldEnterHere
         }
     }
 
     @hColorBuilder
     var getLabelColor: some hColor {
-        if notSure {
+        if config.notSure {
             hTextColor.tertiaryTranslucent
         } else if value != "" {
             hTextColor.primary
@@ -89,7 +89,7 @@ public struct hOptOutField: View {
 
     @hColorBuilder
     var getToggleTextColor: some hColor {
-        if notSure {
+        if config.notSure {
             hTextColor.primary
         } else {
             hTextColor.secondaryTranslucent
@@ -101,6 +101,7 @@ public struct hOptOutField: View {
         let cancelAction = ReferenceAction {}
 
         let view = PriceInputScreen(
+            config: config,
             continueAction: continueAction,
             cancelAction: cancelAction,
             onSave: { value in },
@@ -127,27 +128,43 @@ public struct hOptOutField: View {
             disposeBag += vc.present(priceInputJourney)
         }
     }
+
+    public class HOptOutFieldConfig: ObservableObject {
+        let placeholder: String
+        let currency: String
+        @Published var notSure = false
+
+        public init(
+            placeholder: String,
+            currency: String
+        ) {
+            self.placeholder = placeholder
+            self.currency = currency
+        }
+    }
+
 }
 
 struct PriceInputScreen: View {
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
+    let config: hOptOutField.HOptOutFieldConfig
 
     @Binding fileprivate var purchasePrice: String
-    @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
-    let currency: String
+    @State var type: hOptOutFieldType? = .purchasePrice
     var onSave: (String) -> Void
 
     init(
+        config: hOptOutField.HOptOutFieldConfig,
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
         onSave: @escaping (String) -> Void,
         purchasePrice: Binding<String>
     ) {
+        self.config = config
         self.continueAction = continueAction
         self.cancelAction = cancelAction
         self.onSave = onSave
-        currency = "SEK" /* TODO: CHANGE */
         self._purchasePrice = purchasePrice
     }
 
@@ -159,8 +176,8 @@ struct PriceInputScreen: View {
                     value: $purchasePrice,
                     equals: $type,
                     focusValue: .purchasePrice,
-                    placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
-                    suffix: currency
+                    placeholder: config.placeholder,
+                    suffix: config.currency
                 )
             }
         }
@@ -193,19 +210,31 @@ struct PriceInputScreen: View {
 #Preview{
     hForm {
         VStack(spacing: 5) {
-            hOptOutField(value: "4500 SEK", placeholder: "Purchase price")
-            hOptOutField(value: "", placeholder: "Purchase price")
-            hOptOutField(value: "", placeholder: "Purchase price")
+            hOptOutField(
+                config: .init(
+                    placeholder: "Purchase price",
+                    currency: "SEK"
+                ),
+                value: "4500"
+            )
+
+            hOptOutField(
+                config: .init(
+                    placeholder: "Purchase price",
+                    currency: "SEK"
+                ),
+                value: ""
+            )
         }
     }
 }
 
-enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
-    static var last: ClaimsFlowSingleItemFieldType {
-        return ClaimsFlowSingleItemFieldType.purchasePrice
+enum hOptOutFieldType: hTextFieldFocusStateCompliant {
+    static var last: hOptOutFieldType {
+        return hOptOutFieldType.purchasePrice
     }
 
-    var next: ClaimsFlowSingleItemFieldType? {
+    var next: hOptOutFieldType? {
         switch self {
         case .purchasePrice:
             return nil
