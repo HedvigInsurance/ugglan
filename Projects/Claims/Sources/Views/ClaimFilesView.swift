@@ -65,11 +65,13 @@ public struct ClaimFilesView: View {
                     ImagePicker { image in
                         vm.add(file: image)
                     }
+                    .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showFilePicker) {
                     FileImporterView { file in
                         vm.add(file: file)
                     }
+                    .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showCamera) {
                     CameraPickerView { image in
@@ -84,6 +86,7 @@ public struct ClaimFilesView: View {
                             )
                         )
                     }
+                    .ignoresSafeArea()
                 }
             }
         }
