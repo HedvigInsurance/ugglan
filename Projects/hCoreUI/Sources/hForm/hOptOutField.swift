@@ -6,7 +6,7 @@ import hCore
 public struct hOptOutField: View {
     @ObservedObject var config: HOptOutFieldConfig
     private let onContinue: (_ value: String) -> Void
-    @State private var value: String = ""
+    @Binding private var value: String
     @State private var animate = false
     @Binding var error: String?
     @State var selected: String = ""
@@ -21,12 +21,12 @@ public struct hOptOutField: View {
 
     public init(
         config: HOptOutFieldConfig,
-        value: String,
+        value: Binding<String>,
         error: Binding<String?>? = nil,
         onContinue: @escaping (_ value: String) -> Void = { _ in }
     ) {
         self.config = config
-        self.value = value
+        self._value = value
         self._error = error ?? Binding.constant(nil)
         self.onContinue = onContinue
     }
@@ -56,10 +56,10 @@ public struct hOptOutField: View {
                 .contentShape(Rectangle())
             }
         }
-        .addFieldBackground(animate: $animate, error: $error)
-        .addFieldError(animate: $animate, error: $error)
         .padding(.top, 11)
         .padding(.bottom, 10)
+        .addFieldBackground(animate: $animate, error: $error)
+        .addFieldError(animate: $animate, error: $error)
         .padding(.horizontal, 16)
         .onTapGesture {
             if !config.notSure {
@@ -104,8 +104,10 @@ public struct hOptOutField: View {
             config: config,
             continueAction: continueAction,
             cancelAction: cancelAction,
-            onSave: { value in },
-            purchasePrice: $value
+            onSave: { value in
+                self.value = value
+            },
+            purchasePrice: value
         )
 
         let journey = HostingJourney(
@@ -116,6 +118,10 @@ public struct hOptOutField: View {
 
         let priceInputJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
+                self.animate = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.animate = false
+                }
                 self.onContinue(value)
                 presenter.dismisser(JourneyError.cancelled)
             }
@@ -142,30 +148,29 @@ public struct hOptOutField: View {
             self.currency = currency
         }
     }
-
 }
 
 struct PriceInputScreen: View {
-    fileprivate let continueAction: ReferenceAction
-    fileprivate let cancelAction: ReferenceAction
-    let config: hOptOutField.HOptOutFieldConfig
+    private let continueAction: ReferenceAction
+    private let cancelAction: ReferenceAction
+    private let config: hOptOutField.HOptOutFieldConfig
+    private var onSave: (String) -> Void
 
-    @Binding fileprivate var purchasePrice: String
-    @State var type: hOptOutFieldType? = .purchasePrice
-    var onSave: (String) -> Void
+    @State var purchasePrice: String
+    @State private var type: hOptOutFieldType? = .purchasePrice
 
     init(
         config: hOptOutField.HOptOutFieldConfig,
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
         onSave: @escaping (String) -> Void,
-        purchasePrice: Binding<String>
+        purchasePrice: String
     ) {
         self.config = config
         self.continueAction = continueAction
         self.cancelAction = cancelAction
         self.onSave = onSave
-        self._purchasePrice = purchasePrice
+        self.purchasePrice = purchasePrice
     }
 
     var body: some View {
@@ -209,13 +214,16 @@ struct PriceInputScreen: View {
 
 #Preview{
     hForm {
+        @State var value1: String = "4500"
+        @State var value2: String = ""
+
         VStack(spacing: 5) {
             hOptOutField(
                 config: .init(
                     placeholder: "Purchase price",
                     currency: "SEK"
                 ),
-                value: "4500"
+                value: $value1
             )
 
             hOptOutField(
@@ -223,7 +231,7 @@ struct PriceInputScreen: View {
                     placeholder: "Purchase price",
                     currency: "SEK"
                 ),
-                value: ""
+                value: $value2
             )
         }
     }
