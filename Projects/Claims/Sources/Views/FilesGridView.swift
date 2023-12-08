@@ -1,5 +1,7 @@
+import Flow
 import Foundation
 import Kingfisher
+import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
@@ -30,7 +32,27 @@ struct FilesGridView: View {
             ForEach(files, id: \.self) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
-                        store.send(.navigation(action: .openFile(file: file)))
+                        let bag = DisposeBag()
+                        if let topVC = UIApplication.shared.getTopViewController() {
+                            switch file.source {
+                            case .data(let data):
+                                let preview = DocumentPreview(data: data, mimeType: file.mimeType.mime)
+                                bag += topVC.present(preview.journey)
+
+                            case .url(let url):
+                                let vc = SFSafariViewController(url: url)
+                                if #available(iOS 16.0, *) {
+                                    vc.modalPresentationStyle = .pageSheet
+                                    if let sheet = vc.sheetPresentationController {
+                                        sheet.detents = [.large()]
+                                    }
+                                }
+                                topVC.present(
+                                    vc,
+                                    animated: true
+                                )
+                            }
+                        }
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
@@ -108,7 +130,9 @@ struct FilesGridView: View {
 struct FileView: View {
     let file: File
     let onTap: () -> Void
-
+    let processor = DownsamplingImageProcessor(
+        size: CGSize(width: 300, height: 300)
+    )
     @ViewBuilder
     var body: some View {
         VStack {
@@ -120,6 +144,7 @@ struct FileView: View {
                         .aspectRatio(1, contentMode: .fit)
                 case .url(let url):
                     KFImage(source: Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)))
+                        .setProcessor(processor)
                         .resizable()
                         .aspectRatio(
                             1,

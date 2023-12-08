@@ -63,15 +63,15 @@ public struct ClaimFilesView: View {
                 .sectionContainerStyle(.transparent)
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { image in
-                        if let image {
-                            vm.add(file: image)
-                        }
+                        vm.add(file: image)
                     }
+                    .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showFilePicker) {
                     FileImporterView { file in
                         vm.add(file: file)
                     }
+                    .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showCamera) {
                     CameraPickerView { image in
@@ -86,6 +86,7 @@ public struct ClaimFilesView: View {
                             )
                         )
                     }
+                    .ignoresSafeArea()
                 }
             }
         }
