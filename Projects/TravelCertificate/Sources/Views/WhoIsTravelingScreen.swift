@@ -109,7 +109,7 @@ struct WhoIsTravelingScreen: View {
             }
         }
         .hUseLightMode
-        .fixedSize(horizontal: true, vertical: false)
+        .fixedSize(horizontal: true, vertical: true)
     }
 
     @hColorBuilder
