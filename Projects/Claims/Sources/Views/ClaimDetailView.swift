@@ -19,11 +19,11 @@ public struct ClaimDetailView: View {
             _player = State(initialValue: AudioPlayer(url: URL(string: signedAudioURL)))
         }
     }
-    
+
     private var statusParagraph: String {
         claim.statusParagraph
     }
-    
+
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
@@ -45,7 +45,7 @@ public struct ClaimDetailView: View {
                         .padding(.bottom, 4)
                     }
                 }
-                
+
                 if let inputText = claim.memberFreeText {
                     hSection {
                         hRow {
@@ -58,7 +58,7 @@ public struct ClaimDetailView: View {
                     }
                     .padding(.top, 16)
                 }
-                
+
                 if claim.showUploadedFiles {
                     hSection {
                         if let player {
@@ -85,7 +85,7 @@ public struct ClaimDetailView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
-                
+
                 if claim.canAddFiles {
                     hSection {
                         hButton.LargeButton(type: .primaryAlt) {
@@ -113,9 +113,9 @@ struct ClaimDetailView_Previews: PreviewProvider {
             type: "associated type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: []
+            files: [],
+            targetFileUploadUri: ""
         )
         return ClaimDetailView(claim: claim)
     }
 }
-

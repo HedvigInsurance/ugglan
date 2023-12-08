@@ -340,7 +340,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 switch Environment.current {
                 case .staging:
-                    let hFetchClaimService = FetchClaimServiceDemo()
+                    let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
@@ -348,6 +348,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -357,6 +358,8 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+
                 }
             }
             .toVoid()

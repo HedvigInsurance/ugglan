@@ -48,7 +48,7 @@ extension NetworkError: LocalizedError {
         case .networkError(let message):
             return message
         case .badRequest(let message):
-            return message
+            return message ?? L10n.General.errorBody
         case .parsingError(let message):
             return message
         }

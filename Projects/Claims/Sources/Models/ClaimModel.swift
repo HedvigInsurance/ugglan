@@ -14,7 +14,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
-        files: [File]
+        files: [File],
+        targetFileUploadUri: String
     ) {
         self.id = id
         self.status = status
@@ -27,6 +28,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.memberFreeText = memberFreeText
         self.payoutAmount = payoutAmount
         self.files = files
+        self.targetFileUploadUri = targetFileUploadUri
     }
 
     public var title: String {
@@ -43,7 +45,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let payoutAmount: MonetaryAmount?
     public let type: String
     public let files: [File]
-
+    public let targetFileUploadUri: String
     public var statusParagraph: String {
         switch self.status {
         case .submitted:

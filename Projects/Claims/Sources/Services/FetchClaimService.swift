@@ -26,22 +26,31 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                         size: 22332,
                         mimeType: .PNG,
                         name: "test-image",
-                        source: .url(url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!)
+                        source: .url(
+                            url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!
+                        )
                     ),
-                    
+
                     .init(
                         id: "imageId2",
                         size: 53443,
                         mimeType: MimeType.PNG,
                         name: "test-image2",
-                        source: .url(url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!)
+                        source: .url(
+                            url: URL(
+                                string:
+                                    "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
+                            )!
+                        )
                     ),
                     .init(
                         id: "imageId3",
                         size: 52176,
                         mimeType: MimeType.PNG,
                         name: "test-image3",
-                        source: .url(url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!)
+                        source: .url(
+                            url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!
+                        )
                     ),
                     .init(
                         id: "imageId4",
@@ -55,9 +64,12 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                         size: 52176,
                         mimeType: MimeType.PDF,
                         name: "test-pdf long name it is possible to have it is long name .pdf",
-                        source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
+                        source: .url(
+                            url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!
+                        )
                     ),
-                ]
+                ],
+                targetFileUploadUri: ""
             )
         ]
     }
@@ -90,6 +102,17 @@ extension ClaimModel {
         self.subtitle = ""
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
-        self.files = []
+        self.files = claim.files.compactMap({ .init(with: $0.fragments.fileFragment) })
+        self.targetFileUploadUri = claim.targetFileUploadUri
+    }
+}
+
+extension File {
+    init(with data: OctopusGraphQL.FileFragment) {
+        id = data.id
+        size = 0
+        mimeType = MimeType.findBy(mimeType: data.mimeType)
+        name = data.name
+        source = .url(url: URL(string: data.url)!)
     }
 }

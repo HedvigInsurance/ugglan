@@ -31,7 +31,7 @@ extension AppJourney {
 
     private static func openFilesFor(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
-            rootView: ClaimFilesView(files: claim.files)
+            rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: [])
         )
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
 

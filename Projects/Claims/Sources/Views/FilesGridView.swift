@@ -54,6 +54,7 @@ struct FilesGridView: View {
 
                     }
                 }
+                .transition(.scale.combined(with: .opacity))
             }
         }
     }
@@ -110,7 +111,6 @@ struct FileView: View {
 
     @ViewBuilder
     var body: some View {
-        hText("")
         VStack {
             if file.mimeType.isImage {
                 switch file.source {

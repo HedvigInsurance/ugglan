@@ -15,6 +15,20 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
+    public func refreshIfNeededAsync() async throws {
+        let bag = DisposeBag()
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<Void, Error>) -> Void in
+            bag += refreshIfNeeded()
+                .onValue({ _ in
+                    inCont.resume()
+                })
+                .onError({ error in
+                    inCont.resume(throwing: error)
+                })
+        }
+    }
+
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             return Future(result: .success)
