@@ -51,15 +51,18 @@ struct CoInsuredSelectScreen: View {
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                    store.coInsuredViewModel.addCoInsured(
-                        .init(
-                            firstName: selectedCoinsured.firstName,
-                            lastName: selectedCoinsured.lastName,
-                            SSN: selectedCoinsured.SSN,
-                            birthDate: selectedCoinsured.birthDate,
-                            needsMissingInfo: false
+
+                    if let object = selectedCoinsured.0 {
+                        store.coInsuredViewModel.addCoInsured(
+                            .init(
+                                firstName: object.firstName,
+                                lastName: object.lastName,
+                                SSN: object.SSN,
+                                birthDate: object.birthDate,
+                                needsMissingInfo: false
+                            )
                         )
-                    )
+                    }
                     Task {
                         withAnimation {
                             isLoading = true
@@ -75,15 +78,17 @@ struct CoInsuredSelectScreen: View {
                         if !store.intentViewModel.showErrorViewForCoInsuredList {
                             store.send(.coInsuredNavigationAction(action: .dismissEdit))
                         } else {
-                            store.coInsuredViewModel.removeCoInsured(
-                                .init(
-                                    firstName: selectedCoinsured.firstName,
-                                    lastName: selectedCoinsured.lastName,
-                                    SSN: selectedCoinsured.SSN,
-                                    birthDate: selectedCoinsured.birthDate,
-                                    needsMissingInfo: false
+                            if let object = selectedCoinsured.0 {
+                                store.coInsuredViewModel.removeCoInsured(
+                                    .init(
+                                        firstName: object.firstName,
+                                        lastName: object.lastName,
+                                        SSN: object.SSN,
+                                        birthDate: object.birthDate,
+                                        needsMissingInfo: false
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
