@@ -1,3 +1,4 @@
+import Disk
 import Flow
 import Foundation
 import Kingfisher
@@ -7,19 +8,7 @@ import hCore
 import hCoreUI
 
 struct FilesGridView: View {
-    let files: [File]
-    let options: ClaimFilesViewModel.ClaimFilesViewOptions
-    let onDelete: ((_ file: File) -> Void)?
-
-    public init(
-        files: [File],
-        options: ClaimFilesViewModel.ClaimFilesViewOptions,
-        onDelete: ((_ file: File) -> Void)? = nil
-    ) {
-        self.files = files
-        self.options = options
-        self.onDelete = onDelete
-    }
+    @ObservedObject var vm: FileGridViewModel
     @PresentableStore private var store: ClaimsStore
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: 8),
@@ -29,54 +18,71 @@ struct FilesGridView: View {
 
     var body: some View {
         LazyVGrid(columns: adaptiveColumn, spacing: 8) {
-            ForEach(files, id: \.self) { file in
+            ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
-                        let bag = DisposeBag()
-                        if let topVC = UIApplication.shared.getTopViewController() {
-                            switch file.source {
-                            case .data(let data):
-                                let preview = DocumentPreview(data: data, mimeType: file.mimeType.mime)
-                                bag += topVC.present(preview.journey)
-
-                            case .url(let url):
-                                let vc = SFSafariViewController(url: url)
-                                if #available(iOS 16.0, *) {
-                                    vc.modalPresentationStyle = .pageSheet
-                                    if let sheet = vc.sheetPresentationController {
-                                        sheet.detents = [.large()]
-                                    }
-                                }
-                                topVC.present(
-                                    vc,
-                                    animated: true
-                                )
-                            }
-                        }
+                        vm.show(file: file)
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
-                    if options.contains(.delete) {
+                    .contentShape(Rectangle())
+                    if vm.options.contains(.delete) {
                         Button(
                             action: {
-                                onDelete?(file)
+                                vm.onDelete?(file)
                             },
                             label: {
-                                Image(uiImage: HCoreUIAsset.closeSmall.image)
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColor.secondary)
+                                Circle().fill(Color.clear)
+                                    .frame(width: 30, height: 30)
+                                    .hShadow()
+                                    .overlay(
+                                        Circle().fill(hBackgroundColor.primary)
+                                            .frame(width: 24, height: 24)
+                                            .hShadow()
+                                            .overlay(
+                                                Image(uiImage: HCoreUIAsset.closeSmall.image)
+                                                    .resizable()
+                                                    .frame(width: 16, height: 16)
+                                                    .foregroundColor(hTextColor.secondary)
+                                            )
+                                    )
+                                    .offset(.init(width: 8, height: -8))
                             }
                         )
-                        .frame(width: 24, height: 24)
-                        .background(hBackgroundColor.primary)
-                        .clipShape(Circle())
-                        .hShadow()
-                        .offset(.init(width: 4, height: -4))
-
+                        .zIndex(.infinity)
                     }
                 }
                 .transition(.scale.combined(with: .opacity))
+            }
+        }
+    }
+}
+
+class FileGridViewModel: ObservableObject {
+    @Published var files: [File]
+    let options: ClaimFilesViewModel.ClaimFilesViewOptions
+    var onDelete: ((_ file: File) -> Void)?
+    var disposeBag = DisposeBag()
+    init(
+        files: [File],
+        options: ClaimFilesViewModel.ClaimFilesViewOptions,
+        onDelete: ((_ file: File) -> Void)? = nil
+    ) {
+        self.files = files
+        self.options = options
+        self.onDelete = onDelete
+    }
+
+    @MainActor
+    func show(file: File) {
+        if let topVC = UIApplication.shared.getTopViewController() {
+            switch file.source {
+            case let .localFile(url, _):
+                let preview = DocumentPreview(url: url)
+                disposeBag += topVC.present(preview.journey)
+            case .url(let url):
+                let preview = DocumentPreview(url: url)
+                disposeBag += topVC.present(preview.journey)
             }
         }
     }
@@ -123,8 +129,7 @@ struct FilesGridView: View {
             source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
         ),
     ]
-    return FilesGridView(files: files, options: [.add, .delete]) { _ in
-    }
+    return FilesGridView(vm: .init(files: files, options: [.delete]))
 }
 
 struct FileView: View {
@@ -138,18 +143,10 @@ struct FileView: View {
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
-                case .data(let data):
-                    Image(uiImage: UIImage(data: data) ?? hCoreUIAssets.hedvigBigLogo.image)
-                        .resizable()
-                        .aspectRatio(1, contentMode: .fit)
+                case let .localFile(_, thumbnailUrl):
+                    imageFrom(url: thumbnailUrl!)
                 case .url(let url):
-                    KFImage(source: Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)))
-                        .setProcessor(processor)
-                        .resizable()
-                        .aspectRatio(
-                            1,
-                            contentMode: .fit
-                        )
+                    imageFrom(url: url)
                 }
             } else {
                 GeometryReader { geometry in
@@ -173,5 +170,18 @@ struct FileView: View {
         .onTapGesture {
             onTap()
         }
+    }
+
+    private func imageFrom(url: URL) -> some View {
+        Rectangle().fill(.clear)
+            .aspectRatio(1, contentMode: .fill)
+            .background(
+                KFImage(source: Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id)))
+                    .setProcessor(processor)
+                    .resizable()
+                    .aspectRatio(
+                        contentMode: .fill
+                    )
+            )
     }
 }

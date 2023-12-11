@@ -30,9 +30,7 @@ public struct ClaimFilesView: View {
             } else {
                 hForm {
                     hSection {
-                        FilesGridView(files: vm.files, options: vm.options) { file in
-                            vm.removeFile(id: file.id)
-                        }
+                        FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .padding(.vertical, 16)
 
@@ -40,10 +38,11 @@ public struct ClaimFilesView: View {
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButton(type: .primaryAlt) {
-                                showAlert()
+                            hButton.LargeButton(type: .secondary) {
+                                showFilePickerAlert()
                             } content: {
                                 hText(L10n.ClaimStatusDetail.addMoreFiles)
+
                             }
                             .disabled(vm.isLoading)
 
@@ -52,137 +51,140 @@ public struct ClaimFilesView: View {
                                     await vm.uploadFiles()
                                 }
                             } content: {
-                                hText(L10n.saveAndContinueButtonLabel)
+                                hText(L10n.fileUploadUploadFiles)
                             }
                             .hButtonIsLoading(vm.isLoading)
-                            .disabled(vm.files.isEmpty)
+                            .disabled(vm.fileGridViewModel.files.isEmpty)
                         }
                     }
                     .padding(.vertical, 16)
                 }
                 .sectionContainerStyle(.transparent)
                 .sheet(isPresented: $showImagePicker) {
-                    ImagePicker { image in
-                        vm.add(file: image)
+                    ImagePicker { images in
+                        for image in images {
+                            let dataPath = vm.fileUploadManager.getPathForData(
+                                for: image.id,
+                                andExtension: image.extension
+                            )
+                            let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
+                                for: image.id,
+                                andExtension: image.extension
+                            )
+                            if let file = image.asFile(with: dataPath, and: thumbnailPath) {
+                                vm.add(file: file)
+                            }
+                        }
                     }
                     .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showFilePicker) {
-                    FileImporterView { file in
-                        vm.add(file: file)
+                    FileImporterView { files in
+                        for file in files {
+                            let dataPath = vm.fileUploadManager.getPathForData(
+                                for: file.id,
+                                andExtension: file.extension
+                            )
+                            let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
+                                for: file.id,
+                                andExtension: file.extension
+                            )
+                            if let file = file.asFile(with: dataPath, and: thumbnailPath) {
+                                vm.add(file: file)
+                            }
+                        }
                     }
                     .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showCamera) {
                     CameraPickerView { image in
-                        guard let data = image.jpegData(compressionQuality: 1) else { return }
-                        vm.add(
-                            file: .init(
-                                id: UUID().uuidString,
-                                size: Double(data.count),
-                                mimeType: .JPEG,
-                                name: "image_\(Date())",
-                                source: .data(data: data)
-                            )
+                        guard let data = image.jpegData(compressionQuality: 0.9),
+                            let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                        else { return }
+                        let file = FilePickerDto(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: .JPEG,
+                            name: "image_\(Date()).jpeg",
+                            data: data,
+                            thumbnailData: thumbnailData,
+                            extension: "jpeg"
                         )
+                        let dataPath = vm.fileUploadManager.getPathForData(for: file.id, andExtension: file.extension)
+                        let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
+                            for: file.id,
+                            andExtension: file.extension
+                        )
+                        if let file = file.asFile(with: dataPath, and: thumbnailPath) {
+                            vm.add(file: file)
+                        }
+
                     }
                     .ignoresSafeArea()
                 }
             }
         }
-        .onAppear {
-            showAlert()
+    }
+
+    private func showFilePickerAlert() {
+        FilePicker.showAlert { selected in
+            switch selected {
+            case .camera:
+                showCamera = true
+            case .imagePicker:
+                showImagePicker = true
+            case .filePicker:
+                showFilePicker = true
+            }
         }
     }
 
     private var loadingView: some View {
-        VStack {
-            Spacer()
-            Spacer()
-            hText(L10n.fileUploadIsUploading)
-            ProgressView(value: vm.progress)
-                .tint(hTextColor.primary)
-                .frame(width: UIScreen.main.bounds.width * 0.53)
-            Spacer()
-            Spacer()
-            Spacer()
+        hSection {
+            VStack(spacing: 20) {
+                Spacer()
+                hText(L10n.fileUploadIsUploading)
+                ProgressView(value: vm.progress)
+                    .tint(hTextColor.primary)
+                    .frame(width: UIScreen.main.bounds.width * 0.53)
+                Spacer()
+            }
         }
+        .sectionContainerStyle(.transparent)
     }
 
     private var successView: some View {
         SuccessScreen(title: L10n.fileUploadFilesAdded)
     }
-
-    func showAlert() {
-        let alert = UIAlertController(
-            title: nil,
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadPhotoLibrary,
-                style: .default,
-                handler: { _ in
-                    showImagePicker = true
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadTakePhoto,
-                style: .default,
-                handler: { _ in
-                    showCamera = true
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadChooseFiles,
-                style: .default,
-                handler: {
-                    _
-                    in showFilePicker = true
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.generalCancelButton,
-                style: .destructive,
-                handler: { _ in }
-            )
-        )
-
-        UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
-    }
 }
 
 class ClaimFilesViewModel: ObservableObject {
-    @Published var files: [File] = []
     @Published var isLoading = false
     @Published var success = false
     @Published var error: String?
     @Published var progress: Double = 0
     private let endPoint: String
-    let options: ClaimFilesViewOptions
+    let fileUploadManager = FileUploadManager()
+    var fileGridViewModel: FileGridViewModel
     @Inject var claimFileUploadService: hClaimFileUploadService
     @Inject var fetchClaimService: hFetchClaimService
 
     @PresentableStore var store: ClaimsStore
     init(endPoint: String, files: [File], options: ClaimFilesViewOptions) {
         self.endPoint = endPoint
-        self.files = files
-        self.options = options
+        self.fileGridViewModel = .init(files: files, options: options)
+        self.fileGridViewModel.onDelete = { file in
+            Task { [weak self] in
+                await self?.removeFile(id: file.id)
+            }
+        }
     }
 
     @MainActor
     func add(file: File) {
         DispatchQueue.main.async { [weak self] in
             withAnimation {
-                self?.files.append(file)
+                self?.fileGridViewModel.files.append(file)
             }
         }
     }
@@ -190,7 +192,7 @@ class ClaimFilesViewModel: ObservableObject {
     @MainActor
     func removeFile(id: String) {
         withAnimation {
-            files.removeAll(where: { $0.id == id })
+            self.fileGridViewModel.files.removeAll(where: { $0.id == id })
         }
     }
 
@@ -201,7 +203,9 @@ class ClaimFilesViewModel: ObservableObject {
             setNavigationBarHidden(true)
         }
         do {
-            let filteredFiles = files.filter({ if case .data = $0.source { return true } else { return false } })
+            let filteredFiles = fileGridViewModel.files.filter({
+                if case .localFile(_, _) = $0.source { return true } else { return false }
+            })
             if !filteredFiles.isEmpty {
                 _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
                     [weak self] progress in
@@ -216,6 +220,7 @@ class ClaimFilesViewModel: ObservableObject {
                 store.send(.setClaims(claims: claims))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
                     self?.setNavigationBarHidden(false)
+                    self?.fileUploadManager.resetuploadFilesPath()
                     self?.store.send(.navigation(action: .dismissAddFiles))
                 }
             }
@@ -241,12 +246,8 @@ class ClaimFilesViewModel: ObservableObject {
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
-        let topVC = UIApplication.shared.getTopViewController()
-        if let topVC = topVC as? UITabBarController {
-            if let nav = topVC.selectedViewController as? UINavigationController {
-                nav.setNavigationBarHidden(hidden, animated: true)
-            }
-        }
+        let nav = UIApplication.shared.getTopViewControllerNavigation()
+        nav?.setNavigationBarHidden(hidden, animated: true)
     }
 }
 
@@ -292,4 +293,57 @@ class ClaimFilesViewModel: ObservableObject {
         ),
     ]
     return ClaimFilesView(endPoint: "", files: files)
+}
+
+struct FilePicker {
+    static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.fileUploadPhotoLibrary,
+                style: .default,
+                handler: { _ in
+                    closure(.imagePicker)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.fileUploadTakePhoto,
+                style: .default,
+                handler: { _ in
+                    closure(.camera)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.fileUploadChooseFiles,
+                style: .default,
+                handler: { _ in
+                    closure(.filePicker)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.generalCancelButton,
+                style: .cancel,
+                handler: { _ in }
+            )
+        )
+
+        UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
+    }
+
+    enum SelectedFileInputType {
+        case camera
+        case imagePicker
+        case filePicker
+    }
 }

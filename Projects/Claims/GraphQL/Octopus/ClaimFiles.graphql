@@ -1,0 +1,17 @@
+query ClaimsFiles {
+  currentMember {
+    claims {
+      id
+      files {
+        ...FileFragment
+      }
+    }
+  }
+}
+
+fragment FileFragment on ClaimFile {
+    id
+    name
+    mimeType
+    url
+}

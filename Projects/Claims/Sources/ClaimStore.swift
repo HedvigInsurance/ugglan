@@ -53,6 +53,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
+        case let .setFiles(files):
+            newState.files = files
         default:
             break
         }
