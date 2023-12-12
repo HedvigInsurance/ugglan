@@ -112,7 +112,7 @@ let project = Project(
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
-            entitlements: "Config/Production/NotificationService.entitlements",
+            //            entitlements: "Config/Production/NotificationService.entitlements",
             scripts: targetScripts,
             dependencies: appDependencies,
             settings: .settings(configurations: ugglanConfigurations)
