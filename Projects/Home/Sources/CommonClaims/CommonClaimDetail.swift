@@ -1,92 +1,106 @@
-import Flow
-import Form
-import Foundation
+import Kingfisher
 import Presentation
-import UIKit
-import hAnalytics
+import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
-public struct CommonClaimDetail {
+public struct CommonClaimDetail: View {
+    @PresentableStore var store: HomeStore
     let claim: CommonClaim
+
     public init(
         claim: CommonClaim
     ) {
         self.claim = claim
     }
 
-    var layoutTitle: String {
-        if let layoutTitle = claim.layout.emergency?.title { return layoutTitle }
-        return claim.layout.titleAndBulletPoint?.title ?? ""
+    public var body: some View {
+        hForm {
+            let bulletPoints = claim.layout.titleAndBulletPoint?.bulletPoints
+            VStack(spacing: 8) {
+                ForEach(bulletPoints ?? [], id: \.hashValue) { bulletPoint in
+                    hSection {
+                        hRow {
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack(spacing: 8) {
+                                    if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                        Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
+                                    }
+                                    hText(bulletPoint.title)
+                                    Spacer()
+                                }
+                                hText(bulletPoint.description)
+                                    .foregroundColor(hTextColor.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                hButton.MediumButton(type: .secondaryAlt) {
+                                    if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                        if let url = URL(
+                                            string: "https://app.adjust.com/11u5tuxu"
+                                        ) {
+                                            UIApplication.shared.open(url)
+                                        }
+                                    }
+                                } content: {
+                                    hText("Book now")
+                                }
+                            }
+                        }
+                    }
+                }
+                .hWithoutDivider
+            }
+        }
+        .hFormAttachToBottom {
+            hButton.LargeButton(type: .ghost) {
+                store.send(.dismissOtherServices)
+            } content: {
+                hText(L10n.generalCloseButton)
+            }
+        }
     }
 }
 
-extension CommonClaimDetail: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = claim.displayTitle
-
-        let bag = DisposeBag()
-
-        let view = UIStackView()
-        view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
-        view.isLayoutMarginsRelativeArrangement = true
-
-        let topCard = UIView()
-        view.addArrangedSubview(topCard)
-
-        let topCardContentView = UIStackView()
-        topCardContentView.axis = .vertical
-        topCardContentView.spacing = 15
-        topCardContentView.layoutMargins = UIEdgeInsets(inset: 15)
-        topCardContentView.isLayoutMarginsRelativeArrangement = true
-        topCard.addSubview(topCardContentView)
-
-        topCardContentView.snp.makeConstraints { make in
-            make.bottom.trailing.leading.equalToSuperview()
-            make.top.equalTo(0)
-        }
-
-        let titleStyle: TextStyle = TextStyle(
-            font: Fonts.fontFor(style: .standardLarge),
-            color: UIColor.BrandColorNew.primaryText().color,
-            minimumScaleFactor: 1
-        )
-        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: titleStyle)
-        bag += topCardContentView.addArranged(layoutTitle)
-
-        if let bulletPoints = claim.layout.titleAndBulletPoint?.bulletPoints {
-            let claimButton = Button(
-                title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
-                type: .normal(
-                    backgroundColor: .brand(.primaryBackground(true)),
-                    textColor: .brand(.primaryText(true))
-                )
-            )
-            bag += topCardContentView.addArranged(claimButton)
-
-            let store: HomeStore = self.get()
-            bag += claimButton.onTapSignal.onValue { [weak store] in
-
-                if claim.id == "30" || claim.id == "31" || claim.id == "32" {
-                    if let url = URL(
-                        string: "https://app.adjust.com/11u5tuxu"
-                    ) {
-                        UIApplication.shared.open(url)
-                    }
-                } else if claim.id == CommonClaim.travelInsurance.id {
-                    store?.send(.openTravelInsurance)
-                } else {
-                    store?.send(.startClaim)
-                }
+extension CommonClaimDetail {
+    public static func journey(claim: CommonClaim) -> some JourneyPresentation {
+        HostingJourney(
+            HomeStore.self,
+            rootView: CommonClaimDetail(claim: claim),
+            style: .detented(.large, modally: true),
+            options: [.largeNavigationBar, .blurredBackground]
+        ) { action in
+            if case .dismissOtherServices = action {
+                DismissJourney()
             }
-            bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
         }
-
-        bag += viewController.install(view)
-
-        return (viewController, bag)
     }
+}
+
+#Preview{
+    CommonClaimDetail(
+        claim: CommonClaim(
+            id: "",
+            icon: nil,
+            imageName: "",
+            displayTitle: "",
+            layout: CommonClaim.Layout.init(
+                titleAndBulletPoint:
+                    .init(
+                        color: "",
+                        bulletPoints: [
+                            .init(
+                                title: "title",
+                                description: "description",
+                                icon: nil
+                            ),
+                            .init(
+                                title: "title",
+                                description: "description",
+                                icon: nil
+                            ),
+                        ]
+                    ),
+                emergency: nil
+            )
+        )
+    )
 }
