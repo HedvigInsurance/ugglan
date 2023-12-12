@@ -13,7 +13,7 @@ extension UIApplication {
             .rootViewController?
             .getTopPresendedViewController()
     }
-    
+
     public func getTopViewControllerNavigation() -> UINavigationController? {
         let topVC = UIApplication.shared.connectedScenes
             .map({ $0 as? UIWindowScene })
@@ -24,7 +24,7 @@ extension UIApplication {
             .first?
             .rootViewController?
             .getTopPresendedViewController()
-        
+
         if let topVC = topVC as? UITabBarController {
             if let topVC = topVC.selectedViewController as? UINavigationController {
                 return topVC

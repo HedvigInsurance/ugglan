@@ -151,7 +151,7 @@ struct FileView: View {
             } else {
                 GeometryReader { geometry in
                     VStack(spacing: 4) {
-                        Image(uiImage: hCoreUIAssets.pdf.image)
+                        Image(uiImage: fileImage)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(hTextColor.secondary)
@@ -169,6 +169,15 @@ struct FileView: View {
         }
         .onTapGesture {
             onTap()
+        }
+    }
+
+    private var fileImage: UIImage {
+        switch file.mimeType {
+        case .PDF:
+            return hCoreUIAssets.pdf.image
+        default:
+            return hCoreUIAssets.file.image
         }
     }
 

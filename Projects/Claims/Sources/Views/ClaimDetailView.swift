@@ -19,6 +19,9 @@ public struct ClaimDetailView: View {
         claim: ClaimModel
     ) {
         self._vm = .init(wrappedValue: .init(claim: claim))
+        if let url = URL(string: claim.signedAudioURL) {
+            player = AudioPlayer(url: url)
+        }
     }
 
     private var statusParagraph: String {
