@@ -106,16 +106,18 @@ let project = Project(
         Target(
             name: "NotificationService",
             platform: .iOS,
-            product: .app,
-            bundleId: "com.hedvig.app",
+            product: .appExtension,
+            bundleId: "com.hedvig.test.app.NotificationService",
             deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
-            infoPlist: "Config/Production/Info.plist",
-            sources: ["Sources/**"],
-            resources: ["Resources/**", "Config/Test/Resources/**"],
-            //            entitlements: "Config/Production/NotificationService.entitlements",
-            scripts: targetScripts,
-            dependencies: appDependencies,
-            settings: .settings(configurations: ugglanConfigurations)
+            infoPlist: .extendingDefault(with: [
+                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
+                 "NSExtension": [
+                     "NSExtensionPointIdentifier": "com.apple.usernotifications.service",
+                     "NSExtensionPrincipalClass": "$(PRODUCT_MODULE_NAME).NotificationService"
+                 ]
+             ]),
+             sources: "NotificationService/**",
+             dependencies: []
         ),
         Target(
             name: "AppTests",
