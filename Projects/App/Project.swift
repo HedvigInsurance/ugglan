@@ -104,6 +104,20 @@ let project = Project(
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target(
+            name: "NotificationService",
+            platform: .iOS,
+            product: .app,
+            bundleId: "com.hedvig.app",
+            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            infoPlist: "Config/Production/Info.plist",
+            sources: ["Sources/**"],
+            resources: ["Resources/**", "Config/Test/Resources/**"],
+            entitlements: "Config/Production/NotificationService.entitlements",
+            scripts: targetScripts,
+            dependencies: appDependencies,
+            settings: .settings(configurations: ugglanConfigurations)
+        ),
+        Target(
             name: "AppTests",
             platform: .iOS,
             product: .unitTests,
