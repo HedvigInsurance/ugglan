@@ -186,6 +186,7 @@ struct FileView: View {
             .aspectRatio(1, contentMode: .fill)
             .background(
                 KFImage(source: Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id)))
+                    .fade(duration: 0.25)
                     .setProcessor(processor)
                     .resizable()
                     .aspectRatio(
