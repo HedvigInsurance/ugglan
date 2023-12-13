@@ -166,7 +166,7 @@ let project = Project(
             deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
             infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
             sources: "../NotificationService/**",
-            entitlements: .file(path: .relativeToRoot("Projects/NotificationService/NotificationService.entitlements")),
+            entitlements: .relativeToRoot("Projects/NotificationService/NotificationService.entitlements"),
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
