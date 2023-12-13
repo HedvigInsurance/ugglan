@@ -76,7 +76,6 @@ struct ImagePicker: UIViewControllerRepresentable {
                                     thumbnailData: thumbnailData,
                                     extension: "jpeg"
                                 )
-                            //                            ImageCache.default.store(image, forKey: id)
                             files.append(file)
                         }
                         dispatchGroup.leave()
