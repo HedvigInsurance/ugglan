@@ -4,6 +4,7 @@ import EditCoInsured
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
@@ -72,6 +73,7 @@ public struct HomeState: StateProtocol {
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
+    public var showChatNotification = false
 
     public var hasFirstVet: Bool {
         return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
@@ -100,6 +102,8 @@ public enum HomeAction: ActionProtocol {
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
     case openCoInsured(contractIds: [InsuredPeopleConfig])
     case openEmergency
+    case fetchChatNotifications
+    case setChatNotifications(hasNew: Bool)
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
@@ -209,6 +213,27 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     }
                 return disposeBag
             }
+        case .fetchChatNotifications:
+
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.ChatMessageTimeStampQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { data in
+                        if UserDefaults.standard.object(forKey: "chatNotification") as? Date
+                            != data.chat.messages.first?.sentAt.localDateToIso8601Date
+                        {
+                            callback(.value(.setChatNotifications(hasNew: true)))
+                        } else {
+                            callback(.value(.setChatNotifications(hasNew: false)))
+                        }
+                    }
+                return disposeBag
+            }
+
         default:
             return nil
         }
@@ -240,6 +265,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setAllCommonClaims(&newState)
         case .hideImportantMessage:
             newState.hideImportantMessage = true
+        case let .setChatNotifications(hasNew):
+            newState.showChatNotification = hasNew
+            setAllCommonClaims(&newState)
         default:
             break
         }
@@ -258,15 +286,21 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
         allCommonClaims.append(contentsOf: state.commonClaims)
         state.allCommonClaims = allCommonClaims
+
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
+
         if state.hasFirstVet {
             types.append(.firstVet)
         }
-        types.append(.chat)
+
+        if state.showChatNotification {
+            types.append(.chatNotification)
+        } else {
+            types.append(.chat)
+        }
 
         state.toolbarOptionTypes = types
-
     }
 }
 

@@ -38,6 +38,7 @@ extension HomeView {
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
+        store.send(.fetchChatNotifications)
     }
 
     public var body: some View {
@@ -56,7 +57,7 @@ extension HomeView {
                     }) {
                         store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
                     }
-                case .chat:
+                case .chat, .chatNotification:
                     store.send(.openFreeTextChat)
                 }
             }
@@ -76,9 +77,7 @@ extension HomeView {
         .onReceive(store.stateSignal.plain().publisher) { value in
             self.toolbarOptionTypes = value.toolbarOptionTypes
         }
-
     }
-
     private var centralContent: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -165,7 +164,22 @@ class HomeVM: ObservableObject {
             .sink(receiveValue: { [weak self] value in
                 self?.memberStateData = value
             })
+    }
 
+    func observeNotificationsSettings() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: self,
+            queue: OperationQueue.main,
+            using: { _ in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(.fetchChatNotifications)
+            }
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
