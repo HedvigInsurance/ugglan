@@ -11,16 +11,20 @@ class NotificationService: UNNotificationServiceExtension {
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
         self.contentHandler = contentHandler
-        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        var count: Int = defaults?.value(forKey: "count") as! Int
-        if let bestAttemptContent = bestAttemptContent {
-            bestAttemptContent.title = "\(bestAttemptContent.title) "
-            bestAttemptContent.body = "\(bestAttemptContent.body) "
-            bestAttemptContent.badge = count as? NSNumber
-            count = count + 1
-            defaults?.set(count, forKey: "count")
-            contentHandler(bestAttemptContent)
-        }
+        //        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        //        var count: Int = (defaults?.value(forKey: "count") as? Int) ?? 0
+        //        if let bestAttemptContent = bestAttemptContent {
+        //            bestAttemptContent.title = "\(bestAttemptContent.title) "
+        //            bestAttemptContent.body = "\(bestAttemptContent.body) "
+        //            bestAttemptContent.badge = count as NSNumber
+        //            count = count + 1
+        //            defaults?.set(count, forKey: "count")
+        //            contentHandler(bestAttemptContent)
+        //        }
+        let data = UNMutableNotificationContent()
+        data.title = "TITLE"
+        data.body = "BODY"
+        contentHandler(data)
     }
 
     override func serviceExtensionTimeWillExpire() {
