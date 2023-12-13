@@ -32,16 +32,16 @@ public struct CommonClaimDetail: View {
                                 hText(bulletPoint.description)
                                     .foregroundColor(hTextColor.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
-                                hButton.MediumButton(type: .secondaryAlt) {
-                                    if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                    hButton.MediumButton(type: .secondaryAlt) {
                                         if let url = URL(
                                             string: "https://app.adjust.com/11u5tuxu"
                                         ) {
                                             UIApplication.shared.open(url)
                                         }
+                                    } content: {
+                                        hText(L10n.commonClaimButton)
                                     }
-                                } content: {
-                                    hText("Book now")
                                 }
                             }
                         }
