@@ -53,6 +53,23 @@ let testsConfigurations: [Configuration] = [
     ),
 ]
 
+let notificationConfiguration: [Configuration] = [
+    .debug(
+        name: "Debug",
+        settings: [
+            "CODE_SIGN_STYLE": "automatic",
+            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+        ]
+    ),
+    .release(
+        name: "Release",
+        settings: [
+            "CODE_SIGN_STYLE": "automatic",
+            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+        ]
+    ),
+]
+
 let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
@@ -75,6 +92,7 @@ let appDependencies: [TargetDependency] = [
             target: "ResourceBundledDependencies",
             path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
         ),
+        .target(name: "NotificationService"),
     ],
     sdkFrameworks,
 ]
@@ -139,6 +157,18 @@ let project = Project(
             scripts: targetScripts,
             dependencies: appDependencies,
             settings: .settings(configurations: hedvigConfigurations)
+        ),
+        Target(
+            name: "NotificationService",
+            platform: .iOS,
+            product: .appExtension,
+            bundleId: "com.hedvig.test.app.NotificationService",
+            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
+            sources: "../NotificationService/**",
+            entitlements: .file(path: .relativeToRoot("Projects/NotificationService/NotificationService.entitlements")),
+            dependencies: [],
+            settings: .settings(configurations: notificationConfiguration)
         ),
     ],
     schemes: [
