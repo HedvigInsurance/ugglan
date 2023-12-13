@@ -11,7 +11,7 @@ import hGraphQL
 struct ContractTable {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
-    @State var terminatedInfoCard = false
+    @State var onlyTerminatedInsurances = false
 
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
@@ -22,8 +22,7 @@ struct ContractTable {
             if !(activeContractsToShow + pendingContractsToShow).isEmpty {
                 return activeContractsToShow + pendingContractsToShow
             } else {
-                // if only terminated contracts - show these
-                terminatedInfoCard = true
+                onlyTerminatedInsurances = true
                 return state.terminatedContracts.compactMap { $0 }
             }
         }
@@ -41,9 +40,10 @@ extension ContractTable: View {
 
                     }
                 ) { contracts in
-                    VStack(spacing: 16) {
-                        if terminatedInfoCard {
+                    VStack(spacing: 0) {
+                        if onlyTerminatedInsurances {
                             InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                                .padding(.bottom, 16)
 
                         }
                         ForEach(contracts, id: \.id) { contract in
@@ -58,7 +58,7 @@ extension ContractTable: View {
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
-        if !(showTerminated ||  terminatedInfoCard) {
+        if !showTerminated {
             VStack(spacing: 16) {
                 CrossSellingStack(withHeader: true)
                     .padding(.top, 24)
@@ -68,7 +68,7 @@ extension ContractTable: View {
                         state.terminatedContracts
                     }
                 ) { terminatedContracts in
-                    if !terminatedContracts.isEmpty {
+                    if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                         hSection {
                             hButton.LargeButton(type: .secondary) {
                                 store.send(.openTerminatedContracts)
