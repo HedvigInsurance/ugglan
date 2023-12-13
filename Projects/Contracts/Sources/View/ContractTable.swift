@@ -11,15 +11,21 @@ import hGraphQL
 struct ContractTable {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
+    @State var terminatedInfoCard = false
 
     func getContractsToShow(for state: ContractState) -> [Contract] {
-
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
         } else {
             let activeContractsToShow = state.activeContracts.compactMap { $0 }
             let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
-            return activeContractsToShow + pendingContractsToShow
+            if !(activeContractsToShow + pendingContractsToShow).isEmpty {
+                return activeContractsToShow + pendingContractsToShow
+            } else {
+                // if only terminated contracts - show these
+                terminatedInfoCard = true
+                return state.terminatedContracts.compactMap { $0 }
+            }
         }
     }
 }
@@ -35,18 +41,24 @@ extension ContractTable: View {
 
                     }
                 ) { contracts in
-                    ForEach(contracts, id: \.id) { contract in
-                        ContractRow(id: contract.id)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, 8)
-                            .transition(.slide)
+                    VStack(spacing: 16) {
+                        if terminatedInfoCard {
+                            InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+
+                        }
+                        ForEach(contracts, id: \.id) { contract in
+                            ContractRow(id: contract.id)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.bottom, 8)
+                                .transition(.slide)
+                        }
                     }
                 }
             }
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
-        if !showTerminated {
+        if !(showTerminated ||  terminatedInfoCard) {
             VStack(spacing: 16) {
                 CrossSellingStack(withHeader: true)
                     .padding(.top, 24)
