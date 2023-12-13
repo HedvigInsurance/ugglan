@@ -92,11 +92,22 @@ let appDependencies: [TargetDependency] = [
             target: "ResourceBundledDependencies",
             path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
         ),
-        .target(name: "NotificationService"),
     ],
     sdkFrameworks,
 ]
 .flatMap { $0 }
+
+var devAppDependencies: [TargetDependency] = {
+    var dependencies = appDependencies
+    dependencies.append(.target(name: "NotificationService"))
+    return dependencies
+}()
+
+var prodAppDependencies: [TargetDependency] = {
+    var dependencies = appDependencies
+    dependencies.append(.target(name: "NotificationServiceProd"))
+    return dependencies
+}()
 
 let targetScripts: [TargetScript] = [
     .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
@@ -118,7 +129,7 @@ let project = Project(
             resources: ["Resources/**", "Config/Test/Resources/**"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
-            dependencies: appDependencies,
+            dependencies: devAppDependencies,
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target(
@@ -155,7 +166,7 @@ let project = Project(
             resources: ["Resources/**", "Config/Production/Resources/**"],
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
-            dependencies: appDependencies,
+            dependencies: prodAppDependencies,
             settings: .settings(configurations: hedvigConfigurations)
         ),
         Target(
@@ -166,7 +177,19 @@ let project = Project(
             deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
             infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
             sources: "../NotificationService/**",
-            entitlements: .relativeToRoot("Projects/NotificationService/NotificationService.entitlements"),
+            entitlements: .relativeToRoot("Projects/NotificationService/Config/Dev/NotificationService.entitlements"),
+            dependencies: [],
+            settings: .settings(configurations: notificationConfiguration)
+        ),
+        Target(
+            name: "NotificationServiceProd",
+            platform: .iOS,
+            product: .appExtension,
+            bundleId: "com.hedvig.app.NotificationService",
+            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
+            sources: "../NotificationService/**",
+            entitlements: .relativeToRoot("Projects/NotificationService/Config/Prod/NotificationService.entitlements"),
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
