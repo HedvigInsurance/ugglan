@@ -165,13 +165,13 @@ class ChatState {
             })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [OctopusGraphQL.MessageFragment]? in
-                UserDefaults.standard.set(
-                    data.chat.messages.first?.sentAt.localDateToIso8601Date ?? Date(),
-                    forKey: "chatNotification"
-                )
-
                 let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(.setChatNotifications(hasNew: false))
+                store.send(
+                    .setChatNotificationTimeStamp(
+                        sentAt: data.chat.messages.first?.sentAt.localDateToIso8601Date ?? Date()
+                    )
+                )
+                store.send(.setChatNotification(hasNew: false))
 
                 self.isFetching.value = false
                 self.initialHasNext = data.chat.hasNext

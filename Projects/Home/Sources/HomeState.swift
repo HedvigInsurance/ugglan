@@ -74,6 +74,7 @@ public struct HomeState: StateProtocol {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
     public var showChatNotification = false
+    public var latestChatTimeStamp: Date?
 
     public var hasFirstVet: Bool {
         return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
@@ -103,7 +104,8 @@ public enum HomeAction: ActionProtocol {
     case openCoInsured(contractIds: [InsuredPeopleConfig])
     case openEmergency
     case fetchChatNotifications
-    case setChatNotifications(hasNew: Bool)
+    case setChatNotification(hasNew: Bool)
+    case setChatNotificationTimeStamp(sentAt: Date)
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
@@ -214,7 +216,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 return disposeBag
             }
         case .fetchChatNotifications:
-
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client
@@ -223,12 +224,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .onValue { data in
-                        if UserDefaults.standard.object(forKey: "chatNotification") as? Date
-                            != data.chat.messages.first?.sentAt.localDateToIso8601Date
+                        if self.state.latestChatTimeStamp ?? Date() < data.chat.messages.first?.sentAt
+                            .localDateToIso8601Date ?? Date()
                         {
-                            callback(.value(.setChatNotifications(hasNew: true)))
+                            callback(.value(.setChatNotification(hasNew: true)))
                         } else {
-                            callback(.value(.setChatNotifications(hasNew: false)))
+                            callback(.value(.setChatNotification(hasNew: false)))
                         }
                     }
                 return disposeBag
@@ -265,9 +266,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setAllCommonClaims(&newState)
         case .hideImportantMessage:
             newState.hideImportantMessage = true
-        case let .setChatNotifications(hasNew):
+        case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setAllCommonClaims(&newState)
+        case let .setChatNotificationTimeStamp(sentAt):
+            newState.latestChatTimeStamp = sentAt
         default:
             break
         }
