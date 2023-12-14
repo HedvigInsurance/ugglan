@@ -11,6 +11,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let showDividers: Bool?
     private let attachToBottom: Bool
     private let disableIfNoneSelected: Bool
+    private let hButtonText: String
 
     @State private var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
@@ -24,7 +25,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         singleSelect: Bool? = false,
         showDividers: Bool? = false,
         attachToBottom: Bool = false,
-        disableIfNoneSelected: Bool = false
+        disableIfNoneSelected: Bool = false,
+        hButtonText: String? = L10n.generalSaveButton
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -34,6 +36,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.showDividers = showDividers
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
+        self.hButtonText = hButtonText ?? L10n.generalSaveButton
     }
 
     public var body: some View {
@@ -66,7 +69,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
-                    getCell(item: item)
+                    HStack {
+                        if items.count > 3 {
+                            getCell(item: item, fieldSize: .small)
+                        } else {
+                            getCell(item: item, fieldSize: .large)
+                        }
+                    }
                 }
                 .disabled(isLoading)
             }
@@ -80,7 +89,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(L10n.generalSaveButton, style: .standard)
+                    hText(hButtonText, style: .standard)
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
@@ -110,7 +119,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: (object: T, displayName: String)) -> some View {
+    func getCell(item: (object: T, displayName: String), fieldSize: hFieldSize) -> some View {
         if showDividers ?? false {
             hRow {
                 displayContentFor(item.object)
@@ -120,6 +129,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
             .hWithoutDivider
         } else {
             hRow {
@@ -129,6 +139,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .onTap {
                 onTapExecuteFor(item.object)
             }
+            .frame(height: fieldSize == .large ? 72 : .infinity)
         }
     }
 
@@ -140,13 +151,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hText(displayName, style: .title3)
                 .foregroundColor(hTextColor.primary)
             Spacer()
-            Circle()
-                .strokeBorder(
-                    getBorderColor(isSelected: isSelected),
-                    lineWidth: isSelected ? 0 : 1.5
-                )
-                .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
-                .frame(width: 28, height: 28)
+            checkBox(isSelected: isSelected)
         }
     }
 
@@ -165,6 +170,37 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
             }
         }
+    }
+
+    func checkBox(isSelected: Bool) -> some View {
+        Group {
+            if singleSelect ?? false {
+                Circle()
+                    .strokeBorder(
+                        getBorderColor(isSelected: isSelected),
+                        lineWidth: isSelected ? 0 : 1.5
+                    )
+                    .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(
+                            getBorderColor(isSelected: isSelected),
+                            lineWidth: isSelected ? 0 : 1.5
+                        )
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .foregroundColor(retColor(isSelected: isSelected))
+                        )
+
+                    if isSelected {
+                        Image(uiImage: hCoreUIAssets.tick.image)
+                            .foregroundColor(hTextColor.negative)
+                    }
+                }
+            }
+        }
+        .frame(width: 24, height: 24)
     }
 
     @hColorBuilder
