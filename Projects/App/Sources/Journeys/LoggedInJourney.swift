@@ -43,6 +43,8 @@ extension AppJourney {
                     }
                 case .openEmergency:
                     SubmitClaimEmergencyScreen.journey
+                case .openHelpCenter:
+                    HelpCenterStartView.journey
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
@@ -64,6 +66,7 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
+            .configureDeepLink
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -213,6 +216,15 @@ extension JourneyPresentation {
                     }
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
+            }
+        }
+    }
+
+    public var configureDeepLink: some JourneyPresentation {
+        onAction(HomeStore.self) { action, pre in
+            if case let .goToDeepLink(deepLink) = action {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.makeTabActive(deeplink: deepLink))
             }
         }
     }
