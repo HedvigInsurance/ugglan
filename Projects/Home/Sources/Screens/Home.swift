@@ -86,7 +86,7 @@ extension HomeView {
             case .future:
                 hText(L10n.hedvigNameText, style: .title)
             case .terminated:
-                TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
+                TerminatedSectionView(claimsContent: claimsContent)
             case .loading:
                 EmptyView()
             }
@@ -219,11 +219,9 @@ extension HomeView {
                 resultJourney(.openEmergency)
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if !fromOtherService {
-                    Journey(
-                        CommonClaimDetail(claim: claim),
-                        style: .detented(.large, modally: true)
-                    )
-                    .withJourneyDismissButton
+                    CommonClaimDetail.journey(claim: claim)
+                        .withJourneyDismissButton
+                        .configureTitle(claim.displayTitle)
                 }
             } else if case .connectPayments = action {
                 resultJourney(.openConnectPayments)
