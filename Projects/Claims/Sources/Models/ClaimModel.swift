@@ -14,7 +14,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
-        files: [File],
         targetFileUploadUri: String
     ) {
         self.id = id
@@ -27,7 +26,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.subtitle = ""
         self.memberFreeText = memberFreeText
         self.payoutAmount = payoutAmount
-        self.files = files
         self.targetFileUploadUri = targetFileUploadUri
     }
 
@@ -44,7 +42,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let type: String
-    public let files: [File]
     public let targetFileUploadUri: String
     public var statusParagraph: String {
         switch self.status {
@@ -68,14 +65,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         default:
             return ""
         }
-    }
-
-    public var showUploadedFiles: Bool {
-        return self.signedAudioURL != nil || !files.isEmpty || canAddFiles
-    }
-
-    public var canAddFiles: Bool {
-        return self.status != .closed
     }
 
     public enum ClaimStatus: String, Codable, CaseIterable {

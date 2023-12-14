@@ -13,16 +13,6 @@ query Claims {
       payoutAmount {
         ...MoneyFragment
       }
-      files {
-        ...FileFragment
-      }
     }
   }
-}
-
-fragment FileFragment on ClaimFile {
-    id
-    name
-    mimeType
-    url
 }

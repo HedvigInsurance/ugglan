@@ -1,3 +1,5 @@
+import Combine
+import Flow
 import Kingfisher
 import Presentation
 import SwiftUI
@@ -7,29 +9,29 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
-    @State var claim: ClaimModel
-    @State var files: [File]
-    @PresentableStore var store: ClaimsStore
-    @State var player: AudioPlayer?
 
+    @State var player: AudioPlayer?
+    @State var showImagePicker = false
+    @State var showFilePicker = false
+    @State var showCamera = false
+    @StateObject var vm: ClaimDetailViewModel
     public init(
         claim: ClaimModel
     ) {
-        self.claim = claim
-        self.files = claim.files
-        if let signedAudioURL = claim.signedAudioURL {
-            _player = State(initialValue: AudioPlayer(url: URL(string: signedAudioURL)))
+        self._vm = .init(wrappedValue: .init(claim: claim))
+        if let url = URL(string: claim.signedAudioURL) {
+            self._player = State(initialValue: AudioPlayer(url: url))
         }
-
     }
+
     private var statusParagraph: String {
-        claim.statusParagraph
+        vm.claim.statusParagraph
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                ClaimStatus(claim: claim, enableTap: false)
+                ClaimStatus(claim: vm.claim, enableTap: false)
                     .padding(.top, 8)
                     .padding(.horizontal, 16)
                 hSection {
@@ -40,15 +42,15 @@ public struct ClaimDetailView: View {
                     }
                     hRow {
                         ContactChatView(
-                            store: self.store,
-                            id: self.claim.id,
-                            status: self.claim.status.rawValue
+                            store: vm.store,
+                            id: vm.claim.id,
+                            status: vm.claim.status.rawValue
                         )
                         .padding(.bottom, 4)
                     }
                 }
 
-                if let inputText = claim.memberFreeText {
+                if let inputText = vm.claim.memberFreeText {
                     hSection {
                         hRow {
                             hText(inputText)
@@ -61,7 +63,7 @@ public struct ClaimDetailView: View {
                     .padding(.top, 16)
                 }
 
-                if claim.showUploadedFiles {
+                if vm.showUploadedFiles {
                     hSection {
                         if let player {
                             ClaimDetailFilesView(
@@ -82,26 +84,91 @@ public struct ClaimDetailView: View {
                         }
                     }
                     .padding(.top, 16)
-                    hSection {
-                        FilesGridView(files: files, options: [])
+                    if let fetchError = vm.fetchFilesError {
+                        hSection {
+                            RetryView(subtitle: fetchError) {
+                                Task {
+                                    await vm.fetchFiles()
+                                }
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
+                    } else {
+                        hSection {
+                            FilesGridView(vm: vm.fileGridViewModel)
+                        }
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
                 }
 
-                if claim.canAddFiles {
+                if vm.canAddFiles {
                     hSection {
-                        hButton.LargeButton(type: .primaryAlt) {
-                            store.send(.navigation(action: .openFilesFor(claim: claim)))
-                        } content: {
-                            hText(L10n.ClaimStatusDetail.addMoreFiles)
+                        Group {
+                            if !vm.hasFiles {
+                                hButton.LargeButton(type: .secondary) {
+                                    showFilePickerAlert()
+                                } content: {
+                                    hText(L10n.ClaimStatusDetail.addFiles)
+                                }
+                            } else {
+                                hButton.LargeButton(type: .secondary) {
+                                    showFilePickerAlert()
+                                } content: {
+                                    hText(L10n.ClaimStatusDetail.addMoreFiles)
+                                }
+                            }
                         }
                     }
                     .padding(.vertical, 8)
                 }
             }
         }
-        .onAppear {
-            self.files = store.state.claims?.first(where: { $0.id == claim.id })?.files ?? []
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker { images in
+                vm.showAddFiles(with: images)
+            }
+            .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showFilePicker) {
+            FileImporterView { files in
+                vm.showAddFiles(with: files)
+            }
+            .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showCamera) {
+            CameraPickerView { image in
+                guard let data = image.jpegData(compressionQuality: 0.9),
+                    let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                else { return }
+                let file: FilePickerDto = .init(
+                    id: UUID().uuidString,
+                    size: Double(data.count),
+                    mimeType: .JPEG,
+                    name: "image_\(Date()).jpeg",
+                    data: data,
+                    thumbnailData: thumbnailData,
+                    extension: "jpeg"
+                )
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    vm.showAddFiles(with: [file])
+                }
+
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    private func showFilePickerAlert() {
+        vm.fileUploadManager.resetuploadFilesPath()
+        FilePicker.showAlert { selected in
+            switch selected {
+            case .camera:
+                showCamera = true
+            case .imagePicker:
+                showImagePicker = true
+            case .filePicker:
+                showFilePicker = true
+            }
         }
     }
 }
@@ -118,9 +185,90 @@ struct ClaimDetailView_Previews: PreviewProvider {
             type: "associated type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [],
             targetFileUploadUri: ""
         )
         return ClaimDetailView(claim: claim)
+    }
+}
+
+public class ClaimDetailViewModel: ObservableObject {
+    @PresentableStore var store: ClaimsStore
+    @Published var claim: ClaimModel
+    @Inject var claimService: hFetchClaimService
+    @Published var fetchFilesError: String?
+    @Published var hasFiles = false
+
+    let fileUploadManager = FileUploadManager()
+    var fileGridViewModel: FileGridViewModel
+    private var cancellables = Set<AnyCancellable>()
+    public init(claim: ClaimModel) {
+        self.claim = claim
+        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let files = store.state.files[claim.id] ?? []
+        self.fileGridViewModel = .init(files: files, options: [])
+        Task {
+            await fetchFiles()
+        }
+        store.actionSignal.publisher
+            .filter { action in
+                if case .refreshFiles = action {
+                    return true
+                }
+                return false
+            }
+            .sink { _ in
+
+            } receiveValue: { value in
+                Task { [weak self] in
+                    await self?.fetchFiles()
+                }
+            }
+            .store(in: &cancellables)
+        fileGridViewModel.$files
+            .sink { _ in
+
+            } receiveValue: { files in
+                self.hasFiles = !files.isEmpty
+            }
+            .store(in: &cancellables)
+
+    }
+
+    @MainActor
+    func fetchFiles() async {
+        withAnimation {
+            fetchFilesError = nil
+        }
+        do {
+            let files = try await claimService.getFiles()
+            store.send(.setFiles(files: files))
+            self.fileGridViewModel.files = files[claim.id] ?? []
+        } catch let ex {
+            withAnimation {
+                fetchFilesError = ex.localizedDescription
+
+            }
+        }
+    }
+
+    func showAddFiles(with files: [FilePickerDto]) {
+        if !files.isEmpty {
+            let filess = files.compactMap(
+                {
+                    let dataPath = fileUploadManager.getPathForData(for: $0.id, andExtension: $0.extension)
+                    let thumbnailPath = fileUploadManager.getPathForThumnailData(for: $0.id, andExtension: $0.extension)
+                    return $0.asFile(with: dataPath, and: thumbnailPath)
+                }
+            )
+            store.send(.navigation(action: .openFilesFor(claim: claim, files: filess)))
+        }
+    }
+
+    var showUploadedFiles: Bool {
+        return self.claim.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
+    }
+
+    var canAddFiles: Bool {
+        return self.claim.status != .closed && fetchFilesError == nil
     }
 }

@@ -27,6 +27,8 @@ public struct DocumentPreview: UIViewRepresentable {
 
     public func updateUIView(_ webView: WKWebView, context: Context) {
         webView.backgroundColor = .brand(.primaryBackground())
+        webView.scrollView.backgroundColor = .brand(.primaryBackground())
+        webView.isOpaque = false
         webView.viewController?.view.backgroundColor = .brand(.primaryBackground())
         if let data, let mimeType {
             webView.load(data, mimeType: mimeType, characterEncodingName: "UTF-8", baseURL: URL(fileURLWithPath: ""))

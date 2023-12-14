@@ -87,7 +87,9 @@ enum ClaimsRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                guard case let .data(data) = file.source else { throw NetworkError.badRequest(message: nil) }
+                guard case let .localFile(url, _) = file.source,
+                    let data = try? Data(contentsOf: url) /*FileManager.default.contents(atPath: url.path)*/
+                else { throw NetworkError.badRequest(message: nil) }
                 multipartFormDataRequest.addDataField(
                     fieldName: "files",
                     fileName: file.name,

@@ -4,6 +4,7 @@ import hGraphQL
 
 public protocol hFetchClaimService {
     func get() async throws -> [ClaimModel]
+    func getFiles() async throws -> [String: [File]]
 }
 
 public class FetchClaimServiceDemo: hFetchClaimService {
@@ -20,58 +21,61 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                 type: "associated type",
                 memberFreeText: nil,
                 payoutAmount: nil,
-                files: [
-                    .init(
-                        id: "imageId1",
-                        size: 22332,
-                        mimeType: .PNG,
-                        name: "test-image",
-                        source: .url(
-                            url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!
-                        )
-                    ),
-
-                    .init(
-                        id: "imageId2",
-                        size: 53443,
-                        mimeType: MimeType.PNG,
-                        name: "test-image2",
-                        source: .url(
-                            url: URL(
-                                string:
-                                    "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
-                            )!
-                        )
-                    ),
-                    .init(
-                        id: "imageId3",
-                        size: 52176,
-                        mimeType: MimeType.PNG,
-                        name: "test-image3",
-                        source: .url(
-                            url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!
-                        )
-                    ),
-                    .init(
-                        id: "imageId4",
-                        size: 52176,
-                        mimeType: MimeType.PNG,
-                        name: "test-image4",
-                        source: .url(url: URL(string: "https://flif.info/example-images/fish.png")!)
-                    ),
-                    .init(
-                        id: "imageId5",
-                        size: 52176,
-                        mimeType: MimeType.PDF,
-                        name: "test-pdf long name it is possible to have it is long name .pdf",
-                        source: .url(
-                            url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!
-                        )
-                    ),
-                ],
                 targetFileUploadUri: ""
             )
         ]
+    }
+    public func getFiles() async throws -> [String: [File]] {
+        let fileArray: [File] = [
+            .init(
+                id: "imageId1",
+                size: 22332,
+                mimeType: .PNG,
+                name: "test-image",
+                source: .url(
+                    url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!
+                )
+            ),
+
+            .init(
+                id: "imageId2",
+                size: 53443,
+                mimeType: MimeType.PNG,
+                name: "test-image2",
+                source: .url(
+                    url: URL(
+                        string:
+                            "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png"
+                    )!
+                )
+            ),
+            .init(
+                id: "imageId3",
+                size: 52176,
+                mimeType: MimeType.PNG,
+                name: "test-image3",
+                source: .url(
+                    url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!
+                )
+            ),
+            .init(
+                id: "imageId4",
+                size: 52176,
+                mimeType: MimeType.PNG,
+                name: "test-image4",
+                source: .url(url: URL(string: "https://flif.info/example-images/fish.png")!)
+            ),
+            .init(
+                id: "imageId5",
+                size: 52176,
+                mimeType: MimeType.PDF,
+                name: "test-pdf long name it is possible to have it is long name .pdf",
+                source: .url(
+                    url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!
+                )
+            ),
+        ]
+        return ["id": fileArray]
     }
 }
 
@@ -86,6 +90,18 @@ public class FetchClaimServiceOctopus: hFetchClaimService {
         )
         let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
         return claimData
+    }
+
+    public func getFiles() async throws -> [String: [File]] {
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.ClaimsFilesQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+        return data.currentMember.claims
+            .reduce(into: [String: [File]]()) { (accumulator, claim) in
+                let files = claim.files.compactMap { File(with: $0.fragments.fileFragment) }
+                accumulator[claim.id] = files
+            }
     }
 }
 extension ClaimModel {
@@ -102,7 +118,6 @@ extension ClaimModel {
         self.subtitle = ""
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
-        self.files = claim.files.compactMap({ .init(with: $0.fragments.fileFragment) })
         self.targetFileUploadUri = claim.targetFileUploadUri
     }
 }

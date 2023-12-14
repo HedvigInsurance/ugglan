@@ -100,7 +100,6 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [],
             targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
@@ -124,7 +123,6 @@ struct ClaimReopened_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [],
             targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
@@ -148,7 +146,6 @@ struct ClaimPaid_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
-            files: [],
             targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
@@ -172,7 +169,6 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [],
             targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
@@ -196,7 +192,6 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
-            files: [],
             targetFileUploadUri: ""
         )
         return VStack(spacing: 20) {
