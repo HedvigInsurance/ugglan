@@ -16,7 +16,6 @@ import hGraphQL
 
 public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
-    @State var toolbarOptionTypes: [ToolbarOptionType] = []
     @StateObject var vm = HomeVM()
 
     var claimsContent: Claims
@@ -28,8 +27,6 @@ public struct HomeView<Claims: View>: View {
     ) {
         self.claimsContent = claimsContent
         self.memberId = memberId()
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        _toolbarOptionTypes = State(initialValue: store.state.toolbarOptionTypes)
     }
 }
 
@@ -46,7 +43,7 @@ extension HomeView {
             centralContent
         }
         .setHomeNavigationBars(
-            with: $toolbarOptionTypes,
+            with: $vm.toolbarOptionTypes,
             action: { type in
                 switch type {
                 case .newOffer:
@@ -62,10 +59,6 @@ extension HomeView {
                 }
             }
         )
-        .onAppear {
-            fetch()
-            self.toolbarOptionTypes = store.state.toolbarOptionTypes
-        }
         .hFormAttachToBottom {
             VStack(spacing: 0) {
                 bottomContent
@@ -74,8 +67,8 @@ extension HomeView {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .hFormMergeBottomViewWithContentIfNeeded
-        .onReceive(store.stateSignal.plain().publisher) { value in
-            self.toolbarOptionTypes = value.toolbarOptionTypes
+        .onAppear {
+            fetch()
         }
     }
     private var centralContent: some View {
@@ -152,30 +145,47 @@ extension HomeView {
 
 class HomeVM: ObservableObject {
     @Published var memberStateData: MemberStateData = .init(state: .loading, name: nil)
-    var memberStateDataCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
+    @Published var toolbarOptionTypes: [ToolbarOptionType] = []
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberStateData = store.state.memberStateData
-        memberStateDataCancellable = store.stateSignal
+        store.stateSignal
             .map({ $0.memberStateData })
             .plain()
             .publisher.receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberStateData = value
             })
+            .store(in: &cancellables)
+        toolbarOptionTypes = store.state.toolbarOptionTypes
+        addObserverForApplicationDidBecomeActive()
+        observeToolbarOptionTypes()
     }
 
-    func observeNotificationsSettings() {
+    private func addObserverForApplicationDidBecomeActive() {
         NotificationCenter.default.addObserver(
             forName: UIApplication.didBecomeActiveNotification,
-            object: self,
+            object: nil,
             queue: OperationQueue.main,
             using: { _ in
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 store.send(.fetchChatNotifications)
             }
         )
+    }
+
+    private func observeToolbarOptionTypes() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .map({ $0.toolbarOptionTypes })
+            .plain()
+            .publisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                self?.toolbarOptionTypes = value
+            })
+            .store(in: &cancellables)
     }
 
     deinit {

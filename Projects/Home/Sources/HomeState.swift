@@ -74,7 +74,7 @@ public struct HomeState: StateProtocol {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
     public var showChatNotification = false
-    public var latestChatTimeStamp: Date?
+    public var latestChatTimeStamp = Date()
 
     public var hasFirstVet: Bool {
         return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
@@ -224,12 +224,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .onValue { data in
-                        if self.state.latestChatTimeStamp ?? Date() < data.chat.messages.first?.sentAt
-                            .localDateToIso8601Date ?? Date()
-                        {
-                            callback(.value(.setChatNotification(hasNew: true)))
-                        } else {
-                            callback(.value(.setChatNotification(hasNew: false)))
+                        if let date = data.chat.messages.first?.sentAt.localDateToIso8601Date {
+                            if self.state.latestChatTimeStamp < date {
+                                callback(.value(.setChatNotification(hasNew: true)))
+                            } else {
+                                callback(.value(.setChatNotification(hasNew: false)))
+                            }
                         }
                     }
                 return disposeBag
@@ -271,6 +271,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setAllCommonClaims(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
+            newState.showChatNotification = false
+            setAllCommonClaims(&newState)
         default:
             break
         }

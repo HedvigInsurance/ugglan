@@ -171,8 +171,6 @@ class ChatState {
                         sentAt: data.chat.messages.first?.sentAt.localDateToIso8601Date ?? Date()
                     )
                 )
-                store.send(.setChatNotification(hasNew: false))
-
                 self.isFetching.value = false
                 self.initialHasNext = data.chat.hasNext
                 self.initialNextUntil = data.chat.nextUntil
