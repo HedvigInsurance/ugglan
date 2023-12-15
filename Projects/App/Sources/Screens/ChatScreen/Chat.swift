@@ -182,7 +182,29 @@ extension Chat: Presentable {
                 }
             }
         })
-
+        let headerView = UIView()
+        headerView.transform = CGAffineTransform(scaleX: 1, y: -1)
+        tableKit.view.tableHeaderView = headerView
+        headerView.backgroundColor = .brand(.primaryBackground())
+        let textStyle = UIColor.brandStyle(.chatTimeStamp)
+        let styledText = StyledText(text: L10n.chatDeliveredMessage, style: textStyle)
+        let deliveredLabel = UILabel(styledText: styledText)
+        deliveredLabel.alpha = 0
+        headerView.addSubview(deliveredLabel)
+        deliveredLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.trailing.equalToSuperview().inset(20)
+        }
+        bag += chatState.showDelivered
+            .plain()
+            .onValue(on: .main) { [weak deliveredLabel] show in
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: show ? 0.6 : 0
+                ) {
+                    deliveredLabel?.alpha = show ? 1 : 0
+                }
+            }
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
             .compactMap { notification in notification.keyboardInfo }
@@ -201,8 +223,6 @@ extension Chat: Presentable {
                         bottom: 0,
                         right: 0
                     )
-                    let headerView = UIView()
-                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
