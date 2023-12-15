@@ -69,7 +69,7 @@ struct PaymentDetailsDiscountView: View {
             }
             .foregroundColor(hTextColor.secondary)
         }
-        .noHorizontalPadding()
+        .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
 

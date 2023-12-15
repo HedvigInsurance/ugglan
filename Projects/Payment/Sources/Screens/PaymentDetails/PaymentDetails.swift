@@ -78,7 +78,7 @@ struct PaymentDetails: View {
                     hText(data.payment.net.formattedAmount)
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
             hRow {
                 VStack(spacing: 16) {
                     HStack {
@@ -99,7 +99,7 @@ struct PaymentDetails: View {
                     }
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
         }
         .dividerInsets(.all, 0)
         .sectionContainerStyle(.transparent)
@@ -129,7 +129,7 @@ struct PaymentDetails: View {
                     hText(item.value)
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
             .dividerInsets(.all, 0)
 
             list.append((item.key, AnyView(view)))
@@ -149,7 +149,7 @@ struct PaymentDetails: View {
                 .foregroundColor(hTextColor.secondary)
             }
         }
-        .noHorizontalPadding()
+        .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
 }
