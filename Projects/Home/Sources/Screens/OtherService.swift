@@ -104,11 +104,9 @@ extension OtherService {
                 DismissJourney()
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if fromOtherService {
-                    Journey(
-                        CommonClaimDetail(claim: claim),
-                        style: .detented(.large, modally: false)
-                    )
-                    .withJourneyDismissButton
+                    CommonClaimDetail.journey(claim: claim)
+                        .withJourneyDismissButton
+                        .configureTitle(claim.displayTitle)
                 }
             } else if case .dismissOtherServices = action {
                 DismissJourney()

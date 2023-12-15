@@ -4,6 +4,8 @@ import hCoreUI
 
 struct ContractsScreen: View {
     @PresentableStore var store: TravelInsuranceStore
+    @State var isLoading: Bool = false
+
     public var body: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
@@ -18,66 +20,45 @@ struct ContractsScreen: View {
                 }
             ) { travelInsuranceModels in
                 if !travelInsuranceModels.isEmpty {
-                    hForm {
-                        VStack(spacing: 4) {
-                            ForEach(travelInsuranceModels, id: \.contractId) { item in
-                                getContractView(for: item, and: travelInsuranceConfig)
+                    CheckboxPickerScreen<TravelInsuranceContractSpecification>(
+                        items: {
+                            return travelInsuranceModels.map {
+                                (object: $0, displayName: $0.street)
                             }
+                        }(),
+                        preSelectedItems: {
+                            guard let preSelected = travelInsuranceModels.first else {
+                                return []
+                            }
+                            return [preSelected]
+                        },
+                        onSelected: { selected in
+                            if let selected = selected.first {
+                                store.send(.setTravelInsuranceData(specification: selected))
+                                store.send(.navigation(.openStartDateScreen))
+                            }
+                        },
+                        singleSelect: true,
+                        attachToBottom: true,
+                        hButtonText: L10n.generalContinueButton
+                    )
+                    .hFormTitle(.standard, .title1, L10n.TravelCertificate.selectContractTitle)
+                    .hButtonIsLoading(isLoading)
+                    .hDisableScroll
+                    .onReceive(
+                        store.loadingSignal
+                            .plain()
+                            .publisher
+                    ) { value in
+                        withAnimation {
+                            isLoading = value[.getTravelInsurance] == .loading
                         }
                     }
-                    .hFormTitle(.standard, .title3, L10n.TravelCertificate.selectContractTitle)
-                    .hFormAttachToBottom {
-                        hButton.LargeButton(type: .primary) {
-                            store.send(.navigation(.openStartDateScreen))
-                        } content: {
-                            hText(L10n.generalContinueButton)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 6)
-                    }
-                    .navigationTitle(L10n.TravelCertificate.cardTitle)
                 }
             }
         }
         .presentableStoreLensAnimation(.spring())
         .trackLoading(TravelInsuranceStore.self, action: .getTravelInsurance)
-    }
-
-    private func getContractView(
-        for item: TravelInsuranceContractSpecification,
-        and selectedOne: TravelInsuranceContractSpecification?
-    ) -> some View {
-        hSection {
-            hRow {
-                HStack {
-                    hCoreUIAssets.bigPillowHome.view.resizable()
-                        .frame(width: 48, height: 48)
-                    hText(item.street)
-                    Spacer()
-                    getCustomAccessory(item: item, and: selectedOne)
-                }
-            }
-            .withEmptyAccessory
-            .onTap {
-                store.send(.setTravelInsuranceData(specification: item))
-            }
-        }
-        .sectionContainerStyle(.opaque)
-    }
-
-    @ViewBuilder
-    private func getCustomAccessory(
-        item: TravelInsuranceContractSpecification,
-        and selectedOne: TravelInsuranceContractSpecification?
-    ) -> some View {
-        HStack {
-            if item.contractId == selectedOne?.contractId {
-                Circle().fill(hTextColor.primary).frame(width: 22, height: 22)
-            } else {
-                Circle().stroke(hTextColor.tertiary)
-                    .frame(width: 22, height: 22)
-            }
-        }
     }
 }
 

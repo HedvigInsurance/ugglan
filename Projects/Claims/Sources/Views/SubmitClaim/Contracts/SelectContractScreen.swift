@@ -33,6 +33,7 @@ struct SelectContractScreen: View {
                 singleSelect: true,
                 attachToBottom: true
             )
+            .padding(.bottom, 16)
             .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
             .hButtonIsLoading(isLoading)
             .hDisableScroll

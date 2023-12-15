@@ -3,6 +3,7 @@ import Combine
 import Flow
 import Form
 import Foundation
+import Home
 import LinkPresentation
 import Presentation
 import Profile
@@ -164,6 +165,12 @@ class ChatState {
             })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [OctopusGraphQL.MessageFragment]? in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setChatNotificationTimeStamp(
+                        sentAt: data.chat.messages.first?.sentAt.localDateToIso8601Date ?? Date()
+                    )
+                )
                 self.isFetching.value = false
                 self.initialHasNext = data.chat.hasNext
                 self.initialNextUntil = data.chat.nextUntil
@@ -206,9 +213,6 @@ class ChatState {
     func sendChatFreeTextResponse(text: String) -> Signal<Void> {
         Signal { callback in
             let innerBag = DisposeBag()
-            //            innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
-            //                .take(first: 1)
-            //                .onValue { globalId in
             innerBag += self.octopus.client
                 .perform(
                     mutation: OctopusGraphQL.ChatSendTextMutation(input: .init(text: text))
