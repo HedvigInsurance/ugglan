@@ -4,9 +4,15 @@ class NotificationService: UNNotificationServiceExtension {
 
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-    //    let defaults = UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")
 
-    let defaults = UserDefaults(suiteName: "group.com.hedvig.test.app")
+    lazy private var defaults = UserDefaults(suiteName: suiteName)
+
+    let suiteName: String = {
+        var bundle = Bundle.main.bundleIdentifier!.components(separatedBy: ".")
+        bundle.insert("group", at: 0)
+        _ = bundle.removeLast()
+        return bundle.joined(separator: ".")
+    }()
 
     override func didReceive(
         _ request: UNNotificationRequest,
