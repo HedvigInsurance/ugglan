@@ -33,7 +33,7 @@ struct ContractsScreen: View {
                             return [preSelected]
                         },
                         onSelected: { selected in
-                            if let selected = selected.first {
+                            if let selected = selected.first?.0 {
                                 store.send(.setTravelInsuranceData(specification: selected))
                                 store.send(.navigation(.openStartDateScreen))
                             }
