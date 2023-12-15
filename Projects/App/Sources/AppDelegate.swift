@@ -79,7 +79,9 @@ import hGraphQL
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
+        //        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
+        UserDefaults(suiteName: "group.com.hedvig.test.app")?.set(1, forKey: "count")
+
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
 

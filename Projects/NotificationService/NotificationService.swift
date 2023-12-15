@@ -1,10 +1,13 @@
 import UserNotifications
+import hGraphQL
 
 class NotificationService: UNNotificationServiceExtension {
 
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-    let defaults = UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")
+    //    let defaults = UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")
+
+    let defaults = UserDefaults(suiteName: "group.com.hedvig.test.app")
 
     override func didReceive(
         _ request: UNNotificationRequest,
