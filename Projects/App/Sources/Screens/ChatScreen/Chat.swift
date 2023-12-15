@@ -182,7 +182,53 @@ extension Chat: Presentable {
                 }
             }
         })
+        let headerView = UIView()
+        headerView.transform = CGAffineTransform(scaleX: 1, y: -1)
+        tableKit.view.tableHeaderView = headerView
+        headerView.backgroundColor = .brand(.primaryBackground())
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 2
+        let textStyle = UIColor.brandStyle(.chatTimeStamp)
+        let styledText = StyledText(text: L10n.chatDeliveredMessage, style: textStyle)
+        let deliveredLabel = UILabel(styledText: styledText)
+        stackView.alpha = 0
 
+        stackView.addArrangedSubview(deliveredLabel)
+        let image = hCoreUIAssets.circularCheckmarkFilled.image
+        let imageView = UIImageView(image: image)
+        let imageHolderView = UIView()
+        imageHolderView.snp.makeConstraints { make in
+            make.width.equalTo(16)
+        }
+        imageHolderView.backgroundColor = .clear
+        imageView.snp.makeConstraints { make in
+            make.width.height.equalTo(16)
+        }
+        imageView.tintColor = .brand(.chatMessageImportant)
+        imageHolderView.addSubview(imageView)
+        imageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        stackView.addArrangedSubview(imageHolderView)
+        headerView.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(2)
+            make.trailing.equalToSuperview().inset(22)
+        }
+        bag += chatState.showDelivered
+            .plain()
+            .onValue(on: .main) { [weak stackView] show in
+                if show {
+                    stackView?.alpha = 0
+                }
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: show ? 0.6 : 0
+                ) {
+                    stackView?.alpha = show ? 1 : 0
+                }
+            }
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
             .compactMap { notification in notification.keyboardInfo }
@@ -201,8 +247,6 @@ extension Chat: Presentable {
                         bottom: 0,
                         right: 0
                     )
-                    let headerView = UIView()
-                    headerView.backgroundColor = .brand(.primaryBackground())
                     headerView.frame = CGRect(
                         x: 0,
                         y: 0,
