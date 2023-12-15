@@ -10,7 +10,7 @@ public struct hFreeTextInputField: View {
     @Binding var error: String?
     @State private var value: String
     @State private var disposeBag = DisposeBag()
-    private let onContinue: (_ date: String) -> Void
+    private let onContinue: (_ text: String) -> Void
     private let infoCardText: String?
 
     public var shouldMoveLabel: Binding<Bool> {
@@ -24,7 +24,7 @@ public struct hFreeTextInputField: View {
         selectedValue: String?,
         placeholder: String? = nil,
         error: Binding<String?>? = nil,
-        onContinue: @escaping (_ date: String) -> Void = { _ in },
+        onContinue: @escaping (_ text: String) -> Void = { _ in },
         infoCardText: String? = nil
     ) {
         self.placeholder = placeholder ?? ""
