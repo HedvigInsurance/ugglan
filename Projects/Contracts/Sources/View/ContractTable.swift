@@ -11,15 +11,21 @@ import hGraphQL
 struct ContractTable {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
+    @State var onlyTerminatedInsurances = false
 
     func getContractsToShow(for state: ContractState) -> [Contract] {
-
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
         } else {
             let activeContractsToShow = state.activeContracts.compactMap { $0 }
             let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
-            return activeContractsToShow + pendingContractsToShow
+            if !(activeContractsToShow + pendingContractsToShow).isEmpty {
+                onlyTerminatedInsurances = false
+                return activeContractsToShow + pendingContractsToShow
+            } else {
+                onlyTerminatedInsurances = true
+                return state.terminatedContracts.compactMap { $0 }
+            }
         }
     }
 }
@@ -35,11 +41,18 @@ extension ContractTable: View {
 
                     }
                 ) { contracts in
-                    ForEach(contracts, id: \.id) { contract in
-                        ContractRow(id: contract.id)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, 8)
-                            .transition(.slide)
+                    VStack(spacing: 0) {
+                        if onlyTerminatedInsurances {
+                            InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                                .padding(.bottom, 16)
+
+                        }
+                        ForEach(contracts, id: \.id) { contract in
+                            ContractRow(id: contract.id)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.bottom, 8)
+                                .transition(.slide)
+                        }
                     }
                 }
             }
@@ -56,7 +69,7 @@ extension ContractTable: View {
                         state.terminatedContracts
                     }
                 ) { terminatedContracts in
-                    if !terminatedContracts.isEmpty {
+                    if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                         hSection {
                             hButton.LargeButton(type: .secondary) {
                                 store.send(.openTerminatedContracts)

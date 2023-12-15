@@ -12,6 +12,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let attachToBottom: Bool
     private let disableIfNoneSelected: Bool
     private let manualInputPlaceholder: String
+    private let hButtonText: String
 
     @State var type: CheckboxFieldType? = .inputField
 
@@ -32,7 +33,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         showDividers: Bool? = false,
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
-        manualInputPlaceholder: String? = ""
+        manualInputPlaceholder: String? = "",
+        hButtonText: String? = L10n.generalSaveButton
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -43,6 +45,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
+        self.hButtonText = hButtonText ?? L10n.generalSaveButton
     }
 
     public var body: some View {
@@ -81,13 +84,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
-                    getCell(item: item.object)
+                    getCell(item: item.object, fieldSize: items.count > 3 ? .small : .large)
                 }
                 .disabled(isLoading)
             }
             if includeManualInput {
                 hSection {
-                    getCell(displayName: L10n.manualInputListOther)
+                    getCell(displayName: L10n.manualInputListOther, fieldSize: .small)
                 }
                 .disabled(isLoading)
             }
@@ -113,7 +116,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(L10n.generalSaveButton, style: .standard)
+                    hText(hButtonText, style: .standard)
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
@@ -149,13 +152,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
+    func getCell(item: T? = nil, displayName: String? = nil, fieldSize: hFieldSize) -> some View {
         if showDividers ?? false {
             hRow {
                 displayContentFor(item, displayName)
             }
             .withEmptyAccessory
-            .verticalPadding(9)
+            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
                     manualInput = false
@@ -165,12 +168,12 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     selectedItems = []
                 }
             }
-            .hWithoutDivider
         } else {
             hRow {
                 displayContentFor(item, displayName)
             }
             .withEmptyAccessory
+            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
                     manualInput = false
@@ -180,6 +183,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
                 }
             }
+            .hWithoutDivider
         }
     }
 
@@ -192,13 +196,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hText(displayName ?? itemDisplayName ?? "", style: .title3)
                 .foregroundColor(hTextColor.primary)
             Spacer()
-            Circle()
-                .strokeBorder(
-                    getBorderColor(isSelected: isSelected),
-                    lineWidth: isSelected ? 0 : 1.5
-                )
-                .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
-                .frame(width: 28, height: 28)
+            checkBox(isSelected: isSelected)
         }
     }
 
@@ -223,6 +221,37 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
+    func checkBox(isSelected: Bool) -> some View {
+        Group {
+            if singleSelect ?? false {
+                Circle()
+                    .strokeBorder(
+                        RadioFieldsColors().getBorderColor(isSelected: isSelected),
+                        lineWidth: isSelected ? 0 : 1.5
+                    )
+                    .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(
+                            RadioFieldsColors().getBorderColor(isSelected: isSelected),
+                            lineWidth: isSelected ? 0 : 1.5
+                        )
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .foregroundColor(retColor(isSelected: isSelected))
+                        )
+
+                    if isSelected {
+                        Image(uiImage: hCoreUIAssets.tick.image)
+                            .foregroundColor(hTextColor.negative)
+                    }
+                }
+            }
+        }
+        .frame(width: 24, height: 24)
+    }
+
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
@@ -231,16 +260,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hFillColor.opaqueOne
         }
     }
-
-    @hColorBuilder
-    func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.primary
-        } else {
-            hBorderColor.opaqueTwo
-        }
-    }
 }
+
 struct CheckboxPickerScreen_Previews: PreviewProvider {
 
     struct ModelForPreview: Equatable, Hashable {
@@ -248,24 +269,27 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
         let name: String
     }
     static var previews: some View {
-        CheckboxPickerScreen<ModelForPreview>(
-            items: {
-                return [
-                    ModelForPreview(id: "id", name: "name"),
-                    ModelForPreview(id: "id2", name: "name2"),
-                ]
-                .compactMap({ (object: $0, displayName: $0.name) })
-            }(),
-            preSelectedItems: { [] },
-            onSelected: { selectedLocation in
+        VStack {
+            CheckboxPickerScreen<ModelForPreview>(
+                items: {
+                    return [
+                        ModelForPreview(id: "id", name: "name"),
+                        ModelForPreview(id: "id2", name: "name2"),
+                        ModelForPreview(id: "id3", name: "name3"),
+                        ModelForPreview(id: "id4", name: "name4"),
+                    ]
+                    .compactMap({ (object: $0, displayName: $0.name) })
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selectedLocation in
 
-            },
-            onCancel: {
-
-            },
-            singleSelect: true,
-            manualInputPlaceholder: "Enter brand name"
-        )
+                },
+                onCancel: {
+                },
+                singleSelect: true,
+                manualInputPlaceholder: "Enter brand name"
+            )
+        }
     }
 }
 

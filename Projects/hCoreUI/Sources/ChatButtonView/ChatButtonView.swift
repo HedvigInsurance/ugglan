@@ -81,6 +81,7 @@ public enum ToolbarOptionType: String, Codable {
     case newOffer
     case firstVet
     case chat
+    case chatNotification
 
     var image: UIImage {
         switch self {
@@ -90,6 +91,8 @@ public enum ToolbarOptionType: String, Codable {
             return hCoreUIAssets.firstVetQuickNav.image
         case .chat:
             return hCoreUIAssets.chatQuickNav.image
+        case .chatNotification:
+            return hCoreUIAssets.chatQuickNavNotification.image
         }
     }
 
@@ -99,7 +102,7 @@ public enum ToolbarOptionType: String, Codable {
             return "newOfferHint"
         case .firstVet:
             return "firstVetHint"
-        case .chat:
+        case .chat, .chatNotification:
             return "chatHint"
         }
     }

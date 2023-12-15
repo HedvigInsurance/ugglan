@@ -34,3 +34,11 @@ query CommonClaims {
     }
   }
 }
+
+query ChatMessageTimeStamp($until: Instant) {
+  chat(until: $until) {
+    messages {
+        sentAt
+    }
+  }
+}

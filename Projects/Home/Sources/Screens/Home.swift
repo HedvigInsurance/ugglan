@@ -16,7 +16,6 @@ import hGraphQL
 
 public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
-    @State var toolbarOptionTypes: [ToolbarOptionType] = []
     @StateObject var vm = HomeVM()
 
     var claimsContent: Claims
@@ -28,8 +27,6 @@ public struct HomeView<Claims: View>: View {
     ) {
         self.claimsContent = claimsContent
         self.memberId = memberId()
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        _toolbarOptionTypes = State(initialValue: store.state.toolbarOptionTypes)
     }
 }
 
@@ -38,6 +35,7 @@ extension HomeView {
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
+        store.send(.fetchChatNotifications)
     }
 
     public var body: some View {
@@ -45,7 +43,7 @@ extension HomeView {
             centralContent
         }
         .setHomeNavigationBars(
-            with: $toolbarOptionTypes,
+            with: $vm.toolbarOptionTypes,
             action: { type in
                 switch type {
                 case .newOffer:
@@ -56,15 +54,11 @@ extension HomeView {
                     }) {
                         store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
                     }
-                case .chat:
+                case .chat, .chatNotification:
                     store.send(.openFreeTextChat)
                 }
             }
         )
-        .onAppear {
-            fetch()
-            self.toolbarOptionTypes = store.state.toolbarOptionTypes
-        }
         .hFormAttachToBottom {
             VStack(spacing: 0) {
                 bottomContent
@@ -73,12 +67,10 @@ extension HomeView {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .hFormMergeBottomViewWithContentIfNeeded
-        .onReceive(store.stateSignal.plain().publisher) { value in
-            self.toolbarOptionTypes = value.toolbarOptionTypes
+        .onAppear {
+            fetch()
         }
-
     }
-
     private var centralContent: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -94,7 +86,7 @@ extension HomeView {
             case .future:
                 hText(L10n.hedvigNameText, style: .title)
             case .terminated:
-                TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
+                TerminatedSectionView(claimsContent: claimsContent)
             case .loading:
                 EmptyView()
             }
@@ -153,19 +145,51 @@ extension HomeView {
 
 class HomeVM: ObservableObject {
     @Published var memberStateData: MemberStateData = .init(state: .loading, name: nil)
-    var memberStateDataCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
+    @Published var toolbarOptionTypes: [ToolbarOptionType] = []
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberStateData = store.state.memberStateData
-        memberStateDataCancellable = store.stateSignal
+        store.stateSignal
             .map({ $0.memberStateData })
             .plain()
             .publisher.receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberStateData = value
             })
+            .store(in: &cancellables)
+        toolbarOptionTypes = store.state.toolbarOptionTypes
+        addObserverForApplicationDidBecomeActive()
+        observeToolbarOptionTypes()
+    }
 
+    private func addObserverForApplicationDidBecomeActive() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: OperationQueue.main,
+            using: { _ in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(.fetchChatNotifications)
+            }
+        )
+    }
+
+    private func observeToolbarOptionTypes() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .map({ $0.toolbarOptionTypes })
+            .plain()
+            .publisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                self?.toolbarOptionTypes = value
+            })
+            .store(in: &cancellables)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -195,11 +219,9 @@ extension HomeView {
                 resultJourney(.openEmergency)
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if !fromOtherService {
-                    Journey(
-                        CommonClaimDetail(claim: claim),
-                        style: .detented(.large, modally: true)
-                    )
-                    .withJourneyDismissButton
+                    CommonClaimDetail.journey(claim: claim)
+                        .withJourneyDismissButton
+                        .configureTitle(claim.displayTitle)
                 }
             } else if case .connectPayments = action {
                 resultJourney(.openConnectPayments)
