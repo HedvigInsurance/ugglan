@@ -164,7 +164,7 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     static func submitClaimOccurrancePlusLocationScreen(
-        options: ClaimsNavigationAction.SubmitClaimOption
+        options: SubmitClaimsNavigationAction.SubmitClaimOption
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
