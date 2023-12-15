@@ -1,5 +1,4 @@
 import UserNotifications
-import hGraphQL
 
 class NotificationService: UNNotificationServiceExtension {
 
