@@ -207,7 +207,7 @@ private struct DatePickerView: View {
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {
-                    cancelAction.execute()
+                    continueAction.execute()
                 } content: {
                     hText(
                         L10n.generalSaveButton,
