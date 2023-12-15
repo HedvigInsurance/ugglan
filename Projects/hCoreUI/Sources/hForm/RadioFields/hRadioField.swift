@@ -31,10 +31,10 @@ public struct hRadioField<Content: View>: View {
             Spacer()
             Circle()
                 .strokeBorder(
-                    getBorderColor(isSelected: id == selected),
+                    RadioFieldsColors().getBorderColor(isSelected: id == selected),
                     lineWidth: id == selected ? 0 : 1.5
                 )
-                .background(Circle().foregroundColor(retColor(isSelected: id == selected)))
+                .background(Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: id == selected)))
                 .frame(width: 24, height: 24)
         }
         .padding(.vertical, size == .large ? 11 : 8)
@@ -52,24 +52,6 @@ public struct hRadioField<Content: View>: View {
                     self.animate = false
                 }
             }
-        }
-    }
-
-    @hColorBuilder
-    func retColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.primary
-        } else {
-            hBackgroundColor.clear
-        }
-    }
-
-    @hColorBuilder
-    func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.primary
-        } else {
-            hBorderColor.opaqueTwo
         }
     }
 }

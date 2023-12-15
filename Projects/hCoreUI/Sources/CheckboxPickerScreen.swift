@@ -69,13 +69,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
-                    HStack {
-                        if items.count > 3 {
-                            getCell(item: item, fieldSize: .small)
-                        } else {
-                            getCell(item: item, fieldSize: .large)
-                        }
-                    }
+                    getCell(item: item, fieldSize: items.count > 3 ? .small : .large)
                 }
                 .disabled(isLoading)
             }
@@ -120,26 +114,26 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     @ViewBuilder
     func getCell(item: (object: T, displayName: String), fieldSize: hFieldSize) -> some View {
+
         if showDividers ?? false {
             hRow {
                 displayContentFor(item.object)
             }
             .withEmptyAccessory
-            .verticalPadding(9)
+            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 onTapExecuteFor(item.object)
             }
-            .frame(height: fieldSize == .large ? 72 : .infinity)
-            .hWithoutDivider
         } else {
             hRow {
                 displayContentFor(item.object)
             }
             .withEmptyAccessory
+            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 onTapExecuteFor(item.object)
             }
-            .frame(height: fieldSize == .large ? 72 : .infinity)
+            .hWithoutDivider
         }
     }
 
@@ -177,7 +171,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             if singleSelect ?? false {
                 Circle()
                     .strokeBorder(
-                        getBorderColor(isSelected: isSelected),
+                        RadioFieldsColors().getBorderColor(isSelected: isSelected),
                         lineWidth: isSelected ? 0 : 1.5
                     )
                     .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
@@ -185,7 +179,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .strokeBorder(
-                            getBorderColor(isSelected: isSelected),
+                            RadioFieldsColors().getBorderColor(isSelected: isSelected),
                             lineWidth: isSelected ? 0 : 1.5
                         )
                         .background(
@@ -211,16 +205,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hFillColor.opaqueOne
         }
     }
-
-    @hColorBuilder
-    func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.primary
-        } else {
-            hBorderColor.opaqueTwo
-        }
-    }
 }
+
 struct CheckboxPickerScreen_Previews: PreviewProvider {
 
     struct ModelForPreview: Equatable, Hashable {
@@ -228,23 +214,47 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
         let name: String
     }
     static var previews: some View {
-        CheckboxPickerScreen<ModelForPreview>(
-            items: {
-                return [
-                    ModelForPreview(id: "id", name: "name"),
-                    ModelForPreview(id: "id2", name: "name2"),
-                ]
-                .compactMap({ (object: $0, displayName: $0.name) })
-            }(),
-            preSelectedItems: { [] },
-            onSelected: { selectedLocation in
+        VStack {
+            CheckboxPickerScreen<ModelForPreview>(
+                items: {
+                    return [
+                        ModelForPreview(id: "id", name: "name"),
+                        ModelForPreview(id: "id2", name: "name2"),
+                        ModelForPreview(id: "id3", name: "name3"),
+                        ModelForPreview(id: "id4", name: "name4"),
+                    ]
+                    .compactMap({ (object: $0, displayName: $0.name) })
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selectedLocation in
 
-            },
-            onCancel: {
+                },
+                onCancel: {
 
-            },
-            singleSelect: true
-        )
+                },
+                singleSelect: true,
+                showDividers: true
+            )
+            CheckboxPickerScreen<ModelForPreview>(
+                items: {
+                    return [
+                        ModelForPreview(id: "id", name: "name"),
+                        ModelForPreview(id: "id2", name: "name2"),
+                        ModelForPreview(id: "id3", name: "name3"),
+                    ]
+                    .compactMap({ (object: $0, displayName: $0.name) })
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selectedLocation in
+
+                },
+                onCancel: {
+
+                },
+                singleSelect: true,
+                showDividers: true
+            )
+        }
     }
 }
 
