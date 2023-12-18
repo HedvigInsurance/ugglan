@@ -118,7 +118,9 @@ public struct MovingFlowJourneyNew {
                     let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     if let selected = selected.first {
                         store.send(.navigation(action: .dismissTypeOfBuilding))
-                        store.send(.setExtraBuildingType(with: selected))
+                        if let object = selected.0 {
+                            store.send(.setExtraBuildingType(with: object))
+                        }
                     }
                 },
                 onCancel: {

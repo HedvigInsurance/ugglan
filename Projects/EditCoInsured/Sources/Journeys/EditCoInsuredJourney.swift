@@ -190,11 +190,13 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedConfigs in
                     if let selectedConfig = selectedConfigs.first {
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                        store.send(
-                            .coInsuredNavigationAction(
-                                action: .openInsuredPeopleNewScreen(config: selectedConfig)
+                        if let object = selectedConfig.0 {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openInsuredPeopleNewScreen(config: object)
+                                )
                             )
-                        )
+                        }
                     }
                 },
                 onCancel: {

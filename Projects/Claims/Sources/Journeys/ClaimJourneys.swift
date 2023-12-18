@@ -164,7 +164,7 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     static func submitClaimOccurrancePlusLocationScreen(
-        options: ClaimsNavigationAction.SubmitClaimOption
+        options: SubmitClaimsNavigationAction.SubmitClaimOption
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -194,7 +194,9 @@ public class ClaimJourneys {
                 },
                 onSelected: { selectedLocation in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setNewLocation(location: selectedLocation.first))
+                    if let object = selectedLocation.first?.0 {
+                        store.send(.setNewLocation(location: object))
+                    }
                 },
                 onCancel: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -274,7 +276,12 @@ public class ClaimJourneys {
                 preSelectedItems: { return [] },
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setSingleItemModel(modelName: item.first!))
+                    if let object = item.first?.0 {
+                        store.send(.setSingleItemModel(modelName: object))
+                    } else {
+                        let model = ClaimFlowItemModelOptionModel(customName: item.first?.1 ?? "")
+                        store.send(.setSingleItemModel(modelName: model))
+                    }
                 },
                 onCancel: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -316,7 +323,9 @@ public class ClaimJourneys {
                     var damages: [String] = []
 
                     for damage in selectedDamages {
-                        damages.append(damage.itemProblemId)
+                        if let object = damage.0 {
+                            damages.append(object.itemProblemId)
+                        }
                     }
                     store.send(
                         .submitDamage(

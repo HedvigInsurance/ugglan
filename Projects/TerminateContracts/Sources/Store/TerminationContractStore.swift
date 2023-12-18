@@ -9,7 +9,6 @@ public final class TerminationContractStore: LoadingStateStore<
     TerminationContractState, TerminationContractAction, TerminationContractLoadingAction
 >
 {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
 
     public override func effects(
