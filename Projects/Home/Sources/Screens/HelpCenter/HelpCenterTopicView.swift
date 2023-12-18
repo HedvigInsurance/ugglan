@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 
 struct HelpCenterTopicView: View {
-
     private var commonTopic: CommonTopic
 
     public init(
@@ -17,8 +16,8 @@ struct HelpCenterTopicView: View {
         hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 40) {
-                    QuestionsItems(questions: commonTopic.commonQuestions, isCommonQuestions: true)
-                    QuestionsItems(questions: commonTopic.allQuestions, isCommonQuestions: false)
+                    QuestionsItems(questions: commonTopic.commonQuestions, questionType: .commonQuestions)
+                    QuestionsItems(questions: commonTopic.allQuestions, questionType: .allQuestions)
                 }
                 SupportView()
             }
@@ -51,45 +50,55 @@ extension HelpCenterTopicView {
             commonQuestions: [
                 .init(
                     question: "When do you charge for my insurance?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "When do you charge for my insurance?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "How do I make a claim?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "How can I view my payment history?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "What should I do if my payment fails?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
             ],
             allQuestions: [
                 .init(
                     question: "When do you charge for my insurance?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "When do you charge for my insurance?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "How do I make a claim?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "How can I view my payment history?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
                 .init(
                     question: "What should I do if my payment fails?",
-                    answer: ""
+                    answer: "",
+                    relatedQuestions: []
                 ),
             ]
         )

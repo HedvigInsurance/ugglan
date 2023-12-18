@@ -30,7 +30,7 @@ public struct HelpCenterStartView: View {
 
                 displayQuickActions()
                 displayCommonTopics()
-                QuestionsItems(questions: helpCenterModel.commonQuestions, isCommonQuestions: true)
+                QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions)
             }
             .padding(.horizontal, 16)
         }
@@ -102,23 +102,28 @@ extension HelpCenterStartView {
         let commonQuestions: [Question] = [
             .init(
                 question: "When do you charge for my insurance?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "When do you charge for my insurance?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "How do I make a claim?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "How can I view my payment history?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "What should I do if my payment fails?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
         ]
 
@@ -191,23 +196,28 @@ extension HelpCenterStartView {
     let commonQuestions: [Question] = [
         .init(
             question: "When do you charge for my insurance?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "When do you charge for my insurance?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "How do I make a claim?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "How can I view my payment history?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "What should I do if my payment fails?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
     ]
 
