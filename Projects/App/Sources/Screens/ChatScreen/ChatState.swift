@@ -3,6 +3,7 @@ import Combine
 import Flow
 import Form
 import Foundation
+import Home
 import LinkPresentation
 import Presentation
 import Profile
@@ -38,6 +39,8 @@ class ChatState {
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
+    let showDelivered = ReadWriteSignal<Bool>(false)
+
     private let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
     private func parseMessage(message: OctopusGraphQL.MessageFragment) -> [ChatListContent] {
@@ -164,6 +167,12 @@ class ChatState {
             })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [OctopusGraphQL.MessageFragment]? in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setChatNotificationTimeStamp(
+                        sentAt: data.chat.messages.first?.sentAt.localDateToIso8601Date ?? Date()
+                    )
+                )
                 self.isFetching.value = false
                 self.initialHasNext = data.chat.hasNext
                 self.initialNextUntil = data.chat.nextUntil
@@ -181,8 +190,12 @@ class ChatState {
                 self.handleFirstMessage()
             }
             .onValue { messages in
+                let messages = messages.flatMap { self.parseMessage(message: $0) }
+                if let lastMessage = messages.first?.left {
+                    self.showDelivered.value = lastMessage.fromMyself
+                }
                 self.listSignal.value.insert(
-                    contentsOf: messages.flatMap { self.parseMessage(message: $0) },
+                    contentsOf: messages,
                     at: 0
                 )
 
@@ -206,9 +219,6 @@ class ChatState {
     func sendChatFreeTextResponse(text: String) -> Signal<Void> {
         Signal { callback in
             let innerBag = DisposeBag()
-            //            innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
-            //                .take(first: 1)
-            //                .onValue { globalId in
             innerBag += self.octopus.client
                 .perform(
                     mutation: OctopusGraphQL.ChatSendTextMutation(input: .init(text: text))

@@ -4,6 +4,7 @@ import EditCoInsured
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
@@ -72,6 +73,8 @@ public struct HomeState: StateProtocol {
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
+    public var showChatNotification = false
+    public var latestChatTimeStamp = Date()
 
     public var hasFirstVet: Bool {
         return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
@@ -100,6 +103,9 @@ public enum HomeAction: ActionProtocol {
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
     case openCoInsured(contractIds: [InsuredPeopleConfig])
     case openEmergency
+    case fetchChatNotifications
+    case setChatNotification(hasNew: Bool)
+    case setChatNotificationTimeStamp(sentAt: Date)
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
@@ -139,7 +145,6 @@ public enum HomeLoadingType: LoadingProtocol {
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -209,6 +214,26 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     }
                 return disposeBag
             }
+        case .fetchChatNotifications:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client
+                    .fetch(
+                        query: OctopusGraphQL.ChatMessageTimeStampQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
+                    )
+                    .onValue { data in
+                        if let date = data.chat.messages.first?.sentAt.localDateToIso8601Date {
+                            if self.state.latestChatTimeStamp < date {
+                                callback(.value(.setChatNotification(hasNew: true)))
+                            } else {
+                                callback(.value(.setChatNotification(hasNew: false)))
+                            }
+                        }
+                    }
+                return disposeBag
+            }
+
         default:
             return nil
         }
@@ -240,6 +265,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setAllCommonClaims(&newState)
         case .hideImportantMessage:
             newState.hideImportantMessage = true
+        case let .setChatNotification(hasNew):
+            newState.showChatNotification = hasNew
+            setAllCommonClaims(&newState)
+        case let .setChatNotificationTimeStamp(sentAt):
+            newState.latestChatTimeStamp = sentAt
+            newState.showChatNotification = false
+            setAllCommonClaims(&newState)
         default:
             break
         }
@@ -258,15 +290,21 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
         allCommonClaims.append(contentsOf: state.commonClaims)
         state.allCommonClaims = allCommonClaims
+
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
+
         if state.hasFirstVet {
             types.append(.firstVet)
         }
-        types.append(.chat)
+
+        if state.showChatNotification {
+            types.append(.chatNotification)
+        } else {
+            types.append(.chat)
+        }
 
         state.toolbarOptionTypes = types
-
     }
 }
 

@@ -110,7 +110,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public var showEditCoInsuredInfo: Bool {
         return supportsCoInsured && self.terminationDate == nil
     }
-    
+
     public var showEditInfo: Bool {
         return (supportsCoInsured || supportsAddressChange) && self.terminationDate == nil
     }
@@ -126,19 +126,35 @@ public struct Contract: Codable, Hashable, Equatable {
         return false
     }
 
+    public var terminatedInPast: Bool {
+        let localDate = Date().localDateString.localDateToDate
+        if let terminationDate = self.terminationDate?.localDateToDate,
+            let localDate = Date().localDateString.localDateToDate
+        {
+            let daysBetween = terminationDate.daysBetween(start: localDate) < 0
+            if daysBetween {
+                return true
+            }
+        }
+        return false
+    }
+
     public var terminationMessage: String? {
+        let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDotFormat ?? ""
         if let terminationDate {
             if typeOfContract.showValidUntilInsteadOfTerminatedAt {
                 if terminatedToday {
                     return L10n.contractsTrialTerminationDateMessageTomorrow
                 } else {
-                    return L10n.contractsTrialTerminationDateMessage(terminationDate)
+                    return L10n.contractsTrialTerminationDateMessage(terminationDateDisplayValue)
                 }
             } else {
-                if terminatedToday {
+                if terminatedInPast {
+                    return L10n.contractTerminatedOn(terminationDateDisplayValue)
+                } else if terminatedToday {
                     return L10n.contractStatusTerminatedToday
                 } else {
-                    return L10n.contractStatusToBeTerminated(terminationDate)
+                    return L10n.contractStatusToBeTerminated(terminationDateDisplayValue)
                 }
             }
         }

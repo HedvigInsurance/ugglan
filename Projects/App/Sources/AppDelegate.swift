@@ -79,6 +79,8 @@ import hGraphQL
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
+        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
 
     func application(
@@ -318,10 +320,13 @@ import hGraphQL
 
         bag += ApplicationContext.shared.$isDemoMode.onValue { value in
             let store: UgglanStore = globalPresentableStoreContainer.get()
+            TokenRefresher.shared.isDemoMode = value
             store.send(.setIsDemoMode(to: value))
         }
         let store: UgglanStore = globalPresentableStoreContainer.get()
         ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
+        TokenRefresher.shared.isDemoMode = store.state.isDemoMode
+
         observeNotificationsSettings()
 
         return true
@@ -336,23 +341,29 @@ extension ApolloClient {
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
-                Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 switch Environment.current {
                 case .staging:
+                    let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                 case .production, .custom:
+                    let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
+                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
+                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+
                 }
             }
             .toVoid()

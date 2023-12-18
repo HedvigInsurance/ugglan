@@ -296,29 +296,25 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             switch hButtonConfigurationType {
             case .primary:
                 if isEnabled {
-                    switch hButtonFilledStyle {
-                    case .standard:
-                        hTextColor.negative
-                    case .overImage:
-                        hTextColor.negative
-                    }
+                    hTextColor.negative
                 } else {
                     hTextColor.disabled
                 }
             case .primaryAlt:
                 if isEnabled {
-                    switch hButtonFilledStyle {
-                    case .standard:
-                        hTextColor.primary
-                    case .overImage:
-                        hTextColor.primary
-                    }
+                    hTextColor.primary.colorFor(.light, .base)
                 } else {
                     hTextColor.disabled
                 }
-            case .secondary, .ghost, .secondaryAlt:
+            case .secondary, .ghost:
                 if isEnabled {
                     hTextColor.primary
+                } else {
+                    hTextColor.disabled
+                }
+            case .secondaryAlt:
+                if isEnabled {
+                    hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
                 } else {
                     hTextColor.disabled
                 }

@@ -38,7 +38,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setLocation(location: String?)
     case setProgress(progress: Float?)
 
-    case navigationAction(action: ClaimsNavigationAction)
+    case navigationAction(action: SubmitClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
     case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
@@ -50,7 +50,7 @@ public enum SubmitAudioRecordingType: ActionProtocol, Hashable {
     case text(text: String)
 }
 
-public enum ClaimsNavigationAction: ActionProtocol, Hashable {
+public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
     case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen

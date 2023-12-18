@@ -46,35 +46,34 @@ struct ContractInformationView: View {
                             addCoInsuredView(contract: contract)
                         }
 
-                            VStack(spacing: 8) {
-                                if contract.showEditInfo {
-                                    hSection {
-                                        hButton.LargeButton(type: .secondary) {
-                                            if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
-                                                store.send(
-                                                    .openEditCoInsured(
-                                                        config: .init(contract: contract),
-                                                        fromInfoCard: false
-                                                    )
+                        VStack(spacing: 8) {
+                            if contract.showEditInfo {
+                                hSection {
+                                    hButton.LargeButton(type: .secondary) {
+                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                            store.send(
+                                                .openEditCoInsured(
+                                                    config: .init(contract: contract),
+                                                    fromInfoCard: false
                                                 )
-                                            } else {
-                                                store.send(.contractEditInfo(id: id))
-                                            }
-                                        } content: {
-                                            if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
-                                                hText(L10n.contractEditCoinsured)
-                                            } else {
-                                                hText(L10n.contractEditInfoLabel)
-                                            }
+                                            )
+                                        } else {
+                                            store.send(.contractEditInfo(id: id))
+                                        }
+                                    } content: {
+                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                            hText(L10n.contractEditCoinsured)
+                                        } else {
+                                            hText(L10n.contractEditInfoLabel)
                                         }
                                     }
                                 }
-                                if contract.canTerminate {
-                                    displayTerminationButton
-                                }
                             }
-                            .padding(.bottom, 16)
-//                        }
+                            if contract.canTerminate {
+                                displayTerminationButton
+                            }
+                        }
+                        .padding(.bottom, 16)
                     }
                 }
             }
@@ -86,7 +85,7 @@ struct ContractInformationView: View {
         let editTypes: [EditType] = EditType.getTypes(for: contract)
         return editTypes.count == 1 && editTypes.first == .coInsured
     }
-    
+
     func insuredField(contract: Contract) -> some View {
         VStack {
             HStack {
@@ -111,10 +110,11 @@ struct ContractInformationView: View {
                     } else {
                         hRow {
                             insuredField(contract: contract)
-                        }.hWithoutDivider
+                        }
+                        .hWithoutDivider
                     }
                 }
-                
+
                 if hAnalyticsExperiment.editCoinsured {
                     hRow {
                         let hasContentBelow =
@@ -233,7 +233,7 @@ struct ContractInformationView: View {
                     )
                 ])
             }
-            .padding(.bottom, 16)
+            .padding(.top, 8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
             hSection {
                 HStack {
@@ -287,7 +287,6 @@ struct ContractInformationView: View {
                     }
                 }
             }
-            .padding(.bottom, 16)
         }
     }
 

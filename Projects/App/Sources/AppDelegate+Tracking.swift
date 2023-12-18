@@ -23,8 +23,6 @@ extension AppDelegate {
                 .trackUIKitRUMActions(using: RUMUserActionsPredicate())
                 .trackUIKitRUMViews(using: RUMViewsPredicate())
                 .trackURLSession(firstPartyHosts: [
-                    Environment.production.giraffeEndpointURL.host ?? "",
-                    Environment.staging.giraffeEndpointURL.host ?? "",
                     Environment.production.octopusEndpointURL.host ?? "",
                     Environment.staging.octopusEndpointURL.host ?? "",
                 ])

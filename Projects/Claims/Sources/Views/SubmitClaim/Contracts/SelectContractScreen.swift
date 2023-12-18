@@ -28,11 +28,14 @@ struct SelectContractScreen: View {
                 },
                 onSelected: { selectedContract in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.contractSelectRequest(contractId: selectedContract.first?.id))
+                    if let object = selectedContract.first?.0 {
+                        store.send(.contractSelectRequest(contractId: object.id))
+                    }
                 },
                 singleSelect: true,
                 attachToBottom: true
             )
+            .padding(.bottom, 16)
             .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
             .hButtonIsLoading(isLoading)
             .hDisableScroll

@@ -9,3 +9,5 @@ scripts/swiftgen.sh
 scripts/codegen.sh
 
 tuist generate
+
+scripts/configure-embed-app-extensions.sh
