@@ -9,9 +9,24 @@ public struct HelpCenterModel: Codable, Equatable, Hashable {
     let commonQuestions: [Question]
 }
 
-struct QuickAction: Codable, Equatable, Hashable {
-    let title: String
-    let deepLink: DeepLink
+public enum QuickAction: Codable, Equatable, Hashable {
+    case changeBank
+    case updateAddress
+    case editCoInsured
+    case travelCertificate
+
+    var title: String {
+        switch self {
+        case .changeBank:
+            return "Change bank"
+        case .updateAddress:
+            return "Update address"
+        case .editCoInsured:
+            return "Edit co-insured"
+        case .travelCertificate:
+            return "Travel certificate"
+        }
+    }
 }
 
 public struct CommonTopic: Codable, Equatable, Hashable {

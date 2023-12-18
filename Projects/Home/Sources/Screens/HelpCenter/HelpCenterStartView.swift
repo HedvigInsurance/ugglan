@@ -1,3 +1,4 @@
+import Contracts
 import Presentation
 import SwiftUI
 import hCore
@@ -74,8 +75,9 @@ public struct HelpCenterStartView: View {
                 .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
         )
         .onTapGesture {
-            store.send(.goToDeepLink(quickAction.deepLink))
+            store.send(.goToQuickAction(quickAction))
         }
+        .frame(maxWidth: 168)
     }
 
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
@@ -132,6 +134,27 @@ extension HelpCenterStartView {
             ),
         ]
 
+        var quickActions: [QuickAction] {
+            var quickActions: [QuickAction] = []
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contracts = contractStore.state.activeContracts
+
+            quickActions.append(.changeBank)
+
+            if !contracts.filter({ $0.supportsAddressChange }).isEmpty {
+                quickActions.append(.updateAddress)
+            }
+
+            if !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty {
+                quickActions.append(.editCoInsured)
+            }
+
+            if !contracts.filter({ $0.hasTravelInsurance }).isEmpty {
+                quickActions.append(.travelCertificate)
+            }
+            return quickActions
+        }
+
         return HostingJourney(
             HomeStore.self,
             rootView: HelpCenterStartView(
@@ -140,12 +163,7 @@ extension HelpCenterStartView {
                         title: "Need help?",
                         description:
                             "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly, or chat with us if you need.",
-                        quickActions: [
-                            .init(title: "Change bank", deepLink: .contract),
-                            .init(title: "Update address", deepLink: .contract),
-                            .init(title: "Edit co-insured", deepLink: .contract),
-                            .init(title: "Travel certificate", deepLink: .contract),
-                        ],
+                        quickActions: quickActions,
                         commonTopics: [
                             .init(
                                 title: "Payments",
@@ -185,7 +203,7 @@ extension HelpCenterStartView {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case .goToDeepLink = action {
+            if case .goToQuickAction = action {
                 DismissJourney()
             } else if case let .openHelpCenterTopicView(topic) = action {
                 HelpCenterTopicView.journey(commonTopic: topic)
@@ -234,10 +252,10 @@ extension HelpCenterStartView {
                 description:
                     "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly, or chat with us if you need.",
                 quickActions: [
-                    .init(title: "Change bank", deepLink: .payments),
-                    .init(title: "Update address", deepLink: .contract),
-                    .init(title: "Edit co-insured", deepLink: .contract),
-                    .init(title: "Travel certificate", deepLink: .contract),
+                    .changeBank,
+                    .updateAddress,
+                    .editCoInsured,
+                    .travelCertificate,
                 ],
                 commonTopics: [
                     .init(

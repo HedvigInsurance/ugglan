@@ -190,11 +190,20 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedConfigs in
                     if let selectedConfig = selectedConfigs.first {
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                        store.send(
-                            .coInsuredNavigationAction(
-                                action: .openInsuredPeopleNewScreen(config: selectedConfig)
+
+                        if selectedConfig.numberOfMissingCoInsuredWithoutTermination > 0 {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openInsuredPeopleNewScreen(config: selectedConfig)
+                                )
                             )
-                        )
+                        } else {
+                            store.send(
+                                .coInsuredNavigationAction(
+                                    action: .openInsuredPeopleScreen(config: selectedConfig)
+                                )
+                            )
+                        }
                     }
                 },
                 onCancel: {
@@ -206,7 +215,11 @@ public class EditCoInsuredJourney {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            getScreen(for: action)
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
     }
 
@@ -249,7 +262,11 @@ public class EditCoInsuredJourney {
         if configs.count > 1 {
             openSelectInsurance(configs: configs)
         } else if let config = configs.first {
-            openNewInsuredPeopleScreen(config: config)
+            if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                openNewInsuredPeopleScreen(config: config)
+            } else {
+                openInsuredPeopleScreen(with: config)
+            }
         }
     }
 
