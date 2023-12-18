@@ -40,13 +40,6 @@ final class ImportantMessagesSectionTest: XCTestCase {
         )
         self.bag += bag
 
-        apolloClient.fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: "")).delay(by: 0.1)
-            .onValue { _ in view.snp.makeConstraints { make in make.width.equalTo(400) }
-
-                ciAssertSnapshot(matching: view, as: .image)
-                waitForApollo.fulfill()
-            }
-
         wait(for: [waitForApollo], timeout: 1)
     }
 }

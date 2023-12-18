@@ -90,14 +90,6 @@ public enum Environment: Hashable {
         return targetEnvironment
     }
 
-    public var giraffeEndpointURL: URL {
-        switch self {
-        case .staging: return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
-        case .production: return URL(string: "https://giraffe.hedvig.com/graphql")!
-        case let .custom(endpointUrl, _, _, _): return endpointUrl
-        }
-    }
-
     public var octopusEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "https://apollo-router.dev.hedvigit.com/")!
@@ -127,14 +119,6 @@ public enum Environment: Hashable {
         case .staging: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!
         case .production: return URL(string: "https://gateway.hedvig.com/bot-service/")!
         case .custom: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!
-        }
-    }
-
-    public var giraffeWSEndpointURL: URL {
-        switch self {
-        case .staging: return URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
-        case .production: return URL(string: "wss://giraffe.hedvig.com/subscriptions")!
-        case let .custom(_, wsEndpointURL, _, _): return wsEndpointURL
         }
     }
 

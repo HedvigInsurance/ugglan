@@ -341,7 +341,6 @@ extension ApolloClient {
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
-                Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 switch Environment.current {
                 case .staging:
