@@ -4,10 +4,10 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    private let options: ClaimsNavigationAction.SubmitClaimOption
+    private let options: SubmitClaimsNavigationAction.SubmitClaimOption
 
     init(
-        options: ClaimsNavigationAction.SubmitClaimOption
+        options: SubmitClaimsNavigationAction.SubmitClaimOption
     ) {
         self.options = options
     }

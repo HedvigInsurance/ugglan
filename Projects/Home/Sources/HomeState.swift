@@ -150,7 +150,6 @@ public enum HomeLoadingType: LoadingProtocol {
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
     public override func effects(
         _ getState: @escaping () -> HomeState,

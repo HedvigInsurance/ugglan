@@ -8,6 +8,7 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
     var claims: [ClaimModel]? = nil
+    var files: [String: [File]] = [:]
 
     public init() {}
 

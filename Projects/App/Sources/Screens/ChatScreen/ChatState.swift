@@ -39,6 +39,8 @@ class ChatState {
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
+    let showDelivered = ReadWriteSignal<Bool>(false)
+
     private let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
     private func parseMessage(message: OctopusGraphQL.MessageFragment) -> [ChatListContent] {
@@ -188,8 +190,12 @@ class ChatState {
                 self.handleFirstMessage()
             }
             .onValue { messages in
+                let messages = messages.flatMap { self.parseMessage(message: $0) }
+                if let lastMessage = messages.first?.left {
+                    self.showDelivered.value = lastMessage.fromMyself
+                }
                 self.listSignal.value.insert(
-                    contentsOf: messages.flatMap { self.parseMessage(message: $0) },
+                    contentsOf: messages,
                     at: 0
                 )
 

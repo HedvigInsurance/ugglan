@@ -18,24 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         application.setup()
 
-        ApolloClient.createMock {
-            MutationMock(GiraffeGraphQL.VerifyLoginOtpAttemptMutation.self, duration: 2) { operation in
-                if operation.otp == "000000" {
-                    return .init(loginVerifyOtpAttempt: .makeVerifyOtpLoginAttemptError(errorCode: "fail"))
-                } else {
-                    return .init(loginVerifyOtpAttempt: .makeVerifyOtpLoginAttemptSuccess(accessToken: ""))
-                }
-            }
-
-            MutationMock(GiraffeGraphQL.CreateLoginOtpAttemptMutation.self, duration: 2) { _ in
-                .init(loginCreateOtpAttempt: UUID().uuidString)
-            }
-
-            MutationMock(GiraffeGraphQL.ResendLoginOtpMutation.self, duration: 2) { _ in
-                .init(loginResendOtp: UUID().uuidString)
-            }
-        }
-
         return true
     }
 }

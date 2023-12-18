@@ -190,19 +190,20 @@ public class EditCoInsuredJourney {
                 onSelected: { selectedConfigs in
                     if let selectedConfig = selectedConfigs.first {
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-
-                        if selectedConfig.numberOfMissingCoInsuredWithoutTermination > 0 {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleNewScreen(config: selectedConfig)
+                        if let object = selectedConfig.0 {
+                            if object.numberOfMissingCoInsuredWithoutTermination > 0 {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleNewScreen(config: object)
+                                    )
                                 )
-                            )
-                        } else {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleScreen(config: selectedConfig)
+                            } else {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleScreen(config: object)
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 },
