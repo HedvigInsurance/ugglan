@@ -7,7 +7,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     let availableItemBrandOptions: [ClaimFlowItemBrandOptionModel]
     let availableItemModelOptions: [ClaimFlowItemModelOptionModel]
     let availableItemProblems: [ClaimFlowItemProblemOptionModel]
-    let customName: String?
+    var customName: String?
     let prefferedCurrency: String?
     var purchaseDate: String?
     var purchasePrice: Double?
@@ -74,7 +74,9 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     }
 
     func getBrandOrModelName() -> String? {
-        if let selectedItemModel {
+        if let customName {
+            return customName
+        } else if let selectedItemModel {
             return availableItemModelOptions.first(where: { $0.itemModelId == selectedItemModel })?.displayName
         } else if let selectedItemBrand {
             return availableItemBrandOptions.first(where: { $0.itemBrandId == selectedItemBrand })?.displayName
@@ -157,6 +159,17 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
+    let customName: String?
+
+    init(
+        customName: String
+    ) {
+        self.displayName = ""
+        self.itemTypeId = ""
+        self.itemBrandId = ""
+        self.itemModelId = ""
+        self.customName = customName
+    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemModel
@@ -165,6 +178,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemBrandId = model.itemBrandId
         self.itemTypeId = model.itemTypeId
         self.itemModelId = model.itemModelId
+        self.customName = nil
     }
 }
 

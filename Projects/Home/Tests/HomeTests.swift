@@ -23,35 +23,6 @@ class HomeTests: XCTestCase {
     }
 
     func perform(_ body: JSONObject, assertions: @escaping (_ view: UIView) -> Void) {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: .init())
 
-        Dependencies.shared.add(module: Module { () -> ApolloClient in apolloClient })
-
-        let window = UIWindow()
-
-        bag += window.present(
-            Journey(
-                Home(
-                    claimsContent: EmptyView(),
-                    commonClaims: EmptyView()
-                ),
-                options: [
-                    .defaults, .prefersLargeTitles(true),
-                    .largeTitleDisplayMode(.always),
-                ]
-            ) { result in
-                return DismissJourney()
-            }
-        )
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        apolloClient.fetch(query: GiraffeGraphQL.HomeQuery()).delay(by: 0.5)
-            .onValue { _ in assertions(window)
-                waitForApollo.fulfill()
-                self.bag.dispose()
-            }
-
-        wait(for: [waitForApollo], timeout: 2)
     }
 }

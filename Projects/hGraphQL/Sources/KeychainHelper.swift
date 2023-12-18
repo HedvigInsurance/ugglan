@@ -78,7 +78,7 @@ final public class KeychainHelper {
             SecItemUpdate(query, attributesToUpdate)
         default:
             // Fire "security error -{OSStatus}" in terminal for details of the error
-            print("Failed to save token with OSStatus: \(status)")
+            log.error("Failed to save token with OSStatus: \(status)", error: nil, attributes: nil)
         }
     }
 

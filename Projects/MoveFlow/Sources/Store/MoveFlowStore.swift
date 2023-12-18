@@ -6,7 +6,6 @@ import hCore
 import hGraphQL
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
-    @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
     var addressInputModel = AddressInputModel()
     var houseInformationInputModel = HouseInformationInputModel()
