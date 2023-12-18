@@ -65,6 +65,8 @@ enum QuestionType {
 struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
+    @PresentableStore var store: HomeStore
+    //    let onTap: (Question)->Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -84,12 +86,13 @@ struct QuestionsItems: View {
                     }
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
+                    .onTapGesture {
+                        store.send(.openHelpCenterQuestionView(question: item))
+                        //                        onTap(item)
+                    }
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                .onTapGesture {
-                    //TODO: go to question view
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

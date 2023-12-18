@@ -1,8 +1,11 @@
+import Presentation
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct HelpCenterQuestionView: View {
     private var question: Question
+    @PresentableStore var store: HomeStore
 
     public init(
         question: Question
@@ -28,6 +31,23 @@ struct HelpCenterQuestionView: View {
             }
             .padding(.horizontal, 16)
         }
+    }
+}
+
+extension HelpCenterQuestionView {
+    static func journey(question: Question, title: String?) -> some JourneyPresentation {
+        HostingJourney(
+            HomeStore.self,
+            rootView: HelpCenterQuestionView(
+                question: question
+            )
+        ) { action in
+            if case .openFreeTextChat = action {
+                DismissJourney()
+            }
+        }
+        .configureTitle(title ?? "")
+        .withJourneyDismissButton
     }
 }
 

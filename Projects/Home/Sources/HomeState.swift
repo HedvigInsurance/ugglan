@@ -115,6 +115,7 @@ public enum HomeAction: ActionProtocol {
     case goToDeepLink(DeepLink)
 
     case openHelpCenterTopicView(commonTopic: CommonTopic)
+    case openHelpCenterQuestionView(question: Question)
 }
 
 public enum FutureStatus: Codable, Equatable {
