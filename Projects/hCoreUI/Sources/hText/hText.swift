@@ -43,6 +43,7 @@ public enum HFontTextStyle {
     case footnote
     case caption1
     case caption2
+    case standardExtraExtraSmall  //8
     case standardExtraSmall  //12
     case standardSmall  //14
     case standard  //18
@@ -64,6 +65,7 @@ public enum HFontTextStyle {
         case .footnote: return 14
         case .caption1: return 12
         case .caption2: return 11
+        case .standardExtraExtraSmall: return 8
         case .standardExtraSmall: return 12
         case .standardSmall: return 14
         case .standard: return 18
@@ -109,6 +111,8 @@ public enum HFontTextStyle {
             return .headline
         case .footnote:
             return .footnote
+        case .standardExtraExtraSmall:
+            return .body
         case .standardExtraSmall:
             return .body  //12
         case .standardSmall:

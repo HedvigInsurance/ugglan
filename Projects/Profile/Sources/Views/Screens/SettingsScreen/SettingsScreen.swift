@@ -11,8 +11,6 @@ import hGraphQL
 
 struct SettingsScreen: View {
     @PresentableStore var store: ProfileStore
-    @Inject var giraffe: hGiraffe
-
     init() {
         store.send(.fetchMemberDetails)
     }

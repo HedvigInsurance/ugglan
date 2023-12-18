@@ -9,7 +9,6 @@ import hCore
 import hGraphQL
 
 public class NotLoggedViewModel: ObservableObject {
-    @Inject var giraffe: hGiraffe
     @PresentableStore var store: MarketStore
 
     @Published var blurHash: String = ""

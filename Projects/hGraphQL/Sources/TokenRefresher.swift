@@ -6,7 +6,7 @@ import authlib
 public class TokenRefresher {
     public static let shared = TokenRefresher()
     var isRefreshing: ReadWriteSignal<Bool> = ReadWriteSignal(false)
-
+    public var isDemoMode = false
     var needRefresh: Bool {
         guard let token = ApolloClient.retreiveToken() else {
             return false
@@ -15,8 +15,25 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
+    public func refreshIfNeededAsync() async throws {
+        let bag = DisposeBag()
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<Void, Error>) -> Void in
+            bag += refreshIfNeeded()
+                .onValue({ _ in
+                    inCont.resume()
+                })
+                .onError({ error in
+                    inCont.resume(throwing: error)
+                })
+        }
+    }
+
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
+            if !isDemoMode {
+                log.error("Access token refresh missing token", error: nil, attributes: nil)
+            }
             return Future(result: .success)
         }
         return Future { completion in
