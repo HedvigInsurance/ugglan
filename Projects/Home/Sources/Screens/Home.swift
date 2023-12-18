@@ -165,15 +165,17 @@ class HomeVM: ObservableObject {
     }
 
     private func addObserverForApplicationDidBecomeActive() {
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.didBecomeActiveNotification,
-            object: nil,
-            queue: OperationQueue.main,
-            using: { _ in
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(.fetchChatNotifications)
-            }
-        )
+        if ApplicationContext.shared.$isLoggedIn.value {
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.didBecomeActiveNotification,
+                object: nil,
+                queue: OperationQueue.main,
+                using: { _ in
+                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchChatNotifications)
+                }
+            )
+        }
     }
 
     private func observeToolbarOptionTypes() {
