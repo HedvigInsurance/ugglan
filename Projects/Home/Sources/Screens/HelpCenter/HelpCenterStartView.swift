@@ -15,39 +15,39 @@ public struct HelpCenterStartView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 40) {
-                Image(uiImage: hCoreUIAssets.bigPillowHome.image)
-                    .resizable()
-                    .frame(width: 170, height: 170)
-                    .padding(.bottom, 26)
-                    .padding(.top, 39)
+            hSection {
+                VStack(spacing: 40) {
+                    Image(uiImage: hCoreUIAssets.bigPillowHome.image)
+                        .resizable()
+                        .frame(width: 170, height: 170)
+                        .padding(.bottom, 26)
+                        .padding(.top, 39)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    hText(helpCenterModel.title)
-                    hText(helpCenterModel.description)
-                        .foregroundColor(hTextColor.secondary)
+                    VStack(alignment: .leading, spacing: 8) {
+                        hText(helpCenterModel.title)
+                        hText(helpCenterModel.description)
+                            .foregroundColor(hTextColor.secondary)
+                    }
+
+                    displayQuickActions()
+                    displayCommonTopics()
+                    QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions)
                 }
-
-                displayQuickActions()
-                displayCommonTopics()
-                QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions)
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 
     private func displayQuickActions() -> some View {
-        VStack(spacing: 56) {
-            VStack(alignment: .leading, spacing: 8) {
-                HelpCenterPill(title: "Quick actions", color: .green)
+        VStack(alignment: .leading, spacing: 8) {
+            HelpCenterPill(title: "Quick actions", color: .green)
 
-                let quickActionsInPair = helpCenterModel.quickActions.chunked(into: 2)
+            let quickActionsInPair = helpCenterModel.quickActions.chunked(into: 2)
 
-                ForEach(quickActionsInPair, id: \.self) { pair in
-                    HStack(spacing: 8) {
-                        ForEach(pair, id: \.title) { quickAction in
-                            quickActionPill(quickAction: quickAction)
-                        }
+            ForEach(quickActionsInPair, id: \.self) { pair in
+                HStack(spacing: 8) {
+                    ForEach(pair, id: \.title) { quickAction in
+                        quickActionPill(quickAction: quickAction)
                     }
                 }
             }
@@ -88,6 +88,7 @@ public struct HelpCenterStartView: View {
                     .withChevronAccessory
                 }
                 .withoutHorizontalPadding
+                .sectionContainerStyle(.opaque)
                 .onTapGesture {
                     store.send(.openHelpCenterTopicView(commonTopic: item))
                 }
