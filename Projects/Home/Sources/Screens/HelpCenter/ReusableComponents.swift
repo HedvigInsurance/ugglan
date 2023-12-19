@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 enum PillColor {
     case green
@@ -60,11 +61,40 @@ enum QuestionType {
     case commonQuestions
     case allQuestions
     case relatedQuestions
+    
+    var title: String {
+        switch self {
+        case .commonQuestions:
+            return "common questions"
+        case .allQuestions:
+            return "all questions"
+        case .relatedQuestions:
+            return "related qustions"
+        }
+    }
+}
+
+enum HelpViewSource {
+    case homeView
+    case topicView
+    case questionView
+    
+    var title: String {
+        switch self {
+        case .homeView:
+            return "home view"
+        case .topicView:
+            return "topic view"
+        case .questionView:
+            return "question view"
+        }
+    }
 }
 
 struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
+    let source: HelpViewSource
     @PresentableStore var store: HomeStore
 
     var body: some View {
@@ -86,6 +116,12 @@ struct QuestionsItems: View {
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
                     .onTapGesture {
+                        log.info("question clicked", error: nil, attributes: [
+                            "question": item.question,
+                            "answer": item.answer,
+                            "sourcePath": source.title,
+                            "questionType": questionType.title
+                        ])
                         store.send(.openHelpCenterQuestionView(question: item))
                     }
                 }

@@ -32,7 +32,7 @@ public struct HelpCenterStartView: View {
 
                     displayQuickActions()
                     displayCommonTopics()
-                    QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions)
+                    QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions, source: .homeView)
                 }
             }
             .sectionContainerStyle(.transparent)
