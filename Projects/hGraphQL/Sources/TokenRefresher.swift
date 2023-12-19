@@ -32,7 +32,7 @@ public class TokenRefresher {
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             if !isDemoMode {
-                log.error("Access token refresh missing token", error: nil, attributes: nil)
+                log.info("Access token refresh missing token", error: nil, attributes: nil)
             }
             return Future(result: .success)
         }
