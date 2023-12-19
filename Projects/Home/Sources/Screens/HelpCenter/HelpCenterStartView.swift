@@ -18,7 +18,7 @@ public struct HelpCenterStartView: View {
         hForm {
             hSection {
                 VStack(spacing: 40) {
-                    Image(uiImage: hCoreUIAssets.bigPillowHome.image)
+                    Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
                         .resizable()
                         .frame(width: 170, height: 170)
                         .padding(.bottom, 26)
