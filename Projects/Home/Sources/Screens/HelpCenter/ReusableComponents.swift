@@ -66,7 +66,6 @@ struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
     @PresentableStore var store: HomeStore
-    //    let onTap: (Question)->Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -88,7 +87,6 @@ struct QuestionsItems: View {
                     .hWithoutHorizontalPadding
                     .onTapGesture {
                         store.send(.openHelpCenterQuestionView(question: item))
-                        //                        onTap(item)
                     }
                 }
                 .withoutHorizontalPadding
@@ -126,10 +124,6 @@ struct SupportView: View {
         .withoutHorizontalPadding
     }
 }
-
-//#Preview {
-//    HelpCenterPill(title: "Title", color: .green)
-//}
 
 #Preview{
     SupportView()
