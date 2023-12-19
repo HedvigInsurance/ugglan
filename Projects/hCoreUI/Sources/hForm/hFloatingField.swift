@@ -12,6 +12,7 @@ public struct hFloatingField: View {
     private let onTap: () -> Void
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -44,7 +45,8 @@ public struct hFloatingField: View {
                 )
                 if !value.isEmpty {
                     HStack {
-                        getTextLabel.frame(height: HFontTextStyle.title3.fontSize)
+                        getTextLabel
+                            .frame(height: hWithoutFixedHeight ?? false ? .infinity : HFontTextStyle.title3.fontSize)
                         Spacer()
                         fieldTrailingView
                     }
@@ -125,6 +127,23 @@ extension EnvironmentValues {
 extension View {
     public func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hFieldTrailingView, AnyView(content()))
+    }
+}
+
+private struct EnvironmentWithoutFixedHeight: EnvironmentKey {
+    static let defaultValue: Bool? = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutFixedHeight: (Bool)? {
+        get { self[EnvironmentWithoutFixedHeight.self] }
+        set { self[EnvironmentWithoutFixedHeight.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutFixedHeight: some View {
+        self.environment(\.hWithoutFixedHeight, true)
     }
 }
 
