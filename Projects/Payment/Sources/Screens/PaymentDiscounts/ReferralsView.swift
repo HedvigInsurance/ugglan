@@ -11,6 +11,7 @@ struct ReferralsView: View {
                 hRow {
                     ReferralView(referral: referral)
                 }
+                .withChevronAccessory
                 .hWithoutHorizontalPadding
                 .dividerInsets(.all, 0)
             }
