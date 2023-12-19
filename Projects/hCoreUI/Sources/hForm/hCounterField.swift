@@ -35,8 +35,8 @@ public struct hCounterField: View {
     }
 
     public var body: some View {
-        HStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
                     hFieldLabel(
                         placeholder: placeholder,
@@ -44,35 +44,36 @@ public struct hCounterField: View {
                         error: $error,
                         shouldMoveLabel: shouldMoveLabel
                     )
-                    if !textToShow.isEmpty {
-                        getTextLabel
+                    HStack(spacing: 0) {
+                        if !textToShow.isEmpty {
+                            getTextLabel
+                        }
+                        Spacer()
+                        SwiftUI.Button {
+                            if let minValue, minValue < value {
+                                decrease()
+                            }
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.minusSmall.image)
+                                .foregroundColor(
+                                    hTextColor.primary.opacity(value == 0 ? 0.4 : 1)
+
+                                )
+                                .frame(width: 35, height: 35)
+                        }
+                        SwiftUI.Button {
+                            if let maxValue, maxValue > value {
+                                increase()
+                            }
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.plusSmall.image)
+                                .foregroundColor(hTextColor.primary)
+                                .frame(width: 35, height: 35)
+                        }
                     }
                 }
                 .padding(.vertical, textToShow.isEmpty ? 3 : 9.5)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            SwiftUI.Button {
-                if let minValue, minValue < value {
-                    decrease()
-                }
-            } label: {
-                Image(uiImage: hCoreUIAssets.minusSmall.image)
-                    .foregroundColor(
-                        hTextColor.primary.opacity(value == 0 ? 0.4 : 1)
-
-                    )
-                    .frame(width: 35, height: 35)
-            }
-
-            SwiftUI.Button {
-                if let maxValue, maxValue > value {
-                    increase()
-                }
-            } label: {
-                Image(uiImage: hCoreUIAssets.plusSmall.image)
-                    .foregroundColor(hTextColor.primary)
-                    .frame(width: 35, height: 35)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
