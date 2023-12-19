@@ -224,6 +224,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutHorizontalPadding: Bool {
+        get { self[EnvironmentHWithoutHorizontalPadding.self] }
+        set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutHorizontalPadding: some View {
+        self.environment(\.hWithoutHorizontalPadding, true)
+    }
+}
+
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {

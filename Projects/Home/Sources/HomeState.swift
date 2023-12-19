@@ -99,6 +99,7 @@ public enum HomeAction: ActionProtocol {
     case openFreeTextChat
     case openMovingFlow
     case openTravelInsurance
+    case openHelpCenter
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
     case openCoInsured(contractIds: [InsuredPeopleConfig])
@@ -111,6 +112,7 @@ public enum HomeAction: ActionProtocol {
     case dismissOtherServices
     case hideImportantMessage
     case openContractCertificate(url: URL, title: String)
+    case goToDeepLink(DeepLink)
 }
 
 public enum FutureStatus: Codable, Equatable {
@@ -282,6 +284,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
         allCommonClaims.append(.chat)
+
+        allCommonClaims.append(.helpCenter)
+
         if hAnalyticsExperiment.movingFlow {
             allCommonClaims.append(.moving)
         }
@@ -374,6 +379,16 @@ extension CommonClaim {
             icon: nil,
             imageName: nil,
             displayTitle: L10n.InsuranceDetails.changeAddressButton,
+            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+        )
+    }()
+
+    public static let helpCenter: CommonClaim = {
+        CommonClaim(
+            id: "help_center",
+            icon: nil,
+            imageName: nil,
+            displayTitle: "Help Center",
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }()

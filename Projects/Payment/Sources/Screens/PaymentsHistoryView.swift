@@ -53,7 +53,7 @@ public struct PaymentHistoryView: View {
                                             hText(month.paymentData.payment.net.formattedAmount)
                                         }
                                     }
-                                    .noHorizontalPadding()
+                                    .withChevronAccessory
                                     .withCustomAccessory {
                                         VStack(spacing: 0) {
                                             if month.paymentData.status.hasFailed {
