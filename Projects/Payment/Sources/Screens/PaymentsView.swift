@@ -125,7 +125,7 @@ public struct PaymentsView: View {
             hText(L10n.paymentsDiscountsSectionTitle)
         }
         .withChevronAccessory
-        .noHorizontalPadding()
+        .withChevronAccessory
         .onTap {
             store.send(.navigation(to: .openDiscounts))
         }
@@ -143,7 +143,7 @@ public struct PaymentsView: View {
             hText(L10n.paymentsPaymentHistoryButtonLabel)
         }
         .withChevronAccessory
-        .noHorizontalPadding()
+        .withChevronAccessory
         .onTap {
             store.send(.navigation(to: .openHistory))
         }
@@ -164,7 +164,7 @@ public struct PaymentsView: View {
             Spacer()
             hText(descriptor).foregroundColor(hTextColor.secondary)
         }
-        .noHorizontalPadding()
+        .withChevronAccessory
         .dividerInsets(.all, 0)
     }
 

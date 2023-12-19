@@ -15,24 +15,26 @@ public struct HelpCenterStartView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 40) {
-                Image(uiImage: hCoreUIAssets.bigPillowHome.image)
-                    .resizable()
-                    .frame(width: 170, height: 170)
-                    .padding(.bottom, 26)
-                    .padding(.top, 39)
+            hSection {
+                VStack(spacing: 40) {
+                    Image(uiImage: hCoreUIAssets.bigPillowHome.image)
+                        .resizable()
+                        .frame(width: 170, height: 170)
+                        .padding(.bottom, 26)
+                        .padding(.top, 39)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    hText(helpCenterModel.title)
-                    hText(helpCenterModel.description)
-                        .foregroundColor(hTextColor.secondary)
+                    VStack(alignment: .leading, spacing: 8) {
+                        hText(helpCenterModel.title)
+                        hText(helpCenterModel.description)
+                            .foregroundColor(hTextColor.secondary)
+                    }
+
+                    displayQuickActions()
+                    displayCommonTopics()
+                    displayCommonQuestions()
                 }
-
-                displayQuickActions()
-                displayCommonTopics()
-                displayCommonQuestions()
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -64,7 +66,7 @@ public struct HelpCenterStartView: View {
     }
 
     private func displayCommonQuestions() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
             helpCenterPill(title: "Common questions", color: hHighlightColor.blueFillOne)
             commonQuestionsItems(commonQuestions: helpCenterModel.commonQuestions)
         }
@@ -113,6 +115,7 @@ public struct HelpCenterStartView: View {
                     .withChevronAccessory
                 }
                 .withoutHorizontalPadding
+                .sectionContainerStyle(.opaque)
                 .onTapGesture {
                     //TODO: go to topic view
                 }
@@ -128,9 +131,9 @@ public struct HelpCenterStartView: View {
                         .fixedSize()
                 }
                 .withChevronAccessory
+                .hWithoutHorizontalPadding
             }
             .withoutHorizontalPadding
-            .sectionContainerStyle(.transparent)
             .onTapGesture {
                 //TODO: go to question view
             }
