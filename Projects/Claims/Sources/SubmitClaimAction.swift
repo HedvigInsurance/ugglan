@@ -76,6 +76,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openEmergencyScreen
     case openConfirmEmergencyScreen
     case openPestsScreen
+    case openFileUploadScreen
     case openInfoScreen(title: String?, description: String?)
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
@@ -133,6 +134,7 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
+    case setFileUploadStep(model: FlowClaimFileUploadStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {

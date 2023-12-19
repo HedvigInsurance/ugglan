@@ -290,6 +290,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 default:
                     self.send(.navigationAction(action: .openUpdateAppScreen))
                 }
+            case let .setFileUploadStep(model):
+                newState.fileUploadStep = model
+                self.send(.navigationAction(action: .openFileUploadScreen))
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -305,6 +308,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.audioRecordingStep = nil
             newState.contractStep = nil
             newState.currentClaimContext = nil
+            newState.fileUploadStep = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:

@@ -59,6 +59,8 @@ public class ClaimJourneys {
                 openEmergencySelectScreen().addDismissClaimsFlow()
             } else if case .openPestsScreen = navigationAction {
                 openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
+            } else if case .openFileUploadScreen = navigationAction {
+                openFileUploadScreen().addDismissClaimsFlow()
             }
         }
     }
@@ -547,6 +549,10 @@ public class ClaimJourneys {
             getScreen(for: action)
         }
         .hidesBackButton
+    }
+
+    private static func openFileUploadScreen() -> some JourneyPresentation {
+        HostingJourney(rootView: FilesUploadScreen())
     }
 }
 

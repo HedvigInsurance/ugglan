@@ -27,6 +27,7 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimConfirmEmergencyStepFragment
     ...FlowClaimDeflectGlassDamageStepFragment
     ...FlowClaimDeflectPestsStepFragment
+    ...FlowClaimFileUploadStepFragment
   }
 }
 
@@ -95,6 +96,16 @@ fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
     id
     partners {
         ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimFileUploadStepFragment on FlowClaimFileUploadStep {
+    id
+    title
+    targetUploadUrl
+    uploads {
+        fileId
+        signedUrl
     }
 }
 
