@@ -61,7 +61,7 @@ enum QuestionType {
     case commonQuestions
     case allQuestions
     case relatedQuestions
-    
+
     var title: String {
         switch self {
         case .commonQuestions:
@@ -78,7 +78,7 @@ enum HelpViewSource {
     case homeView
     case topicView
     case questionView
-    
+
     var title: String {
         switch self {
         case .homeView:
@@ -116,12 +116,13 @@ struct QuestionsItems: View {
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
                     .onTapGesture {
-                        log.info("question clicked", error: nil, attributes: [
+                        let attributes: [String: String] = [
                             "question": item.question,
                             "answer": item.answer,
                             "sourcePath": source.title,
-                            "questionType": questionType.title
-                        ])
+                            "questionType": questionType.title,
+                        ]
+                        log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         store.send(.openHelpCenterQuestionView(question: item))
                     }
                 }
