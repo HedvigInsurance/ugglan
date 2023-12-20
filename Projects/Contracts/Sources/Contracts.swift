@@ -117,7 +117,7 @@ extension Contracts {
                     openDetails: false
                 )
             } else if case .openContractDetailErrorScreen = action {
-                ContractDetailErrorScreen().journey
+                ContractDetail(id: "", title: "").contractDetailErrorJourney
             } else if case let .openCrossSellingWebUrl(url) = action {
                 resultJourney(.openCrossSellingWebUrl(url: url))
             } else if case .goToFreeTextChat = action {

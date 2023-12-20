@@ -2,13 +2,16 @@ import SwiftUI
 import hCore
 
 public struct GenericErrorView: View {
+    private let title: String?
     private let description: String?
     private let buttons: ErrorViewButtonConfig
 
     public init(
+        title: String? = nil,
         description: String? = nil,
         buttons: ErrorViewButtonConfig
     ) {
+        self.title = title
         self.description = description
         self.buttons = buttons
     }
@@ -20,7 +23,7 @@ public struct GenericErrorView: View {
                     .foregroundColor(hSignalColor.amberElement)
 
                 VStack {
-                    hText(L10n.somethingWentWrong, style: .body)
+                    hText(title ?? L10n.somethingWentWrong, style: .body)
                         .foregroundColor(hTextColor.primaryTranslucent)
 
                     hText(description ?? L10n.General.errorBody, style: .body)
