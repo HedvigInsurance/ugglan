@@ -308,7 +308,7 @@ struct FilePicker {
         let alert = UIAlertController(
             title: nil,
             message: nil,
-            preferredStyle: .actionSheet
+            preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert
         )
 
         alert.addAction(
