@@ -242,7 +242,6 @@ class ClaimFilesViewModel: ObservableObject {
                 setNavigationBarHidden(false)
             }
         }
-
     }
 
     struct ClaimFilesViewOptions: OptionSet {

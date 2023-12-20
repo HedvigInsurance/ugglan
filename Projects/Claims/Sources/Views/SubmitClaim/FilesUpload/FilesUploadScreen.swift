@@ -36,7 +36,7 @@ struct FilesUploadScreen: View {
 
                             hButton.LargeButton(type: .primary) {
                                 Task {
-                                    //                                    await vm.uploadFiles()
+                                    await vm.uploadFiles()
                                 }
                             } content: {
                                 hText(L10n.fileUploadUploadFiles)
@@ -125,8 +125,10 @@ struct FilesUploadScreen: View {
 private class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
+    @Published var error: String?
     private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
+    @Inject var claimFileUploadService: hClaimFileUploadService
     @ObservedObject var fileGridViewModel: FileGridViewModel
     @PresentableStore var store: SubmitClaimStore
     private var cancellables = Set<AnyCancellable>()
@@ -164,11 +166,13 @@ private class FilesUploadViewModel: ObservableObject {
                 }
             )
             fileGridViewModel.files.append(contentsOf: filess)
-            //            store.send(.navigationAction(action: .openFilesFor(endPoint: model.targetUploadUrl, files: filess)))
 
         }
     }
 
+    func uploadFiles() async {
+
+    }
 }
 
 #Preview{
