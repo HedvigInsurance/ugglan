@@ -26,6 +26,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
+    case submitFileUpload(ids: [String])
 
     case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
@@ -150,4 +151,5 @@ public enum ClaimsLoadingType: LoadingProtocol {
     case postAudioRecording
     case postContractSelect
     case postConfirmEmergency
+    case postUploadFiles
 }

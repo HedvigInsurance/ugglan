@@ -205,6 +205,12 @@ extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStep
     }
 }
 
+extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimFileUploadNext.context
+    }
+}
+
 extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepProgress {
     func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
@@ -295,6 +301,15 @@ extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStep
     }
 }
 
+extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimFileUploadNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimFileUploadNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
 //MARK: loading type
 protocol ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType
@@ -357,6 +372,12 @@ extension OctopusGraphQL.FlowClaimSingleItemNextMutation: ClaimStepLoadingType {
 extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
         return .postSingleItemCheckout
+    }
+}
+
+extension OctopusGraphQL.FlowClaimFileUploadNextMutation: ClaimStepLoadingType {
+    func getLoadingType() -> ClaimsLoadingType {
+        return .postUploadFiles
     }
 }
 

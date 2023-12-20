@@ -132,11 +132,13 @@ private class FilesUploadViewModel: ObservableObject {
     @ObservedObject var fileGridViewModel: FileGridViewModel
     @PresentableStore var store: SubmitClaimStore
     private var cancellables = Set<AnyCancellable>()
-
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model
+        let files = model.uploads.compactMap({
+            File(id: $0.fileId, size: 0, mimeType: .JPEG, name: "NAME", source: .url(url: URL(string: $0.signedUrl)!))
+        })
         fileGridViewModel = .init(
-            files: [],
+            files: files,
             options: [.delete, .add]
         )
         fileUploadManager.resetuploadFilesPath()
@@ -153,6 +155,30 @@ private class FilesUploadViewModel: ObservableObject {
                 self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
             }
         }
+
+        store.loadingSignal
+            .plain()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { _ in
+
+            } receiveValue: { [weak self] state in
+                guard let self else { return }
+                withAnimation {
+                    switch state[.postUploadFiles] {
+                    case .loading:
+                        self.isLoading = true
+                    case let .error(error):
+                        self.setNavigationBarHidden(false)
+                        self.isLoading = false
+                        self.error = error
+                    case .none:
+                        self.setNavigationBarHidden(false)
+                        self.isLoading = false
+                    }
+                }
+            }
+            .store(in: &cancellables)
 
     }
 
@@ -171,7 +197,49 @@ private class FilesUploadViewModel: ObservableObject {
     }
 
     func uploadFiles() async {
+        withAnimation {
+            isLoading = true
+        }
+        do {
+            var alreadyUploadedFiles = fileGridViewModel.files
+                .filter({
+                    if case .url(_) = $0.source { return true } else { return false }
+                })
+                .compactMap({ $0.id })
+            let filteredFiles = fileGridViewModel.files.filter({
+                if case .localFile(_, _) = $0.source { return true } else { return false }
+            })
+            if !filteredFiles.isEmpty {
+                setNavigationBarHidden(true)
+                let files = try await claimFileUploadService.upload(
+                    endPoint: model.targetUploadUrl,
+                    files: filteredFiles
+                ) {
+                    [weak self] progress in
+                    //                    DispatchQueue.main.async {
+                    //                        withAnimation {
+                    //                            self?.progress = progress
+                    //                        }
+                    //                    }
+                }
+                let uploadedFiles = files.compactMap({ $0.file?.fileId })
+                store.send(.submitFileUpload(ids: alreadyUploadedFiles + uploadedFiles))
+            } else {
+                store.send(.submitFileUpload(ids: alreadyUploadedFiles))
+            }
+            self.fileUploadManager.resetuploadFilesPath()
+        } catch let ex {
+            withAnimation {
+                error = ex.localizedDescription
+                setNavigationBarHidden(false)
+                isLoading = false
+            }
+        }
+    }
 
+    private func setNavigationBarHidden(_ hidden: Bool) {
+        let nav = UIApplication.shared.getTopViewControllerNavigation()
+        nav?.setNavigationBarHidden(hidden, animated: true)
     }
 }
 

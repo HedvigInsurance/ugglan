@@ -190,6 +190,10 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 context: newClaimContext
             )
             return mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
+        case let .submitFileUpload(ids):
+            let input = OctopusGraphQL.FlowClaimFileUploadInput(fileIds: ids)
+            let mutation = OctopusGraphQL.FlowClaimFileUploadNextMutation(input: input, context: newClaimContext)
+            return mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)
         default:
             return nil
         }
