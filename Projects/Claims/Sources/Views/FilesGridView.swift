@@ -60,7 +60,7 @@ struct FilesGridView: View {
 
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
-    let options: ClaimFilesViewModel.ClaimFilesViewOptions
+    @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
     var onDelete: ((_ file: File) -> Void)?
     var disposeBag = DisposeBag()
     init(
@@ -86,6 +86,13 @@ class FileGridViewModel: ObservableObject {
             }
         }
     }
+
+    func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
+        withAnimation {
+            self.options = options
+        }
+    }
+
 }
 
 #Preview{

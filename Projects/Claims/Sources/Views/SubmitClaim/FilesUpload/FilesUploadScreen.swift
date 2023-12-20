@@ -15,12 +15,39 @@ struct FilesUploadScreen: View {
 
     var body: some View {
         Group {
-            if vm.hasFiles {
-                hForm {
-                    hSection {
-                        FilesGridView(vm: vm.fileGridViewModel)
+            if let error = vm.error {
+                RetryView(subtitle: error) {
+                    withAnimation {
+                        vm.error = nil
                     }
-                    .padding(.vertical, 16)
+                }
+            } else if vm.hasFiles {
+                hForm {
+                    if vm.isLoading, vm.hasFilesToUpload {
+                        hSection {
+                            VStack(spacing: 20) {
+                                Spacer()
+                                hText(L10n.fileUploadIsUploading)
+                                ProgressView(value: vm.progress)
+                                    .tint(hTextColor.primary)
+                                    .frame(width: UIScreen.main.bounds.width * 0.53)
+                                Spacer()
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
+                    } else {
+                        hSection {
+                            FilesGridView(vm: vm.fileGridViewModel)
+                        }
+                        .withHeader {
+                            HStack {
+                                hText("Uploaded files")
+                                Spacer()
+                                InfoViewHolder(title: "", description: "")
+                            }
+                        }
+                        .padding(.vertical, 16)
+                    }
 
                 }
                 .hFormAttachToBottom {
@@ -39,7 +66,7 @@ struct FilesUploadScreen: View {
                                     await vm.uploadFiles()
                                 }
                             } content: {
-                                hText(L10n.fileUploadUploadFiles)
+                                hText(L10n.generalContinueButton)
                             }
                             .hButtonIsLoading(vm.isLoading)
                             .disabled(vm.fileGridViewModel.files.isEmpty)
@@ -48,6 +75,7 @@ struct FilesUploadScreen: View {
                     .padding(.vertical, 16)
                 }
                 .sectionContainerStyle(.transparent)
+
             } else {
                 hForm {}
                     .hFormTitle(.standard, .title1, L10n.claimsFileUploadTitle)
@@ -61,11 +89,15 @@ struct FilesUploadScreen: View {
                                     } content: {
                                         hText(L10n.ClaimStatusDetail.addFiles)
                                     }
+                                    .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
+                                    .disabled(vm.isLoading && vm.skipPressed)
                                     hButton.LargeButton(type: .ghost) {
-
+                                        vm.skip()
                                     } content: {
                                         hText(L10n.NavBar.skip)
                                     }
+                                    .disabled(vm.isLoading && !vm.skipPressed)
+                                    .hButtonIsLoading(vm.isLoading && vm.skipPressed)
                                 }
                             }
                         }
@@ -125,12 +157,17 @@ struct FilesUploadScreen: View {
 private class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
+    @Published var hasFilesToUpload: Bool = false
+    @Published var skipPressed = false
     @Published var error: String?
+    @Published var progress: Double = 0
+
     private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
     @Inject var claimFileUploadService: hClaimFileUploadService
     @ObservedObject var fileGridViewModel: FileGridViewModel
     @PresentableStore var store: SubmitClaimStore
+
     private var cancellables = Set<AnyCancellable>()
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model
@@ -147,7 +184,9 @@ private class FilesUploadViewModel: ObservableObject {
             .sink { _ in
 
             } receiveValue: { [weak self] files in
-                self?.hasFiles = !files.isEmpty
+                withAnimation {
+                    self?.hasFiles = !files.isEmpty
+                }
             }
             .store(in: &cancellables)
         fileGridViewModel.onDelete = { [weak self] file in
@@ -171,12 +210,22 @@ private class FilesUploadViewModel: ObservableObject {
                     case let .error(error):
                         self.setNavigationBarHidden(false)
                         self.isLoading = false
+                        self.skipPressed = false
                         self.error = error
                     case .none:
                         self.setNavigationBarHidden(false)
                         self.isLoading = false
+                        self.skipPressed = false
                     }
                 }
+            }
+            .store(in: &cancellables)
+
+        self.$isLoading.receive(on: RunLoop.main)
+            .sink { _ in
+
+            } receiveValue: { [weak self] isLoading in
+                self?.fileGridViewModel.update(options: isLoading ? [] : [.add, .delete])
             }
             .store(in: &cancellables)
 
@@ -196,12 +245,17 @@ private class FilesUploadViewModel: ObservableObject {
         }
     }
 
+    func skip() {
+        hasFilesToUpload = false
+        store.send(.submitFileUpload(ids: []))
+    }
+
     func uploadFiles() async {
         withAnimation {
             isLoading = true
         }
         do {
-            var alreadyUploadedFiles = fileGridViewModel.files
+            let alreadyUploadedFiles = fileGridViewModel.files
                 .filter({
                     if case .url(_) = $0.source { return true } else { return false }
                 })
@@ -209,6 +263,7 @@ private class FilesUploadViewModel: ObservableObject {
             let filteredFiles = fileGridViewModel.files.filter({
                 if case .localFile(_, _) = $0.source { return true } else { return false }
             })
+            hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
                 let files = try await claimFileUploadService.upload(
@@ -216,18 +271,18 @@ private class FilesUploadViewModel: ObservableObject {
                     files: filteredFiles
                 ) {
                     [weak self] progress in
-                    //                    DispatchQueue.main.async {
-                    //                        withAnimation {
-                    //                            self?.progress = progress
-                    //                        }
-                    //                    }
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self?.progress = progress
+                        }
+                    }
                 }
                 let uploadedFiles = files.compactMap({ $0.file?.fileId })
                 store.send(.submitFileUpload(ids: alreadyUploadedFiles + uploadedFiles))
             } else {
+
                 store.send(.submitFileUpload(ids: alreadyUploadedFiles))
             }
-            self.fileUploadManager.resetuploadFilesPath()
         } catch let ex {
             withAnimation {
                 error = ex.localizedDescription
