@@ -8,6 +8,18 @@ public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
     let uploads: [FlowClaimFileUploadStepFileModel]
 
     init(
+        id: String,
+        title: String,
+        targetUploadUrl: String,
+        uploads: [FlowClaimFileUploadStepFileModel]
+    ) {
+        self.id = id
+        self.title = title
+        self.targetUploadUrl = targetUploadUrl
+        self.uploads = uploads
+    }
+
+    init(
         with data: OctopusGraphQL.FlowClaimFileUploadStepFragment
     ) {
         self.id = data.id
