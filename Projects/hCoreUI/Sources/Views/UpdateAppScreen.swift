@@ -13,38 +13,40 @@ public struct UpdateAppScreen: View {
 
     public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                .foregroundColor(hSignalColor.amberElement)
-                .padding(.top, 254)
-                .padding(.bottom, 8)
+            VStack(spacing: 16) {
+                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .foregroundColor(hSignalColor.amberElement)
 
-            Group {
-                hText(L10n.embarkUpdateAppTitle, style: .body)
-                    .foregroundColor(hTextColor.primary)
+                VStack {
+                    hText(L10n.embarkUpdateAppTitle, style: .body)
+                        .foregroundColor(hTextColor.primary)
 
-                hText(L10n.embarkUpdateAppBody, style: .body)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(hTextColor.secondary)
-            }
-            .padding(.horizontal, 32)
-        }
-        .hFormAttachToBottom {
-            VStack {
-                hButton.LargeButton(type: .primary) {
+                    hText(L10n.embarkUpdateAppBody, style: .body)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                hButton.MediumButton(type: .primary) {
                     UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {
                     hText(L10n.embarkUpdateAppButton, style: .body)
                 }
-                .padding(.bottom, 4)
-                hButton.LargeButton(type: .ghost) {
-                    onSelected()
-                } content: {
-                    hText(L10n.generalCloseButton, style: .body)
-                }
-                .padding(.bottom, 2)
+                .fixedSize()
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.horizontal, 32)
+        }
+        .hFormContentPosition(.center)
+        .hFormAttachToBottom {
+            hButton.LargeButton(type: .ghost) {
+                onSelected()
+            } content: {
+                hText(L10n.generalCloseButton, style: .body)
+            }
+            .padding([.horizontal, .bottom], 16)
         }
     }
+}
+
+#Preview{
+    UpdateAppScreen(onSelected: {})
 }
