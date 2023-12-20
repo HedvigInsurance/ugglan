@@ -34,9 +34,10 @@ public struct RetryView: View {
                         VStack(spacing: 0) {
                             if let title {
                                 hText(title)
+                                    .foregroundColor(hTextColor.primaryTranslucent)
                             }
                             hText(subtitle, style: .body)
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.secondaryTranslucent)
                                 .multilineTextAlignment(.center)
                         }
                         if let action {

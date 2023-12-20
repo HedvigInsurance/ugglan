@@ -36,7 +36,7 @@ public class EditCoInsuredJourney {
             }
         }
     }
-
+    
     static func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some JourneyPresentation {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         store.coInsuredViewModel.initializeCoInsured(with: config)
@@ -51,7 +51,7 @@ public class EditCoInsuredJourney {
         .configureTitle(L10n.coinsuredEditTitle)
         .withJourneyDismissButton
     }
-
+    
     static func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         store.coInsuredViewModel.initializeCoInsured(with: config)
@@ -66,7 +66,7 @@ public class EditCoInsuredJourney {
         .configureTitle(L10n.coinsuredEditTitle)
         .withJourneyDismissButton
     }
-
+    
     @JourneyBuilder
     static func openCoInsuredInput(
         actionType: CoInsuredAction,
@@ -112,7 +112,7 @@ public class EditCoInsuredJourney {
             }
         }
     }
-
+    
     @JourneyBuilder
     static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
         HostingJourney(
@@ -124,11 +124,11 @@ public class EditCoInsuredJourney {
             getScreen(for: action)
         }
     }
-
+    
     static func openRemoveCoInsuredScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         store.coInsuredViewModel.initializeCoInsured(with: config)
-
+        
         return HostingJourney(
             EditCoInsuredStore.self,
             rootView: RemoveCoInsuredScreen(vm: store.coInsuredViewModel),
@@ -139,19 +139,40 @@ public class EditCoInsuredJourney {
         }
         .configureTitle(L10n.coinsuredEditTitle)
     }
-
+    
     @JourneyBuilder
     static func openGenericErrorScreen() -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
-            rootView: CoInsuredErrorScreen(),
+            rootView: GenericErrorView(
+                description: L10n.coinsuredErrorText,
+                icon: .circle,
+                buttons: .init(
+                    actionButton:
+                            .init(
+                                buttonTitle: L10n.openChat,
+                                buttonAction: {
+                                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                    store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        store.send(.goToFreeTextChat)
+                                    }
+                                }),
+                    dismissButton:
+                            .init(
+                                buttonTitle: L10n.generalCancelButton,
+                                buttonAction: {
+                                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                    store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                                }))
+            ),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             getScreen(for: action)
         }
     }
-
+    
     @JourneyBuilder
     public static func openMissingCoInsuredAlert(config: InsuredPeopleConfig) -> some JourneyPresentation {
         HostingJourney(
@@ -170,7 +191,7 @@ public class EditCoInsuredJourney {
             }
         }
     }
-
+    
     @JourneyBuilder
     static func openSelectInsurance(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
         HostingJourney(
@@ -211,7 +232,7 @@ public class EditCoInsuredJourney {
             getScreen(for: action)
         }
     }
-
+    
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
@@ -245,7 +266,7 @@ public class EditCoInsuredJourney {
         .hidesBackButton
         .configureTitle(L10n.contractAddConisuredInfo)
     }
-
+    
     @JourneyBuilder
     public static func openInitialScreen(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
         if configs.count > 1 {
@@ -254,7 +275,7 @@ public class EditCoInsuredJourney {
             openNewInsuredPeopleScreen(config: config)
         }
     }
-
+    
     @JourneyBuilder
     public static func handleOpenEditCoInsured(
         for config: InsuredPeopleConfig,

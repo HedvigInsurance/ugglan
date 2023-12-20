@@ -4,24 +4,34 @@ import hCore
 public struct GenericErrorView: View {
     private let title: String?
     private let description: String?
+    private let icon: ErrorIconType
     private let buttons: ErrorViewButtonConfig
 
     public init(
         title: String? = nil,
         description: String? = nil,
+        icon: ErrorIconType = .triangle,
         buttons: ErrorViewButtonConfig
     ) {
         self.title = title
         self.description = description
+        self.icon = icon
         self.buttons = buttons
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: 16) {
-                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                    .foregroundColor(hSignalColor.amberElement)
-
+                switch icon {
+                case .triangle:
+                    Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                        .foregroundColor(hSignalColor.amberElement)
+                case .circle:
+                    Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.blueElement)
+                }
                 VStack {
                     hText(title ?? L10n.somethingWentWrong, style: .body)
                         .foregroundColor(hTextColor.primaryTranslucent)
@@ -53,6 +63,11 @@ public struct GenericErrorView: View {
     }
 }
 
+public enum ErrorIconType {
+    case triangle
+    case circle
+}
+
 public struct ErrorViewButtonConfig {
     fileprivate let actionButton: ErrorViewButton?
     fileprivate let dismissButton: ErrorViewButton
@@ -78,6 +93,7 @@ public struct ErrorViewButtonConfig {
 
 #Preview{
     GenericErrorView(
+        icon: .circle,
         buttons:
             .init(
                 actionButton:
