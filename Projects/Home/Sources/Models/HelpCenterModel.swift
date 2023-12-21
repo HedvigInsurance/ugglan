@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public struct HelpCenterModel {
+public struct HelpCenterModel: Codable, Equatable, Hashable {
     let title: String
     let description: String
     let quickActions: [QuickAction]
@@ -9,18 +9,18 @@ public struct HelpCenterModel {
     let commonQuestions: [Question]
 }
 
-struct QuickAction: Hashable {
+struct QuickAction: Codable, Equatable, Hashable {
     let title: String
     let deepLink: DeepLink
 }
 
-struct CommonTopic: Hashable {
+public struct CommonTopic: Codable, Equatable, Hashable {
     let title: String
     let commonQuestions: [Question]
     let allQuestions: [Question]
 }
 
-struct Question: Hashable {
+public struct Question: Codable, Equatable, Hashable {
     let question: String
     let answer: String
 }

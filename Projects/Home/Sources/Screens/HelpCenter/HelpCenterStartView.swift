@@ -31,7 +31,7 @@ public struct HelpCenterStartView: View {
 
                     displayQuickActions()
                     displayCommonTopics()
-                    displayCommonQuestions()
+                    QuestionsItems(questions: helpCenterModel.commonQuestions, isCommonQuestions: true)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -40,7 +40,7 @@ public struct HelpCenterStartView: View {
 
     private func displayQuickActions() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            helpCenterPill(title: "Quick actions", color: hSignalColor.greenFill)
+            HelpCenterPill(title: "Quick actions", color: .green)
 
             let quickActionsInPair = helpCenterModel.quickActions.chunked(into: 2)
 
@@ -56,33 +56,10 @@ public struct HelpCenterStartView: View {
 
     private func displayCommonTopics() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            helpCenterPill(title: "Common topics", color: hHighlightColor.yellowFillOne)
+            HelpCenterPill(title: "Common topics", color: .yellow)
 
             let commonTopics = helpCenterModel.commonTopics
             commonTopicsItems(commonTopics: commonTopics)
-        }
-    }
-
-    private func displayCommonQuestions() -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            helpCenterPill(title: "Common questions", color: hHighlightColor.blueFillOne)
-            commonQuestionsItems(commonQuestions: helpCenterModel.commonQuestions)
-        }
-    }
-
-    private func helpCenterPill(title: String, color: some hColor) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                hText(title)
-                    .foregroundColor(hTextColor.primaryTranslucent)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-                Squircle.default()
-                    .fill(color)
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -98,7 +75,6 @@ public struct HelpCenterStartView: View {
         )
         .onTapGesture {
             store.send(.goToDeepLink(quickAction.deepLink))
-            /* TODO: GO TO DEEPLINK */
         }
     }
 
@@ -114,25 +90,8 @@ public struct HelpCenterStartView: View {
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.opaque)
                 .onTapGesture {
-                    //TODO: go to topic view
+                    store.send(.openHelpCenterTopicView(commonTopic: item))
                 }
-            }
-        }
-    }
-
-    private func commonQuestionsItems(commonQuestions: [Question]) -> some View {
-        VStack(spacing: 4) {
-            hSection(commonQuestions, id: \.self) { item in
-                hRow {
-                    hText(item.question)
-                        .fixedSize()
-                }
-                .withChevronAccessory
-                .hWithoutHorizontalPadding
-            }
-            .withoutHorizontalPadding
-            .onTapGesture {
-                //TODO: go to question view
             }
         }
     }
@@ -140,7 +99,31 @@ public struct HelpCenterStartView: View {
 
 extension HelpCenterStartView {
     public static var journey: some JourneyPresentation {
-        HostingJourney(
+
+        let commonQuestions: [Question] = [
+            .init(
+                question: "When do you charge for my insurance?",
+                answer: ""
+            ),
+            .init(
+                question: "When do you charge for my insurance?",
+                answer: ""
+            ),
+            .init(
+                question: "How do I make a claim?",
+                answer: ""
+            ),
+            .init(
+                question: "How can I view my payment history?",
+                answer: ""
+            ),
+            .init(
+                question: "What should I do if my payment fails?",
+                answer: ""
+            ),
+        ]
+
+        return HostingJourney(
             HomeStore.self,
             rootView: HelpCenterStartView(
                 helpCenterModel:
@@ -157,58 +140,37 @@ extension HelpCenterStartView {
                         commonTopics: [
                             .init(
                                 title: "Payments",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
                             .init(
                                 title: "Claims",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
                             .init(
                                 title: "My insurance",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
                             .init(
                                 title: "Co-insured",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
                             .init(
                                 title: "FirstVet",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
                             .init(
                                 title: "Campaigns",
-                                commonQuestions: [],
-                                allQuestions: []
+                                commonQuestions: commonQuestions,
+                                allQuestions: commonQuestions
                             ),
 
                         ],
-                        commonQuestions: [
-                            .init(
-                                question: "When do you charge for my insurance?",
-                                answer: ""
-                            ),
-                            .init(
-                                question: "When do you charge for my insurance?",
-                                answer: ""
-                            ),
-                            .init(
-                                question: "How do I make a claim?",
-                                answer: ""
-                            ),
-                            .init(
-                                question: "How can I view my payment history?",
-                                answer: ""
-                            ),
-                            .init(
-                                question: "What should I do if my payment fails?",
-                                answer: ""
-                            ),
-                        ]
+                        commonQuestions: commonQuestions
                     )
             ),
             style: .detented(.scrollViewContentSize),
@@ -216,6 +178,8 @@ extension HelpCenterStartView {
         ) { action in
             if case .goToDeepLink = action {
                 DismissJourney()
+            } else if case let .openHelpCenterTopicView(topic) = action {
+                HelpCenterTopicView.journey(commonTopic: topic)
             }
         }
         .configureTitle("Help Center")
@@ -224,7 +188,31 @@ extension HelpCenterStartView {
 }
 
 #Preview{
-    HelpCenterStartView(
+
+    let commonQuestions: [Question] = [
+        .init(
+            question: "When do you charge for my insurance?",
+            answer: ""
+        ),
+        .init(
+            question: "When do you charge for my insurance?",
+            answer: ""
+        ),
+        .init(
+            question: "How do I make a claim?",
+            answer: ""
+        ),
+        .init(
+            question: "How can I view my payment history?",
+            answer: ""
+        ),
+        .init(
+            question: "What should I do if my payment fails?",
+            answer: ""
+        ),
+    ]
+
+    return HelpCenterStartView(
         helpCenterModel:
             .init(
                 title: "Need help?",
@@ -239,58 +227,37 @@ extension HelpCenterStartView {
                 commonTopics: [
                     .init(
                         title: "Payments",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "Claims",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "My insurance",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "Co-insured",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "FirstVet",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "Campaigns",
-                        commonQuestions: [],
+                        commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
 
                 ],
-                commonQuestions: [
-                    .init(
-                        question: "When do you charge for my insurance?",
-                        answer: ""
-                    ),
-                    .init(
-                        question: "When do you charge for my insurance?",
-                        answer: ""
-                    ),
-                    .init(
-                        question: "How do I make a claim?",
-                        answer: ""
-                    ),
-                    .init(
-                        question: "How can I view my payment history?",
-                        answer: ""
-                    ),
-                    .init(
-                        question: "What should I do if my payment fails?",
-                        answer: ""
-                    ),
-                ]
+                commonQuestions: commonQuestions
             )
     )
 }

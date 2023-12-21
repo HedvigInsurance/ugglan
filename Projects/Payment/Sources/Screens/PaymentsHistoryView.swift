@@ -53,7 +53,6 @@ public struct PaymentHistoryView: View {
                                             hText(month.paymentData.payment.net.formattedAmount)
                                         }
                                     }
-                                    .withChevronAccessory
                                     .withCustomAccessory {
                                         VStack(spacing: 0) {
                                             if month.paymentData.status.hasFailed {
@@ -71,6 +70,7 @@ public struct PaymentHistoryView: View {
                                     .onTap {
                                         store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
                                     }
+                                    .hWithoutHorizontalPadding
                                     .foregroundColor(
                                         getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
                                     )

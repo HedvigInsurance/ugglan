@@ -113,6 +113,8 @@ public enum HomeAction: ActionProtocol {
     case hideImportantMessage
     case openContractCertificate(url: URL, title: String)
     case goToDeepLink(DeepLink)
+
+    case openHelpCenterTopicView(commonTopic: CommonTopic)
 }
 
 public enum FutureStatus: Codable, Equatable {
