@@ -177,7 +177,28 @@ public class EditCoInsuredJourney {
     public static func openMissingCoInsuredAlert(config: InsuredPeopleConfig) -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
-            rootView: CoInsuredMissingAlertView(config: config),
+            rootView: GenericErrorView(
+                title: config.contractDisplayName,
+                description: L10n.contractCoinsuredMissingInformationLabel,
+                buttons: .init(
+                    actionButtonAttachedToBottom:
+                            .init(
+                                buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                                buttonAction: {
+                                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                                    store.send(.openEditCoInsured(config: config, fromInfoCard: true))
+                                }),
+                    dismissButton:
+                            .init(
+                                buttonTitle: L10n.contractCoinsuredMissingLater,
+                                buttonAction: {
+                                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                    store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                                }))
+            )
+            .hExtraBottomPadding,
+            
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in

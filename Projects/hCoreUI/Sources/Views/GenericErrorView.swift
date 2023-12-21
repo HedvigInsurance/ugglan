@@ -7,6 +7,7 @@ public struct GenericErrorView: View {
     private let icon: ErrorIconType
     private let buttons: ErrorViewButtonConfig
     @Environment(\.hWithoutTitle) var withoutTitle
+    @Environment(\.hExtraBottomPadding) var extraBottomPadding
     
     public init(
         title: String? = nil,
@@ -52,17 +53,30 @@ public struct GenericErrorView: View {
                 }
             }
             .padding(.horizontal, 32)
+            .padding(.bottom, extraBottomPadding ? 32 : 0)
         }
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
-            if let dismissButton = buttons.dismissButton {
-                hButton.LargeButton(type: .ghost) {
-                    dismissButton.buttonAction()
-                } content: {
-                    hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+            hSection {
+                VStack(spacing: 8) {
+                    if let actionButton = buttons.actionButtonAttachedToBottom {
+                        hButton.LargeButton(type: .primary) {
+                            actionButton.buttonAction()
+                        } content: {
+                            hText(actionButton.buttonTitle ?? "")
+                        }
+                    }
+                    if let dismissButton = buttons.dismissButton {
+                        hButton.LargeButton(type: .ghost) {
+                            dismissButton.buttonAction()
+                        } content: {
+                            hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+                        }
+                    }
                 }
-                .padding([.horizontal, .bottom], 16)
             }
+            .sectionContainerStyle(.transparent)
+            .padding(.bottom, 16)
         }
     }
 }
@@ -74,13 +88,16 @@ public enum ErrorIconType {
 
 public struct ErrorViewButtonConfig {
     fileprivate let actionButton: ErrorViewButton?
+    fileprivate let actionButtonAttachedToBottom: ErrorViewButton?
     fileprivate let dismissButton: ErrorViewButton?
     
     public init(
         actionButton: ErrorViewButton? = nil,
-        dismissButton: ErrorViewButton?
+        actionButtonAttachedToBottom: ErrorViewButton? = nil,
+        dismissButton: ErrorViewButton? = nil
     ) {
         self.actionButton = actionButton
+        self.actionButtonAttachedToBottom = actionButtonAttachedToBottom
         self.dismissButton = dismissButton
     }
     
@@ -103,7 +120,11 @@ public struct ErrorViewButtonConfig {
                     actionButton:
                             .init(
                                 buttonAction: {}),
-                    dismissButton:
+                    actionButtonAttachedToBottom:
+                            .init(
+                                buttonTitle: "Extra button",
+                                buttonAction: {}
+                            ), dismissButton:
                             .init(
                                 buttonTitle: "Close",
                                 buttonAction: {}
@@ -126,5 +147,22 @@ extension EnvironmentValues {
 extension GenericErrorView {
     public var hWithoutTitle: some View {
         self.environment(\.hWithoutTitle, true)
+    }
+}
+
+private struct EnvironmenthExtraBottomPadding: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hExtraBottomPadding: Bool {
+        get { self[EnvironmenthExtraBottomPadding.self] }
+        set { self[EnvironmenthExtraBottomPadding.self] = newValue }
+    }
+}
+
+extension GenericErrorView {
+    public var hExtraBottomPadding: some View {
+        self.environment(\.hExtraBottomPadding, true)
     }
 }

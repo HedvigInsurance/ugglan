@@ -88,34 +88,14 @@ struct CoInsuredProcessingScreen: View {
     private var errorView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                Spacer()
-                VStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColor.amberElement)
-                    VStack(spacing: 0) {
-                        hText(L10n.somethingWentWrong)
-                            .foregroundColor(hTextColor.primaryTranslucent)
-                        hText(L10n.General.errorBody)
-                            .foregroundColor(hTextColor.secondaryTranslucent)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 8)
-                    }
-                    .padding(.horizontal, 16)
-                }
-                Spacer()
-                Spacer()
-                Spacer()
-            }
-            hSection {
-                hButton.LargeButton(type: .ghost) {
-                    missingContractAlert()
-                } content: {
-                    hText(L10n.generalCancelButton)
-                }
-            }
-            .sectionContainerStyle(.transparent)
+            GenericErrorView(
+                buttons: .init(
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCancelButton,
+                        buttonAction: {
+                            missingContractAlert()
+                        }))
+            )
         }
     }
 
