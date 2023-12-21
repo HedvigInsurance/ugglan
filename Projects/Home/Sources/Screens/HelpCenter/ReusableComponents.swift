@@ -29,6 +29,7 @@ struct HelpCenterPill: View {
             HStack {
                 hText(title)
                     .foregroundColor(hTextColor.primaryTranslucent)
+                    .colorScheme(.light)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)

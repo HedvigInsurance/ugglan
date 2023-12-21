@@ -32,7 +32,11 @@ public struct HelpCenterStartView: View {
 
                     displayQuickActions()
                     displayCommonTopics()
-                    QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions, source: .homeView)
+                    QuestionsItems(
+                        questions: helpCenterModel.commonQuestions,
+                        questionType: .commonQuestions,
+                        source: .homeView
+                    )
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -67,6 +71,7 @@ public struct HelpCenterStartView: View {
     private func quickActionPill(quickAction: QuickAction) -> some View {
         HStack(alignment: .center) {
             hText(quickAction.title)
+                .colorScheme(.light)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(.vertical, 16)
