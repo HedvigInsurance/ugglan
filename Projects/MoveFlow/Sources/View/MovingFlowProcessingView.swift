@@ -69,11 +69,15 @@ struct MovingFlowProcessingView: View {
     private var errorView: some View {
         ZStack {
             BackgroundView().ignoresSafeArea()
-            RetryView(
-                subtitle: L10n.General.errorBody
-            ) {
-                vm.store.send(.navigation(action: .goBack))
-            }
+            GenericErrorView(
+                description: L10n.General.errorBody,
+                buttons: .init(
+                    actionButton: .init(buttonAction: {
+                        vm.store.send(.navigation(action: .goBack))
+                    }),
+                    dismissButton: nil)
+            )
+            .hWithoutTitle
         }
     }
 

@@ -6,7 +6,8 @@ public struct GenericErrorView: View {
     private let description: String?
     private let icon: ErrorIconType
     private let buttons: ErrorViewButtonConfig
-
+    @Environment(\.hWithoutTitle) var withoutTitle
+    
     public init(
         title: String? = nil,
         description: String? = nil,
@@ -18,7 +19,7 @@ public struct GenericErrorView: View {
         self.icon = icon
         self.buttons = buttons
     }
-
+    
     public var body: some View {
         hForm {
             VStack(spacing: 16) {
@@ -33,9 +34,10 @@ public struct GenericErrorView: View {
                         .foregroundColor(hSignalColor.blueElement)
                 }
                 VStack {
-                    hText(title ?? L10n.somethingWentWrong, style: .body)
-                        .foregroundColor(hTextColor.primaryTranslucent)
-
+                    if !withoutTitle {
+                        hText(title ?? L10n.somethingWentWrong, style: .body)
+                            .foregroundColor(hTextColor.primaryTranslucent)
+                    }
                     hText(description ?? L10n.General.errorBody, style: .body)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.secondaryTranslucent)
@@ -53,12 +55,14 @@ public struct GenericErrorView: View {
         }
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                buttons.dismissButton.buttonAction()
-            } content: {
-                hText(buttons.dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+            if let dismissButton = buttons.dismissButton {
+                hButton.LargeButton(type: .ghost) {
+                    dismissButton.buttonAction()
+                } content: {
+                    hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+                }
+                .padding([.horizontal, .bottom], 16)
             }
-            .padding([.horizontal, .bottom], 16)
         }
     }
 }
@@ -70,20 +74,20 @@ public enum ErrorIconType {
 
 public struct ErrorViewButtonConfig {
     fileprivate let actionButton: ErrorViewButton?
-    fileprivate let dismissButton: ErrorViewButton
-
+    fileprivate let dismissButton: ErrorViewButton?
+    
     public init(
         actionButton: ErrorViewButton? = nil,
-        dismissButton: ErrorViewButton
+        dismissButton: ErrorViewButton?
     ) {
         self.actionButton = actionButton
         self.dismissButton = dismissButton
     }
-
+    
     public struct ErrorViewButton {
         fileprivate let buttonTitle: String?
         fileprivate let buttonAction: () -> Void
-
+        
         public init(buttonTitle: String? = nil, buttonAction: @escaping () -> Void) {
             self.buttonTitle = buttonTitle
             self.buttonAction = buttonAction
@@ -95,15 +99,32 @@ public struct ErrorViewButtonConfig {
     GenericErrorView(
         icon: .circle,
         buttons:
-            .init(
-                actionButton:
-                    .init(
-                        buttonAction: {}),
-                dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
-            )
+                .init(
+                    actionButton:
+                            .init(
+                                buttonAction: {}),
+                    dismissButton:
+                            .init(
+                                buttonTitle: "Close",
+                                buttonAction: {}
+                            )
+                )
     )
+}
+
+private struct EnvironmenthWithoutTitle: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutTitle: Bool {
+        get { self[EnvironmenthWithoutTitle.self] }
+        set { self[EnvironmenthWithoutTitle.self] = newValue }
+    }
+}
+
+extension GenericErrorView {
+    public var hWithoutTitle: some View {
+        self.environment(\.hWithoutTitle, true)
+    }
 }

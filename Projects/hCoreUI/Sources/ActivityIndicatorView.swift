@@ -11,13 +11,13 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
     var content: () -> Content
     var onLoading: () -> LoadingView
     var onError: (_ error: String) -> ErrorView
-
+    
     var action: StoreType.Loading
     @State var showOnLoading: Bool = false
     @State var error: String?
-
+    
     @PresentableStore var store: StoreType
-
+    
     public init(
         _ type: StoreType.Type,
         _ action: StoreType.Loading,
@@ -71,7 +71,7 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
                 }
             }
     }
-
+    
     @ViewBuilder
     private var getView: some View {
         if let error {
@@ -113,18 +113,24 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             _presentError = State(initialValue: state.presentError)
         }
     }
-
+    
     public var body: some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
             if isLoading && showLoading {
                 loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             } else if presentError {
-                RetryView(subtitle: error) {
-                    for action in retryActions {
-                        store.send(action)
-                    }
-                }
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(buttonAction: {
+                            for action in retryActions {
+                                store.send(action)
+                            }
+                        }),
+                        dismissButton: nil)
+                )
+                .hWithoutTitle
             } else {
                 content().transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             }
@@ -137,7 +143,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             handle(allActions: value)
         }
     }
-
+    
     @discardableResult
     private func handle(
         allActions: [StoreType.Loading: LoadingState<String>]
@@ -180,7 +186,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             self.presentError = state.presentError
         }
     }
-
+    
     @ViewBuilder
     private var loadingIndicatorView: some View {
         HStack {
@@ -191,7 +197,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         .edgesIgnoringSafeArea(.top)
         .useDarkColor
     }
-
+    
     private struct ChangeStateValue {
         let isLoading: Bool
         let presentError: Bool
@@ -210,12 +216,12 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
     let buttonStyleSelect: ButtonStyleForLoading?
-
+    
     @State var presentError = false
     @State var error = ""
     @State var isLoading = false
     var disposeBag = DisposeBag()
-
+    
     public init(
         _ type: StoreType.Type,
         _ action: StoreType.Loading,
@@ -228,7 +234,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
         self.content = content
         self.buttonStyleSelect = buttonStyleSelect
     }
-
+    
     public init(
         _ type: StoreType.Type,
         _ actions: [StoreType.Loading],
@@ -241,7 +247,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
         self.content = content
         self.buttonStyleSelect = buttonStyleSelect
     }
-
+    
     public var body: some View {
         loadingButton
             .alert(isPresented: $presentError) {
@@ -296,7 +302,7 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
                 }
             }
     }
-
+    
     @ViewBuilder
     var loadingButton: some View {
         switch buttonStyleSelect {
@@ -338,7 +344,7 @@ struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
     let actions: [StoreType.Loading]
     @State private var isLoading = false
     @Environment(\.presentableStoreLensAnimation) var animation
-
+    
     public init(
         _ type: StoreType.Type,
         _ action: StoreType.Loading
@@ -359,7 +365,7 @@ struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
             }
             .hButtonIsLoading(isLoading)
     }
-
+    
     func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
         let actions = allActions.filter({ self.actions.contains($0.key) })
         if actions.count > 0 {
@@ -416,7 +422,7 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
     let action: StoreType.Loading
     @Binding private var error: String?
     @Environment(\.presentableStoreLensAnimation) var animation
-
+    
     public init(
         _ type: StoreType.Type,
         _ action: StoreType.Loading,
@@ -428,9 +434,15 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             if let error {
-                RetryView(subtitle: error) {
-                    self.error = nil
-                }
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(buttonAction: {
+                            self.error = nil
+                        }),
+                        dismissButton: nil
+                    )
+                ).hWithoutTitle
             } else {
                 content
             }
@@ -446,7 +458,7 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
             handle(allActions: store.loadingSignal.value)
         }
     }
-
+    
     func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
         if let state = allActions[action] {
             switch state {

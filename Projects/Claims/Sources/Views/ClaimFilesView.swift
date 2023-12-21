@@ -22,11 +22,18 @@ public struct ClaimFilesView: View {
                 }
                 .presentableStoreLensAnimation(.default)
             } else if let error = vm.error {
-                RetryView(subtitle: error) {
-                    withAnimation {
-                        vm.error = nil
-                    }
-                }
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(
+                            buttonAction: {
+                                withAnimation {
+                                    vm.error = nil
+                                }
+                            }),
+                        dismissButton: nil)
+                )
+                .hWithoutTitle
             } else {
                 hForm {
                     hSection {
