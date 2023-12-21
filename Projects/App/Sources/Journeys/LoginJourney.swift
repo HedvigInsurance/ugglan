@@ -48,7 +48,15 @@ extension AppJourney {
             } else if case let .loginFailure(message) = action {
                 HostingJourney(
                     AuthenticationStore.self,
-                    rootView: LoginFail(message: message)
+                    rootView: GenericErrorView(
+                        description: message ?? L10n.authenticationBankidLoginError,
+                        buttons: .init(
+                            dismissButton: .init(
+                                buttonTitle: L10n.generalCloseButton,
+                                buttonAction: {
+                                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
+                                    store.send(.cancel)
+                                })))
                 ) {
                     action in
                     if case .cancel = action {

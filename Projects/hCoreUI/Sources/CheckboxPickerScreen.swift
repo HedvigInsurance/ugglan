@@ -24,6 +24,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
 
+    private var fieldSize: hFieldSize
+
     public init(
         items: [(object: T, displayName: String)],
         preSelectedItems: @escaping () -> [T],
@@ -46,6 +48,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
+        if items.count > 3 {
+            self.fieldSize = .small
+        } else {
+            self.fieldSize = .large
+        }
     }
 
     public var body: some View {
@@ -84,13 +91,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
-                    getCell(item: item.object, fieldSize: items.count > 3 ? .small : .large)
+                    getCell(item: item.object)
                 }
                 .disabled(isLoading)
             }
             if includeManualInput {
                 hSection {
-                    getCell(displayName: L10n.manualInputListOther, fieldSize: .small)
+                    getCell(displayName: L10n.manualInputListOther)
                 }
                 .disabled(isLoading)
             }
@@ -152,7 +159,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: T? = nil, displayName: String? = nil, fieldSize: hFieldSize) -> some View {
+    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
         if showDividers ?? false {
             hRow {
                 displayContentFor(item, displayName)
@@ -223,7 +230,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     func checkBox(isSelected: Bool) -> some View {
         Group {
-            if singleSelect ?? false {
+            if fieldSize == .small {
                 Circle()
                     .strokeBorder(
                         RadioFieldsColors().getBorderColor(isSelected: isSelected),

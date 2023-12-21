@@ -45,12 +45,17 @@ public struct MovingFlowHousingTypeView: View {
         } onError: { error in
             ZStack {
                 BackgroundView().ignoresSafeArea()
-                RetryView(
-                    subtitle: error,
-                    retryTitle: L10n.openChat
-                ) {
-                    vm.store.send(.navigation(action: .goToFreeTextChat))
-                }
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(
+                            buttonTitle: L10n.openChat,
+                            buttonAction: {
+                                vm.store.send(.navigation(action: .goToFreeTextChat))
+                            }),
+                        dismissButton: nil)
+                )
+                .hWithoutTitle
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {
