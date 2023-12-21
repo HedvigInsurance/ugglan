@@ -31,7 +31,7 @@ public struct HelpCenterStartView: View {
 
                     displayQuickActions()
                     displayCommonTopics()
-                    QuestionsItems(questions: helpCenterModel.commonQuestions, isCommonQuestions: true)
+                    QuestionsItems(questions: helpCenterModel.commonQuestions, questionType: .commonQuestions)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -103,23 +103,33 @@ extension HelpCenterStartView {
         let commonQuestions: [Question] = [
             .init(
                 question: "When do you charge for my insurance?",
-                answer: ""
+                answer:
+                    "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month.\n\nYour insurance starts on 1 June. The first dawn takes place on June 27, for the entire month of June. This means that you pay 27 days in arrears and 3 days in advance.\n\nThe insurance is valid even if the first payment has not been received.\n\nGo to Payments to view your full history.",
+                relatedQuestions: [
+                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
+                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
+                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
+                ]
             ),
             .init(
-                question: "When do you charge for my insurance?",
-                answer: ""
+                question: "When does my insurance activate?",
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "How do I make a claim?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "How can I view my payment history?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
             .init(
                 question: "What should I do if my payment fails?",
-                answer: ""
+                answer: "",
+                relatedQuestions: []
             ),
         ]
 
@@ -180,6 +190,8 @@ extension HelpCenterStartView {
                 DismissJourney()
             } else if case let .openHelpCenterTopicView(topic) = action {
                 HelpCenterTopicView.journey(commonTopic: topic)
+            } else if case let .openHelpCenterQuestionView(question) = action {
+                HelpCenterQuestionView.journey(question: question, title: nil)
             }
         }
         .configureTitle("Help Center")
@@ -188,27 +200,31 @@ extension HelpCenterStartView {
 }
 
 #Preview{
-
     let commonQuestions: [Question] = [
         .init(
             question: "When do you charge for my insurance?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "When do you charge for my insurance?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "How do I make a claim?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "How can I view my payment history?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
         .init(
             question: "What should I do if my payment fails?",
-            answer: ""
+            answer: "",
+            relatedQuestions: []
         ),
     ]
 

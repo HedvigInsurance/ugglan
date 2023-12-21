@@ -7,6 +7,7 @@ enum PillColor {
     case yellow
     case blue
     case purple
+    case pink
 }
 
 struct HelpCenterPill: View {
@@ -49,20 +50,32 @@ struct HelpCenterPill: View {
             hHighlightColor.yellowFillOne
         case .purple:
             hHighlightColor.purpleFillOne
+        case .pink:
+            hHighlightColor.pinkFillOne
         }
     }
 }
 
+enum QuestionType {
+    case commonQuestions
+    case allQuestions
+    case relatedQuestions
+}
+
 struct QuestionsItems: View {
     let questions: [Question]
-    let isCommonQuestions: Bool
+    let questionType: QuestionType
+    @PresentableStore var store: HomeStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if isCommonQuestions {
+            switch questionType {
+            case .commonQuestions:
                 HelpCenterPill(title: "Common questions", color: .blue)
-            } else {
+            case .allQuestions:
                 HelpCenterPill(title: "All questions", color: .purple)
+            case .relatedQuestions:
+                HelpCenterPill(title: "Related questions", color: .pink)
             }
             VStack(alignment: .leading, spacing: 4) {
                 hSection(questions, id: \.self) { item in
@@ -72,12 +85,12 @@ struct QuestionsItems: View {
                     }
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
+                    .onTapGesture {
+                        store.send(.openHelpCenterQuestionView(question: item))
+                    }
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                .onTapGesture {
-                    //TODO: go to question view
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -111,10 +124,6 @@ struct SupportView: View {
         .withoutHorizontalPadding
     }
 }
-
-//#Preview {
-//    HelpCenterPill(title: "Title", color: .green)
-//}
 
 #Preview{
     SupportView()

@@ -23,4 +23,5 @@ public struct CommonTopic: Codable, Equatable, Hashable {
 public struct Question: Codable, Equatable, Hashable {
     let question: String
     let answer: String
+    let relatedQuestions: [Question]
 }
