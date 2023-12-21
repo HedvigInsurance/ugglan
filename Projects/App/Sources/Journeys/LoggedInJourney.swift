@@ -53,6 +53,8 @@ extension AppJourney {
                     }
                 case let .startCoInsuredFlow(contractIds):
                     AppJourney.editCoInsured(configs: contractIds)
+                case let .goToQuickAction(quickAction):
+                    AppJourney.configureQuickAction(quickAction: quickAction)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in
@@ -66,7 +68,6 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
-            .configureDeepLink
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -216,15 +217,6 @@ extension JourneyPresentation {
                     }
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
-            }
-        }
-    }
-
-    public var configureDeepLink: some JourneyPresentation {
-        onAction(HomeStore.self) { action, pre in
-            if case let .goToDeepLink(deepLink) = action {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.makeTabActive(deeplink: deepLink))
             }
         }
     }

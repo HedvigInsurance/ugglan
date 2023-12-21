@@ -106,8 +106,6 @@ extension OtherService {
                 DismissJourney()
             } else if case .openHelpCenter = action {
                 DismissJourney()
-            } else if case .goToDeepLink = action {
-                DismissJourney()
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if fromOtherService {
                     CommonClaimDetail.journey(claim: claim)

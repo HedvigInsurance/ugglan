@@ -243,6 +243,8 @@ extension HomeView {
                 resultJourney(.openCrossSells)
             } else if case let .openCoInsured(configs) = action {
                 resultJourney(.startCoInsuredFlow(configs: configs))
+            } else if case let .goToQuickAction(quickAction) = action {
+                resultJourney(.goToQuickAction(quickAction: quickAction))
             }
         }
         .configureTabBarItem(
@@ -264,6 +266,7 @@ public enum HomeResult {
     case openEmergency
     case openHelpCenter
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
+    case goToQuickAction(quickAction: QuickAction)
 }
 
 struct Active_Preview: PreviewProvider {

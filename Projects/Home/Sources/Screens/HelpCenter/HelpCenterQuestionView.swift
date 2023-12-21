@@ -25,8 +25,6 @@ struct HelpCenterQuestionView: View {
                     hText(question.answer, style: .title3)
                         .foregroundColor(hTextColor.secondary)
                 }
-
-                QuestionsItems(questions: question.relatedQuestions, questionType: .relatedQuestions)
                 SupportView()
             }
             .padding(.horizontal, 16)

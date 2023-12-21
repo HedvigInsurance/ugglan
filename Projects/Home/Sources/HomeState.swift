@@ -112,10 +112,10 @@ public enum HomeAction: ActionProtocol {
     case dismissOtherServices
     case hideImportantMessage
     case openContractCertificate(url: URL, title: String)
-    case goToDeepLink(DeepLink)
 
     case openHelpCenterTopicView(commonTopic: CommonTopic)
     case openHelpCenterQuestionView(question: Question)
+    case goToQuickAction(QuickAction)
 }
 
 public enum FutureStatus: Codable, Equatable {
