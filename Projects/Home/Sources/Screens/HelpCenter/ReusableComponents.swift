@@ -27,7 +27,7 @@ struct HelpCenterPill: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                hText(title)
+                hText(title, style: .standardSmall)
                     .foregroundColor(hTextColor.primaryTranslucent)
                     .colorScheme(.light)
             }
@@ -36,6 +36,14 @@ struct HelpCenterPill: View {
             .background(
                 Squircle.default()
                     .fill(pillBackgroundColor)
+                    .cornerRadius(8)
+            )
+            .overlay(
+                Squircle.default()
+                    .stroke(
+                        hBorderColor.translucentOne,
+                        lineWidth: 0.5
+                    )
             )
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -116,6 +124,7 @@ struct QuestionsItems: View {
                     }
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
+                    .hWithoutDividerPadding
                     .onTapGesture {
                         let attributes: [String: String] = [
                             "question": item.question,
@@ -129,6 +138,7 @@ struct QuestionsItems: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
+                .padding(.leading, 2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -164,5 +174,5 @@ struct SupportView: View {
 }
 
 #Preview{
-    SupportView()
+    HelpCenterPill(title: "Quick actions", color: .green)
 }
