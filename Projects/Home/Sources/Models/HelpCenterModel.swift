@@ -18,13 +18,13 @@ public enum QuickAction: Codable, Equatable, Hashable {
     var title: String {
         switch self {
         case .changeBank:
-            return "Change bank"
+            return L10n.hcQuickActionsChangeBank
         case .updateAddress:
-            return "Update address"
+            return L10n.hcQuickActionsUpdateAddress
         case .editCoInsured:
-            return "Edit co-insured"
+            return L10n.hcQuickActionsEditCoinsured
         case .travelCertificate:
-            return "Travel certificate"
+            return L10n.hcQuickActionsTravelCertificate
         }
     }
 }

@@ -389,7 +389,7 @@ extension CommonClaim {
             id: "help_center",
             icon: nil,
             imageName: nil,
-            displayTitle: "Help Center",
+            displayTitle: L10n.hcTitle,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }()

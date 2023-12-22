@@ -74,11 +74,11 @@ enum QuestionType {
     var title: String {
         switch self {
         case .commonQuestions:
-            return "common questions"
+            return L10n.hcCommonQuestionsTitle
         case .allQuestions:
-            return "all questions"
+            return L10n.hcAllQuestionTitle
         case .relatedQuestions:
-            return "related qustions"
+            return L10n.hcRelatedQuestionsTitle
         }
     }
 }
@@ -110,11 +110,11 @@ struct QuestionsItems: View {
         VStack(alignment: .leading, spacing: 0) {
             switch questionType {
             case .commonQuestions:
-                HelpCenterPill(title: "Common questions", color: .blue)
+                HelpCenterPill(title: questionType.title, color: .blue)
             case .allQuestions:
-                HelpCenterPill(title: "All questions", color: .purple)
+                HelpCenterPill(title: questionType.title, color: .purple)
             case .relatedQuestions:
-                HelpCenterPill(title: "Related questions", color: .pink)
+                HelpCenterPill(title: questionType.title, color: .pink)
             }
             VStack(alignment: .leading, spacing: 4) {
                 hSection(questions, id: \.self) { item in
@@ -151,18 +151,15 @@ struct SupportView: View {
     var body: some View {
         hSection {
             VStack(spacing: 0) {
-                hText("Still need help?")
+                hText(L10n.hcChatQuestion)
                     .foregroundColor(hTextColor.primaryTranslucent)
-                Group {
-                    hText("We're here Mon-Fri 08-16")
-                    hText("Sat-Sun 08-14")
-                }
-                .foregroundColor(hTextColor.secondaryTranslucent)
+                hText(L10n.hcChatAnswer)
+                    .foregroundColor(hTextColor.secondaryTranslucent)
 
                 hButton.MediumButton(type: .primary) {
                     store.send(.openFreeTextChat)
                 } content: {
-                    hText("Chat with us")
+                    hText(L10n.hcChatButton)
                 }
                 .padding(.top, 16)
                 .fixedSize()
@@ -174,5 +171,5 @@ struct SupportView: View {
 }
 
 #Preview{
-    HelpCenterPill(title: "Quick actions", color: .green)
+    HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
 }

@@ -17,11 +17,11 @@ struct HelpCenterQuestionView: View {
         hForm {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: "Question", color: .blue)
+                    HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
                     hText(question.question, style: .title3)
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: "Answer", color: .green)
+                    HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                     hText(question.answer, style: .title3)
                         .foregroundColor(hTextColor.secondary)
                 }

@@ -45,7 +45,7 @@ public struct HelpCenterStartView: View {
 
     private func displayQuickActions() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            HelpCenterPill(title: "Quick actions", color: .green)
+            HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
 
             let quickActionsInPair = helpCenterModel.quickActions.chunked(into: 2)
 
@@ -61,7 +61,7 @@ public struct HelpCenterStartView: View {
 
     private func displayCommonTopics() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            HelpCenterPill(title: "Common topics", color: .yellow)
+            HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
 
             let commonTopics = helpCenterModel.commonTopics
             commonTopicsItems(commonTopics: commonTopics)
@@ -166,9 +166,9 @@ extension HelpCenterStartView {
             rootView: HelpCenterStartView(
                 helpCenterModel:
                     .init(
-                        title: "Need help?",
+                        title: L10n.hcHomeViewQuestion,
                         description:
-                            "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly, or chat with us if you need.",
+                            L10n.hcHomeViewAnswer,
                         quickActions: quickActions,
                         commonTopics: [
                             .init(
@@ -217,7 +217,7 @@ extension HelpCenterStartView {
                 HelpCenterQuestionView.journey(question: question, title: nil)
             }
         }
-        .configureTitle("Help Center")
+        .configureTitle(L10n.hcTitle)
         .withJourneyDismissButton
     }
 }
@@ -254,9 +254,9 @@ extension HelpCenterStartView {
     return HelpCenterStartView(
         helpCenterModel:
             .init(
-                title: "Need help?",
+                title: L10n.hcHomeViewQuestion,
                 description:
-                    "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly, or chat with us if you need.",
+                    L10n.hcHomeViewAnswer,
                 quickActions: [
                     .changeBank,
                     .updateAddress,
