@@ -36,7 +36,6 @@ struct HelpCenterPill: View {
             .background(
                 Squircle.default()
                     .fill(pillBackgroundColor)
-                    .cornerRadius(8)
             )
             .overlay(
                 Squircle.default()
