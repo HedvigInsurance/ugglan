@@ -17,7 +17,11 @@ struct HelpCenterTopicView: View {
         hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 40) {
-                    QuestionsItems(questions: commonTopic.commonQuestions, questionType: .commonQuestions, source: .topicView)
+                    QuestionsItems(
+                        questions: commonTopic.commonQuestions,
+                        questionType: .commonQuestions,
+                        source: .topicView
+                    )
                     QuestionsItems(questions: commonTopic.allQuestions, questionType: .allQuestions, source: .topicView)
                 }
                 SupportView()
