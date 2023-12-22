@@ -124,7 +124,7 @@ extension HelpCenterStartView {
             ),
             .init(
                 question: L10n.hcCommonQuestionsQ03,
-                answer:L10n.hcCommonQuestionsA03,
+                answer: L10n.hcCommonQuestionsA03,
                 relatedQuestions: []
             ),
             .init(
@@ -187,7 +187,7 @@ extension HelpCenterStartView {
                                         question: L10n.hcPaymentsQ03,
                                         answer: L10n.hcPaymentsA03,
                                         relatedQuestions: []
-                                    )
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -208,7 +208,7 @@ extension HelpCenterStartView {
                                         question: L10n.hcClaimsQ03,
                                         answer: L10n.hcClaimsA03,
                                         relatedQuestions: []
-                                    )
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -229,7 +229,7 @@ extension HelpCenterStartView {
                                         question: L10n.hcCoverageQ03,
                                         answer: L10n.hcCoverageA03,
                                         relatedQuestions: []
-                                    )
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -250,7 +250,7 @@ extension HelpCenterStartView {
                                         question: L10n.hcInsuranceQ03,
                                         answer: L10n.hcInsuranceA03,
                                         relatedQuestions: []
-                                    )
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -258,7 +258,7 @@ extension HelpCenterStartView {
                                 title: L10n.hcGeneralTitle,
                                 commonQuestions: [],
                                 allQuestions: commonQuestions
-                            )
+                            ),
                         ],
                         commonQuestions: commonQuestions
                     )
