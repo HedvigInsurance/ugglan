@@ -83,6 +83,7 @@ public struct HelpCenterStartView: View {
             store.send(.goToQuickAction(quickAction))
         }
         .frame(maxWidth: 168)
+        .frame(maxHeight: 56)
     }
 
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
