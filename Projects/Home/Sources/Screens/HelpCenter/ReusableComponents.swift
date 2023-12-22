@@ -120,7 +120,6 @@ struct QuestionsItems: View {
                 hSection(questions, id: \.self) { item in
                     hRow {
                         hText(item.question)
-                            .fixedSize()
                     }
                     .withChevronAccessory
                     .hWithoutHorizontalPadding
@@ -140,7 +139,6 @@ struct QuestionsItems: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.leading, 2)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -155,6 +153,7 @@ struct SupportView: View {
                     .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.hcChatAnswer)
                     .foregroundColor(hTextColor.secondaryTranslucent)
+                    .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
                     store.send(.openFreeTextChat)

@@ -109,9 +109,8 @@ extension HelpCenterStartView {
 
         let commonQuestions: [Question] = [
             .init(
-                question: "When do you charge for my insurance?",
-                answer:
-                    "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month.\n\nYour insurance starts on 1 June. The first dawn takes place on June 27, for the entire month of June. This means that you pay 27 days in arrears and 3 days in advance.\n\nThe insurance is valid even if the first payment has not been received.\n\nGo to Payments to view your full history.",
+                question: L10n.hcCommonQuestionsQ01,
+                answer: L10n.hcCommonQuestionsA01,
                 relatedQuestions: [
                     .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
                     .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
@@ -119,23 +118,23 @@ extension HelpCenterStartView {
                 ]
             ),
             .init(
-                question: "When does my insurance activate?",
-                answer: "",
+                question: L10n.hcCommonQuestionsQ02,
+                answer: L10n.hcCommonQuestionsA02,
                 relatedQuestions: []
             ),
             .init(
-                question: "How do I make a claim?",
-                answer: "",
+                question: L10n.hcCommonQuestionsQ03,
+                answer:L10n.hcCommonQuestionsA03,
                 relatedQuestions: []
             ),
             .init(
-                question: "How can I view my payment history?",
-                answer: "",
+                question: L10n.hcCommonQuestionsQ04,
+                answer: L10n.hcCommonQuestionsA04,
                 relatedQuestions: []
             ),
             .init(
-                question: "What should I do if my payment fails?",
-                answer: "",
+                question: L10n.hcCommonQuestionsQ05,
+                answer: L10n.hcCommonQuestionsA05,
                 relatedQuestions: []
             ),
         ]
@@ -172,36 +171,94 @@ extension HelpCenterStartView {
                         quickActions: quickActions,
                         commonTopics: [
                             .init(
-                                title: "Payments",
-                                commonQuestions: commonQuestions,
+                                title: L10n.hcPaymentsTitle,
+                                commonQuestions: [
+                                    .init(
+                                        question: L10n.hcPaymentsQ01,
+                                        answer: L10n.hcPaymentsA01,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ02,
+                                        answer: L10n.hcPaymentsA02,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ03,
+                                        answer: L10n.hcPaymentsA03,
+                                        relatedQuestions: []
+                                    )
+                                ],
                                 allQuestions: commonQuestions
                             ),
                             .init(
-                                title: "Claims",
-                                commonQuestions: commonQuestions,
+                                title: L10n.hcClaimsTitle,
+                                commonQuestions: [
+                                    .init(
+                                        question: L10n.hcClaimsQ01,
+                                        answer: L10n.hcClaimsA01,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ02,
+                                        answer: L10n.hcClaimsA02,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ03,
+                                        answer: L10n.hcClaimsA03,
+                                        relatedQuestions: []
+                                    )
+                                ],
                                 allQuestions: commonQuestions
                             ),
                             .init(
-                                title: "My insurance",
-                                commonQuestions: commonQuestions,
+                                title: L10n.hcCoverageTitle,
+                                commonQuestions: [
+                                    .init(
+                                        question: L10n.hcCoverageQ01,
+                                        answer: L10n.hcCoverageA01,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ02,
+                                        answer: L10n.hcCoverageA02,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ03,
+                                        answer: L10n.hcCoverageA03,
+                                        relatedQuestions: []
+                                    )
+                                ],
                                 allQuestions: commonQuestions
                             ),
                             .init(
-                                title: "Co-insured",
-                                commonQuestions: commonQuestions,
+                                title: L10n.hcInsurancesTitle,
+                                commonQuestions: [
+                                    .init(
+                                        question: L10n.hcInsuranceQ01,
+                                        answer: L10n.hcInsuranceA01,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ02,
+                                        answer: L10n.hcInsuranceA02,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ03,
+                                        answer: L10n.hcInsuranceA03,
+                                        relatedQuestions: []
+                                    )
+                                ],
                                 allQuestions: commonQuestions
                             ),
                             .init(
-                                title: "FirstVet",
-                                commonQuestions: commonQuestions,
+                                title: L10n.hcGeneralTitle,
+                                commonQuestions: [],
                                 allQuestions: commonQuestions
-                            ),
-                            .init(
-                                title: "Campaigns",
-                                commonQuestions: commonQuestions,
-                                allQuestions: commonQuestions
-                            ),
-
+                            )
                         ],
                         commonQuestions: commonQuestions
                     )
