@@ -61,15 +61,22 @@ extension AppJourney {
 
     static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
         return HostingJourney(
-            rootView: RetryView(
+            rootView: GenericErrorView(
                 title: nil,
-                subtitle: L10n.chatDisabledMessage,
-                retryTitle: L10n.generalCloseButton,
-                action: {
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.closeChat)
-                }
-            ),
+                description: L10n.chatDisabledMessage,
+                icon: .triangle,
+                buttons: .init(
+                    actionButton:
+                            .init(
+                                buttonTitle: L10n.generalCloseButton,
+                                buttonAction: {
+                                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                                    store.send(.closeChat)
+                                }),
+                    dismissButton: nil
+                    )
+            )
+            .hWithoutTitle,
             style: style,
             options: [.embedInNavigationController, .preffersLargerNavigationBar]
         )

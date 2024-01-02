@@ -144,7 +144,31 @@ public class EditCoInsuredJourney {
     static func openGenericErrorScreen() -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
-            rootView: CoInsuredErrorScreen(),
+            rootView: GenericErrorView(
+                description: L10n.coinsuredErrorText,
+                icon: .circle,
+                buttons: .init(
+                    actionButton:
+                        .init(
+                            buttonTitle: L10n.openChat,
+                            buttonAction: {
+                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    store.send(.goToFreeTextChat)
+                                }
+                            }
+                        ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.generalCancelButton,
+                            buttonAction: {
+                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                            }
+                        )
+                )
+            ),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
@@ -156,7 +180,31 @@ public class EditCoInsuredJourney {
     public static func openMissingCoInsuredAlert(config: InsuredPeopleConfig) -> some JourneyPresentation {
         HostingJourney(
             EditCoInsuredStore.self,
-            rootView: CoInsuredMissingAlertView(config: config),
+            rootView: GenericErrorView(
+                title: config.contractDisplayName,
+                description: L10n.contractCoinsuredMissingInformationLabel,
+                buttons: .init(
+                    actionButtonAttachedToBottom:
+                        .init(
+                            buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                            buttonAction: {
+                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                                store.send(.openEditCoInsured(config: config, fromInfoCard: true))
+                            }
+                        ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.contractCoinsuredMissingLater,
+                            buttonAction: {
+                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                            }
+                        )
+                )
+            )
+            .hExtraBottomPadding,
+
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -191,11 +239,19 @@ public class EditCoInsuredJourney {
                     if let selectedConfig = selectedConfigs.first {
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                         if let object = selectedConfig.0 {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleNewScreen(config: object)
+                            if object.numberOfMissingCoInsuredWithoutTermination > 0 {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleNewScreen(config: object)
+                                    )
                                 )
-                            )
+                            } else {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleScreen(config: object)
+                                    )
+                                )
+                            }
                         }
                     }
                 },
@@ -208,7 +264,11 @@ public class EditCoInsuredJourney {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            getScreen(for: action)
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
     }
 
@@ -251,7 +311,11 @@ public class EditCoInsuredJourney {
         if configs.count > 1 {
             openSelectInsurance(configs: configs)
         } else if let config = configs.first {
-            openNewInsuredPeopleScreen(config: config)
+            if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                openNewInsuredPeopleScreen(config: config)
+            } else {
+                openInsuredPeopleScreen(with: config)
+            }
         }
     }
 

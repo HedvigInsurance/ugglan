@@ -43,6 +43,8 @@ struct OtherService: View {
                                             //TODO: ERROR
                                         }
                                     }
+                                } else if claim.id == CommonClaim.helpCenter.id {
+                                    store.send(.openHelpCenter)
                                 } else if claim.layout.titleAndBulletPoint == nil {
                                     store.send(.openEmergency)
                                 } else {
@@ -101,6 +103,8 @@ extension OtherService {
             } else if case .openTravelInsurance = action {
                 DismissJourney()
             } else if case .openEmergency = action {
+                DismissJourney()
+            } else if case .openHelpCenter = action {
                 DismissJourney()
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if fromOtherService {
