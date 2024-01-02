@@ -50,7 +50,6 @@ struct AttachFileAsset: Reusable {
                         hideOverlayControl.snp.makeConstraints { make in
                             make.width.height.centerX.centerY.equalToSuperview()
                         }
-
                         let button = Button(
                             title: L10n.chatUploadPresend,
                             type: .normal(
