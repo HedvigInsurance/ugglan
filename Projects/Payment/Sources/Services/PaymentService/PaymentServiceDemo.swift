@@ -6,7 +6,13 @@ public class hPaymentServiceDemo: hPaymentService {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return .init(
             id: "",
-            payment: .init(gross: .sek(460), net: .sek(400), date: "2023-11-30"),
+            payment: .init(
+                gross: .sek(460),
+                net: .sek(400),
+                carriedAdjustment: nil,
+                settlementAdjustment: nil,
+                date: "2023-11-30"
+            ),
             status: .upcoming,
             contracts: [
                 .init(
@@ -136,7 +142,13 @@ public class hPaymentServiceDemo: hPaymentService {
                     id: "id1",
                     paymentData: .init(
                         id: "idI1",
-                        payment: .init(gross: .sek(20), net: .sek(18), date: "2023-11-11"),
+                        payment: .init(
+                            gross: .sek(20),
+                            net: .sek(18),
+                            carriedAdjustment: nil,
+                            settlementAdjustment: nil,
+                            date: "2023-11-11"
+                        ),
                         status: .success,
                         contracts: [],
                         discounts: [],
@@ -154,7 +166,13 @@ public class hPaymentServiceDemo: hPaymentService {
                     id: "id1",
                     paymentData: .init(
                         id: "idI1",
-                        payment: .init(gross: .sek(20), net: .sek(18), date: "2023-11-11"),
+                        payment: .init(
+                            gross: .sek(20),
+                            net: .sek(18),
+                            carriedAdjustment: nil,
+                            settlementAdjustment: nil,
+                            date: "2023-11-11"
+                        ),
                         status: .addedtoFuture(date: "2023-12-12"),
                         contracts: [],
                         discounts: [],

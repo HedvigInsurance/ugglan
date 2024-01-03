@@ -63,5 +63,10 @@ fragment MemberChargeFragment on MemberCharge{
         ...MoneyFragment
       }
       status
-      
+      carriedAdjustment {
+        ...MoneyFragment
+      }
+      settlementAdjustment {
+        ...MoneyFragment
+      }
 }

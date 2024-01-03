@@ -22,11 +22,18 @@ public struct ClaimFilesView: View {
                 }
                 .presentableStoreLensAnimation(.default)
             } else if let error = vm.error {
-                RetryView(subtitle: error) {
-                    withAnimation {
-                        vm.error = nil
-                    }
-                }
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(
+                            buttonAction: {
+                                withAnimation {
+                                    vm.error = nil
+                                }
+                            }),
+                        dismissButton: nil)
+                )
+                .hWithoutTitle
             } else {
                 hForm {
                     hSection {
@@ -300,7 +307,7 @@ struct FilePicker {
         let alert = UIAlertController(
             title: nil,
             message: nil,
-            preferredStyle: .actionSheet
+            preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert
         )
 
         alert.addAction(
