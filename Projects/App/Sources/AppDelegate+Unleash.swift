@@ -50,8 +50,7 @@ extension AppDelegate {
                 guard let errorResponse else {
                     return
                 }
-                log.info("Failed loadingunleash experiments")
-                ApplicationContext.shared.hasLoadedExperiments = false
+                log.info("Failed loading unleash experiments")
             }
         )
     }
@@ -59,7 +58,6 @@ extension AppDelegate {
     func handleReady() {
         log.info("Successfully loaded unleash experiments")
         DefaultStyling.installCustom()
-        ApplicationContext.shared.hasLoadedExperiments = true
     }
 
     func handleUpdate() {

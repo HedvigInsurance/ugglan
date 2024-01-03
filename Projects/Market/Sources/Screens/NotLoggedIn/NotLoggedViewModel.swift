@@ -53,7 +53,7 @@ public class NotLoggedViewModel: ObservableObject {
     }
 
     func onLoginPressed() {
-        self.store.send(.loginButtonTapped)
+        store.send(.loginButtonTapped)
     }
 
     func onOnBoardPressed() {

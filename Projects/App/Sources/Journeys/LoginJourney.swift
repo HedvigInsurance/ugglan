@@ -3,6 +3,7 @@ import Authentication
 import Flow
 import Form
 import Foundation
+import Market
 import Presentation
 import UIKit
 import hCore
@@ -83,20 +84,14 @@ extension AppJourney {
     }
 
     @JourneyBuilder static var login: some JourneyPresentation {
+        let marketStore: MarketStore = globalPresentableStoreContainer.get()
         GroupJourney {
-            var variant = ApplicationContext.shared.unleashClient.getVariant(name: "login_method")
-            if variant.enabled {
-                switch variant.name {
-                case "bank_id_sweden":
-                    bankIDSweden
-                case "bank_id_norway":
-                    ZignsecAuthJourney.login {
-                        loginCompleted
-                    }
-                case "otp":
-                    otp()
-                default:
-                    DismissJourney()
+            switch marketStore.state.market {
+            case .sweden:
+                bankIDSweden
+            case .norway, .denmark:
+                ZignsecAuthJourney.login {
+                    loginCompleted
                 }
             }
         }
