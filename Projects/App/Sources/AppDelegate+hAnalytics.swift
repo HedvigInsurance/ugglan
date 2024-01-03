@@ -25,7 +25,6 @@ extension AppDelegate {
     func setupHAnalyticsExperiments() {
         hAnalyticsExperiment.retryingLoad { success in
             DefaultStyling.installCustom()
-            ApplicationContext.shared.hasLoadedExperiments = success
         }
     }
 }

@@ -18,7 +18,6 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var title: String = L10n.MarketLanguageScreen.title
     @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
-    @Published var loadingExperiments = false
     var onLoad: () -> Void = {}
     var cancellables = Set<AnyCancellable>()
     let bag = DisposeBag()
@@ -55,17 +54,7 @@ public class NotLoggedViewModel: ObservableObject {
     }
 
     func onLoginPressed() {
-        withAnimation {
-            loadingExperiments = true
-        }
-        hAnalyticsExperiment.retryingLoad { [weak self] success in
-            withAnimation {
-                self?.loadingExperiments = false
-            }
-            if success {
-                self?.store.send(.loginButtonTapped)
-            }
-        }
+        store.send(.loginButtonTapped)
     }
 
     func onOnBoardPressed() {
