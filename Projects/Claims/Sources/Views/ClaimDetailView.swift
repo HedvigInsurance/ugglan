@@ -86,11 +86,18 @@ public struct ClaimDetailView: View {
                     .padding(.top, 16)
                     if let fetchError = vm.fetchFilesError {
                         hSection {
-                            RetryView(subtitle: fetchError) {
-                                Task {
-                                    await vm.fetchFiles()
-                                }
-                            }
+                            GenericErrorView(
+                                description: fetchError,
+                                buttons: .init(
+                                    actionButton: .init(
+                                        buttonAction: {
+                                            Task {
+                                                await vm.fetchFiles()
+                                            }
+                                        }),
+                                    dismissButton: nil)
+                            )
+                            .hWithoutTitle
                         }
                         .sectionContainerStyle(.transparent)
                     } else {

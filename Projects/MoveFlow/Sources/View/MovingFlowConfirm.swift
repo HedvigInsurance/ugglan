@@ -26,14 +26,10 @@ struct MovingFlowConfirm: View {
                 ) { movingFlowModel in
                     if let movingFlowModel {
                         VStack(spacing: 16) {
-                            VStack(spacing: 16) {
+                            VStack(spacing: 8) {
                                 ForEach(movingFlowModel.quotes, id: \.id) { quote in
                                     contractInfoView(for: quote)
                                 }
-                                if movingFlowModel.quotes.count > 1 {
-                                    noticeComponent
-                                }
-                                totalAmountComponent
                             }
                             .background(
                                 GeometryReader { proxy in
@@ -63,7 +59,22 @@ struct MovingFlowConfirm: View {
                 }
             }
             .hFormAttachToBottom {
-                buttonComponent(proxy: proxy)
+                PresentableStoreLens(
+                    MoveFlowStore.self,
+                    getter: { state in
+                        state.movingFlowModel
+                    }
+                ) { movingFlowModel in
+                    VStack(spacing: 16) {
+                        if let movingFlowModel {
+                            if movingFlowModel.quotes.count > 1 {
+                                noticeComponent
+                            }
+                        }
+                        totalAmountComponent
+                        buttonComponent(proxy: proxy)
+                    }
+                }
             }
         }
         .background(

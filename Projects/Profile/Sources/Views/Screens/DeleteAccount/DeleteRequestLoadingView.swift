@@ -52,16 +52,20 @@ struct DeleteRequestLoadingView: View {
         hSection {
             VStack {
                 Spacer()
-                RetryView(
-                    subtitle:
-                        L10n.DeleteAccount.deleteNotAvailable,
-                    retryTitle: L10n.openChat
-                ) {
-                    store.send(.makeTabActive(deeplink: .home))
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        store.send(.dismissScreen(openChatAfter: true))
-                    }
-                }
+                GenericErrorView(
+                    description: L10n.DeleteAccount.deleteNotAvailable,
+                    buttons: .init(
+                        actionButton: .init(
+                            buttonTitle: L10n.openChat,
+                            buttonAction: {
+                                store.send(.makeTabActive(deeplink: .home))
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    store.send(.dismissScreen(openChatAfter: true))
+                                }
+                            }),
+                        dismissButton: nil)
+                )
+                .hWithoutTitle
                 Spacer()
                 hSection {
                     hButton.LargeButton(type: .ghost) {

@@ -93,7 +93,7 @@ public class TerminationFlowJourney {
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: UpdateAppScreenOld(
+            rootView: UpdateAppScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
