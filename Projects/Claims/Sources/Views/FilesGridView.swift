@@ -151,9 +151,9 @@ struct FileView: View {
             if file.mimeType.isImage {
                 switch file.source {
                 case let .localFile(_, thumbnailUrl):
-                    imageFrom(url: thumbnailUrl!)
+                    imageFromLocalFile(url: thumbnailUrl!)
                 case .url(let url):
-                    imageFrom(url: url)
+                    imageFromRemote(url: url)
                 }
             } else {
                 GeometryReader { geometry in
@@ -188,7 +188,7 @@ struct FileView: View {
         }
     }
 
-    private func imageFrom(url: URL) -> some View {
+    private func imageFromLocalFile(url: URL) -> some View {
         Rectangle().fill(.clear)
             .aspectRatio(1, contentMode: .fill)
             .background(
@@ -199,6 +199,23 @@ struct FileView: View {
                     .aspectRatio(
                         contentMode: .fill
                     )
+            )
+    }
+
+    private func imageFromRemote(url: URL) -> some View {
+        Rectangle().fill(.clear)
+            .aspectRatio(1, contentMode: .fill)
+            .background(
+                KFImage(
+                    source: Kingfisher.Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id))
+                )
+                .fade(duration: 0.25)
+                .targetCache(ImageCache.default)
+                .setProcessor(processor)
+                .resizable()
+                .aspectRatio(
+                    contentMode: .fill
+                )
             )
     }
 }
