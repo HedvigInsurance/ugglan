@@ -4,7 +4,6 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCoreUI
 
 struct ExperimentsLoader: Presentable {
@@ -16,10 +15,7 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                hAnalyticsExperiment.retryingLoad { _ in
-                    callback(())
-                }
-
+                callback(())
                 return bag
             }
         )

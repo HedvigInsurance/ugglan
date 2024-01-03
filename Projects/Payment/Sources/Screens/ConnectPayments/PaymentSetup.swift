@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hGraphQL
 
@@ -27,14 +26,22 @@ public struct PaymentSetup {
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, Bool>>) {
-        switch hAnalyticsExperiment.paymentType {
-        case .trustly:
-            let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
-            return (viewController, result.map { .left($0) })
-        case .adyen:
-            let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
-            return (viewController, result.map { .left($0) })
+        var variant = ApplicationContext.shared.unleashClient.getVariant(name: "payment_type")
+        if variant.enabled {
+            switch variant.name {
+            case "trustly":
+                let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
+                return (viewController, result.map { .left($0) })
+            case "adyen":
+                let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
+                return (viewController, result.map { .left($0) })
+            default:
+                let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
+                return (viewController, result.map { .left($0) })
+            }
         }
+        let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
+        return (viewController, result.map { .left($0) })
     }
 }
 

@@ -1,6 +1,5 @@
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -57,7 +56,7 @@ struct EditContract: View {
                             store.send(.dismissEditInfo(type: selectedType))
                             switch selectedType {
                             case .coInsured:
-                                if hAnalyticsExperiment.editCoinsured {
+                                if ApplicationContext.shared.unleashClient.isEnabled(name: "edit_coinsured") {
                                     if let contract {
                                         store.send(
                                             .openEditCoInsured(
@@ -78,12 +77,11 @@ struct EditContract: View {
                             hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .standard)
                         }
                         .disabled(selectedType == nil)
-                        
-                        
+
                         hButton.LargeButton(type: .ghost) {
                             store.send(.dismissEditInfo(type: nil))
                         } content: {
-                           hText(L10n.generalCancelButton)
+                            hText(L10n.generalCancelButton)
                         }
                     }
                 }
@@ -96,7 +94,7 @@ struct EditContract: View {
 
     @ViewBuilder
     var infoView: some View {
-        if selectedType == .coInsured && !hAnalyticsExperiment.editCoinsured {
+        if selectedType == .coInsured && !ApplicationContext.shared.unleashClient.isEnabled(name: "edit_coinsured") {
             hSection {
                 InfoCard(
                     text: L10n.InsurancesTab.contactUsToEditCoInsured,

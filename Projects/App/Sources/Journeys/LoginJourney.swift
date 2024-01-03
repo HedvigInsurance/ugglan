@@ -5,7 +5,6 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -56,7 +55,10 @@ extension AppJourney {
                                 buttonAction: {
                                     let store: AuthenticationStore = globalPresentableStoreContainer.get()
                                     store.send(.cancel)
-                                })))
+                                }
+                            )
+                        )
+                    )
                 ) {
                     action in
                     if case .cancel = action {
@@ -82,15 +84,20 @@ extension AppJourney {
 
     @JourneyBuilder static var login: some JourneyPresentation {
         GroupJourney {
-            switch hAnalyticsExperiment.loginMethod {
-            case .bankIdSweden:
-                bankIDSweden
-            case .bankIdNorway, .nemId:
-                ZignsecAuthJourney.login {
-                    loginCompleted
+            var variant = ApplicationContext.shared.unleashClient.getVariant(name: "login_method")
+            if variant.enabled {
+                switch variant.name {
+                case "bank_id_sweden":
+                    bankIDSweden
+                case "bank_id_norway":
+                    ZignsecAuthJourney.login {
+                        loginCompleted
+                    }
+                case "otp":
+                    otp()
+                default:
+                    DismissJourney()
                 }
-            case .otp:
-                otp()
             }
         }
         .onDismiss {

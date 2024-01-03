@@ -5,7 +5,6 @@ import Foundation
 import Kingfisher
 import SafariServices
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -123,10 +122,9 @@ extension Message: Reusable {
         )
 
         let extraPadding: CGFloat = {
-            if hAnalyticsExperiment.useHedvigLettersFont {
+            if ApplicationContext.shared.unleashClient.isEnabled(name: "use_hedvig_letters_font") {
                 return 25
             }
-
             return 20
         }()
 

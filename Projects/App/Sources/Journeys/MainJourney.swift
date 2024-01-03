@@ -4,7 +4,6 @@ import Foundation
 import Market
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -12,7 +11,7 @@ import hGraphQL
 extension AppJourney {
     static var main: some JourneyPresentation {
         GroupJourney {
-            if hAnalyticsExperiment.updateNecessary {
+            if ApplicationContext.shared.unleashClient.isEnabled(name: "update_necessary") {
                 AppJourney.updateApp.onPresent {
                     Launch.shared.completeAnimationCallbacker.callAll()
                 }

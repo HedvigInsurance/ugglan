@@ -3,7 +3,6 @@ import Flow
 import Kingfisher
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -95,7 +94,8 @@ public struct ClaimDetailView: View {
                                                 await vm.fetchFiles()
                                             }
                                         }),
-                                    dismissButton: nil)
+                                    dismissButton: nil
+                                )
                             )
                             .hWithoutTitle
                         }

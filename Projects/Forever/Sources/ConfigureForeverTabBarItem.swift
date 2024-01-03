@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -16,7 +15,7 @@ extension JourneyPresentation {
                 selectedImage: hCoreUIAssets.foreverTabActive.image
             )
         ) { state in
-            hAnalyticsExperiment.foreverFebruaryCampaign && !state.hasSeenFebruaryCampaign
+            !state.hasSeenFebruaryCampaign
         }
     }
 }

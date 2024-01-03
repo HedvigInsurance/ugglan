@@ -3,7 +3,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -11,7 +10,7 @@ import hGraphQL
 extension AppJourney {
     @JourneyBuilder
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        if hAnalyticsExperiment.disableChat {
+        if ApplicationContext.shared.unleashClient.isEnabled(name: "disable_chat") {
             AppJourney.disableChatScreen(style: style)
         } else {
             let chat = Chat()
@@ -37,7 +36,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
-        if hAnalyticsExperiment.disableChat {
+        if ApplicationContext.shared.unleashClient.isEnabled(name: "disable_chat") {
             AppJourney.disableChatScreen(style: style)
         } else {
             let chat = Chat()
@@ -67,14 +66,15 @@ extension AppJourney {
                 icon: .triangle,
                 buttons: .init(
                     actionButton:
-                            .init(
-                                buttonTitle: L10n.generalCloseButton,
-                                buttonAction: {
-                                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                                    store.send(.closeChat)
-                                }),
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                store.send(.closeChat)
+                            }
+                        ),
                     dismissButton: nil
-                    )
+                )
             )
             .hWithoutTitle,
             style: style,

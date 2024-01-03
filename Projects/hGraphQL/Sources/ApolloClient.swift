@@ -5,7 +5,6 @@ import Flow
 import Foundation
 import UIKit
 import authlib
-import hAnalytics
 
 public struct hApollo {
     public let octopus: hOctopus

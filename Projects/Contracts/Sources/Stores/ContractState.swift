@@ -3,7 +3,6 @@ import EditCoInsured
 import Flow
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hGraphQL
 
@@ -68,6 +67,6 @@ extension ContractState {
 
     public var isTravelInsuranceIncluded: Bool {
         return activeContracts.compactMap({ $0 }).contains(where: { $0.hasTravelInsurance })
-            && hAnalyticsExperiment.travelInsurance
+            && ApplicationContext.shared.unleashClient.isEnabled(name: "travel_insurance")
     }
 }

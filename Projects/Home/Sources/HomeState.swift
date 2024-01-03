@@ -5,7 +5,6 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -282,7 +281,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
         allCommonClaims.append(.chat)
-        if hAnalyticsExperiment.movingFlow {
+        if ApplicationContext.shared.unleashClient.isEnabled(name: "moving_flow") {
             allCommonClaims.append(.moving)
         }
         if state.shouldShowTravelInsurance {

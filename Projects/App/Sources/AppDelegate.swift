@@ -15,7 +15,6 @@ import Profile
 import SwiftUI
 import UIKit
 import UserNotifications
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -278,7 +277,7 @@ import hGraphQL
 
         ApolloClient.migrateOldTokenIfNeeded()
             .onValue { _ in
-                self.setupHAnalyticsExperiments()
+                self.setupUnleash()
 
                 self.bag += ApplicationContext.shared.$hasLoadedExperiments
                     .atOnce()
@@ -298,7 +297,7 @@ import hGraphQL
                                     Alert.Action(
                                         title: L10n.generalRetry,
                                         action: {
-                                            self.setupHAnalyticsExperiments()
+                                            self.setupUnleash()
                                         }
                                     )
                                 ]

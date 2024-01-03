@@ -6,7 +6,6 @@ import Presentation
 import Profile
 import SwiftUI
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 

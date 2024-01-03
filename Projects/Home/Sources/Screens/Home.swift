@@ -9,7 +9,6 @@ import Payment
 import Presentation
 import SafariServices
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -133,7 +132,7 @@ extension HomeView {
 
     @ViewBuilder
     private var openOtherServices: some View {
-        if hAnalyticsExperiment.homeCommonClaim {
+        if ApplicationContext.shared.unleashClient.isEnabled(name: "home_common_claim") {
             hButton.LargeButton(type: .ghost) {
                 store.send(.openOtherServices)
             } content: {

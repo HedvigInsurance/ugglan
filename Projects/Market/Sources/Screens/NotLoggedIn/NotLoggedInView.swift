@@ -1,5 +1,4 @@
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -46,7 +45,6 @@ public struct NotLoggedInView: View {
                     } content: {
                         hText(L10n.bankidLoginTitle)
                     }
-                    .hButtonIsLoading(vm.loadingExperiments)
 
                     hButton.LargeButton(type: .ghost) {
                         vm.onOnBoardPressed()

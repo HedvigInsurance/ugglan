@@ -43,7 +43,5 @@ extension AppDelegate {
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
-
-        setupHAnalytics()
     }
 }

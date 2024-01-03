@@ -13,7 +13,6 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -156,7 +155,7 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if hAnalyticsExperiment.forever {
+                    if ApplicationContext.shared.unleashClient.isEnabled(name: "forever") {
                         foreverTab
                     }
                 },
