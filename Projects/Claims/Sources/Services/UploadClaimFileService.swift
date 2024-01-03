@@ -1,5 +1,7 @@
 import Apollo
 import Foundation
+import Kingfisher
+import UIKit
 import hCore
 import hGraphQL
 
@@ -33,10 +35,29 @@ extension NetworkClient: hClaimFileUploadService {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
-                    if let data: [ClaimFileUploadResponse] = try self?
+                    if let uploadedFiles: [ClaimFileUploadResponse] = try self?
                         .handleResponse(data: data, response: response, error: error)
                     {
-                        inCont.resume(returning: data)
+                        for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
+                            let localFileSource = files[file.offset].source
+                            switch localFileSource {
+                            case let .localFile(url, _):
+                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                    let data = try? Data(contentsOf: url), let image = UIImage(data: data)
+                                {
+                                    let processor = DownsamplingImageProcessor(
+                                        size: CGSize(width: 300, height: 300)
+                                    )
+                                    var options = KingfisherParsedOptionsInfo.init(nil)
+                                    options.processor = processor
+                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                }
+                            case .url(_):
+                                break
+                            }
+                        }
+
+                        inCont.resume(returning: uploadedFiles)
                     }
                 } catch let error {
                     inCont.resume(throwing: error)
@@ -58,6 +79,9 @@ public struct ClaimFileUploadResponse: Codable {
 
 struct FileUpload: Codable {
     let fileId: String
+    let name: String
+    let mimeType: String
+    let url: String
 }
 
 enum ClaimsRequest {

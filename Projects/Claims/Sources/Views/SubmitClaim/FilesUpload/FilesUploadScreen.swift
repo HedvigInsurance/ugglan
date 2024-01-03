@@ -15,44 +15,20 @@ struct FilesUploadScreen: View {
 
     var body: some View {
         Group {
-            if let error = vm.error {
-                RetryView(subtitle: error) {
-                    withAnimation {
-                        vm.error = nil
-                    }
-                }
-            } else if vm.hasFiles {
+            if vm.hasFiles {
                 hForm {
-                    if vm.isLoading, vm.hasFilesToUpload {
-                        hSection {
-                            VStack(spacing: 20) {
-                                Spacer()
-                                hText(L10n.fileUploadIsUploading)
-                                ProgressView(value: vm.progress)
-                                    .tint(hTextColor.primary)
-                                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                                Spacer()
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-                    } else {
-                        hSection {
-                            FilesGridView(vm: vm.fileGridViewModel)
-                        }
-                        .withHeader {
-                            HStack {
-                                hText("Uploaded files")
-                                Spacer()
-                                InfoViewHolder(title: "", description: "")
-                            }
-                        }
-                        .padding(.vertical, 16)
+                    hSection {
+                        FilesGridView(vm: vm.fileGridViewModel)
                     }
-
+                    .padding(.vertical, 16)
                 }
+                .hDisableScroll
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 8) {
+                            if let error = vm.error {
+                                InfoCard(text: error, type: .attention)
+                            }
                             hButton.LargeButton(type: .secondary) {
                                 showFilePickerAlert()
                             } content: {
@@ -60,21 +36,41 @@ struct FilesUploadScreen: View {
 
                             }
                             .disabled(vm.isLoading)
-
-                            hButton.LargeButton(type: .primary) {
-                                Task {
-                                    await vm.uploadFiles()
+                            ZStack(alignment: .leading) {
+                                hButton.LargeButton(type: .primary) {
+                                    Task {
+                                        await vm.uploadFiles()
+                                    }
+                                } content: {
+                                    hText(L10n.generalContinueButton)
                                 }
-                            } content: {
-                                hText(L10n.generalContinueButton)
+                                .hButtonIsLoading(vm.isLoading)
+                                .disabled(vm.fileGridViewModel.files.isEmpty)
+                                if vm.isLoading {
+                                    GeometryReader { geo in
+                                        Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
+                                            .opacity(vm.isLoading ? 1 : 0)
+                                            .frame(width: vm.progress * geo.size.width)
+                                    }
+                                }
+
                             }
-                            .hButtonIsLoading(vm.isLoading)
-                            .disabled(vm.fileGridViewModel.files.isEmpty)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .clipShape(Squircle.default())
+                            .hShadow()
+
                         }
                     }
                     .padding(.vertical, 16)
                 }
                 .sectionContainerStyle(.transparent)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        VStack {
+                            hText(L10n.ClaimStatusDetail.uploadedFiles)
+                        }
+                    }
+                }
 
             } else {
                 hForm {}
@@ -82,7 +78,11 @@ struct FilesUploadScreen: View {
                     .hFormAttachToBottom {
                         hSection {
                             VStack(spacing: 16) {
-                                InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
+                                if let error = vm.error {
+                                    InfoCard(text: error, type: .attention)
+                                } else {
+                                    InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
+                                }
                                 VStack(spacing: 8) {
                                     hButton.LargeButton(type: .primary) {
                                         showFilePickerAlert()
@@ -161,18 +161,27 @@ private class FilesUploadViewModel: ObservableObject {
     @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
+    var uploadProgress: Double = 0
+    var timerProgress: Double = 0
+    let uploadDelayDuration: UInt64 = 1_500_000_000
 
     private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
     @Inject var claimFileUploadService: hClaimFileUploadService
     @ObservedObject var fileGridViewModel: FileGridViewModel
     @PresentableStore var store: SubmitClaimStore
-
+    var delayTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model
         let files = model.uploads.compactMap({
-            File(id: $0.fileId, size: 0, mimeType: .JPEG, name: "NAME", source: .url(url: URL(string: $0.signedUrl)!))
+            File(
+                id: $0.fileId,
+                size: 0,
+                mimeType: MimeType.findBy(mimeType: $0.mimeType),
+                name: $0.name,
+                source: .url(url: URL(string: $0.signedUrl)!)
+            )
         })
         fileGridViewModel = .init(
             files: files,
@@ -252,6 +261,7 @@ private class FilesUploadViewModel: ObservableObject {
 
     func uploadFiles() async {
         withAnimation {
+            error = nil
             isLoading = true
         }
         do {
@@ -266,21 +276,67 @@ private class FilesUploadViewModel: ObservableObject {
             hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
-                let files = try await claimFileUploadService.upload(
+                let startDate = Date()
+                async let sleepTask: () = Task.sleep(nanoseconds: uploadDelayDuration)
+                async let filesUploadTask = claimFileUploadService.upload(
                     endPoint: model.targetUploadUrl,
                     files: filteredFiles
-                ) {
-                    [weak self] progress in
-                    DispatchQueue.main.async {
+                ) { progress in
+                    DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                        self.uploadProgress = progress
                         withAnimation {
-                            self?.progress = progress
+                            self.progress = min(self.uploadProgress, self.timerProgress)
                         }
                     }
                 }
+                delayTimer = Timer.publish(every: 0.2, on: .main, in: .common)
+                    .autoconnect()
+                    .map({ (output) in
+                        return output.timeIntervalSince(startDate)
+                    })
+                    .eraseToAnyPublisher().subscribe(on: RunLoop.main, options: nil)
+                    .sink { _ in
+                    } receiveValue: { [weak self] timeInterval in
+                        guard let self = self else { return }
+                        self.timerProgress = min(1, timeInterval / 2)
+                        withAnimation {
+                            self.progress = min(self.uploadProgress, self.timerProgress)
+                        }
+                    }
+
+                let data = try await [sleepTask, filesUploadTask] as [Any]
+                delayTimer = nil
+                withAnimation {
+                    self.progress = 1
+                }
+                let files = data[1] as! [ClaimFileUploadResponse]
                 let uploadedFiles = files.compactMap({ $0.file?.fileId })
+                let filesToReplaceLocalFiles =
+                    files
+                    .compactMap({ $0.file })
+                    .compactMap(
+                        {
+                            File(
+                                id: $0.fileId,
+                                size: 0,
+                                mimeType: MimeType.findBy(mimeType: $0.mimeType),
+                                name: $0.name,
+                                source: .url(url: URL(string: $0.url)!)
+                            )
+                        }
+                    )
+                withAnimation {
+                    if let index = fileGridViewModel.files.firstIndex(where: {
+                        if case .localFile(_, _) = $0.source { return true } else { return false }
+                    }) {
+                        fileGridViewModel.files.replaceSubrange(
+                            index...index + filteredFiles.count - 1,
+                            with: filesToReplaceLocalFiles
+                        )
+                    }
+                }
                 store.send(.submitFileUpload(ids: alreadyUploadedFiles + uploadedFiles))
             } else {
-
                 store.send(.submitFileUpload(ids: alreadyUploadedFiles))
             }
         } catch let ex {

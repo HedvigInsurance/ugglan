@@ -106,6 +106,8 @@ fragment FlowClaimFileUploadStepFragment on FlowClaimFileUploadStep {
     uploads {
         fileId
         signedUrl
+        name
+        mimeType
     }
 }
 
