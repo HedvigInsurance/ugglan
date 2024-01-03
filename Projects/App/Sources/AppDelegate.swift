@@ -275,49 +275,11 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-
-        ApolloClient.migrateOldTokenIfNeeded()
-            .onValue { _ in
-                self.setupHAnalyticsExperiments()
-
-                self.bag += ApplicationContext.shared.$hasLoadedExperiments
-                    .atOnce()
-                    .onValue { isLoaded in
-                        guard let isLoaded else { return }
-                        if isLoaded {
-                            self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                                .atValue { _ in
-                                    Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-                                    self.bag += self.window.present(AppJourney.main)
-                                }
-                        } else {
-                            let alert = Alert(
-                                title: L10n.somethingWentWrong,
-                                message: L10n.General.errorBody,
-                                actions: [
-                                    Alert.Action(
-                                        title: L10n.generalRetry,
-                                        action: {
-                                            self.setupHAnalyticsExperiments()
-                                        }
-                                    )
-                                ]
-                            )
-
-                            self.bag += self.window.present(
-                                ActivityIndicator(style: .large, color: hTextColor.primary).disposableHostingJourney
-                                    .onPresent({
-                                        Journey(alert)
-                                            .onPresent {
-                                                Launch.shared.completeAnimationCallbacker.callAll()
-                                            }
-                                    })
-                            )
-
-                        }
-                    }
+        bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+            .atValue { _ in
+                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+                self.bag += self.window.present(AppJourney.main)
             }
-
         bag += ApplicationContext.shared.$isDemoMode.onValue { value in
             let store: UgglanStore = globalPresentableStoreContainer.get()
             TokenRefresher.shared.isDemoMode = value

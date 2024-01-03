@@ -55,17 +55,7 @@ public class NotLoggedViewModel: ObservableObject {
     }
 
     func onLoginPressed() {
-        withAnimation {
-            loadingExperiments = true
-        }
-        hAnalyticsExperiment.retryingLoad { [weak self] success in
-            withAnimation {
-                self?.loadingExperiments = false
-            }
-            if success {
-                self?.store.send(.loginButtonTapped)
-            }
-        }
+        store.send(.loginButtonTapped)
     }
 
     func onOnBoardPressed() {
