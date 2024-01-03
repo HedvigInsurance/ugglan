@@ -26,10 +26,11 @@ struct FilesGridView: View {
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
                     .contentShape(Rectangle())
+                    .opacity(vm.options.contains(.loading) ? 0.5 : 1)
                     if vm.options.contains(.delete) {
                         Button(
                             action: {
-                                vm.onDelete?(file)
+                                vm.delete(file)
                             },
                             label: {
                                 Circle().fill(Color.clear)
@@ -71,6 +72,35 @@ class FileGridViewModel: ObservableObject {
         self.files = files
         self.options = options
         self.onDelete = onDelete
+    }
+
+    func delete(_ file: File) {
+        let alert = UIAlertController(
+            title: L10n.General.areYouSure,
+            message: L10n.claimsFileUploadRemoveSubtitle,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.claimsFileUploadRemoveCancel,
+                style: .default,
+                handler: { _ in
+
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.claimsFileUploadRemoveConfirm,
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.onDelete?(file)
+                }
+            )
+        )
+
+        UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
     @MainActor
@@ -150,8 +180,8 @@ struct FileView: View {
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
-                case let .localFile(_, thumbnailUrl):
-                    imageFromLocalFile(url: thumbnailUrl!)
+                case let .localFile(imageUrl, thumbnailUrl):
+                    imageFromLocalFile(url: thumbnailUrl ?? imageUrl)
                 case .url(let url):
                     imageFromRemote(url: url)
                 }

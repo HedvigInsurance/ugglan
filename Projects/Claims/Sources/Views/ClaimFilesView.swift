@@ -36,7 +36,8 @@ public struct ClaimFilesView: View {
                                     vm.error = nil
                                 }
                             }),
-                        dismissButton: nil)
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
             } else {
@@ -256,6 +257,8 @@ class ClaimFilesViewModel: ObservableObject {
 
         static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
         static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {

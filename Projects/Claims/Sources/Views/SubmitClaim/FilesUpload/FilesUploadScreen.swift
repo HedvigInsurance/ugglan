@@ -234,7 +234,7 @@ private class FilesUploadViewModel: ObservableObject {
             .sink { _ in
 
             } receiveValue: { [weak self] isLoading in
-                self?.fileGridViewModel.update(options: isLoading ? [] : [.add, .delete])
+                self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
             }
             .store(in: &cancellables)
 
@@ -325,14 +325,18 @@ private class FilesUploadViewModel: ObservableObject {
                             )
                         }
                     )
-                withAnimation {
-                    if let index = fileGridViewModel.files.firstIndex(where: {
-                        if case .localFile(_, _) = $0.source { return true } else { return false }
-                    }) {
-                        fileGridViewModel.files.replaceSubrange(
-                            index...index + filteredFiles.count - 1,
-                            with: filesToReplaceLocalFiles
-                        )
+                //added delay so we don't have a flickering
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                    guard let self = self else { return }
+                    withAnimation {
+                        if let index = self.fileGridViewModel.files.firstIndex(where: {
+                            if case .localFile(_, _) = $0.source { return true } else { return false }
+                        }) {
+                            self.fileGridViewModel.files.replaceSubrange(
+                                index...index + filteredFiles.count - 1,
+                                with: filesToReplaceLocalFiles
+                            )
+                        }
                     }
                 }
                 store.send(.submitFileUpload(ids: alreadyUploadedFiles + uploadedFiles))
