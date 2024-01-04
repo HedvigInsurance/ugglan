@@ -1,8 +1,10 @@
 import Claims
+import Contracts
 import Flow
 import Form
 import Foundation
 import Presentation
+import Profile
 import UIKit
 import hCoreUI
 
@@ -15,7 +17,29 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                callback(())
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+
+                let contractSignal = contractStore.stateSignal
+                    .map({ $0.activeContracts })
+                    .distinct()
+
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                profileStore.send(.fetchMemberDetails)
+
+                let profileSignal = profileStore.stateSignal
+                    .map({ $0.memberDetails?.id != nil })
+                    .distinct()
+
+                bag += combineLatest(
+                    contractSignal,
+                    profileSignal
+                )
+                .onValue { value in
+                    UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                        callback(())
+                    })
+                }
                 return bag
             }
         )

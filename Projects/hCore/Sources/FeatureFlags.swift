@@ -7,6 +7,7 @@ public class FeatureFlags {
     private var unleashClient: UnleashClient?
     public init() {}
 
+    private var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     @Published public var isMovingFlowEnabled = false
     @Published public var isEditCoInsuredEnabled = false
     @Published public var isTravelInsuranceEnabled = false
@@ -24,7 +25,7 @@ public class FeatureFlags {
         case adyen
     }
 
-    public func setup(with context: [String: String]) {
+    public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         var clientKey: String {
             switch Environment.current {
             case .production:
@@ -47,6 +48,7 @@ public class FeatureFlags {
         startUnleash()
         unleashClient?.subscribe(name: "ready", callback: handleReady)
         unleashClient?.subscribe(name: "update", callback: handleUpdate)
+        loadingExperimentsSuccess = onComplete
     }
 
     public func updateContext(context: [String: String]) {
@@ -64,6 +66,7 @@ public class FeatureFlags {
                     guard let errorResponse else {
                         return
                     }
+                    self.loadingExperimentsSuccess(false)
                     log.info("Failed loading unleash experiments")
                 }
             )
@@ -71,6 +74,7 @@ public class FeatureFlags {
 
     private func handleReady() {
         setFeatureFlags()
+        loadingExperimentsSuccess(true)
         log.info("Successfully loaded unleash experiments")
     }
 

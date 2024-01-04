@@ -5,8 +5,8 @@ import Profile
 import hCore
 
 extension AppDelegate {
-    func setupFeatureFlags() {
-        FeatureFlags.shared.setup(with: getContext)
+    func setupFeatureFlags(onComplete: @escaping (_ success: Bool) -> Void) {
+        FeatureFlags.shared.setup(with: getContext, onComplete: onComplete)
         observeUpdate()
     }
 

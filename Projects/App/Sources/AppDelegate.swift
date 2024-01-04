@@ -274,13 +274,8 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
+        setupExperiments()
 
-        bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-            .atValue { _ in
-                self.setupFeatureFlags()
-                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-                self.bag += self.window.present(AppJourney.main)
-            }
         bag += ApplicationContext.shared.$isDemoMode.onValue { value in
             let store: UgglanStore = globalPresentableStoreContainer.get()
             TokenRefresher.shared.isDemoMode = value
@@ -293,6 +288,18 @@ import hGraphQL
         observeNotificationsSettings()
 
         return true
+    }
+
+    private func setupExperiments() {
+        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+            .atValue { _ in
+                self.setupFeatureFlags(onComplete: { success in
+                    DispatchQueue.main.async {
+                        Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+                        self.bag += self.window.present(AppJourney.main)
+                    }
+                })
+            }
     }
 }
 
