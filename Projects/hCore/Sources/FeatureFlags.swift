@@ -90,8 +90,6 @@ public class FeatureFlags {
         isChatDisabled = unleashClient.isEnabled(name: "disable_chat")
         isPaymentScreenEnabled = unleashClient.isEnabled(name: "payment_screen")
         isHedvigLettersFontEnabled = unleashClient.isEnabled(name: "use_hedvig_letters_font")
-        isCommonClaimEnabled = unleashClient.isEnabled(name: "home_common_claim")
-        isForeverEnabled = unleashClient.isEnabled(name: "forever")
 
         let paymentTypeName = unleashClient.getVariant(name: "payment_type").name
         if paymentTypeName == "adyen" {

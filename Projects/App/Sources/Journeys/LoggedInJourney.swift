@@ -155,7 +155,8 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if FeatureFlags.shared.isForeverEnabled {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
                         foreverTab
                     }
                 },

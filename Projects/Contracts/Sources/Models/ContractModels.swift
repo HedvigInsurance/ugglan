@@ -182,6 +182,13 @@ public struct Contract: Codable, Hashable, Equatable {
         return self.typeOfContract.pillowType
     }
 
+    public var isNonPayingMember: Bool {
+        if typeOfContract == .seQasaShortTermRental || typeOfContract == .seQasaLongTermRental {
+            return true
+        }
+        return false
+    }
+
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
         firstName: String,
