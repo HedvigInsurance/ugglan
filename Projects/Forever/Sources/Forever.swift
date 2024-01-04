@@ -129,8 +129,11 @@ extension ForeverView {
             }
         }
         .configureTitle(L10n.ReferralsInfoSheet.headline)
-        .configureForeverTabBarItem
-        .configureTabBarBorder
+        .configureTabBarItem(
+            title: L10n.tabReferralsTitle,
+            image: hCoreUIAssets.foreverTab.image,
+            selectedImage: hCoreUIAssets.foreverTabActive.image
+        )
     }
 
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
