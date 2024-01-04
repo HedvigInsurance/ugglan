@@ -275,9 +275,9 @@ import hGraphQL
             }
         }
 
-        self.setupUnleash()
         bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
             .atValue { _ in
+                self.setupFeatureFlags()
                 Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
                 self.bag += self.window.present(AppJourney.main)
             }

@@ -26,22 +26,14 @@ public struct PaymentSetup {
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, Bool>>) {
-        var variant = ApplicationContext.shared.unleashClient.getVariant(name: "payment_type")
-        if variant.enabled {
-            switch variant.name {
-            case "trustly":
-                let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
-                return (viewController, result.map { .left($0) })
-            case "adyen":
-                let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
-                return (viewController, result.map { .left($0) })
-            default:
-                let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
-                return (viewController, result.map { .left($0) })
-            }
+        switch FeatureFlags.shared.paymentType {
+        case .trustly:
+            let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
+            return (viewController, result.map { .left($0) })
+        case .adyen:
+            let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
+            return (viewController, result.map { .left($0) })
         }
-        let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
-        return (viewController, result.map { .left($0) })
     }
 }
 

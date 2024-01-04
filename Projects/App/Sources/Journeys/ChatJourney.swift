@@ -10,7 +10,7 @@ import hGraphQL
 extension AppJourney {
     @JourneyBuilder
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        if ApplicationContext.shared.unleashClient.isEnabled(name: "disable_chat") {
+        if FeatureFlags.shared.isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
             let chat = Chat()
@@ -36,7 +36,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
-        if ApplicationContext.shared.unleashClient.isEnabled(name: "disable_chat") {
+        if FeatureFlags.shared.isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
             let chat = Chat()

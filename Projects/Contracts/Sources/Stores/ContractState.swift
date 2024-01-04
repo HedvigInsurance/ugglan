@@ -67,6 +67,6 @@ extension ContractState {
 
     public var isTravelInsuranceIncluded: Bool {
         return activeContracts.compactMap({ $0 }).contains(where: { $0.hasTravelInsurance })
-            && ApplicationContext.shared.unleashClient.isEnabled(name: "travel_insurance")
+            && FeatureFlags.shared.isTravelInsuranceEnabled
     }
 }

@@ -132,7 +132,7 @@ extension HomeView {
 
     @ViewBuilder
     private var openOtherServices: some View {
-        if ApplicationContext.shared.unleashClient.isEnabled(name: "home_common_claim") {
+        if FeatureFlags.shared.isCommonClaimEnabled {
             hButton.LargeButton(type: .ghost) {
                 store.send(.openOtherServices)
             } content: {

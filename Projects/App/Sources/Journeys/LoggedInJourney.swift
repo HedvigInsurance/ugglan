@@ -155,7 +155,7 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if ApplicationContext.shared.unleashClient.isEnabled(name: "forever") {
+                    if FeatureFlags.shared.isForeverEnabled {
                         foreverTab
                     }
                 },

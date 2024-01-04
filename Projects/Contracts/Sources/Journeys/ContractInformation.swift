@@ -51,7 +51,7 @@ struct ContractInformationView: View {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
                                         if onlyCoInsured(contract)
-                                            && ApplicationContext.shared.unleashClient.isEnabled(name: "edit_coinsured")
+                                            && FeatureFlags.shared.isEditCoInsuredEnabled
                                         {
                                             store.send(
                                                 .openEditCoInsured(
@@ -64,7 +64,7 @@ struct ContractInformationView: View {
                                         }
                                     } content: {
                                         if onlyCoInsured(contract)
-                                            && ApplicationContext.shared.unleashClient.isEnabled(name: "edit_coinsured")
+                                            && FeatureFlags.shared.isEditCoInsuredEnabled
                                         {
                                             hText(L10n.contractEditCoinsured)
                                         } else {
@@ -103,12 +103,11 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        let unleash = ApplicationContext.shared.unleashClient
         let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
         VStack(spacing: 0) {
             hSection {
                 HStack {
-                    if unleash.isEnabled(name: "edit_coinsured") {
+                    if FeatureFlags.shared.isEditCoInsuredEnabled {
                         hRow {
                             insuredField(contract: contract)
                         }
@@ -121,7 +120,7 @@ struct ContractInformationView: View {
 
                 }
 
-                if unleash.isEnabled(name: "edit_coinsured") {
+                if FeatureFlags.shared.isEditCoInsuredEnabled {
                     hRow {
                         let hasContentBelow =
                             !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
@@ -138,7 +137,7 @@ struct ContractInformationView: View {
             }
             .withoutHorizontalPadding
 
-            if unleash.isEnabled(name: "edit_coinsured") {
+            if FeatureFlags.shared.isEditCoInsuredEnabled {
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
                     hRow {
                         if coInsured.coInsured.hasMissingInfo {
@@ -245,7 +244,7 @@ struct ContractInformationView: View {
                 HStack {
                     if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }), ApplicationContext.shared.unleashClient.isEnabled(name: "editCoinsured") {
+                    }), FeatureFlags.shared.isEditCoInsuredEnabled {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 contract.coInsured.count,
@@ -298,7 +297,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private var displayTerminationButton: some View {
-        if ApplicationContext.shared.unleashClient.isEnabled(name: "terminationFlow") {
+        if FeatureFlags.shared.isTerminationFlowEnabled {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in

@@ -71,7 +71,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         switch self {
         case .changeAddress: return L10n.generalContinueButton
         case .coInsured:
-            if ApplicationContext.shared.unleashClient.isEnabled(name: "edit_coinsured") {
+            if FeatureFlags.shared.isEditCoInsuredEnabled {
                 return L10n.generalContinueButton
             }
             return L10n.openChat
@@ -81,7 +81,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
-        if ApplicationContext.shared.unleashClient.isEnabled(name: "moving_flow") && contract.supportsAddressChange {
+        if FeatureFlags.shared.isMovingFlowEnabled && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
         if contract.supportsCoInsured {
