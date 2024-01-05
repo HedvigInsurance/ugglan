@@ -22,10 +22,10 @@ extension AppDelegate {
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
 
-    func setupHAnalyticsExperiments() {
+    func setupHAnalyticsExperiments(onComplete: @escaping (_ success: Bool) -> Void) {
         hAnalyticsExperiment.retryingLoad { success in
+            onComplete(success)
             DefaultStyling.installCustom()
-            ApplicationContext.shared.hasLoadedExperiments = success
         }
     }
 }

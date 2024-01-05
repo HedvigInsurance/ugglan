@@ -3,9 +3,9 @@ import Authentication
 import Flow
 import Form
 import Foundation
+import Market
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -56,7 +56,10 @@ extension AppJourney {
                                 buttonAction: {
                                     let store: AuthenticationStore = globalPresentableStoreContainer.get()
                                     store.send(.cancel)
-                                })))
+                                }
+                            )
+                        )
+                    )
                 ) {
                     action in
                     if case .cancel = action {
@@ -81,16 +84,15 @@ extension AppJourney {
     }
 
     @JourneyBuilder static var login: some JourneyPresentation {
+        let marketStore: MarketStore = globalPresentableStoreContainer.get()
         GroupJourney {
-            switch hAnalyticsExperiment.loginMethod {
-            case .bankIdSweden:
+            switch marketStore.state.market {
+            case .sweden:
                 bankIDSweden
-            case .bankIdNorway, .nemId:
+            case .norway, .denmark:
                 ZignsecAuthJourney.login {
                     loginCompleted
                 }
-            case .otp:
-                otp()
             }
         }
         .onDismiss {

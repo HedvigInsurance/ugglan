@@ -15,9 +15,8 @@ struct PaymentDetails: View {
         hForm {
             VStack(spacing: 16) {
                 contracts
-                discounts
-                total
-                paymentDetails
+                paymentInfo
+                paymentInfoDetails
             }
             .padding(.vertical, 8)
         }
@@ -32,10 +31,10 @@ struct PaymentDetails: View {
     }
 
     @ViewBuilder
-    private var discounts: some View {
+    private var paymentInfo: some View {
         if data.discounts.count > 0 {
-            hSection(data.discounts) { discount in
-                PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
+            hSection(getPaymentElements(), id: \.id) { row in
+                row.view
             }
             .withHeader {
                 HStack {
@@ -49,51 +48,110 @@ struct PaymentDetails: View {
                 .padding(.bottom, -16)
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, -16)
+            .dividerInsets(.all, 0)
+
+        } else {
+            hSection(getPaymentElements(), id: \.id) { row in
+                row.view
+            }
+            .sectionContainerStyle(.transparent)
+            .dividerInsets(.all, 0)
+        }
+
+    }
+    private func getPaymentElements() -> [(id: String, view: AnyView)] {
+        var list: [(id: String, view: AnyView)] = []
+
+        for discount in data.discounts {
+            let view = AnyView(PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount)))
+            list.append(("\(discount.code)", view))
+
+        }
+
+        if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
+            list.append(("carriedAdjusment", AnyView(carriedAdjustmentView)))
+        }
+        if let settlementAdjustment = data.payment.settlementAdjustment, settlementAdjustment.floatAmount > 0 {
+            list.append(("settlementAdjustmentView", AnyView(settlementAdjustmentView)))
+        }
+        list.append(("total", AnyView(total)))
+        list.append(("paymentDue", AnyView(paymentDue)))
+        return list
+    }
+
+    @ViewBuilder
+    private var carriedAdjustmentView: some View {
+        if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
+            hRow {
+                VStack {
+                    HStack {
+                        hText(L10n.paymentsCarriedAdjustment)
+                        Spacer()
+                        hText(carriedAdjustment.formattedAmount)
+                    }
+                    InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
+                }
+            }
+            .hWithoutHorizontalPadding
+        }
+    }
+
+    @ViewBuilder
+    private var settlementAdjustmentView: some View {
+        if let settlementAdjustment = data.payment.settlementAdjustment, settlementAdjustment.floatAmount > 0 {
+            hRow {
+                VStack {
+                    HStack {
+                        hText(L10n.paymentsSettlementAdjustment)
+                        Spacer()
+                        hText(settlementAdjustment.formattedAmount)
+                    }
+                    InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
+                }
+            }
+            .hWithoutHorizontalPadding
         }
     }
 
     @ViewBuilder
     private var total: some View {
-        hSection {
-            if !data.discounts.isEmpty {
-                hRowDivider()
-            }
-            hRow {
-                hText(L10n.PaymentDetails.ReceiptCard.total)
-            }
-            .withCustomAccessory {
-                HStack {
-                    Spacer()
-                    if data.payment.gross.amount != data.payment.net.amount {
-                        if #available(iOS 16.0, *) {
-                            hText(data.payment.gross.formattedAmount)
-                                .foregroundColor(hTextColor.secondary)
-                                .strikethrough()
-                        } else {
-                            hText(data.payment.gross.formattedAmount)
-                                .foregroundColor(hTextColor.secondary)
-                        }
-                    }
-                    hText(data.payment.net.formattedAmount)
-                }
-            }
-            .hWithoutHorizontalPadding
-            hRow {
-                VStack(spacing: 16) {
-                    HStack {
-                        hText(L10n.paymentsPaymentDue)
-                        Spacer()
-                        hText(data.payment.date.displayDate)
+        hRow {
+            hText(L10n.PaymentDetails.ReceiptCard.total)
+        }
+        .withCustomAccessory {
+            HStack {
+                Spacer()
+                if data.payment.gross.amount != data.payment.net.amount {
+                    if #available(iOS 16.0, *) {
+                        hText(data.payment.gross.formattedAmount)
+                            .foregroundColor(hTextColor.secondary)
+                            .strikethrough()
+                    } else {
+                        hText(data.payment.gross.formattedAmount)
                             .foregroundColor(hTextColor.secondary)
                     }
-                    if data.status != .upcoming {
-                        PaymentStatusView(status: data.status) { action in
-                            switch action {
-                            case .viewAddedToPayment:
-                                if let nextPayment = data.addedToThePayment?.first {
-                                    store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
-                                }
+                }
+                hText(data.payment.net.formattedAmount)
+            }
+        }
+        .hWithoutHorizontalPadding
+    }
+
+    @ViewBuilder var paymentDue: some View {
+        hRow {
+            VStack(spacing: 16) {
+                HStack {
+                    hText(L10n.paymentsPaymentDue)
+                    Spacer()
+                    hText(data.payment.date.displayDate)
+                        .foregroundColor(hTextColor.secondary)
+                }
+                if data.status != .upcoming {
+                    PaymentStatusView(status: data.status) { action in
+                        switch action {
+                        case .viewAddedToPayment:
+                            if let nextPayment = data.addedToThePayment?.first {
+                                store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
                             }
                         }
                     }
@@ -101,12 +159,10 @@ struct PaymentDetails: View {
             }
             .hWithoutHorizontalPadding
         }
-        .dividerInsets(.all, 0)
-        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder
-    private var paymentDetails: some View {
+    private var paymentInfoDetails: some View {
         if let paymentDetails = data.paymentDetails {
             hSection(getListForPaymentDetails(for: paymentDetails), id: \.id) { item in
                 item.view
@@ -150,7 +206,6 @@ struct PaymentDetails: View {
             }
         }
         .hWithoutHorizontalPadding
-        .dividerInsets(.all, 0)
     }
 }
 
@@ -161,6 +216,8 @@ struct PaymentDetails_Previews: PreviewProvider {
             payment: .init(
                 gross: .sek(200),
                 net: .sek(180),
+                carriedAdjustment: .sek(100),
+                settlementAdjustment: .sek(20),
                 date: "2022-10-30"
             ),
             status: .upcoming,

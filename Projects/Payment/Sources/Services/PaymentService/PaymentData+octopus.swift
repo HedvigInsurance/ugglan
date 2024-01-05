@@ -58,6 +58,8 @@ extension PaymentData.PaymentStack {
     init(with data: OctopusGraphQL.MemberChargeFragment) {
         gross = .init(fragment: data.gross.fragments.moneyFragment)
         net = .init(fragment: data.net.fragments.moneyFragment)
+        carriedAdjustment = .init(optionalFragment: data.carriedAdjustment?.fragments.moneyFragment)
+        settlementAdjustment = .init(optionalFragment: data.settlementAdjustment?.fragments.moneyFragment)
         date = data.date
     }
 }

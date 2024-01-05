@@ -1,3 +1,4 @@
+import Apollo
 import Foundation
 import hCore
 import hGraphQL
