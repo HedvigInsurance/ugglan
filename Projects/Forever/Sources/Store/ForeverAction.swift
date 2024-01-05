@@ -2,7 +2,6 @@ import Presentation
 import SwiftUI
 
 public indirect enum ForeverAction: ActionProtocol {
-    case hasSeenFebruaryCampaign(value: Bool)
     case showChangeCodeDetail
     case showChangeCodeSuccess
     case dismissChangeCodeDetail
