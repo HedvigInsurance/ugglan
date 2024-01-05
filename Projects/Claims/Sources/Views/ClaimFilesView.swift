@@ -147,8 +147,20 @@ public struct ClaimFilesView: View {
                 showCamera = true
             case .imagePicker:
                 PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
-                    DispatchQueue.main.async {
-                        showImagePicker = true
+                    switch status {
+                    case .notDetermined, .restricted, .denied:
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    case .authorized, .limited:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    @unknown default:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
                     }
                 }
             case .filePicker:
