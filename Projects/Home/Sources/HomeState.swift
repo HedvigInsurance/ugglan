@@ -224,7 +224,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     )
                     .onValue { data in
                         if let date = data.chat.messages.first?.sentAt.localDateToIso8601Date {
-                            if self.state.latestChatTimeStamp < date {
+                            //check if it is auto generated bot message
+                            if data.chat.messages.count == 1 && date.addingTimeInterval(2) > Date() {
+                                callback(.value(.setChatNotification(hasNew: false)))
+                            } else if self.state.latestChatTimeStamp < date {
                                 callback(.value(.setChatNotification(hasNew: true)))
                             } else {
                                 callback(.value(.setChatNotification(hasNew: false)))

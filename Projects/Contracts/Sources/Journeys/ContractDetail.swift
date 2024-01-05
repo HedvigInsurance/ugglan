@@ -175,4 +175,31 @@ extension ContractDetail {
         }
         .configureTitle(title)
     }
+    
+    public var contractDetailErrorJourney: some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: GenericErrorView(
+                description: L10n.contractDetailsError,
+                buttons: .init(
+            actionButton: .init(
+                buttonTitle: L10n.generalCloseButton,
+                buttonAction: {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismisscontractDetailNavigation)
+            }),
+            dismissButton: .init(
+                buttonAction: {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.goToFreeTextChat)
+                })
+        ))
+        ) { action in
+            if case .goToFreeTextChat = action {
+                DismissJourney()
+            } else if case .dismisscontractDetailNavigation = action {
+                DismissJourney()
+            }
+        }
+    }
 }

@@ -256,6 +256,8 @@ extension JourneyPresentation {
                     }
                 } else if case let .openEditCoInsured(contractId, fromInfoCard) = action {
                     EditCoInsuredJourney.handleOpenEditCoInsured(for: contractId, fromInfoCard: fromInfoCard)
+                } else if case .goToFreeTextChat = action {
+                    AppJourney.freeTextChat().withDismissButton
                 }
             }
         )
@@ -263,9 +265,7 @@ extension JourneyPresentation {
             if case .fetchContracts = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
                 store.send(.fetchContracts)
-            } else if case .goToFreeTextChat = action {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.openChat)
+
             } else if case .checkForAlert = action {
                 let store: ContractStore = globalPresentableStoreContainer.get()
                 let editStore: EditCoInsuredStore = globalPresentableStoreContainer.get()

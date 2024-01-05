@@ -15,6 +15,8 @@ public struct PaymentData: Codable, Equatable {
     struct PaymentStack: Codable, Equatable {
         let gross: MonetaryAmount
         let net: MonetaryAmount
+        let carriedAdjustment: MonetaryAmount?
+        let settlementAdjustment: MonetaryAmount?
         let date: ServerBasedDate
     }
 
