@@ -1,6 +1,7 @@
 import Combine
 import Flow
 import Kingfisher
+import Photos
 import Presentation
 import SwiftUI
 import hAnalytics
@@ -95,7 +96,8 @@ public struct ClaimDetailView: View {
                                                 await vm.fetchFiles()
                                             }
                                         }),
-                                    dismissButton: nil)
+                                    dismissButton: nil
+                                )
                             )
                             .hWithoutTitle
                         }
@@ -172,7 +174,11 @@ public struct ClaimDetailView: View {
             case .camera:
                 showCamera = true
             case .imagePicker:
-                showImagePicker = true
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    DispatchQueue.main.async {
+                        showImagePicker = true
+                    }
+                }
             case .filePicker:
                 showFilePicker = true
             }

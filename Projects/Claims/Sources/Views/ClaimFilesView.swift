@@ -1,3 +1,4 @@
+import Photos
 import SwiftUI
 import hCore
 import hCoreUI
@@ -36,7 +37,8 @@ public struct ClaimFilesView: View {
                                     vm.error = nil
                                 }
                             }),
-                        dismissButton: nil)
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
             } else {
@@ -144,7 +146,11 @@ public struct ClaimFilesView: View {
             case .camera:
                 showCamera = true
             case .imagePicker:
-                showImagePicker = true
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    DispatchQueue.main.async {
+                        showImagePicker = true
+                    }
+                }
             case .filePicker:
                 showFilePicker = true
             }
