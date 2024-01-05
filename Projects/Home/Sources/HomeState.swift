@@ -286,7 +286,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
-        allCommonClaims.append(.helpCenter)
+        allCommonClaims.append(.chat)
 
         if hAnalyticsExperiment.movingFlow {
             allCommonClaims.append(.moving)
