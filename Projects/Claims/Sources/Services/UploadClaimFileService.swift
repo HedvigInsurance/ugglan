@@ -8,7 +8,7 @@ public protocol hClaimFileUploadService {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?]
+    ) async throws -> [ClaimFileUploadResponse]
 }
 
 public class hClaimFileUploadServiceDemo {
@@ -16,8 +16,8 @@ public class hClaimFileUploadServiceDemo {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?] {
-        return [:]
+    ) async throws -> [ClaimFileUploadResponse] {
+        return []
     }
 }
 
@@ -26,7 +26,7 @@ extension NetworkClient: hClaimFileUploadService {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?] {
+    ) async throws -> [ClaimFileUploadResponse] {
         let request = try! await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
@@ -47,15 +47,11 @@ extension NetworkClient: hClaimFileUploadService {
             }
             task.resume()
         }
-        var result = [String: String?]()
-        for (index, file) in files.enumerated() {
-            result[file.id] = response[index].file?.fileId
-        }
-        return result
+        return response
     }
 }
 
-struct ClaimFileUploadResponse: Codable {
+public struct ClaimFileUploadResponse: Codable {
     let file: FileUpload?
     let error: String?
 }

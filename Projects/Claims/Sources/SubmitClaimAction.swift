@@ -77,6 +77,8 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openConfirmEmergencyScreen
     case openPestsScreen
     case openFileUploadScreen
+    case openFilesFor(endPoint: String, files: [File])
+    case dismissFileUploadScreen
     case openInfoScreen(title: String?, description: String?)
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)

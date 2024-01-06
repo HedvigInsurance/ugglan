@@ -292,7 +292,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 }
             case let .setFileUploadStep(model):
                 newState.fileUploadStep = model
-                self.send(.navigationAction(action: .openFileUploadScreen))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.send(.navigationAction(action: .openFileUploadScreen))
+                }
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
