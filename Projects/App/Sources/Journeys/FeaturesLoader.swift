@@ -6,6 +6,7 @@ import Foundation
 import Presentation
 import Profile
 import UIKit
+import hCore
 import hCoreUI
 
 struct ExperimentsLoader: Presentable {
@@ -19,33 +20,13 @@ struct ExperimentsLoader: Presentable {
             Signal { callback in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-
-                let contractSignal = contractStore.stateSignal
-                    .map({ $0.activeContracts })
-                    .distinct()
-
-                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                profileStore.send(.fetchMemberDetails)
-
-                let profileSignal = profileStore.stateSignal
-                    .map({ $0.memberDetails?.id != nil })
-                    .distinct()
-
-                bag += combineLatest(
-                    contractSignal,
-                    profileSignal
-                )
-                .distinct({ previousContracts, contracts in
-                    if previousContracts.0.count != contracts.0.count || previousContracts.1 != contracts.1 {
-                        return true
+                bag += contractStore.stateSignal
+                    .onValue { value in
+                        UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                            callback(())
+                        })
+                        bag.dispose()
                     }
-                    return false
-                })
-                .onValue { value in
-                    UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
-                        callback(())
-                    })
-                }
                 return bag
             }
         )
