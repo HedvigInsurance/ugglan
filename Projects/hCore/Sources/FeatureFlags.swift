@@ -89,34 +89,26 @@ public class FeatureFlags {
         let movingFlowKey = "moving_flow"
         isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
 
-        if isMovingFlowEnabled {
-            log.info(
-                "feature flag info",
-                attributes: [
-                    "flag": movingFlowKey,
-                    "enabled": isMovingFlowEnabled,
-                ]
-            )
-        } else {
-            print("false")
-        }
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": movingFlowKey,
+                "enabled": isMovingFlowEnabled,
+            ]
+        )
 
         print("feature flag ", movingFlowKey, " ", isMovingFlowEnabled)
 
         let editCoInsuredKey = "edit_coinsured"
         isEditCoInsuredEnabled = unleashClient.isEnabled(name: editCoInsuredKey)
 
-        if isEditCoInsuredEnabled {
-            log.info(
-                "feature flag info",
-                attributes: [
-                    "flag": editCoInsuredKey,
-                    "enabled": isEditCoInsuredEnabled,
-                ]
-            )
-        } else {
-            print("false")
-        }
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": editCoInsuredKey,
+                "enabled": isEditCoInsuredEnabled,
+            ]
+        )
 
         print("feature flag ", editCoInsuredKey, " ", isEditCoInsuredEnabled)
 
