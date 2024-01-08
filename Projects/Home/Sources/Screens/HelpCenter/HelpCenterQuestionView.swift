@@ -5,6 +5,7 @@ import hCoreUI
 
 struct HelpCenterQuestionView: View {
     private var question: Question
+    @State var height: CGFloat = 0
     @PresentableStore var store: HomeStore
 
     public init(
@@ -22,14 +23,21 @@ struct HelpCenterQuestionView: View {
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                    hText(question.answer, style: .title3)
-                        .foregroundColor(hTextColor.secondary)
+                    CustomTextViewRepresentable(
+                        text: question.answer,
+                        fixedWidth: UIScreen.main.bounds.width - 32,
+                        height: $height
+                    ) { url in
+
+                    }
+                    .frame(height: height)
                 }
                 SupportView()
             }
             .padding(.horizontal, 16)
         }
     }
+
 }
 
 extension HelpCenterQuestionView {

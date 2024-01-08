@@ -2,70 +2,118 @@ import Flow
 import Form
 import Foundation
 import MarkdownKit
+import SnapKit
+import SwiftUI
 import UIKit
 import hCore
 
-public struct MarkdownTextView {
-    public let textSignal: ReadWriteSignal<String>
-    public let style: TextStyle
-    public let linkColor: UIColor
-
+public struct CustomTextViewRepresentable: UIViewRepresentable {
+    private let text: String
+    private let fixedWidth: CGFloat
+    @Binding var height: CGFloat
+    let onUrlClicked: (_ url: String) -> Void
     public init(
-        textSignal: ReadWriteSignal<String>,
-        style: TextStyle,
-        linkColor: UIColor
+        text: String,
+        fixedWidth: CGFloat,
+        height: Binding<CGFloat>,
+        onUrlClicked: @escaping (_ url: String) -> Void
     ) {
-        self.textSignal = textSignal
-        self.style = style
-        self.linkColor = linkColor
+        self.text = text
+        self.fixedWidth = fixedWidth
+        _height = height
+        self.onUrlClicked = onUrlClicked
     }
-
-    public init(
-        value: String,
-        style: TextStyle,
-        linkColor: UIColor
-    ) {
-        textSignal = ReadWriteSignal(value)
-        self.style = style
-        self.linkColor = linkColor
+    public func makeUIView(context: Context) -> some UIView {
+        let textView = CustomTextView(text: text, fixedWidth: fixedWidth, height: $height, onUrlClicked: onUrlClicked)
+        return textView
     }
+    public func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
 
-extension MarkdownTextView: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UITextView, Disposable) {
-        let bag = DisposeBag()
+class CustomTextView: UIView, UITextViewDelegate {
+    let textView: UITextView
+    let fixedWidth: CGFloat
+    let onUrlClicked: (_ url: String) -> Void
+    @Binding var height: CGFloat
+    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: String) -> Void) {
+        _height = height
+        self.onUrlClicked = onUrlClicked
+        self.fixedWidth = fixedWidth
+        self.textView = UITextView()
+        super.init(frame: .zero)
+        self.addSubview(textView)
+        configureTextView()
+        setContent(from: text)
+        calculateHeight()
+    }
 
-        let markdownParser = MarkdownParser(font: style.font, color: style.color)
+    private func configureTextView() {
+        self.backgroundColor = .clear
+        textView.isEditable = false
+        textView.isUserInteractionEnabled = true
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        textView.linkTextAttributes = [
+            .foregroundColor: hTextColor.primary.colorFor(.light, .base).color.uiColor(),
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+        ]
+        textView.backgroundColor = .clear
+        textView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(-6)
+            make.trailing.equalToSuperview().offset(6)
+            make.bottom.top.equalToSuperview()
+        }
+        textView.textContainerInset = .zero
+        textView.delegate = self
+    }
 
+    private func setContent(from text: String) {
+        let markdownParser = MarkdownParser(
+            font: Fonts.fontFor(style: .standardLarge),
+            color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
+        )
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = style.lineSpacing
-        paragraphStyle.alignment = style.alignment
+        paragraphStyle.lineSpacing = 10
+        paragraphStyle.lineBreakMode = .byWordWrapping
+        paragraphStyle.alignment = .left
         paragraphStyle.lineSpacing = 3
 
-        let markdownTextView = UITextView()
-        markdownTextView.isEditable = false
-        markdownTextView.isUserInteractionEnabled = true
-        markdownTextView.isScrollEnabled = false
-        markdownTextView.backgroundColor = .clear
-        markdownTextView.linkTextAttributes = [.foregroundColor: linkColor]
+        let attributedString = markdownParser.parse(text)
+        if !text.isEmpty {
+            let mutableAttributedString = NSMutableAttributedString(
+                attributedString: attributedString
+            )
+            mutableAttributedString.addAttribute(
+                .paragraphStyle,
+                value: paragraphStyle,
+                range: NSRange(location: 0, length: mutableAttributedString.length - 1)
+            )
+            textView.attributedText = mutableAttributedString
+        }
+    }
 
-        bag += textSignal.atOnce()
-            .onValue { text in let attributedString = markdownParser.parse(text)
+    private func calculateHeight() {
+        let newHeight = getHeight()
+        self.snp.makeConstraints { make in
+            make.height.equalTo(newHeight)
+            make.width.equalTo(fixedWidth)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+            self?.height = newHeight
+        }
+    }
 
-                if !text.isEmpty {
-                    let mutableAttributedString = NSMutableAttributedString(
-                        attributedString: attributedString
-                    )
-                    mutableAttributedString.addAttribute(
-                        .paragraphStyle,
-                        value: paragraphStyle,
-                        range: NSRange(location: 0, length: mutableAttributedString.length - 1)
-                    )
+    private func getHeight() -> CGFloat {
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        return newSize.height
+    }
 
-                    markdownTextView.attributedText = mutableAttributedString
-                }
-            }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-        return (markdownTextView, bag)
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
+        onUrlClicked(URL.absoluteString)
+        return false
     }
 }
