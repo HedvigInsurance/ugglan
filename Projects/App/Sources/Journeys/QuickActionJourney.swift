@@ -5,6 +5,8 @@ import Home
 import Payment
 import Presentation
 import TravelCertificate
+import UIKit
+import hCore
 
 extension AppJourney {
     @JourneyBuilder
@@ -29,6 +31,20 @@ extension AppJourney {
             TravelInsuranceFlowJourney.start {
                 AppJourney.freeTextChat()
             }
+        }
+    }
+
+    @JourneyBuilder
+    static func configureURL(url: URL) -> some JourneyPresentation {
+        if let deepLink = DeepLink.getType(from: url) {
+            DismissJourney()
+                .onPresent {
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                    }
+                }
+        } else {
+            AppJourney.webRedirect(url: url)
         }
     }
 }

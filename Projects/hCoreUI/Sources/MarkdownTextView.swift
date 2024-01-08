@@ -6,17 +6,18 @@ import SnapKit
 import SwiftUI
 import UIKit
 import hCore
+import hGraphQL
 
 public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
     @Binding var height: CGFloat
-    let onUrlClicked: (_ url: String) -> Void
+    let onUrlClicked: (_ url: URL) -> Void
     public init(
         text: String,
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: String) -> Void
+        onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
@@ -33,9 +34,9 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
 class CustomTextView: UIView, UITextViewDelegate {
     let textView: UITextView
     let fixedWidth: CGFloat
-    let onUrlClicked: (_ url: String) -> Void
+    let onUrlClicked: (_ url: URL) -> Void
     @Binding var height: CGFloat
-    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: String) -> Void) {
+    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: URL) -> Void) {
         _height = height
         self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
@@ -113,7 +114,18 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        onUrlClicked(URL.absoluteString)
+        let environmentURL = getDeepLinkURL(url: URL)
+        onUrlClicked(environmentURL)
         return false
+    }
+
+    func getDeepLinkURL(url URL: URL) -> URL {
+        if hGraphQL.Environment.current == .staging {
+            let stagingURLString = URL.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
+            if let stagingURL = Foundation.URL(string: stagingURLString) {
+                return stagingURL
+            }
+        }
+        return URL
     }
 }

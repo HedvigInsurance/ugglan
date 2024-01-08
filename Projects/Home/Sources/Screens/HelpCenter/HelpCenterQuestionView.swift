@@ -28,7 +28,7 @@ struct HelpCenterQuestionView: View {
                         fixedWidth: UIScreen.main.bounds.width - 32,
                         height: $height
                     ) { url in
-
+                        store.send(.goToURL(url: url))
                     }
                     .frame(height: height)
                 }

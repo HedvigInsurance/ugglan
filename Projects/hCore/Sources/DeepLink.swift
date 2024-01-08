@@ -9,6 +9,7 @@ public enum DeepLink: String, Codable {
     case sasEuroBonus = "eurobonus"
     case contract = "contract"
     case payments
+    case travelCertificate = "travelCertificate"
 
     public func wholeText(displayText: String) -> String {
         return L10n.generalGoTo(displayText)
@@ -32,6 +33,8 @@ public enum DeepLink: String, Codable {
             return L10n.myPaymentTitle
         case .contract:
             return L10n.deepLinkContract
+        case .travelCertificate:
+            return L10n.TravelCertificate.cardTitle
         }
     }
 
