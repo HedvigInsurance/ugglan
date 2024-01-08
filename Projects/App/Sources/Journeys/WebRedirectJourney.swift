@@ -12,7 +12,19 @@ extension AppJourney {
     static func webRedirect(url: URL) -> some JourneyPresentation {
         ContinueJourney()
             .onPresent {
-                UIApplication.shared.open(url)
+                let urlPrefix = "https://www."
+                var urlToOpen: URL {
+                    if !url.absoluteString.contains("https://") {
+                        let urlStringWithPrefix = urlPrefix + url.absoluteString
+                        if let urlWithPrefix = URL(string: urlStringWithPrefix) {
+                            return urlWithPrefix
+                        }
+                    }
+                    return url
+                }
+
+                print("url is: ", urlToOpen)
+                UIApplication.shared.open(urlToOpen)
             }
     }
 }

@@ -120,11 +120,14 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func getDeepLinkURL(url URL: URL) -> URL {
-        if hGraphQL.Environment.current == .staging {
-            let stagingURLString = URL.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
-            if let stagingURL = Foundation.URL(string: stagingURLString) {
-                return stagingURL
+        if let isDeepLink = DeepLink.getType(from: URL) {
+            if hGraphQL.Environment.current == .staging {
+                let stagingURLString = URL.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
+                if let stagingURL = Foundation.URL(string: stagingURLString) {
+                    return stagingURL
+                }
             }
+            return URL
         }
         return URL
     }
