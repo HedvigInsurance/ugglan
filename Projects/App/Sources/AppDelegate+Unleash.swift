@@ -26,7 +26,8 @@ extension AppDelegate {
     }
 
     private func observeUpdate() {
-        bag += Localization.Locale.$currentLocale
+        featureFlagsBag.dispose()
+        featureFlagsBag += Localization.Locale.$currentLocale
             .atOnce()
             .distinct()
             .onValue { locale in
@@ -36,7 +37,7 @@ extension AppDelegate {
             }
 
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-        bag += profileStore.stateSignal
+        featureFlagsBag += profileStore.stateSignal
             .map({ $0.memberDetails?.id })
             .distinct()
             .onValue { memberId in
