@@ -189,6 +189,61 @@ extension HelpCenterStartView {
                                         answer: L10n.hcPaymentsA03,
                                         relatedQuestions: []
                                     ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ04,
+                                        answer: L10n.hcPaymentsA04,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ05,
+                                        answer: L10n.hcPaymentsA05,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ06,
+                                        answer: L10n.hcPaymentsA06,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ07,
+                                        answer: L10n.hcPaymentsA07,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ08,
+                                        answer: L10n.hcPaymentsA08,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ09,
+                                        answer: L10n.hcPaymentsA09,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ10,
+                                        answer: L10n.hcPaymentsA10,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ11,
+                                        answer: L10n.hcPaymentsA11,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ12,
+                                        answer: L10n.hcPaymentsA12,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ13,
+                                        answer: L10n.hcPaymentsA13,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcPaymentsQ14,
+                                        answer: L10n.hcPaymentsA14,
+                                        relatedQuestions: []
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -210,6 +265,51 @@ extension HelpCenterStartView {
                                         answer: L10n.hcClaimsA03,
                                         relatedQuestions: []
                                     ),
+                                    .init(
+                                        question: L10n.hcClaimsQ04,
+                                        answer: L10n.hcClaimsA04,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ05,
+                                        answer: L10n.hcClaimsA05,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ06,
+                                        answer: L10n.hcClaimsA06,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ07,
+                                        answer: L10n.hcClaimsA07,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ08,
+                                        answer: L10n.hcClaimsA08,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ09,
+                                        answer: L10n.hcClaimsA09,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ10,
+                                        answer: L10n.hcClaimsA10,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ11,
+                                        answer: L10n.hcClaimsA11,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcClaimsQ12,
+                                        answer: L10n.hcClaimsA12,
+                                        relatedQuestions: []
+                                    ),
                                 ],
                                 allQuestions: commonQuestions
                             ),
@@ -229,6 +329,101 @@ extension HelpCenterStartView {
                                     .init(
                                         question: L10n.hcCoverageQ03,
                                         answer: L10n.hcCoverageA03,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ04,
+                                        answer: L10n.hcCoverageA04,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ05,
+                                        answer: L10n.hcCoverageA05,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ06,
+                                        answer: L10n.hcCoverageA06,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ07,
+                                        answer: L10n.hcCoverageA07,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ08,
+                                        answer: L10n.hcCoverageA08,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ09,
+                                        answer: L10n.hcCoverageA09(0), /* TODO: ? */
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ10,
+                                        answer: L10n.hcCoverageA10,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ11,
+                                        answer: L10n.hcCoverageA11,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ12,
+                                        answer: L10n.hcCoverageA12,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ13,
+                                        answer: L10n.hcCoverageA13,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ14,
+                                        answer: L10n.hcCoverageA14,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ15,
+                                        answer: L10n.hcCoverageA15,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ16,
+                                        answer: L10n.hcCoverageA16,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ17,
+                                        answer: L10n.hcCoverageA17,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ18,
+                                        answer: L10n.hcCoverageA18,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ19,
+                                        answer: L10n.hcCoverageA19,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ20,
+                                        answer: L10n.hcCoverageA20,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ21,
+                                        answer: L10n.hcCoverageA21,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcCoverageQ22,
+                                        answer: L10n.hcCoverageA22,
                                         relatedQuestions: []
                                     ),
                                 ],
