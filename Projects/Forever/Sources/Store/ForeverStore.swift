@@ -80,8 +80,6 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         var newState = state
 
         switch action {
-        case let .hasSeenFebruaryCampaign(hasSeenFebruaryCampaign):
-            newState.hasSeenFebruaryCampaign = hasSeenFebruaryCampaign
         case let .setForeverData(data):
             newState.foreverData = data
         default:
