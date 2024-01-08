@@ -46,6 +46,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var emergencyStep: FlowClaimDeflectStepModel?
     @OptionalTransient var pestsStep: FlowClaimDeflectStepModel?
     @OptionalTransient var glassDamageStep: FlowClaimDeflectStepModel?
+    @OptionalTransient var fileUploadStep: FlowClaimFileUploadStepModel?
     @OptionalTransient var progress: Float?
     @OptionalTransient var previousProgress: Float?
     @Transient(defaultValue: EntrypointState()) var entrypoints: EntrypointState
