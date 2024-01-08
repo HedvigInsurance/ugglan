@@ -26,6 +26,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
+    case submitFileUpload(ids: [String])
 
     case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
@@ -76,6 +77,9 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openEmergencyScreen
     case openConfirmEmergencyScreen
     case openPestsScreen
+    case openFileUploadScreen
+    case openFilesFor(endPoint: String, files: [File])
+    case dismissFileUploadScreen
     case openInfoScreen(title: String?, description: String?)
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
@@ -133,6 +137,7 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
+    case setFileUploadStep(model: FlowClaimFileUploadStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
@@ -146,4 +151,5 @@ public enum ClaimsLoadingType: LoadingProtocol {
     case postAudioRecording
     case postContractSelect
     case postConfirmEmergency
+    case postUploadFiles
 }
