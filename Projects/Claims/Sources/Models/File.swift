@@ -60,9 +60,12 @@ struct ImagePicker: UIViewControllerRepresentable {
 
             for selectedItem in selectedItems {
                 dispatchGroup.enter()  // signal IN
-                if selectedItem.canLoadObject(ofClass: UIImage.self) {
-                    selectedItem.loadObject(ofClass: UIImage.self) { image, _ in
-                        if let image = image as? UIImage, let data = image.jpegData(compressionQuality: 0.9),
+                if selectedItem.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                    selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
+                        if let imageUrl,
+                            let pathData = FileManager.default.contents(atPath: imageUrl.relativePath),
+                            let image = UIImage(data: pathData),
+                            let data = image.jpegData(compressionQuality: 0.9),
                             let thumbnailData = image.jpegData(compressionQuality: 0.1)
                         {
                             let id = UUID().uuidString
@@ -95,6 +98,10 @@ struct ImagePicker: UIViewControllerRepresentable {
                                 )
                             files.append(file)
                         }
+                        dispatchGroup.leave()
+                    }
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         dispatchGroup.leave()
                     }
                 }
