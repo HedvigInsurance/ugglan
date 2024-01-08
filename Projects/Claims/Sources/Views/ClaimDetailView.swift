@@ -1,6 +1,7 @@
 import Combine
 import Flow
 import Kingfisher
+import Photos
 import Presentation
 import SwiftUI
 import hCore
@@ -172,7 +173,23 @@ public struct ClaimDetailView: View {
             case .camera:
                 showCamera = true
             case .imagePicker:
-                showImagePicker = true
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    switch status {
+                    case .notDetermined, .restricted, .denied:
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    case .authorized, .limited:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    @unknown default:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    }
+                }
             case .filePicker:
                 showFilePicker = true
             }

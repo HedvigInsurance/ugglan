@@ -1,3 +1,4 @@
+import Photos
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,8 +8,13 @@ public struct ClaimFilesView: View {
     @State var showImagePicker = false
     @State var showFilePicker = false
     @State var showCamera = false
-    public init(endPoint: String, files: [File]) {
-        self.vm = .init(endPoint: endPoint, files: files, options: [.add, .delete])
+    public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
+        self.vm = .init(
+            endPoint: endPoint,
+            files: files,
+            options: [.add, .delete],
+            onSuccess: onSuccess
+        )
     }
     public var body: some View {
         Group {
@@ -31,7 +37,8 @@ public struct ClaimFilesView: View {
                                     vm.error = nil
                                 }
                             }),
-                        dismissButton: nil)
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
             } else {
@@ -139,7 +146,23 @@ public struct ClaimFilesView: View {
             case .camera:
                 showCamera = true
             case .imagePicker:
-                showImagePicker = true
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    switch status {
+                    case .notDetermined, .restricted, .denied:
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    case .authorized, .limited:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    @unknown default:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    }
+                }
             case .filePicker:
                 showFilePicker = true
             }
@@ -173,12 +196,19 @@ class ClaimFilesViewModel: ObservableObject {
     private let endPoint: String
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
+    private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     @Inject var claimFileUploadService: hClaimFileUploadService
     @Inject var fetchClaimService: hFetchClaimService
 
     @PresentableStore var store: ClaimsStore
-    init(endPoint: String, files: [File], options: ClaimFilesViewOptions) {
+    init(
+        endPoint: String,
+        files: [File],
+        options: ClaimFilesViewOptions,
+        onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void
+    ) {
         self.endPoint = endPoint
+        self.onSuccess = onSuccess
         self.fileGridViewModel = .init(files: files, options: options)
         self.fileGridViewModel.onDelete = { file in
             Task { [weak self] in
@@ -214,7 +244,7 @@ class ClaimFilesViewModel: ObservableObject {
                 if case .localFile(_, _) = $0.source { return true } else { return false }
             })
             if !filteredFiles.isEmpty {
-                _ = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
+                let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
                     [weak self] progress in
                     DispatchQueue.main.async {
                         withAnimation {
@@ -223,13 +253,8 @@ class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
-                let claims = try await fetchClaimService.get()
-                store.send(.setClaims(claims: claims))
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-                    self?.setNavigationBarHidden(false)
-                    self?.fileUploadManager.resetuploadFilesPath()
-                    self?.store.send(.navigation(action: .dismissAddFiles))
-                }
+                self.fileUploadManager.resetuploadFilesPath()
+                self.onSuccess(files)
             }
         } catch let ex {
             withAnimation {
@@ -242,7 +267,6 @@ class ClaimFilesViewModel: ObservableObject {
                 setNavigationBarHidden(false)
             }
         }
-
     }
 
     struct ClaimFilesViewOptions: OptionSet {
@@ -250,6 +274,8 @@ class ClaimFilesViewModel: ObservableObject {
 
         static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
         static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
@@ -299,7 +325,9 @@ class ClaimFilesViewModel: ObservableObject {
             source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
         ),
     ]
-    return ClaimFilesView(endPoint: "", files: files)
+    return ClaimFilesView(endPoint: "", files: files) { _ in
+
+    }
 }
 
 struct FilePicker {

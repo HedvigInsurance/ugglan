@@ -58,6 +58,10 @@ public class ClaimJourneys {
                 openEmergencySelectScreen().addDismissClaimsFlow()
             } else if case .openPestsScreen = navigationAction {
                 openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
+            } else if case .openFileUploadScreen = navigationAction {
+                openFileUploadScreen().addDismissClaimsFlow()
+            } else if case let .openFilesFor(endPoint, files) = navigationAction {
+                openFileScreen(for: endPoint, files: files)
             }
         }
     }
@@ -626,6 +630,41 @@ public class ClaimJourneys {
             getScreen(for: action)
         }
         .hidesBackButton
+    }
+
+    private static func openFileUploadScreen() -> some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        return HostingJourney(
+            SubmitClaimStore.self,
+            rootView: FilesUploadScreen(model: store.state.fileUploadStep!)
+        ) {
+            action in
+            getScreen(for: action)
+        }
+    }
+
+    private static func openFileScreen(for: String, files: [File]) -> some JourneyPresentation {
+        return HostingJourney(
+            SubmitClaimStore.self,
+            rootView: ClaimFilesView(endPoint: `for`, files: files) { uploadedFiles in
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.navigationAction(action: .dismissFileUploadScreen))
+            },
+            style: .modally(presentationStyle: .overFullScreen),
+            options: .largeNavigationBar
+        ) { action in
+            if case let .navigationAction(navigationAction) = action {
+                if case .dismissFileUploadScreen = navigationAction {
+                    PopJourney()
+                } else {
+                    getScreen(for: action)
+                }
+            } else {
+                getScreen(for: action)
+            }
+        }
+        .withDismissButton
+        .configureTitle(L10n.ClaimStatusDetail.addedFiles)
     }
 }
 

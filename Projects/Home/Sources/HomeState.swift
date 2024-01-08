@@ -195,7 +195,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client
                     .fetch(
-                        query: OctopusGraphQL.CommonClaimsQuery()
+                        query: OctopusGraphQL.CommonClaimsQuery(),
+                        cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .onValue { claimData in
                         let commonClaims = claimData.currentMember.activeContracts
@@ -283,12 +284,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
-        allCommonClaims.append(.chat)
+        allCommonClaims.append(.chat())
         if FeatureFlags.shared.isMovingFlowEnabled {
-            allCommonClaims.append(.moving)
+            allCommonClaims.append(.moving())
         }
         if state.shouldShowTravelInsurance {
-            allCommonClaims.append(.travelInsurance)
+            allCommonClaims.append(.travelInsurance())
         }
         allCommonClaims.append(contentsOf: state.commonClaims)
         state.allCommonClaims = allCommonClaims
@@ -341,7 +342,7 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
 }
 
 extension CommonClaim {
-    public static let travelInsurance: CommonClaim = {
+    public static func travelInsurance() -> CommonClaim {
         let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(
             color: "",
             buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
@@ -358,25 +359,25 @@ extension CommonClaim {
             layout: layout
         )
         return commonClaim
-    }()
+    }
 
-    public static let chat: CommonClaim = {
-        CommonClaim(
+    public static func chat() -> CommonClaim {
+        return CommonClaim(
             id: "chat",
             icon: nil,
             imageName: nil,
             displayTitle: L10n.chatTitle,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
-    }()
+    }
 
-    public static let moving: CommonClaim = {
-        CommonClaim(
+    public static func moving() -> CommonClaim {
+        return CommonClaim(
             id: "moving_flow",
             icon: nil,
             imageName: nil,
             displayTitle: L10n.InsuranceDetails.changeAddressButton,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
-    }()
+    }
 }

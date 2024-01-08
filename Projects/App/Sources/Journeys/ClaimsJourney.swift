@@ -31,7 +31,16 @@ extension AppJourney {
     private static func openFilesFor(claim: ClaimModel, files: [File]) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
-            rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: files),
+            rootView: ClaimFilesView(endPoint: claim.targetFileUploadUri, files: files) { _ in
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimStore.send(.fetchClaims)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    let nav = UIApplication.shared.getTopViewControllerNavigation()
+                    nav?.setNavigationBarHidden(false, animated: true)
+                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    claimStore.send(.navigation(action: .dismissAddFiles))
+                }
+            },
             style: .modally(presentationStyle: .overFullScreen),
             options: .largeNavigationBar
         ) { action in

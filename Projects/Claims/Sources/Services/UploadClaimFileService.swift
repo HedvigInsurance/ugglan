@@ -1,5 +1,7 @@
 import Apollo
 import Foundation
+import Kingfisher
+import UIKit
 import hCore
 import hGraphQL
 
@@ -8,7 +10,7 @@ public protocol hClaimFileUploadService {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?]
+    ) async throws -> [ClaimFileUploadResponse]
 }
 
 public class hClaimFileUploadServiceDemo {
@@ -16,8 +18,8 @@ public class hClaimFileUploadServiceDemo {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?] {
-        return [:]
+    ) async throws -> [ClaimFileUploadResponse] {
+        return []
     }
 }
 
@@ -26,17 +28,36 @@ extension NetworkClient: hClaimFileUploadService {
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [String: String?] {
+    ) async throws -> [ClaimFileUploadResponse] {
         let request = try! await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
-                    if let data: [ClaimFileUploadResponse] = try self?
+                    if let uploadedFiles: [ClaimFileUploadResponse] = try self?
                         .handleResponse(data: data, response: response, error: error)
                     {
-                        inCont.resume(returning: data)
+                        for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
+                            let localFileSource = files[file.offset].source
+                            switch localFileSource {
+                            case let .localFile(url, _):
+                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                    let data = try? Data(contentsOf: url), let image = UIImage(data: data)
+                                {
+                                    let processor = DownsamplingImageProcessor(
+                                        size: CGSize(width: 300, height: 300)
+                                    )
+                                    var options = KingfisherParsedOptionsInfo.init(nil)
+                                    options.processor = processor
+                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                }
+                            case .url(_):
+                                break
+                            }
+                        }
+
+                        inCont.resume(returning: uploadedFiles)
                     }
                 } catch let error {
                     inCont.resume(throwing: error)
@@ -47,21 +68,20 @@ extension NetworkClient: hClaimFileUploadService {
             }
             task.resume()
         }
-        var result = [String: String?]()
-        for (index, file) in files.enumerated() {
-            result[file.id] = response[index].file?.fileId
-        }
-        return result
+        return response
     }
 }
 
-struct ClaimFileUploadResponse: Codable {
+public struct ClaimFileUploadResponse: Codable {
     let file: FileUpload?
     let error: String?
 }
 
 struct FileUpload: Codable {
     let fileId: String
+    let name: String
+    let mimeType: String
+    let url: String
 }
 
 enum ClaimsRequest {

@@ -190,6 +190,10 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 context: newClaimContext
             )
             return mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
+        case let .submitFileUpload(ids):
+            let input = OctopusGraphQL.FlowClaimFileUploadInput(fileIds: ids)
+            let mutation = OctopusGraphQL.FlowClaimFileUploadNextMutation(input: input, context: newClaimContext)
+            return mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)
         default:
             return nil
         }
@@ -290,6 +294,11 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 default:
                     self.send(.navigationAction(action: .openUpdateAppScreen))
                 }
+            case let .setFileUploadStep(model):
+                newState.fileUploadStep = model
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.send(.navigationAction(action: .openFileUploadScreen))
+                }
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -305,6 +314,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.audioRecordingStep = nil
             newState.contractStep = nil
             newState.currentClaimContext = nil
+            newState.fileUploadStep = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
