@@ -86,16 +86,106 @@ public class FeatureFlags {
         guard let unleashClient else {
             return
         }
-        isMovingFlowEnabled = unleashClient.isEnabled(name: "moving_flow")
-        isEditCoInsuredEnabled = unleashClient.isEnabled(name: "edit_coinsured")
-        isTravelInsuranceEnabled = unleashClient.isEnabled(name: "travel_insurance")
-        isTerminationFlowEnabled = unleashClient.isEnabled(name: "termination_flow")
-        isUpdateNecessary = unleashClient.isEnabled(name: "update_necessary")
-        isChatDisabled = unleashClient.isEnabled(name: "disable_chat")
-        isPaymentScreenEnabled = unleashClient.isEnabled(name: "payment_screen")
-        isHedvigLettersFontEnabled = unleashClient.isEnabled(name: "use_hedvig_letters_font")
+        let movingFlowKey = "moving_flow"
+        isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
 
-        let paymentTypeName = unleashClient.getVariant(name: "payment_type").name
+        if isMovingFlowEnabled {
+            log.info(
+                "feature flag info",
+                attributes: [
+                    "flag": movingFlowKey,
+                    "enabled": isMovingFlowEnabled,
+                ]
+            )
+        } else {
+            print("false")
+        }
+
+        print("feature flag ", movingFlowKey, " ", isMovingFlowEnabled)
+
+        let editCoInsuredKey = "edit_coinsured"
+        isEditCoInsuredEnabled = unleashClient.isEnabled(name: editCoInsuredKey)
+
+        if isEditCoInsuredEnabled {
+            log.info(
+                "feature flag info",
+                attributes: [
+                    "flag": editCoInsuredKey,
+                    "enabled": isEditCoInsuredEnabled,
+                ]
+            )
+        } else {
+            print("false")
+        }
+
+        print("feature flag ", editCoInsuredKey, " ", isEditCoInsuredEnabled)
+
+        let travelInsuranceKey = "travel_insurance"
+        isTravelInsuranceEnabled = unleashClient.isEnabled(name: travelInsuranceKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": travelInsuranceKey,
+                "enabled": isTravelInsuranceEnabled,
+            ]
+        )
+
+        print("feature flag ", travelInsuranceKey, " ", isTravelInsuranceEnabled)
+
+        let terminationFlowKey = "termination_flow"
+        isTerminationFlowEnabled = unleashClient.isEnabled(name: terminationFlowKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": terminationFlowKey,
+                "enabled": isTerminationFlowEnabled,
+            ]
+        )
+
+        print("feature flag ", terminationFlowKey, " ", isTerminationFlowEnabled)
+
+        let updateNecessaryeKey = "update_necessary"
+        isUpdateNecessary = unleashClient.isEnabled(name: updateNecessaryeKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": updateNecessaryeKey,
+                "enabled": isUpdateNecessary,
+            ]
+        )
+
+        let disableChatKey = "disable_chat"
+        isChatDisabled = unleashClient.isEnabled(name: disableChatKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": disableChatKey,
+                "enabled": isChatDisabled,
+            ]
+        )
+
+        let paymentScreenKey = "payment_screen"
+        isPaymentScreenEnabled = unleashClient.isEnabled(name: paymentScreenKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": paymentScreenKey,
+                "enabled": isPaymentScreenEnabled,
+            ]
+        )
+
+        let hedvigLettersFontKey = "use_hedvig_letters_font"
+        isHedvigLettersFontEnabled = unleashClient.isEnabled(name: hedvigLettersFontKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": hedvigLettersFontKey,
+                "enabled": isHedvigLettersFontEnabled,
+            ]
+        )
+
+        let paymentTypeKey = "payment_type"
+        let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
         if paymentTypeName == "adyen" {
             paymentType = .adyen
         } else {

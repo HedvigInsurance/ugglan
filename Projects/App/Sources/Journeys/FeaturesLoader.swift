@@ -35,6 +35,12 @@ struct ExperimentsLoader: Presentable {
                     contractSignal,
                     profileSignal
                 )
+                .distinct({ previousContracts, contracts in
+                    if previousContracts.0.count != contracts.0.count || previousContracts.1 != contracts.1 {
+                        return true
+                    }
+                    return false
+                })
                 .onValue { value in
                     UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
                         callback(())
