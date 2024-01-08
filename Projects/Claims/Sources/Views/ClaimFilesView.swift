@@ -1,3 +1,4 @@
+import Photos
 import SwiftUI
 import hCore
 import hCoreUI
@@ -36,7 +37,8 @@ public struct ClaimFilesView: View {
                                     vm.error = nil
                                 }
                             }),
-                        dismissButton: nil)
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
             } else {
@@ -144,7 +146,23 @@ public struct ClaimFilesView: View {
             case .camera:
                 showCamera = true
             case .imagePicker:
-                showImagePicker = true
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    switch status {
+                    case .notDetermined, .restricted, .denied:
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    case .authorized, .limited:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    @unknown default:
+                        DispatchQueue.main.async {
+                            showImagePicker = true
+                        }
+                    }
+                }
             case .filePicker:
                 showFilePicker = true
             }
@@ -256,6 +274,8 @@ class ClaimFilesViewModel: ObservableObject {
 
         static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
         static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {

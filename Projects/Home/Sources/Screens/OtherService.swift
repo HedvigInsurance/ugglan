@@ -30,11 +30,11 @@ struct OtherService: View {
                             }
                             .withChevronAccessory
                             .onTap {
-                                if claim.id == CommonClaim.chat.id {
+                                if claim.id == CommonClaim.chat().id {
                                     store.send(.openFreeTextChat)
-                                } else if claim.id == CommonClaim.moving.id {
+                                } else if claim.id == CommonClaim.moving().id {
                                     store.send(.openMovingFlow)
-                                } else if claim.id == CommonClaim.travelInsurance.id {
+                                } else if claim.id == CommonClaim.travelInsurance().id {
                                     Task {
                                         do {
                                             _ = try await TravelInsuranceFlowJourney.getTravelCertificate()

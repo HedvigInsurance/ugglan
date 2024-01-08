@@ -16,7 +16,7 @@ extension JourneyPresentation {
             presenter.bag += store.stateSignal.atOnce()
                 .onValue { state in
                     if showDot(state) {
-                        tabBarItem.badgeValue = "●"
+                        tabBarItem.badgeValue = ""
                         presenter.viewController.tabBarItem = tabBarItem
                     } else {
                         tabBarItem.badgeValue = nil

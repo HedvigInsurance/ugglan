@@ -26,10 +26,11 @@ struct FilesGridView: View {
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
                     .contentShape(Rectangle())
+                    .opacity(vm.options.contains(.loading) ? 0.5 : 1)
                     if vm.options.contains(.delete) {
                         Button(
                             action: {
-                                vm.onDelete?(file)
+                                vm.delete(file)
                             },
                             label: {
                                 Circle().fill(Color.clear)
@@ -60,7 +61,7 @@ struct FilesGridView: View {
 
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
-    let options: ClaimFilesViewModel.ClaimFilesViewOptions
+    @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
     var onDelete: ((_ file: File) -> Void)?
     var disposeBag = DisposeBag()
     init(
@@ -71,6 +72,35 @@ class FileGridViewModel: ObservableObject {
         self.files = files
         self.options = options
         self.onDelete = onDelete
+    }
+
+    func delete(_ file: File) {
+        let alert = UIAlertController(
+            title: L10n.General.areYouSure,
+            message: L10n.claimsFileUploadRemoveSubtitle,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.claimsFileUploadRemoveCancel,
+                style: .default,
+                handler: { _ in
+
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: L10n.claimsFileUploadRemoveConfirm,
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.onDelete?(file)
+                }
+            )
+        )
+
+        UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
     @MainActor
@@ -86,6 +116,13 @@ class FileGridViewModel: ObservableObject {
             }
         }
     }
+
+    func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
+        withAnimation {
+            self.options = options
+        }
+    }
+
 }
 
 #Preview{
@@ -143,10 +180,10 @@ struct FileView: View {
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
-                case let .localFile(_, thumbnailUrl):
-                    imageFrom(url: thumbnailUrl!)
+                case let .localFile(imageUrl, thumbnailUrl):
+                    imageFromLocalFile(url: thumbnailUrl ?? imageUrl)
                 case .url(let url):
-                    imageFrom(url: url)
+                    imageFromRemote(url: url)
                 }
             } else {
                 GeometryReader { geometry in
@@ -181,7 +218,7 @@ struct FileView: View {
         }
     }
 
-    private func imageFrom(url: URL) -> some View {
+    private func imageFromLocalFile(url: URL) -> some View {
         Rectangle().fill(.clear)
             .aspectRatio(1, contentMode: .fill)
             .background(
@@ -192,6 +229,23 @@ struct FileView: View {
                     .aspectRatio(
                         contentMode: .fill
                     )
+            )
+    }
+
+    private func imageFromRemote(url: URL) -> some View {
+        Rectangle().fill(.clear)
+            .aspectRatio(1, contentMode: .fill)
+            .background(
+                KFImage(
+                    source: Kingfisher.Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id))
+                )
+                .fade(duration: 0.25)
+                .targetCache(ImageCache.default)
+                .setProcessor(processor)
+                .resizable()
+                .aspectRatio(
+                    contentMode: .fill
+                )
             )
     }
 }
