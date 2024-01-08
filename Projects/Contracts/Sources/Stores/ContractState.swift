@@ -10,7 +10,6 @@ public struct ContractState: StateProtocol {
 
     public init() {}
 
-    @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
