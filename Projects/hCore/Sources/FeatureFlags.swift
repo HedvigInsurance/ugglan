@@ -63,7 +63,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
-            refreshInterval: 15,
+            refreshInterval: 60 * 60,
             appName: "ios",
             environment: environmentContext,
             context: context
@@ -120,8 +120,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             ]
         )
 
-        print("feature flag ", movingFlowKey, " ", isMovingFlowEnabled)
-
         let editCoInsuredKey = "edit_coinsured"
         isEditCoInsuredEnabled = unleashClient.isEnabled(name: editCoInsuredKey)
 
@@ -133,8 +131,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             ]
         )
 
-        print("feature flag ", editCoInsuredKey, " ", isEditCoInsuredEnabled)
-
         let travelInsuranceKey = "travel_insurance"
         isTravelInsuranceEnabled = unleashClient.isEnabled(name: travelInsuranceKey)
         log.info(
@@ -145,8 +141,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             ]
         )
 
-        print("feature flag ", travelInsuranceKey, " ", isTravelInsuranceEnabled)
-
         let terminationFlowKey = "termination_flow"
         isTerminationFlowEnabled = unleashClient.isEnabled(name: terminationFlowKey)
         log.info(
@@ -156,8 +150,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
                 "enabled": isTerminationFlowEnabled,
             ]
         )
-
-        print("feature flag ", terminationFlowKey, " ", isTerminationFlowEnabled)
 
         let updateNecessaryeKey = "update_necessary"
         isUpdateNecessary = unleashClient.isEnabled(name: updateNecessaryeKey)
