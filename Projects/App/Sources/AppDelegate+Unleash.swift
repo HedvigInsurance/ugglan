@@ -6,7 +6,7 @@ import hCore
 
 extension AppDelegate {
     func setupFeatureFlags(onComplete: @escaping (_ success: Bool) -> Void) {
-        FeatureFlags.shared.setup(with: getContext, onComplete: onComplete)
+        Dependencies.featureFlags().setup(with: getContext, onComplete: onComplete)
         observeUpdate()
     }
 
@@ -32,7 +32,7 @@ extension AppDelegate {
             .distinct()
             .onValue { locale in
                 DispatchQueue.main.async {
-                    FeatureFlags.shared.updateContext(context: self.getContext)
+                    Dependencies.featureFlags().updateContext(context: self.getContext)
                 }
             }
 
@@ -41,7 +41,7 @@ extension AppDelegate {
             .map({ $0.memberDetails?.id })
             .distinct()
             .onValue { memberId in
-                FeatureFlags.shared.updateContext(context: self.getContext)
+                Dependencies.featureFlags().updateContext(context: self.getContext)
             }
     }
 }

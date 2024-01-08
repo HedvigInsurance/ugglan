@@ -312,7 +312,9 @@ extension ApolloClient {
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
+                let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
                 Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 switch Environment.current {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()

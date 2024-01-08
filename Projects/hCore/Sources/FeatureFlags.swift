@@ -2,47 +2,70 @@ import Foundation
 import UnleashProxyClientSwift
 import hGraphQL
 
-public class FeatureFlags {
-    public static let shared = FeatureFlags()
+public protocol FeatureFlags {
+    var loadingExperimentsSuccess: (Bool) -> Void { get set }
+    var isMovingFlowEnabled: Bool { get set }
+    var isEditCoInsuredEnabled: Bool { get set }
+    var isTravelInsuranceEnabled: Bool { get set }
+    var isTerminationFlowEnabled: Bool { get set }
+    var isUpdateNecessary: Bool { get set }
+    var isChatDisabled: Bool { get set }
+    var isPaymentScreenEnabled: Bool { get set }
+    var isHedvigLettersFontEnabled: Bool { get set }
+    var isCommonClaimEnabled: Bool { get set }
+    var isForeverEnabled: Bool { get set }
+    var paymentType: PaymentType { get set }
+
+    func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
+    func updateContext(context: [String: String])
+}
+
+public enum PaymentType {
+    case trustly
+    case adyen
+}
+
+public class FeatureFlagsUnleash: FeatureFlags {
     private var unleashClient: UnleashClient?
-    public init() {}
+    private var environment: Environment
 
-    private var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
-    @Published public var isMovingFlowEnabled = false
-    @Published public var isEditCoInsuredEnabled = false
-    @Published public var isTravelInsuranceEnabled = false
-    @Published public var isTerminationFlowEnabled = false
-    @Published public var isUpdateNecessary = false
-    @Published public var isChatDisabled = false
-    @Published public var isPaymentScreenEnabled = false
-    @Published public var isHedvigLettersFontEnabled = false
-    @Published public var isCommonClaimEnabled = false
-    @Published public var isForeverEnabled = false
-    @Published public var paymentType: PaymentType = .trustly
-
-    public enum PaymentType {
-        case trustly
-        case adyen
+    public init(
+        environment: Environment
+    ) {
+        self.environment = environment
     }
+
+    public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
+    public var isMovingFlowEnabled: Bool = false
+    public var isEditCoInsuredEnabled: Bool = false
+    public var isTravelInsuranceEnabled: Bool = false
+    public var isTerminationFlowEnabled: Bool = false
+    public var isUpdateNecessary: Bool = false
+    public var isChatDisabled: Bool = false
+    public var isPaymentScreenEnabled: Bool = false
+    public var isHedvigLettersFontEnabled: Bool = false
+    public var isCommonClaimEnabled: Bool = false
+    public var isForeverEnabled: Bool = false
+    public var paymentType: PaymentType = .trustly
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         var clientKey: String {
-            switch Environment.current {
+            switch environment {
             case .production:
                 return "*:production.21d6af57ae16320fde3a3caf024162db19cc33bf600ab7439c865c20"
-            case .custom, .staging:
+            default:
                 return "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
             }
         }
 
-        let environment = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
+        let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
 
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
             refreshInterval: 15,
             appName: "ios",
-            environment: environment,
+            environment: environmentContext,
             context: context
         )
         startUnleash()
@@ -186,8 +209,36 @@ public class FeatureFlags {
     }
 }
 
-extension Dictionary {
-    public static func == (lhs: [String: AnyObject], rhs: [String: AnyObject]) -> Bool {
-        return NSDictionary(dictionary: lhs).isEqual(to: rhs)
+public class FeatureFlagsDemo: FeatureFlags {
+    public init() {}
+
+    public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
+    public var isMovingFlowEnabled: Bool = false
+    public var isEditCoInsuredEnabled: Bool = false
+    public var isTravelInsuranceEnabled: Bool = false
+    public var isTerminationFlowEnabled: Bool = false
+    public var isUpdateNecessary: Bool = false
+    public var isChatDisabled: Bool = false
+    public var isPaymentScreenEnabled: Bool = false
+    public var isHedvigLettersFontEnabled: Bool = false
+    public var isCommonClaimEnabled: Bool = false
+    public var isForeverEnabled: Bool = false
+    public var paymentType: PaymentType = .trustly
+
+    public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
+        loadingExperimentsSuccess = onComplete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.loadingExperimentsSuccess(true)
+        }
+    }
+
+    public func updateContext(context: [String: String]) {
+    }
+}
+
+extension Dependencies {
+    static public func featureFlags() -> FeatureFlags {
+        let featureFlags: FeatureFlags = shared.resolve()
+        return featureFlags
     }
 }

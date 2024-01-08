@@ -56,7 +56,7 @@ struct EditContract: View {
                             store.send(.dismissEditInfo(type: selectedType))
                             switch selectedType {
                             case .coInsured:
-                                if FeatureFlags.shared.isEditCoInsuredEnabled {
+                                if Dependencies.featureFlags().isEditCoInsuredEnabled {
                                     if let contract {
                                         store.send(
                                             .openEditCoInsured(
@@ -94,7 +94,7 @@ struct EditContract: View {
 
     @ViewBuilder
     var infoView: some View {
-        if selectedType == .coInsured && !FeatureFlags.shared.isEditCoInsuredEnabled {
+        if selectedType == .coInsured && !Dependencies.featureFlags().isEditCoInsuredEnabled {
             hSection {
                 InfoCard(
                     text: L10n.InsurancesTab.contactUsToEditCoInsured,

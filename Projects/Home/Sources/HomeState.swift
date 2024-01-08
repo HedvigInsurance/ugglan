@@ -285,7 +285,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
         allCommonClaims.append(.chat())
-        if FeatureFlags.shared.isMovingFlowEnabled {
+        if Dependencies.featureFlags().isMovingFlowEnabled {
             allCommonClaims.append(.moving())
         }
         if state.shouldShowTravelInsurance {

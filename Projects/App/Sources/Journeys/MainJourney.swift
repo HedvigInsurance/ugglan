@@ -11,7 +11,7 @@ import hGraphQL
 extension AppJourney {
     static var main: some JourneyPresentation {
         GroupJourney {
-            if FeatureFlags.shared.isUpdateNecessary {
+            if Dependencies.featureFlags().isUpdateNecessary {
                 AppJourney.updateApp.onPresent {
                     Launch.shared.completeAnimationCallbacker.callAll()
                 }

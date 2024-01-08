@@ -71,7 +71,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
-        if FeatureFlags.shared.isEditCoInsuredEnabled {
+        if Dependencies.featureFlags().isEditCoInsuredEnabled {
             handleMissingCoInsured()
         }
         handleImportantMessages()

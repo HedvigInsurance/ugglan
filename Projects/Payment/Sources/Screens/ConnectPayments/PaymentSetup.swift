@@ -26,7 +26,7 @@ public struct PaymentSetup {
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, Bool>>) {
-        switch FeatureFlags.shared.paymentType {
+        switch Dependencies.featureFlags().paymentType {
         case .trustly:
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
             return (viewController, result.map { .left($0) })

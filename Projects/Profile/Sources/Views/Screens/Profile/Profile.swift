@@ -47,7 +47,7 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if FeatureFlags.shared.isPaymentScreenEnabled {
+                    if Dependencies.featureFlags().isPaymentScreenEnabled {
                         ProfileRow(row: .payment)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {

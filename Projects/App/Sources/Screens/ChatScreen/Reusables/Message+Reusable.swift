@@ -122,7 +122,7 @@ extension Message: Reusable {
         )
 
         let extraPadding: CGFloat = {
-            if FeatureFlags.shared.isHedvigLettersFontEnabled {
+            if Dependencies.featureFlags().isHedvigLettersFontEnabled {
                 return 25
             }
             return 20
