@@ -11,10 +11,10 @@ public protocol FeatureFlags {
     var isUpdateNecessary: Bool { get set }
     var isChatDisabled: Bool { get set }
     var isPaymentScreenEnabled: Bool { get set }
-    var isHedvigLettersFontEnabled: Bool { get set }
     var isCommonClaimEnabled: Bool { get set }
     var isForeverEnabled: Bool { get set }
     var paymentType: PaymentType { get set }
+    var isHelpCenterEnabled: Bool { get set }
 
     func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
     func updateContext(context: [String: String])
@@ -43,10 +43,10 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isUpdateNecessary: Bool = false
     public var isChatDisabled: Bool = false
     public var isPaymentScreenEnabled: Bool = false
-    public var isHedvigLettersFontEnabled: Bool = false
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
     public var paymentType: PaymentType = .trustly
+    public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
@@ -184,13 +184,13 @@ public class FeatureFlagsUnleash: FeatureFlags {
             ]
         )
 
-        let hedvigLettersFontKey = "use_hedvig_letters_font"
-        isHedvigLettersFontEnabled = unleashClient.isEnabled(name: hedvigLettersFontKey)
+        let helpCenterKey = "help_center"
+        isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
         log.info(
             "feature flag info",
             attributes: [
-                "flag": hedvigLettersFontKey,
-                "enabled": isHedvigLettersFontEnabled,
+                "flag": helpCenterKey,
+                "enabled": isHelpCenterEnabled,
             ]
         )
 
@@ -215,10 +215,10 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var isUpdateNecessary: Bool = false
     public var isChatDisabled: Bool = false
     public var isPaymentScreenEnabled: Bool = false
-    public var isHedvigLettersFontEnabled: Bool = false
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
     public var paymentType: PaymentType = .trustly
+    public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         loadingExperimentsSuccess = onComplete

@@ -122,9 +122,6 @@ extension Message: Reusable {
         )
 
         let extraPadding: CGFloat = {
-            if Dependencies.featureFlags().isHedvigLettersFontEnabled {
-                return 25
-            }
             return 20
         }()
 

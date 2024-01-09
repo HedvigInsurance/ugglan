@@ -189,6 +189,8 @@ extension HelpCenterStartView {
                                         answer: L10n.hcPaymentsA03,
                                         relatedQuestions: []
                                     ),
+                                ],
+                                allQuestions: [
                                     .init(
                                         question: L10n.hcPaymentsQ04,
                                         answer: L10n.hcPaymentsA04,
@@ -244,8 +246,7 @@ extension HelpCenterStartView {
                                         answer: L10n.hcPaymentsA14,
                                         relatedQuestions: []
                                     ),
-                                ],
-                                allQuestions: commonQuestions
+                                ]
                             ),
                             .init(
                                 title: L10n.hcClaimsTitle,
@@ -265,6 +266,8 @@ extension HelpCenterStartView {
                                         answer: L10n.hcClaimsA03,
                                         relatedQuestions: []
                                     ),
+                                ],
+                                allQuestions: [
                                     .init(
                                         question: L10n.hcClaimsQ04,
                                         answer: L10n.hcClaimsA04,
@@ -310,8 +313,7 @@ extension HelpCenterStartView {
                                         answer: L10n.hcClaimsA12,
                                         relatedQuestions: []
                                     ),
-                                ],
-                                allQuestions: commonQuestions
+                                ]
                             ),
                             .init(
                                 title: L10n.hcCoverageTitle,
@@ -331,6 +333,8 @@ extension HelpCenterStartView {
                                         answer: L10n.hcCoverageA03,
                                         relatedQuestions: []
                                     ),
+                                ],
+                                allQuestions: [
                                     .init(
                                         question: L10n.hcCoverageQ04,
                                         answer: L10n.hcCoverageA04,
@@ -358,7 +362,7 @@ extension HelpCenterStartView {
                                     ),
                                     .init(
                                         question: L10n.hcCoverageQ09,
-                                        answer: L10n.hcCoverageA09(0), /* TODO: ? */
+                                        answer: L10n.hcCoverageA09(0),
                                         relatedQuestions: []
                                     ),
                                     .init(
@@ -373,7 +377,7 @@ extension HelpCenterStartView {
                                     ),
                                     .init(
                                         question: L10n.hcCoverageQ12,
-                                        answer: L10n.hcCoverageA12,
+                                        answer: L10n.hcCoverageA12(0),
                                         relatedQuestions: []
                                     ),
                                     .init(
@@ -426,8 +430,7 @@ extension HelpCenterStartView {
                                         answer: L10n.hcCoverageA22,
                                         relatedQuestions: []
                                     ),
-                                ],
-                                allQuestions: commonQuestions
+                                ]
                             ),
                             .init(
                                 title: L10n.hcInsurancesTitle,
@@ -448,12 +451,60 @@ extension HelpCenterStartView {
                                         relatedQuestions: []
                                     ),
                                 ],
-                                allQuestions: commonQuestions
+                                allQuestions: [
+                                    .init(
+                                        question: L10n.hcInsuranceQ04,
+                                        answer: L10n.hcInsuranceA04,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ05,
+                                        answer: L10n.hcInsuranceA05,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ06,
+                                        answer: L10n.hcInsuranceA06,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ07,
+                                        answer: L10n.hcInsuranceA07,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcInsuranceQ08,
+                                        answer: L10n.hcInsuranceA08,
+                                        relatedQuestions: []
+                                    ),
+                                ]
                             ),
                             .init(
                                 title: L10n.hcGeneralTitle,
-                                commonQuestions: [],
-                                allQuestions: commonQuestions
+                                commonQuestions: [
+                                    .init(
+                                        question: L10n.hcOtherQ01,
+                                        answer: L10n.hcOtherA01,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcOtherQ02,
+                                        answer: L10n.hcOtherA02,
+                                        relatedQuestions: []
+                                    ),
+                                    .init(
+                                        question: L10n.hcOtherQ03,
+                                        answer: L10n.hcOtherA03,
+                                        relatedQuestions: []
+                                    ),
+                                ],
+                                allQuestions: [
+                                    .init(
+                                        question: L10n.hcOtherQ04,
+                                        answer: L10n.hcOtherA04,
+                                        relatedQuestions: []
+                                    )
+                                ]
                             ),
                         ],
                         commonQuestions: commonQuestions
