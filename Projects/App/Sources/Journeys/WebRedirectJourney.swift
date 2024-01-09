@@ -22,8 +22,6 @@ extension AppJourney {
                     }
                     return url
                 }
-
-                print("url is: ", urlToOpen)
                 UIApplication.shared.open(urlToOpen)
             }
     }
