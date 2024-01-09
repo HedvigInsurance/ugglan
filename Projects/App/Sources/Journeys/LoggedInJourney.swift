@@ -156,7 +156,9 @@ extension AppJourney {
                 },
                 {
                     let store: ContractStore = globalPresentableStoreContainer.get()
-                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
+                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                        || store.state.activeContracts.isEmpty
+                    {
                         foreverTab
                     }
                 },
