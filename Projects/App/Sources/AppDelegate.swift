@@ -296,7 +296,6 @@ import hGraphQL
             .atValue { _ in
                 self.setupFeatureFlags(onComplete: { success in
                     DispatchQueue.main.async {
-                        Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
                         self.bag += self.window.present(AppJourney.main)
                     }
                 })
@@ -308,6 +307,7 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
+                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
                 let paymentService = hPaymentServiceOctopus()
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
