@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL

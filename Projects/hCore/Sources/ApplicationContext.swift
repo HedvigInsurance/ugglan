@@ -1,4 +1,5 @@
 import Foundation
+import UnleashProxyClientSwift
 
 public struct ApplicationContext {
     public static var shared = ApplicationContext()

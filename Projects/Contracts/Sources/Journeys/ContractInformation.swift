@@ -7,7 +7,7 @@ import Presentation
 import SwiftUI
 import TerminateContracts
 import UIKit
-import hAnalytics
+import UnleashProxyClientSwift
 import hCore
 import hCoreUI
 import hGraphQL
@@ -50,7 +50,9 @@ struct ContractInformationView: View {
                             if contract.showEditInfo {
                                 hSection {
                                     hButton.LargeButton(type: .secondary) {
-                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                        if onlyCoInsured(contract)
+                                            && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                        {
                                             store.send(
                                                 .openEditCoInsured(
                                                     config: .init(contract: contract),
@@ -61,7 +63,9 @@ struct ContractInformationView: View {
                                             store.send(.contractEditInfo(id: id))
                                         }
                                     } content: {
-                                        if onlyCoInsured(contract) && hAnalyticsExperiment.editCoinsured {
+                                        if onlyCoInsured(contract)
+                                            && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                        {
                                             hText(L10n.contractEditCoinsured)
                                         } else {
                                             hText(L10n.contractEditInfoLabel)
@@ -103,7 +107,7 @@ struct ContractInformationView: View {
         VStack(spacing: 0) {
             hSection {
                 HStack {
-                    if hAnalyticsExperiment.editCoinsured {
+                    if Dependencies.featureFlags().isEditCoInsuredEnabled {
                         hRow {
                             insuredField(contract: contract)
                         }
@@ -113,9 +117,10 @@ struct ContractInformationView: View {
                         }
                         .hWithoutDivider
                     }
+
                 }
 
-                if hAnalyticsExperiment.editCoinsured {
+                if Dependencies.featureFlags().isEditCoInsuredEnabled {
                     hRow {
                         let hasContentBelow =
                             !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
@@ -132,7 +137,7 @@ struct ContractInformationView: View {
             }
             .withoutHorizontalPadding
 
-            if hAnalyticsExperiment.editCoinsured {
+            if Dependencies.featureFlags().isEditCoInsuredEnabled {
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
                     hRow {
                         if coInsured.coInsured.hasMissingInfo {
@@ -239,7 +244,7 @@ struct ContractInformationView: View {
                 HStack {
                     if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }), hAnalyticsExperiment.editCoinsured {
+                    }), Dependencies.featureFlags().isEditCoInsuredEnabled {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 contract.coInsured.count,
@@ -292,7 +297,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private var displayTerminationButton: some View {
-        if hAnalyticsExperiment.terminationFlow {
+        if Dependencies.featureFlags().isTerminationFlowEnabled {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in

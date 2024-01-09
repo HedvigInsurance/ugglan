@@ -1,7 +1,6 @@
 import Apollo
 import Foundation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
