@@ -15,6 +15,7 @@ public protocol FeatureFlags {
     var isCommonClaimEnabled: Bool { get set }
     var isForeverEnabled: Bool { get set }
     var paymentType: PaymentType { get set }
+    var isHelpCenterEnabled: Bool { get set }
 
     func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
     func updateContext(context: [String: String])
@@ -47,6 +48,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
     public var paymentType: PaymentType = .trustly
+    public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
@@ -194,6 +196,16 @@ public class FeatureFlagsUnleash: FeatureFlags {
             ]
         )
 
+        let helpCenterKey = "help_center"
+        isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
+        log.info(
+            "feature flag info",
+            attributes: [
+                "flag": helpCenterKey,
+                "enabled": isHelpCenterEnabled,
+            ]
+        )
+
         let paymentTypeKey = "payment_type"
         let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
         if paymentTypeName == "adyen" {
@@ -219,6 +231,7 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
     public var paymentType: PaymentType = .trustly
+    public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         loadingExperimentsSuccess = onComplete
