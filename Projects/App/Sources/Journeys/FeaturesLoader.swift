@@ -20,12 +20,14 @@ struct ExperimentsLoader: Presentable {
             Signal { callback in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                bag += contractStore.stateSignal
-                    .onValue { value in
-                        UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
-                            callback(())
-                        })
-                        bag.dispose()
+                bag += contractStore.actionSignal
+                    .onValue { action in
+                        if case .fetchCompleted = action {
+                            UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                                callback(())
+                            })
+                            bag.dispose()
+                        }
                     }
                 return bag
             }
