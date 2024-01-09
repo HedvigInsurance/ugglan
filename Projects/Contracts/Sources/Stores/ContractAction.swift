@@ -4,7 +4,6 @@ import Flow
 import Presentation
 import SwiftUI
 import TerminateContracts
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -72,7 +71,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         switch self {
         case .changeAddress: return L10n.generalContinueButton
         case .coInsured:
-            if hAnalyticsExperiment.editCoinsured {
+            if Dependencies.featureFlags().isEditCoInsuredEnabled {
                 return L10n.generalContinueButton
             }
             return L10n.openChat
@@ -82,7 +81,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
-        if hAnalyticsExperiment.movingFlow && contract.supportsAddressChange {
+        if Dependencies.featureFlags().isMovingFlowEnabled && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
         if contract.supportsCoInsured {

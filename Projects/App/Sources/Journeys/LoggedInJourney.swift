@@ -13,7 +13,6 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import hAnalytics
 import hCore
 import hCoreUI
 
@@ -160,7 +159,10 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if hAnalyticsExperiment.forever {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                        || store.state.activeContracts.isEmpty
+                    {
                         foreverTab
                     }
                 },

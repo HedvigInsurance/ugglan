@@ -6,7 +6,6 @@ import Presentation
 import SwiftUI
 import TerminateContracts
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -175,25 +174,27 @@ extension ContractDetail {
         }
         .configureTitle(title)
     }
-    
+
     public var contractDetailErrorJourney: some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: GenericErrorView(
                 description: L10n.contractDetailsError,
                 buttons: .init(
-            actionButton: .init(
-                buttonTitle: L10n.generalCloseButton,
-                buttonAction: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.dismisscontractDetailNavigation)
-            }),
-            dismissButton: .init(
-                buttonAction: {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.goToFreeTextChat)
-                })
-        ))
+                    actionButton: .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            let store: ContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismisscontractDetailNavigation)
+                        }
+                    ),
+                    dismissButton: .init(
+                        buttonAction: {
+                            let store: ContractStore = globalPresentableStoreContainer.get()
+                            store.send(.goToFreeTextChat)
+                        })
+                )
+            )
         ) { action in
             if case .goToFreeTextChat = action {
                 DismissJourney()

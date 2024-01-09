@@ -16,11 +16,11 @@ public enum ExternalDependencies: CaseIterable {
     case snapshottesting
     case reveal
     case datadog
-    case hAnalytics
     case authlib
     case tagkit
     case introspect
     case svgkit
+    case unleashProxyClientSwift
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -83,10 +83,6 @@ public enum ExternalDependencies: CaseIterable {
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.20.0"))]
-        case .hAnalytics:
-            return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.321.0"))
-            ]
         case .authlib:
             return [
                 .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("0.0.21"))
@@ -102,6 +98,10 @@ public enum ExternalDependencies: CaseIterable {
         case .svgkit:
             return [
                 .package(url: "https://github.com/SVGKit/SVGKit", .upToNextMajor(from: "3.0.0"))
+            ]
+        case .unleashProxyClientSwift:
+            return [
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
             ]
         }
     }
@@ -150,10 +150,6 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogStatic"),
                 .package(product: "DatadogCrashReporting"),
             ]
-        case .hAnalytics:
-            return [
-                .package(product: "hAnalytics")
-            ]
         case .authlib:
             return [
                 .package(product: "authlib")
@@ -166,6 +162,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "Introspect")]
         case .svgkit:
             return [.package(product: "SVGKit")]
+        case .unleashProxyClientSwift:
+            return [.package(product: "UnleashProxyClientSwift")]
         }
     }
 }

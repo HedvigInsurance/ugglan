@@ -5,7 +5,6 @@ import Foundation
 import Home
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -62,9 +61,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        if hAnalyticsExperiment.claimsFlow {
-            honestyPledge(from: origin)
-        }
+        honestyPledge(from: origin)
     }
 
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
