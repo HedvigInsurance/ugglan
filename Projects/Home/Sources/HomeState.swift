@@ -117,6 +117,7 @@ public enum HomeAction: ActionProtocol {
     case openHelpCenterQuestionView(question: Question)
     case goToQuickAction(QuickAction)
     case goToURL(url: URL)
+    case dismissHelpCenter
 }
 
 public enum FutureStatus: Codable, Equatable {

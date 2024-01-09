@@ -50,6 +50,8 @@ extension HelpCenterQuestionView {
         ) { action in
             if case .openFreeTextChat = action {
                 DismissJourney()
+            } else if case .dismissHelpCenter = action {
+                DismissJourney()
             }
         }
         .configureTitle(title ?? "")
