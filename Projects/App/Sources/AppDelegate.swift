@@ -342,7 +342,7 @@ extension ApolloClient {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> OldChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
@@ -352,7 +352,7 @@ extension ApolloClient {
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                    Dependencies.shared.add(module: Module { () -> OldChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })

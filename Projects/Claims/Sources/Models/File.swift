@@ -6,19 +6,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import hCore
 
-public struct File: Codable, Equatable, Identifiable, Hashable {
-    public let id: String
-    let size: Double
-    let mimeType: MimeType
-    let name: String
-    let source: FileSource
-}
-
-public enum FileSource: Codable, Equatable, Hashable {
-    case localFile(url: URL, thumbnailURL: URL?)
-    case url(url: URL)
-}
-
 struct ImagePicker: UIViewControllerRepresentable {
     let filesSelected: (_ files: [FilePickerDto]) -> Void
 

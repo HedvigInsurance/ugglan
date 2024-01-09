@@ -25,8 +25,8 @@ struct FileUpload {
     let mimeType: String
     let fileName: String
 
-    func upload() throws -> Future<ChatUploadFileResponseModel> {
-        let client: ChatFileUploaderClient = Dependencies.shared.resolve()
+    func upload() throws -> Future<OldChatUploadFileResponseModel> {
+        let client: OldChatFileUploaderClient = Dependencies.shared.resolve()
         return try client.upload(file: UploadFile(data: data, name: fileName, mimeType: mimeType))
     }
 }
@@ -64,7 +64,7 @@ extension AttachFilePane: Viewable {
             return CGSize(width: height, height: height)
         }
 
-        func uploadFile(_ fileUpload: FileUpload) -> Future<ChatUploadFileResponseModel> {
+        func uploadFile(_ fileUpload: FileUpload) -> Future<OldChatUploadFileResponseModel> {
             let future = try! fileUpload.upload()
 
             future.onValue { value in
@@ -80,7 +80,7 @@ extension AttachFilePane: Viewable {
 
         let header = FilePickerHeader()
 
-        bag += header.uploadFileDelegate.set { fileUpload -> Future<ChatUploadFileResponseModel> in
+        bag += header.uploadFileDelegate.set { fileUpload -> Future<OldChatUploadFileResponseModel> in
             uploadFile(fileUpload)
         }
 
@@ -103,7 +103,7 @@ extension AttachFilePane: Viewable {
         bag += collectionKit.onValueDisposePrevious { table in
             DisposeBag(
                 table.map { asset -> Disposable in
-                    asset.uploadFileDelegate.set { data -> Future<ChatUploadFileResponseModel> in
+                    asset.uploadFileDelegate.set { data -> Future<OldChatUploadFileResponseModel> in
                         uploadFile(data)
                     }
                 }

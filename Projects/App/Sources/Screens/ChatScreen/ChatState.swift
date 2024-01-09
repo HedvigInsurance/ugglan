@@ -1,4 +1,5 @@
 import Apollo
+import Chat
 import Combine
 import Flow
 import Form
@@ -347,11 +348,11 @@ class WebMetaDataProvider {
         }
     }
 }
-protocol ChatFileUploaderClient {
-    func upload(file: UploadFile) throws -> Flow.Future<ChatUploadFileResponseModel>
+protocol OldChatFileUploaderClient {
+    func upload(file: UploadFile) throws -> Flow.Future<OldChatUploadFileResponseModel>
 }
 
-struct ChatUploadFileResponseModel: Decodable {
+struct OldChatUploadFileResponseModel: Decodable {
     let uploadToken: String
 }
 
@@ -409,8 +410,8 @@ struct WebMetaDataProviderData {
         self.image = image
     }
 }
-extension NetworkClient: ChatFileUploaderClient {
-    func upload(file: UploadFile) throws -> Flow.Future<ChatUploadFileResponseModel> {
+extension NetworkClient: OldChatFileUploaderClient {
+    func upload(file: UploadFile) throws -> Flow.Future<OldChatUploadFileResponseModel> {
         return Future { [weak self] completion in
             FileUploadRequest.uploadFile(file: file).asRequest
                 .onValue { request in
@@ -419,7 +420,7 @@ extension NetworkClient: ChatFileUploaderClient {
                             with: request,
                             completionHandler: { (data, response, error) in
                                 do {
-                                    if let data: [ChatUploadFileResponseModel] = try self?
+                                    if let data: [OldChatUploadFileResponseModel] = try self?
                                         .handleResponse(data: data, response: response, error: error)
                                     {
                                         if let responseModel = data.first {

@@ -9,7 +9,7 @@ import hCoreUI
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
-    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<ChatUploadFileResponseModel>>()
+    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<OldChatUploadFileResponseModel>>()
 
     enum AssetType { case image, video }
 
