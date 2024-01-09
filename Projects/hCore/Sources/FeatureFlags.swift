@@ -49,6 +49,9 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var paymentType: PaymentType = .trustly
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
+        unleashClient?.unsubscribe(name: "ready")
+        unleashClient?.unsubscribe(name: "update")
+        unleashClient?.stop()
         var clientKey: String {
             switch environment {
             case .production:
