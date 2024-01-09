@@ -36,7 +36,10 @@ extension AppJourney {
 
     @JourneyBuilder
     static func configureURL(url: URL) -> some JourneyPresentation {
-        if let deepLink = DeepLink.getType(from: url) {
+        let urlPath = URLComponents(url: url, resolvingAgainstBaseURL: false)?.path
+        let urlIsDeepLink = urlPath?.filter({ $0 == "/" }).count == 1
+
+        if let deepLink = DeepLink.getType(from: url), urlIsDeepLink {
             DismissJourney()
                 .onPresent {
                     if isTabURL(url: url) {
@@ -71,18 +74,15 @@ public func getType(attribute: String) -> TabURL? {
 }
 
 func isTabURL(url: URL) -> Bool {
-    let prodUrl = "https://hedvig.page.link/"
-    let stagingUrl = "https://hedvigtest.page.link/"
-    guard url.absoluteString.contains(prodUrl) || url.absoluteString.contains(stagingUrl) else {
+    let urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+    guard urlComponent?.host == "hedvig.page.link" || urlComponent?.host == "hedvigtest.page.link" else {
         return false
     }
 
-    let delimiter = ".page.link/"
-    let attribute = url.absoluteString.components(separatedBy: delimiter)[1]
-
-    if let isTabType = getType(attribute: attribute) {
-        return true
+    if let urlPath = urlComponent?.path.replacingOccurrences(of: "/", with: "") {
+        if let isTabType = getType(attribute: urlPath) {
+            return true
+        }
     }
-
     return false
 }

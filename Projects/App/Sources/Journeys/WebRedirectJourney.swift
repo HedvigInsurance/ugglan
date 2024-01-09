@@ -12,9 +12,11 @@ extension AppJourney {
     static func webRedirect(url: URL) -> some JourneyPresentation {
         ContinueJourney()
             .onPresent {
-                let urlPrefix = "https://www."
+                let urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+                let urlPrefix = "https://"
                 var urlToOpen: URL {
-                    if !url.absoluteString.contains("https://") {
+                    if urlComponent?.scheme != "https" {
                         let urlStringWithPrefix = urlPrefix + url.absoluteString
                         if let urlWithPrefix = URL(string: urlStringWithPrefix) {
                             return urlWithPrefix
