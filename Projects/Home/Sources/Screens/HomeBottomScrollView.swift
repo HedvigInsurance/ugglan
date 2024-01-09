@@ -6,7 +6,6 @@ import Flow
 import Payment
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -71,7 +70,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
         handlePayments()
-        if hAnalyticsExperiment.editCoinsured {
+        if Dependencies.featureFlags().isEditCoInsuredEnabled {
             handleMissingCoInsured()
         }
         handleImportantMessages()

@@ -7,7 +7,6 @@ import Presentation
 import Profile
 import TravelCertificate
 import UIKit
-import hAnalytics
 import hCore
 import hGraphQL
 

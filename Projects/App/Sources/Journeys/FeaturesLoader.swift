@@ -1,10 +1,12 @@
 import Claims
+import Contracts
 import Flow
 import Form
 import Foundation
 import Presentation
+import Profile
 import UIKit
-import hAnalytics
+import hCore
 import hCoreUI
 
 struct ExperimentsLoader: Presentable {
@@ -16,10 +18,17 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                hAnalyticsExperiment.retryingLoad { _ in
-                    callback(())
-                }
-
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+                bag += contractStore.actionSignal
+                    .onValue { action in
+                        if case .fetchCompleted = action {
+                            UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                                callback(())
+                            })
+                            bag.dispose()
+                        }
+                    }
                 return bag
             }
         )

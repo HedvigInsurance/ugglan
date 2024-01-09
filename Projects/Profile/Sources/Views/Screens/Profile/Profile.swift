@@ -6,7 +6,6 @@ import Market
 import Payment
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -48,7 +47,7 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if hAnalyticsExperiment.paymentScreen {
+                    if Dependencies.featureFlags().isPaymentScreenEnabled {
                         ProfileRow(row: .payment)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {

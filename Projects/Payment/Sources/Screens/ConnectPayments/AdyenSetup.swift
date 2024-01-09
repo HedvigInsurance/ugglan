@@ -5,7 +5,6 @@ import Presentation
 import SafariServices
 import UIKit
 import WebKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
