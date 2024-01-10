@@ -22,7 +22,6 @@ public enum GraphQLError: Error {
     case otherError
 }
 
-
 func logGraphQLError(error: Error) {
     log.error(
         "GraphQL error",
@@ -122,7 +121,7 @@ extension ApolloClient {
                             }
                             completion(.failure(GraphQLError.graphQLError(errors: errors)))
                         }
-                    case let .failure(error): 
+                    case let .failure(error):
                         logGraphQLError(error: error)
                         completion(.failure(error))
                     }
@@ -180,7 +179,7 @@ extension ApolloClient {
                         }
                         onError(GraphQLError.graphQLError(errors: errors))
                     }
-                case let .failure(error): 
+                case let .failure(error):
                     logGraphQLError(error: error)
                     onError(error)
                 }
@@ -244,7 +243,7 @@ extension ApolloClient {
                             }
                             onError(GraphQLError.graphQLError(errors: errors))
                         }
-                    case let .failure(error): 
+                    case let .failure(error):
                         logGraphQLError(error: error)
                         onError(error)
                     }
