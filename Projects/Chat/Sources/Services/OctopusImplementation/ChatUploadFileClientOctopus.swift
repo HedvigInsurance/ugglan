@@ -17,24 +17,6 @@ extension NetworkClient: ChatFileUploaderClient {
                     if let uploadedFiles: [ChatUploadFileResponseModel] = try self?
                         .handleResponse(data: data, response: response, error: error)
                     {
-                        //                        for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
-                        //                            let localFileSource = files[file.offset].source
-                        //                            switch localFileSource {
-                        //                            case let .localFile(url, _):
-                        //                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
-                        //                                    let data = try? Data(contentsOf: url), let image = UIImage(data: data)
-                        //                                {
-                        //                                    let processor = DownsamplingImageProcessor(
-                        //                                        size: CGSize(width: 300, height: 300)
-                        //                                    )
-                        //                                    var options = KingfisherParsedOptionsInfo.init(nil)
-                        //                                    options.processor = processor
-                        //                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
-                        //                                }
-                        //                            case .url(_):
-                        //                                break
-                        //                            }
-                        //                        }
                         inCont.resume(returning: uploadedFiles)
                     }
                 } catch let error {
@@ -47,27 +29,6 @@ extension NetworkClient: ChatFileUploaderClient {
             task.resume()
         }
         return response
-        //        FileUploadRequest.uploadFile(file: file).asRequest
-        //            .onValue { request in
-        //                let task = self?.sessionClient
-        //                    .dataTask(
-        //                        with: request,
-        //                        completionHandler: { (data, response, error) in
-        //                            do {
-        //                                if let data: [OldChatUploadFileResponseModel] = try self?
-        //                                    .handleResponse(data: data, response: response, error: error)
-        //                                {
-        //                                    if let responseModel = data.first {
-        //                                        completion(.success(responseModel))
-        //                                    }
-        //                                }
-        //                            } catch let error {
-        //                                completion(.failure(error))
-        //                            }
-        //                        }
-        //                    )
-        //                task?.resume()
-        //            }
     }
 }
 

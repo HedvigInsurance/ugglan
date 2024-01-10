@@ -1,5 +1,76 @@
 import Foundation
+import hCore
+import hGraphQL
 
-public struct Message {
+public struct Message: Identifiable, Hashable {
+    public static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.id == rhs.id
+    }
 
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    let localId: String?
+    let remoteId: String?
+    public var id: String {
+        return localId ?? remoteId ?? ""
+    }
+    let sender: MessageSender
+    let sentAt: Date
+    let type: MessageType
+    var status: MessageStatus
+
+    init(type: MessageType) {
+        self.localId = UUID().uuidString
+        self.remoteId = nil
+        self.sender = .member
+        self.type = type
+        self.sentAt = Date()
+        self.status = .draft
+    }
+
+    init(localId: String, remoteId: String, type: MessageType, date: Date) {
+        self.localId = localId
+        self.remoteId = remoteId
+        self.sender = .member
+        self.type = type
+        self.sentAt = date
+        self.status = .sent
+    }
+
+    init(remoteId: String, type: MessageType, sender: MessageSender, date: Date) {
+        self.localId = nil
+        self.remoteId = remoteId
+        self.sender = sender
+        self.type = type
+        self.sentAt = date
+        self.status = sender == .hedvig ? .received : .sent
+    }
+}
+
+enum MessageSender {
+    case member
+    case hedvig
+}
+
+enum MessageStatus {
+    case draft
+    case sent
+    case received
+    case failed(error: String)
+}
+enum MessageType {
+    case text(text: String)
+    case file(file: File)
+    case crossSell(url: URL)
+    case deepLink(url: URL)
+    case otherLink(url: URL)
+    case unknown
+}
+
+extension Sequence where Iterator.Element == Message {
+    func filterNotAddedIn(list alreadyAdded: [String]) -> [Message] {
+        return self.filter({ !alreadyAdded.contains($0.id) })
+    }
 }

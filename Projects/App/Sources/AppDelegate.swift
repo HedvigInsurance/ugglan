@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import Chat
 import Claims
 import CoreDependencies
 import Datadog
@@ -337,7 +338,13 @@ extension ApolloClient {
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
+                let messagesClient = FetchMessagesClientOctopus()
+                let sendMessage = SendMessagesClientOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
+                Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
+
                 switch Environment.current {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()

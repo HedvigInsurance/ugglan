@@ -1,4 +1,5 @@
 import Apollo
+import Chat
 import Flow
 import Foundation
 import Presentation
@@ -11,28 +12,7 @@ import hGraphQL
 extension AppJourney {
     @JourneyBuilder
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        if hAnalyticsExperiment.disableChat {
-            AppJourney.disableChatScreen(style: style)
-        } else {
-            let chat = Chat()
-            Journey(chat, style: style, options: [.embedInNavigationController, .preffersLargerNavigationBar]) {
-                item in
-                item.journey
-            }
-            .onPresent {
-                chat.chatState.initFetch()
-            }
-            .onDismiss {
-                chat.chatState.reset()
-            }
-            .onAction(UgglanStore.self) { action in
-                if case .closeChat = action {
-                    DismissJourney()
-                }
-            }
-            .configureTitle(L10n.chatTitle)
-            .setScrollEdgeNavigationBarAppearanceToStandardd
-        }
+        ChatJourney.start()
     }
 
     @JourneyBuilder
@@ -67,14 +47,15 @@ extension AppJourney {
                 icon: .triangle,
                 buttons: .init(
                     actionButton:
-                            .init(
-                                buttonTitle: L10n.generalCloseButton,
-                                buttonAction: {
-                                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                                    store.send(.closeChat)
-                                }),
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                store.send(.closeChat)
+                            }
+                        ),
                     dismissButton: nil
-                    )
+                )
             )
             .hWithoutTitle,
             style: style,

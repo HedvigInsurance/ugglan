@@ -110,21 +110,6 @@ extension AttachGIFPane: Viewable {
             }
         }
 
-        bag +=
-            searchBarValue.mapLatestToFuture { value in
-                self.octopus.client.fetch(query: OctopusGraphQL.ChatGifsQuery(query: value))
-            }
-            .compactMap({ data in
-                data.chatGifs.compactMap({ $0 })
-            })
-            .onValue { gifs in
-                let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
-                    guard let stringUrl = gif.url, let url = URL(string: stringUrl) else { return nil }
-                    return AttachGIFImage(url: url, chatState: self.chatState)
-                }
-                collectionKit.table = Table(rows: attachGIFImages)
-            }
-
         bag += collectionKit.onValueDisposePrevious { table -> Disposable? in let innerBag = DisposeBag()
 
             innerBag += table.map { gifImage in

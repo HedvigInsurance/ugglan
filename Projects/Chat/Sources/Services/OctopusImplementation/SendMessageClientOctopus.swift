@@ -5,6 +5,8 @@ import hGraphQL
 public class SendMessagesClientOctopus: SendMessageClient {
     @Inject var octopus: hOctopus
     @Inject var chatFileUploaderClient: ChatFileUploaderClient
+
+    public init() {}
     public func send(message: String) async throws -> SentMessageWrapper {
         let data = try await octopus.client.perform(
             mutation: OctopusGraphQL.ChatSendTextMutation(input: .init(text: message))
