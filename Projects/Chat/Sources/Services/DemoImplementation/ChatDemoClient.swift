@@ -78,16 +78,8 @@ class ChatDemoClient: FetchMessagesClient, SendMessageClient {
         )
     }
 
-    func send(message: String) async throws -> SentMessageWrapper {
-        let message = Message(type: .text(text: message))
+    func send(message: Message) async throws -> SentMessageWrapper {
         self.messages.append(message)
         return .init(message: message, status: nil)
     }
-
-    func send(for file: hCore.File) async throws -> SentMessageWrapper {
-        let message = Message(type: .file(file: file))
-        self.messages.append(message)
-        return .init(message: message, status: nil)
-    }
-
 }

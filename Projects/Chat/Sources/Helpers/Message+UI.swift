@@ -4,11 +4,15 @@ import hCoreUI
 extension Message {
     @hColorBuilder
     var bgColor: some hColor {
-        switch self.sender {
-        case .hedvig:
-            hFillColor.opaqueOne
-        case .member:
-            hSignalColor.blueFill
+        if case .failed = status {
+            hSignalColor.redHighlight
+        } else {
+            switch self.sender {
+            case .hedvig:
+                hFillColor.opaqueOne
+            case .member:
+                hSignalColor.blueFill
+            }
         }
     }
     @hColorBuilder

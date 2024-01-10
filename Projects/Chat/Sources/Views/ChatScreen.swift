@@ -32,7 +32,7 @@ struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy) -> some View {
         ScrollView {
             LazyVStack {
-                ForEach(vm.messages, id: \.id) { message in
+                ForEach(vm.messages, id: \.self) { message in
                     messageView(for: message)
                         .flippedUpsideDown()
                         .onAppear {
@@ -46,14 +46,15 @@ struct ChatScreen: View {
             }
             .onAppear {
                 withAnimation {
-                    proxy.scrollTo(vm.messages.last?.id, anchor: .bottom)
+                    proxy.scrollTo(vm.messages.last, anchor: .bottom)
                 }
             }
             .onChange(of: vm.scrollToMessage) { message in
                 withAnimation {
-                    proxy.scrollTo(message?.id, anchor: .bottom)
+                    proxy.scrollTo(message, anchor: .bottom)
                 }
             }
+
         }
         .flippedUpsideDown()
     }
@@ -64,7 +65,7 @@ struct ChatScreen: View {
                 .textFieldStyle(.roundedBorder)
             Button {
                 Task {
-                    await vm.send(text: vm.inputText)
+                    await vm.send(message: .init(type: .text(text: vm.inputText)))
                 }
             } label: {
                 Image(systemName: "paperplane")
@@ -85,14 +86,26 @@ struct ChatScreen: View {
                         alignment: message.sender == .member ? .trailing : .leading
                     )
                     .foregroundColor(message.textColor)
+                    .onTapGesture {
+                        if case .failed = message.status {
+                            Task {
+                                await vm.retrySending(message: message)
+                            }
+                        }
+                    }
                 HStack(spacing: 0) {
-                    hText(message.timeStampString)
-                    if message.sender == .member && vm.messages.first?.id == message.id {
+                    if vm.lastDeliveredMessage?.id == message.id {
+                        hText(message.timeStampString)
                         hText(" ∙ \(L10n.chatDeliveredMessage)")
                         hCoreUIAssets.circularCheckmarkFilled.view
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(hSignalColor.blueElement)
+                    } else if case .failed = message.status {
+                        hText(L10n.chatFailedToSend)
+                        hText(" ∙ \(message.timeStampString)")
+                    } else {
+                        hText(message.timeStampString)
                     }
 
                 }

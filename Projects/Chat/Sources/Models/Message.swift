@@ -3,18 +3,10 @@ import hCore
 import hGraphQL
 
 public struct Message: Identifiable, Hashable {
-    public static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
     let localId: String?
     let remoteId: String?
     public var id: String {
-        return localId ?? remoteId ?? ""
+        return (localId ?? remoteId ?? "") + "\(status.hashValue)"
     }
     let sender: MessageSender
     let sentAt: Date
@@ -47,20 +39,43 @@ public struct Message: Identifiable, Hashable {
         self.sentAt = date
         self.status = sender == .hedvig ? .received : .sent
     }
+
+    private init(localId: String?, type: MessageType, date: Date, status: MessageStatus) {
+        self.localId = localId
+        self.remoteId = nil
+        self.sender = .member
+        self.type = type
+        self.sentAt = date
+        self.status = status
+    }
+
+    func asFailed(with error: String) -> Message {
+        return Message(localId: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error))
+    }
 }
 
-enum MessageSender {
+enum MessageSender: Hashable {
     case member
     case hedvig
 }
 
-enum MessageStatus {
+enum MessageStatus: Hashable {
+
     case draft
     case sent
     case received
     case failed(error: String)
+
+    private var valueToAdd: String {
+        switch self {
+        case .draft: return "draft"
+        case .sent: return "sent"
+        case .received: return "received"
+        case .failed(let error): return "failed\(error)"
+        }
+    }
 }
-enum MessageType {
+enum MessageType: Hashable {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
