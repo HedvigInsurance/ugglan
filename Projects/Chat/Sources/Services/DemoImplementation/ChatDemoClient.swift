@@ -32,6 +32,40 @@ class ChatDemoClient: FetchMessagesClient, SendMessageClient {
                 sender: .hedvig,
                 date: Date()
             ),
+            .init(
+                remoteId: UUID().uuidString,
+                type: .file(
+                    file:
+                        .init(
+                            id: UUID().uuidString,
+                            size: 0,
+                            mimeType: .GIF,
+                            name: "",
+                            source: .url(
+                                url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!
+                            )
+                        )
+                ),
+                sender: .member,
+                date: Date()
+            ),
+            .init(
+                remoteId: UUID().uuidString,
+                type: .file(
+                    file:
+                        .init(
+                            id: UUID().uuidString,
+                            size: 0,
+                            mimeType: .other(type: ""),
+                            name: "",
+                            source: .url(
+                                url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!
+                            )
+                        )
+                ),
+                sender: .member,
+                date: Date()
+            ),
         ]
     }
 
