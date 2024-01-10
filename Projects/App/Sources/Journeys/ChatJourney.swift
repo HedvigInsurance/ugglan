@@ -4,7 +4,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -12,12 +11,16 @@ import hGraphQL
 extension AppJourney {
     @JourneyBuilder
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        ChatJourney.start()
+        if Dependencies.featureFlags().isChatDisabled {
+            AppJourney.disableChatScreen(style: style)
+        } else {
+            ChatJourney.start()
+        }
     }
 
     @JourneyBuilder
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
-        if hAnalyticsExperiment.disableChat {
+        if Dependencies.featureFlags().isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
             let chat = Chat()

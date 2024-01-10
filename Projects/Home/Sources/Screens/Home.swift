@@ -9,7 +9,6 @@ import Payment
 import Presentation
 import SafariServices
 import SwiftUI
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -133,7 +132,8 @@ extension HomeView {
 
     @ViewBuilder
     private var openOtherServices: some View {
-        if hAnalyticsExperiment.homeCommonClaim {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
             hButton.LargeButton(type: .ghost) {
                 store.send(.openOtherServices)
             } content: {

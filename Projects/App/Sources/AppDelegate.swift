@@ -16,7 +16,6 @@ import Profile
 import SwiftUI
 import UIKit
 import UserNotifications
-import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -30,6 +29,7 @@ import hGraphQL
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let deepLinkDisposeBag = DisposeBag()
+    let featureFlagsBag = DisposeBag()
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
@@ -276,7 +276,7 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-        setupHAnalyticsExperiments()
+        setupExperiments()
 
         bag += ApplicationContext.shared.$isDemoMode.onValue { value in
             let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -292,41 +292,15 @@ import hGraphQL
         return true
     }
 
-    private func setupHAnalyticsExperiments() {
-        setupHAnalyticsExperiments { success in
-            DispatchQueue.main.async {
-                if success {
-                    self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                        .atValue { _ in
-                            Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-                            self.bag += self.window.present(AppJourney.main)
-                        }
-                } else {
-                    let alert = Alert(
-                        title: L10n.somethingWentWrong,
-                        message: L10n.General.errorBody,
-                        actions: [
-                            Alert.Action(
-                                title: L10n.generalRetry,
-                                action: {
-                                    self.setupHAnalyticsExperiments()
-                                }
-                            )
-                        ]
-                    )
-
-                    self.bag += self.window.present(
-                        ActivityIndicator(style: .large, color: hTextColor.primary).disposableHostingJourney
-                            .onPresent({
-                                Journey(alert)
-                                    .onPresent {
-                                        Launch.shared.completeAnimationCallbacker.callAll()
-                                    }
-                            })
-                    )
-                }
+    private func setupExperiments() {
+        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+            .atValue { _ in
+                self.setupFeatureFlags(onComplete: { success in
+                    DispatchQueue.main.async {
+                        self.bag += self.window.present(AppJourney.main)
+                    }
+                })
             }
-        }
     }
 }
 
@@ -334,6 +308,7 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
+                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
                 let paymentService = hPaymentServiceOctopus()
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
@@ -344,7 +319,9 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
                 Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
-
+                let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
+                Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 switch Environment.current {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()
