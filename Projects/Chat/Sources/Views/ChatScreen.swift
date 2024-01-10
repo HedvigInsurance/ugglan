@@ -14,6 +14,7 @@ struct ChatScreen: View {
                 messagesContainer(with: proxy)
                 sendMessageView
             }
+            .dismissKeyboard()
         }
     }
 
@@ -80,12 +81,12 @@ struct ChatScreen: View {
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 0) {
                 message
                     .frame(
-                        maxWidth: message.sender == .member ? .infinity : 300,
+                        maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading
                     )
+                    .foregroundColor(message.textColor)
                 HStack(spacing: 0) {
                     hText(message.timeStampString)
-                    hText("")
                     if message.sender == .member && vm.messages.first?.id == message.id {
                         hText(" ∙ \(L10n.chatDeliveredMessage)")
                         hCoreUIAssets.circularCheckmarkFilled.view

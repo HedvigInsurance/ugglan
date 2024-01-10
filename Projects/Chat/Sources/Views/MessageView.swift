@@ -15,21 +15,10 @@ extension Message: View {
     @ViewBuilder
     var messageContent: some View {
         switch self.type {
-        case let .text(text): hText(text).multilineTextAlignment(.leading)
+        case let .text(text):
+            hText(text).multilineTextAlignment(.leading)
         case let .file(file):
-            FileView(file: file) {
-                if let topVC = UIApplication.shared.getTopViewController() {
-                    let disposeBag = DisposeBag()
-                    switch file.source {
-                    case let .localFile(url, _):
-                        let preview = DocumentPreview(url: url)
-                        disposeBag += topVC.present(preview.journey)
-                    case .url(let url):
-                        let preview = DocumentPreview(url: url)
-                        disposeBag += topVC.present(preview.journey)
-                    }
-                }
-            }
+            ChatFileView(file: file).frame(maxHeight: 200)
         case let .crossSell(url): Text("")
         case let .deepLink(url): Text("")
         case let .otherLink(url): Text("")

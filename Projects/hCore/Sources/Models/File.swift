@@ -14,6 +14,15 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
         self.name = name
         self.source = source
     }
+
+    public var url: URL {
+        switch source {
+        case .localFile(let url, let thumbnailURL):
+            return url
+        case .url(let url):
+            return url
+        }
+    }
 }
 
 public enum FileSource: Codable, Equatable, Hashable {

@@ -11,6 +11,15 @@ extension Message {
             hSignalColor.blueFill
         }
     }
+    @hColorBuilder
+    var textColor: some hColor {
+        switch self.sender {
+        case .hedvig:
+            hTextColor.primary
+        case .member:
+            hTextColor.primary.colorFor(.light, .elevated)
+        }
+    }
 
     var padding: CGFloat {
         switch type {

@@ -71,20 +71,31 @@ public struct FileView: View {
             )
     }
 
+    @ViewBuilder
     private func imageFromRemote(url: URL) -> some View {
-        Rectangle().fill(.clear)
-            .aspectRatio(1, contentMode: .fill)
-            .background(
-                KFImage(
-                    source: Kingfisher.Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id))
+        if file.mimeType == .GIF {
+            Rectangle().fill(.clear)
+                .aspectRatio(1, contentMode: .fill)
+                .background(
+                    KFAnimatedImage(url)
+                        .scaledToFit()
                 )
-                .fade(duration: 0.25)
-                .targetCache(ImageCache.default)
-                .setProcessor(processor)
-                .resizable()
-                .aspectRatio(
-                    contentMode: .fill
+        } else {
+            Rectangle().fill(.clear)
+                .aspectRatio(1, contentMode: .fill)
+                .background(
+                    KFImage(
+                        source: Kingfisher.Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id))
+                    )
+                    .fade(duration: 0.25)
+                    .targetCache(ImageCache.default)
+                    .setProcessor(processor)
+                    .resizable()
+                    .aspectRatio(
+                        contentMode: .fill
+                    )
                 )
-            )
+        }
+
     }
 }
