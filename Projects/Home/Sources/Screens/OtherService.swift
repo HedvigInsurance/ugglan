@@ -36,8 +36,10 @@ struct OtherService: View {
                                     store.send(.openMovingFlow)
                                 } else if claim.id == CommonClaim.travelInsurance().id {
                                     Task {
-                                        _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
-                                        store.send(.openTravelInsurance)
+                                        do {
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                            store.send(.openTravelInsurance)
+                                        } catch {}
                                     }
                                 } else if claim.id == CommonClaim.helpCenter().id {
                                     store.send(.openHelpCenter)

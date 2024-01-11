@@ -30,10 +30,12 @@ struct HelpCenterQuestionView: View {
                         height: $height
                     ) { url in
                         Task {
-                            if let isDeepLink = DeepLink.getType(from: url) {
-                                _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
-                            }
-                            store.send(.goToURL(url: url))
+                            do {
+                                if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
+                                    _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                }
+                                store.send(.goToURL(url: url))
+                            } catch {}
                         }
                     }
                     .frame(height: height)

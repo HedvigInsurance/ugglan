@@ -118,24 +118,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        handleURL(url: URL)
+        onUrlClicked(URL)
         return false
-    }
-
-    private func handleURL(url: URL) {
-        var url = url
-        if let isDeepLink = DeepLink.getType(from: url) {
-            let urlPath = URLComponents(url: url, resolvingAgainstBaseURL: false)?.path
-            if urlPath?.filter({ $0 == "/" }).count ?? 0 > 1 {
-            } else {
-                if hGraphQL.Environment.current == .staging {
-                    let stagingURLString = url.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
-                    if let stagingURL = URL(string: stagingURLString) {
-                        url = stagingURL
-                    }
-                }
-            }
-        }
-        onUrlClicked(url)
     }
 }
