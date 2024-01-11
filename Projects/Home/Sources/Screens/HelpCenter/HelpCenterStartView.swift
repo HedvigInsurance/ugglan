@@ -110,32 +110,28 @@ extension HelpCenterStartView {
 
         let commonQuestions: [Question] = [
             .init(
-                question: L10n.hcCommonQuestionsQ01,
-                answer: L10n.hcCommonQuestionsA01,
-                relatedQuestions: [
-                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
-                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
-                    .init(question: "When does my insurance activate?", answer: "", relatedQuestions: []),
-                ]
-            ),
-            .init(
-                question: L10n.hcCommonQuestionsQ02,
-                answer: L10n.hcCommonQuestionsA02,
+                question: L10n.hcClaimsQ01,
+                answer: L10n.hcClaimsQ02,
                 relatedQuestions: []
             ),
             .init(
-                question: L10n.hcCommonQuestionsQ03,
-                answer: L10n.hcCommonQuestionsA03,
+                question: L10n.hcInsuranceQ05,
+                answer: L10n.hcInsuranceA05,
                 relatedQuestions: []
             ),
             .init(
-                question: L10n.hcCommonQuestionsQ04,
-                answer: L10n.hcCommonQuestionsA04,
+                question: L10n.hcPaymentsQ01,
+                answer: L10n.hcPaymentsA01,
                 relatedQuestions: []
             ),
             .init(
-                question: L10n.hcCommonQuestionsQ05,
-                answer: L10n.hcCommonQuestionsA05,
+                question: L10n.hcInsuranceQ03,
+                answer: L10n.hcInsuranceA03,
+                relatedQuestions: []
+            ),
+            .init(
+                question: L10n.hcInsuranceQ01,
+                answer: L10n.hcInsuranceA01,
                 relatedQuestions: []
             ),
         ]
