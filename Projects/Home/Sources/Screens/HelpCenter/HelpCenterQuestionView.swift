@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 
@@ -28,7 +29,12 @@ struct HelpCenterQuestionView: View {
                         fixedWidth: UIScreen.main.bounds.width - 32,
                         height: $height
                     ) { url in
-                        store.send(.goToURL(url: url))
+                        Task {
+                            if let isDeepLink = DeepLink.getType(from: url) {
+                                _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
+                            }
+                            store.send(.goToURL(url: url))
+                        }
                     }
                     .frame(height: height)
                 }
