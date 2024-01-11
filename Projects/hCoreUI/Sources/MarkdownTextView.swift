@@ -54,6 +54,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
+        textView.dataDetectorTypes = [.address, .link, .phoneNumber]
         let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
         textView.linkTextAttributes = [
             .foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
@@ -117,26 +118,24 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        let environmentURL = getDeepLinkURL(url: URL)
-        onUrlClicked(environmentURL)
+        handleURL(url: URL)
         return false
     }
 
-    func getDeepLinkURL(url URL: URL) -> URL {
-        if let isDeepLink = DeepLink.getType(from: URL) {
-            let urlPath = URLComponents(url: URL, resolvingAgainstBaseURL: false)?.path
+    private func handleURL(url: URL) {
+        var url = url
+        if let isDeepLink = DeepLink.getType(from: url) {
+            let urlPath = URLComponents(url: url, resolvingAgainstBaseURL: false)?.path
             if urlPath?.filter({ $0 == "/" }).count ?? 0 > 1 {
-                return URL
-            }
-
-            if hGraphQL.Environment.current == .staging {
-                let stagingURLString = URL.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
-                if let stagingURL = Foundation.URL(string: stagingURLString) {
-                    return stagingURL
+            } else {
+                if hGraphQL.Environment.current == .staging {
+                    let stagingURLString = url.absoluteString.replacingOccurrences(of: "hedvig", with: "hedvigtest")
+                    if let stagingURL = URL(string: stagingURLString) {
+                        url = stagingURL
+                    }
                 }
             }
-            return URL
         }
-        return URL
+        onUrlClicked(url)
     }
 }
