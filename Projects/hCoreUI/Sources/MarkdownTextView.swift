@@ -56,10 +56,11 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.backgroundColor = .clear
         textView.dataDetectorTypes = [.address, .link, .phoneNumber]
         let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
+        let linkColor = hTextColor.primary.colorFor(schema, .base).color.uiColor()
         textView.linkTextAttributes = [
-            .foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+            .foregroundColor: linkColor,
             .underlineStyle: NSUnderlineStyle.thick.rawValue,
-            .underlineColor: hAmberColor.amber600.colorFor(schema, .base).color.uiColor(),
+            .underlineColor: linkColor,
         ]
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
