@@ -77,21 +77,11 @@ class CustomTextView: UIView, UITextViewDelegate {
             font: Fonts.fontFor(style: .standardLarge),
             color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
         )
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 10
-        paragraphStyle.lineBreakMode = .byWordWrapping
-        paragraphStyle.alignment = .left
-        paragraphStyle.lineSpacing = 3
 
         let attributedString = markdownParser.parse(text)
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
-            )
-            mutableAttributedString.addAttribute(
-                .paragraphStyle,
-                value: paragraphStyle,
-                range: NSRange(location: 0, length: mutableAttributedString.length - 1)
             )
             textView.attributedText = mutableAttributedString
         }
