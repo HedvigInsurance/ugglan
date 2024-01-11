@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import Presentation
+import SafariServices
 import UIKit
 import hCore
 import hCoreUI
@@ -23,7 +24,10 @@ extension AppJourney {
                     }
                     return url
                 }
-                UIApplication.shared.open(urlToOpen)
+                let vc = SFSafariViewController(url: urlToOpen)
+                vc.modalPresentationStyle = .pageSheet
+                vc.preferredControlTintColor = .brand(.primaryText())
+                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
             }
     }
 }
