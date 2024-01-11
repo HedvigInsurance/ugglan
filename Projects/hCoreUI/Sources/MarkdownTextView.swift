@@ -35,7 +35,6 @@ class CustomTextView: UIView, UITextViewDelegate {
     let fixedWidth: CGFloat
     let onUrlClicked: (_ url: String) -> Void
     @Binding var height: CGFloat
-    @Environment(\.colorScheme) var colorScheme
     init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: String) -> Void) {
         _height = height
         self.onUrlClicked = onUrlClicked
@@ -46,7 +45,6 @@ class CustomTextView: UIView, UITextViewDelegate {
         configureTextView()
         setContent(from: text)
         calculateHeight()
-
     }
 
     private func configureTextView() {
