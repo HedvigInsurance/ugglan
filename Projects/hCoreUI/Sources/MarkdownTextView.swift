@@ -54,9 +54,11 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
+        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
         textView.linkTextAttributes = [
-            .foregroundColor: hTextColor.primary.colorFor(.light, .base).color.uiColor(),
-            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+            .underlineStyle: NSUnderlineStyle.thick.rawValue,
+            .underlineColor: hAmberColor.amber600.colorFor(schema, .base).color.uiColor(),
         ]
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
@@ -69,6 +71,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     private func setContent(from text: String) {
+        configureTextView()
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: .standardLarge),
             color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
