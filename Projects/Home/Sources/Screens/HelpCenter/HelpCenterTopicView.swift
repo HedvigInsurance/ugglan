@@ -24,10 +24,11 @@ struct HelpCenterTopicView: View {
                     )
                     QuestionsItems(questions: commonTopic.allQuestions, questionType: .allQuestions, source: .topicView)
                 }
+                .padding(.horizontal, 16)
                 SupportView()
             }
-            .padding(.horizontal, 16)
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 

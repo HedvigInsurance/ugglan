@@ -159,10 +159,11 @@ struct SupportView: View {
                 } content: {
                     hText(L10n.hcChatButton)
                 }
-                .padding(.top, 16)
+                .padding(.top, 24)
                 .fixedSize()
             }
             .padding(.vertical, 32)
+            .padding(.bottom, 24)
         }
         .withoutHorizontalPadding
     }
