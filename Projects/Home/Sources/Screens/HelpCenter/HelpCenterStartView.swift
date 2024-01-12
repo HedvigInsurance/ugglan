@@ -17,31 +17,36 @@ public struct HelpCenterStartView: View {
 
     public var body: some View {
         hForm {
-            hSection {
-                VStack(spacing: 40) {
-                    Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
-                        .resizable()
-                        .frame(width: 170, height: 170)
-                        .padding(.bottom, 26)
-                        .padding(.top, 39)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        hText(helpCenterModel.title)
-                        hText(helpCenterModel.description)
-                            .foregroundColor(hTextColor.secondary)
+            VStack(spacing: 0) {
+                hSection {
+                    VStack(spacing: 40) {
+                        Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                            .resizable()
+                            .frame(width: 170, height: 170)
+                            .padding(.bottom, 26)
+                            .padding(.top, 39)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            hText(helpCenterModel.title)
+                            hText(helpCenterModel.description)
+                                .foregroundColor(hTextColor.secondary)
+                        }
+                        
+                        displayQuickActions()
+                        displayCommonTopics()
+                        QuestionsItems(
+                            questions: helpCenterModel.commonQuestions,
+                            questionType: .commonQuestions,
+                            source: .homeView
+                        )
                     }
-
-                    displayQuickActions()
-                    displayCommonTopics()
-                    QuestionsItems(
-                        questions: helpCenterModel.commonQuestions,
-                        questionType: .commonQuestions,
-                        source: .homeView
-                    )
                 }
+                .sectionContainerStyle(.transparent)
+                SupportView()
+                    .padding(.top, 16)
             }
-            .sectionContainerStyle(.transparent)
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 
     private func displayQuickActions() -> some View {
@@ -488,6 +493,8 @@ extension HelpCenterStartView {
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .goToQuickAction = action {
+                DismissJourney()
+            } else if case .openFreeTextChat = action {
                 DismissJourney()
             } else if case let .openHelpCenterTopicView(topic) = action {
                 HelpCenterTopicView.journey(commonTopic: topic)

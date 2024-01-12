@@ -146,14 +146,14 @@ struct SupportView: View {
     @PresentableStore var store: HomeStore
 
     var body: some View {
-        hSection {
+        HStack {
             VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
                     .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.hcChatAnswer)
                     .foregroundColor(hTextColor.secondaryTranslucent)
                     .multilineTextAlignment(.center)
-
+                
                 hButton.MediumButton(type: .primary) {
                     store.send(.openFreeTextChat)
                 } content: {
@@ -165,7 +165,8 @@ struct SupportView: View {
             .padding(.vertical, 32)
             .padding(.bottom, 24)
         }
-        .withoutHorizontalPadding
+        .frame(maxWidth: .infinity)
+        .background(hFillColor.opaqueOne)
     }
 }
 
