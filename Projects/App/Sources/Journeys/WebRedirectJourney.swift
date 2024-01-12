@@ -24,6 +24,11 @@ extension AppJourney {
                     }
                     return url
                 }
+
+                if url.absoluteString.contains("tel:") {
+                    UIApplication.shared.open(url)
+                }
+
                 let vc = SFSafariViewController(url: urlToOpen)
                 vc.modalPresentationStyle = .pageSheet
                 vc.preferredControlTintColor = .brand(.primaryText())
