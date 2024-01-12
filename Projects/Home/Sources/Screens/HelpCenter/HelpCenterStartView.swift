@@ -143,15 +143,21 @@ extension HelpCenterStartView {
 
             quickActions.append(.changeBank)
 
-            if !contracts.filter({ $0.supportsAddressChange }).isEmpty {
+            if Dependencies.featureFlags().isMovingFlowEnabled
+                && !contracts.filter({ $0.supportsAddressChange }).isEmpty
+            {
                 quickActions.append(.updateAddress)
             }
 
-            if !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty {
+            if Dependencies.featureFlags().isEditCoInsuredEnabled
+                && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
+            {
                 quickActions.append(.editCoInsured)
             }
 
-            if !contracts.filter({ $0.hasTravelInsurance }).isEmpty {
+            if Dependencies.featureFlags().isTravelInsuranceEnabled
+                && !contracts.filter({ $0.hasTravelInsurance }).isEmpty
+            {
                 quickActions.append(.travelCertificate)
             }
             return quickActions
