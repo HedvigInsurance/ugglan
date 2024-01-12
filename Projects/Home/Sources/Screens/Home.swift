@@ -134,10 +134,11 @@ extension HomeView {
     private var openOtherServices: some View {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
-            hButton.LargeButton(type: .ghost) {
-                store.send(.openOtherServices)
+            hButton.LargeButton(type: .secondary) {
+                store.send(.openHelpCenter)
+
             } content: {
-                hText(L10n.HomeTab.otherServices)
+                hText(L10n.HomeTab.getHelp)
             }
         }
     }
@@ -217,10 +218,8 @@ extension HomeView {
                 resultJourney(.startMovingFlow)
             } else if case .openTravelInsurance = action {
                 resultJourney(.openTravelInsurance)
-            } else if case .openEmergency = action {
-                resultJourney(.openEmergency)
             } else if case .openHelpCenter = action {
-                resultJourney(.openHelpCenter)
+                HelpCenterStartView.journey
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
                 if !fromOtherService {
                     CommonClaimDetail.journey(claim: claim)
@@ -235,8 +234,6 @@ extension HomeView {
                     style: .detented(.large),
                     options: .defaults
                 )
-            } else if case .openOtherServices = action {
-                OtherService.journey
             } else if case .startClaim = action {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
@@ -265,10 +262,8 @@ public enum HomeResult {
     case startNewClaim
     case openTravelInsurance
     case openCrossSells
-    case openEmergency
-    case openHelpCenter
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
-    case goToQuickAction(quickAction: QuickAction)
+    case goToQuickAction(quickAction: CommonClaim)
     case goToURL(url: URL)
 }
 

@@ -48,11 +48,11 @@ public struct HelpCenterStartView: View {
         VStack(alignment: .leading, spacing: 8) {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
 
-            let quickActionsInPair = helpCenterModel.quickActions.chunked(into: 2)
+            let commonClaimsInPair = store.state.allCommonClaims.chunked(into: 2)
 
-            ForEach(quickActionsInPair, id: \.self) { pair in
+            ForEach(commonClaimsInPair, id: \.self) { pair in
                 HStack(spacing: 8) {
-                    ForEach(pair, id: \.title) { quickAction in
+                    ForEach(pair, id: \.id) { quickAction in
                         quickActionPill(quickAction: quickAction)
                     }
                 }
@@ -69,9 +69,9 @@ public struct HelpCenterStartView: View {
         }
     }
 
-    private func quickActionPill(quickAction: QuickAction) -> some View {
+    private func quickActionPill(quickAction: CommonClaim) -> some View {
         HStack(alignment: .center) {
-            hText(quickAction.title)
+            hText(quickAction.displayTitle)
                 .colorScheme(.light)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -82,7 +82,7 @@ public struct HelpCenterStartView: View {
         )
         .onTapGesture {
             Task {
-                if case quickAction = .travelCertificate {
+                if case quickAction.id = CommonClaim.travelInsurance().id {
                     _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
                 }
                 store.send(.goToQuickAction(quickAction))
@@ -113,7 +113,6 @@ public struct HelpCenterStartView: View {
 
 extension HelpCenterStartView {
     public static var journey: some JourneyPresentation {
-
         let commonQuestions: [Question] = [
             .init(
                 question: L10n.hcClaimsQ01,
@@ -142,33 +141,6 @@ extension HelpCenterStartView {
             ),
         ]
 
-        var quickActions: [QuickAction] {
-            var quickActions: [QuickAction] = []
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contracts = contractStore.state.activeContracts
-
-            quickActions.append(.changeBank)
-
-            if Dependencies.featureFlags().isMovingFlowEnabled
-                && !contracts.filter({ $0.supportsAddressChange }).isEmpty
-            {
-                quickActions.append(.updateAddress)
-            }
-
-            if Dependencies.featureFlags().isEditCoInsuredEnabled
-                && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
-            {
-                quickActions.append(.editCoInsured)
-            }
-
-            if Dependencies.featureFlags().isTravelInsuranceEnabled
-                && !contracts.filter({ $0.hasTravelInsurance }).isEmpty
-            {
-                quickActions.append(.travelCertificate)
-            }
-            return quickActions
-        }
-
         return HostingJourney(
             HomeStore.self,
             rootView: HelpCenterStartView(
@@ -177,7 +149,6 @@ extension HelpCenterStartView {
                         title: L10n.hcHomeViewQuestion,
                         description:
                             L10n.hcHomeViewAnswer,
-                        quickActions: quickActions,
                         commonTopics: [
                             .init(
                                 title: L10n.hcPaymentsTitle,
@@ -564,12 +535,6 @@ extension HelpCenterStartView {
                 title: L10n.hcHomeViewQuestion,
                 description:
                     L10n.hcHomeViewAnswer,
-                quickActions: [
-                    .changeBank,
-                    .updateAddress,
-                    .editCoInsured,
-                    .travelCertificate,
-                ],
                 commonTopics: [
                     .init(
                         title: "Payments",

@@ -1,3 +1,4 @@
+import Claims
 import Contracts
 import EditCoInsured
 import Foundation
@@ -10,13 +11,13 @@ import hCore
 
 extension AppJourney {
     @JourneyBuilder
-    static func configureQuickAction(quickAction: QuickAction) -> some JourneyPresentation {
-        switch quickAction {
-        case .changeBank:
+    static func configureQuickAction(commonClaim: CommonClaim) -> some JourneyPresentation {
+        switch commonClaim {
+        case .changeBank():
             PaymentSetup(setupType: .initial).journeyThenDismiss
-        case .updateAddress:
+        case .moving():
             AppJourney.movingFlow()
-        case .editCoInsured:
+        case .editCoInsured():
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsSupportingCoInsured = contractStore.state.activeContracts.filter({ $0.showEditCoInsuredInfo })
@@ -27,9 +28,17 @@ extension AppJourney {
             if !contractsSupportingCoInsured.isEmpty {
                 AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
             }
-        case .travelCertificate:
+        case .travelInsurance():
             TravelInsuranceFlowJourney.start {
                 AppJourney.freeTextChat()
+            }
+        default:
+            if commonClaim.layout.titleAndBulletPoint == nil {
+                SubmitClaimEmergencyScreen.journey
+            } else {
+                CommonClaimDetail.journey(claim: commonClaim)
+                    .withJourneyDismissButton
+                    .configureTitle(commonClaim.displayTitle)
             }
         }
     }
