@@ -27,12 +27,12 @@ extension AppJourney {
 
                 if url.absoluteString.contains("tel:") {
                     UIApplication.shared.open(url)
+                } else {
+                    let vc = SFSafariViewController(url: urlToOpen)
+                    vc.modalPresentationStyle = .pageSheet
+                    vc.preferredControlTintColor = .brand(.primaryText())
+                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
                 }
-
-                let vc = SFSafariViewController(url: urlToOpen)
-                vc.modalPresentationStyle = .pageSheet
-                vc.preferredControlTintColor = .brand(.primaryText())
-                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
             }
     }
 }
