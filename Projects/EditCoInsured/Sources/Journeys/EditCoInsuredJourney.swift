@@ -269,6 +269,7 @@ public class EditCoInsuredJourney {
                 getScreen(for: action)
             }
         }
+        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
