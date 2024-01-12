@@ -101,7 +101,9 @@ extension HomeView {
                         HomeBottomScrollView(memberId: memberId)
                         VStack(spacing: 8) {
                             startAClaimButton
-                            openOtherServices
+                            if Dependencies.featureFlags().isHelpCenterEnabled {
+                                openHelpCenter
+                            }
                         }
                     }
                 case .future:
@@ -112,7 +114,7 @@ extension HomeView {
                     VStack(spacing: 16) {
                         InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
                         startAClaimButton
-                        openOtherServices
+                        openHelpCenter
                     }
                 case .loading:
                     EmptyView()
@@ -131,12 +133,11 @@ extension HomeView {
     }
 
     @ViewBuilder
-    private var openOtherServices: some View {
+    private var openHelpCenter: some View {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
             hButton.LargeButton(type: .secondary) {
                 store.send(.openHelpCenter)
-
             } content: {
                 hText(L10n.HomeTab.getHelp)
             }
