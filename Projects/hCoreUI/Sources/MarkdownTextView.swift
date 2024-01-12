@@ -6,17 +6,18 @@ import SnapKit
 import SwiftUI
 import UIKit
 import hCore
+import hGraphQL
 
 public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
     @Binding var height: CGFloat
-    let onUrlClicked: (_ url: String) -> Void
+    let onUrlClicked: (_ url: URL) -> Void
     public init(
         text: String,
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: String) -> Void
+        onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
@@ -33,9 +34,9 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
 class CustomTextView: UIView, UITextViewDelegate {
     let textView: UITextView
     let fixedWidth: CGFloat
-    let onUrlClicked: (_ url: String) -> Void
+    let onUrlClicked: (_ url: URL) -> Void
     @Binding var height: CGFloat
-    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: String) -> Void) {
+    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: URL) -> Void) {
         _height = height
         self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
@@ -53,11 +54,13 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
+        textView.dataDetectorTypes = [.address, .link, .phoneNumber]
         let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
+        let linkColor = hTextColor.primary.colorFor(schema, .base).color.uiColor()
         textView.linkTextAttributes = [
-            .foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+            .foregroundColor: linkColor,
             .underlineStyle: NSUnderlineStyle.thick.rawValue,
-            .underlineColor: hAmberColor.amber600.colorFor(schema, .base).color.uiColor(),
+            .underlineColor: linkColor,
         ]
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
@@ -75,21 +78,11 @@ class CustomTextView: UIView, UITextViewDelegate {
             font: Fonts.fontFor(style: .standardLarge),
             color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
         )
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 10
-        paragraphStyle.lineBreakMode = .byWordWrapping
-        paragraphStyle.alignment = .left
-        paragraphStyle.lineSpacing = 3
 
         let attributedString = markdownParser.parse(text)
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
-            )
-            mutableAttributedString.addAttribute(
-                .paragraphStyle,
-                value: paragraphStyle,
-                range: NSRange(location: 0, length: mutableAttributedString.length - 1)
             )
             textView.attributedText = mutableAttributedString
         }
@@ -116,7 +109,16 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        onUrlClicked(URL.absoluteString)
+        onUrlClicked(URL)
+
+        let emailMasking = Masking(type: .email)
+        if emailMasking.isValid(text: URL.absoluteString) {
+            let emailURL = "mailto:" + URL.absoluteString
+            if let url = Foundation.URL(string: emailURL) {
+                UIApplication.shared.open(url)
+            }
+        }
+
         return false
     }
 }

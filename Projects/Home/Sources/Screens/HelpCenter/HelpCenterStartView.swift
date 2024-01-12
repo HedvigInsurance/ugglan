@@ -1,6 +1,7 @@
 import Contracts
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 
@@ -80,7 +81,12 @@ public struct HelpCenterStartView: View {
                 .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
         )
         .onTapGesture {
-            store.send(.goToQuickAction(quickAction))
+            Task {
+                if case quickAction = .travelCertificate {
+                    _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
+                }
+                store.send(.goToQuickAction(quickAction))
+            }
         }
         .frame(maxWidth: 168)
         .frame(maxHeight: 56)

@@ -245,6 +245,8 @@ extension HomeView {
                 resultJourney(.startCoInsuredFlow(configs: configs))
             } else if case let .goToQuickAction(quickAction) = action {
                 resultJourney(.goToQuickAction(quickAction: quickAction))
+            } else if case let .goToURL(url) = action {
+                resultJourney(.goToURL(url: url))
             }
         }
         .configureTabBarItem(
@@ -267,6 +269,7 @@ public enum HomeResult {
     case openHelpCenter
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
     case goToQuickAction(quickAction: QuickAction)
+    case goToURL(url: URL)
 }
 
 struct Active_Preview: PreviewProvider {

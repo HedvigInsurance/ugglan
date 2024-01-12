@@ -54,6 +54,8 @@ extension AppJourney {
                     AppJourney.editCoInsured(configs: contractIds)
                 case let .goToQuickAction(quickAction):
                     AppJourney.configureQuickAction(quickAction: quickAction)
+                case let .goToURL(url):
+                    AppJourney.configureURL(url: url)
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in

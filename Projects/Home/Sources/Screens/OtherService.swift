@@ -39,9 +39,7 @@ struct OtherService: View {
                                         do {
                                             _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
                                             store.send(.openTravelInsurance)
-                                        } catch _ {
-                                            //TODO: ERROR
-                                        }
+                                        } catch {}
                                     }
                                 } else if claim.id == CommonClaim.helpCenter().id {
                                     store.send(.openHelpCenter)
