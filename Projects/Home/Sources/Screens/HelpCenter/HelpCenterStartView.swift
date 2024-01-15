@@ -93,7 +93,6 @@ public struct HelpCenterStartView: View {
                 store.send(.goToQuickAction(quickAction))
             }
         }
-        .frame(maxWidth: 168)
         .frame(maxHeight: 56)
     }
 
