@@ -15,7 +15,7 @@ struct HelpCenterTopicView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 16) {
+            VStack(spacing: 40) {
                 VStack(spacing: 40) {
                     QuestionsItems(
                         questions: commonTopic.commonQuestions,
@@ -28,6 +28,7 @@ struct HelpCenterTopicView: View {
                 SupportView()
             }
         }
+        .hDisableScroll
         .edgesIgnoringSafeArea(.bottom)
     }
 }

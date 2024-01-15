@@ -33,17 +33,12 @@ struct HelpCenterPill: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(
-                Squircle.default()
-                    .fill(pillBackgroundColor)
+            .background(pillBackgroundColor)
+            .border(
+                hBorderColor.translucentOne,
+                width: 0.5
             )
-            .overlay(
-                Squircle.default()
-                    .stroke(
-                        hBorderColor.translucentOne,
-                        lineWidth: 0.5
-                    )
-            )
+            .cornerRadius(8)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }

@@ -43,8 +43,10 @@ struct HelpCenterQuestionView: View {
                 }
                 .padding(.horizontal, 16)
                 SupportView()
+                    .padding(.top, 8)
             }
         }
+        .hDisableScroll
         .edgesIgnoringSafeArea(.bottom)
     }
 }

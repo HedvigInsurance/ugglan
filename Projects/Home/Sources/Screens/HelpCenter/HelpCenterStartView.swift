@@ -22,7 +22,7 @@ public struct HelpCenterStartView: View {
                     VStack(spacing: 40) {
                         Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
                             .resizable()
-                            .frame(width: 170, height: 170)
+                            .frame(width: 160, height: 160)
                             .padding(.bottom, 26)
                             .padding(.top, 39)
 
@@ -43,9 +43,10 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 SupportView()
-                    .padding(.top, 16)
+                    .padding(.top, 40)
             }
         }
+        .hDisableScroll
         .edgesIgnoringSafeArea(.bottom)
     }
 
@@ -56,7 +57,7 @@ public struct HelpCenterStartView: View {
             let commonClaimsInPair = store.state.allCommonClaims.chunked(into: 2)
 
             ForEach(commonClaimsInPair, id: \.self) { pair in
-                HStack(spacing: 8) {
+                HStack(spacing: 4) {
                     ForEach(pair, id: \.id) { quickAction in
                         quickActionPill(quickAction: quickAction)
                     }

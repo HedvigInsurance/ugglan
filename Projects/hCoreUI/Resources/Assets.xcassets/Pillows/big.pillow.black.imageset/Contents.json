@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "hedvig_symbol_original_v2_4000x4000 alpha 1.png",
+      "filename" : "hedvig_symbol_original_680x680-alpha_lightmode (1).png",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "hedvig_symbol_original_v2_4000x4000 alpha.png",
+      "filename" : "hedvig_symbol_original_680x680-alpha_lightmode (1) 1.png",
       "idiom" : "universal"
     },
     {
@@ -21,7 +21,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "hedvig_symbol_original_v2_4000x4000-alpha-edit-darkmode.png",
+      "filename" : "hedvig_symbol_original_680x680-alpha-edit-darkmode.png",
       "idiom" : "universal"
     }
   ],
