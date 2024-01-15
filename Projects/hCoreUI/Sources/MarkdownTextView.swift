@@ -109,7 +109,6 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        onUrlClicked(URL)
 
         let emailMasking = Masking(type: .email)
         if emailMasking.isValid(text: URL.absoluteString) {
@@ -117,6 +116,8 @@ class CustomTextView: UIView, UITextViewDelegate {
             if let url = Foundation.URL(string: emailURL) {
                 UIApplication.shared.open(url)
             }
+        } else {
+            onUrlClicked(URL)
         }
 
         return false

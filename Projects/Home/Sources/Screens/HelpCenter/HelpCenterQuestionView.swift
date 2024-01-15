@@ -22,6 +22,7 @@ struct HelpCenterQuestionView: View {
                     HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
                     hText(question.question, style: .title3)
                 }
+                .padding(.horizontal, 16)
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                     CustomTextViewRepresentable(
@@ -40,12 +41,12 @@ struct HelpCenterQuestionView: View {
                     }
                     .frame(height: height)
                 }
+                .padding(.horizontal, 16)
                 SupportView()
             }
-            .padding(.horizontal, 16)
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
-
 }
 
 extension HelpCenterQuestionView {

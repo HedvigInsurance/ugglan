@@ -40,10 +40,6 @@ extension AppJourney {
                     TravelInsuranceFlowJourney.start {
                         AppJourney.freeTextChat()
                     }
-                case .openEmergency:
-                    SubmitClaimEmergencyScreen.journey
-                case .openHelpCenter:
-                    HelpCenterStartView.journey
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
@@ -53,7 +49,7 @@ extension AppJourney {
                 case let .startCoInsuredFlow(contractIds):
                     AppJourney.editCoInsured(configs: contractIds)
                 case let .goToQuickAction(quickAction):
-                    AppJourney.configureQuickAction(quickAction: quickAction)
+                    AppJourney.configureQuickAction(commonClaim: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
                 }
