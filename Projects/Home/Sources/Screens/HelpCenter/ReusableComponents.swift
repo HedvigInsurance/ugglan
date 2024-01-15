@@ -153,7 +153,7 @@ struct SupportView: View {
                 hText(L10n.hcChatAnswer)
                     .foregroundColor(hTextColor.secondaryTranslucent)
                     .multilineTextAlignment(.center)
-                
+
                 hButton.MediumButton(type: .primary) {
                     store.send(.openFreeTextChat)
                 } content: {
