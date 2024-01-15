@@ -85,7 +85,7 @@ public struct HelpCenterStartView: View {
                 .fill(
                     hColorScheme(
                         light: hGrayscaleTranslucent.greyScaleTranslucent100,
-                        dark: hFillColor.opaqueOne
+                        dark: hGrayscaleColor.greyScale900
                     )
                 )
         )
