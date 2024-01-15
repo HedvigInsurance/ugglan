@@ -18,10 +18,11 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         switch action {
         case .submitClaimOpenFreeTextChat:
             return nil
-        case let .startClaimRequest(entrypointId, entrypointOptionId):
+        case let .startClaimRequest(entrypointId, entrypointOptionId, supportedSteps):
             let startInput = OctopusGraphQL.FlowClaimStartInput(
                 entrypointId: entrypointId,
-                entrypointOptionId: entrypointOptionId
+                entrypointOptionId: entrypointOptionId,
+                supportedSteps: supportedSteps
             )
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
@@ -346,7 +347,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 send(
                     .startClaimRequest(
                         entrypointId: nil,
-                        entrypointOptionId: nil
+                        entrypointOptionId: nil,
+                        supportedSteps: nil
                     )
                 )
             } else {
@@ -369,7 +371,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 send(
                     .startClaimRequest(
                         entrypointId: selectedEntrypointId,
-                        entrypointOptionId: nil
+                        entrypointOptionId: nil,
+                        supportedSteps: FlowClaimStartModel().flowClaimFetchAllSupportedSteps
                     )
                 )
             } else {

@@ -582,7 +582,8 @@ public class ClaimJourneys {
                     store.send(
                         .startClaimRequest(
                             entrypointId: entrypointId,
-                            entrypointOptionId: entrypointOptionId
+                            entrypointOptionId: entrypointOptionId,
+                            supportedSteps: FlowClaimStartModel().flowClaimFetchAllSupportedSteps
                         )
                     )
                 })

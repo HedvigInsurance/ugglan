@@ -18,7 +18,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
 
-    case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
+    case startClaimRequest(entrypointId: String?, entrypointOptionId: String?, supportedSteps: [String]?)
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceAndLocationRequest
     case singleItemRequest(purchasePrice: Double?)
