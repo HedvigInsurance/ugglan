@@ -10,15 +10,20 @@ struct ImagesView: View {
         self.vm = vm
     }
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack {
                 ForEach(vm.files, id: \.creationDate) { file in
                     PHPAssetPreview(asset: file) { message in
                         self.vm.sendMessage(message)
                     }
+                    .frame(width: 205, height: 256)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                    )
                 }
             }
+            .clipped()
         }
         .frame(height: 264)
     }
@@ -76,23 +81,23 @@ class ImagesViewModel: ObservableObject {
 struct PHPAssetPreview: View {
     let asset: PHAsset
     @State private var image: UIImage?
-    @State var selected = false
-    @State var loading = false
+    @State private var selected = false
+    @State private var loading = false
     let onSend: (_ message: Message) -> Void
     @ViewBuilder
     var body: some View {
         if let image {
-            ZStack {
+            ZStack(alignment: .center) {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .onTapGesture {
                         withAnimation {
-                            self.selected = true
+                            self.selected.toggle()
                         }
                     }
-                    .blur(radius: selected ? 3 : 0, opaque: true)
-                Button {
+                    .blur(radius: selected ? 10 : 0, opaque: true)
+                hButton.MediumButton(type: .secondaryAlt) {
                     Task {
                         withAnimation {
                             loading = true
@@ -107,14 +112,17 @@ struct PHPAssetPreview: View {
                             self.selected = false
                         }
                     }
-                } label: {
+                } content: {
                     if loading {
                         ProgressView()
+                            .foregroundColor(hTextColor.primary)
                     } else {
                         hText(L10n.chatUploadPresend)
+                            .foregroundColor(hTextColor.primary)
                     }
                 }
                 .opacity(selected ? 1 : 0)
+                .fixedSize()
             }
         } else {
             ProgressView()
@@ -122,7 +130,7 @@ struct PHPAssetPreview: View {
                     PHImageManager.default()
                         .requestImage(
                             for: asset,
-                            targetSize: .init(width: 300, height: 300),
+                            targetSize: .init(width: 600, height: 600),
                             contentMode: .aspectFit,
                             options: nil,
                             resultHandler: { image, _ in
@@ -140,29 +148,13 @@ extension PHAsset {
             failedToConvertHEIC, failedToConvertToFile
     }
 
-    /// generates a fileUpload for current PHAsset
+    // generates a fileUpload for current PHAsset
     func getFile() async throws -> File {
         let options = PHContentEditingInputRequestOptions()
         options.isNetworkAccessAllowed = true
         let id = UUID().uuidString
         let file = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<File, Error>) -> Void in
-            //            let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
-            //                do {
-            //                    if let uploadedFiles: [ChatUploadFileResponseModel] = try self?
-            //                        .handleResponse(data: data, response: response, error: error)
-            //                    {
-            //                        inCont.resume(returning: uploadedFiles)
-            //                    }
-            //                } catch let error {
-            //                    inCont.resume(throwing: error)
-            //                }
-            //            }
-            //            observation = task.progress.observe(\.fractionCompleted) { progress, _ in
-            //                withProgress?(progress.fractionCompleted)
-            //            }
-            //            task.resume()
-
             requestContentEditingInput(with: options) { contentInput, _ in
                 switch self.mediaType {
                 case .video:

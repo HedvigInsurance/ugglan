@@ -13,9 +13,9 @@ struct ChatScreen: View {
             loadingPreviousMessages
             ScrollViewReader { proxy in
                 messagesContainer(with: proxy)
+                    .padding(.horizontal, 16)
                 ChatInputView(vm: vm.chatInputVm)
             }
-            .padding()
             .dismissKeyboard()
         }
     }

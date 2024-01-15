@@ -9,93 +9,96 @@ struct ChatInputView: View {
     @StateObject var vm: ChatInputViewModel
     @State var height: CGFloat = 0
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .bottom) {
-                Button {
-                    withAnimation {
-                        self.vm.showBottomMenu.toggle()
-                    }
-                } label: {
-                    Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        .resizable().frame(width: 16, height: 16)
-                        .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
-                        .foregroundColor(hTextColor.primary)
-                        .padding(12)
-                        .background(hBackgroundColor.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
-                        )
-                }
-                HStack {
-                    CustomTextViewRepresentable(
-                        placeholder: L10n.chatInputPlaceholder,
-                        text: $vm.inputText,
-                        height: $height,
-                        showBottomMenu: $vm.showBottomMenu
-                    )
-                    .frame(height: height)
+        VStack(spacing: 0) {
+            Rectangle().fill(hBorderColor.translucentOne).frame(height: 1)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .bottom) {
                     Button {
-                        vm.sendTextMessage()
+                        withAnimation {
+                            self.vm.showBottomMenu.toggle()
+                        }
                     } label: {
-                        hCoreUIAssets.sendChat.view
+                        Image(uiImage: hCoreUIAssets.plusSmall.image)
+                            .resizable().frame(width: 16, height: 16)
+                            .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
+                            .foregroundColor(hTextColor.primary)
+                            .padding(12)
+                            .background(hBackgroundColor.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                            )
                     }
+                    HStack {
+                        CustomTextViewRepresentable(
+                            placeholder: L10n.chatInputPlaceholder,
+                            text: $vm.inputText,
+                            height: $height,
+                            showBottomMenu: $vm.showBottomMenu
+                        )
+                        .frame(height: height)
+                        .frame(minHeight: 28)
+                        Button {
+                            vm.sendTextMessage()
+                        } label: {
+                            hCoreUIAssets.sendChat.view
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 4)
+                    .background(hBackgroundColor.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                    )
                 }
-                .padding(.horizontal, 4)
-                .padding(.vertical, 4)
-                .background(hBackgroundColor.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding([.horizontal, .top], 16)
+                .fixedSize(horizontal: false, vertical: true)
+                if vm.showBottomMenu {
+                    HStack(spacing: 8) {
+                        VStack(spacing: 8) {
+                            bottomMenuItem(with: hCoreUIAssets.camera.image) {
+                                vm.openCamera()
+                            }
+                            bottomMenuItem(with: hCoreUIAssets.pictures.image) {
+                                vm.openImagePicker()
+                            }
+                            bottomMenuItem(with: hCoreUIAssets.documents.image) {
+                                vm.openFilePicker()
+                            }
+                        }
+                        .fixedSize(
+                            horizontal: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/,
+                            vertical: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/
+                        )
+                        ImagesView(vm: vm.imagesViewModel)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.leading, 16)
+                }
+            }
+        }
+    }
+
+    private func bottomMenuItem(with image: UIImage, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+        } label: {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(hBackgroundColor.primary)
+                .aspectRatio(1, contentMode: .fit)
+                .overlay(
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 24)
+                        .foregroundColor(hTextColor.primary)
+                )
+                .frame(height: 80)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
                 )
-            }
-            .fixedSize(horizontal: false, vertical: true)
-            if vm.showBottomMenu {
-                HStack(spacing: 8) {
-                    VStack(spacing: 8) {
-                        Button {
-                            vm.openCamera()
-                        } label: {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
-                                .aspectRatio(1, contentMode: .fit)
-                                .overlay(
-                                    hCoreUIAssets.camera.view.resizable().frame(width: 24, height: 24)
-                                )
-                                .frame(height: 80)
-                        }
-                        Button {
-                            vm.openImagePicker()
-                        } label: {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
-                                .aspectRatio(1, contentMode: .fit)
-                                .overlay(
-                                    hCoreUIAssets.pictures.view.resizable().frame(width: 24, height: 24)
-                                )
-                                .frame(height: 80)
-                        }
-                        Button {
-                            vm.openFilePicker()
-                        } label: {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
-                                .aspectRatio(1, contentMode: .fit)
-                                .overlay(
-                                    hCoreUIAssets.documents.view.resizable().frame(width: 24, height: 24)
-                                )
-                                .frame(height: 80)
-                        }
-                    }
-                    .fixedSize(
-                        horizontal: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/,
-                        vertical: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/
-                    )
-                    ImagesView(vm: vm.imagesViewModel)
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
         }
     }
 }
@@ -175,9 +178,10 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         if let uiView = uiView as? CustomTextView {
             if text == "" {
                 uiView.text = text
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                     height = uiView.contentSize.height
                 }
+                uiView.updateColors()
             }
         }
     }
@@ -254,6 +258,16 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         if text.isEmpty {
             textView.text = placeholder
             textView.textColor = UIColor.lightGray
+        }
+    }
+
+    func updateColors() {
+        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        if text.isEmpty {
+            self.text = placeholder
+            self.textColor = hTextColor.secondary.colorFor(colorScheme, .base).color.uiColor()
+        } else {
+            self.textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
         }
     }
 }
