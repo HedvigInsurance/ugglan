@@ -1,7 +1,27 @@
 {
   "images" : [
     {
+      "filename" : "hedvig_symbol_original_v2_4000x4000 alpha 1.png",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
       "filename" : "hedvig_symbol_original_v2_4000x4000 alpha.png",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "hedvig_symbol_original_v2_4000x4000-alpha-edit-darkmode.png",
       "idiom" : "universal"
     }
   ],

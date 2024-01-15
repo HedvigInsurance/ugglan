@@ -77,13 +77,17 @@ public struct HelpCenterStartView: View {
     private func quickActionPill(quickAction: CommonClaim) -> some View {
         HStack(alignment: .center) {
             hText(quickAction.displayTitle)
-                .colorScheme(.light)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(.vertical, 16)
         .background(
             Squircle.default()
-                .fill(hGrayscaleTranslucent.greyScaleTranslucent100)
+                .fill(
+                    hColorScheme(
+                        light: hGrayscaleTranslucent.greyScaleTranslucent100,
+                        dark: hFillColor.opaqueOne
+                    )
+                )
         )
         .onTapGesture {
             Task {
