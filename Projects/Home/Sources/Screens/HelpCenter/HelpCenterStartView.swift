@@ -25,13 +25,13 @@ public struct HelpCenterStartView: View {
                             .frame(width: 170, height: 170)
                             .padding(.bottom, 26)
                             .padding(.top, 39)
-                        
+
                         VStack(alignment: .leading, spacing: 8) {
                             hText(helpCenterModel.title)
                             hText(helpCenterModel.description)
                                 .foregroundColor(hTextColor.secondary)
                         }
-                        
+
                         displayQuickActions()
                         displayCommonTopics()
                         QuestionsItems(
@@ -489,7 +489,7 @@ extension HelpCenterStartView {
                         commonQuestions: commonQuestions
                     )
             ),
-            style: .detented(.scrollViewContentSize),
+            style: .modally(presentationStyle: .overFullScreen),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .goToQuickAction = action {
@@ -578,13 +578,4 @@ extension HelpCenterStartView {
                 commonQuestions: commonQuestions
             )
     )
-}
-
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size)
-            .map {
-                Array(self[$0..<Swift.min($0 + size, count)])
-            }
-    }
 }
