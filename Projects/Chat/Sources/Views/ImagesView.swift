@@ -10,37 +10,59 @@ struct ImagesView: View {
         self.vm = vm
     }
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack {
-                ForEach(vm.files, id: \.creationDate) { file in
-                    PHPAssetPreview(asset: file) { message in
-                        self.vm.sendMessage(message)
-                    }
-                    .frame(width: 205, height: 256)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+        Group {
+            if vm.permissionNotGranted {
+                GenericErrorView(
+                    buttons: .init(
+                        actionButton: .init(
+                            buttonTitle: L10n.Profile.AppSettingsSection.title,
+                            buttonAction: {
+                                vm.openSettings()
+                            }
+                        )
                     )
+                )
+                .background(Color.red)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack {
+                        ForEach(vm.files, id: \.creationDate) { file in
+                            PHPAssetPreview(asset: file) { message in
+                                self.vm.sendMessage(message)
+                            }
+                            .frame(width: 205, height: 256)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                            )
+                        }
+                    }
+                    .clipped()
                 }
             }
-            .clipped()
         }
         .frame(height: 264)
+        .onAppear {
+            vm.fetchData()
+        }
     }
 }
 
 class ImagesViewModel: ObservableObject {
     @Published var files = [PHAsset]()
-    @Published var phAuthorizationStatus: PHAuthorizationStatus = .notDetermined
+    @Published var permissionNotGranted = false
     var sendMessage: (_ message: Message) -> Void = { _ in }
-    init() {
+    init() {}
+
+    func fetchData() {
         PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] (status) in
             switch status {
             case .notDetermined, .restricted, .denied:
-                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                    return
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self?.permissionNotGranted = true
+                    }
                 }
-                DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
             case .authorized, .limited:
                 var list = [PHAsset]()
                 let fetchOptions = PHFetchOptions()
@@ -67,10 +89,13 @@ class ImagesViewModel: ObservableObject {
             @unknown default:
                 break
             }
-            DispatchQueue.main.async {
-                self?.phAuthorizationStatus = status
-            }
         }
+    }
+    func openSettings() {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        UIApplication.shared.open(settingsUrl)
     }
 }
 

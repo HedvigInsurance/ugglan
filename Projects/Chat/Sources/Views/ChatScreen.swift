@@ -13,7 +13,6 @@ struct ChatScreen: View {
             loadingPreviousMessages
             ScrollViewReader { proxy in
                 messagesContainer(with: proxy)
-                    .padding(.horizontal, 16)
                 ChatInputView(vm: vm.chatInputVm)
             }
             .dismissKeyboard()
@@ -27,6 +26,7 @@ struct ChatScreen: View {
                 .useDarkColor
                 .fixedSize()
                 .padding(.vertical, 8)
+                .transition(.opacity)
         }
     }
 
@@ -34,7 +34,7 @@ struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy) -> some View {
         ScrollView {
             LazyVStack {
-                ForEach(vm.messages, id: \.self) { message in
+                ForEach(vm.messages, id: \.id) { message in
                     messageView(for: message)
                         .flippedUpsideDown()
                         .onAppear {
@@ -46,49 +46,26 @@ struct ChatScreen: View {
                         }
                 }
             }
-            .onAppear {
+            .padding([.horizontal, .top], 16)
+            .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
-                    proxy.scrollTo(vm.messages.last, anchor: .bottom)
-                }
-            }
-            .onChange(of: vm.scrollToMessage) { message in
-                withAnimation {
-                    proxy.scrollTo(message, anchor: .bottom)
+                    proxy.scrollTo(id, anchor: .bottom)
                 }
             }
         }
         .flippedUpsideDown()
-        //            .introspectScrollView { scrollView in
-        //                scrollView.viewController?.isModalInPresentation = true
-        //                let presentationController = scrollView.viewController?.navigationController?.presentationController
-        //                let key = [
-        //                    "_sheet", "Interaction",
-        //                ]
-        //                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-        //                sheetInteraction?.setValue(true, forKey: "enabled")
-        ////                scrollView.viewController?.sheet
-        //                // hack to fix modal dismissing when dragging up in scrollView
-        ////                let bag = DisposeBag()
-        ////                print("DELEGATE IS \(scrollView.delegate)")
-        ////                func setSheetInteractionState(_ enabled: Bool) {
-        ////                    let presentationController = scrollView.viewController?.navigationController?.presentationController
-        ////                    let key = [
-        ////                        "_sheet", "Interaction",
-        ////                    ]
-        ////                    let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-        ////                    sheetInteraction?.setValue(enabled, forKey: "enabled")
-        ////                }
-        ////                scrollView.signal
-        ////                bag += scrollView.delegate.willBeginDragging.onValue { _ in
-        ////                    scrollView.viewController?.isModalInPresentation = true
-        ////                    setSheetInteractionState(false)
-        ////                }
-        ////
-        ////                bag += scrollView.delegate.willEndDragging.onValue { _ in
-        ////                    scrollView.viewController.isModalInPresentation = false
-        ////                    setSheetInteractionState(true)
-        ////                }
-        //            }
+        .introspectViewController { vc in
+            vc.isModalInPresentation = true
+            let presentationController = vc.navigationController?.presentationController
+            let key = [
+                "_sheet", "Interaction",
+            ]
+            let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+            sheetInteraction?.setValue(false, forKey: "enabled")
+        }
+        .introspectScrollView { scrollView in
+            scrollView.bounces = false
+        }
     }
 
     private func messageView(for message: Message) -> some View {
@@ -97,7 +74,7 @@ struct ChatScreen: View {
                 Spacer()
             }
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 0) {
-                message
+                MessageView(message: message)
                     .frame(
                         maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading

@@ -29,6 +29,8 @@ extension Message {
         switch type {
         case .text:
             return 16
+        case .deepLink:
+            return 16
         default:
             return 0
         }

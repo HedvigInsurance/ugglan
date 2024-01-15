@@ -128,9 +128,11 @@ class ChatInputViewModel: NSObject, ObservableObject {
         }
     }
     func sendTextMessage() {
-        self.sendMessage(Message(type: .text(text: inputText)))
-        UIApplication.dismissKeyboard()
-        inputText = ""
+        if inputText.count > 0 {
+            self.sendMessage(Message(type: .text(text: inputText)))
+            UIApplication.dismissKeyboard()
+            inputText = ""
+        }
     }
 
     func openCamera() {
@@ -176,7 +178,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
         if let uiView = uiView as? CustomTextView {
-            if text == "" {
+            if text == "" && !uiView.isFirstResponder {
                 uiView.text = text
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                     height = uiView.contentSize.height
@@ -237,9 +239,9 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         showBottomMenu = false
-        if textView.textColor == UIColor.lightGray {
+        if textView.textColor == placeholderTextColor {
             textView.text = nil
-            textView.textColor = UIColor.black
+            textView.textColor = editingTextColor
         }
     }
 
@@ -257,18 +259,26 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         if text.isEmpty {
             textView.text = placeholder
-            textView.textColor = UIColor.lightGray
+            textView.textColor = placeholderTextColor
         }
     }
 
     func updateColors() {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         if text.isEmpty {
             self.text = placeholder
-            self.textColor = hTextColor.secondary.colorFor(colorScheme, .base).color.uiColor()
+            self.textColor = placeholderTextColor
         } else {
-            self.textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
+            self.textColor = editingTextColor
         }
+    }
+
+    private var editingTextColor: UIColor {
+        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
+    }
+    private var placeholderTextColor: UIColor {
+        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return hTextColor.secondary.colorFor(colorScheme, .base).color.uiColor()
     }
 }
 

@@ -1,3 +1,4 @@
+import Chat
 import Claims
 import Contracts
 import EditCoInsured
@@ -10,6 +11,7 @@ import MoveFlow
 import Payment
 import Presentation
 import Profile
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -63,6 +65,7 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
+            .configureChatNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -288,6 +291,38 @@ extension JourneyPresentation {
                             action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
                         )
                     )
+                }
+            }
+        }
+    }
+    public var configureChatNavigation: some JourneyPresentation {
+        onAction(ChatStore.self) { action, _ in
+            if case let .setLastMessageDate(date) = action {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                if store.state.latestChatTimeStamp != date {
+                    store.send(
+                        .setChatNotificationTimeStamp(
+                            sentAt: date
+                        )
+                    )
+                }
+            } else if case let .navigation(navigationAction) = action {
+                switch navigationAction {
+                case let .linkClicked(url):
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        if let deepLink = DeepLink.getType(from: url) {
+                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                        } else {
+                            vc.present(
+                                SFSafariViewController(url: url),
+                                animated: true
+                            )
+                        }
+                    }
+                case .redirectAction:
+                    break
+                case .closeChat:
+                    break
                 }
             }
         }

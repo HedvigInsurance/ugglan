@@ -1,4 +1,6 @@
 import Combine
+import Flow
+import Presentation
 import SwiftUI
 import hCore
 
@@ -141,6 +143,9 @@ class ChatScreenViewModel: ObservableObject {
             type: localMessage.type,
             date: remoteMessage.sentAt
         )
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.send(.setLastMessageDate(date: remoteMessage.sentAt))
+
         addedMessagesIds.append(remoteMessage.id)
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
             withAnimation {
