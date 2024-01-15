@@ -20,16 +20,13 @@ struct ChatFileView: View {
                             Kingfisher.ImageResource(downloadURL: file.url, cacheKey: file.id)
                         )
                     )
-                    .fade(duration: 0.25)
                     .targetCache(ImageCache.default)
                     .aspectRatio(
                         contentMode: .fit
                     )
                 } else {
                     KFImage(
-                        source: Kingfisher.Source.network(
-                            Kingfisher.ImageResource(downloadURL: file.url, cacheKey: file.id)
-                        )
+                        source: getSource()
                     )
                     .fade(duration: 0.25)
                     .placeholder({ progress in
@@ -69,6 +66,17 @@ struct ChatFileView: View {
                 let preview = DocumentPreview(url: url)
                 disposeBag += topVC.present(preview.journey)
             }
+        }
+    }
+
+    private func getSource() -> Kingfisher.Source {
+        switch file.source {
+        case .localFile(let url, _):
+            return Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id))
+        case .url(let url):
+            return Kingfisher.Source.network(
+                Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)
+            )
         }
     }
 }

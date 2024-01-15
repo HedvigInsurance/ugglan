@@ -16,6 +16,26 @@ extension AppJourney {
         } else {
             ChatJourney.start()
         }
+        //        if Dependencies.featureFlags().isChatDisabled {
+        //            AppJourney.disableChatScreen(style: style)
+        //        } else {
+        //            let chat = Chat()
+        //
+        //            Journey(chat, style: style, options: [.embedInNavigationController, .preffersLargerNavigationBar]) {
+        //                item in
+        //                if case .notifications = item {
+        //                    item.journey
+        //                }
+        //            }
+        //            .onPresent {
+        //                chat.chatState.initFetch()
+        //            }
+        //            .onDismiss {
+        //                chat.chatState.reset()
+        //            }
+        //            .configureTitle(L10n.chatTitle)
+        //            .setScrollEdgeNavigationBarAppearanceToStandardd
+        //        }
     }
 
     @JourneyBuilder

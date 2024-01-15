@@ -134,7 +134,7 @@ extension Chat: Presentable {
         tableKit.view.contentInsetAdjustmentBehavior = .never
         tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
 
-        // hack to fix modal dismissing when dragging up in scrollView
+        //         hack to fix modal dismissing when dragging up in scrollView
         func setSheetInteractionState(_ enabled: Bool) {
             let presentationController = viewController.navigationController?.presentationController
             let key = [
@@ -143,7 +143,6 @@ extension Chat: Presentable {
             let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
             sheetInteraction?.setValue(enabled, forKey: "enabled")
         }
-
         bag += tableKit.delegate.willBeginDragging.onValue { _ in
             viewController.isModalInPresentation = true
             setSheetInteractionState(false)

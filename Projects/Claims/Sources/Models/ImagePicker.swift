@@ -63,8 +63,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                                     mimeType: .JPEG,
                                     name: "\(Date().currentTimeMillis).jpeg",
                                     data: data,
-                                    thumbnailData: thumbnailData,
-                                    extension: "jpeg"
+                                    thumbnailData: thumbnailData
                                 )
                             files.append(file)
                         }
@@ -80,8 +79,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                                     mimeType: .MOV,
                                     name: "\(Date().currentTimeMillis).mov",
                                     data: data,
-                                    thumbnailData: nil,
-                                    extension: "mov"
+                                    thumbnailData: nil
                                 )
                             files.append(file)
                         }
@@ -146,8 +144,7 @@ struct FileImporterView: UIViewControllerRepresentable {
                         mimeType: mimeType,
                         name: url.lastPathComponent,
                         data: data,
-                        thumbnailData: nil,
-                        extension: url.pathExtension
+                        thumbnailData: nil
                     )
                 )
                 url.stopAccessingSecurityScopedResource()
@@ -159,90 +156,6 @@ struct FileImporterView: UIViewControllerRepresentable {
 
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
             parent.presentationMode.wrappedValue.dismiss()
-        }
-    }
-}
-
-struct CameraPickerView: UIViewControllerRepresentable {
-
-    private var sourceType: UIImagePickerController.SourceType = .camera
-    private let onImagePicked: (UIImage) -> Void
-
-    @Environment(\.presentationMode) private var presentationMode
-
-    public init(onImagePicked: @escaping (UIImage) -> Void) {
-        self.onImagePicked = onImagePicked
-    }
-
-    public func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = self.sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    public func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(
-            onDismiss: { self.presentationMode.wrappedValue.dismiss() },
-            onImagePicked: self.onImagePicked
-        )
-    }
-
-    final public class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-
-        private let onDismiss: () -> Void
-        private let onImagePicked: (UIImage) -> Void
-
-        init(onDismiss: @escaping () -> Void, onImagePicked: @escaping (UIImage) -> Void) {
-            self.onDismiss = onDismiss
-            self.onImagePicked = onImagePicked
-        }
-
-        public func imagePickerController(
-            _ picker: UIImagePickerController,
-            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
-        ) {
-            if let image = info[.originalImage] as? UIImage {
-                self.onImagePicked(image)
-            }
-            self.onDismiss()
-        }
-        public func imagePickerControllerDidCancel(_: UIImagePickerController) {
-            self.onDismiss()
-        }
-    }
-}
-
-struct FilePickerDto {
-    let id: String
-    let size: Double
-    let mimeType: MimeType
-    let name: String
-    let data: Data
-    let thumbnailData: Data?
-    let `extension`: String
-}
-
-extension FilePickerDto {
-    func asFile(with dataUrl: URL, and thumbnailUrl: URL) -> File? {
-        do {
-            try data.write(to: dataUrl)
-            var useThumbnailUrl = false
-            if let thumbnailData {
-                useThumbnailUrl = true
-                try thumbnailData.write(to: thumbnailUrl)
-            }
-            return File(
-                id: id,
-                size: size,
-                mimeType: mimeType,
-                name: name,
-                source: .localFile(url: dataUrl, thumbnailURL: useThumbnailUrl ? thumbnailUrl : nil)
-            )
-        } catch let ex {
-            return nil
         }
     }
 }

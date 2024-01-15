@@ -7,7 +7,7 @@ class ChatScreenViewModel: ObservableObject {
     @Published var lastDeliveredMessage: Message?
     @Published var isFetchingNext = false
     @Published var scrollToMessage: Message?
-    @Published var inputText: String = ""
+    @Published var chatInputVm: ChatInputViewModel = .init()
     @Inject private var fetchMessagesClient: FetchMessagesClient
     @Inject private var sendMessageClient: SendMessageClient
     private var addedMessagesIds: [String] = []
@@ -16,6 +16,11 @@ class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
 
     init() {
+        chatInputVm.sendMessage = { message in
+            Task { [weak self] in
+                await self?.send(message: message)
+            }
+        }
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()
@@ -28,6 +33,8 @@ class ChatScreenViewModel: ObservableObject {
         Task { [weak self] in
             await self?.fetch()
         }
+        let fileUploadManager = FileUploadManager()
+        fileUploadManager.resetuploadFilesPath()
     }
 
     @MainActor

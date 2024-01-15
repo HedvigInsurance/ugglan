@@ -1,13 +1,14 @@
 import Foundation
-import hCore
 
-class FileUploadManager {
+public class FileUploadManager {
+
+    public init() {}
     private static let uploadFolderPath = FileManager.default.temporaryDirectory.appendingPathComponent("uploadedFiles")
-    func getPathForData(for id: String, andExtension extension: String) -> URL {
-        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id).\(`extension`)")
+    public func getPathForData(for id: String) -> URL {
+        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)")
     }
-    func getPathForThumnailData(for id: String, andExtension extension: String) -> URL {
-        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)-thumb.\(`extension`)")
+    public func getPathForThumnailData(for id: String) -> URL {
+        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)-thumb")
     }
     public func resetuploadFilesPath() {
         var isDir: ObjCBool = true

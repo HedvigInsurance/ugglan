@@ -1,5 +1,6 @@
 import Combine
 import Flow
+import Form
 import SwiftUI
 import hCore
 import hCoreUI
@@ -12,8 +13,9 @@ struct ChatScreen: View {
             loadingPreviousMessages
             ScrollViewReader { proxy in
                 messagesContainer(with: proxy)
-                sendMessageView
+                ChatInputView(vm: vm.chatInputVm)
             }
+            .padding()
             .dismissKeyboard()
         }
     }
@@ -54,24 +56,39 @@ struct ChatScreen: View {
                     proxy.scrollTo(message, anchor: .bottom)
                 }
             }
-
         }
         .flippedUpsideDown()
-    }
-
-    private var sendMessageView: some View {
-        HStack {
-            TextField("Send a message", text: $vm.inputText)
-                .textFieldStyle(.roundedBorder)
-            Button {
-                Task {
-                    await vm.send(message: .init(type: .text(text: vm.inputText)))
-                }
-            } label: {
-                Image(systemName: "paperplane")
-            }
-        }
-        .padding()
+        //            .introspectScrollView { scrollView in
+        //                scrollView.viewController?.isModalInPresentation = true
+        //                let presentationController = scrollView.viewController?.navigationController?.presentationController
+        //                let key = [
+        //                    "_sheet", "Interaction",
+        //                ]
+        //                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+        //                sheetInteraction?.setValue(true, forKey: "enabled")
+        ////                scrollView.viewController?.sheet
+        //                // hack to fix modal dismissing when dragging up in scrollView
+        ////                let bag = DisposeBag()
+        ////                print("DELEGATE IS \(scrollView.delegate)")
+        ////                func setSheetInteractionState(_ enabled: Bool) {
+        ////                    let presentationController = scrollView.viewController?.navigationController?.presentationController
+        ////                    let key = [
+        ////                        "_sheet", "Interaction",
+        ////                    ]
+        ////                    let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+        ////                    sheetInteraction?.setValue(enabled, forKey: "enabled")
+        ////                }
+        ////                scrollView.signal
+        ////                bag += scrollView.delegate.willBeginDragging.onValue { _ in
+        ////                    scrollView.viewController?.isModalInPresentation = true
+        ////                    setSheetInteractionState(false)
+        ////                }
+        ////
+        ////                bag += scrollView.delegate.willEndDragging.onValue { _ in
+        ////                    scrollView.viewController.isModalInPresentation = false
+        ////                    setSheetInteractionState(true)
+        ////                }
+        //            }
     }
 
     private func messageView(for message: Message) -> some View {
