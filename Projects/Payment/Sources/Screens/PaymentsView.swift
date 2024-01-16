@@ -164,7 +164,6 @@ public struct PaymentsView: View {
             Spacer()
             hText(descriptor).foregroundColor(hTextColor.secondary)
         }
-        .withChevronAccessory
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
