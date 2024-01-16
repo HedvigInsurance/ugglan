@@ -12,7 +12,6 @@ extension AppJourney {
     static func webRedirect(url: URL) -> some JourneyPresentation {
         ContinueJourney()
             .onPresent {
-                let url = URL(string: url.absoluteString.replacingOccurrences(of: "https://", with: ""))!
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 if urlComponent?.scheme == nil {
                     urlComponent?.scheme = "https"
