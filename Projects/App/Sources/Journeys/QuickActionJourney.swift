@@ -48,7 +48,7 @@ extension AppJourney {
         if let deepLink = DeepLink.getType(from: url), url.absoluteString.isDeepLink {
             DismissJourney()
                 .onPresent {
-                    if DeepLink.tabURL(url: url) {
+                    if DeepLink.getType(from: url)?.tabURL ?? false {
                         let store: HomeStore = globalPresentableStoreContainer.get()
                         store.send(.dismissHelpCenter)
                     }
