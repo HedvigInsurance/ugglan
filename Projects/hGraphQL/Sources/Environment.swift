@@ -138,11 +138,11 @@ public enum Environment: Hashable {
         }
     }
 
-    public var deepLinkUrl: String {
+    public var deepLinkUrl: URL {
         switch self {
-        case .staging: return "https://hedvigtest.page.link"
-        case .production: return "https://hedvig.page.link"
-        case .custom(_, _, _, _): return ""
+        case .staging: return URL(string: "https://hedvigtest.page.link")!
+        case .production: return URL(string: "https://hedvig.page.link")!
+        case .custom(_, _, _, _): return URL(string: "https://hedvig.page.link")!
         }
     }
 
