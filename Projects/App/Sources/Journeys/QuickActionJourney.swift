@@ -45,13 +45,10 @@ extension AppJourney {
 
     @JourneyBuilder
     static func configureURL(url: URL) -> some JourneyPresentation {
-        let urlPath = URLComponents(url: url, resolvingAgainstBaseURL: false)?.path
-        let urlIsDeepLink = urlPath?.filter({ $0 == "/" }).count == 1
-
-        if let deepLink = DeepLink.getType(from: url), urlIsDeepLink {
+        if let deepLink = DeepLink.getType(from: url), url.absoluteString.isDeepLink {
             DismissJourney()
                 .onPresent {
-                    if isTabURL(url: url) {
+                    if DeepLink.tabURL(url: url) {
                         let store: HomeStore = globalPresentableStoreContainer.get()
                         store.send(.dismissHelpCenter)
                     }
@@ -63,35 +60,4 @@ extension AppJourney {
             AppJourney.webRedirect(url: url)
         }
     }
-}
-
-public enum TabURL {
-    case insurances
-    case home
-    case forever
-}
-
-public func getType(attribute: String) -> TabURL? {
-    if attribute == "insurances" {
-        return .insurances
-    } else if attribute == "forever" {
-        return .forever
-    } else if attribute == "home" {
-        return .home
-    }
-    return nil
-}
-
-func isTabURL(url: URL) -> Bool {
-    let urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-    guard urlComponent?.host == "hedvig.page.link" || urlComponent?.host == "hedvigtest.page.link" else {
-        return false
-    }
-
-    if let urlPath = urlComponent?.path.replacingOccurrences(of: "/", with: "") {
-        if let isTabType = getType(attribute: urlPath) {
-            return true
-        }
-    }
-    return false
 }

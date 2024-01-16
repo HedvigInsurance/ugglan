@@ -44,4 +44,22 @@ public enum DeepLink: String, Codable {
         }
         return type
     }
+
+    public static func tabURL(url: URL) -> Bool {
+        let urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        guard urlComponent?.host == "hedvig.page.link" || urlComponent?.host == "hedvigtest.page.link" else {
+            return false
+        }
+
+        let urlPath = urlComponent?.path.replacingOccurrences(of: "/", with: "")
+
+        if urlPath == "insurances" {
+            return true
+        } else if urlPath == "forever" {
+            return true
+        } else if urlPath == "home" {
+            return true
+        }
+        return false
+    }
 }
