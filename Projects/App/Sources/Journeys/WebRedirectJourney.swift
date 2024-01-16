@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import Presentation
+import SafariServices
 import UIKit
 import hCore
 import hCoreUI
@@ -11,7 +12,20 @@ extension AppJourney {
     static func webRedirect(url: URL) -> some JourneyPresentation {
         ContinueJourney()
             .onPresent {
-                UIApplication.shared.open(url)
+                var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                if urlComponent?.scheme == nil {
+                    urlComponent?.scheme = "https"
+                }
+                if let finalUrl = urlComponent?.url {
+                    if urlComponent?.scheme == "tel" {
+                        UIApplication.shared.open(url)
+                    } else {
+                        let vc = SFSafariViewController(url: finalUrl)
+                        vc.modalPresentationStyle = .pageSheet
+                        vc.preferredControlTintColor = .brand(.primaryText())
+                        UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                    }
+                }
             }
     }
 }

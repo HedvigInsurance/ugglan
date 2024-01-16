@@ -91,17 +91,16 @@ public enum HomeAction: ActionProtocol {
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
-    case openOtherServices
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
     case startClaim
     case openFreeTextChat
     case openMovingFlow
     case openTravelInsurance
+    case openHelpCenter
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
     case openCoInsured(contractIds: [InsuredPeopleConfig])
-    case openEmergency
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
     case setChatNotificationTimeStamp(sentAt: Date)
@@ -110,6 +109,12 @@ public enum HomeAction: ActionProtocol {
     case dismissOtherServices
     case hideImportantMessage
     case openContractCertificate(url: URL, title: String)
+
+    case openHelpCenterTopicView(commonTopic: CommonTopic)
+    case openHelpCenterQuestionView(question: Question)
+    case goToQuickAction(CommonClaim)
+    case goToURL(url: URL)
+    case dismissHelpCenter
 }
 
 public enum FutureStatus: Codable, Equatable {
@@ -284,11 +289,26 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setAllCommonClaims(_ state: inout HomeState) {
         var allCommonClaims = [CommonClaim]()
-        allCommonClaims.append(.chat())
-        if Dependencies.featureFlags().isMovingFlowEnabled {
+
+        allCommonClaims.append(.changeBank())
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contracts = contractStore.state.activeContracts
+
+        if Dependencies.featureFlags().isEditCoInsuredEnabled
+            && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
+        {
+            allCommonClaims.append(.editCoInsured())
+        }
+
+        if Dependencies.featureFlags().isMovingFlowEnabled
+            && !contracts.filter({ $0.supportsAddressChange }).isEmpty
+        {
             allCommonClaims.append(.moving())
         }
-        if state.shouldShowTravelInsurance {
+        if Dependencies.featureFlags().isTravelInsuranceEnabled
+            && !contracts.filter({ $0.hasTravelInsurance }).isEmpty
+        {
             allCommonClaims.append(.travelInsurance())
         }
         allCommonClaims.append(contentsOf: state.commonClaims)
@@ -361,22 +381,32 @@ extension CommonClaim {
         return commonClaim
     }
 
-    public static func chat() -> CommonClaim {
-        return CommonClaim(
-            id: "chat",
-            icon: nil,
-            imageName: nil,
-            displayTitle: L10n.chatTitle,
-            layout: .init(titleAndBulletPoint: nil, emergency: nil)
-        )
-    }
-
     public static func moving() -> CommonClaim {
         return CommonClaim(
             id: "moving_flow",
             icon: nil,
             imageName: nil,
             displayTitle: L10n.InsuranceDetails.changeAddressButton,
+            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+        )
+    }
+
+    public static func editCoInsured() -> CommonClaim {
+        CommonClaim(
+            id: "edit_coinsured",
+            icon: nil,
+            imageName: nil,
+            displayTitle: L10n.hcQuickActionsEditCoinsured,
+            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+        )
+    }
+
+    public static func changeBank() -> CommonClaim {
+        CommonClaim(
+            id: "change_bank",
+            icon: nil,
+            imageName: nil,
+            displayTitle: L10n.hcQuickActionsChangeBank,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }

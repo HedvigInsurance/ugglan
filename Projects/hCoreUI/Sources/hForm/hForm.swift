@@ -24,6 +24,8 @@ public struct hForm<Content: View>: View {
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hFormMergeBottomWithContentIfNeeded) var mergeBottomWithContentIfNeeded
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
+    @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.colorScheme) private var colorScheme
 
     var content: Content
     @Namespace private var animation
@@ -109,7 +111,7 @@ public struct hForm<Content: View>: View {
                 }
                 .background(
                     GeometryReader { proxy in
-                        Color.clear
+                        hBackgroundColor.primary
                             .onAppear {
                                 contentHeight = proxy.size.height
                                 recalculateHeight()
@@ -167,7 +169,19 @@ public struct hForm<Content: View>: View {
         }
         .background(
             GeometryReader { proxy in
-                Color.clear
+                switch bottomBackgroundStyle {
+                case let .gradient(from, to):
+
+                    LinearGradient(
+                        colors: [
+                            from.colorFor(colorScheme, .base).color,
+                            from.colorFor(colorScheme, .base).color,
+                            to.colorFor(colorScheme, .base).color,
+                            to.colorFor(colorScheme, .base).color,
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                     .onAppear {
                         scrollViewHeight = proxy.size.height
                         recalculateHeight()
@@ -176,6 +190,17 @@ public struct hForm<Content: View>: View {
                         scrollViewHeight = proxy.size.height
                         recalculateHeight()
                     }
+                case .transparent:
+                    Color.clear
+                        .onAppear {
+                            scrollViewHeight = proxy.size.height
+                            recalculateHeight()
+                        }
+                        .onChange(of: proxy.size) { size in
+                            scrollViewHeight = proxy.size.height
+                            recalculateHeight()
+                        }
+                }
             }
         )
     }
@@ -230,15 +255,7 @@ struct hForm_Previews: PreviewProvider {
                     .background(Color.red)
             }
         }
-        .hFormAttachToBottom {
-            hButton.LargeButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
-            }
-
-        }
-        .hFormContentPosition(.bottom)
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .hFormTitle(.small, .standard, "TITLE")
     }
 }
@@ -298,6 +315,28 @@ extension EnvironmentValues {
 extension View {
     public func hFormIgnoreKeyboard() -> some View {
         self.environment(\.hFormIgnoreKeyboard, true)
+    }
+}
+
+public enum hFormBottomBackgroundStyle {
+    case transparent
+    case gradient(from: any hColor, to: any hColor)
+}
+
+private struct EnvironmentHFormBottomBackgorundColor: EnvironmentKey {
+    static let defaultValue: hFormBottomBackgroundStyle = hFormBottomBackgroundStyle.transparent
+}
+
+extension EnvironmentValues {
+    public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
+        get { self[EnvironmentHFormBottomBackgorundColor.self] }
+        set { self[EnvironmentHFormBottomBackgorundColor.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
+        self.environment(\.hFormBottomBackgroundStyle, style)
     }
 }
 

@@ -39,6 +39,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
     @Environment(\.hWithoutDivider) var hWithoutDivider
+    @Environment(\.hWithoutHorizontalPadding) var withoutHorizontalPadding
 
     var content: Content
     var accessory: Accessory
@@ -61,12 +62,6 @@ public struct hRow<Content: View, Accessory: View>: View {
         return new
     }
 
-    public func noHorizontalPadding() -> Self {
-        var new = self
-        new.horizontalPadding = 0
-        return new
-    }
-
     public func verticalPadding(_ newPadding: CGFloat) -> Self {
         var new = self
         new.verticalPadding = newPadding
@@ -82,7 +77,7 @@ public struct hRow<Content: View, Accessory: View>: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding([.horizontal], horizontalPadding)
+            .padding([.horizontal], withoutHorizontalPadding ? 0 : horizontalPadding)
             .padding([.vertical], verticalPadding)
             if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()

@@ -16,13 +16,32 @@ extension EnvironmentValues {
     }
 }
 
+private struct EnvironmentHWithoutPadding: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutDividerPadding: Bool {
+        get { self[EnvironmentHWithoutPadding.self] }
+        set { self[EnvironmentHWithoutPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutDividerPadding: some View {
+        self.environment(\.hWithoutDividerPadding, true)
+    }
+}
+
 public struct hRowDivider: View {
-    @SwiftUI.Environment(\.hRowDividerSettings) var settings: hRowDividerSettings
+    @Environment(\.hRowDividerSettings) var settings
+    @Environment(\.hWithoutDividerPadding) var withoutPadding: Bool
 
     public init() {}
 
     public var body: some View {
-        SwiftUI.Divider().padding(settings.insets)
+        let noPaddingInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+        SwiftUI.Divider().padding(withoutPadding ? noPaddingInsets : settings.insets)
     }
 }
 
