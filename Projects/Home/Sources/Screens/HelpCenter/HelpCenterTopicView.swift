@@ -28,7 +28,7 @@ struct HelpCenterTopicView: View {
                 SupportView()
             }
         }
-        .hDisableScroll
+        .hFormBottomBackgroundColor(.opaque)
         .edgesIgnoringSafeArea(.bottom)
     }
 }

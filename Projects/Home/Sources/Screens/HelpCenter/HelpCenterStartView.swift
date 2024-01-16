@@ -46,7 +46,7 @@ public struct HelpCenterStartView: View {
                     .padding(.top, 40)
             }
         }
-        .hDisableScroll
+        .hFormBottomBackgroundColor(.opaque)
         .edgesIgnoringSafeArea(.bottom)
     }
 

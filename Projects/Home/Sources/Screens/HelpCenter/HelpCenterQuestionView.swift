@@ -46,7 +46,7 @@ struct HelpCenterQuestionView: View {
                     .padding(.top, 8)
             }
         }
-        .hDisableScroll
+        .hFormBottomBackgroundColor(.opaque)
         .edgesIgnoringSafeArea(.bottom)
     }
 }
