@@ -123,14 +123,14 @@ public struct OTPSSNEntry: View {
                                     state.otpState.personalNumber ?? ""
                                 },
                                 setter: { personalNumber in
-                                        .otpStateAction(action: .setPersonalNumber(personalNumber: personalNumber))
+                                    .otpStateAction(action: .setPersonalNumber(personalNumber: personalNumber))
                                 }
                             )
                         )
                         .focused($focusPersonalNumberField, equals: true) {
                             onSubmit()
                         }
-                        .hTextFieldError(state.personalNumber)
+                        .hTextFieldError(state.otpInputErrorMessage)
                     }
                     .presentableStoreLensAnimation(.default)
                 }
@@ -157,6 +157,6 @@ public struct OTPSSNEntry: View {
     }
 }
 
-#Preview {
+#Preview{
     OTPSSNEntry()
 }

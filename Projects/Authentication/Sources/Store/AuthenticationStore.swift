@@ -135,10 +135,12 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             return FiniteSignal { callback in
                 let bag = DisposeBag()
 
+                let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
+
                 self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
                     market: Localization.Locale.currentLocale.market.rawValue,
-                    personalNumber: state.otpState.personalNumber,
+                    personalNumber: personalNumber,
                     email: state.otpState.email
                 ) { result, error in
                     bag += Signal(after: 0.5)
@@ -172,7 +174,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 return bag
             }
-            
+
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
@@ -381,7 +383,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         case let .setStatus(text):
             newState.statusText = text
         case .cancel:
-            newState.otpState = OTPState()
             newState.seBankIDState = SEBankIDState()
             newState.loginHasFailed = false
         case .loginFailure:
