@@ -28,7 +28,7 @@ struct HelpCenterTopicView: View {
                 SupportView()
             }
         }
-        .hFormBottomBackgroundColor(.opaque)
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .edgesIgnoringSafeArea(.bottom)
     }
 }

@@ -46,7 +46,7 @@ public struct HelpCenterStartView: View {
                     .padding(.top, 40)
             }
         }
-        .hFormBottomBackgroundColor(.opaque)
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .edgesIgnoringSafeArea(.bottom)
     }
 

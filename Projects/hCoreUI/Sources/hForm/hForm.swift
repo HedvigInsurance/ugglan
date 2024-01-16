@@ -25,6 +25,7 @@ public struct hForm<Content: View>: View {
     @Environment(\.hFormMergeBottomWithContentIfNeeded) var mergeBottomWithContentIfNeeded
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.colorScheme) private var colorScheme
 
     var content: Content
     @Namespace private var animation
@@ -169,16 +170,26 @@ public struct hForm<Content: View>: View {
         .background(
             GeometryReader { proxy in
                 switch bottomBackgroundStyle {
-                case .opaque:
-                    hFillColor.opaqueOne
-                        .onAppear {
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
-                        .onChange(of: proxy.size) { size in
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
+                case let .gradient(from, to):
+
+                    LinearGradient(
+                        colors: [
+                            from.colorFor(colorScheme, .base).color,
+                            from.colorFor(colorScheme, .base).color,
+                            to.colorFor(colorScheme, .base).color,
+                            to.colorFor(colorScheme, .base).color,
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .onAppear {
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
+                    }
+                    .onChange(of: proxy.size) { size in
+                        scrollViewHeight = proxy.size.height
+                        recalculateHeight()
+                    }
                 case .transparent:
                     Color.clear
                         .onAppear {
@@ -244,15 +255,7 @@ struct hForm_Previews: PreviewProvider {
                     .background(Color.red)
             }
         }
-        .hFormAttachToBottom {
-            hButton.LargeButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
-            }
-
-        }
-        .hFormContentPosition(.bottom)
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .hFormTitle(.small, .standard, "TITLE")
     }
 }
@@ -317,7 +320,7 @@ extension View {
 
 public enum hFormBottomBackgroundStyle {
     case transparent
-    case opaque
+    case gradient(from: any hColor, to: any hColor)
 }
 
 private struct EnvironmentHFormBottomBackgorundColor: EnvironmentKey {
