@@ -139,7 +139,7 @@ struct PaymentsDiscountsView: View {
         hRow {
             ReferralView(referral: referral)
         }
-        .noHorizontalPadding()
+        .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
 
@@ -147,10 +147,10 @@ struct PaymentsDiscountsView: View {
         hRow {
             hText(L10n.referralsSeeAllInvites)
         }
-        .noHorizontalPadding()
         .onTap {
             store.send(.navigation(to: .openAllReferrals))
         }
+        .hWithoutHorizontalPadding
         .padding(.horizontal, -16)
     }
 }

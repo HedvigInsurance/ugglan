@@ -6,6 +6,7 @@ import Foundation
 import Payment
 import Presentation
 import Profile
+import TravelCertificate
 import UIKit
 import hCore
 import hGraphQL
@@ -92,6 +93,16 @@ extension AppDelegate {
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
                     let vc = PaymentsView().detentJourney(schema: Bundle.main.urlScheme ?? "")
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
+                }
+        } else if path == .travelCertificate {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
+                    let vc = TravelInsuranceFlowJourney.start {
+                        AppJourney.freeTextChat()
+                    }
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }
