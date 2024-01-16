@@ -46,7 +46,6 @@ enum LoginError: Error {
 }
 
 public enum AuthenticationAction: ActionProtocol {
-    case setStatus(text: String?)
     case exchange(code: String)
     case impersonate(code: String)
     case cancel

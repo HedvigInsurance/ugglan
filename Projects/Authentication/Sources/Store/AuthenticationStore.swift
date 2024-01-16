@@ -380,8 +380,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             case let .updateWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
             }
-        case let .setStatus(text):
-            newState.statusText = text
         case .cancel:
             newState.seBankIDState = SEBankIDState()
             newState.loginHasFailed = false

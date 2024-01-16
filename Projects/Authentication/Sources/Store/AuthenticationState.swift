@@ -23,7 +23,6 @@ struct SEBankIDState: StateProtocol {
 }
 
 public struct AuthenticationState: StateProtocol {
-    var statusText: String? = nil
     var otpState = OTPState()
     @Transient(defaultValue: SEBankIDState()) var seBankIDState
     @Transient(defaultValue: false) var loginHasFailed: Bool
