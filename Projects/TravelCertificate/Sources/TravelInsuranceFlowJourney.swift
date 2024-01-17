@@ -13,7 +13,11 @@ public struct TravelInsuranceFlowJourney {
             let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
             store.send(.getTravelCertificateSpecification)
             let disposable = store.onAction(.travelCertificateSpecificationSet) {
-                inCont.resume(returning: store.state.travelInsuranceConfigs!)
+                if let travelInsuranceConfigs = store.state.travelInsuranceConfigs {
+                    inCont.resume(returning: travelInsuranceConfigs)
+                } else {
+                    inCont.resume(throwing: NetworkError.badRequest(message: nil))
+                }
             }
             disposeBag.add(disposable)
         }

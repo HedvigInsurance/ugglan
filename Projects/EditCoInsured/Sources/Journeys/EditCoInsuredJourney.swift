@@ -238,11 +238,19 @@ public class EditCoInsuredJourney {
                     if let selectedConfig = selectedConfigs.first {
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                         if let object = selectedConfig.0 {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleNewScreen(config: object)
+                            if object.numberOfMissingCoInsuredWithoutTermination > 0 {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleNewScreen(config: object)
+                                    )
                                 )
-                            )
+                            } else {
+                                store.send(
+                                    .coInsuredNavigationAction(
+                                        action: .openInsuredPeopleScreen(config: object)
+                                    )
+                                )
+                            }
                         }
                     }
                 },
@@ -255,8 +263,13 @@ public class EditCoInsuredJourney {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            getScreen(for: action)
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
+        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 
     static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
@@ -298,7 +311,11 @@ public class EditCoInsuredJourney {
         if configs.count > 1 {
             openSelectInsurance(configs: configs)
         } else if let config = configs.first {
-            openNewInsuredPeopleScreen(config: config)
+            if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                openNewInsuredPeopleScreen(config: config)
+            } else {
+                openInsuredPeopleScreen(with: config)
+            }
         }
     }
 

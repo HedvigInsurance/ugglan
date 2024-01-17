@@ -230,7 +230,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     func checkBox(isSelected: Bool) -> some View {
         Group {
-            if fieldSize == .small {
+            if singleSelect ?? false {
                 Circle()
                     .strokeBorder(
                         RadioFieldsColors().getBorderColor(isSelected: isSelected),

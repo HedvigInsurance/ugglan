@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "filename" : "hedvig_symbol_original_680x680-alpha_lightmode (1).png",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "hedvig_symbol_original_680x680-alpha-edit-darkmode.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -220,7 +220,7 @@ struct MovingFlowConfirm: View {
                     Spacer(minLength: 8)
                     hText(field.limit, style: .body)
                 }
-                .noHorizontalPadding()
+                .hWithoutHorizontalPadding
             }
             .sectionContainerStyle(.transparent)
             Spacing(height: 32)

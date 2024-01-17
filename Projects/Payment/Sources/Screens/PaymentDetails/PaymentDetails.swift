@@ -92,7 +92,7 @@ struct PaymentDetails: View {
                     InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
         }
     }
 
@@ -109,7 +109,7 @@ struct PaymentDetails: View {
                     InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
         }
     }
 
@@ -134,7 +134,7 @@ struct PaymentDetails: View {
                 hText(data.payment.net.formattedAmount)
             }
         }
-        .noHorizontalPadding()
+        .hWithoutHorizontalPadding
     }
 
     @ViewBuilder var paymentDue: some View {
@@ -157,8 +157,8 @@ struct PaymentDetails: View {
                     }
                 }
             }
+            .hWithoutHorizontalPadding
         }
-        .noHorizontalPadding()
     }
 
     @ViewBuilder
@@ -185,7 +185,7 @@ struct PaymentDetails: View {
                     hText(item.value)
                 }
             }
-            .noHorizontalPadding()
+            .hWithoutHorizontalPadding
             .dividerInsets(.all, 0)
 
             list.append((item.key, AnyView(view)))
@@ -205,7 +205,7 @@ struct PaymentDetails: View {
                 .foregroundColor(hTextColor.secondary)
             }
         }
-        .noHorizontalPadding()
+        .hWithoutHorizontalPadding
     }
 }
 
