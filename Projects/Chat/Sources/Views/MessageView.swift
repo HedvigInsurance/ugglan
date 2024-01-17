@@ -9,7 +9,8 @@ import hCoreUI
 
 struct MessageView: View {
     let message: Message
-
+    @State var height: CGFloat = 0
+    @State var width: CGFloat = 0
     @ViewBuilder
     public var body: some View {
         HStack {
@@ -37,11 +38,19 @@ struct MessageView: View {
             }
             switch message.type {
             case let .text(text):
-                hText(text)
+                ChatTextViewRepresentable(
+                    text: text,
+                    fixedWidth: 300,
+                    height: $height,
+                    width: $width
+                ) { url in
+
+                }
+                .frame(width: width, height: height)
             case let .file(file):
                 ChatFileView(file: file).frame(maxHeight: 200)
             case let .crossSell(url):
-                LinkView(vm: .init(url: url))
+                LinkView(vm: .init(url: url), height: $height, width: $width)
             case let .deepLink(url):
                 if let type = DeepLink.getType(from: url) {
                     Button {
@@ -55,10 +64,18 @@ struct MessageView: View {
                         }
                     }
                 } else {
-                    hText(url.absoluteString)
+                    ChatTextViewRepresentable(
+                        text: url.absoluteString,
+                        fixedWidth: 300,
+                        height: $height,
+                        width: $width
+                    ) { url in
+
+                    }
+                    .frame(width: width, height: height)
                 }
             case let .otherLink(url):
-                LinkView(vm: .init(url: url))
+                LinkView(vm: .init(url: url), height: $height, width: $width)
             case .unknown: Text("")
             }
         }
@@ -67,11 +84,22 @@ struct MessageView: View {
 
 struct LinkView: View {
     @StateObject var vm: LinkViewModel
+    @Binding var height: CGFloat
+    @Binding var width: CGFloat
+
     var body: some View {
         if let error = vm.error {
-            hText(error)
-                .padding(16)
-                .transition(.opacity)
+            ChatTextViewRepresentable(
+                text: error,
+                fixedWidth: 300,
+                height: $height,
+                width: $width
+            ) { url in
+
+            }
+            .frame(width: width, height: height)
+            .padding(16)
+            .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: 8) {
                 Image(uiImage: model.image ?? hCoreUIAssets.hedvigBigLogo.image)

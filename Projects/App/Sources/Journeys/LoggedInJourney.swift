@@ -68,6 +68,14 @@ extension AppJourney {
             .configurePaymentNavigation
             .configureContractNavigation
             .configureChatNavigation
+        //            .onPresent {
+        //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        //                    let vc = UIHostingController(rootView: ChatScreen(vm: .init()))
+        //                    vc.preferredPresentationStyle = .detented(.large)
+        //                    let topVc = UIApplication.shared.getTopViewController()
+        //                    topVc?.present(vc, animated: true)
+        //                }
+        //            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -298,7 +306,7 @@ extension JourneyPresentation {
         }
     }
     public var configureChatNavigation: some JourneyPresentation {
-        onAction(ChatStore.self) { action, _ in
+        onAction(ChatStore.self) { action, pre in
             if case let .setLastMessageDate(date) = action {
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 if store.state.latestChatTimeStamp != date {
@@ -324,6 +332,38 @@ extension JourneyPresentation {
                 case .redirectAction:
                     break
                 case .closeChat:
+                    break
+                }
+            } else if case .checkPushNotificationStatus = action {
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                let status = profileStore.state.pushNotificationCurrentStatus()
+                switch status {
+                case .denied:
+                    func createToast() -> Toast {
+                        let schema = UITraitCollection.current.userInterfaceStyle
+                        return Toast(
+                            symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                            body: L10n.chatToastPushNotificationsTitle,
+                            infoText: L10n.pushNotificationsAlertActionOk,
+                            textColor: hSignalColor.blueText.colorFor(schema == .dark ? .dark : .light, .base).color
+                                .uiColor(),
+                            backgroundColor: hSignalColor.blueFill.colorFor(schema == .dark ? .dark : .light, .base)
+                                .color
+                                .uiColor(),
+                            symbolColor: hSignalColor.blueElement.colorFor(schema == .dark ? .dark : .light, .base)
+                                .color
+                                .uiColor(),
+                            duration: 6
+                        )
+                    }
+
+                    let toast = createToast()
+
+                    pre.bag += toast.onTap.onValue { _ in
+                        UIApplication.shared.appDelegate.registerForPushNotifications().sink()
+                    }
+                    Toasts.shared.displayToast(toast: toast)
+                default:
                     break
                 }
             }

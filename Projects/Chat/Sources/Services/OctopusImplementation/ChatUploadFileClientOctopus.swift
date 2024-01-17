@@ -1,5 +1,7 @@
 import Apollo
 import Foundation
+import Kingfisher
+import UIKit
 import hCore
 import hGraphQL
 

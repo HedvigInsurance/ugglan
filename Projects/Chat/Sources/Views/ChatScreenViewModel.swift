@@ -1,5 +1,6 @@
 import Combine
 import Flow
+import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
@@ -18,7 +19,7 @@ class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
 
     init() {
-        chatInputVm.sendMessage = { message in
+        chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
             }
@@ -37,6 +38,10 @@ class ChatScreenViewModel: ObservableObject {
         }
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let store: ChatStore = globalPresentableStoreContainer.get()
+            store.send(.checkPushNotificationStatus)
+        }
     }
 
     @MainActor
@@ -97,6 +102,10 @@ class ChatScreenViewModel: ObservableObject {
             self.messages.insert(contentsOf: messages, at: 0)
             self.messages.sort(by: { $0.sentAt > $1.sentAt })
         }
+        if let lastMessage = messages.first {
+            handleLastMessageTimeStamp(for: lastMessage)
+        }
+
     }
 
     private func handleNext(messages: [Message]) {
@@ -140,11 +149,38 @@ class ChatScreenViewModel: ObservableObject {
         let newMessage = Message(
             localId: localMessage.id,
             remoteId: remoteMessage.id,
-            type: localMessage.type,
+            type: remoteMessage.type,
             date: remoteMessage.sentAt
         )
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.send(.setLastMessageDate(date: remoteMessage.sentAt))
+
+        switch localMessage.type {
+        case let .file(file):
+            if file.mimeType.isImage {
+                switch file.source {
+                case .localFile(let url, _):
+                    if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                        switch remoteMessage.type {
+                        case let .file(file):
+                            let processor = DownsamplingImageProcessor(
+                                size: CGSize(width: 300, height: 300)
+                            )
+                            var options = KingfisherParsedOptionsInfo.init(nil)
+                            options.processor = processor
+                            ImageCache.default.store(image, forKey: file.id, options: options)
+                        default:
+                            break
+                        }
+
+                    }
+                case .url:
+                    break
+                }
+            }
+        default:
+            break
+        }
+
+        handleLastMessageTimeStamp(for: newMessage)
 
         addedMessagesIds.append(remoteMessage.id)
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
@@ -168,5 +204,10 @@ class ChatScreenViewModel: ObservableObject {
             let newMessage = message.asFailed(with: error)
             messages[index] = newMessage
         }
+    }
+
+    private func handleLastMessageTimeStamp(for message: Message) {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.send(.setLastMessageDate(date: message.sentAt))
     }
 }

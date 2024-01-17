@@ -3,6 +3,7 @@ import Chat
 import Flow
 import Foundation
 import Presentation
+import Profile
 import UIKit
 import hCore
 import hCoreUI
@@ -14,28 +15,28 @@ extension AppJourney {
         if Dependencies.featureFlags().isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
-            ChatJourney.start()
+            ChatJourney.start(resultJourney: { result in
+                if case .notifications = result {
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    let status = profileStore.state.pushNotificationCurrentStatus()
+                    if case .notDetermined = status {
+                        HostingJourney(
+                            UgglanStore.self,
+                            rootView: AskForPushnotifications(
+                                text: L10n.chatActivateNotificationsBody,
+                                onActionExecuted: {
+                                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                                    store.send(.dismissScreen)
+                                }
+                            ),
+                            style: .detented(.large)
+                        ) { action in
+                            PopJourney()
+                        }
+                    }
+                }
+            })
         }
-        //        if Dependencies.featureFlags().isChatDisabled {
-        //            AppJourney.disableChatScreen(style: style)
-        //        } else {
-        //            let chat = Chat()
-        //
-        //            Journey(chat, style: style, options: [.embedInNavigationController, .preffersLargerNavigationBar]) {
-        //                item in
-        //                if case .notifications = item {
-        //                    item.journey
-        //                }
-        //            }
-        //            .onPresent {
-        //                chat.chatState.initFetch()
-        //            }
-        //            .onDismiss {
-        //                chat.chatState.reset()
-        //            }
-        //            .configureTitle(L10n.chatTitle)
-        //            .setScrollEdgeNavigationBarAppearanceToStandardd
-        //        }
     }
 
     @JourneyBuilder

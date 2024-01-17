@@ -6,7 +6,9 @@ import hCoreUI
 
 struct ChatFileView: View {
     let file: File
-
+    init(file: File) {
+        self.file = file
+    }
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
     )
@@ -31,6 +33,9 @@ struct ChatFileView: View {
                     .fade(duration: 0.25)
                     .placeholder({ progress in
                         ProgressView()
+                            .foregroundColor(hTextColor.primary)
+                            .environment(\.colorScheme, .light)
+
                     })
                     .targetCache(ImageCache.default)
                     .setProcessor(processor)
@@ -38,6 +43,7 @@ struct ChatFileView: View {
                     .aspectRatio(
                         contentMode: .fit
                     )
+                    .animation(nil)
                 }
             } else {
                 HStack {
@@ -74,6 +80,18 @@ struct ChatFileView: View {
         case .localFile(let url, _):
             return Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id))
         case .url(let url):
+            var options = KingfisherParsedOptionsInfo(nil)
+            options.processor = processor
+            ImageCache.default.retrieveImageInDiskCache(forKey: file.id) {
+                data in
+                switch data {
+                case .success(let success):
+                    let ss = ""
+                case .failure(let failure):
+                    let ss = ""
+                }
+            }
+            let image = ImageCache.default.retrieveImageInMemoryCache(forKey: file.id, options: options)
             return Kingfisher.Source.network(
                 Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)
             )

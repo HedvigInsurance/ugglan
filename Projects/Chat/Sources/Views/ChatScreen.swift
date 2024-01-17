@@ -1,22 +1,21 @@
 import Combine
 import Flow
 import Form
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
-
     var body: some View {
-        VStack {
+        ScrollViewReader { proxy in
             loadingPreviousMessages
-            ScrollViewReader { proxy in
-                messagesContainer(with: proxy)
-                ChatInputView(vm: vm.chatInputVm)
-            }
-            .dismissKeyboard()
+            messagesContainer(with: proxy)
+            ChatInputView(vm: vm.chatInputVm)
         }
+        .dismissKeyboard()
     }
 
     @ViewBuilder
@@ -31,7 +30,7 @@ struct ChatScreen: View {
     }
 
     @ViewBuilder
-    private func messagesContainer(with proxy: ScrollViewProxy) -> some View {
+    private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack {
                 ForEach(vm.messages, id: \.id) { message in
@@ -49,7 +48,7 @@ struct ChatScreen: View {
             .padding([.horizontal, .top], 16)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
-                    proxy.scrollTo(id, anchor: .bottom)
+                    proxy?.scrollTo(id, anchor: .bottom)
                 }
             }
         }
@@ -63,9 +62,10 @@ struct ChatScreen: View {
             let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
             sheetInteraction?.setValue(false, forKey: "enabled")
         }
-        .introspectScrollView { scrollView in
-            scrollView.bounces = false
-        }
+        //        .introspectScrollView { scrollView in
+        //            scrollView.bounces = false
+        //        }
+        //        .ignoresSafeArea()
     }
 
     private func messageView(for message: Message) -> some View {

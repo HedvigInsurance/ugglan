@@ -8,6 +8,7 @@ public struct ChatState: StateProtocol {
 
 public enum ChatAction: ActionProtocol {
     case setLastMessageDate(date: Date)
+    case checkPushNotificationStatus
     case navigation(action: ChatNavigationAction)
 }
 
