@@ -33,7 +33,11 @@ struct ChatTextViewRepresentable: UIViewRepresentable {
         )
         return textView
     }
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        if let uiView = uiView as? ChatTextView {
+            uiView.calculateSize()
+        }
+    }
 }
 
 class ChatTextView: UIView, UITextViewDelegate {
@@ -59,7 +63,7 @@ class ChatTextView: UIView, UITextViewDelegate {
         self.addSubview(textView)
         configureTextView()
         setContent(from: text)
-        calculateHeight()
+        calculateSize()
     }
 
     private func configureTextView() {
@@ -89,23 +93,10 @@ class ChatTextView: UIView, UITextViewDelegate {
 
     private func setContent(from text: String) {
         configureTextView()
-        //        let markdownParser = MarkdownParser(
-        //            font: Fonts.fontFor(style: .standardLarge),
-        //            color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
-        //        )
-
         textView.text = text
-
-        //        let attributedString = markdownParser.parse(text)
-        //        if !text.isEmpty {
-        //            let mutableAttributedString = NSMutableAttributedString(
-        //                attributedString: attributedString
-        //            )
-        //            textView.attributedText = mutableAttributedString
-        //        }
     }
 
-    private func calculateHeight() {
+    func calculateSize() {
         let newSize = getSize()
         self.snp.makeConstraints { make in
             make.height.equalTo(newSize.height)

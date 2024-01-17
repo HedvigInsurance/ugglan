@@ -36,12 +36,12 @@ class ChatScreenViewModel: ObservableObject {
         Task { [weak self] in
             await self?.fetch()
         }
+
+    }
+
+    deinit {
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(.checkPushNotificationStatus)
-        }
     }
 
     @MainActor
@@ -137,6 +137,10 @@ class ChatScreenViewModel: ObservableObject {
     }
 
     private func handleAddingLocal(for message: Message) {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        if !store.state.askedForPushNotificationsPermission {
+            store.send(.checkPushNotificationStatus)
+        }
         withAnimation {
             messages.insert(message, at: 0)
         }
@@ -202,7 +206,13 @@ class ChatScreenViewModel: ObservableObject {
     private func handleSendFail(for message: Message, with error: String) {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
             let newMessage = message.asFailed(with: error)
-            messages[index] = newMessage
+            let oldMessage = messages[index]
+            switch oldMessage.status {
+            case .failed:
+                break
+            default:
+                messages[index] = newMessage
+            }
         }
     }
 

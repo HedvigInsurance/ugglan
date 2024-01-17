@@ -43,7 +43,7 @@ struct ChatFileView: View {
                     .aspectRatio(
                         contentMode: .fit
                     )
-                    .animation(nil)
+                    .frame(minWidth: 50)
                 }
             } else {
                 HStack {
@@ -80,18 +80,6 @@ struct ChatFileView: View {
         case .localFile(let url, _):
             return Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id))
         case .url(let url):
-            var options = KingfisherParsedOptionsInfo(nil)
-            options.processor = processor
-            ImageCache.default.retrieveImageInDiskCache(forKey: file.id) {
-                data in
-                switch data {
-                case .success(let success):
-                    let ss = ""
-                case .failure(let failure):
-                    let ss = ""
-                }
-            }
-            let image = ImageCache.default.retrieveImageInMemoryCache(forKey: file.id, options: options)
             return Kingfisher.Source.network(
                 Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)
             )

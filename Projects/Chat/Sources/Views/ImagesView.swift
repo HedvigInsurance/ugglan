@@ -13,6 +13,8 @@ struct ImagesView: View {
         Group {
             if vm.permissionNotGranted {
                 GenericErrorView(
+                    title: "Notifications permission",
+                    description: "Please allow access to the images",
                     buttons: .init(
                         actionButton: .init(
                             buttonTitle: L10n.Profile.AppSettingsSection.title,
