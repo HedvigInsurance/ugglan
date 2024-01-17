@@ -36,7 +36,8 @@ class ChatScreenViewModel: ObservableObject {
         Task { [weak self] in
             await self?.fetch()
         }
-
+        let fileUploadManager = FileUploadManager()
+        fileUploadManager.resetuploadFilesPath()
     }
 
     deinit {
