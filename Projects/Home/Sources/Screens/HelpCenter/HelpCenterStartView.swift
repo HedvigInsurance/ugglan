@@ -53,13 +53,19 @@ public struct HelpCenterStartView: View {
     private func displayQuickActions() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
+                .padding(.bottom, 4)
 
             let commonClaimsInPair = store.state.allCommonClaims.chunked(into: 2)
 
             ForEach(commonClaimsInPair, id: \.self) { pair in
                 HStack(spacing: 4) {
                     ForEach(pair, id: \.id) { quickAction in
-                        quickActionPill(quickAction: quickAction)
+                        if pair.count > 1 {
+                            quickActionPill(quickAction: quickAction)
+                        } else {
+                            quickActionPill(quickAction: quickAction)
+                            quickActionPill(quickAction: nil)
+                        }
                     }
                 }
             }
@@ -75,30 +81,44 @@ public struct HelpCenterStartView: View {
         }
     }
 
-    private func quickActionPill(quickAction: CommonClaim) -> some View {
+    private func quickActionPill(quickAction: CommonClaim?) -> some View {
         HStack(alignment: .center) {
-            hText(quickAction.displayTitle)
+            hText(quickAction?.displayTitle ?? "")
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(.vertical, 16)
         .background(
             Squircle.default()
                 .fill(
-                    hColorScheme(
-                        light: hGrayscaleTranslucent.greyScaleTranslucent100,
-                        dark: hGrayscaleColor.greyScale900
-                    )
+                    getColor(quickAction: quickAction)
                 )
         )
         .onTapGesture {
-            Task {
-                if case quickAction.id = CommonClaim.travelInsurance().id {
-                    _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
+            if let quickAction {
+                Task {
+                    if case quickAction.id = CommonClaim.travelInsurance().id {
+                        _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
+                    }
+                    store.send(.goToQuickAction(quickAction))
                 }
-                store.send(.goToQuickAction(quickAction))
             }
         }
         .frame(maxHeight: 56)
+    }
+
+    @hColorBuilder
+    private func getColor(quickAction: CommonClaim?) -> some hColor {
+        if quickAction != nil {
+            hColorScheme(
+                light: hGrayscaleTranslucent.greyScaleTranslucent100,
+                dark: hGrayscaleColor.greyScale900
+            )
+        } else {
+            hColorScheme(
+                light: hBackgroundColor.clear,
+                dark: hBackgroundColor.clear
+            )
+        }
     }
 
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
