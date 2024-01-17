@@ -53,6 +53,7 @@ public struct HelpCenterStartView: View {
     private func displayQuickActions() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
+                .padding(.bottom, 4)
 
             let commonClaimsInPair = store.state.allCommonClaims.chunked(into: 2)
 
