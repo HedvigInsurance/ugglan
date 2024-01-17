@@ -28,6 +28,8 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimDeflectGlassDamageStepFragment
     ...FlowClaimDeflectPestsStepFragment
     ...FlowClaimFileUploadStepFragment
+    ...FlowClaimInfoStepFragment
+    ...FlowClaimPersonSelectStepFragment
   }
 }
 
@@ -111,11 +113,23 @@ fragment FlowClaimFileUploadStepFragment on FlowClaimFileUploadStep {
     }
 }
 
+fragment FlowClaimInfoStepFragment on FlowClaimInfoStep {
+    id
+    infos {
+        ...FlowClaimInfoFragment
+    }
+}
+
 fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
     id
     location
     options {
         displayName
+        value
+    }
+    subOptions {
+        displayName
+        parentId
         value
     }
 }
@@ -224,4 +238,110 @@ fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
 fragment FlowClaimConfirmEmergencyOptionFragment on FlowClaimConfirmEmergencyOption {
     displayName
     displayValue: value
+}
+
+fragment FlowClaimInfoRequiresValueFragment on FlowClaimInfoRequiresValue {
+    id
+    operator
+    value {
+        ...ValueTypeFragment
+    }
+}
+
+fragment ValueTypeFragment on ValueType {
+    ... on ValueString {
+        value1: value
+    }
+    ... on ValueInteger {
+        value2: value
+    }
+    ... on ValueBoolean {
+        value3: value
+    }
+    ... on ValueDate {
+        value4: value
+    }
+    ... on ValueArray {
+        value5: value
+    }
+}
+
+fragment FlowClaimInfoFragment on FlowClaimInfo {
+    id
+    requires {
+        ...FlowClaimInfoRequiresValueFragment
+    }
+    value {
+        ...ValueTypeFragment
+    }
+    ... on FlowClaimInfoDate {
+        id
+        label
+        max
+        min
+        requires {
+            ...FlowClaimInfoRequiresValueFragment
+        }
+        value {
+            ...ValueTypeFragment
+        }
+    }
+    ... on FlowClaimInfoInteger {
+        id
+        isSelectable
+        label
+        max1: max
+        min1: min
+        requires {
+            ...FlowClaimInfoRequiresValueFragment
+        }
+        value {
+            ...ValueTypeFragment
+        }
+    }
+    ... on FlowClaimInfoSelect {
+        id
+        isMulti
+        label
+        options {
+            displayName
+            value
+        }
+        requires {
+            ...FlowClaimInfoRequiresValueFragment
+        }
+        value {
+            ...ValueTypeFragment
+        }
+    }
+    ... on FlowClaimInfoText {
+        id
+        label
+        requires {
+            ...FlowClaimInfoRequiresValueFragment
+        }
+        value {
+            ...ValueTypeFragment
+        }
+    }
+    ... on FlowClaimInfoYesNo {
+        id
+        label
+        requires {
+            ...FlowClaimInfoRequiresValueFragment
+        }
+        value {
+            ...ValueTypeFragment
+        }
+    }
+}
+
+fragment FlowClaimPersonSelectStepFragment on FlowClaimPersonSelectStep {
+    id
+    options {
+        fullName
+        isHolder
+        isSelected
+        ssn
+    }
 }
