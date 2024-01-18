@@ -32,7 +32,7 @@ struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            VStack {
+            LazyVStack {
                 ForEach(vm.messages, id: \.id) { message in
                     messageView(for: message)
                         .flippedUpsideDown()
