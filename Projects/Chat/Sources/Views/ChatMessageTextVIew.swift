@@ -83,7 +83,6 @@ class ChatTextView: UIView, UITextViewDelegate {
         ]
         textView.textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
         textView.font = Fonts.fontFor(style: .standard)
-        textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(-6)
             make.trailing.equalToSuperview().offset(6)
@@ -104,7 +103,7 @@ class ChatTextView: UIView, UITextViewDelegate {
         let newSize = getSize()
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
-            self?.width = newSize.width
+            self?.width = newSize.width - 12
         }
     }
 
@@ -123,18 +122,8 @@ class ChatTextView: UIView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-
-        let emailMasking = Masking(type: .email)
-        if emailMasking.isValid(text: URL.absoluteString) {
-            let emailURL = "mailto:" + URL.absoluteString
-            if let url = Foundation.URL(string: emailURL) {
-                UIApplication.shared.open(url)
-            }
-        } else {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(.navigation(action: .linkClicked(url: URL)))
-        }
-
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.send(.navigation(action: .linkClicked(url: URL)))
         return false
     }
 }
