@@ -72,8 +72,14 @@ public class FeatureFlagsUnleash: FeatureFlags {
             context: context
         )
         startUnleash()
-        unleashClient?.subscribe(name: "ready", callback: handleReady)
-        unleashClient?.subscribe(name: "update", callback: handleUpdate)
+        unleashClient?
+            .subscribe(name: "ready") { [weak self] in
+                self?.handleReady()
+            }
+        unleashClient?
+            .subscribe(name: "update") { [weak self] in
+                self?.handleUpdate()
+            }
     }
 
     public func updateContext(context: [String: String]) {
@@ -87,11 +93,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         unleashClient?
             .start(
                 true,
-                completionHandler: { errorResponse in
+                completionHandler: { [weak self] errorResponse in
                     guard let errorResponse else {
                         return
                     }
-                    self.loadingExperimentsSuccess(false)
+                    self?.loadingExperimentsSuccess(false)
                     log.info("Failed loading unleash experiments")
                 }
             )
