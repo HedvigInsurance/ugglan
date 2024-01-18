@@ -49,8 +49,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
-        unleashClient?.unsubscribe(name: "ready")
-        unleashClient?.unsubscribe(name: "update")
         unleashClient?.stop()
         var clientKey: String {
             switch environment {
@@ -73,8 +71,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         )
         loadingExperimentsSuccess = onComplete
         startUnleash()
-        unleashClient?.subscribe(name: "ready", callback: handleReady)
-        unleashClient?.subscribe(name: "update", callback: handleUpdate)
     }
 
     public func updateContext(context: [String: String]) {
@@ -88,11 +84,13 @@ public class FeatureFlagsUnleash: FeatureFlags {
         unleashClient?
             .start(
                 true,
-                completionHandler: { errorResponse in
+                completionHandler: { [weak self] errorResponse in
                     guard let errorResponse else {
+                        self?.setFeatureFlags()
+                        self?.loadingExperimentsSuccess(true)
                         return
                     }
-                    self.loadingExperimentsSuccess(false)
+                    self?.loadingExperimentsSuccess(false)
                     log.info("Failed loading unleash experiments")
                 }
             )
