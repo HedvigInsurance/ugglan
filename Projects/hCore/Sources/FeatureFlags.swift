@@ -71,10 +71,10 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
+        loadingExperimentsSuccess = onComplete
         startUnleash()
         unleashClient?.subscribe(name: "ready", callback: handleReady)
         unleashClient?.subscribe(name: "update", callback: handleUpdate)
-        loadingExperimentsSuccess = onComplete
     }
 
     public func updateContext(context: [String: String]) {
