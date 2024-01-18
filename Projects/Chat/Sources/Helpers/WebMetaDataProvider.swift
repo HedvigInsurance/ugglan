@@ -4,11 +4,13 @@ import LinkPresentation
 class WebMetaDataProvider {
     static let shared = WebMetaDataProvider()
     private init() {}
-    private var cache: [URL: WebMetaDataProviderData] = [:]
-
-    func data(for url: URL) async throws -> WebMetaDataProviderData {
+    private var cache: [URL: WebMetaDataProviderData?] = [:]
+    private var failedURLs: [URL] = []
+    func data(for url: URL) async throws -> WebMetaDataProviderData? {
         if let data = cache[url] {
             return data
+        } else if failedURLs.contains(url) {
+            return nil
         } else {
             let data = try await withCheckedThrowingContinuation {
                 (inCont: CheckedContinuation<WebMetaDataProviderData, Error>) -> Void in
@@ -33,7 +35,7 @@ class WebMetaDataProvider {
                                                     image: nil
                                                 )
                                             }
-                                            if let data = self?.cache[url] {
+                                            if let data = self?.cache[url], let data = data {
                                                 inCont.resume(returning: data)
                                             } else {
                                                 inCont.resume(
@@ -47,12 +49,13 @@ class WebMetaDataProvider {
                                     title: title,
                                     image: nil
                                 )
-                                if let data = self?.cache[url] {
+                                if let data = self?.cache[url], let data = data {
                                     inCont.resume(returning: data)
                                 } else {
                                     inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
                                 }
                             } else {
+                                self?.failedURLs.append(url)
                                 inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
                             }
                         } else {
@@ -61,7 +64,7 @@ class WebMetaDataProvider {
                                 image: nil
                             )
 
-                            if let data = self?.cache[url] {
+                            if let data = self?.cache[url], let data = data {
                                 inCont.resume(returning: data)
                             } else {
                                 inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))

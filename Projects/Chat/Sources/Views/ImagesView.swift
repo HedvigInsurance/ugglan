@@ -13,18 +13,18 @@ struct ImagesView: View {
         Group {
             if vm.permissionNotGranted {
                 GenericErrorView(
-                    title: "Notifications permission",
-                    description: "Please allow access to the images",
+                    title: L10n.chatMissingImagesPermissionSubtitle,
+                    description: nil,
+                    useForm: false,
                     buttons: .init(
                         actionButton: .init(
-                            buttonTitle: L10n.Profile.AppSettingsSection.title,
+                            buttonTitle: L10n.chatOpenAppSettingsButton,
                             buttonAction: {
                                 vm.openSettings()
                             }
                         )
                     )
                 )
-                .background(Color.red)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack {
@@ -34,6 +34,7 @@ struct ImagesView: View {
                             }
                             .frame(width: 205, height: 256)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .contentShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
                             )
@@ -146,6 +147,7 @@ struct PHPAssetPreview: View {
                     } else {
                         hText(L10n.chatUploadPresend)
                             .foregroundColor(hTextColor.primary)
+                            .colorScheme(.light)
                     }
                 }
                 .opacity(selected ? 1 : 0)

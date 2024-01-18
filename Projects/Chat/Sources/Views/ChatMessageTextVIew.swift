@@ -7,21 +7,20 @@ import hCoreUI
 struct ChatTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
-    @Binding var height: CGFloat
-    @Binding var width: CGFloat
-    let onUrlClicked: (_ url: URL) -> Void
+    @Binding private var height: CGFloat
+    @Binding private var width: CGFloat
+    @Environment(\.colorScheme) var colorScheme
+
     public init(
         text: String,
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
-        width: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: URL) -> Void
+        width: Binding<CGFloat>
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
         _height = height
         _width = width
-        self.onUrlClicked = onUrlClicked
     }
     public func makeUIView(context: Context) -> some UIView {
         let textView = ChatTextView(
@@ -29,36 +28,39 @@ struct ChatTextViewRepresentable: UIViewRepresentable {
             fixedWidth: fixedWidth,
             height: $height,
             width: $width,
-            onUrlClicked: onUrlClicked
+            colorScheme: colorScheme
         )
+        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        textView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return textView
     }
     public func updateUIView(_ uiView: UIViewType, context: Context) {
         if let uiView = uiView as? ChatTextView {
+            uiView.setContent(from: text)
             uiView.calculateSize()
         }
     }
 }
 
 class ChatTextView: UIView, UITextViewDelegate {
-    let textView: UITextView
-    let fixedWidth: CGFloat
-    let onUrlClicked: (_ url: URL) -> Void
-    @Binding var height: CGFloat
-    @Binding var width: CGFloat
+    private let textView: UITextView
+    private let fixedWidth: CGFloat
+    private let colorScheme: ColorScheme
+    @Binding private var height: CGFloat
+    @Binding private var width: CGFloat
 
     init(
         text: String,
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
         width: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: URL) -> Void
+        colorScheme: ColorScheme
     ) {
         _height = height
         _width = width
-        self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
         self.textView = UITextView()
+        self.colorScheme = colorScheme
         super.init(frame: .zero)
         self.addSubview(textView)
         configureTextView()
@@ -73,13 +75,13 @@ class ChatTextView: UIView, UITextViewDelegate {
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
         textView.dataDetectorTypes = [.address, .link, .phoneNumber]
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
-        let linkColor = hTextColor.primary.colorFor(schema, .base).color.uiColor()
+        let linkColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
         textView.linkTextAttributes = [
             .foregroundColor: linkColor,
             .underlineStyle: NSUnderlineStyle.thick.rawValue,
             .underlineColor: linkColor,
         ]
+        textView.textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
         textView.font = Fonts.fontFor(style: .standard)
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
@@ -87,25 +89,28 @@ class ChatTextView: UIView, UITextViewDelegate {
             make.trailing.equalToSuperview().offset(6)
             make.bottom.top.equalToSuperview()
         }
+        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        textView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         textView.textContainerInset = .zero
         textView.delegate = self
     }
 
-    private func setContent(from text: String) {
+    func setContent(from text: String) {
         configureTextView()
         textView.text = text
     }
 
     func calculateSize() {
         let newSize = getSize()
-        self.snp.makeConstraints { make in
-            make.height.equalTo(newSize.height)
-            make.width.equalTo(newSize.width)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
             self?.width = newSize.width
         }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
     }
 
     private func getSize() -> CGSize {
@@ -131,5 +136,24 @@ class ChatTextView: UIView, UITextViewDelegate {
         }
 
         return false
+    }
+}
+
+struct Label_Previews: PreviewProvider {
+    @State static var height: CGFloat = 0
+    @State static var width: CGFloat = 0
+
+    static var previews: some View {
+        VStack {
+            ChatTextViewRepresentable(
+                text: "teasd asd asd sds dasd asd asda sd asdas ad asd asd",
+                fixedWidth: 300,
+                height: $height,
+                width: $width
+            )
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: 300)
+        }
+        .environment(\.colorScheme, .light)
     }
 }

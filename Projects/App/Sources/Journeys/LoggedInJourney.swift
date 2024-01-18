@@ -320,13 +320,12 @@ extension JourneyPresentation {
                 switch navigationAction {
                 case let .linkClicked(url):
                     if let vc = UIApplication.shared.getTopViewController() {
-                        if let deepLink = DeepLink.getType(from: url) {
+                        if DeepLink.getType(from: url) != nil {
                             UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
                         } else {
-                            vc.present(
-                                SFSafariViewController(url: url),
-                                animated: true
-                            )
+                            let journey = AppJourney.webRedirect(url: url)
+                            pre.bag += pre.viewController.present(journey)
+
                         }
                     }
                 case .redirectAction:

@@ -26,7 +26,7 @@ extension DeepLink {
 
     @available(iOS 15, *)
     public func title(displayText: String) -> AttributedString {
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
+        let schema: ColorScheme = .light
         let attributes = AttributeContainer(
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .standard),

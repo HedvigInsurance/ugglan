@@ -18,6 +18,7 @@ struct MessageView: View {
                 .padding(message.padding)
                 .background(message.bgColor)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .environment(\.colorScheme, .light)
             if case .failed = message.status {
                 hCoreUIAssets.infoIconFilled.view
                     .resizable()
@@ -43,9 +44,7 @@ struct MessageView: View {
                     fixedWidth: 300,
                     height: $height,
                     width: $width
-                ) { url in
-
-                }
+                )
                 .frame(width: width, height: height)
             case let .file(file):
                 ChatFileView(file: file).frame(maxHeight: 200)
@@ -69,13 +68,13 @@ struct MessageView: View {
                         fixedWidth: 300,
                         height: $height,
                         width: $width
-                    ) { url in
-
-                    }
+                    )
                     .frame(width: width, height: height)
+                    .frame(maxWidth: 300)
                 }
             case let .otherLink(url):
                 LinkView(vm: .init(url: url), height: $height, width: $width)
+
             case .unknown: Text("")
             }
         }
@@ -86,7 +85,6 @@ struct LinkView: View {
     @StateObject var vm: LinkViewModel
     @Binding var height: CGFloat
     @Binding var width: CGFloat
-
     var body: some View {
         if let error = vm.error {
             ChatTextViewRepresentable(
@@ -94,10 +92,9 @@ struct LinkView: View {
                 fixedWidth: 300,
                 height: $height,
                 width: $width
-            ) { url in
-
-            }
+            )
             .frame(width: width, height: height)
+            .frame(maxWidth: 300)
             .padding(16)
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
@@ -108,6 +105,7 @@ struct LinkView: View {
                     .frame(height: 200)
                 VStack(spacing: 8) {
                     hText(model.title)
+                        .foregroundColor(hTextColor.primary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                     hButton.MediumButton(type: .primaryAlt) {
@@ -148,9 +146,14 @@ class LinkViewModel: ObservableObject {
     func getData() {
         Task {
             do {
-                let webMetaDataProviderData = try await WebMetaDataProvider.shared.data(for: url)
-                withAnimation {
-                    self.webMetaDataProviderData = webMetaDataProviderData
+                if let webMetaDataProviderData = try await WebMetaDataProvider.shared.data(for: url) {
+                    withAnimation {
+                        self.webMetaDataProviderData = webMetaDataProviderData
+                    }
+                } else {
+                    withAnimation {
+                        self.error = url.absoluteString
+                    }
                 }
             } catch let ex {
                 withAnimation {

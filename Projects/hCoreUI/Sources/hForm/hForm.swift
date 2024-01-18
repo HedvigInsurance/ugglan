@@ -169,37 +169,31 @@ public struct hForm<Content: View>: View {
         }
         .background(
             GeometryReader { proxy in
-                switch bottomBackgroundStyle {
-                case let .gradient(from, to):
+                Group {
+                    switch bottomBackgroundStyle {
+                    case let .gradient(from, to):
 
-                    LinearGradient(
-                        colors: [
-                            from.colorFor(colorScheme, .base).color,
-                            from.colorFor(colorScheme, .base).color,
-                            to.colorFor(colorScheme, .base).color,
-                            to.colorFor(colorScheme, .base).color,
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .onAppear {
-                        scrollViewHeight = proxy.size.height
-                        recalculateHeight()
+                        LinearGradient(
+                            colors: [
+                                from.colorFor(colorScheme, .base).color,
+                                from.colorFor(colorScheme, .base).color,
+                                to.colorFor(colorScheme, .base).color,
+                                to.colorFor(colorScheme, .base).color,
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    case .transparent:
+                        Color.clear
                     }
-                    .onChange(of: proxy.size) { size in
-                        scrollViewHeight = proxy.size.height
-                        recalculateHeight()
-                    }
-                case .transparent:
-                    Color.clear
-                        .onAppear {
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
-                        .onChange(of: proxy.size) { size in
-                            scrollViewHeight = proxy.size.height
-                            recalculateHeight()
-                        }
+                }
+                .onAppear {
+                    scrollViewHeight = proxy.size.height
+                    recalculateHeight()
+                }
+                .onChange(of: proxy.size) { size in
+                    scrollViewHeight = proxy.size.height
+                    recalculateHeight()
                 }
             }
         )
