@@ -33,7 +33,7 @@ public struct OTPCodeEntry: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         ReadOTPState { state in
                             hText(
-                                L10n.Login.Subtitle.verificationCodeEmail(state.email ?? ""),
+                                L10n.Login.Subtitle.verificationCodeEmail(state.email ?? L10n.authOtpYourEmail),
                                 style: .body
                             )
                         }
