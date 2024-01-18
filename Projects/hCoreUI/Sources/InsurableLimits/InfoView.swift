@@ -8,18 +8,20 @@ import hGraphQL
 public struct InfoViewHolder: View {
     let title: String
     let description: String
+    let type: InfoButtonType
     @State private var disposeBag = DisposeBag()
-    public init(title: String, description: String) {
+    public init(title: String, description: String, type: InfoButtonType = .regular) {
         self.title = title
         self.description = description
+        self.type = type
     }
 
     public var body: some View {
         SwiftUI.Button {
             showInfoView()
         } label: {
-            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                .foregroundColor(hTextColor.secondary)
+            Image(uiImage: type.image)
+                .foregroundColor(type.color)
         }
     }
 
@@ -44,7 +46,32 @@ public struct InfoViewHolder: View {
             disposeBag += vc.present(calendarJourney)
         }
     }
+
+    public enum InfoButtonType {
+        case regular
+        case navigation
+
+        var image: UIImage {
+            switch self {
+            case .regular:
+                hCoreUIAssets.infoIconFilled.image
+            case .navigation:
+                hCoreUIAssets.infoIcon.image
+            }
+        }
+
+        @hColorBuilder
+        var color: some hColor {
+            switch self {
+            case .regular:
+                hTextColor.secondary
+            case .navigation:
+                hTextColor.primary
+            }
+        }
+    }
 }
+
 extension InfoViewHolder {
     public static func showInfoView(with title: String, and description: String) {
         let disposeBag = DisposeBag()

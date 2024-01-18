@@ -23,7 +23,7 @@ public enum GraphQLError: Error {
 }
 
 func logGraphQLError(error: Error) {
-    log.error(
+    log.warn(
         "GraphQL error",
         error: error,
         attributes: nil
