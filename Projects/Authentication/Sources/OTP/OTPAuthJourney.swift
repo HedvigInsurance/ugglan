@@ -33,7 +33,7 @@ public struct OTPAuthJourney {
             store.send(.otpStateAction(action: .reset))
         }
     }
-    
+
     public static func loginSSN<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ next: OTPAuthJourneyNext) -> Next
     ) -> some JourneyPresentation {

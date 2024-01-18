@@ -82,7 +82,7 @@ extension AppJourney {
         .setStyle(style)
         .withDismissButton
     }
-    
+
     fileprivate static func otpSSN(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
         OTPAuthJourney.loginSSN { next in
             switch next {
