@@ -62,7 +62,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         }
 
         let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
-
+        loadingExperimentsSuccess = onComplete
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
@@ -72,9 +72,14 @@ public class FeatureFlagsUnleash: FeatureFlags {
             context: context
         )
         startUnleash()
-        unleashClient?.subscribe(name: "ready", callback: handleReady)
-        unleashClient?.subscribe(name: "update", callback: handleUpdate)
-        loadingExperimentsSuccess = onComplete
+        unleashClient?
+            .subscribe(name: "ready") { [weak self] in
+                self?.handleReady()
+            }
+        unleashClient?
+            .subscribe(name: "update") { [weak self] in
+                self?.handleUpdate()
+            }
     }
 
     public func updateContext(context: [String: String]) {
@@ -88,11 +93,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         unleashClient?
             .start(
                 true,
-                completionHandler: { errorResponse in
+                completionHandler: { [weak self] errorResponse in
                     guard let errorResponse else {
                         return
                     }
-                    self.loadingExperimentsSuccess(false)
+                    self?.loadingExperimentsSuccess(false)
                     log.info("Failed loading unleash experiments")
                 }
             )

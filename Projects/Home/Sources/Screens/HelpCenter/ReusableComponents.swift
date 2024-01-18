@@ -60,7 +60,7 @@ struct HelpCenterPill: View {
     }
 }
 
-enum QuestionType {
+enum QuestionType: String {
     case commonQuestions
     case allQuestions
     case relatedQuestions
@@ -123,7 +123,7 @@ struct QuestionsItems: View {
                             "question": item.question,
                             "answer": item.answer,
                             "sourcePath": source.title,
-                            "questionType": questionType.title,
+                            "questionType": questionType.rawValue,
                         ]
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         store.send(.openHelpCenterQuestionView(question: item))
