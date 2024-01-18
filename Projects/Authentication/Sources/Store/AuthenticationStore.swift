@@ -36,12 +36,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeadersProvider: {ApolloClient.headers()},
+            additionalHttpHeaders: ApolloClient.headers(),
             callbacks: Callbacks(
                 successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
                 failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
-            ), 
-            httpClientEngine: .none
+            )
         )
     }()
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
