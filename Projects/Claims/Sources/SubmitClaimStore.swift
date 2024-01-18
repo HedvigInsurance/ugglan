@@ -21,8 +21,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .startClaimRequest(entrypointId, entrypointOptionId, supportedSteps):
             let startInput = OctopusGraphQL.FlowClaimStartInput(
                 entrypointId: entrypointId,
-                entrypointOptionId: entrypointOptionId,
-                supportedSteps: supportedSteps
+                entrypointOptionId: entrypointOptionId
+//                supportedSteps: supportedSteps
             )
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
