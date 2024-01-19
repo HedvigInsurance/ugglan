@@ -72,7 +72,12 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimFileUploadStepFragment {
             return .stepModelAction(action: .setFileUploadStep(model: .init(with: step)))
-        } else {
+        } else if let step = self.fragments.flowClaimInfoStepFragment {
+            return .stepModelAction(action: .setInfoStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimPersonSelectStepFragment {
+            return .stepModelAction(action: .setPersonSelectStep(model: .init(with: step)))
+        }
+        else {
             return .navigationAction(action: .openUpdateAppScreen)
         }
     }

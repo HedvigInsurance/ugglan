@@ -300,6 +300,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.send(.navigationAction(action: .openFileUploadScreen))
                 }
+            case .setInfoStep(model: let model):
+                newState.infoStep = model
+                /* TODO: ADD SCREEN */
+            case .setPersonSelectStep(model: let model):
+                newState.personSelectStep = model
+                /* TODO: ADD SCREEN */
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)

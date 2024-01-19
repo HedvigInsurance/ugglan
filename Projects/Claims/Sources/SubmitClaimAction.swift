@@ -138,6 +138,8 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
     case setFileUploadStep(model: FlowClaimFileUploadStepModel)
+    case setInfoStep(model: FlowClaimInfoStepModel)
+    case setPersonSelectStep(model: FlowClaimPersonSelectStepModel)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
