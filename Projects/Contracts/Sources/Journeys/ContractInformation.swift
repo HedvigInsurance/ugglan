@@ -308,6 +308,16 @@ struct ContractInformationView: View {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
                             terminationContractStore.send(
+                                .setTerminationConfig(
+                                    config: .init(
+                                        image: contract?.pillowType?.name,
+                                        contractDisplayName: contract?.currentAgreement?.productVariant.displayName
+                                            ?? "",
+                                        contractExposureName: contract?.exposureDisplayName ?? ""
+                                    )
+                                )
+                            )
+                            terminationContractStore.send(
                                 .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
                             )
                             vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in

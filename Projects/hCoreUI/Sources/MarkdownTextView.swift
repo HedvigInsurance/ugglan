@@ -12,20 +12,29 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
     @Binding var height: CGFloat
+    let fontSize: HFontTextStyle
     let onUrlClicked: (_ url: URL) -> Void
     public init(
         text: String,
         fixedWidth: CGFloat,
+        fontSize: HFontTextStyle = .standardLarge,
         height: Binding<CGFloat>,
         onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
         _height = height
+        self.fontSize = fontSize
         self.onUrlClicked = onUrlClicked
     }
     public func makeUIView(context: Context) -> some UIView {
-        let textView = CustomTextView(text: text, fixedWidth: fixedWidth, height: $height, onUrlClicked: onUrlClicked)
+        let textView = CustomTextView(
+            text: text,
+            fixedWidth: fixedWidth,
+            height: $height,
+            fontSize: fontSize,
+            onUrlClicked: onUrlClicked
+        )
         return textView
     }
     public func updateUIView(_ uiView: UIViewType, context: Context) {}
@@ -34,13 +43,21 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
 class CustomTextView: UIView, UITextViewDelegate {
     let textView: UITextView
     let fixedWidth: CGFloat
+    let fontSize: HFontTextStyle
     let onUrlClicked: (_ url: URL) -> Void
     @Binding var height: CGFloat
-    init(text: String, fixedWidth: CGFloat, height: Binding<CGFloat>, onUrlClicked: @escaping (_ url: URL) -> Void) {
+    init(
+        text: String,
+        fixedWidth: CGFloat,
+        height: Binding<CGFloat>,
+        fontSize: HFontTextStyle,
+        onUrlClicked: @escaping (_ url: URL) -> Void
+    ) {
         _height = height
         self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
         self.textView = UITextView()
+        self.fontSize = fontSize
         super.init(frame: .zero)
         self.addSubview(textView)
         configureTextView()
@@ -75,7 +92,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     private func setContent(from text: String) {
         configureTextView()
         let markdownParser = MarkdownParser(
-            font: Fonts.fontFor(style: .standardLarge),
+            font: Fonts.fontFor(style: fontSize),
             color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
         )
 

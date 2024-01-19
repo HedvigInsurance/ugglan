@@ -19,10 +19,12 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case deleteTermination
     case setTerminationContext(context: String)
     case setTerminationContractId(id: String)
+    case setTerminationConfig(config: TerminationConfirmConfig)
 
     case sendTermination(terminationDate: Date, surveyUrl: String)
     case dismissTerminationFlow
     case goToFreeTextChat
+    case goToUrl(url: URL)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {
@@ -31,6 +33,7 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationFailScreen
     case openTerminationDeletionScreen
     case openSetTerminationDateScreen
+    case openConfirmTerminationScreen(config: TerminationConfirmConfig?)
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {

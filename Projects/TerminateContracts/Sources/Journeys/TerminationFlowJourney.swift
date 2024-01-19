@@ -34,6 +34,8 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openUpdateAppTerminationScreen()
             } else if case .openTerminationDeletionScreen = navigationAction {
                 TerminationFlowJourney.openTerminationDeletionScreen()
+            } else if case let .openConfirmTerminationScreen(config) = navigationAction {
+                openConfirmTerminationScreen(config: config)
             }
         } else if case .dismissTerminationFlow = action {
             DismissJourney()
@@ -50,13 +52,35 @@ public class TerminationFlowJourney {
                     terminationDate in
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
-                    store.send(.sendTerminationDate)
+                    store.send(.navigationAction(action: .openConfirmTerminationScreen(config: store.state.config)))
                 }
             ),
             style: .detented(.large)
         ) {
             action in
             getScreenForAction(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    static func openConfirmTerminationScreen(config: TerminationConfirmConfig?) -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: ConfirmTerminationScreen(
+                config: config,
+                onSelected: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.sendTerminationDate)
+                }
+            ),
+            style: .detented(.large)
+        ) {
+            action in
+            //            if case let .goToUrl(url) = action {
+            //                DismissJourney()
+            //            } else {
+            getScreenForAction(for: action)
+            //            }
         }
         .withJourneyDismissButton
     }

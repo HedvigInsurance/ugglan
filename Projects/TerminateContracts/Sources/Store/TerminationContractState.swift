@@ -12,4 +12,5 @@ public struct TerminationContractState: StateProtocol {
     @OptionalTransient var terminationDeleteStep: TerminationFlowDeletionNextModel?
     @OptionalTransient var successStep: TerminationFlowSuccessNextModel?
     @OptionalTransient var failedStep: TerminationFlowFailedNextModel?
+    @OptionalTransient var config: TerminationConfirmConfig?
 }

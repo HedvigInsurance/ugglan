@@ -114,11 +114,14 @@ public struct ContractDetail: View {
     }
 
     public var body: some View {
+        let contract = store.state.contractForId(id)
         hForm {
             hSection {
                 ContractRow(
-                    id: id,
-                    allowDetailNavigation: false
+                    image: contract?.pillowType?.bgImage,
+                    terminationMessage: contract?.terminationMessage,
+                    contractDisplayName: contract?.currentAgreement?.productVariant.displayName ?? "",
+                    contractExposureName: contract?.exposureDisplayName ?? ""
                 )
                 .fixedSize(horizontal: false, vertical: true)
                 Picker("View", selection: $context.selected) {

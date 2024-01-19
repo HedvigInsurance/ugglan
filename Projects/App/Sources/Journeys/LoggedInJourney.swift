@@ -65,6 +65,7 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
+            .configureTerminationNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -78,6 +79,7 @@ extension AppJourney {
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
+                    .configureTerminationNavigation
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -293,5 +295,24 @@ extension JourneyPresentation {
                 }
             }
         }
+    }
+
+    public var configureTerminationNavigation: some JourneyPresentation {
+        onAction(TerminationContractStore.self) { action in
+            if case let .goToUrl(url) = action {
+                AppJourney.configureURL(url: url)
+            }
+        }
+        .onAction(
+            SubmitClaimStore.self,
+            { action, pre in
+                if case let .navigationAction(navigationAction) = action {
+                    if case .openSuccessScreen = navigationAction {
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        store.send(.setPushNotificationsTo(date: nil))
+                    }
+                }
+            }
+        )
     }
 }

@@ -72,6 +72,8 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
+        case let .setTerminationConfig(config):
+            newState.config = config
         default:
             break
         }
