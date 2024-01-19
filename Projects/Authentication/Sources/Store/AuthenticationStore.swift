@@ -129,16 +129,18 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .otpStateAction(action: .setLoading(isLoading: false))
             ]
             .emitEachThenEnd
-        } else if case .otpStateAction(action: .submitEmail) = action {
+        } else if case .otpStateAction(action: .submitOtpData) = action {
             let state = getState()
 
             return FiniteSignal { callback in
                 let bag = DisposeBag()
 
+                let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
+
                 self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
                     market: Localization.Locale.currentLocale.market.rawValue,
-                    personalNumber: nil,
+                    personalNumber: personalNumber,
                     email: state.otpState.email
                 ) { result, error in
                     bag += Signal(after: 0.5)
@@ -160,7 +162,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                 callback(
                                     .value(
                                         .otpStateAction(
-                                            action: .setEmailError(message: L10n.Login.TextInput.emailErrorNotValid)
+                                            action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)
                                         )
                                     )
                                 )
@@ -172,6 +174,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 return bag
             }
+
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
@@ -312,43 +315,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 return DisposeBag()
             }
-        } else if case let .zignsecStateAction(.startSession(personalNumber)) = action {
-            return FiniteSignal { callback in
-                let bag = DisposeBag()
-
-                self.networkAuthRepository.startLoginAttempt(
-                    loginMethod: .zignsec,
-                    market: Localization.Locale.currentLocale.market.rawValue,
-                    personalNumber: personalNumber,
-                    email: nil
-                ) { result, error in
-                    if let zignsecProperties = result as? AuthAttemptResultZignSecProperties,
-                        let statusUrl = URL(string: zignsecProperties.statusUrl.url),
-                        let webviewUrl = URL(string: zignsecProperties.redirectUrl)
-                    {
-                        callback(.value(.navigationAction(action: .zignsecWebview(url: webviewUrl))))
-                        callback(.value(.observeLoginStatus(url: statusUrl)))
-                    } else {
-                        callback(
-                            .value(
-                                .zignsecStateAction(
-                                    action: .setIsLoading(isLoading: false)
-                                )
-                            )
-                        )
-                        callback(
-                            .value(
-                                .zignsecStateAction(
-                                    action: .setCredentialError(error: true)
-                                )
-                            )
-                        )
-                    }
-                    callback(.end)
-                }
-
-                return bag
-            }
         }
         return nil
     }
@@ -377,18 +343,23 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.isLoading = isLoading
             case let .setCodeError(message):
                 newState.otpState.codeErrorMessage = message
-            case let .setEmailError(message):
-                newState.otpState.emailErrorMessage = message
             case let .setEmail(email):
                 newState.otpState.email = email
-                newState.otpState.emailErrorMessage = nil
+                newState.otpState.otpInputErrorMessage = nil
+                newState.otpState.personalNumber = nil
+            case let .setOtpInputError(message):
+                newState.otpState.otpInputErrorMessage = message
+            case let .setPersonalNumber(personalNumber):
+                newState.otpState.personalNumber = personalNumber
+                newState.otpState.otpInputErrorMessage = nil
+                newState.otpState.email = nil
             case let .startSession(verifyUrl, resendUrl):
                 newState.otpState.code = ""
                 newState.otpState.verifyUrl = verifyUrl
                 newState.otpState.resendUrl = resendUrl
                 newState.otpState.isLoading = false
                 newState.otpState.codeErrorMessage = nil
-                newState.otpState.emailErrorMessage = nil
+                newState.otpState.otpInputErrorMessage = nil
                 newState.otpState.canResendAt = Date().addingTimeInterval(60)
                 newState.otpState.isResending = false
             case .resendCode:
@@ -397,8 +368,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.isResending = true
             case .showResentToast:
                 newState.otpState.isResending = false
-            case .submitEmail:
-                newState.otpState.emailErrorMessage = nil
+            case .submitOtpData:
+                newState.otpState.otpInputErrorMessage = nil
             default:
                 break
             }
@@ -409,29 +380,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             case let .updateWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
             }
-        case let .zignsecStateAction(action):
-            switch action {
-            case .reset:
-                newState.zignsecState = ZignsecState()
-            case let .setIsLoading(isLoading):
-                newState.zignsecState.isLoading = isLoading
-            case let .setPersonalNumber(personalNumber):
-                newState.zignsecState.personalNumber = personalNumber
-            case let .setWebviewUrl(url):
-                newState.zignsecState.webviewUrl = url
-            case let .setCredentialError(error):
-                newState.zignsecState.credentialError = error
-            case .startSession:
-                newState.zignsecState.credentialError = false
-            }
-        case let .setStatus(text):
-            newState.statusText = text
         case .cancel:
-            newState.otpState = OTPState()
             newState.seBankIDState = SEBankIDState()
-            newState.zignsecState.webviewUrl = nil
-            newState.zignsecState.isLoading = false
-            newState.zignsecState.credentialError = false
             newState.loginHasFailed = false
         case .loginFailure:
             newState.seBankIDState = SEBankIDState()

@@ -49,8 +49,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isHelpCenterEnabled: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
-        unleashClient?.unsubscribe(name: "ready")
-        unleashClient?.unsubscribe(name: "update")
         unleashClient?.stop()
         var clientKey: String {
             switch environment {
@@ -71,7 +69,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
-        startUnleash()
         unleashClient?
             .subscribe(name: "ready") { [weak self] in
                 self?.handleReady()
@@ -80,6 +77,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
             .subscribe(name: "update") { [weak self] in
                 self?.handleUpdate()
             }
+        startUnleash()
     }
 
     public func updateContext(context: [String: String]) {
@@ -95,6 +93,8 @@ public class FeatureFlagsUnleash: FeatureFlags {
                 true,
                 completionHandler: { [weak self] errorResponse in
                     guard let errorResponse else {
+                        self?.setFeatureFlags()
+                        self?.loadingExperimentsSuccess(true)
                         return
                     }
                     self?.loadingExperimentsSuccess(false)

@@ -6,10 +6,11 @@ public enum OTPStateAction: ActionProtocol {
     case verifyCode
     case setLoading(isLoading: Bool)
     case setCodeError(message: String?)
-    case setEmailError(message: String?)
     case setEmail(email: String)
+    case setPersonalNumber(personalNumber: String)
+    case setOtpInputError(message: String?)
     case startSession(verifyUrl: URL, resendUrl: URL)
-    case submitEmail
+    case submitOtpData
     case reset
     case resendCode
     case showResentToast
@@ -40,21 +41,11 @@ public enum SEBankIDStateAction: ActionProtocol {
     case updateWith(autoStartToken: String)
 }
 
-public enum ZignsecStateAction: ActionProtocol {
-    case reset
-    case setIsLoading(isLoading: Bool)
-    case setPersonalNumber(personalNumber: String)
-    case setWebviewUrl(url: URL)
-    case startSession(personalNumber: String)
-    case setCredentialError(error: Bool)
-}
-
 enum LoginError: Error {
     case failed
 }
 
 public enum AuthenticationAction: ActionProtocol {
-    case setStatus(text: String?)
     case exchange(code: String)
     case impersonate(code: String)
     case cancel
@@ -65,7 +56,6 @@ public enum AuthenticationAction: ActionProtocol {
     case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
-    case zignsecStateAction(action: ZignsecStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
     case bankIdQrResultAction(action: BankIDLoginQRResult)
 }
