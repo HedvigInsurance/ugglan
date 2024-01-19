@@ -30,20 +30,16 @@ struct ChatTextViewRepresentable: UIViewRepresentable {
             width: $width,
             colorScheme: colorScheme
         )
-        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        textView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return textView
     }
     public func updateUIView(_ uiView: UIViewType, context: Context) {
         if let uiView = uiView as? ChatTextView {
-            uiView.setContent(from: text)
             uiView.calculateSize()
         }
     }
 }
 
-class ChatTextView: UIView, UITextViewDelegate {
-    private let textView: UITextView
+class ChatTextView: UITextView, UITextViewDelegate {
     private let fixedWidth: CGFloat
     private let colorScheme: ColorScheme
     @Binding private var height: CGFloat
@@ -58,61 +54,43 @@ class ChatTextView: UIView, UITextViewDelegate {
         _height = height
         _width = width
         self.fixedWidth = fixedWidth
-        self.textView = UITextView()
         self.colorScheme = colorScheme
-        super.init(frame: .zero)
-        self.addSubview(textView)
+        super.init(frame: .zero, textContainer: nil)
+        self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
         configureTextView()
-        setContent(from: text)
+        self.text = text
         calculateSize()
     }
 
     private func configureTextView() {
         self.backgroundColor = .clear
-        textView.isEditable = false
-        textView.isUserInteractionEnabled = true
-        textView.isScrollEnabled = false
-        textView.backgroundColor = .clear
-        textView.dataDetectorTypes = [.address, .link, .phoneNumber]
+        isEditable = false
+        isUserInteractionEnabled = true
+        isScrollEnabled = true
+        dataDetectorTypes = [.address, .link, .phoneNumber]
         let linkColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
-        textView.linkTextAttributes = [
+        linkTextAttributes = [
             .foregroundColor: linkColor,
             .underlineStyle: NSUnderlineStyle.thick.rawValue,
             .underlineColor: linkColor,
         ]
-        textView.textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
-        textView.font = Fonts.fontFor(style: .standard)
-        textView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-6)
-            make.trailing.equalToSuperview().offset(6)
-            make.bottom.top.equalToSuperview()
-        }
-        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        textView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        textView.textContainerInset = .zero
-        textView.delegate = self
-    }
-
-    func setContent(from text: String) {
-        configureTextView()
-        textView.text = text
+        textColor = hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
+        font = Fonts.fontFor(style: .standard)
+        delegate = self
     }
 
     func calculateSize() {
         let newSize = getSize()
+        self.frame.size = newSize
+        self.contentSize = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
-            self?.width = newSize.width - 12
+            self?.width = newSize.width
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-    }
-
     private func getSize() -> CGSize {
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return newSize
     }
 

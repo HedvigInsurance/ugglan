@@ -38,6 +38,9 @@ class ChatScreenViewModel: ObservableObject {
         }
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            AskForRating().ask()
+        }
     }
 
     deinit {

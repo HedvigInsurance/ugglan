@@ -1,4 +1,5 @@
 import Apollo
+import Chat
 import Contracts
 import CoreDependencies
 import Flow
@@ -154,6 +155,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
-        if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        if store.state.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
     }
 }

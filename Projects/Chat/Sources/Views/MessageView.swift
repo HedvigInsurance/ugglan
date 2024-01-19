@@ -58,6 +58,7 @@ struct MessageView: View {
                     } label: {
                         if #available(iOS 15.0, *) {
                             Text(type.title(displayText: url.contractName ?? type.importantText))
+                                .multilineTextAlignment(.leading)
                         } else {
                             hText(type.wholeText(displayText: url.contractName ?? type.importantText))
                         }
