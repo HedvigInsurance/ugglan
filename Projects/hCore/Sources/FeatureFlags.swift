@@ -60,7 +60,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         }
 
         let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
-
+        loadingExperimentsSuccess = onComplete
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
@@ -69,7 +69,14 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
-        loadingExperimentsSuccess = onComplete
+        unleashClient?
+            .subscribe(name: "ready") { [weak self] in
+                self?.handleReady()
+            }
+        unleashClient?
+            .subscribe(name: "update") { [weak self] in
+                self?.handleUpdate()
+            }
         startUnleash()
     }
 

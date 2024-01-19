@@ -18,7 +18,8 @@ struct StartDateScreen: View {
                     ) {
                         InfoViewHolder(
                             title: L10n.TravelCertificate.Info.title,
-                            description: L10n.TravelCertificate.Info.subtitle
+                            description: L10n.TravelCertificate.Info.subtitle,
+                            type: .navigation
                         )
                         .foregroundColor(hTextColor.primary)
                     }
