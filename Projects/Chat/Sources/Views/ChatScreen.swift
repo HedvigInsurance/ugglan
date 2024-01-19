@@ -12,6 +12,7 @@ struct ChatScreen: View {
     var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
+
             messagesContainer(with: proxy)
             ChatInputView(vm: vm.chatInputVm)
         }
@@ -45,7 +46,7 @@ struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .top], 16)
+            .padding([.horizontal, .bottom], 16)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
@@ -62,10 +63,6 @@ struct ChatScreen: View {
             let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
             sheetInteraction?.setValue(false, forKey: "enabled")
         }
-        //        .introspectScrollView { scrollView in
-        //            scrollView.bounces = false
-        //        }
-        //        .ignoresSafeArea()
     }
 
     private func messageView(for message: Message) -> some View {
@@ -73,7 +70,7 @@ struct ChatScreen: View {
             if message.sender == .member {
                 Spacer()
             }
-            VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 0) {
+            VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
                 MessageView(message: message)
                     .frame(
                         maxWidth: 300,
@@ -95,6 +92,7 @@ struct ChatScreen: View {
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(hSignalColor.blueElement)
+                            .padding(.leading, 2)
                     } else if case .failed = message.status {
                         hText(L10n.chatFailedToSend)
                         hText(" ∙ \(message.timeStampString)")

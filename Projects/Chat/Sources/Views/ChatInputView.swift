@@ -29,7 +29,7 @@ struct ChatInputView: View {
                                 RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
                             )
                     }
-                    HStack {
+                    HStack(alignment: .bottom, spacing: 0) {
                         CustomTextViewRepresentable(
                             placeholder: L10n.chatInputPlaceholder,
                             text: $vm.inputText,
@@ -37,15 +37,18 @@ struct ChatInputView: View {
                             showBottomMenu: $vm.showBottomMenu
                         )
                         .frame(height: height)
-                        .frame(minHeight: 28)
+                        .frame(minHeight: 40)
+
                         Button {
                             vm.sendTextMessage()
                         } label: {
                             hCoreUIAssets.sendChat.view
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(8)
                         }
                     }
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 4)
+                    .padding(.leading, 4)
                     .background(hBackgroundColor.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
@@ -180,9 +183,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         if let uiView = uiView as? CustomTextView {
             if text == "" && !uiView.isFirstResponder {
                 uiView.text = text
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    height = uiView.contentSize.height
-                }
+                uiView.updateHeight()
                 uiView.updateColors()
             }
         }
@@ -222,15 +223,18 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         toolbar.setItems([space, doneButton], animated: false)
 
         self.inputAccessoryView = toolbar
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in guard let self = self else { return }
-            withAnimation {
-                self.height = self.contentSize.height + 12
-            }
-        }
     }
 
     @objc private func handleDoneButtonTap() {
         self.resignFirstResponder()
+    }
+
+    func updateHeight() {
+        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+            withAnimation {
+                self.height = min(self.contentSize.height, 200)
+            }
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -246,11 +250,9 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        withAnimation {
-            self.height = textView.contentSize.height
-        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
             self?.inputText = textView.text
+            self?.updateHeight()
         }
         return true
     }

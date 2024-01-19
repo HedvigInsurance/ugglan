@@ -48,7 +48,6 @@ class ChatTextView: UIView, UITextViewDelegate {
     private let colorScheme: ColorScheme
     @Binding private var height: CGFloat
     @Binding private var width: CGFloat
-
     init(
         text: String,
         fixedWidth: CGFloat,
