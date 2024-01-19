@@ -76,11 +76,7 @@ public class TerminationFlowJourney {
             style: .detented(.large)
         ) {
             action in
-            //            if case let .goToUrl(url) = action {
-            //                DismissJourney()
-            //            } else {
             getScreenForAction(for: action)
-            //            }
         }
         .withJourneyDismissButton
     }
