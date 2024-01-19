@@ -114,9 +114,7 @@ struct ConfirmTerminationScreen: View {
                             fontSize: .body,
                             height: $height
                         ) { url in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                store.send(.goToUrl(url: url))
-                            }
+                            store.send(.goToUrl(url: url))
                         }
                         .frame(height: height)
                     }
