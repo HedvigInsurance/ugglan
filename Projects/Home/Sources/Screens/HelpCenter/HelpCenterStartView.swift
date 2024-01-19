@@ -145,7 +145,7 @@ extension HelpCenterStartView {
         let commonQuestions: [Question] = [
             .init(
                 question: L10n.hcClaimsQ01,
-                answer: L10n.hcClaimsA02,
+                answer: L10n.hcClaimsA01,
                 relatedQuestions: []
             ),
             .init(
