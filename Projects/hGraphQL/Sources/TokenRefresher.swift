@@ -36,6 +36,7 @@ public class TokenRefresher {
             }
             return Future(result: .success)
         }
+
         return Future { completion in
             let bag = DisposeBag()
 

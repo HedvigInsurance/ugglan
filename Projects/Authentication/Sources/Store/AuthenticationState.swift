@@ -9,8 +9,9 @@ struct OTPState: StateProtocol {
     var verifyUrl: URL? = nil
     var code: String = ""
     var codeErrorMessage: String? = nil
-    var emailErrorMessage: String? = nil
-    var email: String = ""
+    var otpInputErrorMessage: String? = nil
+    var email: String? = nil
+    var personalNumber: String? = nil
     var canResendAt: Date? = nil
 
     public init() {}
@@ -21,20 +22,9 @@ struct SEBankIDState: StateProtocol {
     public init() {}
 }
 
-struct ZignsecState: StateProtocol {
-    var isLoading: Bool = false
-    var personalNumber: String = ""
-    var webviewUrl: URL? = nil
-    var credentialError: Bool = false
-
-    public init() {}
-}
-
 public struct AuthenticationState: StateProtocol {
-    var statusText: String? = nil
     var otpState = OTPState()
     @Transient(defaultValue: SEBankIDState()) var seBankIDState
-    var zignsecState = ZignsecState()
     @Transient(defaultValue: false) var loginHasFailed: Bool
 
     public init() {}
