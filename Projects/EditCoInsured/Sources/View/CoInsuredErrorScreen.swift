@@ -24,40 +24,45 @@ public struct CoInsuredInputErrorView: View {
             }
             return L10n.generalRetry
         }
-        
+
         GenericErrorView(
             description: vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList,
+            useForm: true,
             buttons:
-                    .init(
-                        actionButtonAttachedToBottom: . init(
-                            buttonTitle: actionButtonTitle,
-                            buttonAction: {
-                                if vm.enterManually {
-                                    vm.SSNError = nil
-                                    vm.noSSN = true
-                                } else {
-                                    vm.SSNError = nil
-                                    intentVm.errorMessageForInput = nil
-                                    intentVm.errorMessageForCoinsuredList = nil
-                                }
-                            }),
-                        dismissButton: .init(
-                            buttonTitle: L10n.generalCancelButton,
-                            buttonAction: {
+                .init(
+                    actionButtonAttachedToBottom: .init(
+                        buttonTitle: actionButtonTitle,
+                        buttonAction: {
+                            if vm.enterManually {
+                                vm.SSNError = nil
+                                vm.noSSN = true
+                            } else {
                                 vm.SSNError = nil
                                 intentVm.errorMessageForInput = nil
                                 intentVm.errorMessageForCoinsuredList = nil
-                            })
+                            }
+                        }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCancelButton,
+                        buttonAction: {
+                            vm.SSNError = nil
+                            intentVm.errorMessageForInput = nil
+                            intentVm.errorMessageForCoinsuredList = nil
+                        }
+                    )
+                )
         )
-            )
         .hExtraBottomPadding
     }
 }
 
-#Preview {
-    CoInsuredInputErrorView(vm: CoInusuredInputViewModel(
-        coInsuredModel: CoInsuredModel(),
-        actionType: .add,
-        contractId: "")
+#Preview{
+    CoInsuredInputErrorView(
+        vm: CoInusuredInputViewModel(
+            coInsuredModel: CoInsuredModel(),
+            actionType: .add,
+            contractId: ""
+        )
     )
 }

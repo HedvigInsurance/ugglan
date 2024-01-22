@@ -154,8 +154,7 @@ public struct ClaimDetailView: View {
                     mimeType: .JPEG,
                     name: "image_\(Date()).jpeg",
                     data: data,
-                    thumbnailData: thumbnailData,
-                    extension: "jpeg"
+                    thumbnailData: thumbnailData
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.showAddFiles(with: [file])
@@ -279,9 +278,7 @@ public class ClaimDetailViewModel: ObservableObject {
         if !files.isEmpty {
             let filess = files.compactMap(
                 {
-                    let dataPath = fileUploadManager.getPathForData(for: $0.id, andExtension: $0.extension)
-                    let thumbnailPath = fileUploadManager.getPathForThumnailData(for: $0.id, andExtension: $0.extension)
-                    return $0.asFile(with: dataPath, and: thumbnailPath)
+                    return $0.asFile()
                 }
             )
             store.send(.navigation(action: .openFilesFor(claim: claim, files: filess)))
