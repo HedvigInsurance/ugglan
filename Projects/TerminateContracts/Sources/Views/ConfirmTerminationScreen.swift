@@ -55,25 +55,11 @@ struct ConfirmTerminationScreen: View {
 
     var displayQuestionView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            hText("Common questions")
+            hText(L10n.terminateContractCommonQuestions)
                 .padding(.leading, 16)
-
             VStack(spacing: 4) {
                 ForEach(questions, id: \.question) { question in
-                    hSection {
-                        SwiftUI.Button {
-                            if let index = self.selectedQuestions.firstIndex(where: { $0 == question }) {
-                                selectedQuestions.remove(at: index)
-                            } else {
-                                selectedQuestions.append(question)
-                            }
-                        } label: {
-                            EmptyView()
-                        }
-                        .buttonStyle(
-                            ConfirmTerminationButtonStyle(question: question, selectedQuestions: selectedQuestions)
-                        )
-                    }
+                    InfoExpandableView(title: question.question, text: question.answer)
                 }
             }
         }
@@ -82,50 +68,6 @@ struct ConfirmTerminationScreen: View {
     struct TerminationQuestion: Codable, Equatable, Hashable {
         let question: String
         let answer: String
-    }
-
-    struct ConfirmTerminationButtonStyle: SwiftUI.ButtonStyle {
-        var question: TerminationQuestion
-        var selectedQuestions: [TerminationQuestion]
-        @State var height: CGFloat = 0
-        @PresentableStore var store: TerminationContractStore
-
-        func makeBody(configuration: Configuration) -> some View {
-            VStack(alignment: .center, spacing: 11) {
-                HStack(spacing: 8) {
-                    hText(question.question, style: .body)
-                    Spacer()
-                    Image(
-                        uiImage: selectedQuestions.contains(question)
-                            ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                    )
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .transition(.opacity.animation(.easeOut))
-                    .padding(.trailing, 4)
-                }
-                .padding(.vertical, 13)
-
-                if selectedQuestions.contains(question) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        CustomTextViewRepresentable(
-                            text: question.answer,
-                            fixedWidth: UIScreen.main.bounds.width - 32,
-                            fontSize: .body,
-                            height: $height
-                        ) { url in
-                            store.send(.goToUrl(url: url))
-                        }
-                        .frame(height: height)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 24)
-                }
-            }
-            .padding(.horizontal, 12)
-            .contentShape(Rectangle())
-        }
     }
 }
 
