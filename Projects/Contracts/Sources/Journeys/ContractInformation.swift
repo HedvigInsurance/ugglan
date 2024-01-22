@@ -27,6 +27,7 @@ struct ContractInformationView: View {
         ) { contract in
             if let contract {
                 upatedContractView(contract)
+                    .transition(.opacity.combined(with: .scale))
                 VStack(spacing: 0) {
                     if let displayItems = contract.currentAgreement?.displayItems {
                         hSection(displayItems, id: \.displayValue) { item in
@@ -215,7 +216,8 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
-            let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date())
+            let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
+            let url = URL(string: upcomingRenewal.certificateUrl)
         {
             hSection {
                 InfoCard(
@@ -227,19 +229,19 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            if let url = URL(string: upcomingRenewal.draftCertificateUrl) {
-                                store.send(
-                                    .contractDetailNavigationAction(
-                                        action: .document(url: url, title: L10n.insuranceCertificateTitle)
-                                    )
+                            store.send(
+                                .contractDetailNavigationAction(
+                                    action: .document(url: url, title: L10n.insuranceCertificateTitle)
                                 )
-                            }
+                            )
                         }
                     )
                 ])
             }
             .padding(.top, 8)
-        } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement {
+        } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
+            let url = URL(string: upcomingChangedAgreement.certificateUrl)
+        {
             hSection {
                 HStack {
                     if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
@@ -257,14 +259,11 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    let certificateURL = upcomingChangedAgreement.certificateUrl
-                                    if let url = URL(string: certificateURL) {
-                                        store.send(
-                                            .contractDetailNavigationAction(
-                                                action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                            )
+                                    store.send(
+                                        .contractDetailNavigationAction(
+                                            action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
                                         )
-                                    }
+                                    )
                                 }
                             )
                         ])
@@ -292,6 +291,17 @@ struct ContractInformationView: View {
                     }
                 }
             }
+        } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
+            upcomingChangedAgreement.certificateUrl == nil
+        {
+            Rectangle()
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        store.send(.fetchContracts)
+                    }
+                }
+                .frame(height: 0)
+                .id(UUID().uuidString)
         }
     }
 

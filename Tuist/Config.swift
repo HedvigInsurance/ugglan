@@ -8,5 +8,5 @@ let config = Config(
     cache: nil,
     swiftVersion: nil,
     plugins: [],
-    generationOptions: .options()
+    generationOptions: .options(resolveDependenciesWithSystemScm: true)
 )
