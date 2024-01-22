@@ -79,11 +79,13 @@ struct ProcessingScreen: View {
             BackgroundView().ignoresSafeArea()
             GenericErrorView(
                 description: L10n.General.errorBody,
+                useForm: true,
                 buttons: .init(
                     actionButton: .init(buttonAction: {
                         vm.store.send(.postTravelInsuranceForm)
                     }),
-                    dismissButton: nil)
+                    dismissButton: nil
+                )
             )
             .hWithoutTitle
         }

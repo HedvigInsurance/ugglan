@@ -1,3 +1,4 @@
+import Chat
 import Claims
 import Contracts
 import EditCoInsured
@@ -10,6 +11,7 @@ import MoveFlow
 import Payment
 import Presentation
 import Profile
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -65,6 +67,7 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
+            .configureChatNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -290,6 +293,69 @@ extension JourneyPresentation {
                             action: .openMissingCoInsuredAlert(config: .init(contract: missingContract))
                         )
                     )
+                }
+            }
+        }
+    }
+    public var configureChatNavigation: some JourneyPresentation {
+        onAction(ChatStore.self) { action, pre in
+            if case let .setLastMessageDate(date) = action {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                if store.state.latestChatTimeStamp != date {
+                    store.send(
+                        .setChatNotificationTimeStamp(
+                            sentAt: date
+                        )
+                    )
+                }
+            } else if case let .navigation(navigationAction) = action {
+                switch navigationAction {
+                case let .linkClicked(url):
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        if DeepLink.getType(from: url) != nil {
+                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                        } else {
+                            let journey = AppJourney.webRedirect(url: url)
+                            pre.bag += pre.viewController.present(journey)
+
+                        }
+                    }
+                case .redirectAction:
+                    break
+                case .closeChat:
+                    break
+                }
+            } else if case .checkPushNotificationStatus = action {
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                let status = profileStore.state.pushNotificationCurrentStatus()
+                switch status {
+                case .denied:
+                    func createToast() -> Toast {
+                        let schema = UITraitCollection.current.userInterfaceStyle
+                        return Toast(
+                            symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                            body: L10n.chatToastPushNotificationsTitle,
+                            infoText: L10n.pushNotificationsAlertActionOk,
+                            textColor: hSignalColor.blueText.colorFor(schema == .dark ? .dark : .light, .base).color
+                                .uiColor(),
+                            backgroundColor: hSignalColor.blueFill.colorFor(schema == .dark ? .dark : .light, .base)
+                                .color
+                                .uiColor(),
+                            symbolColor: hSignalColor.blueElement.colorFor(schema == .dark ? .dark : .light, .base)
+                                .color
+                                .uiColor(),
+                            duration: 6
+                        )
+                    }
+
+                    let toast = createToast()
+
+                    pre.bag += toast.onTap.onValue { _ in
+                        UIApplication.shared.appDelegate.registerForPushNotifications().sink()
+                    }
+                    Toasts.shared.displayToast(toast: toast)
+                default:
+                    break
                 }
             }
         }

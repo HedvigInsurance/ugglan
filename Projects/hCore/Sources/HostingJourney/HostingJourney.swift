@@ -13,6 +13,7 @@ public struct PresentableStore<S: Store> {
 }
 
 public class HostingJourneyController<RootView: View>: UIHostingController<RootView> {
+    var updateFrameOnViewDidLayouSubviews = true
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
     }
@@ -21,11 +22,13 @@ public class HostingJourneyController<RootView: View>: UIHostingController<RootV
         super.viewDidLayoutSubviews()
 
         /// Force set frame to make SwiftUI resize itself accordingly
-        if let navigationController = self.navigationController,
-            let presentedFrame = navigationController.presentationController?.presentedView?.frame
-        {
-            self.view.frame.size = presentedFrame.size
-            self.view.setNeedsUpdateConstraints()
+        if updateFrameOnViewDidLayouSubviews {
+            if let navigationController = self.navigationController,
+                let presentedFrame = navigationController.presentationController?.presentedView?.frame
+            {
+                self.view.frame.size = presentedFrame.size
+                self.view.setNeedsUpdateConstraints()
+            }
         }
     }
 }
@@ -119,6 +122,9 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
 
         self.presentable = AnyPresentable(materialize: {
             let controller = HostingJourneyController(rootView: rootView)
+            if options.contains(.ignoreSizeChange) {
+                controller.updateFrameOnViewDidLayouSubviews = false
+            }
             controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
@@ -175,4 +181,5 @@ extension View {
 
 extension PresentationOptions {
     public static let ignoreActionWhenNotOnTop = PresentationOptions()
+    public static let ignoreSizeChange = PresentationOptions()
 }
