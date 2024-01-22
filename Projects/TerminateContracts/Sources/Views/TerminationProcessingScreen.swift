@@ -10,14 +10,9 @@ struct TerminationProcessingScreen: View {
             showSuccessScreen: true,
             TerminationContractStore.self,
             loading: .sendTerminationDate,
-            successView: successView,
+            successView: EmptyView(),
             loadingViewText: L10n.terminateContractTerminatingProgress
         )
-    }
-
-    @ViewBuilder
-    private var successView: some View {
-        EmptyView()
     }
 }
 

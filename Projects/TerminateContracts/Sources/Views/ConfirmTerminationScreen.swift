@@ -5,20 +5,16 @@ import hCoreUI
 struct ConfirmTerminationScreen: View {
     @PresentableStore var store: TerminationContractStore
     let config: TerminationConfirmConfig?
-    let questions: [TerminationQuestion] = [
-        TerminationQuestion(question: L10n.terminationQ01, answer: L10n.terminationA01),
-        TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
-        TerminationQuestion(question: L10n.terminationQ03, answer: L10n.terminationA03),
-    ]
-
-    @State var selectedQuestions: [TerminationQuestion] = []
     let onSelected: () -> Void
 
     var body: some View {
         hForm {
             VStack(spacing: 16) {
-                displayContractTable
-                displayQuestionView
+                DisplayContractTable(
+                    config: config,
+                    terminationDate: store.state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
+                )
+                DisplayQuestionView()
             }
         }
         .hFormAttachToBottom {
@@ -36,38 +32,6 @@ struct ConfirmTerminationScreen: View {
             }
             .padding(.horizontal, 16)
         }
-    }
-
-    var displayContractTable: some View {
-        hSection {
-            if let config = config {
-                ContractRow(
-                    image: config.image?.getPillowType.bgImage,
-                    terminationMessage: L10n.contractStatusToBeTerminated(
-                        store.state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    contractDisplayName: config.contractDisplayName,
-                    contractExposureName: config.contractExposureName
-                )
-            }
-        }
-    }
-
-    var displayQuestionView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            hText(L10n.terminateContractCommonQuestions)
-                .padding(.leading, 16)
-            VStack(spacing: 4) {
-                ForEach(questions, id: \.question) { question in
-                    InfoExpandableView(title: question.question, text: question.answer)
-                }
-            }
-        }
-    }
-
-    struct TerminationQuestion: Codable, Equatable, Hashable {
-        let question: String
-        let answer: String
     }
 }
 
