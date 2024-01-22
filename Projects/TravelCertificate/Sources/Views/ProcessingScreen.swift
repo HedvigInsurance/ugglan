@@ -83,7 +83,8 @@ struct ProcessingScreen: View {
                     actionButton: .init(buttonAction: {
                         vm.store.send(.postTravelInsuranceForm)
                     }),
-                    dismissButton: nil)
+                    dismissButton: nil
+                )
             )
             .hWithoutTitle
         }
@@ -157,15 +158,5 @@ struct SuccessScreen_Previews: PreviewProvider {
                 store.setLoading(for: .postTravelInsurance)
                 store.setError("error", for: .postTravelInsurance)
             }
-    }
-}
-struct BackgroundView: UIViewRepresentable {
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brand(.primaryBackground())
-    }
-
-    func makeUIView(context: Context) -> some UIView {
-        UIView()
     }
 }

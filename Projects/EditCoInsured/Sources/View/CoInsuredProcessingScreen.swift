@@ -94,7 +94,9 @@ struct CoInsuredProcessingScreen: View {
                         buttonTitle: L10n.generalCancelButton,
                         buttonAction: {
                             missingContractAlert()
-                        }))
+                        }
+                    )
+                )
             )
         }
     }
@@ -136,15 +138,5 @@ struct SuccessScreen_Previews: PreviewProvider {
                 store.setLoading(for: .postCoInsured)
                 store.setError("error", for: .postCoInsured)
             }
-    }
-}
-struct BackgroundView: UIViewRepresentable {
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brand(.primaryBackground())
-    }
-
-    func makeUIView(context: Context) -> some UIView {
-        UIView()
     }
 }

@@ -36,11 +36,25 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openTerminationDeletionScreen()
             } else if case let .openConfirmTerminationScreen(config) = navigationAction {
                 openConfirmTerminationScreen(config: config)
+            } else if case .openTerminationProcessingScreen = navigationAction {
+                openProgressScreen()
             }
         } else if case .dismissTerminationFlow = action {
             DismissJourney()
         } else if case .goToFreeTextChat = action {
             DismissJourney()
+        }
+    }
+
+    @JourneyBuilder
+    static func openProgressScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: TerminationProcessingScreen(),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
+        ) { action in
+            getScreen(for: action)
         }
     }
 
@@ -71,6 +85,7 @@ public class TerminationFlowJourney {
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.sendTerminationDate)
+                    store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
             style: .detented(.large)
@@ -82,7 +97,6 @@ public class TerminationFlowJourney {
     }
 
     static func openTerminationSuccessScreen() -> some JourneyPresentation {
-
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationSuccessScreen()

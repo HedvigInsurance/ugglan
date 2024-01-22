@@ -75,7 +75,8 @@ struct MovingFlowProcessingView: View {
                     actionButton: .init(buttonAction: {
                         vm.store.send(.navigation(action: .goBack))
                     }),
-                    dismissButton: nil)
+                    dismissButton: nil
+                )
             )
             .hWithoutTitle
         }
@@ -106,15 +107,5 @@ struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE
         return MovingFlowProcessingView()
-    }
-}
-struct BackgroundView: UIViewRepresentable {
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brand(.primaryBackground())
-    }
-
-    func makeUIView(context: Context) -> some UIView {
-        UIView()
     }
 }
