@@ -205,7 +205,7 @@ struct ContractRow_Previews: PreviewProvider {
                 upcomingRenewal:
                     ContractRenewal(
                         renewalDate: "",
-                        draftCertificateUrl: ""
+                        certificateUrl: ""
                     ),
                 firstName: "",
                 lastName: "",

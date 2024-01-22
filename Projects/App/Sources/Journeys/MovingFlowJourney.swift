@@ -38,5 +38,9 @@ extension AppJourney {
                 AppJourney.freeTextChat().withDismissButton
             }
         }
+        .onDismiss {
+            let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+            contractsStore.send(.fetch)
+        }
     }
 }
