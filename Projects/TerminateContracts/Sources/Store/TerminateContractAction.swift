@@ -13,7 +13,7 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
 
-    case startTermination(contractId: String, contractName: String, config: TerminationConfirmConfig)
+    case startTermination(config: TerminationConfirmConfig)
     case setTerminationDate(terminationDate: Date)
     case sendTerminationDate
     case deleteTermination

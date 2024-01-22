@@ -319,9 +319,8 @@ struct ContractInformationView: View {
                         hButton.LargeButton(type: .ghost) {
                             terminationContractStore.send(
                                 .startTermination(
-                                    contractId: id,
-                                    contractName: contract?.exposureDisplayName ?? "",
                                     config: .init(
+                                        contractId: id,
                                         image: contract?.pillowType,
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
