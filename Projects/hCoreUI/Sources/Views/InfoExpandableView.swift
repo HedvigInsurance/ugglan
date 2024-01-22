@@ -1,16 +1,20 @@
 import SwiftUI
 
 public struct InfoExpandableView: View {
+    @State var height: CGFloat = 0
     @State var selectedFields: [String] = []
     var title: String
     var text: String
+    var onMarkDownClick: ((URL) -> Void)?
 
     public init(
         title: String,
-        text: String
+        text: String,
+        onMarkDownClick: ((URL) -> Void)? = nil
     ) {
         self.title = title
         self.text = text
+        self.onMarkDownClick = onMarkDownClick
     }
 
     public var body: some View {
@@ -41,9 +45,15 @@ public struct InfoExpandableView: View {
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
-                        hText(text)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .foregroundColor(hTextColor.secondary)
+                        CustomTextViewRepresentable(
+                            text: text,
+                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fontSize: .body,
+                            height: $height
+                        ) { url in
+                            onMarkDownClick?(url)
+                        }
+                        .frame(height: height)
                     }
                     .verticalPadding(0)
                     .padding(.bottom, 24)
