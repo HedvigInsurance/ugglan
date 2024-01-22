@@ -1,12 +1,11 @@
 import SwiftUI
-import hCoreUI
 
-struct InfoExpandableView: View {
+public struct InfoExpandableView: View {
     @State var selectedFields: [String] = []
     var title: String
     var text: String
 
-    init(
+    public init(
         title: String,
         text: String
     ) {
@@ -14,7 +13,7 @@ struct InfoExpandableView: View {
         self.text = text
     }
 
-    var body: some View {
+    public var body: some View {
         hSection {
             hRow {
                 hText(title)
