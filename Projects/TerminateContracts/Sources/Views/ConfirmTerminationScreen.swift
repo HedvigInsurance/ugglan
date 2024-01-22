@@ -78,15 +78,18 @@ struct ConfirmTerminationScreen: View {
 }
 
 public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
+    public var contractId: String
     public var image: PillowType?
     public var contractDisplayName: String
     public var contractExposureName: String
 
     public init(
+        contractId: String,
         image: PillowType?,
         contractDisplayName: String,
         contractExposureName: String
     ) {
+        self.contractId = contractId
         self.image = image
         self.contractDisplayName = contractDisplayName
         self.contractExposureName = contractExposureName
@@ -95,7 +98,7 @@ public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
 
 #Preview{
     ConfirmTerminationScreen(
-        config: .init(image: .home, contractDisplayName: "", contractExposureName: ""),
+        config: .init(contractId: "", image: .home, contractDisplayName: "", contractExposureName: ""),
         onSelected: {}
     )
 }
