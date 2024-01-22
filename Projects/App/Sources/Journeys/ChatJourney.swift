@@ -42,38 +42,6 @@ extension AppJourney {
         }
     }
 
-    @JourneyBuilder
-    static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
-        if Dependencies.featureFlags().isChatDisabled {
-            AppJourney.disableChatScreen(style: style)
-        } else {
-            ChatJourney.start(
-                style: style,
-                resultJourney: { result in
-                    if case .notifications = result {
-                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                        let status = profileStore.state.pushNotificationCurrentStatus()
-                        if case .notDetermined = status {
-                            HostingJourney(
-                                UgglanStore.self,
-                                rootView: AskForPushnotifications(
-                                    text: L10n.chatActivateNotificationsBody,
-                                    onActionExecuted: {
-                                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                                        store.send(.dismissScreen)
-                                    }
-                                ),
-                                style: .detented(.large)
-                            ) { action in
-                                PopJourney()
-                            }
-                        }
-                    }
-                }
-            )
-        }
-    }
-
     static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
         return HostingJourney(
             rootView: GenericErrorView(

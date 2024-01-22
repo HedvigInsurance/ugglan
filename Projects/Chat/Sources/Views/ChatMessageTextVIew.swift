@@ -81,8 +81,8 @@ class ChatTextView: UITextView, UITextViewDelegate {
 
     func calculateSize() {
         let newSize = getSize()
-        self.frame.size = newSize
-        self.contentSize = newSize
+        //        self.frame.size = newSize
+        //        self.contentSize = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
             self?.width = newSize.width

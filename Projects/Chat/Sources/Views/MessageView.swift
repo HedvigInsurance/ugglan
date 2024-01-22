@@ -15,7 +15,8 @@ struct MessageView: View {
     public var body: some View {
         HStack {
             messageContent
-                .padding(message.padding)
+                .padding(.horizontal, message.horizontalPadding)
+                .padding(.vertical, message.verticalPadding)
                 .background(message.bgColor)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .environment(\.colorScheme, .light)
@@ -49,7 +50,7 @@ struct MessageView: View {
             case let .file(file):
                 ChatFileView(file: file).frame(maxHeight: 200)
             case let .crossSell(url):
-                LinkView(vm: .init(url: url), height: $height, width: $width)
+                LinkView(vm: .init(url: url))
             case let .deepLink(url):
                 if let type = DeepLink.getType(from: url) {
                     Button {
@@ -71,11 +72,11 @@ struct MessageView: View {
                         width: $width
                     )
                     .frame(width: width, height: height)
-                    .frame(maxWidth: 300)
                 }
             case let .otherLink(url):
-                LinkView(vm: .init(url: url), height: $height, width: $width)
-
+                LinkView(
+                    vm: .init(url: url)
+                )
             case .unknown: Text("")
             }
         }
@@ -84,8 +85,8 @@ struct MessageView: View {
 
 struct LinkView: View {
     @StateObject var vm: LinkViewModel
-    @Binding var height: CGFloat
-    @Binding var width: CGFloat
+    @State var height: CGFloat = 0
+    @State var width: CGFloat = 0
     var body: some View {
         if let error = vm.error {
             ChatTextViewRepresentable(

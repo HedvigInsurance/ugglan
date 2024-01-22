@@ -25,12 +25,18 @@ extension Message {
         }
     }
 
-    var padding: CGFloat {
+    var horizontalPadding: CGFloat {
         switch type {
-        case .text:
+        case .text, .deepLink:
             return 16
-        case .deepLink:
-            return 16
+        default:
+            return 0
+        }
+    }
+    var verticalPadding: CGFloat {
+        switch type {
+        case .text, .deepLink:
+            return 12
         default:
             return 0
         }
