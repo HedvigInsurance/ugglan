@@ -54,6 +54,10 @@ public class TerminationFlowJourney {
                 TerminationContractStore.self,
                 loading: .sendTerminationDate,
                 loadingViewText: L10n.terminateContractTerminatingProgress,
+                onErrorCancelAction: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                },
                 onDismiss: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
