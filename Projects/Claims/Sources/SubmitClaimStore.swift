@@ -203,7 +203,9 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         var newState = state
         switch action {
         case let .setNewClaimId(id):
-            newState.currentClaimId = id
+            if newState.currentClaimId != id {
+                newState.currentClaimId = id
+            }
         case let .setNewLocation(location):
             newState.locationStep?.location = location?.value
         case let .setNewDate(dateOfOccurrence):

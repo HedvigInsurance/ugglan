@@ -82,7 +82,7 @@ extension GraphQLMutation {
     func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<SubmitClaimsAction>
     where
         ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
-        Self.Data: ClaimStepProgress
+        Self.Data: ClaimStepProgress, Self.Data: ClaimStepId
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
@@ -91,9 +91,7 @@ extension GraphQLMutation {
             store.setLoading(for: self.getLoadingType())
             disposeBag += octopus.client.perform(mutation: self)
                 .map { data in
-                    if let data = data as? ClaimStepId {
-                        callback(.value(.setNewClaimId(with: data.getStepId())))
-                    }
+                    callback(.value(.setNewClaimId(with: data.getStepId())))
                     callback(.value(.setNewClaimContext(context: data.getContext())))
                     if let clearedSteps = data.getProgress().clearedSteps,
                         let totalSteps = data.getProgress().totalSteps
@@ -145,69 +143,102 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
     }
 }
 
-extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimDateOfOccurrencePlusLocationNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimDateOfOccurrencePlusLocationNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimContractSelectNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimContractSelectNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimContractSelectNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimConfirmEmergencyNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimConfirmEmergencyNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimAudioRecordingNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimAudioRecordingNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimPhoneNumberNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimPhoneNumberNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimDateOfOccurrenceNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimDateOfOccurrenceNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimLocationNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimLocationNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimSingleItemNext.context
     }
+    func getStepId() -> String {
+        return self.flowClaimSingleItemNext.id
+    }
 }
 
-extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimSummaryNext.context
     }
-}
-
-extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepContext {
-    func getContext() -> String {
-        return self.flowClaimSingleItemCheckoutNext.context
+    func getStepId() -> String {
+        return self.flowClaimSummaryNext.id
     }
 }
 
-extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimStepContext {
+extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepContext, ClaimStepId {
+    func getContext() -> String {
+        return self.flowClaimSingleItemCheckoutNext.context
+    }
+    func getStepId() -> String {
+        return self.flowClaimSingleItemCheckoutNext.id
+    }
+}
+
+extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimFileUploadNext.context
+    }
+    func getStepId() -> String {
+        return self.flowClaimFileUploadNext.id
     }
 }
 
