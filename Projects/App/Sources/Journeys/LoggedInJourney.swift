@@ -303,16 +303,5 @@ extension JourneyPresentation {
                 AppJourney.configureURL(url: url)
             }
         }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case let .navigationAction(navigationAction) = action {
-                    if case .openSuccessScreen = navigationAction {
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.setPushNotificationsTo(date: nil))
-                    }
-                }
-            }
-        )
     }
 }

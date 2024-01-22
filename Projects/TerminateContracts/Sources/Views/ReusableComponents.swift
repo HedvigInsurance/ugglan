@@ -10,7 +10,7 @@ struct DisplayContractTable: View {
         hSection {
             if let config = config {
                 ContractRow(
-                    image: config.image?.getPillowType.bgImage,
+                    image: config.image?.bgImage,
                     terminationMessage: L10n.contractStatusToBeTerminated(terminationDate),
                     contractDisplayName: config.contractDisplayName,
                     contractExposureName: config.contractExposureName

@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @PresentableStore var store: TerminationContractStore
-    let config: TerminationConfirmConfig?
+    let config: TerminationConfirmConfig
     let onSelected: () -> Void
 
     var body: some View {
@@ -38,12 +38,12 @@ struct ConfirmTerminationScreen: View {
 }
 
 public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
-    public var image: String?
+    public var image: PillowType?
     public var contractDisplayName: String
     public var contractExposureName: String
 
     public init(
-        image: String?,
+        image: PillowType?,
         contractDisplayName: String,
         contractExposureName: String
     ) {
@@ -55,7 +55,7 @@ public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
 
 #Preview{
     ConfirmTerminationScreen(
-        config: .init(image: hCoreUIAssets.pillowHome.name, contractDisplayName: "", contractExposureName: ""),
+        config: .init(image: .home, contractDisplayName: "", contractExposureName: ""),
         onSelected: {}
     )
 }
