@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @PresentableStore var store: TerminationContractStore
-    let config: TerminationConfirmConfig?
+    let config: TerminationConfirmConfig
     let questions: [TerminationQuestion] = [
         TerminationQuestion(question: L10n.terminationQ01, answer: L10n.terminationA01),
         TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
@@ -42,16 +42,14 @@ struct ConfirmTerminationScreen: View {
 
     var displayContractTable: some View {
         hSection {
-            if let config = config {
-                ContractRow(
-                    image: config.image?.getPillowType.bgImage,
-                    terminationMessage: L10n.contractStatusToBeTerminated(
-                        store.state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    contractDisplayName: config.contractDisplayName,
-                    contractExposureName: config.contractExposureName
-                )
-            }
+            ContractRow(
+                image: config.image?.bgImage,
+                terminationMessage: L10n.contractStatusToBeTerminated(
+                    store.state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                contractDisplayName: config.contractDisplayName,
+                contractExposureName: config.contractExposureName
+            )
         }
     }
 
@@ -73,19 +71,19 @@ struct ConfirmTerminationScreen: View {
         }
     }
 
-    struct TerminationQuestion: Codable, Equatable, Hashable {
+    struct TerminationQuestion {
         let question: String
         let answer: String
     }
 }
 
 public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
-    public var image: String?
+    public var image: PillowType?
     public var contractDisplayName: String
     public var contractExposureName: String
 
     public init(
-        image: String?,
+        image: PillowType?,
         contractDisplayName: String,
         contractExposureName: String
     ) {
@@ -97,7 +95,7 @@ public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
 
 #Preview{
     ConfirmTerminationScreen(
-        config: .init(image: hCoreUIAssets.pillowHome.name, contractDisplayName: "", contractExposureName: ""),
+        config: .init(image: .home, contractDisplayName: "", contractExposureName: ""),
         onSelected: {}
     )
 }
