@@ -225,7 +225,6 @@ extension PHAsset {
                         inCont.resume(throwing: GenerateFileUploadError.failedToGenerateMimeType)
                         return
                     }
-                    //
                     guard
                         let mimeType = UTTypeCopyPreferredTagWithClass(
                             uti as CFString,

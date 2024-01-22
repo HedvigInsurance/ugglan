@@ -68,14 +68,6 @@ extension AppJourney {
             .configurePaymentNavigation
             .configureContractNavigation
             .configureChatNavigation
-        //            .onPresent {
-        //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-        //                    let vc = UIHostingController(rootView: ChatScreen(vm: .init()))
-        //                    vc.preferredPresentationStyle = .detented(.large)
-        //                    let topVc = UIApplication.shared.getTopViewController()
-        //                    topVc?.present(vc, animated: true)
-        //                }
-        //            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
