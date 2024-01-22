@@ -2,31 +2,43 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
+public struct ProcessingView<S: Store & StoreLoading>: View {
     @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
     var store: S.Type
     var loading: S.Loading
-    var successView: T
+    
     var loadingViewText: String
+    var successViewTitle: String?
+    var successViewBody: String?
+    var successViewButtonAction: (() -> Void)?
+    
     var onAppearLoadingView: (() -> Void)?
     var onErrorCancelAction: (() -> Void)?
+    var onLoadingDismiss: (() -> Void)?
 
     public init(
-        showSuccessScreen: Bool,
+        showSuccessScreen: Bool? = true,
         _ storeType: S.Type,
         loading: S.Loading,
-        successView: T,
         loadingViewText: String,
+        successViewTitle: String? = nil,
+        successViewBody: String? = nil,
+        successViewButtonAction: (() -> Void)? = nil,
         onAppearLoadingView: (() -> Void)? = nil,
-        onErrorCancelAction: (() -> Void)? = nil
+        onErrorCancelAction: (() -> Void)? = nil,
+        onDismiss: (() -> Void)? = nil
     ) {
-        self.showSuccessScreen = showSuccessScreen
+        self.showSuccessScreen = showSuccessScreen ?? true
         self.store = storeType
         self.loading = loading
         self.loadingViewText = loadingViewText
-        self.successView = successView
+        self.successViewTitle = successViewTitle
+        self.successViewBody = successViewBody
+        self.successViewButtonAction = successViewButtonAction
         self.onAppearLoadingView = onAppearLoadingView
+        self.onErrorCancelAction = onErrorCancelAction
+        self.onLoadingDismiss = onDismiss
     }
 
     public var body: some View {
@@ -58,6 +70,43 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
             }
         }
     }
+    
+    private var successView: some View {
+        ZStack(alignment: .bottom) {
+            BackgroundView().ignoresSafeArea()
+            VStack {
+                Spacer()
+                Spacer()
+                VStack(spacing: 16) {
+                    Image(uiImage: hCoreUIAssets.tick.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.greenElement)
+                    VStack(spacing: 0) {
+                        hText(successViewTitle ?? "")
+                        hText(successViewBody ?? "")
+                            .foregroundColor(hTextColor.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 16)
+                }
+                Spacer()
+                Spacer()
+                Spacer()
+            }
+            hSection {
+                VStack(spacing: 8) {
+                    hButton.LargeButton(type: .ghost) {
+                        successViewButtonAction?()
+                    } content: {
+                        hText(L10n.generalCloseButton)
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+
+        }
+    }
 
     private var errorView: some View {
         ZStack(alignment: .bottom) {
@@ -85,7 +134,16 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
                 .frame(width: UIScreen.main.bounds.width * 0.53)
             Spacer()
             Spacer()
-            Spacer()
+            if let onDismiss = onLoadingDismiss {
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        onDismiss()
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+            }
         }
     }
 }

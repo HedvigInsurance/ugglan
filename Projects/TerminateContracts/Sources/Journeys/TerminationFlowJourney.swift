@@ -50,7 +50,15 @@ public class TerminationFlowJourney {
     static func openProgressScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: TerminationProcessingScreen(),
+            rootView: ProcessingView(
+                TerminationContractStore.self,
+                loading: .sendTerminationDate,
+                loadingViewText: L10n.terminateContractTerminatingProgress,
+                onDismiss: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                }
+            ),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
