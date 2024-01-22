@@ -435,20 +435,20 @@ extension PillowType {
 
 public struct ContractRenewal: Codable, Hashable {
     public let renewalDate: String
-    public let draftCertificateUrl: String?
+    public let certificateUrl: String?
 
     init(
         renewalDate: String,
-        draftCertificateUrl: String
+        certificateUrl: String
     ) {
         self.renewalDate = renewalDate
-        self.draftCertificateUrl = draftCertificateUrl
+        self.certificateUrl = certificateUrl
     }
 
     init?(upcoming: OctopusGraphQL.AgreementFragment?) {
         guard let upcoming = upcoming, upcoming.creationCause == .renewal else { return nil }
         self.renewalDate = upcoming.activeFrom
-        self.draftCertificateUrl = upcoming.certificateUrl
+        self.certificateUrl = upcoming.certificateUrl
     }
 }
 
