@@ -120,10 +120,10 @@ let project = Project(
     targets: [
         Target(
             name: "Ugglan",
-            platform: .iOS,
+            destinations: .iOS,
             product: .app,
             bundleId: "com.hedvig.test.app",
-            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            deploymentTargets: .iOS("14.0"),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
@@ -134,10 +134,10 @@ let project = Project(
         ),
         Target(
             name: "AppTests",
-            platform: .iOS,
+            destinations: .iOS,
             product: .unitTests,
             bundleId: "com.hedvig.AppTests",
-            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            deploymentTargets: .iOS("14.0"),
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
@@ -157,10 +157,10 @@ let project = Project(
         ),
         Target(
             name: "Hedvig",
-            platform: .iOS,
+            destinations: .iOS,
             product: .app,
             bundleId: "com.hedvig.app",
-            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            deploymentTargets: .iOS("14.0"),
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
@@ -171,29 +171,25 @@ let project = Project(
         ),
         Target(
             name: "NotificationService",
-            platform: .iOS,
+            destinations: .iOS,
             product: .appExtension,
             bundleId: "com.hedvig.test.app.NotificationService",
-            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
-            infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
+            deploymentTargets: .iOS("14.0"),
+            infoPlist: "../../Projects/NotificationService/Info.plist",
             sources: "../NotificationService/**",
-            entitlements: .file(
-                path: .relativeToRoot("Projects/NotificationService/Config/Dev/NotificationService.entitlements")
-            ),
+            entitlements: "../NotificationService/Config/Dev/NotificationService.entitlements",
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
         Target(
             name: "NotificationServiceProd",
-            platform: .iOS,
+            destinations: .iOS,
             product: .appExtension,
             bundleId: "com.hedvig.app.NotificationService",
-            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
-            infoPlist: .file(path: .relativeToRoot("Projects/NotificationService/Info.plist")),
+            deploymentTargets: .iOS("14.0"),
+            infoPlist: "../../Projects/NotificationService/Info.plist",
             sources: "../NotificationService/**",
-            entitlements: .file(
-                path: .relativeToRoot("Projects/NotificationService/Config/Prod/NotificationService.entitlements")
-            ),
+            entitlements: "../NotificationService/Config/Prod/NotificationService.entitlements",
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
