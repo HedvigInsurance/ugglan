@@ -92,8 +92,8 @@ public struct hDatePickerField: View {
     private func getValueLabel() -> some View {
         HStack {
             Group {
-                if config.dateFormatter == .dotFormat {
-                    if (selectedDate?.displayDateDotFormat) != nil {
+                if config.dateFormatter == .DDMMMYYYY {
+                    if (selectedDate?.displayDateDDMMMYYYYFormat) != nil {
                         Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
                     }
                 } else if config.dateFormatter == .birthDate {
@@ -158,6 +158,7 @@ public struct hDatePickerField: View {
         let title: String
         let showAsList: Bool?
         let dateFormatter: DateFormatter?
+        let buttonText: String?
 
         public init(
             minDate: Date? = nil,
@@ -166,7 +167,8 @@ public struct hDatePickerField: View {
             placeholder: String,
             title: String,
             showAsList: Bool? = false,
-            dateFormatter: DateFormatter? = .dotFormat
+            dateFormatter: DateFormatter? = .DDMMMYYYY,
+            buttonText: String? = nil
         ) {
             self.minDate = minDate
             self.maxDate = maxDate
@@ -175,15 +177,28 @@ public struct hDatePickerField: View {
             self.title = title
             self.showAsList = showAsList
             self.dateFormatter = dateFormatter
+            self.buttonText = buttonText
         }
     }
 }
 
-private struct DatePickerView: View {
-    fileprivate let continueAction: ReferenceAction
-    fileprivate let cancelAction: ReferenceAction
-    @Binding fileprivate var date: Date
+public struct DatePickerView: View {
+    let continueAction: ReferenceAction
+    let cancelAction: ReferenceAction
+    @Binding var date: Date
     let config: hDatePickerField.HDatePickerFieldConfig
+
+    public init(
+        continueAction: ReferenceAction,
+        cancelAction: ReferenceAction,
+        date: Binding<Date>,
+        config: hDatePickerField.HDatePickerFieldConfig
+    ) {
+        self.continueAction = continueAction
+        self.cancelAction = cancelAction
+        self._date = date
+        self.config = config
+    }
 
     public var body: some View {
         hForm {
@@ -210,7 +225,7 @@ private struct DatePickerView: View {
                     continueAction.execute()
                 } content: {
                     hText(
-                        L10n.generalSaveButton,
+                        config.buttonText ?? L10n.generalSaveButton,
                         style: .body
                     )
                     .foregroundColor(hTextColor.negative)
@@ -234,7 +249,7 @@ private struct DatePickerView: View {
             ToolbarItem(placement: .principal) {
                 VStack {
                     hText(config.title)
-                    if let subtitle = date.displayDateDotFormat, !(config.showAsList ?? false) {
+                    if let subtitle = date.displayDateDDMMMYYYYFormat, !(config.showAsList ?? false) {
                         hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
@@ -300,10 +315,10 @@ struct hDatePickerField_Previews: PreviewProvider {
     }
 }
 
-class ReferenceAction {
+public class ReferenceAction {
     var execute: () -> (Void)
 
-    init(
+    public init(
         execute: @escaping () -> Void
     ) {
         self.execute = execute
@@ -311,6 +326,6 @@ class ReferenceAction {
 }
 
 public enum DateFormatter {
-    case dotFormat
+    case DDMMMYYYY
     case birthDate
 }

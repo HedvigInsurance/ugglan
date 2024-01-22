@@ -21,6 +21,7 @@ struct DisplayContractTable: View {
 }
 
 struct DisplayQuestionView: View {
+    @PresentableStore var store: TerminationContractStore
     let questions: [TerminationQuestion] = [
         TerminationQuestion(question: L10n.terminationQ01, answer: L10n.terminationA01),
         TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
@@ -33,7 +34,9 @@ struct DisplayQuestionView: View {
                 .padding(.leading, 16)
             VStack(spacing: 4) {
                 ForEach(questions, id: \.question) { question in
-                    InfoExpandableView(title: question.question, text: question.answer)
+                    InfoExpandableView(title: question.question, text: question.answer) { url in
+                        store.send(.goToUrl(url: url))
+                    }
                 }
             }
         }

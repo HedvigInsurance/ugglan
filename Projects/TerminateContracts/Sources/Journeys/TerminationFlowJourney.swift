@@ -81,12 +81,13 @@ public class TerminationFlowJourney {
                     }
                 }
             ),
-            style: .detented(.large)
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBarWithoutGrabber, .blurredBackground]
         ) {
             action in
             getScreenForAction(for: action)
         }
-        .withJourneyDismissButton
+        .configureTitle(L10n.setTerminationDateText)
     }
 
     static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
