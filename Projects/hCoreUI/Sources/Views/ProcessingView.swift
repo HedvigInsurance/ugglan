@@ -7,12 +7,12 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
     var showSuccessScreen: Bool
     var store: S.Type
     var loading: S.Loading
-    
+
     var loadingViewText: String
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
-    
+
     var onAppearLoadingView: (() -> Void)?
     var onErrorCancelAction: (() -> Void)?
     var onLoadingDismiss: (() -> Void)?
@@ -70,7 +70,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
             }
         }
     }
-    
+
     private var successView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
