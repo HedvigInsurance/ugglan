@@ -74,7 +74,11 @@ public class TerminationFlowJourney {
                     terminationDate in
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
-                    store.send(.navigationAction(action: .openConfirmTerminationScreen(config: store.state.config)))
+                    if let config = store.state.config {
+                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    } else {
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    }
                 }
             ),
             style: .detented(.large)
@@ -85,7 +89,7 @@ public class TerminationFlowJourney {
         .withJourneyDismissButton
     }
 
-    static func openConfirmTerminationScreen(config: TerminationConfirmConfig?) -> some JourneyPresentation {
+    static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: ConfirmTerminationScreen(

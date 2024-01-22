@@ -308,17 +308,16 @@ struct ContractInformationView: View {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
                             terminationContractStore.send(
-                                .setTerminationConfig(
+                                .startTermination(
+                                    contractId: id,
+                                    contractName: contract?.exposureDisplayName ?? "",
                                     config: .init(
-                                        image: contract?.pillowType?.name,
+                                        image: contract?.pillowType,
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
                                         contractExposureName: contract?.exposureDisplayName ?? ""
                                     )
                                 )
-                            )
-                            terminationContractStore.send(
-                                .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
                             )
                             vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
                                 if case let .navigationAction(navigationAction) = action {

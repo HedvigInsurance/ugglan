@@ -32,11 +32,13 @@ public struct InfoExpandableView: View {
                 .transition(.opacity.animation(.easeOut))
             })
             .onTap {
-                if !selectedFields.contains(title) {
-                    selectedFields.append(title)
-                } else {
-                    if let index = selectedFields.firstIndex(of: title) {
-                        selectedFields.remove(at: index)
+                withAnimation(.spring) {
+                    if !selectedFields.contains(title) {
+                        selectedFields.append(title)
+                    } else {
+                        if let index = selectedFields.firstIndex(of: title) {
+                            selectedFields.remove(at: index)
+                        }
                     }
                 }
             }
