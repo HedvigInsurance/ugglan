@@ -23,7 +23,7 @@ struct HomeBottomScrollView: View {
             items: vm.items.sorted(by: { $0.id < $1.id }),
             previousHeight: height,
             content: { content in
-                switch content.type {
+                switch content.id {
                 case .payment:
                     ConnectPaymentCardView()
                 case .renewal:
@@ -33,8 +33,11 @@ struct HomeBottomScrollView: View {
                         text: L10n.hometabAccountDeletionNotification,
                         type: .attention
                     )
-                case .importantMessage:
-                    ImportantMessagesView()
+                case let .importantMessage(id):
+                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    if let importantMessage = store.state.getImportantMessage(with: id) {
+                        ImportantMessagesView(importantMessage: importantMessage)
+                    }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
                         let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -106,18 +109,33 @@ class HomeButtonScrollViewModel: ObservableObject {
     private func handleImportantMessages() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal.plain()
-            .map({ $0.importantMessage != nil && !$0.hideImportantMessage })
+            .map({ $0.getImportantMessageToShow() })
             .distinct()
             .publisher
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.importantMessage, with: show)
+            .sink(receiveValue: { [weak self] importantMessages in guard let self = self else { return }
+                var oldItems = self.items
+                let itemsToRemove = oldItems.filter { view in
+                    switch view.id {
+                    case .importantMessage:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                for itemToRemove in itemsToRemove {
+                    oldItems.remove(itemToRemove)
+                }
+                for importantMessage in importantMessages {
+                    oldItems.insert(.init(with: .importantMessage(message: importantMessage.id)))
+                }
+                self.items = oldItems
             })
             .store(in: &cancellables)
-        handleItem(
-            .importantMessage,
-            with: homeStore.state.importantMessage != nil && !homeStore.state.hideImportantMessage
-        )
+        let itemsToShow = homeStore.state.getImportantMessageToShow()
+        for importantMessage in itemsToShow {
+            self.handleItem(.importantMessage(message: importantMessage.id), with: true)
+        }
     }
 
     private func handleRenewalCardView() {
@@ -185,18 +203,16 @@ struct HomeBottomScrollView_Previews: PreviewProvider {
 }
 
 struct InfoCardView: Identifiable, Hashable {
-    let id: Int
-    let type: InfoCardType
+    let id: InfoCardType
     init(with type: InfoCardType) {
-        self.id = type.rawValue
-        self.type = type
+        self.id = type
     }
 }
 
-enum InfoCardType: Int {
+enum InfoCardType: Hashable, Comparable {
     case payment
     case missingCoInsured
-    case importantMessage
+    case importantMessage(message: String)
     case renewal
     case deletedView
 }
