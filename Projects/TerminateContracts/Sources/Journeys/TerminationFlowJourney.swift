@@ -78,11 +78,11 @@ public class TerminationFlowJourney {
             action in
             getScreenForAction(for: action)
         }
+        .configureTitle(L10n.terminationConfirmButton)
         .withJourneyDismissButton
     }
 
     static func openTerminationSuccessScreen() -> some JourneyPresentation {
-
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationSuccessScreen()

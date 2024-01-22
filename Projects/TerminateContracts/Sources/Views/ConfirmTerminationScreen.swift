@@ -22,19 +22,21 @@ struct ConfirmTerminationScreen: View {
             }
         }
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                hButton.LargeButton(type: .alert) {
-                    onSelected()
-                } content: {
-                    hText(L10n.terminationConfirmButton)
-                }
-                hButton.LargeButton(type: .ghost) {
-                    store.send(.dismissTerminationFlow)
-                } content: {
-                    hText(L10n.generalCancelButton)
+            hSection {
+                VStack(spacing: 8) {
+                    hButton.LargeButton(type: .alert) {
+                        onSelected()
+                    } content: {
+                        hText(L10n.terminationConfirmButton)
+                    }
+                    hButton.LargeButton(type: .ghost) {
+                        store.send(.dismissTerminationFlow)
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
                 }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -59,7 +61,13 @@ struct ConfirmTerminationScreen: View {
                 .padding(.leading, 16)
             VStack(spacing: 4) {
                 ForEach(questions, id: \.question) { question in
-                    InfoExpandableView(title: question.question, text: question.answer)
+                    InfoExpandableView(
+                        title: question.question,
+                        text: question.answer,
+                        onMarkDownClick: { url in
+                            store.send(.goToUrl(url: url))
+                        }
+                    )
                 }
             }
         }

@@ -140,7 +140,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var terminationMessage: String? {
-        let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDotFormat ?? ""
+        let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
         if let terminationDate {
             if typeOfContract.showValidUntilInsteadOfTerminatedAt {
                 if terminatedToday {
@@ -227,7 +227,7 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement =
             .init(agreement: contract.currentAgreement.fragments.agreementFragment)
         exposureDisplayName = contract.exposureDisplayName
-        masterInceptionDate = contract.masterInceptionDate
+        masterInceptionDate = contract.masterInceptionDate.localDateToDate?.displayDateYYMMDDFormat
         terminationDate = contract.terminationDate
         selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
@@ -498,8 +498,8 @@ public struct Agreement: Codable, Hashable {
             return nil
         }
         certificateUrl = agreement.certificateUrl
-        activeFrom = agreement.activeFrom
-        activeTo = agreement.activeTo
+        activeFrom = agreement.activeFrom.localDateToDate?.displayDateYYMMDDFormat
+        activeTo = agreement.activeTo.localDateToDate?.displayDateYYMMDDFormat
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
