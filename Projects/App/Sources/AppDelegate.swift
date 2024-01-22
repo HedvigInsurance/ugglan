@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import Chat
 import Claims
 import CoreDependencies
 import Datadog
@@ -48,7 +49,6 @@ import hGraphQL
 
         self.bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in
-                ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
                 UIView.transition(
                     with: self.window,
@@ -174,9 +174,7 @@ import hGraphQL
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
-
         setupAnalyticsAndTracking()
-
         bag += Localization.Locale.$currentLocale
             .atOnce()
             .onValue { locale in
@@ -185,7 +183,6 @@ import hGraphQL
 
                 ApolloClient.initAndRegisterClient()
                     .always {
-                        ChatState.shared = ChatState()
                         self.performUpdateLanguage()
                     }
             }
@@ -312,6 +309,12 @@ extension ApolloClient {
                 let hForeverCodeService = hForeverCodeServiceOctopus()
                 let hCampaignsService = hCampaingsServiceOctopus()
                 let networkClient = NetworkClient()
+                let messagesClient = FetchMessagesClientOctopus()
+                let sendMessage = SendMessagesClientOctopus()
+                Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
+                Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
                 let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -319,7 +322,6 @@ extension ApolloClient {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
@@ -329,7 +331,6 @@ extension ApolloClient {
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                     Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                     Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
                     Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })

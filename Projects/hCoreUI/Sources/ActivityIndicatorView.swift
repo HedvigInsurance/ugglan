@@ -174,16 +174,18 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         return state
     }
     private func changeState(to state: LoadingViewWithContent.ChangeStateValue) {
-        if let animation {
-            withAnimation(animation) {
+        DispatchQueue.main.async {
+            if let animation {
+                withAnimation(animation) {
+                    self.error = state.error ?? ""
+                    self.isLoading = state.isLoading
+                    self.presentError = state.presentError
+                }
+            } else {
                 self.error = state.error ?? ""
                 self.isLoading = state.isLoading
                 self.presentError = state.presentError
             }
-        } else {
-            self.error = state.error ?? ""
-            self.isLoading = state.isLoading
-            self.presentError = state.presentError
         }
     }
 

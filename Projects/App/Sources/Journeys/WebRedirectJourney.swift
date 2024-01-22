@@ -16,14 +16,15 @@ extension AppJourney {
                 if urlComponent?.scheme == nil {
                     urlComponent?.scheme = "https"
                 }
+                let schema = urlComponent?.scheme
                 if let finalUrl = urlComponent?.url {
-                    if urlComponent?.scheme == "tel" {
-                        UIApplication.shared.open(url)
-                    } else {
+                    if schema == "https" || schema == "http" {
                         let vc = SFSafariViewController(url: finalUrl)
                         vc.modalPresentationStyle = .pageSheet
                         vc.preferredControlTintColor = .brand(.primaryText())
                         UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                    } else {
+                        UIApplication.shared.open(url)
                     }
                 }
             }
