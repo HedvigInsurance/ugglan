@@ -22,13 +22,14 @@ struct TerminationDeleteScreen: View {
             } _: { termination in
                 GenericErrorView(
                     title: L10n.General.areYouSure,
-                    description: "The selected insurance will be deleted which means it will not be activated on "
-                        + (termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""),
+                    description: L10n.terminateContractDeletionText(
+                        termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
                     icon: .triangle,
                     buttons: .init(
                         actionButton: nil,
                         actionButtonAttachedToBottom: .init(
-                            buttonTitle: "Yes, continue",
+                            buttonTitle: L10n.terminateContractDeletionContinueButton,
                             buttonAction: {
                                 onSelected()
                             }
