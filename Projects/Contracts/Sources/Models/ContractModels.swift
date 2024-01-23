@@ -227,7 +227,7 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement =
             .init(agreement: contract.currentAgreement.fragments.agreementFragment)
         exposureDisplayName = contract.exposureDisplayName
-        masterInceptionDate = contract.masterInceptionDate.localDateToDate?.displayDateYYMMDDFormat
+        masterInceptionDate = contract.masterInceptionDate.localDateToDate?.displayDateDDMMMYYYYFormat
         terminationDate = contract.terminationDate
         selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
@@ -447,7 +447,7 @@ public struct ContractRenewal: Codable, Hashable {
 
     init?(upcoming: OctopusGraphQL.AgreementFragment?) {
         guard let upcoming = upcoming, upcoming.creationCause == .renewal else { return nil }
-        self.renewalDate = upcoming.activeFrom
+        self.renewalDate = upcoming.activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
         self.certificateUrl = upcoming.certificateUrl
     }
 }
@@ -498,8 +498,8 @@ public struct Agreement: Codable, Hashable {
             return nil
         }
         certificateUrl = agreement.certificateUrl
-        activeFrom = agreement.activeFrom.localDateToDate?.displayDateYYMMDDFormat
-        activeTo = agreement.activeTo.localDateToDate?.displayDateYYMMDDFormat
+        activeFrom = agreement.activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat
+        activeTo = agreement.activeTo.localDateToDate?.displayDateDDMMMYYYYFormat
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)

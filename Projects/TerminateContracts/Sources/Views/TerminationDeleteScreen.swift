@@ -14,7 +14,6 @@ struct TerminationDeleteScreen: View {
 
     var body: some View {
         LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
-
             PresentableStoreLens(
                 TerminationContractStore.self
             ) { state in
@@ -23,7 +22,7 @@ struct TerminationDeleteScreen: View {
                 GenericErrorView(
                     title: L10n.General.areYouSure,
                     description: L10n.terminateContractDeletionText(
-                        termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        termination.config?.activeFrom ?? ""
                     ),
                     icon: .triangle,
                     buttons: .init(
