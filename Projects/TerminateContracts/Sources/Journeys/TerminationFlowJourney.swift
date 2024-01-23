@@ -51,6 +51,7 @@ public class TerminationFlowJourney {
         HostingJourney(
             TerminationContractStore.self,
             rootView: ProcessingView(
+                showSuccessScreen: false,
                 TerminationContractStore.self,
                 loading: .sendTerminationDate,
                 loadingViewText: L10n.terminateContractTerminatingProgress,
@@ -58,9 +59,7 @@ public class TerminationFlowJourney {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }
-            ),
-            style: .modally(presentationStyle: .overFullScreen),
-            options: [.defaults, .withAdditionalSpaceForProgressBar]
+            )
         ) { action in
             getScreen(for: action)
         }
@@ -101,7 +100,7 @@ public class TerminationFlowJourney {
                     store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
-            style: .detented(.large)
+            style: .modally(presentationStyle: .overFullScreen)
         ) {
             action in
             getScreenForAction(for: action)
