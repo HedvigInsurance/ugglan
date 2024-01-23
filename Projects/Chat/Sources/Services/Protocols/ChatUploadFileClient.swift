@@ -51,7 +51,8 @@ class ChatDemoClients: FetchMessagesClient, SendMessageClient {
             hasNext: true,
             id: UUID().uuidString,
             messages: messages,
-            nextUntil: nil
+            nextUntil: nil,
+            informationMessage: nil
         )
     }
 

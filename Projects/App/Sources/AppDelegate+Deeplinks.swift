@@ -3,6 +3,7 @@ import Contracts
 import CoreDependencies
 import Flow
 import Foundation
+import Home
 import Payment
 import Presentation
 import Profile
@@ -106,6 +107,9 @@ extension AppDelegate {
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }
+        } else if path == .helpCenter {
+            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+            homeStore.send(.openHelpCenter)
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
