@@ -6,23 +6,11 @@ import hCoreUI
 public class TerminationFlowJourney {
 
     public static func start(for action: TerminationNavigationAction) -> some JourneyPresentation {
-        getScreenForAction(for: .navigationAction(action: action), withHidesBack: true)
+        getScreen(for: .navigationAction(action: action)).hidesBackButton
     }
 
     @JourneyBuilder
-    static func getScreenForAction(
-        for action: TerminationContractAction,
-        withHidesBack: Bool = false
-    ) -> some JourneyPresentation {
-        if withHidesBack {
-            getScreen(for: action).hidesBackButton
-        } else {
-            getScreen(for: action).showsBackButton
-        }
-    }
-
-    @JourneyBuilder
-    static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
+    private static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
             if case .openTerminationSuccessScreen = navigationAction {
                 TerminationFlowJourney.openTerminationSuccessScreen()
@@ -47,7 +35,7 @@ public class TerminationFlowJourney {
     }
 
     @JourneyBuilder
-    static func openProgressScreen() -> some JourneyPresentation {
+    private static func openProgressScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: ProcessingView(
@@ -63,9 +51,10 @@ public class TerminationFlowJourney {
         ) { action in
             getScreen(for: action)
         }
+        .hidesBackButton
     }
 
-    static func openSetTerminationDateScreen() -> some JourneyPresentation {
+    private static func openSetTerminationDateScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: SetTerminationDate(
@@ -84,12 +73,12 @@ public class TerminationFlowJourney {
             options: [.largeNavigationBarWithoutGrabber, .blurredBackground]
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .configureTitle(L10n.setTerminationDateText)
     }
 
-    static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
+    private static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: ConfirmTerminationScreen(
@@ -103,19 +92,19 @@ public class TerminationFlowJourney {
             style: .modally(presentationStyle: .overFullScreen)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .configureTitle(L10n.terminationConfirmButton)
         .withJourneyDismissButton
     }
 
-    static func openTerminationSuccessScreen() -> some JourneyPresentation {
+    private static func openTerminationSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationSuccessScreen()
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .configureTitle(L10n.terminateContractConfirmationTitle)
         .withJourneyDismissButton
@@ -126,19 +115,19 @@ public class TerminationFlowJourney {
         }
     }
 
-    static func openTerminationFailScreen() -> some JourneyPresentation {
+    private static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationFailScreen()
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .withJourneyDismissButton
         .hidesBackButton
     }
 
-    static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
+    private static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: UpdateAppScreen(
@@ -150,13 +139,13 @@ public class TerminationFlowJourney {
             style: .detented(.large, modally: true)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .withJourneyDismissButton
         .hidesBackButton
     }
 
-    static func openTerminationDeletionScreen() -> some JourneyPresentation {
+    private static func openTerminationDeletionScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationDeleteScreen(
@@ -168,7 +157,7 @@ public class TerminationFlowJourney {
             style: .detented(.large, modally: true)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .withJourneyDismissButton
     }
