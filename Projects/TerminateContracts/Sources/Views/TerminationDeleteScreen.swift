@@ -36,10 +36,12 @@ struct TerminationDeleteScreen: View {
                             PresentableStoreLens(
                                 TerminationContractStore.self
                             ) { state in
-                                state.contractName
-                            } _: { name in
+                                state.config
+                            } _: { config in
                                 hText(
-                                    L10n.terminationContractDeletionAlertDescription(name ?? ""),
+                                    L10n.terminationContractDeletionAlertDescription(
+                                        config?.contractExposureName ?? ""
+                                    ),
                                     style: .title2
                                 )
                                 .frame(maxWidth: .infinity, alignment: .leading)

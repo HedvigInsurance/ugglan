@@ -5,31 +5,39 @@ import hGraphQL
 
 extension PillowType {
     public var bgImage: UIImage {
+        asset.image
+    }
+
+    public var name: String {
+        asset.name
+    }
+
+    private var asset: ImageAsset {
         switch self {
         case .accident:
-            return hCoreUIAssets.bigPillowAccident.image
+            return hCoreUIAssets.bigPillowAccident
         case .car:
-            return hCoreUIAssets.bigPillowCar.image
+            return hCoreUIAssets.bigPillowCar
         case .cat:
-            return hCoreUIAssets.bigPillowCat.image
+            return hCoreUIAssets.bigPillowCat
         case .dog:
-            return hCoreUIAssets.bigPillowDog.image
+            return hCoreUIAssets.bigPillowDog
         case .home:
-            return hCoreUIAssets.bigPillowHome.image
+            return hCoreUIAssets.bigPillowHome
         case .homeOwner:
-            return hCoreUIAssets.bigPillowHomeowner.image
+            return hCoreUIAssets.bigPillowHomeowner
         case .pet:
-            return hCoreUIAssets.bigPillowPet.image
+            return hCoreUIAssets.bigPillowPet
         case .rental:
-            return hCoreUIAssets.bigPillowRental.image
+            return hCoreUIAssets.bigPillowRental
         case .student:
-            return hCoreUIAssets.bigPillowStudent.image
+            return hCoreUIAssets.bigPillowStudent
         case .travel:
-            return hCoreUIAssets.bigPillowHome.image
+            return hCoreUIAssets.bigPillowHome
         case .villa:
-            return hCoreUIAssets.bigPillowVilla.image
+            return hCoreUIAssets.bigPillowVilla
         case .unknown:
-            return hCoreUIAssets.bigPillowHome.image
+            return hCoreUIAssets.bigPillowHome
         }
     }
 }

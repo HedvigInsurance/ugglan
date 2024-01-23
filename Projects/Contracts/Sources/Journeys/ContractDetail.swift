@@ -114,37 +114,46 @@ public struct ContractDetail: View {
     }
 
     public var body: some View {
-        hForm {
-            hSection {
-                ContractRow(
-                    id: id,
-                    allowDetailNavigation: false
-                )
-                .fixedSize(horizontal: false, vertical: true)
-                Picker("View", selection: $context.selected) {
-                    ForEach(ContractDetailsViews.allCases) { view in
-                        hText(view.title, style: .standardSmall).tag(view)
+        if let contract = store.state.contractForId(id) {
+            hForm {
+                hSection {
+                    ContractRow(
+                        image: contract.pillowType?.bgImage,
+                        terminationMessage: contract.terminationMessage,
+                        contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: contract.exposureDisplayName
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    Picker("View", selection: $context.selected) {
+                        ForEach(ContractDetailsViews.allCases) { view in
+                            hText(view.title, style: .standardSmall).tag(view)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.top, 8)
+                VStack(spacing: 4) {
+                    ForEach(ContractDetailsViews.allCases) { panel in
+                        if context.trigger == panel {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                        }
                     }
                 }
-                .pickerStyle(.segmented)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.top, 8)
-            VStack(spacing: 4) {
-                ForEach(ContractDetailsViews.allCases) { panel in
-                    if context.trigger == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
-                    }
+            .presentableStoreLensAnimation(.default)
+        } else {
+            EmptyView()
+                .onAppear {
+                    store.send(.dismisscontractDetailNavigation)
                 }
-            }
-            .padding(.top, 16)
-            .padding(.bottom, 8)
         }
-        .presentableStoreLensAnimation(.default)
     }
 }
 

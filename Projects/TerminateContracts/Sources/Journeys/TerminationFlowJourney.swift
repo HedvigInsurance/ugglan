@@ -34,6 +34,8 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openUpdateAppTerminationScreen()
             } else if case .openTerminationDeletionScreen = navigationAction {
                 TerminationFlowJourney.openTerminationDeletionScreen()
+            } else if case let .openConfirmTerminationScreen(config) = navigationAction {
+                openConfirmTerminationScreen(config: config)
             }
         } else if case .dismissTerminationFlow = action {
             DismissJourney()
@@ -50,7 +52,11 @@ public class TerminationFlowJourney {
                     terminationDate in
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
-                    store.send(.sendTerminationDate)
+                    if let config = store.state.config {
+                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    } else {
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    }
                 }
             ),
             style: .detented(.large)
@@ -61,8 +67,26 @@ public class TerminationFlowJourney {
         .withJourneyDismissButton
     }
 
-    static func openTerminationSuccessScreen() -> some JourneyPresentation {
+    static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: ConfirmTerminationScreen(
+                config: config,
+                onSelected: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.sendTerminationDate)
+                }
+            ),
+            style: .detented(.large)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+        .configureTitle(L10n.terminationConfirmButton)
+        .withJourneyDismissButton
+    }
 
+    static func openTerminationSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationSuccessScreen()

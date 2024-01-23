@@ -62,7 +62,7 @@ struct SetTerminationDate: View {
                             hButton.LargeButton(type: .primary) {
                                 onSelected(terminationDate)
                             } content: {
-                                hText(L10n.terminationConfirmButton, style: .body)
+                                hText(L10n.generalContinueButton, style: .body)
                             }
                         }
                     }

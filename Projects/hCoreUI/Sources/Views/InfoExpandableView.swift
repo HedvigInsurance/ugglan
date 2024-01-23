@@ -1,20 +1,23 @@
 import SwiftUI
-import hCoreUI
 
-struct InfoExpandableView: View {
+public struct InfoExpandableView: View {
+    @State var height: CGFloat = 0
     @State var selectedFields: [String] = []
     var title: String
     var text: String
+    var onMarkDownClick: ((URL) -> Void)?
 
-    init(
+    public init(
         title: String,
-        text: String
+        text: String,
+        onMarkDownClick: ((URL) -> Void)? = nil
     ) {
         self.title = title
         self.text = text
+        self.onMarkDownClick = onMarkDownClick
     }
 
-    var body: some View {
+    public var body: some View {
         hSection {
             hRow {
                 hText(title)
@@ -29,11 +32,13 @@ struct InfoExpandableView: View {
                 .transition(.opacity.animation(.easeOut))
             })
             .onTap {
-                if !selectedFields.contains(title) {
-                    selectedFields.append(title)
-                } else {
-                    if let index = selectedFields.firstIndex(of: title) {
-                        selectedFields.remove(at: index)
+                withAnimation(.spring) {
+                    if !selectedFields.contains(title) {
+                        selectedFields.append(title)
+                    } else {
+                        if let index = selectedFields.firstIndex(of: title) {
+                            selectedFields.remove(at: index)
+                        }
                     }
                 }
             }
@@ -42,9 +47,15 @@ struct InfoExpandableView: View {
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
-                        hText(text)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .foregroundColor(hTextColor.secondary)
+                        CustomTextViewRepresentable(
+                            text: text,
+                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fontSize: .body,
+                            height: $height
+                        ) { url in
+                            onMarkDownClick?(url)
+                        }
+                        .frame(height: height)
                     }
                     .verticalPadding(0)
                     .padding(.bottom, 24)
