@@ -2,7 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct ProcessingView<S: Store & StoreLoading>: View {
+public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
     @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
     var store: S.Type
@@ -17,6 +17,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
     var onErrorCancelAction: (() -> Void)?
     var onLoadingDismiss: (() -> Void)?
 
+    var customBottomSuccessView: T?
+    var errorViewButtons: ErrorViewButtonConfig?
+
     public init(
         showSuccessScreen: Bool? = true,
         _ storeType: S.Type,
@@ -27,7 +30,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         successViewButtonAction: (() -> Void)? = nil,
         onAppearLoadingView: (() -> Void)? = nil,
         onErrorCancelAction: (() -> Void)? = nil,
-        onDismiss: (() -> Void)? = nil
+        onLoadingDismiss: (() -> Void)? = nil,
+        customBottomSuccessView: T? = nil,
+        errorViewButtons: ErrorViewButtonConfig? = nil
     ) {
         self.showSuccessScreen = showSuccessScreen ?? true
         self.store = storeType
@@ -38,7 +43,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         self.successViewButtonAction = successViewButtonAction
         self.onAppearLoadingView = onAppearLoadingView
         self.onErrorCancelAction = onErrorCancelAction
-        self.onLoadingDismiss = onDismiss
+        self.onLoadingDismiss = onLoadingDismiss
+        self.customBottomSuccessView = customBottomSuccessView
+        self.errorViewButtons = errorViewButtons
     }
 
     public var body: some View {
@@ -94,17 +101,20 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 Spacer()
                 Spacer()
             }
-            hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .ghost) {
-                        successViewButtonAction?()
-                    } content: {
-                        hText(L10n.generalCloseButton)
+            if customBottomSuccessView != nil {
+                customBottomSuccessView
+            } else {
+                hSection {
+                    VStack(spacing: 8) {
+                        hButton.LargeButton(type: .ghost) {
+                            successViewButtonAction?()
+                        } content: {
+                            hText(L10n.generalCloseButton)
+                        }
                     }
                 }
+                .sectionContainerStyle(.transparent)
             }
-            .sectionContainerStyle(.transparent)
-
         }
     }
 
@@ -112,14 +122,15 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
             GenericErrorView(
-                buttons: .init(
-                    dismissButton: .init(
-                        buttonTitle: L10n.generalCancelButton,
-                        buttonAction: {
-                            onErrorCancelAction?()
-                        }
+                buttons: errorViewButtons
+                    ?? .init(
+                        dismissButton: .init(
+                            buttonTitle: L10n.generalCancelButton,
+                            buttonAction: {
+                                onErrorCancelAction?()
+                            }
+                        )
                     )
-                )
             )
         }
     }

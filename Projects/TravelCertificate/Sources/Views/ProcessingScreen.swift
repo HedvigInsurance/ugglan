@@ -6,108 +6,47 @@ import hCoreUI
 struct ProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     var body: some View {
-        BlurredProgressOverlay {
-            PresentableLoadingStoreLens(
-                TravelInsuranceStore.self,
-                loadingState: .postTravelInsurance
-            ) {
-                loadingView
-            } error: { error in
-                errorView
-            } success: {
-                successView
-            }
-        }
-        .presentableStoreLensAnimation(.default)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                withAnimation(.easeInOut(duration: 1.25)) {
-                    vm.progress = 1
-                }
-            }
-        }
+        ProcessingView(
+            showSuccessScreen: true,
+            TravelInsuranceStore.self,
+            loading: .postTravelInsurance,
+            loadingViewText: L10n.TravelCertificate.generating,
+            successViewTitle: L10n.TravelCertificate.travelCertificateReady,
+            successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
+            onErrorCancelAction: {
+                vm.store.send(.postTravelInsuranceForm)
+            },
+            customBottomSuccessView: bottomSuccessView
+        )
     }
 
-    private var successView: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                Spacer()
-                VStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.tick.image)
-                        .foregroundColor(hSignalColor.greenElement)
-                    VStack(spacing: 0) {
-                        hText(L10n.TravelCertificate.travelCertificateReady)
-                        hText(L10n.TravelCertificate.weHaveSentCopyToYourEmail).foregroundColor(hTextColor.secondary)
-                            .multilineTextAlignment(.center)
+    private var bottomSuccessView: some View {
+        hSection {
+            VStack(spacing: 16) {
+                InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
+                VStack(spacing: 8) {
+                    hButton.LargeButton(type: .primary) {
+                        Task {
+                            await vm.presentShare()
+                        }
+                    } content: {
+                        hText(L10n.TravelCertificate.download)
                     }
-                    .padding(.horizontal, 16)
-                }
-                Spacer()
-                Spacer()
-                Spacer()
-            }
-            hSection {
-                VStack(spacing: 16) {
-                    InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                    VStack(spacing: 8) {
-                        hButton.LargeButton(type: .primary) {
-                            Task {
-                                await vm.presentShare()
-                            }
-                        } content: {
-                            hText(L10n.TravelCertificate.download)
-                        }
-                        .trackLoading(TravelInsuranceStore.self, action: .downloadCertificate)
+                    .trackLoading(TravelInsuranceStore.self, action: .downloadCertificate)
 
-                        hButton.LargeButton(type: .ghost) {
-                            vm.store.send(.navigation(.dismissCreateTravelCertificate))
-                        } content: {
-                            hText(L10n.generalCloseButton)
-                        }
+                    hButton.LargeButton(type: .ghost) {
+                        vm.store.send(.navigation(.dismissCreateTravelCertificate))
+                    } content: {
+                        hText(L10n.generalCloseButton)
                     }
                 }
             }
-            .sectionContainerStyle(.transparent)
-
         }
-    }
-
-    private var errorView: some View {
-        ZStack {
-            BackgroundView().ignoresSafeArea()
-            GenericErrorView(
-                description: L10n.General.errorBody,
-                useForm: true,
-                buttons: .init(
-                    actionButton: .init(buttonAction: {
-                        vm.store.send(.postTravelInsuranceForm)
-                    }),
-                    dismissButton: nil
-                )
-            )
-            .hWithoutTitle
-        }
-    }
-
-    private var loadingView: some View {
-        VStack {
-            Spacer()
-            Spacer()
-            hText(L10n.TravelCertificate.generating)
-            ProgressView(value: vm.progress)
-                .tint(hTextColor.primary)
-                .frame(width: UIScreen.main.bounds.width * 0.53)
-            Spacer()
-            Spacer()
-            Spacer()
-        }
+        .sectionContainerStyle(.transparent)
     }
 }
 
 class ProcessingViewModel: ObservableObject {
-    @Published var progress: Float = 0
     @PresentableStore var store: TravelInsuranceStore
 
     func presentShare() async {
