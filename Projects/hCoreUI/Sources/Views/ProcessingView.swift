@@ -59,7 +59,12 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
                 errorView
             } success: {
                 if showSuccessScreen {
-                    successView
+                    SuccessScreen(
+                        successViewTitle: successViewTitle ?? "",
+                        successViewBody: successViewBody ?? "",
+                        customBottomSuccessView: customBottomSuccessView,
+                        successViewButtonAction: successViewButtonAction ?? {}
+                    )
                 } else {
                     loadingView
                         .onAppear {
@@ -78,45 +83,45 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
         }
     }
 
-    private var successView: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                Spacer()
-                VStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.tick.image)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(hSignalColor.greenElement)
-                    VStack(spacing: 0) {
-                        hText(successViewTitle ?? "")
-                        hText(successViewBody ?? "")
-                            .foregroundColor(hTextColor.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, 16)
-                }
-                Spacer()
-                Spacer()
-                Spacer()
-            }
-            if customBottomSuccessView != nil {
-                customBottomSuccessView
-            } else {
-                hSection {
-                    VStack(spacing: 8) {
-                        hButton.LargeButton(type: .ghost) {
-                            successViewButtonAction?()
-                        } content: {
-                            hText(L10n.generalCloseButton)
-                        }
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-        }
-    }
+    //    private var successView: some View {
+    //        ZStack(alignment: .bottom) {
+    //            BackgroundView().ignoresSafeArea()
+    //            VStack {
+    //                Spacer()
+    //                Spacer()
+    //                VStack(spacing: 16) {
+    //                    Image(uiImage: hCoreUIAssets.tick.image)
+    //                        .resizable()
+    //                        .frame(width: 24, height: 24)
+    //                        .foregroundColor(hSignalColor.greenElement)
+    //                    VStack(spacing: 0) {
+    //                        hText(successViewTitle ?? "")
+    //                        hText(successViewBody ?? "")
+    //                            .foregroundColor(hTextColor.secondary)
+    //                            .multilineTextAlignment(.center)
+    //                    }
+    //                    .padding(.horizontal, 16)
+    //                }
+    //                Spacer()
+    //                Spacer()
+    //                Spacer()
+    //            }
+    //            if customBottomSuccessView != nil {
+    //                customBottomSuccessView
+    //            } else {
+    //                hSection {
+    //                    VStack(spacing: 8) {
+    //                        hButton.LargeButton(type: .ghost) {
+    //                            successViewButtonAction?()
+    //                        } content: {
+    //                            hText(L10n.generalCloseButton)
+    //                        }
+    //                    }
+    //                }
+    //                .sectionContainerStyle(.transparent)
+    //            }
+    //        }
+    //    }
 
     private var errorView: some View {
         ZStack(alignment: .bottom) {

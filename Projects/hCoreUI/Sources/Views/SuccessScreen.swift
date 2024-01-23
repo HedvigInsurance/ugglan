@@ -2,29 +2,95 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct SuccessScreen: View {
+public struct SuccessScreen<T>: View where T: View {
     let title: String
-    public init(title: String) {
+    let subTitle: String?
+    let withButtons: Bool
+    let customBottomSuccessView: T?
+    let successViewButtonAction: (() -> Void)?
+
+    public init(
+        title: String
+    ) {
         self.title = title
+        self.withButtons = false
+        self.subTitle = nil
+        self.customBottomSuccessView = nil
+        self.successViewButtonAction = nil
     }
+
+    public init(
+        successViewTitle: String,
+        successViewBody: String,
+        customBottomSuccessView: T? = nil,
+        successViewButtonAction: @escaping () -> Void
+    ) {
+        self.withButtons = true
+        self.title = successViewTitle
+        self.subTitle = successViewBody
+        self.customBottomSuccessView = customBottomSuccessView
+        self.successViewButtonAction = successViewButtonAction
+    }
+
     public var body: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                Image(uiImage: hCoreUIAssets.tick.image)
-                    .resizable()
-                    .foregroundColor(hSignalColor.greenElement)
-                    .frame(width: 24, height: 24)
-                hText(title)
-                Spacer()
+        if withButtons {
+            ZStack(alignment: .bottom) {
+                BackgroundView().ignoresSafeArea()
+                VStack {
+                    Spacer()
+                    Spacer()
+                    VStack(spacing: 16) {
+                        Image(uiImage: hCoreUIAssets.tick.image)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(hSignalColor.greenElement)
+                        VStack(spacing: 0) {
+                            hText(title)
+                            hText(subTitle ?? "")
+                                .foregroundColor(hTextColor.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                }
+                if customBottomSuccessView != nil {
+                    customBottomSuccessView
+                } else {
+                    hSection {
+                        VStack(spacing: 8) {
+                            hButton.LargeButton(type: .ghost) {
+                                successViewButtonAction?()
+                            } content: {
+                                hText(L10n.generalCloseButton)
+                            }
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
             }
+        } else {
+            hSection {
+                VStack(spacing: 20) {
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.tick.image)
+                        .resizable()
+                        .foregroundColor(hSignalColor.greenElement)
+                        .frame(width: 24, height: 24)
+                    hText(title)
+                    Spacer()
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 }
+
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SuccessScreen(title: "SUCCESS")
+        SuccessScreen<EmptyView>(title: "SUCCESS")
     }
 }
 
