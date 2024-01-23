@@ -17,8 +17,9 @@ class ChatScreenViewModel: ObservableObject {
     private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-
-    init() {
+    private let topicType: HelpCenterTopicType?
+    init(topicType: HelpCenterTopicType?) {
+        self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)

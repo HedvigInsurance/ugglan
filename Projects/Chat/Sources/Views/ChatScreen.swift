@@ -124,5 +124,5 @@ struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init())
+    return ChatScreen(vm: .init(topicType: nil))
 }

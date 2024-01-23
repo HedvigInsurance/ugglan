@@ -42,7 +42,7 @@ public struct HelpCenterStartView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                SupportView()
+                SupportView(topic: nil)
                     .padding(.top, 40)
             }
         }
@@ -143,33 +143,12 @@ public struct HelpCenterStartView: View {
 extension HelpCenterStartView {
     public static var journey: some JourneyPresentation {
         let commonQuestions: [Question] = [
-            .init(
-                question: L10n.hcClaimsQ01,
-                answer: L10n.hcClaimsA01,
-                relatedQuestions: []
-            ),
-            .init(
-                question: L10n.hcInsuranceQ05,
-                answer: L10n.hcInsuranceA05,
-                relatedQuestions: []
-            ),
-            .init(
-                question: L10n.hcPaymentsQ01,
-                answer: L10n.hcPaymentsA01,
-                relatedQuestions: []
-            ),
-            .init(
-                question: L10n.hcInsuranceQ03,
-                answer: L10n.hcInsuranceA03,
-                relatedQuestions: []
-            ),
-            .init(
-                question: L10n.hcInsuranceQ01,
-                answer: L10n.hcInsuranceA01,
-                relatedQuestions: []
-            ),
+            ClaimsQuestions.q1,
+            InsuranceQuestions.q5,
+            PaymentsQuestions.q1,
+            InsuranceQuestions.q3,
+            InsuranceQuestions.q1,
         ]
-
         return HostingJourney(
             HomeStore.self,
             rootView: HelpCenterStartView(
@@ -181,332 +160,104 @@ extension HelpCenterStartView {
                         commonTopics: [
                             .init(
                                 title: L10n.hcPaymentsTitle,
+                                type: .payments,
                                 commonQuestions: [
-                                    .init(
-                                        question: L10n.hcPaymentsQ01,
-                                        answer: L10n.hcPaymentsA01,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ02,
-                                        answer: L10n.hcPaymentsA02,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ03,
-                                        answer: L10n.hcPaymentsA03,
-                                        relatedQuestions: []
-                                    ),
+                                    PaymentsQuestions.q1,
+                                    PaymentsQuestions.q2,
+                                    PaymentsQuestions.q3,
                                 ],
                                 allQuestions: [
-                                    .init(
-                                        question: L10n.hcPaymentsQ04,
-                                        answer: L10n.hcPaymentsA04,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ05,
-                                        answer: L10n.hcPaymentsA05,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ06,
-                                        answer: L10n.hcPaymentsA06,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ07,
-                                        answer: L10n.hcPaymentsA07,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ08,
-                                        answer: L10n.hcPaymentsA08,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ09,
-                                        answer: L10n.hcPaymentsA09,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ10,
-                                        answer: L10n.hcPaymentsA10,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ11,
-                                        answer: L10n.hcPaymentsA11,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ12,
-                                        answer: L10n.hcPaymentsA12,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ13,
-                                        answer: L10n.hcPaymentsA13,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcPaymentsQ14,
-                                        answer: L10n.hcPaymentsA14,
-                                        relatedQuestions: []
-                                    ),
+                                    PaymentsQuestions.q4,
+                                    PaymentsQuestions.q5,
+                                    PaymentsQuestions.q6,
+                                    PaymentsQuestions.q7,
+                                    PaymentsQuestions.q8,
+                                    PaymentsQuestions.q9,
+                                    PaymentsQuestions.q10,
+                                    PaymentsQuestions.q11,
+                                    PaymentsQuestions.q12,
+                                    PaymentsQuestions.q13,
+                                    PaymentsQuestions.q14,
                                 ]
                             ),
                             .init(
                                 title: L10n.hcClaimsTitle,
+                                type: .claims,
                                 commonQuestions: [
-                                    .init(
-                                        question: L10n.hcClaimsQ01,
-                                        answer: L10n.hcClaimsA01,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ02,
-                                        answer: L10n.hcClaimsA02,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ03,
-                                        answer: L10n.hcClaimsA03,
-                                        relatedQuestions: []
-                                    ),
+                                    ClaimsQuestions.q1,
+                                    ClaimsQuestions.q2,
+                                    ClaimsQuestions.q3,
                                 ],
                                 allQuestions: [
-                                    .init(
-                                        question: L10n.hcClaimsQ04,
-                                        answer: L10n.hcClaimsA04,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ05,
-                                        answer: L10n.hcClaimsA05,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ06,
-                                        answer: L10n.hcClaimsA06,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ07,
-                                        answer: L10n.hcClaimsA07,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ08,
-                                        answer: L10n.hcClaimsA08,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ09,
-                                        answer: L10n.hcClaimsA09,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ10,
-                                        answer: L10n.hcClaimsA10,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ11,
-                                        answer: L10n.hcClaimsA11,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcClaimsQ12,
-                                        answer: L10n.hcClaimsA12,
-                                        relatedQuestions: []
-                                    ),
+                                    ClaimsQuestions.q4,
+                                    ClaimsQuestions.q5,
+                                    ClaimsQuestions.q6,
+                                    ClaimsQuestions.q7,
+                                    ClaimsQuestions.q8,
+                                    ClaimsQuestions.q9,
+                                    ClaimsQuestions.q10,
+                                    ClaimsQuestions.q11,
+                                    ClaimsQuestions.q12,
                                 ]
                             ),
                             .init(
                                 title: L10n.hcCoverageTitle,
+                                type: .coverage,
                                 commonQuestions: [
-                                    .init(
-                                        question: L10n.hcCoverageQ01,
-                                        answer: L10n.hcCoverageA01,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ02,
-                                        answer: L10n.hcCoverageA02,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ03,
-                                        answer: L10n.hcCoverageA03,
-                                        relatedQuestions: []
-                                    ),
+                                    CoverageQuestions.q1,
+                                    CoverageQuestions.q2,
+                                    CoverageQuestions.q3,
                                 ],
                                 allQuestions: [
-                                    .init(
-                                        question: L10n.hcCoverageQ04,
-                                        answer: L10n.hcCoverageA04,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ05,
-                                        answer: L10n.hcCoverageA05,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ06,
-                                        answer: L10n.hcCoverageA06,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ07,
-                                        answer: L10n.hcCoverageA07,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ08,
-                                        answer: L10n.hcCoverageA08,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ09,
-                                        answer: L10n.hcCoverageA09(0),
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ10,
-                                        answer: L10n.hcCoverageA10,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ11,
-                                        answer: L10n.hcCoverageA11,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ12,
-                                        answer: L10n.hcCoverageA12(0),
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ13,
-                                        answer: L10n.hcCoverageA13,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ14,
-                                        answer: L10n.hcCoverageA14,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ15,
-                                        answer: L10n.hcCoverageA15,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ17,
-                                        answer: L10n.hcCoverageA17,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ18,
-                                        answer: L10n.hcCoverageA18,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ19,
-                                        answer: L10n.hcCoverageA19,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ20,
-                                        answer: L10n.hcCoverageA20,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ21,
-                                        answer: L10n.hcCoverageA21,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcCoverageQ22,
-                                        answer: L10n.hcCoverageA22,
-                                        relatedQuestions: []
-                                    ),
+                                    CoverageQuestions.q4,
+                                    CoverageQuestions.q5,
+                                    CoverageQuestions.q6,
+                                    CoverageQuestions.q7,
+                                    CoverageQuestions.q8,
+                                    CoverageQuestions.q9,
+                                    CoverageQuestions.q10,
+                                    CoverageQuestions.q11,
+                                    CoverageQuestions.q12,
+                                    CoverageQuestions.q13,
+                                    CoverageQuestions.q14,
+                                    CoverageQuestions.q15,
+                                    CoverageQuestions.q16,
+                                    CoverageQuestions.q17,
+                                    CoverageQuestions.q18,
+                                    CoverageQuestions.q19,
+                                    CoverageQuestions.q20,
+                                    CoverageQuestions.q21,
+                                    CoverageQuestions.q22,
                                 ]
                             ),
                             .init(
                                 title: L10n.hcInsurancesTitle,
+                                type: .myInsurance,
                                 commonQuestions: [
-                                    .init(
-                                        question: L10n.hcInsuranceQ01,
-                                        answer: L10n.hcInsuranceA01,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ02,
-                                        answer: L10n.hcInsuranceA02,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ03,
-                                        answer: L10n.hcInsuranceA03,
-                                        relatedQuestions: []
-                                    ),
+                                    InsuranceQuestions.q1,
+                                    InsuranceQuestions.q2,
+                                    InsuranceQuestions.q3,
                                 ],
                                 allQuestions: [
-                                    .init(
-                                        question: L10n.hcInsuranceQ04,
-                                        answer: L10n.hcInsuranceA04,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ05,
-                                        answer: L10n.hcInsuranceA05,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ06,
-                                        answer: L10n.hcInsuranceA06,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ07,
-                                        answer: L10n.hcInsuranceA07,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcInsuranceQ08,
-                                        answer: L10n.hcInsuranceA08,
-                                        relatedQuestions: []
-                                    ),
+                                    InsuranceQuestions.q4,
+                                    InsuranceQuestions.q5,
+                                    InsuranceQuestions.q6,
+                                    InsuranceQuestions.q7,
+                                    InsuranceQuestions.q8,
+                                    InsuranceQuestions.q9,
+                                    InsuranceQuestions.q10,
                                 ]
                             ),
                             .init(
                                 title: L10n.hcGeneralTitle,
+                                type: .other,
                                 commonQuestions: [
-                                    .init(
-                                        question: L10n.hcOtherQ01,
-                                        answer: L10n.hcOtherA01,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcOtherQ02,
-                                        answer: L10n.hcOtherA02,
-                                        relatedQuestions: []
-                                    ),
-                                    .init(
-                                        question: L10n.hcOtherQ03,
-                                        answer: L10n.hcOtherA03,
-                                        relatedQuestions: []
-                                    ),
+                                    OtherQuestions.q1,
+                                    OtherQuestions.q2,
+                                    OtherQuestions.q3,
                                 ],
                                 allQuestions: [
-                                    .init(
-                                        question: L10n.hcOtherQ04,
-                                        answer: L10n.hcOtherA04,
-                                        relatedQuestions: []
-                                    )
+                                    OtherQuestions.q4
                                 ]
                             ),
                         ],
@@ -536,26 +287,31 @@ extension HelpCenterStartView {
         .init(
             question: "When do you charge for my insurance?",
             answer: "",
+            topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "When do you charge for my insurance?",
             answer: "",
+            topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "How do I make a claim?",
             answer: "",
+            topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "How can I view my payment history?",
             answer: "",
+            topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "What should I do if my payment fails?",
             answer: "",
+            topicType: .payments,
             relatedQuestions: []
         ),
     ]
@@ -569,35 +325,22 @@ extension HelpCenterStartView {
                 commonTopics: [
                     .init(
                         title: "Payments",
+                        type: .payments,
                         commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "Claims",
+                        type: .claims,
                         commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
                     .init(
                         title: "My insurance",
+                        type: .myInsurance,
                         commonQuestions: commonQuestions,
                         allQuestions: []
                     ),
-                    .init(
-                        title: "Co-insured",
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-                    .init(
-                        title: "FirstVet",
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-                    .init(
-                        title: "Campaigns",
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-
                 ],
                 commonQuestions: commonQuestions
             )

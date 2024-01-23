@@ -138,6 +138,7 @@ struct QuestionsItems: View {
 }
 
 struct SupportView: View {
+    let topic: HelpCenterTopicType?
     @PresentableStore var store: HomeStore
 
     var body: some View {
@@ -150,7 +151,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    store.send(.openFreeTextChat)
+                    store.send(.openFreeTextChat(from: topic))
                 } content: {
                     hText(L10n.hcChatButton)
                 }
