@@ -325,7 +325,8 @@ struct ContractInformationView: View {
                                         image: contract?.pillowType,
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
-                                        contractExposureName: contract?.exposureDisplayName ?? ""
+                                        contractExposureName: contract?.exposureDisplayName ?? "",
+                                        activeFrom: contract?.currentAgreement?.activeFrom
                                     )
                                 )
                             )

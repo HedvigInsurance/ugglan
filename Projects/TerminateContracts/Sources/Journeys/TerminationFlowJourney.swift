@@ -85,7 +85,11 @@ public class TerminationFlowJourney {
                 config: config,
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.sendTerminationDate)
+                    if store.state.config?.isDeletion ?? false {
+                        store.send(.deleteTermination)
+                    } else {
+                        store.send(.sendTerminationDate)
+                    }
                     store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
@@ -151,10 +155,16 @@ public class TerminationFlowJourney {
             rootView: TerminationDeleteScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.deleteTermination)
+                    if let config = store.state.config {
+                        store.send(.setTerminationisDeletion)
+                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    } else {
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    }
                 }
             ),
-            style: .detented(.large, modally: true)
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBarWithoutGrabber, .blurredBackground]
         ) {
             action in
             getScreen(for: action)

@@ -20,7 +20,9 @@ struct TerminationSuccessScreen: View {
                             contractDisplayName: store.state.config?.contractDisplayName ?? "",
                             contractExposureName: store.state.config?.contractExposureName ?? ""
                         ),
-                        terminationDate: termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        terminationDate: (store.state.config?.isDeletion ?? false)
+                            ? Date().displayDateDDMMMYYYYFormat ?? ""
+                            : termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     )
 
                     hSection {

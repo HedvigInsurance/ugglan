@@ -73,6 +73,8 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
+        case .setTerminationisDeletion:
+            newState.config?.isDeletion = true
         default:
             break
         }
