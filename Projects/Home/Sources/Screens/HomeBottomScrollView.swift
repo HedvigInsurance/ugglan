@@ -84,9 +84,13 @@ class HomeButtonScrollViewModel: ObservableObject {
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
         let item = InfoCardView(with: item)
         if addItem {
-            self.items.insert(item)
+            _ = withAnimation {
+                self.items.insert(item)
+            }
         } else {
-            self.items.remove(item)
+            _ = withAnimation {
+                self.items.remove(item)
+            }
         }
     }
 
@@ -129,7 +133,9 @@ class HomeButtonScrollViewModel: ObservableObject {
                 for importantMessage in importantMessages {
                     oldItems.insert(.init(with: .importantMessage(message: importantMessage.id)))
                 }
-                self.items = oldItems
+                withAnimation {
+                    self.items = oldItems
+                }
             })
             .store(in: &cancellables)
         let itemsToShow = homeStore.state.getImportantMessageToShow()

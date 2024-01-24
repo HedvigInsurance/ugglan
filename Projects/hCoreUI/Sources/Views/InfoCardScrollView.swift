@@ -46,7 +46,9 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
             scrollView.delegate = vm
             scrollView.clipsToBounds = false
         }
-        hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
+        if items.count > 1 {
+            hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
+        }
 
     }
 }
