@@ -154,8 +154,6 @@ final class TravelInsuranceStore: LoadingStateStore<
                 break
             case .openCoinsured:
                 break
-            case .openSomethingWentWrongScreen:
-                break
             case .dismissAddUpdateCoinsured:
                 break
             case .dismissCreateTravelCertificate:
@@ -163,6 +161,8 @@ final class TravelInsuranceStore: LoadingStateStore<
             case .openFreeTextChat:
                 break
             case .openProcessingScreen:
+                break
+            case .goBack:
                 break
             }
         }

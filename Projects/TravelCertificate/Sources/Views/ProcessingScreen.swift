@@ -14,7 +14,7 @@ struct ProcessingScreen: View {
             successViewTitle: L10n.TravelCertificate.travelCertificateReady,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             onErrorCancelAction: {
-                vm.store.send(.postTravelInsuranceForm)
+                vm.store.send(.navigation(.goBack))
             },
             customBottomSuccessView: bottomSuccessView
         )

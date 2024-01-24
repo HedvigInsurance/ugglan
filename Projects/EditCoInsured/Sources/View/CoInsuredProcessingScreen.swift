@@ -35,7 +35,7 @@ struct CoInsuredProcessingScreen: View {
                 missingContractAlert()
             },
             onErrorCancelAction: {
-                missingContractAlert()
+                store.send(.coInsuredNavigationAction(action: .dismissEdit))
             },
             customBottomSuccessView: customBottomSuccessView
         )

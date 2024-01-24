@@ -28,8 +28,6 @@ public class EditCoInsuredJourney {
                 openCoInsuredSelectScreen(contractId: contractId)
             } else if case let .openMissingCoInsuredAlert(config) = navigationAction {
                 openMissingCoInsuredAlert(config: config)
-            } else if case .openErrorScreen = navigationAction {
-                openGenericErrorScreen()
             } else if case let .openSelectInsuranceScreen(configs) = navigationAction {
                 openSelectInsurance(configs: configs)
             }
@@ -120,7 +118,11 @@ public class EditCoInsuredJourney {
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
-            getScreen(for: action)
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
     }
 
