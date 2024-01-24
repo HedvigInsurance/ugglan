@@ -49,7 +49,7 @@ public struct InfoExpandableView: View {
                     hRow {
                         CustomTextViewRepresentable(
                             text: text,
-                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fixedWidth: UIScreen.main.bounds.width - 56,
                             height: $height
                         ) { url in
                             onMarkDownClick?(url)
@@ -66,6 +66,6 @@ public struct InfoExpandableView: View {
 
 struct InfoExpandableView_Previews: PreviewProvider {
     static var previews: some View {
-        InfoExpandableView(title: "title", text: "text")
+        InfoExpandableView(title: "title", text: "long long long long long long long long long long")
     }
 }
