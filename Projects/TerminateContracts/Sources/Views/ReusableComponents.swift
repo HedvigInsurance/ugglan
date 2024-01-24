@@ -22,8 +22,13 @@ struct DisplayContractTable: View {
 
 struct DisplayQuestionView: View {
     @PresentableStore var store: TerminationContractStore
-    let questions: [TerminationQuestion] = [
+    let terminationQuestions: [TerminationQuestion] = [
         TerminationQuestion(question: L10n.terminationQ01, answer: L10n.terminationA01),
+        TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
+        TerminationQuestion(question: L10n.terminationQ03, answer: L10n.terminationA03),
+    ]
+
+    let deletionQuestions: [TerminationQuestion] = [
         TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
         TerminationQuestion(question: L10n.terminationQ03, answer: L10n.terminationA03),
     ]
@@ -33,7 +38,10 @@ struct DisplayQuestionView: View {
             hText(L10n.terminateContractCommonQuestions)
                 .padding(.leading, 16)
             VStack(spacing: 4) {
-                ForEach(questions, id: \.question) { question in
+                ForEach(
+                    (store.state.config?.isDeletion ?? false) ? deletionQuestions : terminationQuestions,
+                    id: \.question
+                ) { question in
                     InfoExpandableView(title: question.question, text: question.answer) { url in
                         store.send(.goToUrl(url: url))
                     }

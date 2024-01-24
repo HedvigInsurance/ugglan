@@ -42,11 +42,7 @@ public class TerminationFlowJourney {
                 showSuccessScreen: false,
                 TerminationContractStore.self,
                 loading: .sendTerminationDate,
-                loadingViewText: L10n.terminateContractTerminatingProgress,
-                onDismiss: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissTerminationFlow)
-                }
+                loadingViewText: L10n.terminateContractTerminatingProgress
             )
         ) { action in
             getScreen(for: action)
