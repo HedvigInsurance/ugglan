@@ -6,6 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct SetTerminationDate: View {
+    @PresentableStore var store: TerminationContractStore
     @State private var terminationDate = Date()
     let onSelected: (Date) -> Void
 
@@ -17,62 +18,44 @@ struct SetTerminationDate: View {
 
     var body: some View {
         LoadingViewWithContent(TerminationContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
-            hForm {}
-                .hDisableScroll
-                .hFormTitle(.small, .title1, L10n.setTerminationDateText)
-                .hFormAttachToBottom {
-                    VStack(spacing: 16) {
-                        hSection {
-                            hRow {
-                                HStack {
-                                    hText(L10n.terminationDateText, style: .body)
-                                    Spacer()
-                                    hText(terminationDate.displayDateDotFormat ?? "", style: .body)
-                                        .foregroundColor(hTextColor.secondary)
-                                }
-                                .padding(.bottom, 8)
-                                .padding(.horizontal, 8)
-                            }
-                            .noSpacing()
-                            .slideUpFadeAppearAnimation(delay: 0.4)
-
-                            PresentableStoreLens(
-                                TerminationContractStore.self,
-                                getter: { state in
-                                    state.terminationDateStep
-                                }
-                            ) { termination in
-                                DatePicker(
-                                    L10n.terminationDateText,
-                                    selection: self.$terminationDate.animation(.easeInOut(duration: 0.2)),
-                                    in: convertDateFormat(
-                                        inputDate: termination?.minDate ?? ""
-                                    )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
-                                    displayedComponents: [.date]
-                                )
-                                .environment(
-                                    \.locale,
-                                    Locale.init(identifier: Localization.Locale.currentLocale.rawValue)
-                                )
-                                .datePickerStyle(.graphical)
-                                .slideUpFadeAppearAnimation(delay: 0.4)
-                            }
-                        }
-                        hSection {
-                            hButton.LargeButton(type: .primary) {
-                                onSelected(terminationDate)
-                            } content: {
-                                hText(L10n.generalContinueButton, style: .body)
-                            }
-                        }
+            hForm {
+                PresentableStoreLens(
+                    TerminationContractStore.self,
+                    getter: { state in
+                        state.terminationDateStep
                     }
-                    .padding(.bottom, 16)
-                    .sectionContainerStyle(.transparent)
+                ) { termination in
+                    if let termination {
+                        DatePickerView(
+                            continueAction: {
+                                self.onSelected(terminationDate)
+                            },
+                            cancelAction: {
+                                store.send(.dismissTerminationFlow)
+                            },
+                            date: $terminationDate,
+                            config: .init(
+                                minDate: termination.minDate.localDateToDate,
+                                maxDate: termination.maxDate.localDateToDate,
+                                initialySelectedValue: Date(),
+                                placeholder: "",
+                                title: L10n.terminationDateText,
+                                showAsList: false,
+                                dateFormatter: .none,
+                                buttonText: L10n.generalContinueButton
+                            )
+                        )
+                    }
                 }
+
+            }
+            .hDisableScroll
         }
     }
+}
 
-    func convertDateFormat(inputDate: String) -> Date {
-        return inputDate.localDateToDate ?? Date()
-    }
+#Preview{
+    SetTerminationDate(onSelected: { date in
+
+    })
 }

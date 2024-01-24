@@ -248,6 +248,9 @@ extension PresentationOptions {
     public static let largeNavigationBar: PresentationOptions = [
         embedInNavigationController, .preffersLargerNavigationBar, .wantsGrabber,
     ]
+    public static let largeNavigationBarWithoutGrabber: PresentationOptions = [
+        embedInNavigationController, .preffersLargerNavigationBar,
+    ]
 }
 
 extension UIViewController {
