@@ -175,7 +175,6 @@ import hGraphQL
             return InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
-        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         bag += Localization.Locale.$currentLocale
             .onValue { [weak self] locale in
                 ApplicationState.setPreferredLocale(locale)
