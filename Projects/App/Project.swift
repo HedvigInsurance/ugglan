@@ -59,14 +59,17 @@ let notificationConfiguration: [Configuration] = [
         settings: [
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
-        ]
+        ],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
     .release(
         name: "Release",
         settings: [
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
-        ]
+        ],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+
     ),
 ]
 
