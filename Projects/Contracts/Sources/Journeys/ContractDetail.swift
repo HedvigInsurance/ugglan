@@ -1,3 +1,4 @@
+import Combine
 import Flow
 import Form
 import Foundation
@@ -59,7 +60,7 @@ class TabControllerContext: ObservableObject {
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
     @EnvironmentObject var context: TabControllerContext
-
+    @StateObject private var vm: ContractDetailsViewModel
     var id: String
     var title: String
 
@@ -89,6 +90,7 @@ public struct ContractDetail: View {
     ) {
         self.id = id
         self.title = title
+        self._vm = .init(wrappedValue: .init(id: id))
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(id: id)
         contractDocuments = ContractDocumentsView(id: id)
@@ -148,11 +150,9 @@ public struct ContractDetail: View {
                 .padding(.bottom, 8)
             }
             .presentableStoreLensAnimation(.default)
-        } else {
-            EmptyView()
-                .onAppear {
-                    store.send(.dismisscontractDetailNavigation)
-                }
+            .introspectViewController { [weak vm] vc in
+                vm?.vc = vc
+            }
         }
     }
 }
@@ -194,7 +194,7 @@ extension ContractDetail {
                         buttonTitle: L10n.generalCloseButton,
                         buttonAction: {
                             let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismisscontractDetailNavigation)
+                            store.send(.dismissContractDetailNavigation)
                         }
                     ),
                     dismissButton: .init(
@@ -207,9 +207,34 @@ extension ContractDetail {
         ) { action in
             if case .goToFreeTextChat = action {
                 DismissJourney()
-            } else if case .dismisscontractDetailNavigation = action {
+            } else if case .dismissContractDetailNavigation = action {
                 DismissJourney()
             }
         }
+    }
+}
+
+class ContractDetailsViewModel: ObservableObject {
+    private let id: String
+    @PresentableStore var store: ContractStore
+    weak var vc: UIViewController?
+    var observeContractStateCancellable: AnyCancellable?
+    init(id: String) {
+        self.id = id
+        observeContractState()
+    }
+
+    private func observeContractState() {
+        let id = self.id
+        observeContractStateCancellable = store.stateSignal.plain()
+            .publisher
+            .map({ $0.contractForId(id)?.id })
+            .eraseToAnyPublisher()
+            .removeDuplicates()
+            .sink { [weak self] value in
+                if value == nil {
+                    self?.vc?.navigationController?.popToRootViewController(animated: true)
+                }
+            }
     }
 }
