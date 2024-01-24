@@ -29,7 +29,9 @@ struct TerminationSuccessScreen: View {
                     hSection {
                         InfoCard(
                             text: L10n.terminateContractConfirmationInfoText(
-                                termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                                (store.state.config?.isDeletion ?? false)
+                                    ? Date().displayDateDDMMMYYYYFormat ?? ""
+                                    : termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             ),
                             type: .info
                         )
