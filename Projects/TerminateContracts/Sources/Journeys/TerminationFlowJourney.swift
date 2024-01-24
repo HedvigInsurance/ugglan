@@ -125,10 +125,9 @@ public class TerminationFlowJourney {
             TerminationContractStore.self,
             rootView: GenericErrorView(
                 title: L10n.terminationNotSuccessfulTitle,
-                description: nil,
+                description: L10n.somethingWentWrong,
                 icon: .triangle,
                 buttons: .init(
-                    actionButton: nil,
                     actionButtonAttachedToBottom: .init(
                         buttonTitle: L10n.openChat,
                         buttonAction: {
@@ -145,12 +144,12 @@ public class TerminationFlowJourney {
                         }
                     )
                 )
-            )
+            ),
+            style: .detented(.large, modally: false)
         ) {
             action in
             getScreen(for: action)
         }
-        .withJourneyDismissButton
         .hidesBackButton
     }
 
