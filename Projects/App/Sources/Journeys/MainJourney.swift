@@ -12,7 +12,7 @@ extension AppJourney {
     static var main: some JourneyPresentation {
         GroupJourney {
             if Dependencies.featureFlags().isUpdateNecessary {
-                AppJourney.updateApp.onPresent {
+                UpdateAppScreen.journey.onPresent {
                     Launch.shared.completeAnimationCallbacker.callAll()
                 }
             } else {

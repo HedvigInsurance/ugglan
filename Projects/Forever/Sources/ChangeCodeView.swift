@@ -68,7 +68,7 @@ extension ChangeCodeView {
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .showChangeCodeSuccess = action {
-                SuccessScreen.journey(with: L10n.ReferralsChange.codeChanged)
+                SuccessScreen<EmptyView>.journey(with: L10n.ReferralsChange.codeChanged)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ForeverStore = globalPresentableStoreContainer.get()

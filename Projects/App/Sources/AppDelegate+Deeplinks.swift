@@ -1,3 +1,4 @@
+import Chat
 import Contracts
 import CoreDependencies
 import Flow
@@ -64,6 +65,8 @@ extension AppDelegate {
                         .onValue { _ in
                             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                             ugglanStore.send(.closeChat)
+                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                            chatStore.send(.navigation(action: .closeChat))
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 ugglanStore.send(.makeTabActive(deeplink: .insurances))
                                 if let contractId {

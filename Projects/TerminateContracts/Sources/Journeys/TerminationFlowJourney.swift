@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -38,12 +39,16 @@ public class TerminationFlowJourney {
     private static func openProgressScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: ProcessingView(
+            rootView: ProcessingView<TerminationContractStore, EmptyView>(
                 showSuccessScreen: false,
                 TerminationContractStore.self,
                 loading: .sendTerminationDate,
                 loadingViewText: L10n.terminateContractTerminatingProgress,
-                onDismiss: {
+                onErrorCancelAction: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                },
+                onLoadingDismiss: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }

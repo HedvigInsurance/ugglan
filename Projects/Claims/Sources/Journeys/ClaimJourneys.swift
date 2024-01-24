@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -418,7 +419,14 @@ public class ClaimJourneys {
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
-            rootView: SubmitClaimSuccessScreen()
+            rootView: SuccessScreen<EmptyView>(
+                successViewTitle: L10n.claimsSuccessTitle,
+                successViewBody: L10n.claimsSuccessLabel,
+                successViewButtonAction: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                }
+            )
         )
         .hidesBackButton
     }

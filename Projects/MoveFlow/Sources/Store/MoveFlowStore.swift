@@ -166,7 +166,7 @@ extension MoveFlowStore {
         OctopusGraphQL.MoveIntentRequestInput(
             moveToAddress: .init(
                 street: addressInputModel.address,
-                postalCode: addressInputModel.postalCode
+                postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
             ),
             moveFromAddressId: state.movingFromAddressModel?.id ?? "",
             movingDate: addressInputModel.accessDate?.localDateString ?? "",

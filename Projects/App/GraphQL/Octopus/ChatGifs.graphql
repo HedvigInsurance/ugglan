@@ -1,5 +1,0 @@
-query ChatGifs($query: String) {
-  chatGifs(query: $query) {
-    url
-  }
-}
