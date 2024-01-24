@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct TerminationSuccessScreen: View {
     @PresentableStore var store: TerminationContractStore
@@ -43,6 +44,7 @@ struct TerminationSuccessScreen: View {
             .padding(.top, 8)
             .hFormAttachToBottom {
                 hButton.LargeButton(type: .ghost) {
+                    log.addUserAction(type: .click, name: "terminationSurvey")
                     if let surveyToURL = URL(string: termination?.surveyUrl) {
                         store.send(.dismissTerminationFlow)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
