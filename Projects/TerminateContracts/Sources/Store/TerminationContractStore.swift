@@ -65,8 +65,10 @@ public final class TerminationContractStore: LoadingStateStore<
                 send(.navigationAction(action: .openTerminationDeletionScreen))
             case let .setSuccessStep(model):
                 newState.successStep = model
+                log.info("termination success", attributes: ["contractId": newState.config?.contractId])
                 send(.navigationAction(action: .openTerminationSuccessScreen))
             case let .setFailedStep(model):
+                log.info("termination failed", attributes: ["contractId": newState.config?.contractId])
                 newState.failedStep = model
                 send(.navigationAction(action: .openTerminationFailScreen))
             }
