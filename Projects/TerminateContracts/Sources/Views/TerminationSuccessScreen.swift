@@ -16,6 +16,7 @@ struct TerminationSuccessScreen: View {
                 VStack(spacing: 16) {
                     DisplayContractTable(
                         config: .init(
+                            contractId: store.state.config?.contractId ?? "",
                             image: nil,
                             contractDisplayName: store.state.config?.contractDisplayName ?? "",
                             contractExposureName: store.state.config?.contractExposureName ?? ""
