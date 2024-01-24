@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -36,11 +37,37 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openTerminationDeletionScreen()
             } else if case let .openConfirmTerminationScreen(config) = navigationAction {
                 openConfirmTerminationScreen(config: config)
+            } else if case .openTerminationProcessingScreen = navigationAction {
+                openProgressScreen()
             }
         } else if case .dismissTerminationFlow = action {
             DismissJourney()
         } else if case .goToFreeTextChat = action {
             DismissJourney()
+        }
+    }
+
+    @JourneyBuilder
+    static func openProgressScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: ProcessingView<TerminationContractStore, EmptyView>(
+                TerminationContractStore.self,
+                loading: .sendTerminationDate,
+                loadingViewText: L10n.terminateContractTerminatingProgress,
+                onErrorCancelAction: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                },
+                onLoadingDismiss: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                }
+            ),
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
+        ) { action in
+            getScreen(for: action)
         }
     }
 
@@ -75,6 +102,7 @@ public class TerminationFlowJourney {
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.sendTerminationDate)
+                    store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
             style: .detented(.large)

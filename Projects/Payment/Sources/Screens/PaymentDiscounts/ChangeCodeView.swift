@@ -8,7 +8,7 @@ struct ChangeCodeView: View {
     var body: some View {
         if vm.codeChanged {
             hForm {
-                SuccessScreen(title: L10n.ReferralsChange.codeChanged)
+                SuccessScreen<EmptyView>(title: L10n.ReferralsChange.codeChanged)
             }
         } else {
             TextInputView(vm: vm.inputVm)

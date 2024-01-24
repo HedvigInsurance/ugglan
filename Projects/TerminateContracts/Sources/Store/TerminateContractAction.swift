@@ -33,6 +33,7 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationDeletionScreen
     case openSetTerminationDateScreen
     case openConfirmTerminationScreen(config: TerminationConfirmConfig)
+    case openTerminationProcessingScreen
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {

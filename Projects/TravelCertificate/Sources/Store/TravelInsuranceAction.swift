@@ -27,11 +27,11 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openStartDateScreen
     case openWhoIsTravelingScreen
     case openCoinsured(member: PolicyCoinsuredPersonModel?)
-    case openSomethingWentWrongScreen
     case dismissAddUpdateCoinsured
     case dismissCreateTravelCertificate
     case openFreeTextChat
     case openProcessingScreen
+    case goBack
 }
 
 enum TravelInsuranceLoadingAction: LoadingProtocol {

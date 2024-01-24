@@ -106,7 +106,7 @@ extension ChangeEuroBonusView {
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .openSuccessChangeEuroBonus = action {
-                SuccessScreen.journey(with: L10n.SasIntegration.eurobonusConnected)
+                SuccessScreen<EmptyView>.journey(with: L10n.SasIntegration.eurobonusConnected)
                     .onPresent {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             let store: ProfileStore = globalPresentableStoreContainer.get()
