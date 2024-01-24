@@ -301,6 +301,8 @@ extension JourneyPresentation {
         onAction(TerminationContractStore.self) { action in
             if case let .goToUrl(url) = action {
                 AppJourney.configureURL(url: url)
+            } else if case .goToFreeTextChat = action {
+                AppJourney.freeTextChat().withDismissButton
             }
         }
     }

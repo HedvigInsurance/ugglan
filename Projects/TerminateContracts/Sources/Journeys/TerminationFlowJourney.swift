@@ -118,7 +118,29 @@ public class TerminationFlowJourney {
     private static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: TerminationFailScreen()
+            rootView: GenericErrorView(
+                title: L10n.terminationNotSuccessfulTitle,
+                description: nil,
+                icon: .triangle,
+                buttons: .init(
+                    actionButton: nil,
+                    actionButtonAttachedToBottom: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissTerminationFlow)
+                            store.send(.goToFreeTextChat)
+                        }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissTerminationFlow)
+                        }
+                    )
+                )
+            )
         ) {
             action in
             getScreen(for: action)
