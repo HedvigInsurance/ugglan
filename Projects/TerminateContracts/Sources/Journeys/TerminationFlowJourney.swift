@@ -186,8 +186,7 @@ public class TerminationFlowJourney {
                     }
                 }
             ),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBarWithoutGrabber, .blurredBackground]
+            style: .detented(.scrollViewContentSize)
         ) {
             action in
             getScreen(for: action)
