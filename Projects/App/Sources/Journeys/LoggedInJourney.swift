@@ -81,7 +81,6 @@ extension AppJourney {
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
-                    .configureTerminationNavigation
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
