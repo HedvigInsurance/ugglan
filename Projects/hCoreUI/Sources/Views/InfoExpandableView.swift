@@ -50,7 +50,6 @@ public struct InfoExpandableView: View {
                         CustomTextViewRepresentable(
                             text: text,
                             fixedWidth: UIScreen.main.bounds.width - 32,
-                            fontSize: .body,
                             height: $height
                         ) { url in
                             onMarkDownClick?(url)

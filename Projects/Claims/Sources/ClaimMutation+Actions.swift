@@ -85,10 +85,11 @@ extension GraphQLMutation {
         Self.Data: ClaimStepProgress, Self.Data: ClaimStepId
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
+        let loadingType = self.getLoadingType()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            store.setLoading(for: self.getLoadingType())
+            store.setLoading(for: loadingType)
             disposeBag += octopus.client.perform(mutation: self)
                 .map { data in
                     callback(.value(.setNewClaimId(with: data.getStepId())))
@@ -104,10 +105,12 @@ extension GraphQLMutation {
                         }
                     }
                     callback(.value(data[keyPath: keyPath].into()))
-                    store.removeLoading(for: self.getLoadingType())
+                    store.removeLoading(for: loadingType)
+                    callback(.end)
                 }
                 .onError({ error in
-                    store.setError(L10n.General.errorBody, for: self.getLoadingType())
+                    store.setError(L10n.General.errorBody, for: loadingType)
+                    callback(.end(error))
                 })
             return disposeBag
         }
