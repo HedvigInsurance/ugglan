@@ -122,6 +122,7 @@ public class TerminationFlowJourney {
             action in
             getScreenForAction(for: action)
         }
+        .configureTitle(L10n.terminateContractConfirmationTitle)
         .withJourneyDismissButton
         .hidesBackButton
         .onDismiss {
