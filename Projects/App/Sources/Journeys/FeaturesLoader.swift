@@ -18,6 +18,8 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                profileStore.send(.updateLanguage)
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
                 bag += contractStore.actionSignal
