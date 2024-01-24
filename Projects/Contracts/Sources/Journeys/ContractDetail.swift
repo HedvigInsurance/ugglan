@@ -123,7 +123,10 @@ public struct ContractDetail: View {
                         image: contract.pillowType?.bgImage,
                         terminationMessage: contract.terminationMessage,
                         contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: contract.exposureDisplayName
+                        contractExposureName: contract.exposureDisplayName,
+                        activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                        activeInFuture: contract.activeInFuture,
+                        masterInceptionDate: contract.masterInceptionDate
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     Picker("View", selection: $context.selected) {
