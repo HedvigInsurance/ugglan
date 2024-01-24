@@ -20,7 +20,7 @@ struct HelpCenterQuestionView: View {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                    hText(question.question, style: .title3)
+                    hText(question.question, style: .body)
                 }
                 .padding(.horizontal, 16)
                 VStack(alignment: .leading, spacing: 8) {

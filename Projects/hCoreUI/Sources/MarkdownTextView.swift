@@ -75,7 +75,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     private func setContent(from text: String) {
         configureTextView()
         let markdownParser = MarkdownParser(
-            font: Fonts.fontFor(style: .standardLarge),
+            font: Fonts.fontFor(style: .body),
             color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
         )
 
