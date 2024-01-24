@@ -20,10 +20,14 @@ struct ContractTable {
             let activeContractsToShow = state.activeContracts.compactMap { $0 }
             let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
             if !(activeContractsToShow + pendingContractsToShow).isEmpty {
-                onlyTerminatedInsurances = false
+                DispatchQueue.main.async {
+                    onlyTerminatedInsurances = false
+                }
                 return activeContractsToShow + pendingContractsToShow
             } else {
-                onlyTerminatedInsurances = true
+                DispatchQueue.main.async {
+                    onlyTerminatedInsurances = true
+                }
                 return state.terminatedContracts.compactMap { $0 }
             }
         }

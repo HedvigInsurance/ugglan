@@ -137,6 +137,8 @@ public struct TravelInsuranceFlowJourney {
                     DismissJourney()
                 } else if case .openFreeTextChat = navigationAction {
                     openChat()
+                } else if case .goBack = navigationAction {
+                    PopJourney()
                 }
             }
         }

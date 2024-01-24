@@ -2,20 +2,23 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct ProcessingView<S: Store & StoreLoading>: View {
+public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
     @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
     var store: S.Type
     var loading: S.Loading
-    
+
     var loadingViewText: String
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
-    
+
     var onAppearLoadingView: (() -> Void)?
     var onErrorCancelAction: (() -> Void)?
     var onLoadingDismiss: (() -> Void)?
+
+    var customBottomSuccessView: T?
+    var errorViewButtons: ErrorViewButtonConfig?
 
     public init(
         showSuccessScreen: Bool? = true,
@@ -27,7 +30,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         successViewButtonAction: (() -> Void)? = nil,
         onAppearLoadingView: (() -> Void)? = nil,
         onErrorCancelAction: (() -> Void)? = nil,
-        onDismiss: (() -> Void)? = nil
+        onLoadingDismiss: (() -> Void)? = nil,
+        customBottomSuccessView: T? = nil,
+        errorViewButtons: ErrorViewButtonConfig? = nil
     ) {
         self.showSuccessScreen = showSuccessScreen ?? true
         self.store = storeType
@@ -38,7 +43,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         self.successViewButtonAction = successViewButtonAction
         self.onAppearLoadingView = onAppearLoadingView
         self.onErrorCancelAction = onErrorCancelAction
-        self.onLoadingDismiss = onDismiss
+        self.onLoadingDismiss = onLoadingDismiss
+        self.customBottomSuccessView = customBottomSuccessView
+        self.errorViewButtons = errorViewButtons
     }
 
     public var body: some View {
@@ -52,7 +59,12 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 errorView
             } success: {
                 if showSuccessScreen {
-                    successView
+                    SuccessScreen(
+                        successViewTitle: successViewTitle ?? "",
+                        successViewBody: successViewBody ?? "",
+                        customBottomSuccessView: customBottomSuccessView,
+                        successViewButtonAction: successViewButtonAction ?? {}
+                    )
                 } else {
                     loadingView
                         .onAppear {
@@ -70,56 +82,60 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
             }
         }
     }
-    
-    private var successView: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                Spacer()
-                VStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.tick.image)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(hSignalColor.greenElement)
-                    VStack(spacing: 0) {
-                        hText(successViewTitle ?? "")
-                        hText(successViewBody ?? "")
-                            .foregroundColor(hTextColor.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, 16)
-                }
-                Spacer()
-                Spacer()
-                Spacer()
-            }
-            hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .ghost) {
-                        successViewButtonAction?()
-                    } content: {
-                        hText(L10n.generalCloseButton)
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
 
-        }
-    }
+    //    private var successView: some View {
+    //        ZStack(alignment: .bottom) {
+    //            BackgroundView().ignoresSafeArea()
+    //            VStack {
+    //                Spacer()
+    //                Spacer()
+    //                VStack(spacing: 16) {
+    //                    Image(uiImage: hCoreUIAssets.tick.image)
+    //                        .resizable()
+    //                        .frame(width: 24, height: 24)
+    //                        .foregroundColor(hSignalColor.greenElement)
+    //                    VStack(spacing: 0) {
+    //                        hText(successViewTitle ?? "")
+    //                        hText(successViewBody ?? "")
+    //                            .foregroundColor(hTextColor.secondary)
+    //                            .multilineTextAlignment(.center)
+    //                    }
+    //                    .padding(.horizontal, 16)
+    //                }
+    //                Spacer()
+    //                Spacer()
+    //                Spacer()
+    //            }
+    //            if customBottomSuccessView != nil {
+    //                customBottomSuccessView
+    //            } else {
+    //                hSection {
+    //                    VStack(spacing: 8) {
+    //                        hButton.LargeButton(type: .ghost) {
+    //                            successViewButtonAction?()
+    //                        } content: {
+    //                            hText(L10n.generalCloseButton)
+    //                        }
+    //                    }
+    //                }
+    //                .sectionContainerStyle(.transparent)
+    //            }
+    //        }
+    //    }
 
     private var errorView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
             GenericErrorView(
-                buttons: .init(
-                    dismissButton: .init(
-                        buttonTitle: L10n.generalCancelButton,
-                        buttonAction: {
-                            onErrorCancelAction?()
-                        }
+                buttons: errorViewButtons
+                    ?? .init(
+                        dismissButton: .init(
+                            buttonTitle: L10n.generalCancelButton,
+                            buttonAction: {
+                                onErrorCancelAction?()
+                            }
+                        )
                     )
-                )
             )
         }
     }

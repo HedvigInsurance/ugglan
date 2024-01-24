@@ -77,15 +77,7 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { images in
                         for image in images {
-                            let dataPath = vm.fileUploadManager.getPathForData(
-                                for: image.id,
-                                andExtension: image.extension
-                            )
-                            let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
-                                for: image.id,
-                                andExtension: image.extension
-                            )
-                            if let file = image.asFile(with: dataPath, and: thumbnailPath) {
+                            if let file = image.asFile() {
                                 vm.add(file: file)
                             }
                         }
@@ -95,15 +87,7 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showFilePicker) {
                     FileImporterView { files in
                         for file in files {
-                            let dataPath = vm.fileUploadManager.getPathForData(
-                                for: file.id,
-                                andExtension: file.extension
-                            )
-                            let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
-                                for: file.id,
-                                andExtension: file.extension
-                            )
-                            if let file = file.asFile(with: dataPath, and: thumbnailPath) {
+                            if let file = file.asFile() {
                                 vm.add(file: file)
                             }
                         }
@@ -121,15 +105,9 @@ public struct ClaimFilesView: View {
                             mimeType: .JPEG,
                             name: "image_\(Date()).jpeg",
                             data: data,
-                            thumbnailData: thumbnailData,
-                            extension: "jpeg"
+                            thumbnailData: thumbnailData
                         )
-                        let dataPath = vm.fileUploadManager.getPathForData(for: file.id, andExtension: file.extension)
-                        let thumbnailPath = vm.fileUploadManager.getPathForThumnailData(
-                            for: file.id,
-                            andExtension: file.extension
-                        )
-                        if let file = file.asFile(with: dataPath, and: thumbnailPath) {
+                        if let file = file.asFile() {
                             vm.add(file: file)
                         }
 
@@ -184,7 +162,7 @@ public struct ClaimFilesView: View {
     }
 
     private var successView: some View {
-        SuccessScreen(title: L10n.fileUploadFilesAdded)
+        SuccessScreen<EmptyView>(title: L10n.fileUploadFilesAdded)
     }
 }
 

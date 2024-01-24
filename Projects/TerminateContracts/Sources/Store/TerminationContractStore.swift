@@ -17,9 +17,9 @@ public final class TerminationContractStore: LoadingStateStore<
     ) -> FiniteSignal<TerminationContractAction>? {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
-        case .startTermination(let contractId, _, _):
+        case let .startTermination(config):
             let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-                input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
+                input: OctopusGraphQL.FlowTerminationStartInput(contractId: config.contractId)
             )
             return mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
         case .sendTerminationDate:
@@ -49,8 +49,7 @@ public final class TerminationContractStore: LoadingStateStore<
     ) -> TerminationContractState {
         var newState = state
         switch action {
-        case let .startTermination(_, contractName, config):
-            newState.contractName = contractName
+        case let .startTermination(config):
             newState.config = config
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context

@@ -124,10 +124,12 @@ extension ClaimModel {
 
 extension File {
     init(with data: OctopusGraphQL.FileFragment) {
-        id = data.id
-        size = 0
-        mimeType = MimeType.findBy(mimeType: data.mimeType)
-        name = data.name
-        source = .url(url: URL(string: data.url)!)
+        self.init(
+            id: data.id,
+            size: 0,
+            mimeType: MimeType.findBy(mimeType: data.mimeType),
+            name: data.name,
+            source: .url(url: URL(string: data.url)!)
+        )
     }
 }
