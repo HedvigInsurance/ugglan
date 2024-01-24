@@ -48,7 +48,7 @@ public class EditCoInsuredJourney {
             getScreen(for: action)
         }
         .configureTitle(L10n.coinsuredEditTitle)
-        .withJourneyDismissButton
+        .addDismissEditCoInsuredFlow()
     }
 
     static func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
@@ -63,7 +63,7 @@ public class EditCoInsuredJourney {
             getScreen(for: action)
         }
         .configureTitle(L10n.coinsuredEditTitle)
-        .withJourneyDismissButton
+        .addDismissEditCoInsuredFlow()
     }
 
     @JourneyBuilder
@@ -263,11 +263,7 @@ public class EditCoInsuredJourney {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
+            getScreen(for: action)
         }
         .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
@@ -333,5 +329,16 @@ public class EditCoInsuredJourney {
         } else {
             EditCoInsuredJourney.openInsuredPeopleScreen(with: config)
         }
+    }
+}
+
+extension JourneyPresentation {
+    func addDismissEditCoInsuredFlow() -> some JourneyPresentation {
+        self.withJourneyDismissButtonWithConfirmation(
+            withTitle: L10n.General.areYouSure,
+            andBody: L10n.Claims.Alert.body,
+            andCancelText: L10n.General.no,
+            andConfirmText: L10n.General.yes
+        )
     }
 }
