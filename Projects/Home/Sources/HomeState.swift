@@ -171,9 +171,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 .client
                 .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
                 .map { data in
-                    let messages = data.currentMember.importantMessages.compactMap({
+                    var messages = data.currentMember.importantMessages.compactMap({
                         ImportantMessage(id: $0.id, message: $0.message, link: $0.link)
                     })
+                    messages.append(.init(id: "idOfTheImportantMessage", message: "Message that we have", link: nil))
                     return .setImportantMessages(messages: messages)
                 }
                 .valueThenEndSignal

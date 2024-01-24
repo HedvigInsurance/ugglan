@@ -36,7 +36,7 @@ struct HomeBottomScrollView: View {
                 case let .importantMessage(id):
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     if let importantMessage = store.state.getImportantMessage(with: id) {
-                        ImportantMessagesView(importantMessage: importantMessage)
+                        ImportantMessageView(importantMessage: importantMessage)
                     }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {

@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ImportantMessagesView: View {
+struct ImportantMessageView: View {
     let importantMessage: ImportantMessage
     @PresentableStore var store: HomeStore
     @State var showSafariView = false
@@ -35,6 +35,16 @@ struct ImportantMessagesView: View {
                     }
             } else {
                 InfoCard(text: message, type: .attention)
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: L10n.ImportantMessage.hide,
+                                buttonAction: {
+                                    store.send(.hideImportantMessage(id: importantMessage.id))
+                                }
+                            )
+                        ]
+                    )
             }
         }
     }
