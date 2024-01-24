@@ -188,7 +188,7 @@ public struct DatePickerView: View {
     @Binding var date: Date
     let config: hDatePickerField.HDatePickerFieldConfig
 
-    public init(
+    init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
         date: Binding<Date>,
@@ -196,6 +196,22 @@ public struct DatePickerView: View {
     ) {
         self.continueAction = continueAction
         self.cancelAction = cancelAction
+        self._date = date
+        self.config = config
+    }
+
+    public init(
+        continueAction: @escaping () -> Void,
+        cancelAction: @escaping () -> Void,
+        date: Binding<Date>,
+        config: hDatePickerField.HDatePickerFieldConfig
+    ) {
+        self.continueAction = .init(execute: {
+            continueAction()
+        })
+        self.cancelAction = .init(execute: {
+            cancelAction()
+        })
         self._date = date
         self.config = config
     }
@@ -315,7 +331,7 @@ struct hDatePickerField_Previews: PreviewProvider {
     }
 }
 
-public class ReferenceAction {
+class ReferenceAction {
     var execute: () -> (Void)
 
     public init(

@@ -28,15 +28,11 @@ struct SetTerminationDate: View {
                     if let termination {
                         DatePickerView(
                             continueAction: {
-                                return ReferenceAction(execute: {
-                                    self.onSelected(terminationDate)
-                                })
-                            }(),
+                                self.onSelected(terminationDate)
+                            },
                             cancelAction: {
-                                return ReferenceAction(execute: {
-                                    store.send(.dismissTerminationFlow)
-                                })
-                            }(),
+                                store.send(.dismissTerminationFlow)
+                            },
                             date: $terminationDate,
                             config: .init(
                                 minDate: termination.minDate.localDateToDate,
