@@ -48,6 +48,12 @@ extension GraphQLMutation {
                     callback(.end)
                 }
                 .onError({ error in
+                    switch loadingType {
+                    case .startTermination:
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    default:
+                       break
+                    }
                     store.setError(L10n.General.errorBody, for: loadingType)
                     callback(.end)
                 })

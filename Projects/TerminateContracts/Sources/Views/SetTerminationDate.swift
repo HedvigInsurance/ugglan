@@ -17,40 +17,38 @@ struct SetTerminationDate: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(TerminationContractStore.self, [.sendTerminationDate], [.sendTerminationDate]) {
-            hForm {
-                PresentableStoreLens(
-                    TerminationContractStore.self,
-                    getter: { state in
-                        state.terminationDateStep
-                    }
-                ) { termination in
-                    if let termination {
-                        DatePickerView(
-                            continueAction: {
-                                self.onSelected(terminationDate)
-                            },
-                            cancelAction: {
-                                store.send(.dismissTerminationFlow)
-                            },
-                            date: $terminationDate,
-                            config: .init(
-                                minDate: termination.minDate.localDateToDate,
-                                maxDate: termination.maxDate.localDateToDate,
-                                initialySelectedValue: Date(),
-                                placeholder: "",
-                                title: L10n.terminationDateText,
-                                showAsList: false,
-                                dateFormatter: .none,
-                                buttonText: L10n.generalContinueButton
-                            )
-                        )
-                    }
+        hForm {
+            PresentableStoreLens(
+                TerminationContractStore.self,
+                getter: { state in
+                    state.terminationDateStep
                 }
-
+            ) { termination in
+                if let termination {
+                    DatePickerView(
+                        continueAction: {
+                            self.onSelected(terminationDate)
+                        },
+                        cancelAction: {
+                            store.send(.dismissTerminationFlow)
+                        },
+                        date: $terminationDate,
+                        config: .init(
+                            minDate: termination.minDate.localDateToDate,
+                            maxDate: termination.maxDate.localDateToDate,
+                            initialySelectedValue: Date(),
+                            placeholder: "",
+                            title: L10n.terminationDateText,
+                            showAsList: false,
+                            dateFormatter: .none,
+                            buttonText: L10n.generalContinueButton
+                        )
+                    )
+                }
             }
-            .hDisableScroll
+
         }
+        .hDisableScroll
     }
 }
 
