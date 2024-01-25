@@ -49,7 +49,6 @@ extension GraphQLMutation {
                 }
                 .onError({ error in
                     store.setError(L10n.General.errorBody, for: loadingType)
-                    store.send(.navigationAction(action: .openTerminationFailScreen))
                     callback(.end)
                 })
             return disposeBag
