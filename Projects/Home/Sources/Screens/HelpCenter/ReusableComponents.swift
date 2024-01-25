@@ -115,6 +115,7 @@ struct QuestionsItems: View {
                     hRow {
                         hText(item.question)
                             .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
                     }
                     .withChevronAccessory
                     .hWithoutHorizontalPadding

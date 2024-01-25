@@ -111,7 +111,6 @@ public struct ChevronAccessory: View {
     public init() {}
 
     public var body: some View {
-        Spacer()
         StandaloneChevronAccessory()
     }
 }

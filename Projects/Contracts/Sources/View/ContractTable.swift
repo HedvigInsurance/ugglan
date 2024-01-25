@@ -97,6 +97,7 @@ extension ContractTable: View {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
                                         .foregroundColor(hTextColor.primary)
+                                    Spacer()
                                 }
                                 .withChevronAccessory
                                 .foregroundColor(hTextColor.secondary)
