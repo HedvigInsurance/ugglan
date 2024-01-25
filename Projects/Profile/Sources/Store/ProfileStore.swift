@@ -60,6 +60,29 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     }
                 return disposeBag
             }
+        case .languageChanged:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                callback(.value(.updateLanguage))
+                return disposeBag
+            }
+        case .updateLanguage:
+            let locale = Localization.Locale.currentLocale
+            let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client
+                    .perform(
+                        mutation: mutation
+                    )
+                    .onValue { data in
+                        log.info("Updated language successfully")
+                    }
+                    .onError { error in
+                        log.info("Failed updating language")
+                    }
+                return disposeBag
+            }
         default:
             return nil
         }
