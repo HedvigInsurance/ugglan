@@ -46,6 +46,10 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
             scrollView.delegate = vm
             scrollView.clipsToBounds = false
         }
+        if items.count > 1 {
+            hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
+        }
+
     }
 }
 
@@ -115,6 +119,9 @@ class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDelegate 
         let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
         if valueOver > 0.5 {
             indexToScroll += 1
+        }
+        withAnimation {
+            activeCard = indexToScroll
         }
         scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * cardWithSpacing, y: 0), animated: true)
     }

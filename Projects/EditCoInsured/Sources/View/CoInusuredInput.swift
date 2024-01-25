@@ -235,6 +235,7 @@ struct CoInusuredInput: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
                 .padding(.bottom, 16)
+                .disabled(vm.isLoading || intentVm.isLoading)
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
@@ -263,6 +264,7 @@ struct CoInusuredInput: View {
             toggleField
         }
         .hFieldSize(.small)
+        .disabled(vm.isLoading || intentVm.isLoading)
     }
 
     @ViewBuilder
