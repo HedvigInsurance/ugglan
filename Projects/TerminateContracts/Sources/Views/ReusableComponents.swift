@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct DisplayContractTable: View {
     let config: TerminationConfirmConfig?
@@ -42,7 +43,16 @@ struct DisplayQuestionView: View {
                     (store.state.config?.isDeletion ?? false) ? deletionQuestions : terminationQuestions,
                     id: \.question
                 ) { question in
-                    InfoExpandableView(title: question.question, text: question.answer) { url in
+                    InfoExpandableView(
+                        title: question.question,
+                        text: question.answer,
+                        questionClicked: { question in
+                            let stringToLog =
+                                (store.state.config?.isDeletion ?? false)
+                                ? "deletion question clicked" : "termination question clicked"
+                            log.info(stringToLog, attributes: ["question": question])
+                        }
+                    ) { url in
                         store.send(.goToUrl(url: url))
                     }
                 }
