@@ -10,10 +10,13 @@ struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     @State private var isHidden = false
     let onSelected: (Date) -> Void
+
     init(
-        onSelected: @escaping (Date) -> Void
+        onSelected: @escaping (Date) -> Void,
+        terminationDate: () -> Date
     ) {
         self.onSelected = onSelected
+        self._terminationDate = State(wrappedValue: terminationDate())
     }
 
     var body: some View {
@@ -56,7 +59,10 @@ struct SetTerminationDate: View {
 }
 
 #Preview{
-    SetTerminationDate(onSelected: { date in
+    SetTerminationDate(
+        onSelected: { date in
 
-    })
+        },
+        terminationDate: { Date() }
+    )
 }

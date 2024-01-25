@@ -72,6 +72,11 @@ public class TerminationFlowJourney {
                     } else {
                         store.send(.navigationAction(action: .openTerminationFailScreen))
                     }
+                },
+                terminationDate: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    let preSelectedTerminationDate = store.state.terminationDateStep?.minDate.localDateToDate
+                    return preSelectedTerminationDate ?? Date()
                 }
             ),
             style: .detented(.scrollViewContentSize),
@@ -137,7 +142,9 @@ public class TerminationFlowJourney {
                         buttonAction: {
                             let store: TerminationContractStore = globalPresentableStoreContainer.get()
                             store.send(.dismissTerminationFlow)
-                            store.send(.goToFreeTextChat)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                store.send(.goToFreeTextChat)
+                            }
                         }
                     ),
                     dismissButton: .init(
