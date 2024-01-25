@@ -10,6 +10,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ImportantMessage: Codable, Equatable {
+    let id: String
     let message: String?
     let link: String?
 }
@@ -63,12 +64,12 @@ public struct HomeState: StateProtocol {
     public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
-    public var importantMessage: ImportantMessage? = nil
+    public var importantMessages: [ImportantMessage] = []
     public var commonClaims: [CommonClaim] = []
     public var allCommonClaims: [CommonClaim] = []
     public var shouldShowTravelInsurance: Bool = false
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
-    @Transient(defaultValue: false) var hideImportantMessage = false
+    @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
@@ -79,13 +80,23 @@ public struct HomeState: StateProtocol {
         return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
     }
 
+    func getImportantMessageToShow() -> [ImportantMessage] {
+        return importantMessages.filter { importantMessage in
+            !hidenImportantMessages.contains(importantMessage.id)
+        }
+    }
+
+    func getImportantMessage(with id: String) -> ImportantMessage? {
+        return importantMessages.first(where: { $0.id == id })
+    }
+
     public init() {}
 }
 
 public enum HomeAction: ActionProtocol {
     case fetchMemberState
     case fetchImportantMessages
-    case setImportantMessage(message: ImportantMessage)
+    case setImportantMessages(messages: [ImportantMessage])
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case setFutureStatus(status: FutureStatus)
@@ -107,7 +118,7 @@ public enum HomeAction: ActionProtocol {
 
     case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
-    case hideImportantMessage
+    case hideImportantMessage(id: String)
     case openContractCertificate(url: URL, title: String)
 
     case openHelpCenterTopicView(commonTopic: CommonTopic)
@@ -159,9 +170,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             return octopus
                 .client
                 .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
-                .map { $0.currentMember.importantMessages.first }
                 .map { data in
-                    .setImportantMessage(message: .init(message: data?.message, link: data?.link))
+                    var messages = data.currentMember.importantMessages.compactMap({
+                        ImportantMessage(id: $0.id, message: $0.message, link: $0.link)
+                    })
+                    return .setImportantMessages(messages: messages)
                 }
                 .valueThenEndSignal
         case .fetchMemberState:
@@ -256,12 +269,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.contracts = contracts
         case .setFutureStatus(let status):
             newState.futureStatus = status
-        case .setImportantMessage(let message):
-            if let text = message.message, text != "" {
-                newState.importantMessage = message
-            } else {
-                newState.importantMessage = nil
-            }
+        case .setImportantMessages(let messages):
+            newState.importantMessages = messages
         case .fetchCommonClaims:
             setLoading(for: .fetchCommonClaim)
         case let .setCommonClaims(commonClaims):
@@ -271,8 +280,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setShowTravelInsurance(show):
             newState.shouldShowTravelInsurance = show
             setAllCommonClaims(&newState)
-        case .hideImportantMessage:
-            newState.hideImportantMessage = true
+        case let .hideImportantMessage(id):
+            newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setAllCommonClaims(&newState)
