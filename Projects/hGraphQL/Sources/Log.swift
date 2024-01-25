@@ -1,4 +1,3 @@
-import Datadog
 import Foundation
 
 public typealias AttributeKey = String
@@ -62,12 +61,16 @@ public protocol Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     func addUserAction(
-        type: RUMUserActionType,
+        type: LoggingAction,
         name: String,
         error: Error?,
         attributes: [AttributeKey: AttributeValue]?
     )
 
+}
+
+public enum LoggingAction {
+    case click
 }
 
 extension Logging {
@@ -134,7 +137,7 @@ extension Logging {
     }
 
     public func addUserAction(
-        type: RUMUserActionType,
+        type: LoggingAction,
         name: String,
         error: Error? = nil,
         attributes: [AttributeKey: AttributeValue]? = nil

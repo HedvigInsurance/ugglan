@@ -58,15 +58,24 @@ extension Logger: Logging {
     }
 
     public func addUserAction(
-        type: RUMUserActionType,
+        type: LoggingAction,
         name: String,
         error: Error? = nil,
         attributes: [AttributeKey: AttributeValue]? = nil
     ) {
         if let attributes {
-            Global.rum.addUserAction(type: type, name: name, attributes: attributes)
+            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name, attributes: attributes)
         } else {
-            Global.rum.addUserAction(type: type, name: name)
+            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name)
+        }
+    }
+}
+
+extension LoggingAction {
+    var asRUMUserActionType: RUMUserActionType {
+        switch self {
+        case .click:
+            return .click
         }
     }
 }
