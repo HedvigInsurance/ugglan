@@ -58,9 +58,6 @@ extension ChatData {
         self.hasNext = data.hasNext
         self.nextUntil = data.nextUntil
         self.messages = data.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
-        self.informationMessage = """
-            We are expecting long awaiting time. We are expecting long awaiting time. We are expecting long awaiting time.
-            Information message with deeplink asd asd as *[Help Center](https://hedvigtest.page.link/help-center)*
-            """
+        self.informationMessage = data.banner
     }
 }
