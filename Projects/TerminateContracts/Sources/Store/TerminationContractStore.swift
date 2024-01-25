@@ -50,6 +50,12 @@ public final class TerminationContractStore: LoadingStateStore<
         var newState = state
         switch action {
         case let .startTermination(config):
+            newState.currentTerminationContext = nil
+            newState.terminationContractId = nil
+            newState.terminationDateStep = nil
+            newState.terminationDeleteStep = nil
+            newState.successStep = nil
+            newState.failedStep = nil
             newState.config = config
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context

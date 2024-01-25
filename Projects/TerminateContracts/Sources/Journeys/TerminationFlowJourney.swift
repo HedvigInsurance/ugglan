@@ -145,7 +145,7 @@ public class TerminationFlowJourney {
                     )
                 )
             ),
-            style: .detented(.large, modally: false)
+            style: .detented(.large, modally: true)
         ) {
             action in
             getScreen(for: action)
