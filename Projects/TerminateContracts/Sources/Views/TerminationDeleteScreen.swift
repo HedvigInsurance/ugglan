@@ -13,35 +13,33 @@ struct TerminationDeleteScreen: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.sendConfirmDelete]) {
-            PresentableStoreLens(
-                TerminationContractStore.self
-            ) { state in
-                state
-            } _: { termination in
-                GenericErrorView(
-                    title: L10n.General.areYouSure,
-                    description: L10n.terminateContractDeletionText(
-                        termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+        PresentableStoreLens(
+            TerminationContractStore.self
+        ) { state in
+            state
+        } _: { termination in
+            GenericErrorView(
+                title: L10n.General.areYouSure,
+                description: L10n.terminateContractDeletionText(
+                    termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                icon: .triangle,
+                buttons: .init(
+                    actionButton: nil,
+                    actionButtonAttachedToBottom: .init(
+                        buttonTitle: L10n.terminateContractDeletionContinueButton,
+                        buttonAction: {
+                            onSelected()
+                        }
                     ),
-                    icon: .triangle,
-                    buttons: .init(
-                        actionButton: nil,
-                        actionButtonAttachedToBottom: .init(
-                            buttonTitle: L10n.terminateContractDeletionContinueButton,
-                            buttonAction: {
-                                onSelected()
-                            }
-                        ),
-                        dismissButton: .init(
-                            buttonTitle: L10n.generalCancelButton,
-                            buttonAction: {
-                                store.send(.dismissTerminationFlow)
-                            }
-                        )
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCancelButton,
+                        buttonAction: {
+                            store.send(.dismissTerminationFlow)
+                        }
                     )
                 )
-            }
+            )
         }
     }
 }
