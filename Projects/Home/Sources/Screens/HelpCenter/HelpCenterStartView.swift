@@ -371,7 +371,7 @@ extension HelpCenterStartView {
                                     ),
                                     .init(
                                         question: L10n.hcCoverageQ09,
-                                        answer: L10n.hcCoverageA09,
+                                        answer: L10n.hcCoverageA09(0),
                                         relatedQuestions: []
                                     ),
                                     .init(
