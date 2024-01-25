@@ -45,6 +45,7 @@ struct TerminationDeleteScreen: View {
                 )
             )
         }
+        .hDisableScroll
         .hide($isHidden)
 
     }
