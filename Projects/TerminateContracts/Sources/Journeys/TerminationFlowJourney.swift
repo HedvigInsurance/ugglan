@@ -87,7 +87,7 @@ public class TerminationFlowJourney {
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     if store.state.config?.isDeletion ?? false {
-                        store.send(.deleteTermination)
+                        store.send(.sendConfirmDelete)
                     } else {
                         store.send(.sendTerminationDate)
                     }
