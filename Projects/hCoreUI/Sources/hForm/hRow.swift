@@ -73,6 +73,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             VStack(alignment: .leading) {
                 HStack(alignment: .top) {
                     content
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     accessory
                         .padding(.top, 4)
                 }

@@ -24,7 +24,6 @@ public struct InfoExpandableView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .withCustomAccessory({
-                Spacer()
                 Image(
                     uiImage: selectedFields.contains(title)
                         ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
@@ -66,6 +65,9 @@ public struct InfoExpandableView: View {
 
 struct InfoExpandableView_Previews: PreviewProvider {
     static var previews: some View {
-        InfoExpandableView(title: "title", text: "long long long long long long long long long long")
+        InfoExpandableView(
+            title: "long longlong long long long title",
+            text: "long long long long long long long long long long"
+        )
     }
 }

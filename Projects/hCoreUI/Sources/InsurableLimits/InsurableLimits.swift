@@ -25,7 +25,6 @@ public struct InsurableLimitsSectionView: View {
                 }
             }
             .withCustomAccessory {
-                Spacer()
                 HStack(alignment: .top) {
                     hText(limit.limit)
                         .fixedSize(horizontal: false, vertical: true)
