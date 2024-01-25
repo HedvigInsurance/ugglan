@@ -28,11 +28,13 @@ public struct InfoExpandableView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .withCustomAccessory({
-                Image(
-                    uiImage: selectedFields.contains(title)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .transition(.opacity.animation(.easeOut))
+                withAnimation(.spring()) {
+                    Image(
+                        uiImage: selectedFields.contains(title)
+                            ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                    )
+                }
+                .transition(.opacity)
             })
             .onTap {
                 withAnimation(.spring) {
