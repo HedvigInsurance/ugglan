@@ -33,6 +33,7 @@ struct ContractInformationView: View {
                         hSection(displayItems, id: \.displayValue) { item in
                             hRow {
                                 hText(item.displayTitle)
+                                    .fixedSize()
                             }
                             .noSpacing()
                             .withCustomAccessory({
