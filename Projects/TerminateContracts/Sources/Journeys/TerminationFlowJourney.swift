@@ -29,9 +29,13 @@ public class TerminationFlowJourney {
                 openProgressScreen()
             }
         } else if case .dismissTerminationFlow = action {
-            DismissJourney()
+            withAnimation {
+                DismissJourney()
+            }
         } else if case .goToFreeTextChat = action {
-            DismissJourney()
+            withAnimation {
+                DismissJourney()
+            }
         }
     }
 

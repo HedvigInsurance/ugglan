@@ -4,6 +4,7 @@ import hCoreUI
 
 struct TerminationDeleteScreen: View {
     @PresentableStore var store: TerminationContractStore
+    @State private var isHidden = false
     let onSelected: () -> Void
 
     init(
@@ -30,6 +31,9 @@ struct TerminationDeleteScreen: View {
                         buttonTitle: L10n.terminateContractDeletionContinueButton,
                         buttonAction: {
                             onSelected()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.isHidden = true
+                            }
                         }
                     ),
                     dismissButton: .init(
@@ -41,6 +45,8 @@ struct TerminationDeleteScreen: View {
                 )
             )
         }
+        .hide($isHidden)
+
     }
 }
 

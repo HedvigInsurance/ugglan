@@ -8,8 +8,8 @@ import hGraphQL
 struct SetTerminationDate: View {
     @PresentableStore var store: TerminationContractStore
     @State private var terminationDate = Date()
+    @State private var isHidden = false
     let onSelected: (Date) -> Void
-
     init(
         onSelected: @escaping (Date) -> Void
     ) {
@@ -28,6 +28,9 @@ struct SetTerminationDate: View {
                     DatePickerView(
                         continueAction: {
                             self.onSelected(terminationDate)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.isHidden = true
+                            }
                         },
                         cancelAction: {
                             store.send(.dismissTerminationFlow)
@@ -46,9 +49,9 @@ struct SetTerminationDate: View {
                     )
                 }
             }
-
         }
         .hDisableScroll
+        .hide($isHidden)
     }
 }
 
