@@ -80,7 +80,10 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         var newState = state
 
         switch action {
+        case .fetch:
+            self.setLoading(for: .fetchForeverData)
         case let .setForeverData(data):
+            self.removeLoading(for: .fetchForeverData)
             newState.foreverData = data
         default:
             break
