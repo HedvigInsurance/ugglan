@@ -123,6 +123,7 @@ public struct PaymentsView: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(hSignalColor.greenElement)
             hText(L10n.paymentsDiscountsSectionTitle)
+            Spacer()
         }
         .withChevronAccessory
         .onTap {
@@ -141,6 +142,7 @@ public struct PaymentsView: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.primary)
             hText(L10n.paymentsPaymentHistoryButtonLabel)
+            Spacer()
         }
         .withChevronAccessory
         .onTap {
