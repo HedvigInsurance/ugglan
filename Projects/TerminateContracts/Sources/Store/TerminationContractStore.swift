@@ -65,7 +65,9 @@ public final class TerminationContractStore: LoadingStateStore<
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
-                send(.navigationAction(action: .openSetTerminationDateScreen))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.send(.navigationAction(action: .openSetTerminationDateScreen))
+                }
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
                 send(.navigationAction(action: .openTerminationDeletionScreen))

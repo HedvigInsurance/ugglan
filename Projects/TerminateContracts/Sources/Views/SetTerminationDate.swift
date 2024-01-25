@@ -16,7 +16,7 @@ struct SetTerminationDate: View {
         terminationDate: () -> Date
     ) {
         self.onSelected = onSelected
-        self.terminationDate = terminationDate()
+        self._terminationDate = State(wrappedValue: terminationDate())
     }
 
     var body: some View {
