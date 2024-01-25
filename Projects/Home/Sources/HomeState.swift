@@ -67,7 +67,6 @@ public struct HomeState: StateProtocol {
     public var importantMessages: [ImportantMessage] = []
     public var commonClaims: [CommonClaim] = []
     public var allCommonClaims: [CommonClaim] = []
-    public var shouldShowTravelInsurance: Bool = false
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
@@ -116,7 +115,6 @@ public enum HomeAction: ActionProtocol {
     case setChatNotification(hasNew: Bool)
     case setChatNotificationTimeStamp(sentAt: Date)
 
-    case setShowTravelInsurance(show: Bool)
     case dismissOtherServices
     case hideImportantMessage(id: String)
     case openContractCertificate(url: URL, title: String)
@@ -276,9 +274,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setCommonClaims(commonClaims):
             removeLoading(for: .fetchCommonClaim)
             newState.commonClaims = commonClaims
-            setAllCommonClaims(&newState)
-        case let .setShowTravelInsurance(show):
-            newState.shouldShowTravelInsurance = show
             setAllCommonClaims(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
