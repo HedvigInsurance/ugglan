@@ -52,7 +52,7 @@ class ChatDemoClients: FetchMessagesClient, SendMessageClient {
             id: UUID().uuidString,
             messages: messages,
             nextUntil: nil,
-            informationMessage: nil
+            banner: nil
         )
     }
 

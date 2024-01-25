@@ -79,7 +79,7 @@ class ChatScreenViewModel: ObservableObject {
                     self.nextUntil = chatData.nextUntil
                 } else {
                     withAnimation {
-                        self.informationMessage = chatData.informationMessage
+                        self.informationMessage = chatData.banner
                         self.lastDeliveredMessage = newMessages.first(where: { $0.sender == .member })
                     }
                     if nextUntil == nil {

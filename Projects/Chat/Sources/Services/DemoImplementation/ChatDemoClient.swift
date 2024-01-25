@@ -75,7 +75,7 @@ public class ChatDemoClient: FetchMessagesClient, SendMessageClient {
             id: UUID().uuidString,
             messages: messages,
             nextUntil: nil,
-            informationMessage: """
+            banner: """
                 Information message with deeplink asd asd as *[Help Center](https://hedvigtest.page.link/help-center)*
                 """
         )

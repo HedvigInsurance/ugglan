@@ -6,5 +6,5 @@ public struct ChatData {
     let id: String
     let messages: [Message]
     let nextUntil: String?
-    let informationMessage: Markdown?
+    let banner: Markdown?
 }
