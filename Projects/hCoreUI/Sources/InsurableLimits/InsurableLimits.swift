@@ -20,14 +20,15 @@ public struct InsurableLimitsSectionView: View {
             hRow {
                 VStack(alignment: .leading, spacing: 4) {
                     hText(limit.label)
-                        .fixedSize(horizontal: false, vertical: true)
                         .frame(maxHeight: .infinity, alignment: .top)
+                        .fixedSize()
                 }
             }
             .withCustomAccessory {
+                Spacer()
                 HStack(alignment: .top) {
                     hText(limit.limit)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .fixedSize()
                         .foregroundColor(hTextColor.secondary)
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()

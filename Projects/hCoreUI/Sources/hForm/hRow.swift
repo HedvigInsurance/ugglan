@@ -73,7 +73,6 @@ public struct hRow<Content: View, Accessory: View>: View {
             VStack(alignment: .leading) {
                 HStack(alignment: .top) {
                     content
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     accessory
                         .padding(.top, 4)
                 }
@@ -112,6 +111,7 @@ public struct ChevronAccessory: View {
     public init() {}
 
     public var body: some View {
+        Spacer()
         StandaloneChevronAccessory()
     }
 }
@@ -126,6 +126,7 @@ public struct SelectedAccessory: View {
     var selected: Bool
 
     public var body: some View {
+        Spacer()
         if selected {
             Image(uiImage: hCoreUIAssets.tick.image)
         }

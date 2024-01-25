@@ -22,6 +22,7 @@ public struct InfoExpandableView: View {
             hRow {
                 hText(title)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .withCustomAccessory({
                 Image(

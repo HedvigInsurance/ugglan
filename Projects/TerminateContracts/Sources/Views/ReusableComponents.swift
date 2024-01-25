@@ -48,6 +48,7 @@ struct DisplayQuestionView: View {
                 }
             }
         }
+        .padding(.bottom, 16)
     }
 
     struct TerminationQuestion: Codable, Equatable, Hashable {

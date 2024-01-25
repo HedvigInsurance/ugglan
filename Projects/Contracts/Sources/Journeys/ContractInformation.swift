@@ -38,6 +38,7 @@ struct ContractInformationView: View {
                             .withCustomAccessory({
                                 Spacer()
                                 hText(item.displayValue)
+                                    .fixedSize()
                                     .foregroundColor(hTextColor.secondary)
                             })
                         }
