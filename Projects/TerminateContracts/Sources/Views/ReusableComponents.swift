@@ -24,14 +24,34 @@ struct DisplayContractTable: View {
 struct DisplayQuestionView: View {
     @PresentableStore var store: TerminationContractStore
     let terminationQuestions: [TerminationQuestion] = [
-        TerminationQuestion(question: L10n.terminationQ01, answer: L10n.terminationA01),
-        TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
-        TerminationQuestion(question: L10n.terminationQ03, answer: L10n.terminationA03),
+        TerminationQuestion(
+            question: L10n.terminationQ01,
+            questionTranslated: L10n.terminationQ01_en,
+            answer: L10n.terminationA01
+        ),
+        TerminationQuestion(
+            question: L10n.terminationQ02,
+            questionTranslated: L10n.terminationQ02_en,
+            answer: L10n.terminationA02
+        ),
+        TerminationQuestion(
+            question: L10n.terminationQ03,
+            questionTranslated: L10n.terminationQ03_en,
+            answer: L10n.terminationA03
+        ),
     ]
 
     let deletionQuestions: [TerminationQuestion] = [
-        TerminationQuestion(question: L10n.terminationQ02, answer: L10n.terminationA02),
-        TerminationQuestion(question: L10n.terminationQ03, answer: L10n.terminationA03),
+        TerminationQuestion(
+            question: L10n.terminationQ02,
+            questionTranslated: L10n.terminationQ02_en,
+            answer: L10n.terminationA02
+        ),
+        TerminationQuestion(
+            question: L10n.terminationQ03,
+            questionTranslated: L10n.terminationQ03_en,
+            answer: L10n.terminationA03
+        ),
     ]
 
     var body: some View {
@@ -46,11 +66,11 @@ struct DisplayQuestionView: View {
                     InfoExpandableView(
                         title: question.question,
                         text: question.answer,
-                        questionClicked: { question in
+                        questionClicked: {
                             let stringToLog =
                                 (store.state.config?.isDeletion ?? false)
                                 ? "deletion question clicked" : "termination question clicked"
-                            log.info(stringToLog, attributes: ["question": question])
+                            log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }
                     ) { url in
                         store.send(.goToUrl(url: url))
@@ -63,6 +83,7 @@ struct DisplayQuestionView: View {
 
     struct TerminationQuestion: Codable, Equatable, Hashable {
         let question: String
+        let questionTranslated: String
         let answer: String
     }
 }

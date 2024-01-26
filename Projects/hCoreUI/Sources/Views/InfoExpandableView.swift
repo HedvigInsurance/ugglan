@@ -5,13 +5,13 @@ public struct InfoExpandableView: View {
     @State var selectedFields: [String] = []
     var title: String
     var text: String
-    var questionClicked: ((String) -> Void)?
+    var questionClicked: (() -> Void)?
     var onMarkDownClick: ((URL) -> Void)?
 
     public init(
         title: String,
         text: String,
-        questionClicked: ((String) -> Void)? = nil,
+        questionClicked: (() -> Void)? = nil,
         onMarkDownClick: ((URL) -> Void)? = nil
     ) {
         self.title = title
@@ -39,7 +39,7 @@ public struct InfoExpandableView: View {
             .onTap {
                 withAnimation(.spring) {
                     if !selectedFields.contains(title) {
-                        questionClicked?(title)
+                        questionClicked?()
                         selectedFields.append(title)
                     } else {
                         if let index = selectedFields.firstIndex(of: title) {
