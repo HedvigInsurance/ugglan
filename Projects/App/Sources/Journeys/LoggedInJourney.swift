@@ -39,9 +39,7 @@ extension AppJourney {
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
                 case .openTravelInsurance:
-                    TravelInsuranceFlowJourney.start {
-                        AppJourney.freeTextChat()
-                    }
+                    TravelInsuranceFlowJourney.start()
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {

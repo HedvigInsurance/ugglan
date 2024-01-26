@@ -100,9 +100,7 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
-                    let vc = TravelInsuranceFlowJourney.start {
-                        AppJourney.freeTextChat()
-                    }
+                    let vc = TravelInsuranceFlowJourney.start()
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }

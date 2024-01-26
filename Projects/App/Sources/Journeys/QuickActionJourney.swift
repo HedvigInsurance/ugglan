@@ -29,9 +29,7 @@ extension AppJourney {
                 AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
             }
         case .travelInsurance():
-            TravelInsuranceFlowJourney.start {
-                AppJourney.freeTextChat()
-            }
+            TravelInsuranceFlowJourney.start()
         default:
             if commonClaim.layout.titleAndBulletPoint == nil {
                 SubmitClaimEmergencyScreen.journey
