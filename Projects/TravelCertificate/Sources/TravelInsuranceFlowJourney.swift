@@ -33,6 +33,11 @@ public struct TravelInsuranceFlowJourney {
         }
     }
 
+    @JourneyBuilder
+    public static func list(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+        showListScreen(openChat)
+    }
+
     private static func showContractsList(
         _ openChat: @escaping (() -> some JourneyPresentation)
     ) -> some JourneyPresentation {
@@ -143,6 +148,15 @@ public struct TravelInsuranceFlowJourney {
             }
         }
         .hidesBackButton
+    }
+
+    private static func showListScreen(
+        _ openChat: @escaping (() -> some JourneyPresentation)
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            rootView: ListScreen()
+        )
+        .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 }
 

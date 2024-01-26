@@ -6,6 +6,7 @@ import Market
 import Payment
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 import hGraphQL
@@ -159,6 +160,10 @@ extension ProfileView {
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
+            } else if case .openTravelCertificate = action {
+                TravelInsuranceFlowJourney.list {
+                    resultJourney(.openChat)
+                }
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {

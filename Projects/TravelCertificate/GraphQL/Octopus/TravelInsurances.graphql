@@ -1,0 +1,9 @@
+query TravelCertificates {
+  currentMember {
+    travelCertificates {
+      startDate
+      id
+      signedUrl
+    }
+  }
+}

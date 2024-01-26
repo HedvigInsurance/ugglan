@@ -9,14 +9,14 @@ final class TravelInsuranceStore: LoadingStateStore<
     TravelInsuranceState, TravelInsuranceAction, TravelInsuranceLoadingAction
 >
 {
-    @Inject var octopus: hOctopus
+    @Inject var travelInsuranceClient: TravelInsuranceClient
     override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
     ) -> FiniteSignal<TravelInsuranceAction>? {
         switch action {
         case .postTravelInsuranceForm:
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return NilDisposer() }
                 let disposeBag = DisposeBag()
                 guard let config = self.state.travelInsuranceConfig,
                     let travelInsuranceModel = self.state.travelInsuranceModel
@@ -24,56 +24,61 @@ final class TravelInsuranceStore: LoadingStateStore<
                     self.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     return disposeBag
                 }
-                let input = OctopusGraphQL.TravelCertificateCreateInput(
+                let dto = TravenInsuranceFormDTO(
                     contractId: config.contractId,
                     startDate: travelInsuranceModel.startDate.localDateString,
                     isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
-                    coInsured: travelInsuranceModel.policyCoinsuredPersons.map({
-                        OctopusGraphQL.TravelCertificateCreateCoInsured(fullName: $0.fullName, ssn: $0.personalNumber)
-                    }),
+                    coInsured: travelInsuranceModel.policyCoinsuredPersons.compactMap(
+                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber) }
+                    ),
                     email: travelInsuranceModel.email
                 )
-                let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
-                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
-                let minimumTime = Signal(after: 1.5).future
-                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
-                    .onValue { [weak self] mutation, minimumTime in
-                        if let data = mutation.value {
-                            if let url = URL(string: data.travelCertificateCreate.signedUrl) {
-                                callback(
-                                    .value(
-                                        .setDownloadUrl(urL: url)
-                                    )
-                                )
-                            } else {
-                                self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
-                            }
-                        } else if let _ = mutation.error {
-                            self?.setError(L10n.General.errorBody, for: .postTravelInsurance)
-                        }
+                Task {
+                    do {
+                        let url = try await self.travelInsuranceClient.submitForm(dto: dto)
+                        callback(
+                            .value(
+                                .setDownloadUrl(urL: url)
+                            )
+                        )
+                        callback(.end)
+                    } catch _ {
+                        self.setError(L10n.General.errorBody, for: .postTravelInsurance)
+                        callback(.end)
                     }
+                }
+
                 return disposeBag
             }
         case .getTravelCertificateSpecification:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.TravelCertificateQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { data in
-                        let email = data.currentMember.email
-                        let specification = TravelInsuranceSpecification(
-                            data.currentMember,
-                            email: email
-                        )
+                Task {
+                    do {
+                        let specification = try await self.travelInsuranceClient.getSpecifications()
                         callback(.value(.setTravelInsurancesData(specification: specification)))
                         callback(.value(.travelCertificateSpecificationSet))
+                        callback(.end)
+                    } catch _ {
+                        self.setError(L10n.General.errorBody, for: .getTravelInsuranceSpecifications)
+                        callback(.end)
                     }
-                    .onError { error in
-                        // TODO
+                }
+                return disposeBag
+            }
+        case .getTravelInsruancesList:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                Task {
+                    do {
+                        let list = try await self.travelInsuranceClient.getList()
+                        callback(.value(.setTravelInsruancesList(list: list)))
+                        callback(.end)
+                    } catch _ {
+                        self.setError(L10n.General.errorBody, for: .getTravelInsurancesList)
+                        callback(.end)
                     }
+                }
                 return disposeBag
             }
         default:
@@ -85,11 +90,11 @@ final class TravelInsuranceStore: LoadingStateStore<
         var newState = state
         switch action {
         case .getTravelCertificateSpecification:
-            break
+            self.setLoading(for: .getTravelInsuranceSpecifications)
         case .travelCertificateSpecificationSet:
             break
         case let .setTravelInsurancesData(config):
-            removeLoading(for: .getTravelInsurance)
+            removeLoading(for: .getTravelInsuranceSpecifications)
             if let contractSpecification = config.travelCertificateSpecifications.first {
                 newState.travelInsuranceConfig = contractSpecification
                 newState.travelInsuranceModel = TravelInsuranceModel(
@@ -114,7 +119,7 @@ final class TravelInsuranceStore: LoadingStateStore<
             newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
-            send(.navigation(.openWhoIsTravelingScreen))
+        //            send(.navigation(.openWhoIsTravelingScreen))
         case .toogleMyselfAsInsured:
             newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
@@ -146,6 +151,11 @@ final class TravelInsuranceStore: LoadingStateStore<
         case let .setDownloadUrl(url):
             newState.downloadURL = url
             removeLoading(for: .postTravelInsurance)
+        case .getTravelInsruancesList:
+            setLoading(for: .getTravelInsurancesList)
+        case let .setTravelInsruancesList(list):
+            newState.travelInsuranceList = list
+            removeLoading(for: .getTravelInsurancesList)
         case let .navigation(type):
             switch type {
             case .openStartDateScreen:

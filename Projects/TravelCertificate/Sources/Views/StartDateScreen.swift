@@ -126,9 +126,10 @@ class StartDateViewModel: ObservableObject {
 
     func submit() async {
         if Masking(type: .email).isValid(text: emailValue) {
-            DispatchQueue.main.async { [weak self] in
-                self?.emailError = nil
-                self?.store.send(.navigation(.openWhoIsTravelingScreen))
+            DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                self.emailError = nil
+                self.store.send(.setEmail(value: self.emailValue))
+                self.store.send(.navigation(.openWhoIsTravelingScreen))
             }
         } else {
             DispatchQueue.main.async { [weak self] in
