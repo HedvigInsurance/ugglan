@@ -227,7 +227,7 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement =
             .init(agreement: contract.currentAgreement.fragments.agreementFragment)
         exposureDisplayName = contract.exposureDisplayName
-        masterInceptionDate = contract.masterInceptionDate.localDateToDate?.displayDateYYMMDDFormat
+        masterInceptionDate = contract.masterInceptionDate
         terminationDate = contract.terminationDate
         selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
@@ -498,8 +498,8 @@ public struct Agreement: Codable, Hashable {
             return nil
         }
         certificateUrl = agreement.certificateUrl
-        activeFrom = agreement.activeFrom.localDateToDate?.displayDateYYMMDDFormat
-        activeTo = agreement.activeTo.localDateToDate?.displayDateYYMMDDFormat
+        activeFrom = agreement.activeFrom
+        activeTo = agreement.activeTo
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)

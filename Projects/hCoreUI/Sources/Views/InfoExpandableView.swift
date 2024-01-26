@@ -5,15 +5,18 @@ public struct InfoExpandableView: View {
     @State var selectedFields: [String] = []
     var title: String
     var text: String
+    var questionClicked: ((String) -> Void)?
     var onMarkDownClick: ((URL) -> Void)?
 
     public init(
         title: String,
         text: String,
+        questionClicked: ((String) -> Void)? = nil,
         onMarkDownClick: ((URL) -> Void)? = nil
     ) {
         self.title = title
         self.text = text
+        self.questionClicked = questionClicked
         self.onMarkDownClick = onMarkDownClick
     }
 
@@ -22,18 +25,21 @@ public struct InfoExpandableView: View {
             hRow {
                 hText(title)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .withCustomAccessory({
-                Spacer()
-                Image(
-                    uiImage: selectedFields.contains(title)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .transition(.opacity.animation(.easeOut))
+                withAnimation(.spring()) {
+                    Image(
+                        uiImage: selectedFields.contains(title)
+                            ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                    )
+                }
+                .transition(.opacity)
             })
             .onTap {
                 withAnimation(.spring) {
                     if !selectedFields.contains(title) {
+                        questionClicked?(title)
                         selectedFields.append(title)
                     } else {
                         if let index = selectedFields.firstIndex(of: title) {
@@ -49,7 +55,7 @@ public struct InfoExpandableView: View {
                     hRow {
                         CustomTextViewRepresentable(
                             text: text,
-                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fixedWidth: UIScreen.main.bounds.width - 56,
                             height: $height
                         ) { url in
                             onMarkDownClick?(url)
@@ -66,6 +72,9 @@ public struct InfoExpandableView: View {
 
 struct InfoExpandableView_Previews: PreviewProvider {
     static var previews: some View {
-        InfoExpandableView(title: "title", text: "text")
+        InfoExpandableView(
+            title: "long longlong long long long title",
+            text: "long long long long long long long long long long"
+        )
     }
 }

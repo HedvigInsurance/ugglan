@@ -57,6 +57,9 @@ extension ContractTable: View {
                                 terminationMessage: contract.terminationMessage,
                                 contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
                                 contractExposureName: contract.exposureDisplayName,
+                                activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                                activeInFuture: contract.activeInFuture,
+                                masterInceptionDate: contract.masterInceptionDate,
                                 onClick: {
                                     store.send(
                                         .openDetail(
@@ -94,6 +97,7 @@ extension ContractTable: View {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
                                         .foregroundColor(hTextColor.primary)
+                                    Spacer()
                                 }
                                 .withChevronAccessory
                                 .foregroundColor(hTextColor.secondary)

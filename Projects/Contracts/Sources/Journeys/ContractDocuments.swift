@@ -30,6 +30,7 @@ struct ContractDocumentsView: View {
                                     VStack(alignment: .leading, spacing: 0) {
                                         if #available(iOS 15.0, *) {
                                             Text(attributedPDFString(for: document.displayName))
+                                                .fixedSize()
                                         } else {
                                             HStack(spacing: 1) {
                                                 hText(document.displayName)

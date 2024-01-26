@@ -29,9 +29,13 @@ public class TerminationFlowJourney {
                 openProgressScreen()
             }
         } else if case .dismissTerminationFlow = action {
-            DismissJourney()
+            withAnimation {
+                DismissJourney()
+            }
         } else if case .goToFreeTextChat = action {
-            DismissJourney()
+            withAnimation {
+                DismissJourney()
+            }
         }
     }
 
@@ -45,10 +49,6 @@ public class TerminationFlowJourney {
                 loading: .sendTerminationDate,
                 loadingViewText: L10n.terminateContractTerminatingProgress,
                 onErrorCancelAction: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissTerminationFlow)
-                },
-                onLoadingDismiss: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }
@@ -72,6 +72,11 @@ public class TerminationFlowJourney {
                     } else {
                         store.send(.navigationAction(action: .openTerminationFailScreen))
                     }
+                },
+                terminationDate: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    let preSelectedTerminationDate = store.state.terminationDateStep?.minDate.localDateToDate
+                    return preSelectedTerminationDate ?? Date()
                 }
             ),
             style: .detented(.scrollViewContentSize),
@@ -90,7 +95,11 @@ public class TerminationFlowJourney {
                 config: config,
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.sendTerminationDate)
+                    if store.state.config?.isDeletion ?? false {
+                        store.send(.sendConfirmDelete)
+                    } else {
+                        store.send(.sendTerminationDate)
+                    }
                     store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
@@ -123,12 +132,35 @@ public class TerminationFlowJourney {
     private static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: TerminationFailScreen()
+            rootView: GenericErrorView(
+                title: L10n.terminationNotSuccessfulTitle,
+                description: L10n.somethingWentWrong,
+                icon: .triangle,
+                buttons: .init(
+                    actionButtonAttachedToBottom: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissTerminationFlow)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                store.send(.goToFreeTextChat)
+                            }
+                        }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissTerminationFlow)
+                        }
+                    )
+                )
+            ),
+            style: .detented(.large, modally: true)
         ) {
             action in
             getScreen(for: action)
         }
-        .withJourneyDismissButton
         .hidesBackButton
     }
 
@@ -156,10 +188,15 @@ public class TerminationFlowJourney {
             rootView: TerminationDeleteScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.deleteTermination)
+                    if let config = store.state.config {
+                        store.send(.setTerminationisDeletion)
+                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    } else {
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    }
                 }
             ),
-            style: .detented(.large, modally: true)
+            style: .detented(.scrollViewContentSize)
         ) {
             action in
             getScreen(for: action)

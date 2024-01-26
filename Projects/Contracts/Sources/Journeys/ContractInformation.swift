@@ -33,11 +33,13 @@ struct ContractInformationView: View {
                         hSection(displayItems, id: \.displayValue) { item in
                             hRow {
                                 hText(item.displayTitle)
+                                    .fixedSize()
                             }
                             .noSpacing()
                             .withCustomAccessory({
                                 Spacer()
                                 hText(item.displayValue)
+                                    .fixedSize()
                                     .foregroundColor(hTextColor.secondary)
                             })
                         }
@@ -324,7 +326,8 @@ struct ContractInformationView: View {
                                         image: contract?.pillowType,
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
-                                        contractExposureName: contract?.exposureDisplayName ?? ""
+                                        contractExposureName: contract?.exposureDisplayName ?? "",
+                                        activeFrom: contract?.currentAgreement?.activeFrom
                                     )
                                 )
                             )

@@ -67,6 +67,7 @@ extension AppJourney {
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .configureContractNavigation
+            .configureChatNavigation
             .configureTerminationNavigation
     }
 
@@ -81,7 +82,10 @@ extension AppJourney {
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
-                    .configureTerminationNavigation
+                    .onDismiss {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetch)
+                    }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -303,6 +307,8 @@ extension JourneyPresentation {
         onAction(TerminationContractStore.self) { action in
             if case let .goToUrl(url) = action {
                 AppJourney.configureURL(url: url)
+            } else if case .goToFreeTextChat = action {
+                AppJourney.freeTextChat().withDismissButton
             }
         }
     }

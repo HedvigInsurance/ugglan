@@ -4,6 +4,7 @@ import hCoreUI
 
 struct TerminationDeleteScreen: View {
     @PresentableStore var store: TerminationContractStore
+    @State private var isHidden = false
     let onSelected: () -> Void
 
     init(
@@ -13,75 +14,45 @@ struct TerminationDeleteScreen: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(TerminationContractStore.self, [.deleteTermination], [.deleteTermination]) {
-            hForm {
-                PresentableStoreLens(
-                    TerminationContractStore.self,
-                    getter: { state in
-                        state.terminationDeleteStep
-                    }
-                ) { termination in
-
-                    VStack(spacing: 8) {
-                        Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 4)
-
-                        PresentableStoreLens(
-                            TerminationContractStore.self
-                        ) { state in
-                            state.terminationContractId ?? ""
-                        } _: { value in
-
-                            PresentableStoreLens(
-                                TerminationContractStore.self
-                            ) { state in
-                                state.config
-                            } _: { config in
-                                hText(
-                                    L10n.terminationContractDeletionAlertDescription(
-                                        config?.contractExposureName ?? ""
-                                    ),
-                                    style: .title2
-                                )
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 4)
+        PresentableStoreLens(
+            TerminationContractStore.self
+        ) { state in
+            state
+        } _: { termination in
+            GenericErrorView(
+                title: L10n.General.areYouSure,
+                description: L10n.terminateContractDeletionText(
+                    termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                icon: .triangle,
+                buttons: .init(
+                    actionButton: nil,
+                    actionButtonAttachedToBottom: .init(
+                        buttonTitle: L10n.terminateContractDeletionContinueButton,
+                        buttonAction: {
+                            onSelected()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.isHidden = true
                             }
                         }
-
-                        hText(termination?.disclaimer ?? "", style: .body)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(.leading, 16)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            .hFormAttachToBottom {
-
-                VStack {
-                    hButton.LargeButtonOutlined {
-                        store.send(.dismissTerminationFlow)
-                    } content: {
-                        hText(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hTextColor.primary)
-                    }
-                    .padding(.bottom, 4)
-                    hButton.LargeButton(type: .primary) {
-                        onSelected()
-                    } content: {
-                        hText(L10n.terminationContractDeletionConfirmButton, style: .body)
-                    }
-                    .padding(.bottom, 2)
-                }
-                .padding([.leading, .trailing, .bottom], 16)
-            }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCancelButton,
+                        buttonAction: {
+                            store.send(.dismissTerminationFlow)
+                        }
+                    )
+                )
+            )
         }
+        .hDisableScroll
+        .hide($isHidden)
+
     }
 }
 
 struct TerminationDeleteScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TerminationFailScreen()
+        TerminationDeleteScreen(onSelected: {})
     }
 }

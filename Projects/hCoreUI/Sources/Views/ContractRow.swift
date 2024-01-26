@@ -10,6 +10,10 @@ public struct ContractRow: View {
     let contractDisplayName: String
     let contractExposureName: String
 
+    let activeFrom: String?
+    let activeInFuture: Bool?
+    let masterInceptionDate: String?
+
     let onClick: (() -> Void)?
 
     public init(
@@ -17,12 +21,20 @@ public struct ContractRow: View {
         terminationMessage: String?,
         contractDisplayName: String,
         contractExposureName: String,
+        activeFrom: String? = nil,
+        activeInFuture: Bool? = nil,
+        masterInceptionDate: String? = nil,
         onClick: (() -> Void)? = nil
     ) {
         self.image = image
         self.terminationMessage = terminationMessage
         self.contractDisplayName = contractDisplayName
         self.contractExposureName = contractExposureName
+
+        self.activeFrom = activeFrom
+        self.activeInFuture = activeInFuture
+        self.masterInceptionDate = masterInceptionDate
+
         self.onClick = onClick
     }
 
@@ -37,7 +49,10 @@ public struct ContractRow: View {
                 image: image,
                 contractDisplayName: contractDisplayName,
                 contractExposureName: contractExposureName,
-                terminationMessage: terminationMessage
+                terminationMessage: terminationMessage,
+                activeFrom: activeFrom,
+                activeInFuture: activeInFuture,
+                masterInceptionDate: masterInceptionDate
             )
         )
         .background(
@@ -116,10 +131,19 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 if let terminationMessage {
                     StatusPill(text: terminationMessage).padding(.trailing, 4)
                 } else if let activeFrom {
-                    StatusPill(text: L10n.dashboardInsuranceStatusActiveUpdateDate(activeFrom)).padding(.trailing, 4)
+                    StatusPill(
+                        text: L10n.dashboardInsuranceStatusActiveUpdateDate(
+                            activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        )
+                    )
+                    .padding(.trailing, 4)
                 } else if activeInFuture ?? false {
-                    StatusPill(text: L10n.contractStatusActiveInFuture(masterInceptionDate ?? ""))
-                        .padding(.trailing, 4)
+                    StatusPill(
+                        text: L10n.contractStatusActiveInFuture(
+                            masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        )
+                    )
+                    .padding(.trailing, 4)
                 }
                 Spacer()
                 logo
