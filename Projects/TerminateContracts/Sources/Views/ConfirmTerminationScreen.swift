@@ -35,6 +35,7 @@ struct ConfirmTerminationScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
+            .padding(.top, 16)
         }
     }
 }
