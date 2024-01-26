@@ -75,11 +75,9 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     .perform(
                         mutation: mutation
                     )
-                    .onValue { data in
-                        log.info("Updated language successfully")
-                    }
+                    .onValue { _ in }
                     .onError { error in
-                        log.info("Failed updating language")
+                        log.warn("Failed updating language", error: error)
                     }
                 return disposeBag
             }
