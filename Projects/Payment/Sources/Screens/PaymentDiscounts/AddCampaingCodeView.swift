@@ -9,7 +9,7 @@ struct AddCampaingCodeView: View {
     var body: some View {
         ZStack(alignment: .center) {
             TextInputView(vm: vm.inputVm).opacity(vm.codeAdded ? 0 : 1)
-            SuccessScreen(title: L10n.paymentsDiscountAdded).opacity(vm.codeAdded ? 1 : 0)
+            SuccessScreen<EmptyView>(title: L10n.paymentsDiscountAdded).opacity(vm.codeAdded ? 1 : 0)
                 .offset(y: -32)
         }
         .toolbar {

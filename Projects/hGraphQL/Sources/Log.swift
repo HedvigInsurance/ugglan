@@ -52,6 +52,25 @@ public protocol Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     func critical(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?)
+
+    /// Sends RUM action.
+    /// - Parameters:
+    ///   - type: type of action
+    ///   - name: name of action
+    ///   - error: `Error` instance to be logged with its properties
+    ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
+    /// the same key already exist in this logger, it will be overridden (just for this message).
+    func addUserAction(
+        type: LoggingAction,
+        name: String,
+        error: Error?,
+        attributes: [AttributeKey: AttributeValue]?
+    )
+
+}
+
+public enum LoggingAction {
+    case click
 }
 
 extension Logging {
@@ -115,6 +134,15 @@ extension Logging {
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         critical(message, error: error, attributes: attributes)
+    }
+
+    public func addUserAction(
+        type: LoggingAction,
+        name: String,
+        error: Error? = nil,
+        attributes: [AttributeKey: AttributeValue]? = nil
+    ) {
+        self.addUserAction(type: type, name: name, error: error, attributes: attributes)
     }
 }
 

@@ -42,7 +42,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case openContractDetailErrorScreen
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
-    case dismisscontractDetailNavigation
+    case dismissContractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
     case startTermination(action: TerminationNavigationAction)

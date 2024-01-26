@@ -33,11 +33,13 @@ struct ContractInformationView: View {
                         hSection(displayItems, id: \.displayValue) { item in
                             hRow {
                                 hText(item.displayTitle)
+                                    .fixedSize()
                             }
                             .noSpacing()
                             .withCustomAccessory({
                                 Spacer()
                                 hText(item.displayValue)
+                                    .fixedSize()
                                     .foregroundColor(hTextColor.secondary)
                             })
                         }
@@ -318,7 +320,16 @@ struct ContractInformationView: View {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
                             terminationContractStore.send(
-                                .startTermination(contractId: id, contractName: contract?.exposureDisplayName ?? "")
+                                .startTermination(
+                                    config: .init(
+                                        contractId: id,
+                                        image: contract?.pillowType,
+                                        contractDisplayName: contract?.currentAgreement?.productVariant.displayName
+                                            ?? "",
+                                        contractExposureName: contract?.exposureDisplayName ?? "",
+                                        activeFrom: contract?.currentAgreement?.activeFrom
+                                    )
+                                )
                             )
                             vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
                                 if case let .navigationAction(navigationAction) = action {

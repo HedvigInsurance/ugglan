@@ -127,6 +127,7 @@ public struct HelpCenterStartView: View {
                 hSection {
                     hRow {
                         hText(item.title)
+                        Spacer()
                     }
                     .withChevronAccessory
                 }

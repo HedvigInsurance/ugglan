@@ -71,9 +71,10 @@ public struct hRow<Content: View, Accessory: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
-                HStack {
+                HStack(alignment: .top) {
                     content
                     accessory
+                        .padding(.top, 4)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -110,7 +111,6 @@ public struct ChevronAccessory: View {
     public init() {}
 
     public var body: some View {
-        Spacer()
         StandaloneChevronAccessory()
     }
 }

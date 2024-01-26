@@ -56,4 +56,26 @@ extension Logger: Logging {
     public func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         self.log(level: .critical, message: message, error: error, attributes: attributes)
     }
+
+    public func addUserAction(
+        type: LoggingAction,
+        name: String,
+        error: Error? = nil,
+        attributes: [AttributeKey: AttributeValue]? = nil
+    ) {
+        if let attributes {
+            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name, attributes: attributes)
+        } else {
+            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name)
+        }
+    }
+}
+
+extension LoggingAction {
+    var asRUMUserActionType: RUMUserActionType {
+        switch self {
+        case .click:
+            return .click
+        }
+    }
 }

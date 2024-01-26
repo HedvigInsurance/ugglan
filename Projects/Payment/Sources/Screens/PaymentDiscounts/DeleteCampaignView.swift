@@ -51,7 +51,7 @@ struct DeleteCampaignView: View {
                         .padding(.bottom, 16)
                     }
                 }
-            SuccessScreen(title: L10n.paymentsCodeRemoved).opacity(vm.codeRemoved ? 1 : 0)
+            SuccessScreen<EmptyView>(title: L10n.paymentsCodeRemoved).opacity(vm.codeRemoved ? 1 : 0)
                 .offset(y: -32)
         }
         .hDisableScroll
