@@ -50,6 +50,9 @@ public struct ProfileView: View {
                     if Dependencies.featureFlags().isPaymentScreenEnabled {
                         ProfileRow(row: .payment)
                     }
+                    if store.state.showTravelCertificate {
+                        ProfileRow(row: .travelCertificate)
+                    }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
