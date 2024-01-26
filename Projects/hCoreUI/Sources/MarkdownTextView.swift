@@ -11,7 +11,8 @@ import hGraphQL
 public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
-    @Binding var height: CGFloat
+    private let fontStyle: HFontTextStyle
+    @Binding private var height: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
 
     let onUrlClicked: (_ url: URL) -> Void
@@ -19,10 +20,12 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
         text: String,
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
+        fontStyle: HFontTextStyle,
         onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
+        self.fontStyle = fontStyle
         _height = height
         self.onUrlClicked = onUrlClicked
     }
@@ -30,6 +33,7 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
         let textView = CustomTextView(
             text: text,
             fixedWidth: fixedWidth,
+            fontStyle: fontStyle,
             height: $height,
             onUrlClicked: onUrlClicked
         )
@@ -43,18 +47,21 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
 }
 
 class CustomTextView: UIView, UITextViewDelegate {
-    let textView: UITextView
-    let fixedWidth: CGFloat
-    let onUrlClicked: (_ url: URL) -> Void
-    @Binding var height: CGFloat
+    private let textView: UITextView
+    private let fixedWidth: CGFloat
+    private let fontStyle: HFontTextStyle
+    private let onUrlClicked: (_ url: URL) -> Void
+    @Binding private var height: CGFloat
 
     init(
         text: String,
         fixedWidth: CGFloat,
+        fontStyle: HFontTextStyle,
         height: Binding<CGFloat>,
         onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         _height = height
+        self.fontStyle = fontStyle
         self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
         self.textView = UITextView()
@@ -93,7 +100,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         configureTextView()
         let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
         let markdownParser = MarkdownParser(
-            font: Fonts.fontFor(style: .body),
+            font: Fonts.fontFor(style: fontStyle),
             color: hTextColor.secondary.colorFor(schema, .base).color.uiColor()
         )
 

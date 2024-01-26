@@ -28,7 +28,8 @@ struct HelpCenterQuestionView: View {
                     CustomTextViewRepresentable(
                         text: question.answer,
                         fixedWidth: UIScreen.main.bounds.width - 32,
-                        height: $height
+                        height: $height,
+                        fontStyle: .standardLarge
                     ) { url in
                         Task {
                             do {
