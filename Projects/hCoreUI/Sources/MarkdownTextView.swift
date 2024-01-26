@@ -12,6 +12,8 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
     @Binding var height: CGFloat
+    @SwiftUI.Environment(\.colorScheme) var colorScheme
+
     let onUrlClicked: (_ url: URL) -> Void
     public init(
         text: String,
@@ -33,7 +35,11 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
         )
         return textView
     }
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        if let uiView = uiView as? CustomTextView {
+            uiView.setContent(from: text)
+        }
+    }
 }
 
 class CustomTextView: UIView, UITextViewDelegate {
@@ -41,6 +47,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     let fixedWidth: CGFloat
     let onUrlClicked: (_ url: URL) -> Void
     @Binding var height: CGFloat
+
     init(
         text: String,
         fixedWidth: CGFloat,
@@ -82,11 +89,12 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.delegate = self
     }
 
-    private func setContent(from text: String) {
+    func setContent(from text: String) {
         configureTextView()
+        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: .body),
-            color: hTextColor.secondary.colorFor(.light, .base).color.uiColor()
+            color: hTextColor.secondary.colorFor(schema, .base).color.uiColor()
         )
 
         let attributedString = markdownParser.parse(text)
