@@ -1,29 +1,18 @@
 import Foundation
 
 extension String {
-    // converts a YYYY-MM-DD date-string to a Date
-    private static let localDateToDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
     public var localDateToDate: Date? {
-        return String.localDateToDateFormatter.date(from: self)
+        return DateFormatters.localDateStringFormatter.date(from: self)
     }
+
     public var localDateToIso8601Date: Date? {
-        let formatter = ISO8601DateFormatter()
-
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        formatter.timeZone = .current
-        return formatter.date(from: self)
+        return DateFormatters.localDateToIso8601Date.date(from: self)
     }
 
-    public var localYYMMDDDateToDate: Date? {
-        let formatter = DateFormatter()
+    public var localBirthDateStringToDate: Date? {
         if self == "" {
             return nil
         }
-        formatter.dateFormat = "yyMMdd"
-        return formatter.date(from: self)
+        return DateFormatters.localbirthDateStringFormatter.date(from: self)
     }
 }

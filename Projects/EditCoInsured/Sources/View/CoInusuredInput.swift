@@ -313,9 +313,9 @@ struct CoInusuredInput: View {
                     showAsList: true,
                     dateFormatter: .birthDate
                 ),
-                selectedDate: vm.birthday.localYYMMDDDateToDate ?? vm.birthday.localDateToDate
+                selectedDate: vm.birthday.localBirthDateStringToDate ?? vm.birthday.localDateToDate
             ) { date in
-                vm.birthday = date.displayDateYYMMDDFormat ?? ""
+                vm.birthday = date.localBirthDateString
             }
         }
         .sectionContainerStyle(.transparent)

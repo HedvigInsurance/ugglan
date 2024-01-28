@@ -94,11 +94,11 @@ public struct hDatePickerField: View {
             Group {
                 if config.dateFormatter == .DDMMMYYYY {
                     if (selectedDate?.displayDateDDMMMYYYYFormat) != nil {
-                        Text((selectedDate?.displayDateDotFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                        Text((selectedDate?.displayDateDDMMMYYYYFormat ?? placeholderText) ?? L10n.generalSelectButton)
                     }
                 } else if config.dateFormatter == .birthDate {
-                    if (selectedDate?.displayDateYYMMDDFormat) != nil {
-                        Text((selectedDate?.displayDateYYMMDDFormat ?? placeholderText) ?? L10n.generalSelectButton)
+                    if (selectedDate?.localBirthDateString) != nil {
+                        Text((selectedDate?.localBirthDateString ?? placeholderText) ?? L10n.generalSelectButton)
                     }
                 }
             }

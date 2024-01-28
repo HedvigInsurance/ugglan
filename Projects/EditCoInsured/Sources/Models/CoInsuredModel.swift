@@ -101,8 +101,8 @@ extension String {
     var calculate10DigitBirthDate: String {
         if self.localDateToDate != nil {
             return self.localDateToDate?.localDateString ?? ""
-        } else if self.localYYMMDDDateToDate != nil {
-            return self.localYYMMDDDateToDate?.localDateString ?? ""
+        } else if self.localBirthDateStringToDate != nil {
+            return self.localBirthDateStringToDate?.localDateString ?? ""
         }
         return ""
     }
@@ -110,8 +110,8 @@ extension String {
     var birtDateDisplayFormat: String {
         if self.localDateToDate != nil {
             return self.localDateToDate?.localBirthDateString ?? ""
-        } else if self.localYYMMDDDateToDate != nil {
-            return self.localYYMMDDDateToDate?.localBirthDateString ?? ""
+        } else if self.localBirthDateStringToDate != nil {
+            return self.localBirthDateStringToDate?.localBirthDateString ?? ""
         }
         return ""
     }
