@@ -29,8 +29,12 @@ struct ContractDocumentsView: View {
                                 hRow {
                                     VStack(alignment: .leading, spacing: 0) {
                                         if #available(iOS 15.0, *) {
-                                            Text(attributedPDFString(for: document.displayName))
+                                            let attributedString = attributedPDFString(for: document.displayName)
+                                                .description
+                                            let stringToDisplay = attributedString.components(separatedBy: "{")[0]
+                                            hText(stringToDisplay)
                                                 .fixedSize()
+                                                .padding(.leading, 16)
                                         } else {
                                             HStack(spacing: 1) {
                                                 hText(document.displayName)
@@ -55,6 +59,7 @@ struct ContractDocumentsView: View {
                                 }
                             }
                         }
+                        .hWithoutHorizontalPadding
                     }
                 }
             }
