@@ -164,15 +164,15 @@ enum InsuranceQuestions {
 }
 enum OtherQuestions {
     static var q1: Question {
-        return .init(question: L10n.hcOtherQ01, answer: L10n.hcOtherA01, topicType: .myInsurance)
+        return .init(question: L10n.hcOtherQ01, answer: L10n.hcOtherA01, topicType: nil)
     }
     static var q2: Question {
-        return .init(question: L10n.hcOtherQ02, answer: L10n.hcOtherA02, topicType: .myInsurance)
+        return .init(question: L10n.hcOtherQ02, answer: L10n.hcOtherA02, topicType: nil)
     }
     static var q3: Question {
-        return .init(question: L10n.hcOtherQ03, answer: L10n.hcOtherA03, topicType: .myInsurance)
+        return .init(question: L10n.hcOtherQ03, answer: L10n.hcOtherA03, topicType: nil)
     }
     static var q4: Question {
-        return .init(question: L10n.hcOtherQ04, answer: L10n.hcOtherA04, topicType: .myInsurance)
+        return .init(question: L10n.hcOtherQ04, answer: L10n.hcOtherA04, topicType: nil)
     }
 }

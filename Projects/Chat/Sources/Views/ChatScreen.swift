@@ -18,6 +18,7 @@ struct ChatScreen: View {
             loadingPreviousMessages
             messagesContainer(with: proxy)
             infoCard
+                .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
         }
         .dismissKeyboard()
@@ -121,7 +122,6 @@ struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle)
         if let informationMessage = vm.informationMessage {
             InfoCard(text: "", type: .info)
                 .hInfoCardCustomView {

@@ -257,7 +257,7 @@ extension HelpCenterStartView {
                             ),
                             .init(
                                 title: L10n.hcGeneralTitle,
-                                type: .other,
+                                type: nil,
                                 commonQuestions: [
                                     OtherQuestions.q1,
                                     OtherQuestions.q2,

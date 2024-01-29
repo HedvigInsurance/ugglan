@@ -81,7 +81,7 @@ public class ChatDemoClient: FetchMessagesClient, SendMessageClient {
         )
     }
 
-    public func send(message: Message) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
         self.messages.append(message)
         return .init(message: message, status: nil)
     }

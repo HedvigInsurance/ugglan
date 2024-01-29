@@ -18,8 +18,8 @@ class ChatScreenViewModel: ObservableObject {
     private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-    private let topicType: HelpCenterTopicType?
-    init(topicType: HelpCenterTopicType?) {
+    private let topicType: ChatTopicType?
+    init(topicType: ChatTopicType?) {
         self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
@@ -72,7 +72,9 @@ class ChatScreenViewModel: ObservableObject {
                 if next != nil {
                     handleNext(messages: newMessages)
                 } else {
-                    self.informationMessage = chatData.banner
+                    withAnimation {
+                        self.informationMessage = chatData.banner
+                    }
                     handleInitial(messages: newMessages)
                 }
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
@@ -133,7 +135,7 @@ class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageClient.send(message: message)
+            let data = try await sendMessageClient.send(message: message, topic: topicType)
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }

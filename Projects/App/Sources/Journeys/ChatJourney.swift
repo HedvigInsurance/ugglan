@@ -13,7 +13,7 @@ extension AppJourney {
     @JourneyBuilder
     static func freeTextChat(
         style: PresentationStyle = .detented(.large),
-        withTopic topic: HelpCenterTopicType? = nil
+        withTopic topic: ChatTopicType? = nil
     ) -> some JourneyPresentation {
         if Dependencies.featureFlags().isChatDisabled {
             AppJourney.disableChatScreen(style: style)
@@ -46,7 +46,7 @@ extension AppJourney {
         }
     }
 
-    static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
+    private static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
         return HostingJourney(
             rootView: GenericErrorView(
                 title: nil,

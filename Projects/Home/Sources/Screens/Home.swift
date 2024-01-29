@@ -260,7 +260,7 @@ extension HomeView {
 
 public enum HomeResult {
     case startMovingFlow
-    case openFreeTextChat(topic: HelpCenterTopicType?)
+    case openFreeTextChat(topic: ChatTopicType?)
     case openConnectPayments
     case startNewClaim
     case openTravelInsurance

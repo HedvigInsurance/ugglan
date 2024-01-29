@@ -11,7 +11,7 @@ public struct HelpCenterModel: Codable, Equatable, Hashable {
 
 public struct CommonTopic: Codable, Equatable, Hashable {
     let title: String
-    let type: HelpCenterTopicType
+    let type: ChatTopicType?
     let commonQuestions: [Question]
     let allQuestions: [Question]
 }
@@ -19,10 +19,10 @@ public struct CommonTopic: Codable, Equatable, Hashable {
 public struct Question: Codable, Equatable, Hashable {
     let question: String
     let answer: String
-    let topicType: HelpCenterTopicType
+    let topicType: ChatTopicType?
     let relatedQuestions: [Question]
 
-    public init(question: String, answer: String, topicType: HelpCenterTopicType, relatedQuestions: [Question] = []) {
+    public init(question: String, answer: String, topicType: ChatTopicType?, relatedQuestions: [Question] = []) {
         var answer = answer
         if Environment.staging == Environment.current {
             answer =

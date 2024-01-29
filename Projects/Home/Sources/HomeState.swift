@@ -104,7 +104,7 @@ public enum HomeAction: ActionProtocol {
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
     case startClaim
-    case openFreeTextChat(from: HelpCenterTopicType?)
+    case openFreeTextChat(from: ChatTopicType?)
     case openMovingFlow
     case openTravelInsurance
     case openHelpCenter

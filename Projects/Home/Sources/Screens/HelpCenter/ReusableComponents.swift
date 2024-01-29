@@ -140,7 +140,7 @@ struct QuestionsItems: View {
 }
 
 struct SupportView: View {
-    let topic: HelpCenterTopicType?
+    let topic: ChatTopicType?
     @PresentableStore var store: HomeStore
 
     var body: some View {

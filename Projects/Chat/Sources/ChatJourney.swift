@@ -5,7 +5,7 @@ import hCoreUI
 
 public class ChatJourney {
     public static func start<ResultJourney: JourneyPresentation>(
-        topic: HelpCenterTopicType?,
+        topic: ChatTopicType?,
         style: PresentationStyle,
         @JourneyBuilder resultJourney: @escaping (_ result: ChatResult) -> ResultJourney
 
