@@ -161,7 +161,7 @@ extension DefaultStyling {
     public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = UIColor.brand(.primaryBackground())
+        appearance.backgroundColor = .clear
         appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
         appearance.backgroundImage = nil
         appearance.backgroundEffect = UIBlurEffect(style: style == .dark ? .dark : .light)

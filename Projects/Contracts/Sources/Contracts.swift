@@ -143,12 +143,12 @@ extension Contracts {
                     description: limit.description,
                     onDismiss: {
                         let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.dismisscontractDetailNavigation)
+                        store.send(.dismissContractDetailNavigation)
                     }
                 )
                 .journey
                 .onAction(ContractStore.self) { action, presenter in
-                    if case .dismisscontractDetailNavigation = action {
+                    if case .dismissContractDetailNavigation = action {
                         presenter.bag.dispose()
                     }
                 }

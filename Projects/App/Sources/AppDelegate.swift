@@ -176,15 +176,10 @@ import hGraphQL
         }
         setupAnalyticsAndTracking()
         bag += Localization.Locale.$currentLocale
-            .atOnce()
-            .onValue { locale in
+            .onValue { [weak self] locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-
-                ApolloClient.initAndRegisterClient()
-                    .always {
-                        self.performUpdateLanguage()
-                    }
+                self?.bag += ApolloClient.initAndRegisterClient()
             }
 
         ApolloClient.bundle = Bundle.main

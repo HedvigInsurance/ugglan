@@ -28,6 +28,7 @@ public struct GenericErrorView: View {
         if useForm {
             hForm {
                 content
+                    .padding(.bottom, 32)
             }
             .hFormContentPosition(.center)
             .hFormAttachToBottom {
@@ -50,7 +51,7 @@ public struct GenericErrorView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.bottom, 16)
+                .padding(.vertical, 16)
             }
         } else {
             content

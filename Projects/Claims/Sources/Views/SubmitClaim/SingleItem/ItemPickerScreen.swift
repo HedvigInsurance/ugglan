@@ -24,6 +24,7 @@ public struct ItemPickerScreen<T>: View {
                         hRow {
                             hText(item.displayName, style: .title3)
                                 .foregroundColor(hTextColor.primary)
+                            Spacer()
                         }
                         .withChevronAccessory
                         .verticalPadding(9)

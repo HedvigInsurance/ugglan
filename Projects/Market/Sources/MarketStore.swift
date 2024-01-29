@@ -4,7 +4,7 @@ import Presentation
 import hCore
 
 public struct MarketState: StateProtocol {
-    public var market: Market = .sweden
+    public var market: Market = .fromLocalization(Localization.Locale.currentLocale.market)
 
     public init() {}
 }

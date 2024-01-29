@@ -140,7 +140,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var terminationMessage: String? {
-        let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDotFormat ?? ""
+        let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
         if let terminationDate {
             if typeOfContract.showValidUntilInsteadOfTerminatedAt {
                 if terminatedToday {

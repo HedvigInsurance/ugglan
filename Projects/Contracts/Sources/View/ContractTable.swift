@@ -52,10 +52,26 @@ extension ContractTable: View {
 
                         }
                         ForEach(contracts, id: \.id) { contract in
-                            ContractRow(id: contract.id)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.bottom, 8)
-                                .transition(.slide)
+                            ContractRow(
+                                image: contract.pillowType?.bgImage,
+                                terminationMessage: contract.terminationMessage,
+                                contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                contractExposureName: contract.exposureDisplayName,
+                                activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                                activeInFuture: contract.activeInFuture,
+                                masterInceptionDate: contract.masterInceptionDate,
+                                onClick: {
+                                    store.send(
+                                        .openDetail(
+                                            contractId: contract.id,
+                                            title: contract.currentAgreement?.productVariant.displayName ?? ""
+                                        )
+                                    )
+                                }
+                            )
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.bottom, 8)
+                            .transition(.slide)
                         }
                     }
                 }
@@ -81,6 +97,7 @@ extension ContractTable: View {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
                                         .foregroundColor(hTextColor.primary)
+                                    Spacer()
                                 }
                                 .withChevronAccessory
                                 .foregroundColor(hTextColor.secondary)

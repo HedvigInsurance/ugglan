@@ -63,9 +63,4 @@ extension ContractState {
     public var hasActiveContracts: Bool {
         !(activeContracts.compactMap { $0 }.isEmpty)
     }
-
-    public var isTravelInsuranceIncluded: Bool {
-        return activeContracts.compactMap({ $0 }).contains(where: { $0.hasTravelInsurance })
-            && Dependencies.featureFlags().isTravelInsuranceEnabled
-    }
 }

@@ -107,9 +107,11 @@ extension HomeView {
                         }
                     }
                 case .future:
-                    ImportantMessagesView()
-                    FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
-                        .slideUpFadeAppearAnimation()
+                    VStack(spacing: 16) {
+                        HomeBottomScrollView(memberId: memberId)
+                        FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
+                            .slideUpFadeAppearAnimation()
+                    }
                 case .terminated:
                     VStack(spacing: 16) {
                         InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)

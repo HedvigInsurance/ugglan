@@ -58,5 +58,6 @@ extension ChatData {
         self.hasNext = data.hasNext
         self.nextUntil = data.nextUntil
         self.messages = data.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
+        self.banner = data.banner
     }
 }

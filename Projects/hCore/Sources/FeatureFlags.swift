@@ -117,87 +117,39 @@ public class FeatureFlagsUnleash: FeatureFlags {
         guard let unleashClient else {
             return
         }
+        var featureFlags = [String: Bool]()
+
         let movingFlowKey = "moving_flow"
         isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
-
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": movingFlowKey,
-                "enabled": isMovingFlowEnabled,
-            ]
-        )
+        featureFlags[movingFlowKey] = isMovingFlowEnabled
 
         let editCoInsuredKey = "edit_coinsured"
         isEditCoInsuredEnabled = unleashClient.isEnabled(name: editCoInsuredKey)
-
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": editCoInsuredKey,
-                "enabled": isEditCoInsuredEnabled,
-            ]
-        )
+        featureFlags[editCoInsuredKey] = isEditCoInsuredEnabled
 
         let travelInsuranceKey = "travel_insurance"
         isTravelInsuranceEnabled = unleashClient.isEnabled(name: travelInsuranceKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": travelInsuranceKey,
-                "enabled": isTravelInsuranceEnabled,
-            ]
-        )
+        featureFlags[travelInsuranceKey] = isTravelInsuranceEnabled
 
         let terminationFlowKey = "termination_flow"
         isTerminationFlowEnabled = unleashClient.isEnabled(name: terminationFlowKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": terminationFlowKey,
-                "enabled": isTerminationFlowEnabled,
-            ]
-        )
+        featureFlags[terminationFlowKey] = isTerminationFlowEnabled
 
         let updateNecessaryeKey = "update_necessary"
         isUpdateNecessary = unleashClient.isEnabled(name: updateNecessaryeKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": updateNecessaryeKey,
-                "enabled": isUpdateNecessary,
-            ]
-        )
+        featureFlags[updateNecessaryeKey] = isUpdateNecessary
 
         let disableChatKey = "disable_chat"
         isChatDisabled = unleashClient.isEnabled(name: disableChatKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": disableChatKey,
-                "enabled": isChatDisabled,
-            ]
-        )
+        featureFlags[disableChatKey] = isChatDisabled
 
         let paymentScreenKey = "payment_screen"
         isPaymentScreenEnabled = unleashClient.isEnabled(name: paymentScreenKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": paymentScreenKey,
-                "enabled": isPaymentScreenEnabled,
-            ]
-        )
+        featureFlags[paymentScreenKey] = isPaymentScreenEnabled
 
         let helpCenterKey = "help_center"
         isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
-        log.info(
-            "feature flag info",
-            attributes: [
-                "flag": helpCenterKey,
-                "enabled": isHelpCenterEnabled,
-            ]
-        )
+        featureFlags[helpCenterKey] = isHelpCenterEnabled
 
         let paymentTypeKey = "payment_type"
         let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
@@ -206,6 +158,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } else {
             paymentType = .trustly
         }
+
+        log.info(
+            "Feature flag set",
+            attributes: ["featureFlags": featureFlags]
+        )
     }
 }
 

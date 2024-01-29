@@ -9,12 +9,18 @@ import hGraphQL
 
 struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
+    @State var infoViewHeight: CGFloat = 0
+    @State var infoViewWidth: CGFloat = 0
+
+    @PresentableStore private var store: ChatStore
     var body: some View {
         ScrollViewReader { proxy in
-            loadingPreviousMessages
-
-            messagesContainer(with: proxy)
-            ChatInputView(vm: vm.chatInputVm)
+            VStack(spacing: 0) {
+                loadingPreviousMessages
+                messagesContainer(with: proxy)
+                infoCard
+                ChatInputView(vm: vm.chatInputVm)
+            }
         }
         .dismissKeyboard()
     }
@@ -33,7 +39,7 @@ struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(spacing: 8) {
                 ForEach(vm.messages, id: \.id) { message in
                     messageView(for: message)
                         .flippedUpsideDown()
@@ -47,6 +53,7 @@ struct ChatScreen: View {
                 }
             }
             .padding([.horizontal, .bottom], 16)
+            .padding(.top, vm.informationMessage != nil ? 8 : 0)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
@@ -63,6 +70,7 @@ struct ChatScreen: View {
             let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
             sheetInteraction?.setValue(false, forKey: "enabled")
         }
+        .padding(.bottom, -8)
     }
 
     private func messageView(for message: Message) -> some View {
@@ -103,12 +111,50 @@ struct ChatScreen: View {
                 }
                 .hTextStyle(.standardSmall)
                 .foregroundColor(hTextColor.tertiary)
+                .padding(.bottom, 3)
+
             }
             if message.sender == .hedvig {
                 Spacer()
             }
         }
         .id(message.id)
+    }
+
+    @ViewBuilder
+    private var infoCard: some View {
+        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle)
+        if let informationMessage = vm.informationMessage {
+            InfoCard(text: "", type: .info)
+                .hInfoCardCustomView {
+                    GeometryReader { geo in
+                        if infoViewWidth > 0 {
+                            hCoreUI.CustomTextViewRepresentable(
+                                config: .init(
+                                    text: informationMessage,
+                                    fixedWidth: infoViewWidth,
+                                    fontStyle: .standardSmall,
+                                    color: hSignalColor.blueText,
+                                    linkColor: hTextColor.primary,
+                                    linkUnderlineStyle: nil,
+                                    onUrlClicked: { url in
+                                        store.send(.navigation(action: .linkClicked(url: url)))
+                                    }
+                                ),
+                                height: $infoViewHeight
+                            )
+                        } else {
+                            Rectangle().frame(height: 0)
+                                .onReceive(Just(geo.size.width)) { width in
+                                    self.infoViewWidth = width
+                                }
+                        }
+                    }
+                    .frame(height: infoViewHeight)
+
+                }
+                .hInfoCardLayoutStyle(.rectange)
+        }
     }
 }
 

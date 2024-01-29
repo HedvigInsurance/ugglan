@@ -23,6 +23,10 @@ public class ChatJourney {
             if case let .navigation(navigationAction) = action {
                 if case .closeChat = navigationAction {
                     PopJourney()
+                } else if case let .linkClicked(link) = navigationAction {
+                    if let deepLink = DeepLink.getType(from: link), deepLink.tabURL {
+                        PopJourney()
+                    }
                 }
             } else if case .checkPushNotificationStatus = action {
                 resultJourney(.notifications)
@@ -42,5 +46,4 @@ public class ChatJourney {
 }
 public enum ChatResult {
     case notifications
-
 }
