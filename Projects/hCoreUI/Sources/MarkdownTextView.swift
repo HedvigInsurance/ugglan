@@ -10,30 +10,8 @@ import hGraphQL
 
 public struct CustomTextViewRepresentable: UIViewRepresentable {
     let config: CustomTextViewRepresentableConfig
-    @Binding var height: CGFloat
-    public init(
-        text: Markdown,
-        fixedWidth: CGFloat,
-        height: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: URL) -> Void
-    ) {
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
-        let linkColor = hTextColor.primary.colorFor(schema, .base).color.uiColor()
-        let textColor = hTextColor.secondary.colorFor(.light, .base).color.uiColor()
-        config = .init(
-            text: text,
-            fixedWidth: fixedWidth,
-            fontStyle: .standardLarge,
-            color: textColor,
-            linkColor: linkColor,
-            linkUnderlineStyle: .thick,
-            onUrlClicked: { url in
-                onUrlClicked(url)
-            }
-        )
-        _height = height
-    }
-
+    @Binding private var height: CGFloat
+    @SwiftUI.Environment(\.colorScheme) var colorScheme
     public init(
         config: CustomTextViewRepresentableConfig,
         height: Binding<CGFloat>
@@ -46,7 +24,11 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
         let textView = CustomTextView(config: config, height: $height)
         return textView
     }
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        if let uiView = uiView as? CustomTextView {
+            uiView.setContent(from: config.text)
+        }
+    }
 }
 
 class CustomTextView: UIView, UITextViewDelegate {
@@ -71,13 +53,14 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
         textView.dataDetectorTypes = [.address, .link, .phoneNumber]
-        textView.linkTextAttributes = [
-            .foregroundColor: config.linkColor,
-            .underlineColor: config.linkColor,
-        ]
+        let schema = ColorScheme.init(UITraitCollection.current.userInterfaceStyle) ?? .light
+        var linkTextAttributes = [NSAttributedString.Key: Any]()
+        linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(schema, .base).color.uiColor()
+        linkTextAttributes[.underlineColor] = config.linkColor.colorFor(schema, .base).color.uiColor()
         if let linkUnderlineStyle = config.linkUnderlineStyle {
-            textView.linkTextAttributes[.underlineStyle] = linkUnderlineStyle
+            linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
         }
+        textView.linkTextAttributes = linkTextAttributes
 
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
@@ -89,11 +72,12 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.delegate = self
     }
 
-    private func setContent(from text: String) {
+    func setContent(from text: String) {
         configureTextView()
+        let schema = ColorScheme.init(UITraitCollection.current.userInterfaceStyle) ?? .light
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
-            color: config.color
+            color: config.color.colorFor(schema, .base).color.uiColor()
         )
 
         let attributedString = markdownParser.parse(text)
@@ -107,11 +91,11 @@ class CustomTextView: UIView, UITextViewDelegate {
 
     private func calculateHeight() {
         let newHeight = getHeight()
-        self.snp.makeConstraints { make in
-            make.height.equalTo(newHeight)
-            make.width.equalTo(config.fixedWidth)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        //        self.snp.makeConstraints { make in
+        //            make.height.equalTo(newHeight)
+        //            make.width.equalTo(config.fixedWidth)
+        //        }
+        DispatchQueue.main.async { [weak self] in
             self?.height = newHeight
         }
     }
@@ -145,8 +129,8 @@ public struct CustomTextViewRepresentableConfig {
     let text: Markdown
     let fixedWidth: CGFloat
     let fontStyle: HFontTextStyle
-    let color: UIColor
-    let linkColor: UIColor
+    let color: any hColor
+    let linkColor: any hColor
     let linkUnderlineStyle: NSUnderlineStyle?
     let onUrlClicked: (_ url: URL) -> Void
 
@@ -154,8 +138,8 @@ public struct CustomTextViewRepresentableConfig {
         text: Markdown,
         fixedWidth: CGFloat,
         fontStyle: HFontTextStyle,
-        color: UIColor,
-        linkColor: UIColor,
+        color: any hColor,
+        linkColor: any hColor,
         linkUnderlineStyle: NSUnderlineStyle?,
         onUrlClicked: @escaping (_: URL) -> Void
     ) {

@@ -10,6 +10,7 @@ struct ReferralsView: View {
             hSection(referrals) { referral in
                 hRow {
                     ReferralView(referral: referral)
+                    Spacer()
                 }
                 .withChevronAccessory
                 .hWithoutHorizontalPadding

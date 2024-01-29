@@ -134,8 +134,8 @@ struct ChatScreen: View {
                                     text: informationMessage,
                                     fixedWidth: infoViewWidth,
                                     fontStyle: .standardSmall,
-                                    color: hSignalColor.blueText.colorFor(schema ?? .light, .base).color.uiColor(),
-                                    linkColor: hTextColor.primary.colorFor(.light, .base).color.uiColor(),
+                                    color: hSignalColor.blueText,
+                                    linkColor: hTextColor.primary,
                                     linkUnderlineStyle: nil,
                                     onUrlClicked: { url in
                                         store.send(.navigation(action: .linkClicked(url: url)))

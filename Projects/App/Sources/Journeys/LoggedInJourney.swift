@@ -68,6 +68,7 @@ extension AppJourney {
             .configurePaymentNavigation
             .configureContractNavigation
             .configureChatNavigation
+            .configureTerminationNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -81,6 +82,10 @@ extension AppJourney {
                 AppJourney.webRedirect(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
+                    .onDismiss {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetch)
+                    }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -297,6 +302,17 @@ extension JourneyPresentation {
             }
         }
     }
+
+    public var configureTerminationNavigation: some JourneyPresentation {
+        onAction(TerminationContractStore.self) { action in
+            if case let .goToUrl(url) = action {
+                AppJourney.configureURL(url: url)
+            } else if case .goToFreeTextChat = action {
+                AppJourney.freeTextChat().withDismissButton
+            }
+        }
+    }
+
     public var configureChatNavigation: some JourneyPresentation {
         onAction(ChatStore.self) { action, pre in
             if case let .setLastMessageDate(date) = action {

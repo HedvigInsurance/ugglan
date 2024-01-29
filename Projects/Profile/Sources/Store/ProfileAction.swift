@@ -41,6 +41,8 @@ public enum ProfileAction: ActionProtocol {
     case setPushNotificationsTo(date: Date?)
 
     case registerForPushNotifications
+
+    case updateLanguage
 }
 
 public enum ProfileLoadingAction: LoadingProtocol {

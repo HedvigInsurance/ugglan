@@ -26,19 +26,26 @@ struct HelpCenterQuestionView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                     CustomTextViewRepresentable(
-                        text: question.answer,
-                        fixedWidth: UIScreen.main.bounds.width - 32,
-                        height: $height
-                    ) { url in
-                        Task {
-                            do {
-                                if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
-                                    _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                        config: .init(
+                            text: question.answer,
+                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fontStyle: .standardLarge,
+                            color: hTextColor.secondary,
+                            linkColor: hTextColor.primary,
+                            linkUnderlineStyle: .single,
+                            onUrlClicked: { url in
+                                Task {
+                                    do {
+                                        if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                        }
+                                        store.send(.goToURL(url: url))
+                                    } catch {}
                                 }
-                                store.send(.goToURL(url: url))
-                            } catch {}
-                        }
-                    }
+                            }
+                        ),
+                        height: $height
+                    )
                     .frame(height: height)
                 }
                 .padding(.horizontal, 16)

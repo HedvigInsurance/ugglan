@@ -1,14 +1,12 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct TerminationSuccessScreen: View {
     @PresentableStore var store: TerminationContractStore
 
-    init() {}
-
     var body: some View {
-
         PresentableStoreLens(
             TerminationContractStore.self,
             getter: { state in
@@ -16,46 +14,49 @@ struct TerminationSuccessScreen: View {
             }
         ) { termination in
             hForm {
-                VStack(spacing: 8) {
-                    Image(uiImage: hCoreUIAssets.circularCheckmark.image)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 81)
-
-                    hText(L10n.terminationSuccessfulTitle, style: .title1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    hText(
-                        L10n.terminationSuccessfulText(
-                            formatAndPrintDate(dateStringInput: termination?.terminationDate ?? ""),
-                            L10n.hedvigNameText
+                VStack(spacing: 16) {
+                    DisplayContractTable(
+                        config: .init(
+                            contractId: store.state.config?.contractId ?? "",
+                            image: nil,
+                            contractDisplayName: store.state.config?.contractDisplayName ?? "",
+                            contractExposureName: store.state.config?.contractExposureName ?? ""
                         ),
-                        style: .body
+                        terminationDate: (store.state.config?.isDeletion ?? false)
+                            ? Date().displayDateDDMMMYYYYFormat ?? ""
+                            : termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     )
-                    .foregroundColor(hTextColor.secondary)
-                    .padding(.bottom, 300)
+
+                    hSection {
+                        InfoCard(
+                            text: L10n.terminateContractConfirmationInfoText(
+                                (store.state.config?.isDeletion ?? false)
+                                    ? Date().displayDateDDMMMYYYYFormat ?? ""
+                                    : termination?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            ),
+                            type: .info
+                        )
+                    }
+
+                    DisplayQuestionView()
+                }
+            }
+            .padding(.top, 8)
+            .hFormAttachToBottom {
+                hButton.LargeButton(type: .ghost) {
+                    log.addUserAction(type: .click, name: "terminationSurvey")
+                    if let surveyToURL = URL(string: termination?.surveyUrl) {
+                        store.send(.dismissTerminationFlow)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            store.send(.goToUrl(url: surveyToURL))
+                        }
+                    }
+                } content: {
+                    hText(L10n.terminationOpenSurveyLabel)
                 }
                 .padding(.horizontal, 16)
             }
-
-            hButton.LargeButton(type: .primary) {
-
-                if let surveyToURL = URL(string: termination?.surveyUrl) {
-                    UIApplication.shared.open(surveyToURL)
-                }
-                store.send(.dismissTerminationFlow)
-
-            } content: {
-                hText(L10n.terminationOpenSurveyLabel, style: .body)
-            }
-            .frame(maxWidth: .infinity, alignment: .bottom)
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 40)
         }
-    }
-
-    func formatAndPrintDate(dateStringInput: String) -> String {
-        let date = dateStringInput.localDateToDate ?? Date()
-        return date.localDateStringDayFirst ?? ""
     }
 }
 

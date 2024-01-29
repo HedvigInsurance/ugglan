@@ -125,12 +125,6 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         self.view.addSubview(tabBarController.view)
 
         tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
-
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        bag += contractStore.stateSignal.onValue { state in
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(.setShowTravelInsurance(show: state.isTravelInsuranceIncluded))
-        }
     }
 }
 

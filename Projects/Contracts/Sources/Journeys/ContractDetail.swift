@@ -1,3 +1,4 @@
+import Combine
 import Flow
 import Form
 import Foundation
@@ -59,7 +60,7 @@ class TabControllerContext: ObservableObject {
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
     @EnvironmentObject var context: TabControllerContext
-
+    @StateObject private var vm: ContractDetailsViewModel
     var id: String
     var title: String
 
@@ -89,6 +90,7 @@ public struct ContractDetail: View {
     ) {
         self.id = id
         self.title = title
+        self._vm = .init(wrappedValue: .init(id: id))
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(id: id)
         contractDocuments = ContractDocumentsView(id: id)
@@ -114,37 +116,47 @@ public struct ContractDetail: View {
     }
 
     public var body: some View {
-        hForm {
-            hSection {
-                ContractRow(
-                    id: id,
-                    allowDetailNavigation: false
-                )
-                .fixedSize(horizontal: false, vertical: true)
-                Picker("View", selection: $context.selected) {
-                    ForEach(ContractDetailsViews.allCases) { view in
-                        hText(view.title, style: .standardSmall).tag(view)
+        if let contract = store.state.contractForId(id) {
+            hForm {
+                hSection {
+                    ContractRow(
+                        image: contract.pillowType?.bgImage,
+                        terminationMessage: contract.terminationMessage,
+                        contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: contract.exposureDisplayName,
+                        activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                        activeInFuture: contract.activeInFuture,
+                        masterInceptionDate: contract.masterInceptionDate
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    Picker("View", selection: $context.selected) {
+                        ForEach(ContractDetailsViews.allCases) { view in
+                            hText(view.title, style: .standardSmall).tag(view)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.top, 8)
+                VStack(spacing: 4) {
+                    ForEach(ContractDetailsViews.allCases) { panel in
+                        if context.trigger == panel {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                        }
                     }
                 }
-                .pickerStyle(.segmented)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.top, 8)
-            VStack(spacing: 4) {
-                ForEach(ContractDetailsViews.allCases) { panel in
-                    if context.trigger == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
-                    }
-                }
+            .presentableStoreLensAnimation(.default)
+            .introspectViewController { [weak vm] vc in
+                vm?.vc = vc
             }
-            .padding(.top, 16)
-            .padding(.bottom, 8)
         }
-        .presentableStoreLensAnimation(.default)
     }
 }
 
@@ -185,7 +197,7 @@ extension ContractDetail {
                         buttonTitle: L10n.generalCloseButton,
                         buttonAction: {
                             let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismisscontractDetailNavigation)
+                            store.send(.dismissContractDetailNavigation)
                         }
                     ),
                     dismissButton: .init(
@@ -198,9 +210,34 @@ extension ContractDetail {
         ) { action in
             if case .goToFreeTextChat = action {
                 DismissJourney()
-            } else if case .dismisscontractDetailNavigation = action {
+            } else if case .dismissContractDetailNavigation = action {
                 DismissJourney()
             }
         }
+    }
+}
+
+class ContractDetailsViewModel: ObservableObject {
+    private let id: String
+    @PresentableStore var store: ContractStore
+    weak var vc: UIViewController?
+    var observeContractStateCancellable: AnyCancellable?
+    init(id: String) {
+        self.id = id
+        observeContractState()
+    }
+
+    private func observeContractState() {
+        let id = self.id
+        observeContractStateCancellable = store.stateSignal.plain()
+            .publisher
+            .map({ $0.contractForId(id)?.id })
+            .eraseToAnyPublisher()
+            .removeDuplicates()
+            .sink { [weak self] value in
+                if value == nil {
+                    self?.vc?.navigationController?.popToRootViewController(animated: true)
+                }
+            }
     }
 }
