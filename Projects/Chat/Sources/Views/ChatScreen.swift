@@ -12,7 +12,6 @@ struct ChatScreen: View {
     var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
-
             messagesContainer(with: proxy)
             ChatInputView(vm: vm.chatInputVm)
         }
