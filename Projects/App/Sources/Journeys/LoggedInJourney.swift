@@ -320,8 +320,6 @@ extension JourneyPresentation {
 
                         }
                     }
-                case .redirectAction:
-                    break
                 case .closeChat:
                     break
                 }
