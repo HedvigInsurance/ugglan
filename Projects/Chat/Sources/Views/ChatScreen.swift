@@ -15,12 +15,10 @@ struct ChatScreen: View {
     @PresentableStore private var store: ChatStore
     var body: some View {
         ScrollViewReader { proxy in
-            VStack(spacing: 0) {
-                loadingPreviousMessages
-                messagesContainer(with: proxy)
-                infoCard
-                ChatInputView(vm: vm.chatInputVm)
-            }
+            loadingPreviousMessages
+            messagesContainer(with: proxy)
+            infoCard
+            ChatInputView(vm: vm.chatInputVm)
         }
         .dismissKeyboard()
     }
