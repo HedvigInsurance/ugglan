@@ -19,7 +19,7 @@ struct ListScreen: View {
                     hRow {
                         hText(travelCertificate.date.displayDateDDMMMFormat)
                         Spacer()
-                        hText(travelCertificate.valid ? "Active" : "Expired")
+                        hText(travelCertificate.valid ? L10n.TravelCertificate.active : L10n.TravelCertificate.expired)
                     }
                     .withChevronAccessory
                     .foregroundColor(travelCertificate.textColor)
@@ -40,7 +40,7 @@ struct ListScreen: View {
                                 disposeBag += topVc.present(vc)
                             }
                         } content: {
-                            hText("Create new certificate")
+                            hText(L10n.TravelCertificate.createNewCertificate)
                         }
                     }
                     .padding(.vertical, 16)
