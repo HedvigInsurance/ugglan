@@ -128,7 +128,6 @@ public struct ContractDetail: View {
                         activeInFuture: contract.activeInFuture,
                         masterInceptionDate: contract.masterInceptionDate
                     )
-                    .fixedSize(horizontal: false, vertical: true)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title, style: .standardSmall).tag(view)
