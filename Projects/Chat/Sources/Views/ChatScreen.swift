@@ -15,12 +15,11 @@ struct ChatScreen: View {
     @PresentableStore private var store: ChatStore
     var body: some View {
         ScrollViewReader { proxy in
-            VStack(spacing: 0) {
-                loadingPreviousMessages
-                messagesContainer(with: proxy)
-                infoCard
-                ChatInputView(vm: vm.chatInputVm)
-            }
+            loadingPreviousMessages
+            messagesContainer(with: proxy)
+            infoCard
+                .padding(.bottom, -8)
+            ChatInputView(vm: vm.chatInputVm)
         }
         .dismissKeyboard()
     }
@@ -123,7 +122,6 @@ struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle)
         if let informationMessage = vm.informationMessage {
             InfoCard(text: "", type: .info)
                 .hInfoCardCustomView {
@@ -170,5 +168,5 @@ struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init())
+    return ChatScreen(vm: .init(topicType: nil))
 }

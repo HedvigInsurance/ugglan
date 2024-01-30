@@ -32,8 +32,8 @@ extension AppJourney {
                 switch result {
                 case .startMovingFlow:
                     AppJourney.movingFlow()
-                case .openFreeTextChat:
-                    AppJourney.freeTextChat().withDismissButton
+                case let .openFreeTextChat(topic):
+                    AppJourney.freeTextChat(withTopic: topic).withDismissButton
                 case .openConnectPayments:
                     PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:

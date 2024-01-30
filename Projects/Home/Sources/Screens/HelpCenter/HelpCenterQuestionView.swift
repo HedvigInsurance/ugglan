@@ -49,7 +49,7 @@ struct HelpCenterQuestionView: View {
                     .frame(height: height)
                 }
                 .padding(.horizontal, 16)
-                SupportView()
+                SupportView(topic: question.topicType)
                     .padding(.top, 8)
             }
         }
@@ -83,6 +83,7 @@ extension HelpCenterQuestionView {
             question: "When do you charge for my insurance?",
             answer:
                 "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month. \n\nYour insurance starts on 1 June. The first dawn takes place on June 27, for the entire month of June. This means that you pay 27 days in arrears and 3 days in advance. \n\nThe insurance is valid even if the first payment has not been received. \n\nGo to Payments to view your full history",
+            topicType: .payments,
             relatedQuestions: []
         )
     )

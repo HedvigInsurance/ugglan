@@ -5,13 +5,14 @@ import hCoreUI
 
 public class ChatJourney {
     public static func start<ResultJourney: JourneyPresentation>(
+        topic: ChatTopicType?,
         style: PresentationStyle,
         @JourneyBuilder resultJourney: @escaping (_ result: ChatResult) -> ResultJourney
 
     ) -> some JourneyPresentation {
         return HostingJourney(
             ChatStore.self,
-            rootView: ChatScreen(vm: .init()),
+            rootView: ChatScreen(vm: .init(topicType: topic)),
             style: style,
             options: [
                 .embedInNavigationController,

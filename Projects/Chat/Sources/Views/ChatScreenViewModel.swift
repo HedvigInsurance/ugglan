@@ -18,8 +18,9 @@ class ChatScreenViewModel: ObservableObject {
     private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-
-    init() {
+    private let topicType: ChatTopicType?
+    init(topicType: ChatTopicType?) {
+        self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
@@ -69,27 +70,23 @@ class ChatScreenViewModel: ObservableObject {
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             if !newMessages.isEmpty {
                 if next != nil {
-                    if lastDeliveredMessage == nil {
-                        withAnimation {
-                            self.lastDeliveredMessage = newMessages.first(where: { $0.sender == .member })
-                        }
-                    }
                     handleNext(messages: newMessages)
-                    self.hasNext = chatData.hasNext
-                    self.nextUntil = chatData.nextUntil
                 } else {
                     withAnimation {
                         self.informationMessage = chatData.banner
-                        self.lastDeliveredMessage = newMessages.first(where: { $0.sender == .member })
-                    }
-                    if nextUntil == nil {
-                        self.hasNext = chatData.hasNext
-                        self.nextUntil = chatData.nextUntil
                     }
                     handleInitial(messages: newMessages)
                 }
-
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+            }
+            if next == nil && nextUntil == nil {
+                self.hasNext = chatData.hasNext
+                if self.hasNext == true {
+                    self.nextUntil = chatData.nextUntil
+                }
+            } else if next != nil {
+                self.hasNext = chatData.hasNext
+                self.nextUntil = chatData.nextUntil
             }
         } catch let ex {
             if let next = next {
@@ -106,18 +103,23 @@ class ChatScreenViewModel: ObservableObject {
     private func handleInitial(messages: [Message]) {
         withAnimation {
             self.messages.insert(contentsOf: messages, at: 0)
-            self.messages.sort(by: { $0.sentAt > $1.sentAt })
+            sortMessages()
         }
         if let lastMessage = messages.first {
             handleLastMessageTimeStamp(for: lastMessage)
         }
-
     }
 
     private func handleNext(messages: [Message]) {
         withAnimation {
             self.messages.append(contentsOf: messages)
+            sortMessages()
         }
+    }
+
+    private func sortMessages() {
+        self.messages.sort(by: { $0.sentAt > $1.sentAt })
+        self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
     }
 
     @MainActor
@@ -133,7 +135,7 @@ class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageClient.send(message: message)
+            let data = try await sendMessageClient.send(message: message, topic: topicType)
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }
@@ -162,7 +164,6 @@ class ChatScreenViewModel: ObservableObject {
             type: remoteMessage.type,
             date: remoteMessage.sentAt
         )
-
         switch localMessage.type {
         case let .file(file):
             if file.mimeType.isImage {
