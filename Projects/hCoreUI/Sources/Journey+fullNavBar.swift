@@ -11,20 +11,11 @@ extension JourneyPresentation {
                 let appearance = UINavigationBarAppearance()
                 appearance.configureWithTransparentBackground()
                 appearance.backgroundColor = UIColor.brand(.primaryBackground())
-                appearance.shadowColor = .clear
-                appearance.backgroundImage = UIImage()
-                appearance.backgroundEffect = UIBlurEffect(style: .systemThinMaterial)
+                appearance.shadowColor = hBorderColor.translucentOne.colorFor(.light, .base).color.uiColor()
+                appearance.backgroundImage = nil
+                appearance.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
                 DefaultStyling.applyCommonNavigationBarStyling(appearance)
                 presenter.viewController.navigationController?.navigationBar.scrollEdgeAppearance = appearance
-
-                let standardAppearance = UINavigationBarAppearance()
-                standardAppearance.configureWithTransparentBackground()
-                standardAppearance.backgroundColor = UIColor.brand(.primaryBackground())
-                standardAppearance.shadowColor = .clear
-                standardAppearance.backgroundImage = UIImage()
-                standardAppearance.backgroundEffect = UIBlurEffect(style: .systemThinMaterial)
-                DefaultStyling.applyCommonNavigationBarStyling(standardAppearance)
-                presenter.viewController.navigationController?.navigationBar.standardAppearance = standardAppearance
             })
         }
     }
