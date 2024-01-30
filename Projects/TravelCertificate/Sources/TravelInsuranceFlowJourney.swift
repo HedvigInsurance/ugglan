@@ -141,9 +141,27 @@ public struct TravelInsuranceFlowJourney {
 
     private static func showListScreen() -> some JourneyPresentation {
         HostingJourney(
+            TravelInsuranceStore.self,
             rootView: ListScreen()
-        )
+        ) { action in
+            if case let .navigation(navigationAction) = action {
+                if case let .openDetails(model) = navigationAction {
+                    showDetails(for: model)
+                } else if case .goBack = navigationAction {
+                    PopJourney()
+                }
+            }
+        }
         .configureTitle(L10n.TravelCertificate.cardTitle)
+    }
+
+    private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
+        let document = Document(url: model.url, title: model.title)
+        return Journey(
+            document,
+            style: .detented(.large)
+        )
+        .withDismissButton
     }
 }
 

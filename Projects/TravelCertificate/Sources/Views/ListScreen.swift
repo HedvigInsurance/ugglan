@@ -23,6 +23,9 @@ struct ListScreen: View {
                     }
                     .withChevronAccessory
                     .foregroundColor(travelCertificate.textColor)
+                    .onTapGesture {
+                        store.send(.navigation(.openDetails(for: travelCertificate)))
+                    }
                 }
                 .withoutHorizontalPadding
             }

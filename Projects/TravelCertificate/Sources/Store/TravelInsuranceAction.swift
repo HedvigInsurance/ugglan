@@ -10,7 +10,7 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setTravelInsuranceData(specification: TravelInsuranceContractSpecification)
     case postTravelInsuranceForm
     case getTravelInsruancesList
-    case setTravelInsruancesList(list: [TravelCertificateListModel])
+    case setTravelInsruancesList(list: [TravelCertificateModel])
 
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
@@ -34,6 +34,7 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openFreeTextChat
     case openProcessingScreen
     case goBack
+    case openDetails(for: TravelCertificateModel)
 }
 
 enum TravelInsuranceLoadingAction: LoadingProtocol {

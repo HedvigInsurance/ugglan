@@ -174,6 +174,8 @@ final class TravelInsuranceStore: LoadingStateStore<
                 break
             case .goBack:
                 break
+            case .openDetails:
+                break
             }
         }
         return newState

@@ -4,7 +4,7 @@ import hCore
 public protocol TravelInsuranceClient {
     func getSpecifications() async throws -> TravelInsuranceSpecification
     func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL
-    func getList() async throws -> [TravelCertificateListModel]
+    func getList() async throws -> [TravelCertificateModel]
 }
 
 public struct TravenInsuranceFormDTO {
