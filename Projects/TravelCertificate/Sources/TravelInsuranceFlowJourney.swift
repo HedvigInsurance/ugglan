@@ -147,6 +147,8 @@ public struct TravelInsuranceFlowJourney {
             if case let .navigation(navigationAction) = action {
                 if case let .openDetails(model) = navigationAction {
                     showDetails(for: model)
+                } else if case .openStartDateScreen = navigationAction {
+                    start()
                 } else if case .goBack = navigationAction {
                     PopJourney()
                 }

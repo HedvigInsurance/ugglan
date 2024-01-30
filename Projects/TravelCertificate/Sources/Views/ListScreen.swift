@@ -39,10 +39,13 @@ struct ListScreen: View {
                         InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
                         if canAddTravelInsurance {
                             hButton.LargeButton(type: .secondary) {
-                                let vc = TravelInsuranceFlowJourney.start()
-                                let disposeBag = DisposeBag()
-                                if let topVc = UIApplication.shared.getTopViewController() {
-                                    disposeBag += topVc.present(vc)
+                                Task {
+                                    do {
+                                        _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                        store.send(.navigation(.openStartDateScreen))
+                                    } catch _ {
+
+                                    }
                                 }
                             } content: {
                                 hText(L10n.TravelCertificate.createNewCertificate)
@@ -52,7 +55,6 @@ struct ListScreen: View {
                     .padding(.vertical, 16)
                 }
             }
-            .trackLoading(TravelInsuranceStore.self, action: .getTravelInsurancesList)
         }
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
