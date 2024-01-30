@@ -4,6 +4,7 @@ import SwiftUI
 import TravelCertificate
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct HelpCenterStartView: View {
     private var helpCenterModel: HelpCenterModel
@@ -95,6 +96,11 @@ public struct HelpCenterStartView: View {
         )
         .onTapGesture {
             if let quickAction {
+                log.addUserAction(
+                    type: .click,
+                    name: "help center quick action",
+                    attributes: ["action": quickAction.id]
+                )
                 Task {
                     if case quickAction.id = CommonClaim.travelInsurance().id {
                         _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
