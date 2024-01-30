@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-    public static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
+    static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
         let disposeBag = DisposeBag()
         return try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<TravelInsuranceSpecification, Error>) -> Void in
@@ -23,30 +23,38 @@ public struct TravelInsuranceFlowJourney {
         }
     }
     @JourneyBuilder
-    public static func start() -> some JourneyPresentation {
+    static func start() -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         let numberOfContracts = store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 0
         if numberOfContracts > 1 {
             showContractsList()
         } else {
-            showStartDateScreen(detended: true)
+            showStartDateScreen(style: .modally(presentationStyle: .fullScreen))
         }
     }
 
     @JourneyBuilder
-    public static func list(canAddTravelInsurance: Bool) -> some JourneyPresentation {
-        showListScreen(canAddTravelInsurance: canAddTravelInsurance)
+    public static func list(
+        canAddTravelInsurance: Bool,
+        style: PresentationStyle,
+        infoButtonPlacement: ToolbarItemPlacement
+    ) -> some JourneyPresentation {
+        showListScreen(
+            canAddTravelInsurance: canAddTravelInsurance,
+            style: style,
+            infoButtonPlacement: infoButtonPlacement
+        )
     }
 
     private static func showContractsList() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: ContractsScreen(),
-            style: .modally(presentationStyle: .overFullScreen)
+            style: .modally(presentationStyle: .fullScreen)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openStartDateScreen = navigationAction {
-                    TravelInsuranceFlowJourney.showStartDateScreen(detended: false)
+                    showStartDateScreen(style: .default)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 }
@@ -55,11 +63,11 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
 
-    private static func showStartDateScreen(detended: Bool) -> some JourneyPresentation {
+    private static func showStartDateScreen(style: PresentationStyle) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: StartDateScreen(),
-            style: detended ? .modally(presentationStyle: .overFullScreen) : .default
+            style: style
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openWhoIsTravelingScreen = navigationAction {
@@ -139,15 +147,24 @@ public struct TravelInsuranceFlowJourney {
         .hidesBackButton
     }
 
-    private static func showListScreen(canAddTravelInsurance: Bool) -> some JourneyPresentation {
+    private static func showListScreen(
+        canAddTravelInsurance: Bool,
+        style: PresentationStyle,
+        infoButtonPlacement: ToolbarItemPlacement
+    ) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ListScreen(canAddTravelInsurance: canAddTravelInsurance)
+            rootView: ListScreen(
+                canAddTravelInsurance: canAddTravelInsurance,
+                infoButtonPlacement: infoButtonPlacement
+            ),
+            style: style,
+            options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case let .openDetails(model) = navigationAction {
                     showDetails(for: model)
-                } else if case .openStartDateScreen = navigationAction {
+                } else if case .openCreateNew = navigationAction {
                     start()
                 } else if case .goBack = navigationAction {
                     PopJourney()

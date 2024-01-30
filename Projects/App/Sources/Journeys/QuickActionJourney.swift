@@ -5,7 +5,7 @@ import Foundation
 import Home
 import Payment
 import Presentation
-import TravelCertificate
+import Profile
 import UIKit
 import hCore
 
@@ -29,7 +29,7 @@ extension AppJourney {
                 AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
             }
         case .travelInsurance():
-            TravelInsuranceFlowJourney.start()
+            TravelInsuranceJourney.travelCertificateModally()
         default:
             if commonClaim.layout.titleAndBulletPoint == nil {
                 SubmitClaimEmergencyScreen.journey

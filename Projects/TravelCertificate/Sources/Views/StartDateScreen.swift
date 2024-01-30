@@ -9,24 +9,7 @@ struct StartDateScreen: View {
     @StateObject var vm = StartDateViewModel()
     @PresentableStore var store: TravelInsuranceStore
     var body: some View {
-        if store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 1 < 2 {
-            form
-                .toolbar {
-                    ToolbarItem(
-                        placement: store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 1 == 1
-                            ? .navigationBarLeading : .navigationBarTrailing
-                    ) {
-                        InfoViewHolder(
-                            title: L10n.TravelCertificate.Info.title,
-                            description: L10n.TravelCertificate.Info.subtitle,
-                            type: .navigation
-                        )
-                        .foregroundColor(hTextColor.primary)
-                    }
-                }
-        } else {
-            form
-        }
+        form
     }
 
     var form: some View {

@@ -6,7 +6,6 @@ import Foundation
 import Payment
 import Presentation
 import Profile
-import TravelCertificate
 import UIKit
 import hCore
 import hGraphQL
@@ -100,7 +99,7 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
-                    let vc = TravelInsuranceFlowJourney.start()
+                    let vc = TravelInsuranceJourney.travelCertificateModally()
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }

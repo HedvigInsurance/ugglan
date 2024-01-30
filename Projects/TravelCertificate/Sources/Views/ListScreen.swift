@@ -8,8 +8,13 @@ import hCoreUI
 struct ListScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     let canAddTravelInsurance: Bool
-    init(canAddTravelInsurance: Bool) {
+    let infoButtonPlacement: ToolbarItemPlacement
+    init(
+        canAddTravelInsurance: Bool,
+        infoButtonPlacement: ToolbarItemPlacement
+    ) {
         self.canAddTravelInsurance = canAddTravelInsurance
+        self.infoButtonPlacement = infoButtonPlacement
     }
     public var body: some View {
         PresentableStoreLens(
@@ -42,7 +47,7 @@ struct ListScreen: View {
                                 Task {
                                     do {
                                         _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                        store.send(.navigation(.openStartDateScreen))
+                                        store.send(.navigation(.openCreateNew))
                                     } catch _ {
 
                                     }
@@ -53,6 +58,18 @@ struct ListScreen: View {
                         }
                     }
                     .padding(.vertical, 16)
+                }
+            }
+            .toolbar {
+                ToolbarItem(
+                    placement: infoButtonPlacement
+                ) {
+                    InfoViewHolder(
+                        title: L10n.TravelCertificate.Info.title,
+                        description: L10n.TravelCertificate.Info.subtitle,
+                        type: .navigation
+                    )
+                    .foregroundColor(hTextColor.primary)
                 }
             }
         }

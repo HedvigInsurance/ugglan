@@ -26,6 +26,7 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
 }
 
 enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
+    case openCreateNew
     case openStartDateScreen
     case openWhoIsTravelingScreen
     case openCoinsured(member: PolicyCoinsuredPersonModel?)

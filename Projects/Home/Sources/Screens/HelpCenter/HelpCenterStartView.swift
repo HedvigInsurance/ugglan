@@ -102,9 +102,6 @@ public struct HelpCenterStartView: View {
                     attributes: ["action": quickAction.id]
                 )
                 Task {
-                    if case quickAction.id = CommonClaim.travelInsurance().id {
-                        _ = try? await TravelInsuranceFlowJourney.getTravelCertificate()
-                    }
                     store.send(.goToQuickAction(quickAction))
                 }
             }
