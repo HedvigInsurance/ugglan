@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hCoreUI
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: Date
@@ -73,5 +74,16 @@ public struct TravelCertificateListModel: Codable, Equatable, Hashable, Identifi
         self.date = date
         self.valid = valid
         self.url = url
+    }
+}
+
+extension TravelCertificateListModel {
+    @hColorBuilder
+    var textColor: some hColor {
+        if valid {
+            hTextColor.primary
+        } else {
+            hSignalColor.redElement
+        }
     }
 }

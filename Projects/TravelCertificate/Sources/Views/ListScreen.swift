@@ -15,13 +15,14 @@ struct ListScreen: View {
             }
         ) { list in
             hForm {
-                hSection(list) { element in
+                hSection(list) { travelCertificate in
                     hRow {
-                        hText(element.date.displayDateDDMMMFormat)
+                        hText(travelCertificate.date.displayDateDDMMMFormat)
                         Spacer()
-                        hText("Active")
+                        hText(travelCertificate.valid ? "Active" : "Expired")
                     }
                     .withChevronAccessory
+                    .foregroundColor(travelCertificate.textColor)
                 }
                 .withoutHorizontalPadding
             }

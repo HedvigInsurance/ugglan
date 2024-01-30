@@ -47,12 +47,7 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let query = OctopusGraphQL.TravelCertificatesQuery()
             let data = try await self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             return data.currentMember.travelCertificates.compactMap({
-                TravelCertificateListModel(
-                    id: $0.id,
-                    date: $0.startDate.localDateToDate ?? Date(),
-                    valid: true,
-                    url: URL(string: $0.signedUrl)
-                )
+                TravelCertificateListModel.init($0)
             })
         } catch let ex {
             throw ex
@@ -112,5 +107,15 @@ extension TravelInsuranceContractSpecification {
         self.maxDuration = data.maxDurationDays
         self.street = data.location?.street ?? ""
 
+    }
+}
+
+extension TravelCertificateListModel {
+    init?(_ data: OctopusGraphQL.TravelCertificatesQuery.Data.CurrentMember.TravelCertificate) {
+        guard let url = URL(string: data.signedUrl) else { return nil }
+        self.id = data.id
+        self.date = data.startDate.localDateToDate ?? Date()
+        self.valid = (data.expiryDate.localDateToDate ?? Date()) > Date()
+        self.url = url
     }
 }

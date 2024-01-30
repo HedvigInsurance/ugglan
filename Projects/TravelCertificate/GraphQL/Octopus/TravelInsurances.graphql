@@ -4,6 +4,7 @@ query TravelCertificates {
       startDate
       id
       signedUrl
+      expiryDate
     }
   }
 }
