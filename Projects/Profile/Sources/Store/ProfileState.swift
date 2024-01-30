@@ -23,9 +23,12 @@ public struct ProfileState: StateProtocol {
 
     var showTravelCertificate: Bool {
         let flags: FeatureFlags = Dependencies.shared.resolve()
+        return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
+    }
+
+    var canCreateTravelInsurance: Bool {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let canCreateTravelcertificate = !contractStore.state.activeContracts.filter({ $0.hasTravelInsurance }).isEmpty
-        return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelcertificate)
+        return !contractStore.state.activeContracts.filter({ $0.hasTravelInsurance }).isEmpty
     }
     public init() {
         UNUserNotificationCenter.current()

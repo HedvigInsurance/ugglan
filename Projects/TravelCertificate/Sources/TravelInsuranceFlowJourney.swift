@@ -34,8 +34,8 @@ public struct TravelInsuranceFlowJourney {
     }
 
     @JourneyBuilder
-    public static func list() -> some JourneyPresentation {
-        showListScreen()
+    public static func list(canAddTravelInsurance: Bool) -> some JourneyPresentation {
+        showListScreen(canAddTravelInsurance: canAddTravelInsurance)
     }
 
     private static func showContractsList() -> some JourneyPresentation {
@@ -139,10 +139,10 @@ public struct TravelInsuranceFlowJourney {
         .hidesBackButton
     }
 
-    private static func showListScreen() -> some JourneyPresentation {
+    private static func showListScreen(canAddTravelInsurance: Bool) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ListScreen()
+            rootView: ListScreen(canAddTravelInsurance: canAddTravelInsurance)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case let .openDetails(model) = navigationAction {

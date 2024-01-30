@@ -161,7 +161,8 @@ extension ProfileView {
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
             } else if case .openTravelCertificate = action {
-                TravelInsuranceFlowJourney.list()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                TravelInsuranceFlowJourney.list(canAddTravelInsurance: store.state.canCreateTravelInsurance)
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {

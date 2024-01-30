@@ -7,6 +7,10 @@ import hCoreUI
 
 struct ListScreen: View {
     @PresentableStore var store: TravelInsuranceStore
+    let canAddTravelInsurance: Bool
+    init(canAddTravelInsurance: Bool) {
+        self.canAddTravelInsurance = canAddTravelInsurance
+    }
     public var body: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
@@ -33,14 +37,16 @@ struct ListScreen: View {
                 hSection {
                     VStack(spacing: 16) {
                         InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
-                        hButton.LargeButton(type: .secondary) {
-                            let vc = TravelInsuranceFlowJourney.start()
-                            let disposeBag = DisposeBag()
-                            if let topVc = UIApplication.shared.getTopViewController() {
-                                disposeBag += topVc.present(vc)
+                        if canAddTravelInsurance {
+                            hButton.LargeButton(type: .secondary) {
+                                let vc = TravelInsuranceFlowJourney.start()
+                                let disposeBag = DisposeBag()
+                                if let topVc = UIApplication.shared.getTopViewController() {
+                                    disposeBag += topVc.present(vc)
+                                }
+                            } content: {
+                                hText(L10n.TravelCertificate.createNewCertificate)
                             }
-                        } content: {
-                            hText(L10n.TravelCertificate.createNewCertificate)
                         }
                     }
                     .padding(.vertical, 16)
