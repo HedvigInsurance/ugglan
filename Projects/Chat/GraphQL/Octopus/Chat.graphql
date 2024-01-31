@@ -7,7 +7,7 @@ query Chat($until: Instant) {
     messages {
         ...MessageFragment
     }
-    banner
+    bannerText
   }
 }
 

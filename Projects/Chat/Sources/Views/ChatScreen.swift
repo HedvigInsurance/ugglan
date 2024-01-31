@@ -52,7 +52,7 @@ struct ChatScreen: View {
                 }
             }
             .padding([.horizontal, .bottom], 16)
-            .padding(.top, vm.informationMessage != nil ? 8 : 0)
+            .padding(.top, vm.banner != nil ? 8 : 0)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
@@ -122,19 +122,19 @@ struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if let informationMessage = vm.informationMessage {
+        if let banner = vm.banner {
             InfoCard(text: "", type: .info)
                 .hInfoCardCustomView {
                     GeometryReader { geo in
                         if infoViewWidth > 0 {
                             hCoreUI.CustomTextViewRepresentable(
                                 config: .init(
-                                    text: informationMessage,
+                                    text: banner,
                                     fixedWidth: infoViewWidth,
                                     fontStyle: .standardSmall,
                                     color: hSignalColor.blueText,
-                                    linkColor: hTextColor.primary,
-                                    linkUnderlineStyle: nil,
+                                    linkColor: hSignalColor.blueText,
+                                    linkUnderlineStyle: .single,
                                     onUrlClicked: { url in
                                         store.send(.navigation(action: .linkClicked(url: url)))
                                     }

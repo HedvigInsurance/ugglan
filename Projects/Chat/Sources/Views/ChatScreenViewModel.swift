@@ -10,7 +10,7 @@ class ChatScreenViewModel: ObservableObject {
     @Published var lastDeliveredMessage: Message?
     @Published var isFetchingNext = false
     @Published var scrollToMessage: Message?
-    @Published var informationMessage: Markdown?
+    @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
     @Inject private var fetchMessagesClient: FetchMessagesClient
     @Inject private var sendMessageClient: SendMessageClient
@@ -73,7 +73,7 @@ class ChatScreenViewModel: ObservableObject {
                     handleNext(messages: newMessages)
                 } else {
                     withAnimation {
-                        self.informationMessage = chatData.banner
+                        self.banner = chatData.banner
                     }
                     handleInitial(messages: newMessages)
                 }
