@@ -8,11 +8,16 @@ import hGraphQL
 
 struct DeleteAccountView: View {
     @ObservedObject var viewModel: DeleteAccountViewModel
+
+    var text: String {
+        return (viewModel.hasActiveClaims || viewModel.hasActiveContracts)
+            ? L10n.DeleteAccount.canNotDeleteAccountInfo : L10n.DeleteAccount.canDeleteAccountInfo
+    }
     var body: some View {
         hForm {
             hSection {
                 MarkdownView(
-                    text: L10n.DeleteAccount.deleteAccountInfo,
+                    text: text,
                     fontStyle: .standard
                 ) { url in
                     let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -24,12 +29,13 @@ struct DeleteAccountView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hButton.LargeButton(type: .alert) { [weak viewModel] in
-                        viewModel?.deleteAccount()
-                    } content: {
-                        hText(L10n.profileDeleteAccountConfirmDeleteion)
+                    if !viewModel.hasActiveClaims && !viewModel.hasActiveContracts {
+                        hButton.LargeButton(type: .alert) { [weak viewModel] in
+                            viewModel?.deleteAccount()
+                        } content: {
+                            hText(L10n.profileDeleteAccountConfirmDeleteion)
+                        }
                     }
-                    .disabled(viewModel.hasActiveClaims || viewModel.hasActiveContracts)
                     hButton.LargeButton(type: .ghost) {
                         let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.dismissScreen(openChatAfter: false))
