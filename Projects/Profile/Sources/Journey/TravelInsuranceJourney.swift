@@ -13,15 +13,6 @@ public class TravelInsuranceJourney {
                 infoButtonPlacement: .navigationBarTrailing
             )
             .showsBackButton
-        //            .setOptions([.defaults, .ignoreActionWhenNotOnTop])
-        ////            .onDismiss {
-        ////                let vc = UIApplication.shared.getTopViewController()
-        ////                let ss = ""
-        ////                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-        ////                    let vc = UIApplication.shared.getTopViewController()
-        ////                    let ss = ""
-        ////                }
-        ////            }
     }
     public static func travelCertificateModally() -> some JourneyPresentation {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -32,6 +23,5 @@ public class TravelInsuranceJourney {
                 infoButtonPlacement: .navigationBarLeading
             )
             .withJourneyDismissButton
-            .setOptions([.disablePushPopCoalecing, .defaults])
     }
 }
