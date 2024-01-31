@@ -7,7 +7,7 @@ import hGraphQL
 
 struct TravelInsuranceState: StateProtocol {
     init() {}
-    var travelInsuranceList: [TravelCertificateListModel] = []
+    var travelInsuranceList: [TravelCertificateModel] = []
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
     @OptionalTransient var travelInsuranceConfigs: TravelInsuranceSpecification?
     @OptionalTransient var travelInsuranceConfig: TravelInsuranceContractSpecification?

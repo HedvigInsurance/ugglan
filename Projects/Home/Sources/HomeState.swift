@@ -106,7 +106,6 @@ public enum HomeAction: ActionProtocol {
     case startClaim
     case openFreeTextChat
     case openMovingFlow
-    case openTravelInsurance
     case openHelpCenter
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)

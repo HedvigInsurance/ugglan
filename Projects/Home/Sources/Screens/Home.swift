@@ -219,8 +219,6 @@ extension HomeView {
                 resultJourney(.openFreeTextChat)
             } else if case .openMovingFlow = action {
                 resultJourney(.startMovingFlow)
-            } else if case .openTravelInsurance = action {
-                resultJourney(.openTravelInsurance)
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
@@ -263,7 +261,6 @@ public enum HomeResult {
     case openFreeTextChat
     case openConnectPayments
     case startNewClaim
-    case openTravelInsurance
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
     case goToQuickAction(quickAction: CommonClaim)

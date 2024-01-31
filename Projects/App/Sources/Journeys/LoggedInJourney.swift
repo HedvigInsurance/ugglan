@@ -38,8 +38,6 @@ extension AppJourney {
                     PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
-                case .openTravelInsurance:
-                    TravelInsuranceFlowJourney.start()
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {

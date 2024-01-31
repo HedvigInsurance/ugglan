@@ -62,7 +62,7 @@ struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var personalNumber: String
 }
 
-public struct TravelCertificateListModel: Codable, Equatable, Hashable, Identifiable {
+public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     let date: Date
     let valid: Bool
@@ -75,9 +75,13 @@ public struct TravelCertificateListModel: Codable, Equatable, Hashable, Identifi
         self.valid = valid
         self.url = url
     }
+
+    var title: String {
+        "\(L10n.TravelCertificate.cardTitle) \(date.displayDateDDMMMFormat)"
+    }
 }
 
-extension TravelCertificateListModel {
+extension TravelCertificateModel {
     @hColorBuilder
     var textColor: some hColor {
         if valid {

@@ -31,14 +31,7 @@ struct HelpCenterQuestionView: View {
                         height: $height,
                         fontStyle: .standardLarge
                     ) { url in
-                        Task {
-                            do {
-                                if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
-                                    _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                }
-                                store.send(.goToURL(url: url))
-                            } catch {}
-                        }
+                        store.send(.goToURL(url: url))
                     }
                     .frame(height: height)
                 }

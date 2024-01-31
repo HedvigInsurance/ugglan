@@ -42,12 +42,12 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> [TravelCertificateListModel] {
+    public func getList() async throws -> [TravelCertificateModel] {
         do {
             let query = OctopusGraphQL.TravelCertificatesQuery()
             let data = try await self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             return data.currentMember.travelCertificates.compactMap({
-                TravelCertificateListModel.init($0)
+                TravelCertificateModel.init($0)
             })
         } catch let ex {
             throw ex
@@ -110,7 +110,7 @@ extension TravelInsuranceContractSpecification {
     }
 }
 
-extension TravelCertificateListModel {
+extension TravelCertificateModel {
     init?(_ data: OctopusGraphQL.TravelCertificatesQuery.Data.CurrentMember.TravelCertificate) {
         guard let url = URL(string: data.signedUrl) else { return nil }
         self.id = data.id
