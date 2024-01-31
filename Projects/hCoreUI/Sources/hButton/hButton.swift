@@ -94,7 +94,13 @@ struct ButtonFilledStandardBackground: View {
                 Color.clear
             }
         case .alert:
-            hSignalColor.redElement
+            if configuration.isPressed {
+                hSignalColor.redElement
+            } else if isEnabled {
+                hSignalColor.redElement
+            } else {
+                hSignalColor.redElement.opacity(0.2)
+            }
         }
     }
 }
@@ -322,7 +328,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 if isEnabled {
                     hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
                 } else {
-                    hTextColor.disabled
+                    hTextColor.secondary
                 }
             }
         }

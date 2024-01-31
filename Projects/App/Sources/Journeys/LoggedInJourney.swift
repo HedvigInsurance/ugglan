@@ -145,6 +145,22 @@ extension AppJourney {
                     )
                 }
             }
+            .onAction(ProfileStore.self) { action, pre in
+                if case let .goToURL(url) = action {
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        if let deepLink = DeepLink.getType(from: url) {
+                            if deepLink.tabURL {
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
+                                store.send(.dismissScreen(openChatAfter: false))
+                            }
+                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                        } else {
+                            let journey = AppJourney.webRedirect(url: url)
+                            pre.bag += pre.viewController.present(journey)
+                        }
+                    }
+                }
+            }
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -325,7 +341,6 @@ extension JourneyPresentation {
                         } else {
                             let journey = AppJourney.webRedirect(url: url)
                             pre.bag += pre.viewController.present(journey)
-
                         }
                     }
                 case .redirectAction:

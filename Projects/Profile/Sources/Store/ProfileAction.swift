@@ -41,6 +41,7 @@ public enum ProfileAction: ActionProtocol {
     case setPushNotificationsTo(date: Date?)
 
     case registerForPushNotifications
+    case goToURL(url: URL)
 
     case updateLanguage
 }

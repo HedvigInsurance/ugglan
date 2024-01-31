@@ -160,7 +160,13 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        handleItem(.deletedView, with: members.contains(memberId))
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        handleItem(
+            .deletedView,
+            with: members.contains(memberId)
+                && (store.state.activeContracts.count == 0 && store.state.pendingContracts.count == 0)
+        )
+
     }
 
     private func handleMissingCoInsured() {

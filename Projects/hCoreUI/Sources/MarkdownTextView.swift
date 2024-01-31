@@ -8,6 +8,35 @@ import UIKit
 import hCore
 import hGraphQL
 
+public struct MarkdownView: View {
+    private let text: String
+    @State private var height: CGFloat = 20
+    @State private var width: CGFloat = 0
+    private let fontStyle: HFontTextStyle
+    let onUrlClicked: (_ url: URL) -> Void
+    public init(text: String, fontStyle: HFontTextStyle, onUrlClicked: @escaping (_ url: URL) -> Void) {
+        self.text = text
+        self.fontStyle = fontStyle
+        self.onUrlClicked = onUrlClicked
+    }
+    public var body: some View {
+        GeometryReader { geo in
+            Color.clear.background(
+                CustomTextViewRepresentable(
+                    text: text,
+                    fixedWidth: geo.size.width,
+                    height: $height,
+                    fontStyle: fontStyle,
+                    onUrlClicked: { url in
+                        onUrlClicked(url)
+                    }
+                )
+            )
+        }
+        .frame(height: height)
+    }
+}
+
 public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
@@ -103,7 +132,6 @@ class CustomTextView: UIView, UITextViewDelegate {
             font: Fonts.fontFor(style: fontStyle),
             color: hTextColor.secondary.colorFor(schema, .base).color.uiColor()
         )
-
         let attributedString = markdownParser.parse(text)
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(

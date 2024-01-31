@@ -108,6 +108,7 @@ public enum ProfileResult {
     case openChat
     case logout
     case registerForPushNotifications
+
 }
 
 extension ProfileView {
