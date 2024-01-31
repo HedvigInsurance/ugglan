@@ -23,19 +23,22 @@ public struct TravelInsuranceFlowJourney {
         }
     }
     @JourneyBuilder
-    public static func start(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+    public static func start() -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         let numberOfContracts = store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 0
         if numberOfContracts > 1 {
-            showContractsList(openChat)
+            showContractsList()
         } else {
-            showStartDateScreen(openChat, detended: true)
+            showStartDateScreen(detended: true)
         }
     }
 
-    private static func showContractsList(
-        _ openChat: @escaping (() -> some JourneyPresentation)
-    ) -> some JourneyPresentation {
+    @JourneyBuilder
+    public static func list() -> some JourneyPresentation {
+        showListScreen()
+    }
+
+    private static func showContractsList() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: ContractsScreen(),
@@ -43,7 +46,7 @@ public struct TravelInsuranceFlowJourney {
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openStartDateScreen = navigationAction {
-                    TravelInsuranceFlowJourney.showStartDateScreen(openChat, detended: false)
+                    TravelInsuranceFlowJourney.showStartDateScreen(detended: false)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 }
@@ -52,10 +55,7 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
 
-    private static func showStartDateScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation),
-        detended: Bool
-    ) -> some JourneyPresentation {
+    private static func showStartDateScreen(detended: Bool) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: StartDateScreen(),
@@ -63,7 +63,7 @@ public struct TravelInsuranceFlowJourney {
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openWhoIsTravelingScreen = navigationAction {
-                    showWhoIsTravelingScreen(openChat)
+                    showWhoIsTravelingScreen()
                 }
             }
         }
@@ -78,16 +78,14 @@ public struct TravelInsuranceFlowJourney {
 
     }
 
-    private static func showWhoIsTravelingScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation)
-    ) -> some JourneyPresentation {
+    private static func showWhoIsTravelingScreen() -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: WhoIsTravelingScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openProcessingScreen = navigationAction {
-                    openProcessingScreen(openChat)
+                    openProcessingScreen()
                 } else if case let .openCoinsured(member) = navigationAction {
                     openCoinsured(member: member)
                 }
@@ -125,9 +123,7 @@ public struct TravelInsuranceFlowJourney {
         }
     }
 
-    private static func openProcessingScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation)
-    ) -> some JourneyPresentation {
+    private static func openProcessingScreen() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: ProcessingScreen()
@@ -135,14 +131,19 @@ public struct TravelInsuranceFlowJourney {
             if case let .navigation(navigationAction) = action {
                 if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
-                } else if case .openFreeTextChat = navigationAction {
-                    openChat()
                 } else if case .goBack = navigationAction {
                     PopJourney()
                 }
             }
         }
         .hidesBackButton
+    }
+
+    private static func showListScreen() -> some JourneyPresentation {
+        HostingJourney(
+            rootView: ListScreen()
+        )
+        .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 }
 

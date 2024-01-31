@@ -9,6 +9,8 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setTravelInsurancesData(specification: TravelInsuranceSpecification)
     case setTravelInsuranceData(specification: TravelInsuranceContractSpecification)
     case postTravelInsuranceForm
+    case getTravelInsruancesList
+    case setTravelInsruancesList(list: [TravelCertificateListModel])
 
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
@@ -35,7 +37,8 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
 }
 
 enum TravelInsuranceLoadingAction: LoadingProtocol {
-    case getTravelInsurance
+    case getTravelInsuranceSpecifications
+    case getTravelInsurancesList
     case postTravelInsurance
     case downloadCertificate
 }
