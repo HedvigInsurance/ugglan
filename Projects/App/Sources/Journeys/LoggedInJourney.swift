@@ -30,18 +30,10 @@ extension AppJourney {
                 }
             ) { result in
                 switch result {
-                case .startMovingFlow:
-                    AppJourney.movingFlow()
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
-                case .openConnectPayments:
-                    PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
-                case .openTravelInsurance:
-                    TravelInsuranceFlowJourney.start {
-                        AppJourney.freeTextChat()
-                    }
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
