@@ -1,5 +1,8 @@
 query Profile {
   currentMember {
+  travelCertificates {
+      id
+    }
   id
   email
   phoneNumber
