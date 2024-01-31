@@ -23,41 +23,64 @@ struct ListScreen: View {
                 state.travelInsuranceList
             }
         ) { list in
-            hForm {
-                hSection(list) { travelCertificate in
-                    hRow {
-                        hText(travelCertificate.date.displayDateDDMMMFormat)
-                        Spacer()
-                        hText(travelCertificate.valid ? L10n.TravelCertificate.active : L10n.TravelCertificate.expired)
-                    }
-                    .withChevronAccessory
-                    .foregroundColor(travelCertificate.textColor)
-                    .onTapGesture {
-                        store.send(.navigation(.openDetails(for: travelCertificate)))
-                    }
-                }
-                .withoutHorizontalPadding
-            }
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 16) {
-                        InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
-                        if canAddTravelInsurance {
-                            hButton.LargeButton(type: .secondary) {
-                                Task {
-                                    do {
-                                        _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                        store.send(.navigation(.openCreateNew))
-                                    } catch _ {
+            LoadingViewWithContent(
+                TravelInsuranceStore.self,
+                [.getTravelInsurancesList],
+                [.getTravelInsruancesList]
+            ) {
 
-                                    }
-                                }
-                            } content: {
-                                hText(L10n.TravelCertificate.createNewCertificate)
+                hForm {
+                    if list.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(hSignalColor.blueElement)
+                            hText(L10n.TravelCertificate.emptyListMessage)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.horizontal, 24)
+                    } else {
+                        hSection(list) { travelCertificate in
+                            hRow {
+                                hText(travelCertificate.date.displayDateDDMMMFormat)
+                                Spacer()
+                                hText(
+                                    travelCertificate.valid
+                                        ? L10n.TravelCertificate.active : L10n.TravelCertificate.expired
+                                )
+                            }
+                            .withChevronAccessory
+                            .foregroundColor(travelCertificate.textColor)
+                            .onTapGesture {
+                                store.send(.navigation(.openDetails(for: travelCertificate)))
                             }
                         }
+                        .withoutHorizontalPadding
                     }
-                    .padding(.vertical, 16)
+                }
+                .hFormContentPosition(list.isEmpty ? .center : .top)
+                .hFormAttachToBottom {
+                    hSection {
+                        VStack(spacing: 16) {
+                            InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
+                            if canAddTravelInsurance {
+                                hButton.LargeButton(type: .secondary) {
+                                    Task {
+                                        do {
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                            store.send(.navigation(.openCreateNew))
+                                        } catch _ {
+
+                                        }
+                                    }
+                                } content: {
+                                    hText(L10n.TravelCertificate.createNewCertificate)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 16)
+                    }
                 }
             }
             .toolbar {
