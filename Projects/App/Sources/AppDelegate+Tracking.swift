@@ -23,8 +23,9 @@ extension AppDelegate {
                 .trackUIKitRUMActions(using: RUMUserActionsPredicate())
                 .trackUIKitRUMViews(using: RUMViewsPredicate())
                 .trackURLSession(firstPartyHosts: [
-                    Environment.production.octopusEndpointURL.host ?? "",
-                    Environment.staging.octopusEndpointURL.host ?? "",
+                    Environment.current.octopusEndpointURL.host ?? "",
+                    Environment.current.claimsApiURL.host ?? "",
+                    Environment.current.odysseyApiURL.host ?? "",
                 ])
                 .set(uploadFrequency: .frequent)
                 .build()

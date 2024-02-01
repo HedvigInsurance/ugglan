@@ -4,6 +4,7 @@ import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
+import hGraphQL
 
 class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
@@ -41,6 +42,7 @@ class ChatScreenViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().ask()
         }
+        log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
     }
 
     deinit {
