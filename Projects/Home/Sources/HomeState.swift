@@ -96,7 +96,6 @@ public enum HomeAction: ActionProtocol {
     case fetchMemberState
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
-    case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
@@ -105,8 +104,6 @@ public enum HomeAction: ActionProtocol {
     case setCommonClaims(commonClaims: [CommonClaim])
     case startClaim
     case openFreeTextChat(from: ChatTopicType?)
-    case openMovingFlow
-    case openTravelInsurance
     case openHelpCenter
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)

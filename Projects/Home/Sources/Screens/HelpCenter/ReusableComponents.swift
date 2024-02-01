@@ -122,7 +122,7 @@ struct QuestionsItems: View {
                     .hWithoutDividerPadding
                     .onTapGesture {
                         let attributes: [String: String] = [
-                            "question": item.question,
+                            "question": item.questionEn,
                             "answer": item.answer,
                             "sourcePath": source.title,
                             "questionType": questionType.rawValue,

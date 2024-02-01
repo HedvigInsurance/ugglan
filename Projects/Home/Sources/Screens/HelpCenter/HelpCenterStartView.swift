@@ -293,30 +293,35 @@ extension HelpCenterStartView {
     let commonQuestions: [Question] = [
         .init(
             question: "When do you charge for my insurance?",
+            questionEn: "When do you charge for my insurance?",
             answer: "",
             topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "When do you charge for my insurance?",
+            questionEn: "When do you charge for my insurance?",
             answer: "",
             topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "How do I make a claim?",
+            questionEn: "How do I make a claim?",
             answer: "",
             topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "How can I view my payment history?",
+            questionEn: "How can I view my payment history?",
             answer: "",
             topicType: .payments,
             relatedQuestions: []
         ),
         .init(
             question: "What should I do if my payment fails?",
+            questionEn: "What should I do if my payment fails?",
             answer: "",
             topicType: .payments,
             relatedQuestions: []

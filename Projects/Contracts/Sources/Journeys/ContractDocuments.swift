@@ -13,7 +13,7 @@ import hGraphQL
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
     let id: String
-
+    @State var height: CGFloat = 0
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -24,26 +24,13 @@ struct ContractDocumentsView: View {
             if let contract = contract {
                 VStack(spacing: 4) {
                     ForEach(getDocumentsToDisplay(contract: contract), id: \.displayName) { document in
-                        hSection {
-                            if let url = URL(string: document.url) {
+                        if let url = URL(string: document.url) {
+                            hSection {
                                 hRow {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        if #available(iOS 15.0, *) {
-                                            Text(attributedPDFString(for: document.displayName))
-                                                .fixedSize()
-                                        } else {
-                                            HStack(spacing: 1) {
-                                                hText(document.displayName)
-                                                if #available(iOS 16.0, *) {
-                                                    hText(L10n.documentPdfLabel, style: .footnote)
-                                                        .baselineOffset(6.0)
-                                                }
-                                            }
-                                        }
-                                    }
+                                    hAttributedTextView(text: attributedPDFString(for: document.displayName))
+                                        .id("sds_\(document.displayName)")
                                 }
                                 .withCustomAccessory {
-                                    Spacer()
                                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                                 }
                                 .onTap {
@@ -61,28 +48,27 @@ struct ContractDocumentsView: View {
         }
     }
 
-    @available(iOS 15, *)
-    private func attributedPDFString(for title: String) -> AttributedString {
+    private func attributedPDFString(for title: String) -> NSAttributedString {
         let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
-        let attributes = AttributeContainer(
+        let attributes =
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
                 NSAttributedString.Key.foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
             ]
-        )
 
-        var result = AttributedString(title, attributes: attributes)
-
-        let pdfAddonAttribures = AttributeContainer(
-            [
-                NSAttributedString.Key.font: Fonts.fontFor(style: .standardExtraSmall),
-                NSAttributedString.Key.foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
-                NSAttributedString.Key.baselineOffset: 6,
-            ]
+        let baseText = title
+        let pdfAddOnText = L10n.documentPdfLabel
+        let combined = baseText + " " + pdfAddOnText
+        let attributedString = NSMutableAttributedString(string: combined, attributes: attributes)
+        let rangeOfPdf = NSRange(location: baseText.count, length: pdfAddOnText.count + 1)
+        attributedString.addAttribute(.font, value: Fonts.fontFor(style: .standardExtraSmall), range: rangeOfPdf)
+        attributedString.addAttribute(.baselineOffset, value: 6, range: rangeOfPdf)
+        attributedString.addAttribute(
+            .foregroundColor,
+            value: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+            range: rangeOfPdf
         )
-        var pdfAddon = AttributedString(" \(L10n.documentPdfLabel)", attributes: pdfAddonAttribures)
-        result.append(pdfAddon)
-        return result
+        return attributedString
     }
 
     func getDocumentsToDisplay(contract: Contract) -> [InsuranceTerm] {
@@ -99,6 +85,7 @@ struct ContractDocumentsView: View {
         return documents
     }
 }
+
 private class ContractsDocumentViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 }

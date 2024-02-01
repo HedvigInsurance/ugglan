@@ -18,11 +18,18 @@ public struct CommonTopic: Codable, Equatable, Hashable {
 
 public struct Question: Codable, Equatable, Hashable {
     let question: String
+    let questionEn: String
     let answer: String
     let topicType: ChatTopicType?
     let relatedQuestions: [Question]
 
-    public init(question: String, answer: String, topicType: ChatTopicType?, relatedQuestions: [Question] = []) {
+    public init(
+        question: String,
+        questionEn: String,
+        answer: String,
+        topicType: ChatTopicType?,
+        relatedQuestions: [Question] = []
+    ) {
         var answer = answer
         if Environment.staging == Environment.current {
             answer =
@@ -36,7 +43,7 @@ public struct Question: Codable, Equatable, Hashable {
                     with: Environment.staging.deepLinkUrl.host!
                 )
         }
-
+        self.questionEn = questionEn
         self.question = question
         self.answer = answer
         self.topicType = topicType
