@@ -9,19 +9,58 @@ import hGraphQL
 struct DeleteAccountView: View {
     @ObservedObject var viewModel: DeleteAccountViewModel
 
+    var title: String {
+        if viewModel.hasActiveContracts {
+            return L10n.DeleteAccount.youHaveActiveInsuranceTitle
+        } else if viewModel.hasActiveClaims {
+            return L10n.DeleteAccount.youHaveActiveClaimTitle
+        } else {
+            return L10n.DeleteAccount.deleteAccountTitle
+        }
+    }
     var text: String {
-        return (viewModel.hasActiveClaims || viewModel.hasActiveContracts)
-            ? L10n.DeleteAccount.canNotDeleteAccountInfo : L10n.DeleteAccount.canDeleteAccountInfo
+        if viewModel.hasActiveContracts {
+            return L10n.DeleteAccount.youHaveActiveInsuranceDescription
+        } else if viewModel.hasActiveClaims {
+            return L10n.DeleteAccount.youHaveActiveClaimDescription
+        } else {
+            return L10n.DeleteAccount.deleteAccountDescription
+        }
+    }
+
+    var alignment: HorizontalAlignment {
+        if viewModel.hasActiveContracts {
+            return .center
+        } else if viewModel.hasActiveClaims {
+            return .center
+        } else {
+            return .leading
+        }
+    }
+
+    var textAlignment: NSTextAlignment {
+        if viewModel.hasActiveContracts {
+            return .center
+        } else if viewModel.hasActiveClaims {
+            return .center
+        } else {
+            return .left
+        }
     }
     var body: some View {
         hForm {
+            Spacing(height: 32)
             hSection {
-                MarkdownView(
-                    text: text,
-                    fontStyle: .standard
-                ) { url in
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.goToURL(url: url))
+                VStack(alignment: alignment) {
+                    hText(title)
+                    MarkdownView(
+                        text: text,
+                        fontStyle: .standard,
+                        textAlignment: textAlignment
+                    ) { url in
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        store.send(.goToURL(url: url))
+                    }
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -47,6 +86,26 @@ struct DeleteAccountView: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .onAppear {
+            for i in 0...10 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
+                    if #available(iOS 15.0, *) {
+                        if #available(iOS 16.0, *) {
+                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                .animateChanges {
+                                    UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                        .invalidateDetents()
+                                }
+                        } else {
+                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                .animateChanges {
+
+                                }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -70,14 +129,14 @@ extension DeleteAccountView {
             claimsStore: claimsStore,
             contractsStore: contractsStore
         )
-        let style: PresentationStyle = .modally(presentationStyle: .fullScreen)
+        let style: PresentationStyle = .detented(.scrollViewContentSize)  //.modally(presentationStyle: .fullScreen)
         return HostingJourney(
             ProfileStore.self,
             rootView: DeleteAccountView(
                 viewModel: model
             ),
             style: style,
-            options: [.blurredBackground, .largeNavigationBar]
+            options: [.blurredBackground]
         ) { action in
             if case let .sendAccountDeleteRequest(memberDetails) = action {
                 sendAccountDeleteRequestJourney(details: memberDetails)
@@ -93,8 +152,8 @@ extension DeleteAccountView {
                     }
             }
         }
-        .configureTitle(L10n.DeleteAccount.confirmButton)
-        .withDismissButton
+        //        .configureTitle(L10n.DeleteAccount.confirmButton)
+        //        .withDismissButton
     }
 
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {

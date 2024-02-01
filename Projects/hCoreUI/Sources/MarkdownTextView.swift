@@ -13,10 +13,17 @@ public struct MarkdownView: View {
     @State private var height: CGFloat = 20
     @State private var width: CGFloat = 0
     private let fontStyle: HFontTextStyle
+    private let textAlignment: NSTextAlignment
     let onUrlClicked: (_ url: URL) -> Void
-    public init(text: String, fontStyle: HFontTextStyle, onUrlClicked: @escaping (_ url: URL) -> Void) {
+    public init(
+        text: String,
+        fontStyle: HFontTextStyle,
+        textAlignment: NSTextAlignment,
+        onUrlClicked: @escaping (_ url: URL) -> Void
+    ) {
         self.text = text
         self.fontStyle = fontStyle
+        self.textAlignment = textAlignment
         self.onUrlClicked = onUrlClicked
     }
     public var body: some View {
@@ -27,6 +34,7 @@ public struct MarkdownView: View {
                     fixedWidth: geo.size.width,
                     height: $height,
                     fontStyle: fontStyle,
+                    textAlignment: textAlignment,
                     onUrlClicked: { url in
                         onUrlClicked(url)
                     }
@@ -41,6 +49,7 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
     private let text: String
     private let fixedWidth: CGFloat
     private let fontStyle: HFontTextStyle
+    private let textAlignment: NSTextAlignment
     @Binding private var height: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
 
@@ -50,12 +59,14 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
         fixedWidth: CGFloat,
         height: Binding<CGFloat>,
         fontStyle: HFontTextStyle,
+        textAlignment: NSTextAlignment = .left,
         onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         self.text = text
         self.fixedWidth = fixedWidth
         self.fontStyle = fontStyle
         _height = height
+        self.textAlignment = textAlignment
         self.onUrlClicked = onUrlClicked
     }
     public func makeUIView(context: Context) -> some UIView {
@@ -64,6 +75,7 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
             fixedWidth: fixedWidth,
             fontStyle: fontStyle,
             height: $height,
+            textAlignment: textAlignment,
             onUrlClicked: onUrlClicked
         )
         return textView
@@ -79,6 +91,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     private let textView: UITextView
     private let fixedWidth: CGFloat
     private let fontStyle: HFontTextStyle
+    private let textAlignment: NSTextAlignment
     private let onUrlClicked: (_ url: URL) -> Void
     @Binding private var height: CGFloat
 
@@ -87,6 +100,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         fixedWidth: CGFloat,
         fontStyle: HFontTextStyle,
         height: Binding<CGFloat>,
+        textAlignment: NSTextAlignment,
         onUrlClicked: @escaping (_ url: URL) -> Void
     ) {
         _height = height
@@ -94,6 +108,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         self.onUrlClicked = onUrlClicked
         self.fixedWidth = fixedWidth
         self.textView = UITextView()
+        self.textAlignment = textAlignment
         super.init(frame: .zero)
         self.addSubview(textView)
         configureTextView()
@@ -138,6 +153,7 @@ class CustomTextView: UIView, UITextViewDelegate {
                 attributedString: attributedString
             )
             textView.attributedText = mutableAttributedString
+            textView.textAlignment = textAlignment
         }
     }
 
