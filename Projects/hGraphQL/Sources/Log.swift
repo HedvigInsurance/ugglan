@@ -67,8 +67,16 @@ public protocol Logging {
         attributes: [AttributeKey: AttributeValue]?
     )
 
-}
+    func addError(
+        error: Error,
+        type: ErrorSource,
+        attributes: [AttributeKey: AttributeValue]?
+    )
 
+}
+public enum ErrorSource {
+    case network
+}
 public enum LoggingAction {
     case click
 }
