@@ -12,16 +12,16 @@ import hGraphQL
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
-    @State var height: CGFloat = 0
+    @StateObject var scrollVM: InfoCardScrollViewModel
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
+        self._scrollVM = StateObject(wrappedValue: .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0))
     }
 
     var body: some View {
         InfoCardScrollView(
-            spacing: 16,
             items: vm.items.sorted(by: { $0.id < $1.id }),
-            previousHeight: height,
+            vm: scrollVM,
             content: { content in
                 switch content.id {
                 case .payment:
@@ -57,13 +57,9 @@ struct HomeBottomScrollView: View {
                 }
             }
         )
-        .background(
-            GeometryReader(content: { geo in
-                Color.clear.onReceive(Just(geo.size.height)) { height in
-                    self.height = height
-                }
-            })
-        )
+        .onChange(of: vm.items) { value in
+            scrollVM.updateItems(count: value.count)
+        }
     }
 }
 
