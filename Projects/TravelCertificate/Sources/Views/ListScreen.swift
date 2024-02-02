@@ -41,7 +41,7 @@ struct ListScreen: View {
                         }
                         .padding(.horizontal, 24)
                     } else {
-                        hSection(list) { travelCertificate in
+                        hSection(list, id: \.id) { travelCertificate in
                             hRow {
                                 hText(travelCertificate.date.displayDateDDMMMFormat)
                                 Spacer()
