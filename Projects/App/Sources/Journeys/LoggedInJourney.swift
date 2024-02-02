@@ -30,12 +30,8 @@ extension AppJourney {
                 }
             ) { result in
                 switch result {
-                case .startMovingFlow:
-                    AppJourney.movingFlow()
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
-                case .openConnectPayments:
-                    PaymentSetup(setupType: .initial).journeyThenDismiss
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
                 case .openCrossSells:

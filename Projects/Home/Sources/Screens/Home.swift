@@ -217,8 +217,6 @@ extension HomeView {
         ) { action in
             if case .openFreeTextChat = action {
                 resultJourney(.openFreeTextChat)
-            } else if case .openMovingFlow = action {
-                resultJourney(.startMovingFlow)
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
@@ -227,8 +225,6 @@ extension HomeView {
                         .withJourneyDismissButton
                         .configureTitle(claim.displayTitle)
                 }
-            } else if case .connectPayments = action {
-                resultJourney(.openConnectPayments)
             } else if case let .openDocument(contractURL) = action {
                 Journey(
                     Document(url: contractURL, title: L10n.insuranceCertificateTitle),
@@ -257,9 +253,7 @@ extension HomeView {
 }
 
 public enum HomeResult {
-    case startMovingFlow
     case openFreeTextChat
-    case openConnectPayments
     case startNewClaim
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
