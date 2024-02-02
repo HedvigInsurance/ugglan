@@ -5,6 +5,7 @@ public struct InfoCard: View {
     let text: String
     let type: InfoCardType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
+    @Environment(\.hInfoCardCustomView) var customContentView
 
     public init(
         text: String,
@@ -24,13 +25,28 @@ public struct InfoCard: View {
                     .foregroundColor(imageColor)
                     .frame(width: 16, height: 16)
             }
-            VStack(alignment: .leading) {
-                hText(text, style: .footnote)
-                    .foregroundColor(getTextColor)
-                    .multilineTextAlignment(.leading)
-                if let buttonsConfig {
-                    if buttonsConfig.count > 1 {
-                        HStack(spacing: 8) {
+            if let customContentView = customContentView {
+                customContentView
+                    .padding(.leading, 8)
+                    .hUseLightMode
+            } else {
+                VStack(alignment: .leading) {
+                    hText(text, style: .footnote)
+                        .foregroundColor(getTextColor)
+                        .multilineTextAlignment(.leading)
+                    if let buttonsConfig {
+                        if buttonsConfig.count > 1 {
+                            HStack(spacing: 8) {
+                                ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                                    hButton.SmallButton(type: .secondaryAlt) {
+                                        config.buttonAction()
+                                    } content: {
+                                        hText(config.buttonTitle, style: .standardSmall)
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                }
+                            }
+                        } else {
                             ForEach(buttonsConfig, id: \.buttonTitle) { config in
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
@@ -40,34 +56,18 @@ public struct InfoCard: View {
                                 }
                             }
                         }
-                    } else {
-                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                            hButton.SmallButton(type: .secondaryAlt) {
-                                config.buttonAction()
-                            } content: {
-                                hText(config.buttonTitle, style: .standardSmall)
-                                    .frame(maxWidth: .infinity)
-                            }
-                        }
                     }
                 }
+                .padding(.leading, 8)
+                .hUseLightMode
             }
-            .padding(.leading, 8)
-            .hUseLightMode
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)
         .padding(.bottom, 16)
         .padding(.leading, 12)
         .padding(.trailing, 16)
-        .background(
-            Squircle.default()
-                .fill(getBackgroundColor)
-                .overlay(
-                    RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
-                        .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
-                )
-        )
+        .modifier(InfoCardStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -82,20 +82,6 @@ public struct InfoCard: View {
             hSignalColor.redText
         case .campaign:
             hSignalColor.greenText
-        }
-    }
-
-    @hColorBuilder
-    var getBackgroundColor: some hColor {
-        switch type {
-        case .info:
-            hSignalColor.blueFill
-        case .attention:
-            hSignalColor.amberFill
-        case .error:
-            hSignalColor.redFill
-        case .campaign:
-            hSignalColor.greenFill
         }
     }
 
@@ -147,6 +133,12 @@ struct InfoCard_Previews: PreviewProvider {
 
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+
+            InfoCard(text: "", type: .error)
+                .hInfoCardCustomView {
+                    Text("Testing custom texzt view")
+
+                }
         }
     }
 }
@@ -196,5 +188,87 @@ public struct InfoCardButtonConfig {
     public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
         self.buttonTitle = buttonTitle
         self.buttonAction = buttonAction
+    }
+}
+
+private struct EnvironmentInfoCardCustomView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hInfoCardCustomView: AnyView? {
+        get { self[EnvironmentInfoCardCustomView.self] }
+        set { self[EnvironmentInfoCardCustomView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hInfoCardCustomView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hInfoCardCustomView, AnyView(content()))
+    }
+}
+
+private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
+    static let defaultValue: InfoCardLayoutStyle = .roundedRectangle
+}
+
+extension EnvironmentValues {
+    public var hInfoCardLayoutStyle: InfoCardLayoutStyle {
+        get { self[EnvironmentInfoCardLayoutStyle.self] }
+        set { self[EnvironmentInfoCardLayoutStyle.self] = newValue }
+    }
+}
+
+extension View {
+    public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
+        self.environment(\.hInfoCardLayoutStyle, style)
+    }
+}
+
+public enum InfoCardLayoutStyle {
+    case roundedRectangle
+    case rectange
+}
+
+struct InfoCardStyle: ViewModifier {
+    let type: InfoCardType
+    @Environment(\.hInfoCardLayoutStyle) var layoutStyle
+    func body(content: Content) -> some View {
+        switch layoutStyle {
+        case .rectange:
+            content
+                .background(
+                    Rectangle()
+                        .fill(getBackgroundColor)
+                        .overlay(
+                            Rectangle()
+                                .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
+                        )
+                )
+        case .roundedRectangle:
+            content
+                .background(
+                    Squircle.default()
+                        .fill(getBackgroundColor)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
+                                .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
+                        )
+                )
+        }
+    }
+
+    @hColorBuilder
+    var getBackgroundColor: some hColor {
+        switch type {
+        case .info:
+            hSignalColor.blueFill
+        case .attention:
+            hSignalColor.amberFill
+        case .error:
+            hSignalColor.redFill
+        case .campaign:
+            hSignalColor.greenFill
+        }
     }
 }

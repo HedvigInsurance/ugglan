@@ -11,11 +11,15 @@ import hGraphQL
 
 extension AppJourney {
     @JourneyBuilder
-    static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
+    static func freeTextChat(
+        style: PresentationStyle = .detented(.large),
+        withTopic topic: ChatTopicType? = nil
+    ) -> some JourneyPresentation {
         if Dependencies.featureFlags().isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
             ChatJourney.start(
+                topic: topic,
                 style: style,
                 resultJourney: { result in
                     if case .notifications = result {
@@ -42,7 +46,7 @@ extension AppJourney {
         }
     }
 
-    static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
+    private static func disableChatScreen(style: PresentationStyle = .default) -> some JourneyPresentation {
         return HostingJourney(
             rootView: GenericErrorView(
                 title: nil,
