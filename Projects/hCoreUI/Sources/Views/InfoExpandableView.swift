@@ -54,13 +54,20 @@ public struct InfoExpandableView: View {
                 VStack(alignment: .leading) {
                     hRow {
                         CustomTextViewRepresentable(
-                            text: text,
-                            fixedWidth: UIScreen.main.bounds.width - 56,
-                            height: $height,
-                            fontStyle: .standard
-                        ) { url in
-                            onMarkDownClick?(url)
-                        }
+                            config: .init(
+                                text: text,
+                                fixedWidth: UIScreen.main.bounds.width - 56,
+                                fontStyle: .standard,
+                                color: hTextColor.secondary,
+                                linkColor: hTextColor.primary,
+                                linkUnderlineStyle: .single,
+                                onUrlClicked: { url in
+                                    onMarkDownClick?(url)
+
+                                }
+                            ),
+                            height: $height
+                        )
                         .frame(height: height)
                     }
                     .verticalPadding(0)

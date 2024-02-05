@@ -17,7 +17,6 @@ public enum ChatAction: ActionProtocol {
 }
 
 public enum ChatNavigationAction: ActionProtocol {
-    case redirectAction
     case linkClicked(url: URL)
     case closeChat
 }
