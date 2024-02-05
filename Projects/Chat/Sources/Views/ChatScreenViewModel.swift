@@ -4,6 +4,7 @@ import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
+import hGraphQL
 
 class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
@@ -19,6 +20,8 @@ class ChatScreenViewModel: ObservableObject {
     private var hasNext: Bool?
     private var isFetching = false
     private let topicType: ChatTopicType?
+    private var haveSentAMessage = false
+    private var storeActionSignal: AnyCancellable?
     init(topicType: ChatTopicType?) {
         self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
@@ -43,6 +46,24 @@ class ChatScreenViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().ask()
         }
+
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        storeActionSignal = store.actionSignal.publisher
+            .sink(receiveValue: { [weak self] action in guard let self = self else { return }
+                if case let .navigation(navigationAction) = action {
+                    if case let .linkClicked(url) = navigationAction {
+                        if let deepLink = DeepLink.getType(from: url), deepLink == .helpCenter {
+                            log.addUserAction(
+                                type: .custom,
+                                name: "Help center opened from the chat",
+                                error: nil,
+                                attributes: ["haveSentAMessage": self.haveSentAMessage]
+                            )
+                        }
+                    }
+                }
+            }
+            )
     }
 
     deinit {
@@ -139,6 +160,7 @@ class ChatScreenViewModel: ObservableObject {
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }
+            haveSentAMessage = true
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
         }
