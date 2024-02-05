@@ -9,66 +9,40 @@ import hCore
 import hGraphQL
 
 public struct CustomTextViewRepresentable: UIViewRepresentable {
-    private let text: String
-    private let fixedWidth: CGFloat
-    private let fontStyle: HFontTextStyle
+    let config: CustomTextViewRepresentableConfig
     @Binding private var height: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
-
-    let onUrlClicked: (_ url: URL) -> Void
     public init(
-        text: String,
-        fixedWidth: CGFloat,
-        height: Binding<CGFloat>,
-        fontStyle: HFontTextStyle,
-        onUrlClicked: @escaping (_ url: URL) -> Void
+        config: CustomTextViewRepresentableConfig,
+        height: Binding<CGFloat>
     ) {
-        self.text = text
-        self.fixedWidth = fixedWidth
-        self.fontStyle = fontStyle
+        self.config = config
         _height = height
-        self.onUrlClicked = onUrlClicked
     }
+
     public func makeUIView(context: Context) -> some UIView {
-        let textView = CustomTextView(
-            text: text,
-            fixedWidth: fixedWidth,
-            fontStyle: fontStyle,
-            height: $height,
-            onUrlClicked: onUrlClicked
-        )
+        let textView = CustomTextView(config: config, height: $height)
         return textView
     }
     public func updateUIView(_ uiView: UIViewType, context: Context) {
         if let uiView = uiView as? CustomTextView {
-            uiView.setContent(from: text)
+            uiView.setContent(from: config.text)
         }
     }
 }
 
 class CustomTextView: UIView, UITextViewDelegate {
-    private let textView: UITextView
-    private let fixedWidth: CGFloat
-    private let fontStyle: HFontTextStyle
-    private let onUrlClicked: (_ url: URL) -> Void
-    @Binding private var height: CGFloat
-
-    init(
-        text: String,
-        fixedWidth: CGFloat,
-        fontStyle: HFontTextStyle,
-        height: Binding<CGFloat>,
-        onUrlClicked: @escaping (_ url: URL) -> Void
-    ) {
+    let config: CustomTextViewRepresentableConfig
+    let textView: UITextView
+    @Binding var height: CGFloat
+    init(config: CustomTextViewRepresentableConfig, height: Binding<CGFloat>) {
         _height = height
-        self.fontStyle = fontStyle
-        self.onUrlClicked = onUrlClicked
-        self.fixedWidth = fixedWidth
+        self.config = config
         self.textView = UITextView()
         super.init(frame: .zero)
         self.addSubview(textView)
         configureTextView()
-        setContent(from: text)
+        setContent(from: config.text)
         calculateHeight()
     }
 
@@ -79,13 +53,15 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
         textView.dataDetectorTypes = [.address, .link, .phoneNumber]
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
-        let linkColor = hTextColor.primary.colorFor(schema, .base).color.uiColor()
-        textView.linkTextAttributes = [
-            .foregroundColor: linkColor,
-            .underlineStyle: NSUnderlineStyle.thick.rawValue,
-            .underlineColor: linkColor,
-        ]
+        let schema = ColorScheme.init(UITraitCollection.current.userInterfaceStyle) ?? .light
+        var linkTextAttributes = [NSAttributedString.Key: Any]()
+        linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(schema, .base).color.uiColor()
+        linkTextAttributes[.underlineColor] = config.linkColor.colorFor(schema, .base).color.uiColor()
+        if let linkUnderlineStyle = config.linkUnderlineStyle {
+            linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
+        }
+        textView.linkTextAttributes = linkTextAttributes
+
         textView.backgroundColor = .clear
         textView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(-6)
@@ -98,10 +74,10 @@ class CustomTextView: UIView, UITextViewDelegate {
 
     func setContent(from text: String) {
         configureTextView()
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
+        let schema = ColorScheme.init(UITraitCollection.current.userInterfaceStyle) ?? .light
         let markdownParser = MarkdownParser(
-            font: Fonts.fontFor(style: fontStyle),
-            color: hTextColor.secondary.colorFor(schema, .base).color.uiColor()
+            font: Fonts.fontFor(style: config.fontStyle),
+            color: config.color.colorFor(schema, .base).color.uiColor()
         )
 
         let attributedString = markdownParser.parse(text)
@@ -115,17 +91,13 @@ class CustomTextView: UIView, UITextViewDelegate {
 
     private func calculateHeight() {
         let newHeight = getHeight()
-        self.snp.makeConstraints { make in
-            make.height.equalTo(newHeight)
-            make.width.equalTo(fixedWidth)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        DispatchQueue.main.async { [weak self] in
             self?.height = newHeight
         }
     }
 
     private func getHeight() -> CGFloat {
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = textView.sizeThatFits(CGSize(width: config.fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return newSize.height
     }
 
@@ -142,9 +114,37 @@ class CustomTextView: UIView, UITextViewDelegate {
                 UIApplication.shared.open(url)
             }
         } else {
-            onUrlClicked(URL)
+            config.onUrlClicked(URL)
         }
 
         return false
+    }
+}
+
+public struct CustomTextViewRepresentableConfig {
+    let text: Markdown
+    let fixedWidth: CGFloat
+    let fontStyle: HFontTextStyle
+    let color: any hColor
+    let linkColor: any hColor
+    let linkUnderlineStyle: NSUnderlineStyle?
+    let onUrlClicked: (_ url: URL) -> Void
+
+    public init(
+        text: Markdown,
+        fixedWidth: CGFloat,
+        fontStyle: HFontTextStyle,
+        color: any hColor,
+        linkColor: any hColor,
+        linkUnderlineStyle: NSUnderlineStyle?,
+        onUrlClicked: @escaping (_: URL) -> Void
+    ) {
+        self.text = text
+        self.fixedWidth = fixedWidth
+        self.fontStyle = fontStyle
+        self.color = color
+        self.linkColor = linkColor
+        self.linkUnderlineStyle = linkUnderlineStyle
+        self.onUrlClicked = onUrlClicked
     }
 }

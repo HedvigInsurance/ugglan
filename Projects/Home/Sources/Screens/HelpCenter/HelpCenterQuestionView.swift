@@ -26,24 +26,30 @@ struct HelpCenterQuestionView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                     CustomTextViewRepresentable(
-                        text: question.answer,
-                        fixedWidth: UIScreen.main.bounds.width - 32,
-                        height: $height,
-                        fontStyle: .standardLarge
-                    ) { url in
-                        Task {
-                            do {
-                                if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
-                                    _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                        config: .init(
+                            text: question.answer,
+                            fixedWidth: UIScreen.main.bounds.width - 32,
+                            fontStyle: .standard,
+                            color: hTextColor.secondary,
+                            linkColor: hTextColor.primary,
+                            linkUnderlineStyle: .single,
+                            onUrlClicked: { url in
+                                Task {
+                                    do {
+                                        if let deepLink = DeepLink.getType(from: url), deepLink == .travelCertificate {
+                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
+                                        }
+                                        store.send(.goToURL(url: url))
+                                    } catch {}
                                 }
-                                store.send(.goToURL(url: url))
-                            } catch {}
-                        }
-                    }
+                            }
+                        ),
+                        height: $height
+                    )
                     .frame(height: height)
                 }
                 .padding(.horizontal, 16)
-                SupportView()
+                SupportView(topic: question.topicType)
                     .padding(.top, 8)
             }
         }
@@ -75,8 +81,10 @@ extension HelpCenterQuestionView {
     HelpCenterQuestionView(
         question: Question(
             question: "When do you charge for my insurance?",
+            questionEn: "When do you charge for my insurance?",
             answer:
                 "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month. \n\nYour insurance starts on 1 June. The first dawn takes place on June 27, for the entire month of June. This means that you pay 27 days in arrears and 3 days in advance. \n\nThe insurance is valid even if the first payment has not been received. \n\nGo to Payments to view your full history",
+            topicType: .payments,
             relatedQuestions: []
         )
     )
