@@ -56,6 +56,7 @@ public struct Contract: Codable, Hashable, Equatable {
         selfChangeBlockers: String? = nil,
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
+        supportsTravelCertificate: Bool,
         upcomingChangedAgreement: Agreement,
         upcomingRenewal: ContractRenewal,
         firstName: String,
@@ -72,6 +73,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.selfChangeBlockers = selfChangeBlockers
         self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
+        self.supportsTravelCertificate = supportsTravelCertificate
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -89,6 +91,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
     public let supportsCoInsured: Bool
+    public let supportsTravelCertificate: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
@@ -207,6 +210,7 @@ public struct Contract: Codable, Hashable, Equatable {
         terminationDate = nil
         supportsAddressChange = false
         supportsCoInsured = false
+        supportsTravelCertificate = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
         selfChangeBlockers = nil
@@ -232,6 +236,7 @@ public struct Contract: Codable, Hashable, Equatable {
         selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
         supportsCoInsured = contract.supportsCoInsured
+        supportsTravelCertificate = contract.supportsTravelCertificate
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
@@ -298,13 +303,6 @@ public struct Contract: Codable, Hashable, Equatable {
             )
             return .unknown
         }
-        fileprivate static let insurancesSuitableForTravelInsurance: [Contract.TypeOfContract] = [
-            .seHouse,
-            .seApartmentBrf,
-            .seApartmentRent,
-            .seApartmentStudentBrf,
-            .seApartmentStudentRent,
-        ]
 
         public var showValidUntilInsteadOfTerminatedAt: Bool {
             switch self {
@@ -314,12 +312,6 @@ public struct Contract: Codable, Hashable, Equatable {
                 return false
             }
         }
-    }
-
-    public var hasTravelInsurance: Bool {
-        let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
-        let isNotInTerminationProcess = terminationDate == nil
-        return suitableType && isNotInTerminationProcess
     }
 }
 
