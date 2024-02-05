@@ -91,10 +91,6 @@ class CustomTextView: UIView, UITextViewDelegate {
 
     private func calculateHeight() {
         let newHeight = getHeight()
-        //        self.snp.makeConstraints { make in
-        //            make.height.equalTo(newHeight)
-        //            make.width.equalTo(config.fixedWidth)
-        //        }
         DispatchQueue.main.async { [weak self] in
             self?.height = newHeight
         }
