@@ -308,7 +308,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allCommonClaims.append(.moving())
         }
         if Dependencies.featureFlags().isTravelInsuranceEnabled
-            && !contracts.filter({ $0.hasTravelInsurance }).isEmpty
+            && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
             allCommonClaims.append(.travelInsurance())
         }
