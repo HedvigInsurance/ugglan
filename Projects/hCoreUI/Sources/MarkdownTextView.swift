@@ -97,7 +97,9 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     private func getHeight() -> CGFloat {
-        let newSize = textView.sizeThatFits(CGSize(width: config.fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = textView.sizeThatFits(
+            CGSize(width: config.fixedWidth + 12, height: CGFloat.greatestFiniteMagnitude)
+        )
         return newSize.height
     }
 

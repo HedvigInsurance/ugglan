@@ -14,7 +14,7 @@ public struct ProfileState: StateProtocol {
     var memberEmail: String = ""
     var memberPhone: String?
     public var partnerData: PartnerData?
-    var openSettingsDirectly = true
+    var openSettingsDirectly = false
     public var memberDetails: MemberDetails?
     var pushNotificationStatus: Int?
     var pushNotificationsSnoozeDate: Date?
