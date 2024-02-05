@@ -119,7 +119,6 @@ final class TravelInsuranceStore: LoadingStateStore<
             newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
-        //            send(.navigation(.openWhoIsTravelingScreen))
         case .toogleMyselfAsInsured:
             newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
