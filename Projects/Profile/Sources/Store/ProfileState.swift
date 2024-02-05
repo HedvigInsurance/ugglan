@@ -1,4 +1,5 @@
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import Presentation
@@ -18,6 +19,17 @@ public struct ProfileState: StateProtocol {
     var pushNotificationStatus: Int?
     var pushNotificationsSnoozeDate: Date?
 
+    var hasTravelCertificates: Bool = false
+
+    var showTravelCertificate: Bool {
+        let flags: FeatureFlags = Dependencies.shared.resolve()
+        return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
+    }
+
+    var canCreateTravelInsurance: Bool {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        return !contractStore.state.activeContracts.filter({ $0.hasTravelInsurance }).isEmpty
+    }
     public init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in

@@ -19,7 +19,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 let getProfileData = self.octopus.client
                     .fetch(
                         query: OctopusGraphQL.ProfileQuery(),
-                        cachePolicy: .fetchIgnoringCacheData
+                        cachePolicy: .fetchIgnoringCacheCompletely
                     )
                 disposeBag +=
                     getProfileData.onValue({ profileData in
@@ -36,6 +36,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                                 )
                             )
                         )
+                        let hasTravelCertificate = !profileData.currentMember.travelCertificates.isEmpty
+                        callback(.value(.setHasTravelCertificate(has: hasTravelCertificate)))
                         callback(.value(.fetchProfileStateCompleted))
                     })
                     .onError({ error in
@@ -52,7 +54,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 disposeBag += self.octopus.client
                     .fetch(
                         query: query,
-                        cachePolicy: .returnCacheDataElseFetch
+                        cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .compactMap { details in
                         let details = MemberDetails(memberData: details.currentMember)
@@ -108,6 +110,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.pushNotificationStatus = status
         case let .setPushNotificationsTo(date):
             newState.pushNotificationsSnoozeDate = date
+        case let .setHasTravelCertificate(hasTravelCertificates):
+            newState.hasTravelCertificates = hasTravelCertificates
         default:
             break
         }
