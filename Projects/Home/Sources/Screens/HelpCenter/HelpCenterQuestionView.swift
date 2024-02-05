@@ -29,7 +29,7 @@ struct HelpCenterQuestionView: View {
                         config: .init(
                             text: question.answer,
                             fixedWidth: UIScreen.main.bounds.width - 32,
-                            fontStyle: .standardLarge,
+                            fontStyle: .standard,
                             color: hTextColor.secondary,
                             linkColor: hTextColor.primary,
                             linkUnderlineStyle: .single,
