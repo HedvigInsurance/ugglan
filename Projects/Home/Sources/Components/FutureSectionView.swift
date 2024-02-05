@@ -68,7 +68,8 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                         id: "id",
                         masterInceptionDate: "2023-11-22",
                         supportsMoving: true,
-                        supportsCoInsured: true
+                        supportsCoInsured: true,
+                        supportsTravelCertificate: true
                     )
 
                     store.send(
