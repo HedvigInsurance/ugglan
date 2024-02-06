@@ -25,6 +25,7 @@ extension NetworkClient: ChatFileUploaderClient {
                     inCont.resume(throwing: error)
                 }
             }
+
             observation = task.progress.observe(\.fractionCompleted) { progress, _ in
                 withProgress?(progress.fractionCompleted)
             }

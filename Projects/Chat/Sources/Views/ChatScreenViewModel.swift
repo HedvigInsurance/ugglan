@@ -109,7 +109,7 @@ class ChatScreenViewModel: ObservableObject {
                 self.hasNext = chatData.hasNext
                 self.nextUntil = chatData.nextUntil
             }
-        } catch let ex {
+        } catch _ {
             if let next = next {
                 if #available(iOS 16.0, *) {
                     try! await Task.sleep(for: .seconds(2))
