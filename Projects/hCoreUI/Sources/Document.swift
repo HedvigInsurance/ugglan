@@ -7,20 +7,16 @@ import UIKit
 import hCore
 
 public struct Document {
-    fileprivate static let certificateName = "Travel Insurance Certificate"
-    fileprivate static let fileExt = ".pdf"
     let url: URL
     let title: String
-    let downloadButtonTitle: String?
     public init(
         url: URL,
-        title: String,
-        downloadButtonTitle: String? = nil
+        title: String
     ) {
         self.url = url
         self.title = title
-        self.downloadButtonTitle = downloadButtonTitle
     }
+
 }
 
 extension Document: Presentable {
@@ -31,26 +27,28 @@ extension Document: Presentable {
         viewController.edgesForExtendedLayout = []
         viewController.title = title
 
-        let pdfViewer = PDFViewer(downloadButtonTitle: downloadButtonTitle)
+        let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)
 
         pdfViewer.url.value = url
 
         let activityButton = UIBarButtonItem(system: .action)
 
+        func getPathForFile() -> URL {
+            let temporaryFolder = FileManager.default.temporaryDirectory
+            let fileName = "\(title) \(Date().localDateString).pdf"
+            let url = temporaryFolder.appendingPathComponent(fileName)
+            return url
+        }
         func transformDataToPresentation(data: Data) -> Presentation<ActivityView> {
             var thingToShare: Any = data
-            if downloadButtonTitle != nil {
-                let temporaryFolder = FileManager.default.temporaryDirectory
-                let fileName = "\(Document.certificateName) \(Date().localDateString)\(Document.fileExt)"
-                let temporaryFileURL = temporaryFolder.appendingPathComponent(fileName)
-                do {
-                    try? FileManager.default.removeItem(at: temporaryFileURL)
-                    try data.write(to: temporaryFileURL)
-                    thingToShare = temporaryFileURL
-                } catch let error {
-                    print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
-                }
+            let temporaryFileURL = getPathForFile()
+            do {
+                try? FileManager.default.removeItem(at: temporaryFileURL)
+                try data.write(to: temporaryFileURL)
+                thingToShare = temporaryFileURL
+            } catch let error {
+                print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
             }
 
             let activityView = ActivityView(
@@ -68,22 +66,16 @@ extension Document: Presentable {
             return activityViewPresentation
         }
 
-        bag += pdfViewer.downloadButtonPressed
-            .withLatestFrom(pdfViewer.data)
-            .onValueDisposePrevious({ _, value -> Disposable? in
-                guard let value = value else { return NilDisposer() }
-                let activityViewPresentation = transformDataToPresentation(data: value)
-                return viewController.present(activityViewPresentation).disposable
-            })
-
         bag += viewController.navigationItem.addItem(activityButton, position: .right)
             .withLatestFrom(pdfViewer.data)
             .onValueDisposePrevious { _, value -> Disposable? in
                 guard let value = value else { return NilDisposer() }
                 let activityViewPresentation = transformDataToPresentation(data: value)
+                    .onDismiss {
+                        try? FileManager.default.removeItem(at: getPathForFile())
+                    }
                 return viewController.present(activityViewPresentation).disposable
             }
-
         return (viewController, bag)
     }
 }

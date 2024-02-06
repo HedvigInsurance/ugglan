@@ -5,7 +5,6 @@ import Claims
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
-import Disk
 import Flow
 import Form
 import Foundation
@@ -14,6 +13,7 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TravelCertificate
 import UIKit
 import UserNotifications
 import hCore
@@ -313,6 +313,10 @@ extension ApolloClient {
                 let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
+                Dependencies.shared.add(
+                    module: Module { () -> TravelInsuranceClient in TravelInsuranceClientOctopus() }
+                )
+
                 switch Environment.current {
                 case .staging:
                     let hFetchClaimService = FetchClaimServiceOctopus()

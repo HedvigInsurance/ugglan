@@ -1,10 +1,10 @@
 import Foundation
 import hCore
 
-class ChatDemoClient: FetchMessagesClient, SendMessageClient {
+public class ChatDemoClient: FetchMessagesClient, SendMessageClient {
     var messages = [Message]()
 
-    init() {
+    public init() {
         self.messages = [
             .init(type: .text(text: "Test message")),
             .init(type: .text(text: "Another message")),
@@ -69,16 +69,19 @@ class ChatDemoClient: FetchMessagesClient, SendMessageClient {
         ]
     }
 
-    func get(_ next: String?) async throws -> ChatData {
+    public func get(_ next: String?) async throws -> ChatData {
         return .init(
             hasNext: true,
             id: UUID().uuidString,
             messages: messages,
-            nextUntil: nil
+            nextUntil: nil,
+            banner: """
+                Information message with deeplink asd asd as *[Help Center](https://hedvigtest.page.link/help-center)*
+                """
         )
     }
 
-    func send(message: Message) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
         self.messages.append(message)
         return .init(message: message, status: nil)
     }

@@ -51,14 +51,14 @@ struct ContractsScreen: View {
                             .publisher
                     ) { value in
                         withAnimation {
-                            isLoading = value[.getTravelInsurance] == .loading
+                            isLoading = value[.getTravelInsuranceSpecifications] == .loading
                         }
                     }
                 }
             }
         }
         .presentableStoreLensAnimation(.spring())
-        .trackLoading(TravelInsuranceStore.self, action: .getTravelInsurance)
+        .trackLoading(TravelInsuranceStore.self, action: .getTravelInsuranceSpecifications)
     }
 }
 

@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-    public static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
+    static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
         let disposeBag = DisposeBag()
         return try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<TravelInsuranceSpecification, Error>) -> Void in
@@ -23,27 +23,38 @@ public struct TravelInsuranceFlowJourney {
         }
     }
     @JourneyBuilder
-    public static func start(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+    static func start() -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         let numberOfContracts = store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 0
         if numberOfContracts > 1 {
-            showContractsList(openChat)
+            showContractsList()
         } else {
-            showStartDateScreen(openChat, detended: true)
+            showStartDateScreen(style: .modally(presentationStyle: .fullScreen))
         }
     }
 
-    private static func showContractsList(
-        _ openChat: @escaping (() -> some JourneyPresentation)
+    @JourneyBuilder
+    public static func list(
+        canAddTravelInsurance: Bool,
+        style: PresentationStyle,
+        infoButtonPlacement: ToolbarItemPlacement
     ) -> some JourneyPresentation {
+        showListScreen(
+            canAddTravelInsurance: canAddTravelInsurance,
+            style: style,
+            infoButtonPlacement: infoButtonPlacement
+        )
+    }
+
+    private static func showContractsList() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: ContractsScreen(),
-            style: .modally(presentationStyle: .overFullScreen)
+            style: .modally(presentationStyle: .fullScreen)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openStartDateScreen = navigationAction {
-                    TravelInsuranceFlowJourney.showStartDateScreen(openChat, detended: false)
+                    showStartDateScreen(style: .default)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 }
@@ -52,18 +63,15 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
 
-    private static func showStartDateScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation),
-        detended: Bool
-    ) -> some JourneyPresentation {
+    private static func showStartDateScreen(style: PresentationStyle) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: StartDateScreen(),
-            style: detended ? .modally(presentationStyle: .overFullScreen) : .default
+            style: style
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openWhoIsTravelingScreen = navigationAction {
-                    showWhoIsTravelingScreen(openChat)
+                    showWhoIsTravelingScreen()
                 }
             }
         }
@@ -78,16 +86,14 @@ public struct TravelInsuranceFlowJourney {
 
     }
 
-    private static func showWhoIsTravelingScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation)
-    ) -> some JourneyPresentation {
+    private static func showWhoIsTravelingScreen() -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: WhoIsTravelingScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openProcessingScreen = navigationAction {
-                    openProcessingScreen(openChat)
+                    openProcessingScreen()
                 } else if case let .openCoinsured(member) = navigationAction {
                     openCoinsured(member: member)
                 }
@@ -125,9 +131,7 @@ public struct TravelInsuranceFlowJourney {
         }
     }
 
-    private static func openProcessingScreen(
-        _ openChat: @escaping (() -> some JourneyPresentation)
-    ) -> some JourneyPresentation {
+    private static func openProcessingScreen() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: ProcessingScreen()
@@ -135,14 +139,48 @@ public struct TravelInsuranceFlowJourney {
             if case let .navigation(navigationAction) = action {
                 if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
-                } else if case .openFreeTextChat = navigationAction {
-                    openChat()
                 } else if case .goBack = navigationAction {
                     PopJourney()
                 }
             }
         }
         .hidesBackButton
+    }
+
+    private static func showListScreen(
+        canAddTravelInsurance: Bool,
+        style: PresentationStyle,
+        infoButtonPlacement: ToolbarItemPlacement
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: ListScreen(
+                canAddTravelInsurance: canAddTravelInsurance,
+                infoButtonPlacement: infoButtonPlacement
+            ),
+            style: style,
+            options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
+        ) { action in
+            if case let .navigation(navigationAction) = action {
+                if case let .openDetails(model) = navigationAction {
+                    showDetails(for: model)
+                } else if case .openCreateNew = navigationAction {
+                    start()
+                } else if case .goBack = navigationAction {
+                    PopJourney()
+                }
+            }
+        }
+        .configureTitle(L10n.TravelCertificate.cardTitle)
+    }
+
+    private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
+        let document = Document(url: model.url, title: model.title)
+        return Journey(
+            document,
+            style: .detented(.large)
+        )
+        .withDismissButton
     }
 }
 

@@ -3,7 +3,6 @@ import Contracts
 import Flow
 import Foundation
 import Presentation
-import SnapKit
 import SwiftUI
 import hCore
 import hCoreUI
@@ -169,6 +168,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                     masterInceptionDate: "",
                     supportsMoving: true,
                     supportsCoInsured: true,
+                    supportsTravelCertificate: true,
                     upcomingChangedAgreement: .init(
                         activeFrom: "2023-12-10",
                         activeTo: "2024-12-10",

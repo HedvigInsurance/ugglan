@@ -103,7 +103,7 @@ public enum HomeAction: ActionProtocol {
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
     case startClaim
-    case openFreeTextChat
+    case openFreeTextChat(from: ChatTopicType?)
     case openHelpCenter
     case showNewOffer
     case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
@@ -308,7 +308,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allCommonClaims.append(.moving())
         }
         if Dependencies.featureFlags().isTravelInsuranceEnabled
-            && !contracts.filter({ $0.hasTravelInsurance }).isEmpty
+            && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
             allCommonClaims.append(.travelInsurance())
         }

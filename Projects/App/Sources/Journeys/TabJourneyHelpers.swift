@@ -56,7 +56,6 @@ extension JourneyPresentation where P: Tabable {
 }
 
 struct Loader: Presentable {
-    let tabBarController: UITabBarController
 
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -119,39 +118,10 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
 
-        tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
-    }
-}
-
-extension JourneyPresentation {
-    func onTabSelected(_ perform: @escaping () -> Void) -> Self {
-        addConfiguration { presenter in
-            guard let tabBarController = presenter.viewController.tabBarController else {
-                return
-            }
-
-            func compareViewController() {
-                if tabBarController.selectedViewController == presenter.viewController {
-                    perform()
-                }
-            }
-
-            compareViewController()
-
-            presenter.bag += tabBarController.signal(for: \.selectedViewController)
-                .onValue { _ in
-                    compareViewController()
-                }
-
-            presenter.bag += tabBarController.signal(for: \.selectedIndex)
-                .onValue { _ in
-                    compareViewController()
-                }
-        }
+        tabBarController.viewControllers = [Loader().materialize(into: bag)]
     }
 }

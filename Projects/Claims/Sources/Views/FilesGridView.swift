@@ -1,4 +1,3 @@
-import Disk
 import Flow
 import Foundation
 import Kingfisher

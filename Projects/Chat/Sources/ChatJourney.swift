@@ -5,13 +5,14 @@ import hCoreUI
 
 public class ChatJourney {
     public static func start<ResultJourney: JourneyPresentation>(
+        topic: ChatTopicType?,
         style: PresentationStyle,
         @JourneyBuilder resultJourney: @escaping (_ result: ChatResult) -> ResultJourney
 
     ) -> some JourneyPresentation {
         return HostingJourney(
             ChatStore.self,
-            rootView: ChatScreen(vm: .init()),
+            rootView: ChatScreen(vm: .init(topicType: topic)),
             style: style,
             options: [
                 .embedInNavigationController,
@@ -22,6 +23,10 @@ public class ChatJourney {
             if case let .navigation(navigationAction) = action {
                 if case .closeChat = navigationAction {
                     PopJourney()
+                } else if case let .linkClicked(link) = navigationAction {
+                    if let deepLink = DeepLink.getType(from: link), deepLink.tabURL {
+                        PopJourney()
+                    }
                 }
             } else if case .checkPushNotificationStatus = action {
                 resultJourney(.notifications)
@@ -41,5 +46,4 @@ public class ChatJourney {
 }
 public enum ChatResult {
     case notifications
-
 }
