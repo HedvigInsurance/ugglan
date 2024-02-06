@@ -54,13 +54,17 @@ struct DeleteAccountView: View {
                 VStack(alignment: alignment) {
                     hText(title)
                     MarkdownView(
-                        text: text,
-                        fontStyle: .standard,
-                        textAlignment: textAlignment
-                    ) { url in
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.goToURL(url: url))
-                    }
+                        config: .init(
+                            text: text,
+                            fontStyle: .standard,
+                            color: hTextColor.secondary,
+                            linkColor: hTextColor.primary,
+                            linkUnderlineStyle: .single
+                        ) { url in
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.goToURL(url: url))
+                        }
+                    )
                 }
             }
             .sectionContainerStyle(.transparent)

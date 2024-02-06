@@ -125,31 +125,17 @@ struct ChatScreen: View {
         if let banner = vm.banner {
             InfoCard(text: "", type: .info)
                 .hInfoCardCustomView {
-                    GeometryReader { geo in
-                        if infoViewWidth > 0 {
-                            hCoreUI.CustomTextViewRepresentable(
-                                config: .init(
-                                    text: banner,
-                                    fixedWidth: infoViewWidth,
-                                    fontStyle: .standardSmall,
-                                    color: hSignalColor.blueText,
-                                    linkColor: hSignalColor.blueText,
-                                    linkUnderlineStyle: .single,
-                                    onUrlClicked: { url in
-                                        store.send(.navigation(action: .linkClicked(url: url)))
-                                    }
-                                ),
-                                height: $infoViewHeight
-                            )
-                        } else {
-                            Rectangle().frame(height: 0)
-                                .onReceive(Just(geo.size.width)) { width in
-                                    self.infoViewWidth = width
-                                }
+                    MarkdownView(
+                        config: .init(
+                            text: banner,
+                            fontStyle: .standardSmall,
+                            color: hSignalColor.blueText,
+                            linkColor: hSignalColor.blueText,
+                            linkUnderlineStyle: .single
+                        ) { url in
+                            store.send(.navigation(action: .linkClicked(url: url)))
                         }
-                    }
-                    .frame(height: infoViewHeight)
-
+                    )
                 }
                 .hInfoCardLayoutStyle(.rectange)
         }

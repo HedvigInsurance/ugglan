@@ -107,7 +107,9 @@ struct DeleteRequestLoadingView: View {
         case let .tryToDelete(memberDetails):
             sendingState
                 .onAppear {
-                    sendSlackMessage(details: memberDetails)
+                    Task {
+                        await sendSlackMessage(details: memberDetails)
+                    }
                 }
         case .success:
             successState
@@ -115,21 +117,15 @@ struct DeleteRequestLoadingView: View {
             errorState(errorMessage: errorMessage)
         }
     }
-
-    private func sendSlackMessage(details: MemberDetails) {
-        self.octopus.client
-            .perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
-            .onValue { value in
-                if let errorFromGraphQL = value.memberDeletionRequest?.message {
-                    screenState = .error(errorMessage: errorFromGraphQL)
-                } else {
-                    ApolloClient.saveDeleteAccountStatus(for: details.id)
-                    screenState = .success
-                }
-            }
-            .onError { graphQLError in
-                screenState = .error(errorMessage: L10n.General.errorBody)
-            }
+    @MainActor
+    private func sendSlackMessage(details: MemberDetails) async {
+        do {
+            let data = try await self.octopus.client.perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+            ApolloClient.saveDeleteAccountStatus(for: details.id)
+            screenState = .success
+        } catch let ex {
+            screenState = .error(errorMessage: L10n.General.errorBody)
+        }
     }
 }
 
