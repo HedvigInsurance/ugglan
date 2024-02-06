@@ -4,6 +4,7 @@ import ProjectDescription
 public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
+    case apolloIosCodegen
     case flow
     case form
     case presentation
@@ -21,6 +22,7 @@ public enum ExternalDependencies: CaseIterable {
     case introspect
     case svgkit
     case unleashProxyClientSwift
+    case argumentParser
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -38,7 +40,7 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .runtime:
             return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
         case .form:
@@ -103,6 +105,14 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
             ]
+        case .apolloIosCodegen:
+            return [
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.9.0"))
+            ]
+        case .argumentParser:
+            return [
+                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
+            ]
         }
     }
 
@@ -164,6 +174,10 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:
             return [.package(product: "UnleashProxyClientSwift")]
+        case .apolloIosCodegen:
+            return [.package(product: "ApolloIosCodegen")]
+        case .argumentParser:
+            return [.package(product: "ArgumentParser")]
         }
     }
 }

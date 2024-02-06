@@ -1,8 +1,15 @@
 import ApolloCodegenLib
+import ArgumentParser
 import Foundation
 
-let parentFolderOfScriptFile = FileFinder.findParentFolder()
-let sourceRootURL = parentFolderOfScriptFile.deletingLastPathComponent().deletingLastPathComponent()
+//@main
+//struct CustomCodegenScript: AsyncParsableCommand {
+//    func run() async throws {
+
+let filePath = "file:///Users/juliaandersson/ugglan/Projects/Codegen/Sources/Codegen/" /* TODO: CHANGE */
+
+let parentFolderOfScriptFile = URL(string: filePath)
+let sourceRootURL = parentFolderOfScriptFile?.deletingLastPathComponent().deletingLastPathComponent()
     .deletingLastPathComponent()
 
 let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
@@ -12,7 +19,8 @@ try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirect
 
 let endpoints = ["octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!]
 
-func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
+// endless loop
+func findAllGraphQLFolders(basePath: String = sourceRootURL?.path ?? "") -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
 
     let ownDirs = dirs.filter { $0 == "GraphQL" }
@@ -20,38 +28,29 @@ func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
         .compactMap { $0 }
 
     let nestedDirs = dirs.compactMap { $0 }
-        .map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }.flatMap { $0 }
+        .map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }
+        .flatMap { $0 }
         .filter { !$0.absoluteString.contains("Derived") }
 
     return [ownDirs, nestedDirs].flatMap { $0 }
 }
 
-let sourceUrls = findAllGraphQLFolders()
-
-sourceUrls.forEach { sourceUrl in
-    let baseFolderUrl =
-        sourceUrl
-        .appendingPathComponent("../")
-        .appendingPathComponent("../")
-        .appendingPathComponent("Sources")
-        .appendingPathComponent("Derived")
-        .appendingPathComponent("GraphQL")
-
-    try? FileManager.default.removeItem(at: baseFolderUrl)
-}
-
-try! endpoints.forEach { name, endpoint in
+endpoints.forEach { name, endpoint in
     let downloadConfiguration = ApolloSchemaDownloadConfiguration(
         using: .introspection(endpointURL: endpoint),
-        outputFolderURL: cliFolderURL
+        outputPath: cliFolderURL.path
     )
 
-    try ApolloSchemaDownloader.fetch(with: downloadConfiguration)
+    Task {
+        try await ApolloSchemaDownloader.fetch(configuration: downloadConfiguration)
+    }
+
+    let sourceUrls = findAllGraphQLFolders()
 
     sourceUrls.forEach { sourceUrl in
         let sourceUrl = sourceUrl.appendingPathComponent(name.capitalized)
 
-        guard FileManager.default.apollo.folderExists(at: sourceUrl) else {
+        guard ApolloFileManager.default.doesDirectoryExist(atPath: sourceUrl.path) else {
             return
         }
 
@@ -67,12 +66,12 @@ try! endpoints.forEach { name, endpoint in
             baseFolderUrl
             .appendingPathComponent(name.capitalized)
 
-        try! FileManager.default.apollo.deleteFolder(at: folderUrl)
-        try! FileManager.default.apollo.createFolderIfNeeded(at: baseFolderUrl)
-        try! FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
+        try! ApolloFileManager.default.deleteDirectory(atPath: folderUrl.path)
+        try! ApolloFileManager.default.createDirectoryIfNeeded(atPath: baseFolderUrl.path)
+        try! ApolloFileManager.default.createDirectoryIfNeeded(atPath: folderUrl.path)
 
         let hGraphQLUrl =
-            sourceRootURL
+            sourceRootURL?
             .appendingPathComponent("hGraphQL")
             .appendingPathComponent("GraphQL")
             .appendingPathComponent(name.capitalized)
@@ -85,7 +84,9 @@ try! endpoints.forEach { name, endpoint in
 
         if !ishGraphQLFolder {
             symlinks.append(hGraphQLSymlinkUrl)
-            try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
+            if let hGraphQLUrl {
+                try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
+            }
         } else {
             sourceUrls.filter { url in
                 !url.absoluteString.contains("hGraphQL")
@@ -110,24 +111,29 @@ try! endpoints.forEach { name, endpoint in
 
                     fatalError("Couldn't find project name for \(sourceUrl)")
                 }
+                if let hGraphQLUrl {
+                    let symlinkUrl = hGraphQLUrl.appendingPathComponent(projectName)
+                    symlinks.append(symlinkUrl)
 
-                let symlinkUrl = hGraphQLUrl.appendingPathComponent(projectName)
-                symlinks.append(symlinkUrl)
-
-                try? FileManager.default.createSymbolicLink(
-                    at: symlinkUrl,
-                    withDestinationURL: hGraphQLSymlinkUrl
-                )
+                    try? FileManager.default.createSymbolicLink(
+                        at: symlinkUrl,
+                        withDestinationURL: hGraphQLSymlinkUrl
+                    )
+                }
             }
         }
 
-        let codegenOptions = ApolloCodegenOptions(
-            namespace: "\(name.capitalized)GraphQL",
-            outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
-            urlToSchemaFile: cliFolderURL.appendingPathComponent("introspection_response.json")
+        let codegenOptions = ApolloCodegenConfiguration(
+            schemaNamespace: "\(name.capitalized)GraphQL",
+            input: ApolloCodegenConfiguration.FileInput(
+                schemaPath: cliFolderURL.appendingPathComponent("introspection_response.json").path
+            ),
+            output: ApolloCodegenConfiguration.FileOutput(schemaTypes: .init(path: folderUrl.path, moduleType: .other))
         )
 
-        try! ApolloCodegen.run(from: sourceUrl, with: cliFolderURL, options: codegenOptions)
+        Task {
+            try! await ApolloCodegen.build(with: codegenOptions)
+        }
 
         if !ishGraphQLFolder {
             var allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
@@ -136,23 +142,25 @@ try! endpoints.forEach { name, endpoint in
                 options: []
             )
 
-            let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
-                at: hGraphQLUrl,
-                includingPropertiesForKeys: nil,
-                options: []
-            )
-
-            allGeneratedFiles.filter { generatedFile in
-                let originalFileName = generatedFile.lastPathComponent.replacingOccurrences(
-                    of: ".swift",
-                    with: ""
+            if let hGraphQLUrl {
+                let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
+                    at: hGraphQLUrl,
+                    includingPropertiesForKeys: nil,
+                    options: []
                 )
 
-                return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) != nil
-            }
-            .forEach { url in
-                allGeneratedFiles.removeAll(where: { $0 == url })
-                try? FileManager.default.removeItem(at: url)
+                allGeneratedFiles.filter { generatedFile in
+                    let originalFileName = generatedFile.lastPathComponent.replacingOccurrences(
+                        of: ".swift",
+                        with: ""
+                    )
+
+                    return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) != nil
+                }
+                .forEach { url in
+                    allGeneratedFiles.removeAll(where: { $0 == url })
+                    try? FileManager.default.removeItem(at: url)
+                }
             }
 
             allGeneratedFiles.forEach { file in
@@ -173,22 +181,25 @@ try! endpoints.forEach { name, endpoint in
                 options: []
             )
 
-            let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
-                at: hGraphQLUrl,
-                includingPropertiesForKeys: nil,
-                options: []
-            )
-
-            allGeneratedFiles.filter { generatedFile in
-                let originalFileName = generatedFile.lastPathComponent.replacingOccurrences(
-                    of: ".swift",
-                    with: ""
+            if let hGraphQLUrl {
+                let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
+                    at: hGraphQLUrl,
+                    includingPropertiesForKeys: nil,
+                    options: []
                 )
 
-                return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) == nil
+                allGeneratedFiles.filter { generatedFile in
+                    let originalFileName = generatedFile.lastPathComponent.replacingOccurrences(
+                        of: ".swift",
+                        with: ""
+                    )
+
+                    return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) == nil
+                }
+                .filter { !$0.lastPathComponent.contains("Types.graphql.swift") }
+                .forEach { url in try? FileManager.default.removeItem(at: url) }
+
             }
-            .filter { !$0.lastPathComponent.contains("Types.graphql.swift") }
-            .forEach { url in try? FileManager.default.removeItem(at: url) }
 
             allGeneratedFiles
                 .filter { $0.lastPathComponent.contains("Types.graphql.swift") }
