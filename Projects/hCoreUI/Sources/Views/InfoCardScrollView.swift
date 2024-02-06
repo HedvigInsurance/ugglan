@@ -140,7 +140,9 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDe
             indexToScroll += 1
         }
         withAnimation {
-            activeCard = indexToScroll
+            DispatchQueue.main.async { [weak self] in
+                self?.activeCard = indexToScroll
+            }
         }
     }
 }
