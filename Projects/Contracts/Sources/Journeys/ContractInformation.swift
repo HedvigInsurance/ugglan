@@ -38,9 +38,15 @@ struct ContractInformationView: View {
                             .noSpacing()
                             .withCustomAccessory({
                                 Spacer()
-                                hText(item.displayValue)
-                                    .fixedSize()
-                                    .foregroundColor(hTextColor.secondary)
+                                Group {
+                                    if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
+                                        hText(date)
+                                    } else {
+                                        hText(item.displayValue)
+                                    }
+                                }
+                                .fixedSize()
+                                .foregroundColor(hTextColor.secondary)
                             })
                         }
                         .withoutHorizontalPadding

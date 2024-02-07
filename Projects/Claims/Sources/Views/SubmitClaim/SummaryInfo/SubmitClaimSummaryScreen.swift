@@ -78,7 +78,7 @@ public struct SubmitClaimSummaryScreen: View {
         ) { dateOfOccurenceStep in
             createRow(
                 with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDotFormat
+                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
             )
         }
     }
@@ -117,7 +117,7 @@ public struct SubmitClaimSummaryScreen: View {
         ) { singleItemStep in
             createRow(
                 with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDotFormat
+                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
             )
         }
     }
