@@ -140,9 +140,12 @@ struct CustomCodegenScript: AsyncParsableCommand {
         let codegenOptions = ApolloCodegenConfiguration(
             schemaNamespace: "\(endpoint.name.capitalized)GraphQL",
             input: ApolloCodegenConfiguration.FileInput(
-                //                schemaPath: "/Users/juliaandersson/ugglan/Projects/Home/GraphQL/Octopus/HomeQuery.graphql"
                 schemaPath: cliFolderURL.appendingPathComponent("schema.graphqls").path,
-                operationSearchPaths: ["/Users/sladannimcevic/Hedvig/ugglan/Projects/Home/GraphQL/Octopus/*.graphql"]
+                operationSearchPaths: [
+                    sourceUrl.appendingPathComponent("*.graphql").path,
+                    sourceUrl.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+                        .appendingPathComponent("hGraphQL/GraphQL/Octopus/*.graphql").path,
+                ]
             ),
             output: ApolloCodegenConfiguration.FileOutput(
                 schemaTypes: .init(path: folderUrl.path, moduleType: .swiftPackageManager)
@@ -156,11 +159,34 @@ struct CustomCodegenScript: AsyncParsableCommand {
         }
 
         if !ishGraphQLFolder {
-            var allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
-                at: folderUrl,
-                includingPropertiesForKeys: nil,
-                options: []
-            )
+            var allGeneratedFiles: [URL] = []
+            if ApolloFileManager.default.doesDirectoryExist(
+                atPath: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                    .appendingPathComponent("Mutations").path
+            ) {
+                allGeneratedFiles.append(
+                    contentsOf: try! FileManager.default.contentsOfDirectory(
+                        at: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                            .appendingPathComponent("Mutations"),
+                        includingPropertiesForKeys: nil,
+                        options: []
+                    )
+                )
+            }
+
+            if ApolloFileManager.default.doesDirectoryExist(
+                atPath: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                    .appendingPathComponent("Queries").path
+            ) {
+                allGeneratedFiles.append(
+                    contentsOf: try! FileManager.default.contentsOfDirectory(
+                        at: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                            .appendingPathComponent("Queries"),
+                        includingPropertiesForKeys: nil,
+                        options: []
+                    )
+                )
+            }
 
             if let hGraphQLUrl {
                 let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
@@ -196,11 +222,35 @@ struct CustomCodegenScript: AsyncParsableCommand {
 
             try? FileManager.default.removeItem(at: folderUrl.appendingPathComponent("Types.graphql.swift"))
         } else {
-            let allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
-                at: folderUrl,
-                includingPropertiesForKeys: nil,
-                options: []
-            )
+
+            var allGeneratedFiles: [URL] = []
+            if ApolloFileManager.default.doesDirectoryExist(
+                atPath: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                    .appendingPathComponent("Mutations").path
+            ) {
+                allGeneratedFiles.append(
+                    contentsOf: try! FileManager.default.contentsOfDirectory(
+                        at: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                            .appendingPathComponent("Mutations"),
+                        includingPropertiesForKeys: nil,
+                        options: []
+                    )
+                )
+            }
+
+            if ApolloFileManager.default.doesDirectoryExist(
+                atPath: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                    .appendingPathComponent("Queries").path
+            ) {
+                allGeneratedFiles.append(
+                    contentsOf: try! FileManager.default.contentsOfDirectory(
+                        at: folderUrl.appendingPathComponent("Sources").appendingPathComponent("Operations")
+                            .appendingPathComponent("Queries"),
+                        includingPropertiesForKeys: nil,
+                        options: []
+                    )
+                )
+            }
 
             if let hGraphQLUrl {
                 let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(

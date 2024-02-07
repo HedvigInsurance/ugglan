@@ -3,16 +3,3 @@ query CrossSells {
     ...CrossSellFragment
   }
 }
-
-fragment CrossSellFragment on Member {
-    crossSells {
-      id
-      title
-      description
-      about
-      imageUrl
-      blurHash
-      storeUrl
-      type
-    }
-}
