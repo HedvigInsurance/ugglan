@@ -11,7 +11,7 @@ let sourceRootURL = parentFolderOfScriptFile?.deletingLastPathComponent().deleti
 let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
     .appendingPathComponent("Codegen").appendingPathComponent("ApolloCLI")
 
-let endpoints = ["octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!]
+let endpoint = (name: "octopus", url: URL(string: "https://apollo-router.dev.hedvigit.com/")!)
 
 func findAllGraphQLFolders(basePath: String = sourceRootURL?.path ?? "") -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
@@ -36,30 +36,20 @@ struct CustomCodegenScript: AsyncParsableCommand {
 
         try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirectories: true, attributes: nil)
 
-        //        endpoints.forEach { name, endpoint in
-        //        await endpoints.map { endpoint in
-
-        let endpoint = endpoints.first!.value
-        let name = endpoints.first!.key
-
         let downloadConfiguration = ApolloSchemaDownloadConfiguration(
-            using: .introspection(endpointURL: endpoint),
-            //                outputPath: cliFolderURL.path
-            //                outputPath: cliFolderURL.absoluteString + "schema.graphqls"
-            outputPath: cliFolderURL.absoluteString + "schema.graphqls"
+            using: .introspection(endpointURL: endpoint.url),
+            outputPath: cliFolderURL.path + "schema.graphqls"
         )
 
-        //            Task {
         do {
             try await ApolloSchemaDownloader.fetch(configuration: downloadConfiguration)
             print("suceeded to download schema")
         } catch let error {
             print("Failed to download schema ", error)
         }
-        //            }
 
         sourceUrls.forEach { sourceUrl in
-            let sourceUrl = sourceUrl.appendingPathComponent(name.capitalized)
+            let sourceUrl = sourceUrl.appendingPathComponent(endpoint.name.capitalized)
 
             guard ApolloFileManager.default.doesDirectoryExist(atPath: sourceUrl.path) else {
                 return
@@ -75,7 +65,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
 
             let folderUrl =
                 baseFolderUrl
-                .appendingPathComponent(name.capitalized)
+                .appendingPathComponent(endpoint.name.capitalized)
 
             try! ApolloFileManager.default.deleteDirectory(atPath: folderUrl.path)
             try! ApolloFileManager.default.createDirectoryIfNeeded(atPath: baseFolderUrl.path)
@@ -85,7 +75,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
                 sourceRootURL?
                 .appendingPathComponent("hGraphQL")
                 .appendingPathComponent("GraphQL")
-                .appendingPathComponent(name.capitalized)
+                .appendingPathComponent(endpoint.name.capitalized)
 
             let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
 
@@ -108,7 +98,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
                 .forEach { sourceUrl in
                     let hGraphQLSymlinkUrl =
                         sourceUrl
-                        .appendingPathComponent(name.capitalized)
+                        .appendingPathComponent(endpoint.name.capitalized)
 
                     var projectName: String {
                         let pattern = "/Projects/([^/]+)/"
@@ -143,7 +133,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
             }
 
             let codegenOptions = ApolloCodegenConfiguration(
-                schemaNamespace: "\(name.capitalized)GraphQL",
+                schemaNamespace: "\(endpoint.name.capitalized)GraphQL",
                 input: ApolloCodegenConfiguration.FileInput(
                     schemaPath: cliFolderURL.appendingPathComponent("introspection_response.json").path
                 ),
@@ -230,7 +220,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
                         let destination =
                             typesFileUrl
                             .deletingLastPathComponent()
-                            .appendingPathComponent("\(name.capitalized)Types.graphql.swift")
+                            .appendingPathComponent("\(endpoint.name.capitalized)Types.graphql.swift")
                         try! FileManager.default.moveItem(at: typesFileUrl, to: destination)
                     }
             }
@@ -239,6 +229,5 @@ struct CustomCodegenScript: AsyncParsableCommand {
                 try? FileManager.default.removeItem(at: symlink)
             }
         }
-        //        }
     }
 }
