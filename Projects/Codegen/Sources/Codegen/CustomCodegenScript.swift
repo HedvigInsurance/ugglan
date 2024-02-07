@@ -35,7 +35,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
 
         let downloadConfiguration = ApolloSchemaDownloadConfiguration(
             using: .introspection(endpointURL: endpoint.url),
-            outputPath: cliFolderURL.path + "schema.graphqls"
+            outputPath: cliFolderURL.path + "/schema.graphqls"
         )
 
         do {
@@ -141,11 +141,11 @@ struct CustomCodegenScript: AsyncParsableCommand {
             schemaNamespace: "\(endpoint.name.capitalized)GraphQL",
             input: ApolloCodegenConfiguration.FileInput(
                 //                schemaPath: "/Users/juliaandersson/ugglan/Projects/Home/GraphQL/Octopus/HomeQuery.graphql"
-                schemaPath: cliFolderURL.appendingPathComponent("introspection_response.json").path
+                schemaPath: cliFolderURL.appendingPathComponent("schema.graphqls").path,
+                operationSearchPaths: ["/Users/sladannimcevic/Hedvig/ugglan/Projects/Home/GraphQL/Octopus/*.graphql"]
             ),
             output: ApolloCodegenConfiguration.FileOutput(
                 schemaTypes: .init(path: folderUrl.path, moduleType: .swiftPackageManager)
-                //                schemaTypes: .init(path: "/Users/juliaandersson/Library/Caches/Codegen/ApolloCLI/", moduleType: .other)
             )
         )
         do {
