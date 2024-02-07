@@ -47,7 +47,6 @@ struct CustomCodegenScript: AsyncParsableCommand {
 
         try await sourceUrls.forEachAsync { sourceUrl in
             try await buildSchema(sourceUrl: sourceUrl)
-            //               buildSchema(sourceUrl: sourceUrls)
         }
     }
 
