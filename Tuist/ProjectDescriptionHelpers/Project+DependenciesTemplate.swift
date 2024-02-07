@@ -34,6 +34,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+            && self != .apolloIosCodegen
     }
 
     public func swiftPackages() -> [Package] {
