@@ -2,10 +2,7 @@ import ApolloCodegenLib
 import ArgumentParser
 import Foundation
 
-let filePath = "file:///Users/juliaandersson/ugglan/Projects/Codegen/Sources/Codegen/" /* TODO: CHANGE */
-
-let parentFolderOfScriptFile = URL(string: filePath)
-let sourceRootURL = parentFolderOfScriptFile?.deletingLastPathComponent().deletingLastPathComponent()
+let sourceRootURL: URL? = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
     .deletingLastPathComponent()
 
 let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
