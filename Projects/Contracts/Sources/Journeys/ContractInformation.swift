@@ -39,8 +39,8 @@ struct ContractInformationView: View {
                             .withCustomAccessory({
                                 Spacer()
                                 Group {
-                                    if item.displayValue.localDateToDate != nil {
-                                        hText(item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")
+                                    if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
+                                        hText(date)
                                     } else {
                                         hText(item.displayValue)
                                     }

@@ -99,19 +99,15 @@ extension String {
     }
 
     var calculate10DigitBirthDate: String {
-        if self.localDateToDate != nil {
-            return self.localDateToDate?.localDateString ?? ""
-        } else if self.localBirthDateStringToDate != nil {
-            return self.localBirthDateStringToDate?.localDateString ?? ""
+        if let date = self.localDateToDate ?? self.localBirthDateStringToDate {
+            return date.localDateString
         }
         return ""
     }
 
     var birtDateDisplayFormat: String {
-        if self.localDateToDate != nil {
-            return self.localDateToDate?.localBirthDateString ?? ""
-        } else if self.localBirthDateStringToDate != nil {
-            return self.localBirthDateStringToDate?.localBirthDateString ?? ""
+        if let date = self.localDateToDate ?? self.localBirthDateStringToDate {
+            return date.localBirthDateString
         }
         return ""
     }
