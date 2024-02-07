@@ -6,6 +6,7 @@ import Market
 import Payment
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 import hGraphQL
@@ -49,6 +50,9 @@ public struct ProfileView: View {
                     ProfileRow(row: .myInfo)
                     if Dependencies.featureFlags().isPaymentScreenEnabled {
                         ProfileRow(row: .payment)
+                    }
+                    if store.state.showTravelCertificate {
+                        ProfileRow(row: .travelCertificate)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
@@ -156,6 +160,8 @@ extension ProfileView {
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
+            } else if case .openTravelCertificate = action {
+                TravelInsuranceJourney.travelCertificatePush()
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {

@@ -79,6 +79,7 @@ public enum ErrorSource {
 }
 public enum LoggingAction {
     case click
+    case custom
 }
 
 extension Logging {

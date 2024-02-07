@@ -30,8 +30,8 @@ extension AppJourney {
                 }
             ) { result in
                 switch result {
-                case .openFreeTextChat:
-                    AppJourney.freeTextChat().withDismissButton
+                case let .openFreeTextChat(topic):
+                    AppJourney.freeTextChat(withTopic: topic).withDismissButton
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
                 case .openCrossSells:
@@ -328,8 +328,6 @@ extension JourneyPresentation {
 
                         }
                     }
-                case .redirectAction:
-                    break
                 case .closeChat:
                     break
                 }

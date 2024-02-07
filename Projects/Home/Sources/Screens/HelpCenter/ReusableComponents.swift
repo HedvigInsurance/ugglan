@@ -122,7 +122,7 @@ struct QuestionsItems: View {
                     .hWithoutDividerPadding
                     .onTapGesture {
                         let attributes: [String: String] = [
-                            "question": item.question,
+                            "question": item.questionEn,
                             "answer": item.answer,
                             "sourcePath": source.title,
                             "questionType": questionType.rawValue,
@@ -140,6 +140,7 @@ struct QuestionsItems: View {
 }
 
 struct SupportView: View {
+    let topic: ChatTopicType?
     @PresentableStore var store: HomeStore
 
     var body: some View {
@@ -152,7 +153,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    store.send(.openFreeTextChat)
+                    store.send(.openFreeTextChat(from: topic))
                 } content: {
                     hText(L10n.hcChatButton)
                 }

@@ -51,11 +51,12 @@ class ChatDemoClients: FetchMessagesClient, SendMessageClient {
             hasNext: true,
             id: UUID().uuidString,
             messages: messages,
-            nextUntil: nil
+            nextUntil: nil,
+            banner: nil
         )
     }
 
-    func send(message: Message) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
         self.messages.append(message)
         return .init(message: message, status: nil)
     }

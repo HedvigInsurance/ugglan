@@ -15,7 +15,6 @@ public struct SubmitClaimEmergencyScreen: View {
                 hSection {
                     InfoCard(text: L10n.submitClaimEmergencyInfoLabel, type: .attention)
                 }
-
                 PresentableStoreLens(
                     SubmitClaimStore.self,
                     getter: { state in

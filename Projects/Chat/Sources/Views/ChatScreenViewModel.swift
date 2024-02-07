@@ -11,6 +11,7 @@ class ChatScreenViewModel: ObservableObject {
     @Published var lastDeliveredMessage: Message?
     @Published var isFetchingNext = false
     @Published var scrollToMessage: Message?
+    @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
     @Inject private var fetchMessagesClient: FetchMessagesClient
     @Inject private var sendMessageClient: SendMessageClient
@@ -18,8 +19,11 @@ class ChatScreenViewModel: ObservableObject {
     private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-
-    init() {
+    private let topicType: ChatTopicType?
+    private var haveSentAMessage = false
+    private var storeActionSignal: AnyCancellable?
+    init(topicType: ChatTopicType?) {
+        self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
@@ -43,6 +47,23 @@ class ChatScreenViewModel: ObservableObject {
             AskForRating().ask()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        storeActionSignal = store.actionSignal.publisher
+            .sink(receiveValue: { [weak self] action in guard let self = self else { return }
+                if case let .navigation(navigationAction) = action {
+                    if case let .linkClicked(url) = navigationAction {
+                        if let deepLink = DeepLink.getType(from: url), deepLink == .helpCenter {
+                            log.addUserAction(
+                                type: .custom,
+                                name: "Help center opened from the chat",
+                                error: nil,
+                                attributes: ["haveSentAMessage": self.haveSentAMessage]
+                            )
+                        }
+                    }
+                }
+            }
+            )
     }
 
     deinit {
@@ -72,6 +93,9 @@ class ChatScreenViewModel: ObservableObject {
                 if next != nil {
                     handleNext(messages: newMessages)
                 } else {
+                    withAnimation {
+                        self.banner = chatData.banner
+                    }
                     handleInitial(messages: newMessages)
                 }
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
@@ -85,7 +109,7 @@ class ChatScreenViewModel: ObservableObject {
                 self.hasNext = chatData.hasNext
                 self.nextUntil = chatData.nextUntil
             }
-        } catch let ex {
+        } catch _ {
             if let next = next {
                 if #available(iOS 16.0, *) {
                     try! await Task.sleep(for: .seconds(2))
@@ -132,10 +156,11 @@ class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageClient.send(message: message)
+            let data = try await sendMessageClient.send(message: message, topic: topicType)
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }
+            haveSentAMessage = true
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
         }

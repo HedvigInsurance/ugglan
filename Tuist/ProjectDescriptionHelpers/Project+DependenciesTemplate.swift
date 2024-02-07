@@ -11,7 +11,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case runtime
     case hero
     case snapshottesting
     case reveal
@@ -36,8 +35,6 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .runtime:
-            return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
@@ -52,7 +49,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .exact("2.0.22")
+                    .upToNextMajor(from: "2.0.23")
                 )
             ]
         case .dynamiccolor:
@@ -62,9 +59,9 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.6.2"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.10.0"))]
         case .snapkit:
-            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.6.0"))]
+            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.0"))]
         case .markdownkit:
             return [
                 .package(
@@ -118,7 +115,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .runtime: return [.package(product: "Runtime")]
         case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:

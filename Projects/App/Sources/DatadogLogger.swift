@@ -97,6 +97,8 @@ extension LoggingAction {
         switch self {
         case .click:
             return .click
+        case .custom:
+            return .custom
         }
     }
 }

@@ -54,7 +54,7 @@ extension HomeView {
                         store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
                     }
                 case .chat, .chatNotification:
-                    store.send(.openFreeTextChat)
+                    store.send(.openFreeTextChat(from: nil))
                 }
             }
         )
@@ -215,8 +215,8 @@ extension HomeView {
                 .defaults
             ]
         ) { action in
-            if case .openFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
+            if case let .openFreeTextChat(type) = action {
+                resultJourney(.openFreeTextChat(topic: type))
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
@@ -253,7 +253,7 @@ extension HomeView {
 }
 
 public enum HomeResult {
-    case openFreeTextChat
+    case openFreeTextChat(topic: ChatTopicType?)
     case startNewClaim
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])

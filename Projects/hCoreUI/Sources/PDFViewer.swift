@@ -8,15 +8,10 @@ import hCore
 public struct PDFViewer {
     public let url = ReadWriteSignal<URL?>(nil)
     public let data: ReadSignal<Data?>
-    public let downloadButtonPressed = ReadWriteSignal<Bool>(false)
     private let dataReadWriteSignal: ReadWriteSignal<Data?>
-    private let downloadButtonTitle: String?
-    public init(
-        downloadButtonTitle: String?
-    ) {
+    public init() {
         dataReadWriteSignal = ReadWriteSignal(nil)
         data = dataReadWriteSignal.readOnly()
-        self.downloadButtonTitle = downloadButtonTitle
     }
 }
 
@@ -49,29 +44,6 @@ extension PDFViewer: Viewable {
         let loadingView = UIView()
         loadingView.alpha = 1
         loadingView.backgroundColor = .brand(.primaryBackground())
-        if let downloadButtonTitle {
-
-            let downloadButton = Button(
-                title: downloadButtonTitle,
-                type: .standard(
-                    backgroundColor: .brand(.primaryBackground()),
-                    textColor: .brand(.primaryText())
-                )
-            )
-            bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                downloadButtonPressed.value = true
-            }
-            let stackVieww = UIStackView()
-            bag += stackVieww.addArranged(downloadButton.wrappedIn(UIStackView())) { stackView in
-                stackView.axis = .vertical
-                stackView.alignment = .trailing
-            }
-            pdfView.addSubview(stackVieww)
-            stackVieww.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(16)
-                make.bottom.equalTo(pdfView.safeAreaLayoutGuide)
-            }
-        }
 
         pdfView.addSubview(loadingView)
 
