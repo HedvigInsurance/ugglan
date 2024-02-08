@@ -11,7 +11,7 @@ public struct TerminationFlowDeletionNextModel: FlowClaimStepModel {
         self.disclaimer = data.disclaimer
     }
 
-    public func returnDeltionInput() -> GraphQLNullable<OctopusGraphQL.FlowTerminationDeletionInput> {
-        return GraphQLNullable.some(OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true))
+    public func returnDeltionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
+        return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
     }
 }

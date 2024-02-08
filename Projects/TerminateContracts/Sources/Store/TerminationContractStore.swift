@@ -35,7 +35,7 @@ public final class TerminationContractStore: LoadingStateStore<
         case .sendConfirmDelete:
             let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
                 context: terminationContext,
-                input: state.terminationDeleteStep!.returnDeltionInput()
+                input: GraphQLNullable(optionalValue: state.terminationDeleteStep?.returnDeltionInput())
             )
             return mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
         default:
