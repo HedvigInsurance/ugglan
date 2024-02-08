@@ -79,8 +79,6 @@ extension TravelInsuranceSpecification {
             TravelInsuranceInfoSpecification($0)
         })
         travelCertificateSpecifications = data.travelCertificateSpecifications.contractSpecifications.map({
-            //            TravelInsuranceContractSpecification($0)
-
             TravelInsuranceContractSpecification($0)
         })
     }
