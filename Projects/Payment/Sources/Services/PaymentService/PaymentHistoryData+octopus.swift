@@ -53,14 +53,22 @@ extension PaymentData {
         status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = campaings.redeemedCampaigns
-        let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment.asReedeemedCampaing()
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-            .init(
-                with: discountBreakdown,
-                discount: discountBreakdown.isReferral
-                    ? referralDescription : redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-            )
+            if discountBreakdown.isReferral {
+                let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return Discount.init(
+                    with: discountBreakdown,
+                    discountDto: referralDescription
+                )
+            } else {
+                return Discount.init(
+                    with: discountBreakdown,
+                    discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                )
+            }
         })
+
         paymentDetails = nil
         if let nextPayment {
             addedToThePayment = [nextPayment]
@@ -92,17 +100,20 @@ extension PaymentData.PaymentStatus {
         and nextPayment: PaymentData?
     ) -> PaymentData.PaymentStatus {
         switch data.status {
-        case .failed:
-            return .addedtoFuture(
-                date: nextPayment?.payment.date ?? ""
-            )
-        case .pending:
-            return .pending
-        case .success:
-            return .success
-        case .upcoming:
-            return .upcoming
-        case .__unknown:
+        case let .case(status):
+            switch status {
+            case .failed:
+                return .addedtoFuture(
+                    date: nextPayment?.payment.date ?? ""
+                )
+            case .pending:
+                return .pending
+            case .success:
+                return .success
+            case .upcoming:
+                return .upcoming
+            }
+        case .unknown(_):
             return .unknown
         }
     }

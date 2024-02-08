@@ -23,7 +23,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
             if $0.__typename == "FlowClaimAutomaticAutogiroPayout" {
-                let fragment = $0.fragments.flowClaimAutomaticAutogiroPayoutFragment
+                let fragment = $0.asFlowClaimAutomaticAutogiroPayout!.fragments.flowClaimAutomaticAutogiroPayoutFragment
                 return AvailableCheckoutMethod(id: id, autogiro: ClaimAutomaticAutogiroPayoutModel(with: fragment))
             }
             return nil
@@ -62,7 +62,7 @@ public struct AvailableCheckoutMethod: Codable, Equatable, Hashable {
             )
 
             return OctopusGraphQL.FlowClaimSingleItemCheckoutInput(
-                automaticAutogiro: automaticAutogiroInput
+                automaticAutogiro: GraphQLNullable(optionalValue: automaticAutogiroInput)
             )
         }
         return nil

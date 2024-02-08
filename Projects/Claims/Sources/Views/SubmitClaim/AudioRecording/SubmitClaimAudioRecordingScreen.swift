@@ -303,23 +303,23 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 }
 
-struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimAudioRecordingScreen(url: nil)
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
-                    id: "id",
-                    questions: ["question 1"],
-                    freeText: nil,
-                    freeTextQuestions: [],
-                    freeTextAvailable: true
-                )
-                let model = FlowClaimAudioRecordingStepModel(with: graphQL)
-                store.send(.stepModelAction(action: .setAudioStep(model: model)))
-            }
-    }
-}
+//struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SubmitClaimAudioRecordingScreen(url: nil)
+//            .onAppear {
+//                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+//                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
+//                    id: "id",
+//                    questions: ["question 1"],
+//                    freeText: nil,
+//                    freeTextQuestions: [],
+//                    freeTextAvailable: true
+//                )
+//                let model = FlowClaimAudioRecordingStepModel(with: graphQL)
+//                store.send(.stepModelAction(action: .setAudioStep(model: model)))
+//            }
+//    }
+//}
 
 struct CustomTextViewRepresentable: UIViewRepresentable {
     let placeholder: String

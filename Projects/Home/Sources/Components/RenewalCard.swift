@@ -139,55 +139,55 @@ public struct RenewalCardView: View {
     }
 }
 
-struct RenewalCardView_Previews: PreviewProvider {
-    @PresentableStore static var store: HomeStore
-
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return RenewalCardView()
-            .onAppear {
-                let state = MemberStateData(state: .active, name: "NAME")
-                let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                    currentAgreement: .init(
-                        activeFrom: "",
-                        activeTo: "",
-                        creationCause: .midtermChange,
-                        displayItems: [],
-                        premium: .init(amount: 22, currencyCode: .sek),
-                        productVariant: .init(
-                            perils: [],
-                            typeOfContract: "",
-                            termsVersion: "",
-                            documents: [],
-                            displayName: "dispaly name",
-                            insurableLimits: []
-                        )
-                    ),
-                    exposureDisplayName: "exposure dispay name",
-                    id: "",
-                    masterInceptionDate: "",
-                    supportsMoving: true,
-                    supportsCoInsured: true,
-                    supportsTravelCertificate: true,
-                    upcomingChangedAgreement: .init(
-                        activeFrom: "2023-12-10",
-                        activeTo: "2024-12-10",
-                        creationCause: .renewal,
-                        displayItems: [],
-                        premium: .init(amount: 22, currencyCode: .sek),
-                        productVariant: .init(
-                            perils: [],
-                            typeOfContract: "",
-                            termsVersion: "",
-                            documents: [],
-                            displayName: "display name",
-                            insurableLimits: []
-                        )
-                    )
-                )
-
-                let contract = Home.Contract(contract: octopusContract)
-                store.send(.setMemberContractState(state: state, contracts: [contract]))
-            }
-    }
-}
+//struct RenewalCardView_Previews: PreviewProvider {
+//    @PresentableStore static var store: HomeStore
+//
+//    static var previews: some View {
+//        Localization.Locale.currentLocale = .en_SE
+//        return RenewalCardView()
+//            .onAppear {
+//                let state = MemberStateData(state: .active, name: "NAME")
+//                let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
+//                    currentAgreement: .init(
+//                        activeFrom: "",
+//                        activeTo: "",
+//                        creationCause: .midtermChange,
+//                        displayItems: [],
+//                        premium: .init(amount: 22, currencyCode: .sek),
+//                        productVariant: .init(
+//                            perils: [],
+//                            typeOfContract: "",
+//                            termsVersion: "",
+//                            documents: [],
+//                            displayName: "dispaly name",
+//                            insurableLimits: []
+//                        )
+//                    ),
+//                    exposureDisplayName: "exposure dispay name",
+//                    id: "",
+//                    masterInceptionDate: "",
+//                    supportsMoving: true,
+//                    supportsCoInsured: true,
+//                    supportsTravelCertificate: true,
+//                    upcomingChangedAgreement: .init(
+//                        activeFrom: "2023-12-10",
+//                        activeTo: "2024-12-10",
+//                        creationCause: .renewal,
+//                        displayItems: [],
+//                        premium: .init(amount: 22, currencyCode: .sek),
+//                        productVariant: .init(
+//                            perils: [],
+//                            typeOfContract: "",
+//                            termsVersion: "",
+//                            documents: [],
+//                            displayName: "display name",
+//                            insurableLimits: []
+//                        )
+//                    )
+//                )
+//
+//                let contract = Home.Contract(contract: octopusContract)
+//                store.send(.setMemberContractState(state: state, contracts: [contract]))
+//            }
+//    }
+//}

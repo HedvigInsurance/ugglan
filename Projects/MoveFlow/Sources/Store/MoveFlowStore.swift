@@ -172,8 +172,8 @@ extension MoveFlowStore {
             movingDate: addressInputModel.accessDate?.localDateString ?? "",
             numberCoInsured: addressInputModel.nbOfCoInsured,
             squareMeters: Int(addressInputModel.squareArea) ?? 0,
-            apartment: apartmentInput(),
-            house: houseInput()
+            apartment: GraphQLNullable(optionalValue: apartmentInput()),
+            house: GraphQLNullable(optionalValue: houseInput())
         )
     }
 
@@ -202,10 +202,11 @@ extension MoveFlowStore {
                 extraBuildings: houseInformationInputModel.extraBuildings.map({
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: $0.livingArea,
-                        type: OctopusGraphQL.MoveExtraBuildingType(rawValue: $0.type) ?? .garage,
+                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
                         hasWaterConnected: $0.connectedToWater
                     )
                 })
+
             )
         }
     }

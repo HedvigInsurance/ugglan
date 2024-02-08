@@ -19,7 +19,8 @@ public final class TerminationContractStore: LoadingStateStore<
         switch action {
         case let .startTermination(config):
             let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-                input: OctopusGraphQL.FlowTerminationStartInput(contractId: config.contractId)
+                input: OctopusGraphQL.FlowTerminationStartInput(contractId: config.contractId),
+                context: nil
             )
             return mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
         case .sendTerminationDate:
@@ -34,7 +35,7 @@ public final class TerminationContractStore: LoadingStateStore<
         case .sendConfirmDelete:
             let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
                 context: terminationContext,
-                input: state.terminationDeleteStep?.returnDeltionInput()
+                input: state.terminationDeleteStep!.returnDeltionInput()
             )
             return mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
         default:

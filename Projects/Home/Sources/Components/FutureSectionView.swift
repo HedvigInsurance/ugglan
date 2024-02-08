@@ -41,49 +41,49 @@ struct FutureSectionInfoView: View {
     }
 }
 
-struct ActiveInFutureView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return VStack {
-            FutureSectionInfoView(memberName: "NAME")
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                        currentAgreement: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement(
-                            activeFrom: "",
-                            activeTo: "",
-                            creationCause: .midtermChange,
-                            displayItems: [],
-                            premium: .init(amount: 20, currencyCode: .sek),
-                            productVariant: .init(
-                                perils: [],
-                                typeOfContract: "",
-                                termsVersion: "i",
-                                documents: [],
-                                displayName: "dis name",
-                                insurableLimits: []
-                            )
-                        ),
-                        exposureDisplayName: "DISPLAY NAME",
-                        id: "id",
-                        masterInceptionDate: "2023-11-22",
-                        supportsMoving: true,
-                        supportsCoInsured: true,
-                        supportsTravelCertificate: true
-                    )
-
-                    store.send(
-                        .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
-                            contracts: [.init(contract: contract)]
-                        )
-                    )
-                    store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-                }
-        }
-
-    }
-}
+//struct ActiveInFutureView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Localization.Locale.currentLocale = .en_SE
+//        return VStack {
+//            FutureSectionInfoView(memberName: "NAME")
+//                .onAppear {
+//                    let store: HomeStore = globalPresentableStoreContainer.get()
+//                    let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
+//                        currentAgreement: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement(
+//                            activeFrom: "",
+//                            activeTo: "",
+//                            creationCause: .midtermChange,
+//                            displayItems: [],
+//                            premium: .init(amount: 20, currencyCode: .sek),
+//                            productVariant: .init(
+//                                perils: [],
+//                                typeOfContract: "",
+//                                termsVersion: "i",
+//                                documents: [],
+//                                displayName: "dis name",
+//                                insurableLimits: []
+//                            )
+//                        ),
+//                        exposureDisplayName: "DISPLAY NAME",
+//                        id: "id",
+//                        masterInceptionDate: "2023-11-22",
+//                        supportsMoving: true,
+//                        supportsCoInsured: true,
+//                        supportsTravelCertificate: true
+//                    )
+//
+//                    store.send(
+//                        .setMemberContractState(
+//                            state: .init(state: .future, name: "NAME"),
+//                            contracts: [.init(contract: contract)]
+//                        )
+//                    )
+//                    store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+//                }
+//        }
+//
+//    }
+//}
 
 struct PendingSwitchableView_Previews: PreviewProvider {
     static var previews: some View {

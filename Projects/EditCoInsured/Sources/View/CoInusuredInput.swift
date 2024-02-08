@@ -605,13 +605,15 @@ public class IntentViewModel: ObservableObject {
         do {
             let coInsuredList = coInsured.map { coIn in
                 OctopusGraphQL.CoInsuredInput(
-                    firstName: coIn.firstName,
-                    lastName: coIn.lastName,
-                    ssn: coIn.formattedSSN,
-                    birthdate: coIn.birthDate?.calculate10DigitBirthDate
+                    firstName: GraphQLNullable(optionalValue: coIn.firstName),
+                    lastName: GraphQLNullable(optionalValue: coIn.lastName),
+                    ssn: GraphQLNullable(optionalValue: coIn.formattedSSN),
+                    birthdate: GraphQLNullable(optionalValue: coIn.birthDate?.calculate10DigitBirthDate)
                 )
             }
-            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
+            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(
+                coInsuredInputs: GraphQLNullable(optionalValue: coInsuredList)
+            )
             let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
                 contractId: contractId,
                 input: coinsuredInput

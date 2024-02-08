@@ -12,12 +12,13 @@ extension PaymentData {
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-            .init(
-                with: discountBreakdown,
-                discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                    ?? data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
-                    .asReedeemedCampaingForPayment()
-            )
+            if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
+                return .init(with: discountBreakdown, discount: campaing)
+            } else {
+                let dto = data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return .init(with: discountBreakdown, discountDto: dto)
+            }
         })
         paymentDetails = nil
         addedToThePayment = []
@@ -30,25 +31,28 @@ extension PaymentData.PaymentStatus {
     ) -> PaymentData.PaymentStatus {
         let charge = data.futureCharge
         switch charge?.status {
-        case .failed:
-            return .upcoming
-        case .pending:
-            return .pending
-        case .success:
-            return .success
-        case .upcoming:
-            let previousChargesPeriods =
-                data.futureCharge?.contractsChargeBreakdown.flatMap({ $0.periods })
-                .filter({ $0.isPreviouslyFailedCharge }) ?? []
-            let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
-            let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
-            if let from, let to {
-                return .failedForPrevious(from: from.displayDateDDMMMFormat, to: to.displayDateDDMMMFormat)
+        case .case(let t):
+            switch t {
+            case .failed:
+                return .upcoming
+            case .pending:
+                return .pending
+            case .success:
+                return .success
+            case .upcoming:
+                let previousChargesPeriods =
+                    data.futureCharge?.contractsChargeBreakdown.flatMap({ $0.periods })
+                    .filter({ $0.isPreviouslyFailedCharge }) ?? []
+                let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
+                let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
+                if let from, let to {
+                    return .failedForPrevious(from: from.displayDateDDMMMFormat, to: to.displayDateDDMMMFormat)
+                }
+                return .upcoming
             }
-            return .upcoming
-        case .__unknown:
+        case .unknown(let string):
             return .unknown
-        case .none:
+        case nil:
             return .unknown
         }
     }
@@ -121,26 +125,35 @@ extension Discount {
         canBeDeleted = false
     }
 
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        discountDto discount: ReedeemedCampaingDTO?
+    ) {
+        id = UUID().uuidString
+        code = data.code ?? discount?.code ?? ""
+        amount = .init(fragment: data.discount.fragments.moneyFragment)
+        title = discount?.description ?? ""
+        listOfAffectedInsurances = []
+        validUntil = nil
+        canBeDeleted = false
+    }
+
 }
 
 extension OctopusGraphQL.MemberReferralInformationCodeFragment {
-    func asReedeemedCampaing() -> OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign {
-        let referralDescription = OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign(
-            code: self.code,
+    func asReedeemedCampaing() -> ReedeemedCampaingDTO {
+        return .init(
+            code: code,
             description: L10n.paymentsReferralDiscount,
-            type: .referral,
-            id: self.code
+            type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>(.referral),
+            id: code
         )
-        return referralDescription
     }
+}
 
-    func asReedeemedCampaingForPayment() -> OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign {
-        let referralDescription = OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign(
-            code: self.code,
-            description: L10n.paymentsReferralDiscount,
-            type: .referral,
-            id: self.code
-        )
-        return referralDescription
-    }
+struct ReedeemedCampaingDTO {
+    let code: String
+    let description: String
+    let type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>
+    let id: String
 }

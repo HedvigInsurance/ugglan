@@ -64,12 +64,12 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         let problemsIds = self.selectedItemProblems ?? defaultItemProblems ?? []
 
         return OctopusGraphQL.FlowClaimSingleItemInput(
-            purchasePrice: purchasePrice == 0 ? nil : purchasePrice,
-            purchaseDate: purchaseDate?.localDateToDate?.localDateString,
-            itemProblemIds: problemsIds,
-            itemBrandInput: itemBrandInput,
-            itemModelInput: itemModelInput,
-            customName: nil
+            purchasePrice: GraphQLNullable(optionalValue: purchasePrice == 0 ? nil : purchasePrice),
+            purchaseDate: GraphQLNullable(optionalValue: purchaseDate?.localDateToDate?.localDateString),
+            itemProblemIds: GraphQLNullable(optionalValue: problemsIds),
+            itemBrandInput: GraphQLNullable(optionalValue: itemBrandInput),
+            itemModelInput: GraphQLNullable(optionalValue: itemModelInput),
+            customName: GraphQLNullable.none
         )
     }
 
