@@ -102,27 +102,24 @@ public struct PerilCollection: View {
         }
     }
 }
-//
-//struct PerilCollection_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let perils: [Perils] =
-//            [
-//                .init(
-//                    fragment: .init(
-//                        id: "2",
-//                        title: "title",
-//                        description: "DESC",
-//                        info: "info",
-//                        color: "color",
-//                        covered: [],
-//                        exceptions: []
-//                    )
-//                )
-//            ]
-//        PerilCollection(
-//            perils: perils
-//        ) { peril in
-//
-//        }
-//    }
-//}
+
+struct PerilCollection_Previews: PreviewProvider {
+    static var previews: some View {
+        let perils: [Perils] =
+            [
+                .init(
+                    fragment: .init(
+                        _dataDict: .init(
+                            data: [:],
+                            fulfilledFragments: .init()
+                        )
+                    )
+                )
+            ]
+        PerilCollection(
+            perils: perils
+        ) { peril in
+
+        }
+    }
+}
