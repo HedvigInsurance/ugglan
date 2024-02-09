@@ -7,59 +7,26 @@ import hCoreUI
 import hGraphQL
 
 struct DeleteAccountView: View {
-    @ObservedObject var viewModel: DeleteAccountViewModel
-
-    var title: String {
-        if viewModel.hasActiveContracts {
-            return L10n.DeleteAccount.youHaveActiveInsuranceTitle
-        } else if viewModel.hasActiveClaims {
-            return L10n.DeleteAccount.youHaveActiveClaimTitle
-        } else {
-            return L10n.DeleteAccount.deleteAccountTitle
-        }
-    }
-    var text: String {
-        if viewModel.hasActiveContracts {
-            return L10n.DeleteAccount.youHaveActiveInsuranceDescription
-        } else if viewModel.hasActiveClaims {
-            return L10n.DeleteAccount.youHaveActiveClaimDescription
-        } else {
-            return L10n.DeleteAccount.deleteAccountDescription
-        }
-    }
-
-    var alignment: HorizontalAlignment {
-        if viewModel.hasActiveContracts {
-            return .center
-        } else if viewModel.hasActiveClaims {
-            return .center
-        } else {
-            return .leading
-        }
-    }
-
-    var textAlignment: NSTextAlignment {
-        if viewModel.hasActiveContracts {
-            return .center
-        } else if viewModel.hasActiveClaims {
-            return .center
-        } else {
-            return .left
-        }
-    }
+    @ObservedObject var vm: DeleteAccountViewModel
     var body: some View {
         hForm {
-            Spacing(height: 32)
+            Spacing(height: vm.topSpacing)
             hSection {
-                VStack(alignment: alignment) {
-                    hText(title)
+                VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
+                    if let topIcon = vm.topIcon {
+                        Image(uiImage: topIcon)
+                            .foregroundColor(hSignalColor.amberElement)
+                            .padding(.bottom, 16)
+                    }
+                    hText(vm.title)
                     MarkdownView(
                         config: .init(
-                            text: text,
+                            text: vm.text,
                             fontStyle: .standard,
                             color: hTextColor.secondary,
                             linkColor: hTextColor.primary,
-                            linkUnderlineStyle: .single
+                            linkUnderlineStyle: .single,
+                            textAlignment: vm.textAlignment
                         ) { url in
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.goToURL(url: url))
@@ -72,9 +39,9 @@ struct DeleteAccountView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    if !viewModel.hasActiveClaims && !viewModel.hasActiveContracts {
-                        hButton.LargeButton(type: .alert) { [weak viewModel] in
-                            viewModel?.deleteAccount()
+                    if !vm.hasActiveClaims && !vm.hasActiveContracts {
+                        hButton.LargeButton(type: .alert) { [weak vm] in
+                            vm?.deleteAccount()
                         } content: {
                             hText(L10n.profileDeleteAccountConfirmDeletion)
                         }
@@ -83,7 +50,7 @@ struct DeleteAccountView: View {
                         let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.dismissScreen(openChatAfter: false))
                     } content: {
-                        hText(L10n.generalCancelButton)
+                        hText(vm.dismissButtonTitle)
                     }
                 }
                 .padding(.vertical, 16)
@@ -137,7 +104,7 @@ extension DeleteAccountView {
         return HostingJourney(
             ProfileStore.self,
             rootView: DeleteAccountView(
-                viewModel: model
+                vm: model
             ),
             style: style,
             options: [.blurredBackground]
@@ -156,8 +123,6 @@ extension DeleteAccountView {
                     }
             }
         }
-        //        .configureTitle(L10n.DeleteAccount.confirmButton)
-        //        .withDismissButton
     }
 
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
@@ -181,6 +146,86 @@ extension DeleteAccountView {
             if case .makeTabActive = action {
                 PopJourney()
             }
+        }
+    }
+}
+
+extension DeleteAccountViewModel {
+    var title: String {
+        if self.hasActiveContracts {
+            return L10n.DeleteAccount.youHaveActiveInsuranceTitle
+        } else if self.hasActiveClaims {
+            return L10n.DeleteAccount.youHaveActiveClaimTitle
+        } else {
+            return L10n.DeleteAccount.deleteAccountTitle
+        }
+    }
+    var text: String {
+        if self.hasActiveContracts {
+            return L10n.DeleteAccount.youHaveActiveInsuranceDescription
+        } else if self.hasActiveClaims {
+            return L10n.DeleteAccount.youHaveActiveClaimDescription
+        } else {
+            return L10n.DeleteAccount.deleteAccountDescription
+        }
+    }
+
+    var alignment: HorizontalAlignment {
+        if self.hasActiveContracts {
+            return .center
+        } else if self.hasActiveClaims {
+            return .center
+        } else {
+            return .leading
+        }
+    }
+    var topSpacing: Float {
+        if self.hasActiveContracts {
+            return 64
+        } else if self.hasActiveClaims {
+            return 64
+        } else {
+            return 32
+        }
+    }
+
+    var titleAndDescriptionSpacing: CGFloat {
+        if self.hasActiveContracts {
+            return 0
+        } else if self.hasActiveClaims {
+            return 0
+        } else {
+            return 8
+        }
+    }
+
+    var topIcon: UIImage? {
+        if self.hasActiveContracts {
+            return hCoreUIAssets.warningTriangleFilled.image
+        } else if self.hasActiveClaims {
+            return hCoreUIAssets.warningTriangleFilled.image
+        } else {
+            return nil
+        }
+    }
+
+    var textAlignment: NSTextAlignment {
+        if self.hasActiveContracts {
+            return .center
+        } else if self.hasActiveClaims {
+            return .center
+        } else {
+            return .left
+        }
+    }
+
+    var dismissButtonTitle: String {
+        if self.hasActiveContracts {
+            return L10n.generalCloseButton
+        } else if self.hasActiveClaims {
+            return L10n.generalCloseButton
+        } else {
+            return L10n.generalCancelButton
         }
     }
 }
