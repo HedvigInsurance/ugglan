@@ -26,7 +26,7 @@ public struct hForm<Content: View>: View {
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.colorScheme) private var colorScheme
-
+    @State var lastTimeChangedMergeBottomViewWithContent = Date()
     var content: Content
     @Namespace private var animation
 
@@ -219,9 +219,17 @@ public struct hForm<Content: View>: View {
 
         var shouldMergeContent = false
         if mergeBottomWithContentIfNeeded {
-            let shouldMerge = scrollViewHeight - contentHeight - bottomAttachedViewHeight < 0
-            scrollView?.bounces = shouldMerge
-            shouldMergeContent = shouldMerge
+            shouldMergeContent = mergeBottomViewWithContent
+            scrollView?.bounces = mergeBottomViewWithContent
+            let dateToCompareWith = Date()
+            let value = lastTimeChangedMergeBottomViewWithContent.timeIntervalSince(dateToCompareWith)
+            if value < -0.01 {
+                let contentSize = scrollViewHeight - contentHeight - bottomAttachedViewHeight
+                let shouldMerge = contentSize < 0
+                lastTimeChangedMergeBottomViewWithContent = dateToCompareWith
+                shouldMergeContent = shouldMerge
+                scrollView?.bounces = shouldMerge
+            }
         }
 
         let animated = self.additionalSpaceFromTop != additionalSpaceFromTop
