@@ -37,13 +37,15 @@ public struct ItemPickerScreen<T>: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                onCancel()
-            } content: {
-                hText(L10n.generalCancelButton, style: .body)
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    onCancel()
+                } content: {
+                    hText(L10n.generalCancelButton, style: .body)
+                }
+                .padding(.top, 16)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 }

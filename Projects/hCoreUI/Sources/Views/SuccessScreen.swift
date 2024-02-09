@@ -44,13 +44,15 @@ public struct SuccessScreen<T>: View where T: View {
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hSignalColor.greenElement)
-                        VStack(spacing: 0) {
-                            hText(title)
-                            hText(subTitle ?? "")
-                                .foregroundColor(hTextColor.secondary)
-                                .multilineTextAlignment(.center)
+                        hSection {
+                            VStack(spacing: 0) {
+                                hText(title)
+                                hText(subTitle ?? "")
+                                    .foregroundColor(hTextColor.secondary)
+                                    .multilineTextAlignment(.center)
+                            }
                         }
-                        .padding(.horizontal, 16)
+                        .sectionContainerStyle(.transparent)
                     }
                     Spacer()
                     Spacer()

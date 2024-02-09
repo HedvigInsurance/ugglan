@@ -56,20 +56,22 @@ struct InsuredPeopleNewScreen: View {
             VStack(spacing: 8) {
                 let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
-                    hButton.LargeButton(type: .primary) {
-                        store.send(.performCoInsuredChanges(commitId: intentVm.id))
-                        store.send(
-                            .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
+                    hSection {
+                        hButton.LargeButton(type: .primary) {
+                            store.send(.performCoInsuredChanges(commitId: intentVm.id))
+                            store.send(
+                                .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
+                            )
+                        } content: {
+                            hText(L10n.generalSaveChangesButton)
+                        }
+                        .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                        .disabled(
+                            (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
+                                < nbOfMissingCoInsured
                         )
-                    } content: {
-                        hText(L10n.generalSaveChangesButton)
                     }
-                    .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
-                    .disabled(
-                        (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                            < nbOfMissingCoInsured
-                    )
-                    .padding(.horizontal, 16)
+                    .sectionContainerStyle(.transparent)
                 }
 
                 hButton.LargeButton(type: .ghost) {

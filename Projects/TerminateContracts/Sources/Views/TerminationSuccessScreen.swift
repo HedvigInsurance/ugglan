@@ -43,17 +43,20 @@ struct TerminationSuccessScreen: View {
             }
             .padding(.top, 8)
             .hFormAttachToBottom {
-                hButton.LargeButton(type: .ghost) {
-                    log.addUserAction(type: .click, name: "terminationSurvey")
-                    if let surveyToURL = URL(string: termination?.surveyUrl) {
-                        store.send(.dismissTerminationFlow)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            store.send(.goToUrl(url: surveyToURL))
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        log.addUserAction(type: .click, name: "terminationSurvey")
+                        if let surveyToURL = URL(string: termination?.surveyUrl) {
+                            store.send(.dismissTerminationFlow)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                store.send(.goToUrl(url: surveyToURL))
+                            }
                         }
+                    } content: {
+                        hText(L10n.terminationOpenSurveyLabel)
                     }
-                } content: {
-                    hText(L10n.terminationOpenSurveyLabel)
                 }
+                .sectionContainerStyle(.transparent)
                 .padding(.horizontal, 16)
             }
         }

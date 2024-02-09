@@ -227,15 +227,17 @@ struct CoInusuredInput: View {
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !(vm.actionType == .delete))
 
-                hButton.LargeButton(type: .ghost) {
-                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                } content: {
-                    hText(L10n.generalCancelButton)
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                    .padding(.top, 4)
+                    .padding(.bottom, 16)
+                    .disabled(vm.isLoading || intentVm.isLoading)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 4)
-                .padding(.bottom, 16)
-                .disabled(vm.isLoading || intentVm.isLoading)
+                .sectionContainerStyle(.transparent)
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }

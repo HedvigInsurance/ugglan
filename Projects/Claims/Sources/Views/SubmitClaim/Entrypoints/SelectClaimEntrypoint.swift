@@ -220,65 +220,67 @@ struct ShowTagList: View {
     @Binding var oldValue: String?
     @State private var showTags = false
     var body: some View {
-        VStack(spacing: 16) {
-            showNotValid
-            TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
-                if showTags {
-                    HStack(spacing: 0) {
-                        getPillText(claimId: tag)
-                            .lineLimit(1)
-                            .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
-                    }
-                    .onAppear {
-                        selection = oldValue
-                    }
-                    .onTapGesture {
-                        onTap(tag)
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selection = tag
-                            animate = true
+        hSection {
+            VStack(spacing: 16) {
+                showNotValid
+                TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
+                    if showTags {
+                        HStack(spacing: 0) {
+                            getPillText(claimId: tag)
+                                .lineLimit(1)
+                                .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                         }
-                        withAnimation(.easeInOut(duration: 0.15).delay(0.15)) {
-                            animate = false
+                        .onAppear {
+                            selection = oldValue
                         }
-                        notValid = false
-                        ImpactGenerator.soft()
-                    }
-                    .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
-                    .padding(.vertical, 8)
-                    .background(getColorAndShadow(claimId: tag))
-                    .scaleEffect(animate && selection == tag ? scaleSize : 1)
-                    .transition(
-                        .scale.animation(
-                            .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
-                                .delay(Double.random(in: 0.3...0.6))
+                        .onTapGesture {
+                            onTap(tag)
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                selection = tag
+                                animate = true
+                            }
+                            withAnimation(.easeInOut(duration: 0.15).delay(0.15)) {
+                                animate = false
+                            }
+                            notValid = false
+                            ImpactGenerator.soft()
+                        }
+                        .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
+                        .padding(.vertical, 8)
+                        .background(getColorAndShadow(claimId: tag))
+                        .scaleEffect(animate && selection == tag ? scaleSize : 1)
+                        .transition(
+                            .scale.animation(
+                                .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
+                                    .delay(Double.random(in: 0.3...0.6))
+                            )
                         )
-                    )
-                }
-            }
-            .disableOn(SubmitClaimStore.self, [.startClaim])
-            LoadingButtonWithContent(SubmitClaimStore.self, .startClaim) {
-                if selection != nil && selection != "" {
-                    notValid = false
-                    onButtonClick()
-                } else {
-                    withAnimation {
-                        notValid = true
                     }
-                    selection = ""
                 }
-            } content: {
-                hText(L10n.generalContinueButton, style: .body)
+                .disableOn(SubmitClaimStore.self, [.startClaim])
+                LoadingButtonWithContent(SubmitClaimStore.self, .startClaim) {
+                    if selection != nil && selection != "" {
+                        notValid = false
+                        onButtonClick()
+                    } else {
+                        withAnimation {
+                            notValid = true
+                        }
+                        selection = ""
+                    }
+                } content: {
+                    hText(L10n.generalContinueButton, style: .body)
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    withAnimation {
+                        showTags = true
+                    }
+                }
             }
         }
-        .padding([.leading, .trailing], 16)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                withAnimation {
-                    showTags = true
-                }
-            }
-        }
+        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder

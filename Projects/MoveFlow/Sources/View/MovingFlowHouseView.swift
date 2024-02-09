@@ -96,55 +96,57 @@ struct MovingFlowHouseView: View {
 
     private var extraBuildingTypes: some View {
         hSection {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
-                    Spacer()
-                }
-                ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
+            hRow {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(extraBuilding.type.translatedValue, style: .standard)
-                            HStack(spacing: 0) {
-                                hText(extraBuilding.descriptionText, style: .standardSmall)
-                                    .foregroundColor(hTextColor.secondary)
+                        hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
+                        Spacer()
+                    }
+                    ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText(extraBuilding.type.translatedValue, style: .standard)
+                                HStack(spacing: 0) {
+                                    hText(extraBuilding.descriptionText, style: .standardSmall)
+                                        .foregroundColor(hTextColor.secondary)
+                                }
+                            }
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    vm.remove(extraBuilding: extraBuilding)
+                                }
+                            } label: {
+                                Image(uiImage: hCoreUIAssets.closeSmall.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(hTextColor.primary)
                             }
                         }
-                        Spacer()
-                        Button {
-                            withAnimation {
-                                vm.remove(extraBuilding: extraBuilding)
-                            }
-                        } label: {
-                            Image(uiImage: hCoreUIAssets.closeSmall.image)
+                        .padding(.vertical, 13)
+                        if offset + 1 < vm.extraBuildings.count {
+                            Divider()
+                        }
+                    }
+                    hButton.MediumButton(type: .primaryAlt) {
+                        vm.addExtraBuilding()
+                    } content: {
+                        HStack {
+                            Image(uiImage: hCoreUIAssets.plusSmall.image)
                                 .resizable()
                                 .frame(width: 16, height: 16)
-                                .foregroundColor(hTextColor.primary)
+                            hText(L10n.changeAddressAddBuilding)
                         }
                     }
-                    .padding(.vertical, 13)
-                    if offset + 1 < vm.extraBuildings.count {
-                        Divider()
-                    }
-                }
-                hButton.MediumButton(type: .primaryAlt) {
-                    vm.addExtraBuilding()
-                } content: {
-                    HStack {
-                        Image(uiImage: hCoreUIAssets.plusSmall.image)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                        hText(L10n.changeAddressAddBuilding)
-                    }
-                }
-                .fixedSize(horizontal: true, vertical: false)
-                .hUseLightMode
-                .padding(.top, 8)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .hUseLightMode
+                    .padding(.top, 8)
 
+                }
             }
+            .verticalPadding(0)
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .padding(.horizontal, 16)
         }
         .sectionContainerStyle(.opaque)
         .padding(.top, 6)
@@ -152,21 +154,23 @@ struct MovingFlowHouseView: View {
 
     private var isSubleted: some View {
         hSection {
-            Toggle(isOn: $vm.isSubleted.animation(.default)) {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.changeAddressSubletLabel, style: .standardLarge)
+            hRow {
+                Toggle(isOn: $vm.isSubleted.animation(.default)) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(L10n.changeAddressSubletLabel, style: .standardLarge)
+                    }
+                }
+                .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        vm.type = nil
+                        vm.isSubleted.toggle()
+                    }
                 }
             }
-            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-            .contentShape(Rectangle())
-            .onTapGesture {
-                withAnimation {
-                    vm.type = nil
-                    vm.isSubleted.toggle()
-                }
-            }
+            .verticalPadding(0)
             .padding(.vertical, 21)
-            .padding(.horizontal, 16)
         }
         .sectionContainerStyle(.opaque)
     }

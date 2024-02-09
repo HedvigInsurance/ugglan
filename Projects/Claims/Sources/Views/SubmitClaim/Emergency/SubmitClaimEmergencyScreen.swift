@@ -156,20 +156,22 @@ struct ClaimEmergencyContactCard: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.bottom, 8)
-                hButton.MediumButton(type: .secondaryAlt) {
-                    if let phoneNumber {
-                        let tel = "tel://"
-                        let formattedString = tel + phoneNumber
-                        if let url = URL(string: formattedString) {
-                            UIApplication.shared.open(url)
+                hSection {
+                    hButton.MediumButton(type: .secondaryAlt) {
+                        if let phoneNumber {
+                            let tel = "tel://"
+                            let formattedString = tel + phoneNumber
+                            if let url = URL(string: formattedString) {
+                                UIApplication.shared.open(url)
+                            }
                         }
+                    } content: {
+                        hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
+                            .foregroundColor(hTextColor.primary)
+                            .colorScheme(.light)
                     }
-                } content: {
-                    hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
-                        .foregroundColor(hTextColor.primary)
-                        .colorScheme(.light)
                 }
-                .padding(.horizontal, 16)
+                .sectionContainerStyle(.transparent)
 
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
