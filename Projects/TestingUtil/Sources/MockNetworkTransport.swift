@@ -1,4 +1,5 @@
 import Apollo
+import ApolloAPI
 import ApolloWebSocket
 import Flow
 import Foundation
@@ -11,12 +12,15 @@ var mockURL: URL {
 public enum MockError: Error { case failed }
 
 public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
+    public var id: String
+
     let handlers: GraphQLMockHandlers
 
     internal init(
         handlers: GraphQLMockHandlers
     ) {
         self.handlers = handlers
+        self.id = UUID().uuidString
     }
 
     func interceptAsync<Operation: GraphQLOperation>(
@@ -36,9 +40,8 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
                 response: httpURLResponse,
                 rawData: try! JSONSerialization.data(
                     withJSONObject: [
-                        "data": data.jsonObject
-                    ]
-                    .jsonObject,
+                        "data": data
+                    ],
                     options: []
                 ),
                 parsedResponse: nil
@@ -126,7 +129,7 @@ open class MockInterceptorProvider: InterceptorProvider {
             CacheReadInterceptor(store: self.store),
             mockNetworkFetchInterceptor,
             ResponseCodeInterceptor(),
-            JSONResponseParsingInterceptor(cacheKeyForObject: self.store.cacheKeyForObject),
+            //            JSONResponseParsingInterceptor(cacheKeyForObject: self.store.cacheKeyForObject),
             AutomaticPersistedQueryInterceptor(),
             CacheWriteInterceptor(store: self.store),
         ]
@@ -148,6 +151,7 @@ public final class MockRequestChainNetworkTransport: RequestChainNetworkTranspor
 }
 
 public class MockWebSocketNetworkTransport: NetworkTransport {
+
     let handlers: GraphQLMockHandlers
 
     internal init(
@@ -162,11 +166,12 @@ public class MockWebSocketNetworkTransport: NetworkTransport {
 
     public func send<Operation>(
         operation: Operation,
-        cachePolicy: CachePolicy,
+        cachePolicy: Apollo.CachePolicy,
         contextIdentifier: UUID?,
+        context: Apollo.RequestContext?,
         callbackQueue: DispatchQueue,
-        completionHandler: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
-    ) -> Cancellable where Operation: GraphQLOperation {
+        completionHandler: @escaping (Swift.Result<Apollo.GraphQLResult<Operation.Data>, Error>) -> Void
+    ) -> Apollo.Cancellable where Operation: ApolloAPI.GraphQLOperation {
         if let handler = handlers[ObjectIdentifier(Operation.self)] as? SubscriptionMock<Operation> {
             let mainQueue = DispatchQueue.main
             let deadline = DispatchTime.now() + handler.duration
@@ -178,9 +183,8 @@ public class MockWebSocketNetworkTransport: NetworkTransport {
                         let response = GraphQLResponse(
                             operation: operation,
                             body: [
-                                "data": dataEntry.jsonObject
+                                "data": dataEntry
                             ]
-                            .jsonObject
                         )
 
                         if let result = try? response.parseResultFast() {
@@ -236,12 +240,13 @@ extension ApolloClient {
 
 public final class MockNetworkTransport: NetworkTransport {
     public func send<Operation>(
-        operation _: Operation,
-        cachePolicy _: CachePolicy,
-        contextIdentifier _: UUID?,
-        callbackQueue _: DispatchQueue,
-        completionHandler: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
-    ) -> Cancellable where Operation: GraphQLOperation {
+        operation: Operation,
+        cachePolicy: Apollo.CachePolicy,
+        contextIdentifier: UUID?,
+        context: Apollo.RequestContext?,
+        callbackQueue: DispatchQueue,
+        completionHandler: @escaping (Swift.Result<Apollo.GraphQLResult<Operation.Data>, Error>) -> Void
+    ) -> Apollo.Cancellable where Operation: ApolloAPI.GraphQLOperation {
         DispatchQueue.global(qos: .default)
             .async {
                 if self.simulateNetworkFailure {
@@ -250,7 +255,7 @@ public final class MockNetworkTransport: NetworkTransport {
                 }
             }
 
-        if let data = try? Operation.Data(jsonObject: body) {
+        if let data = try? Operation.Data(data: body) {
             completionHandler(
                 .success(
                     .init(
