@@ -53,22 +53,17 @@ public struct InfoExpandableView: View {
             if selectedFields.contains(title) {
                 VStack(alignment: .leading) {
                     hRow {
-                        CustomTextViewRepresentable(
+                        MarkdownView(
                             config: .init(
                                 text: text,
-                                fixedWidth: UIScreen.main.bounds.width - 56,
                                 fontStyle: .standard,
                                 color: hTextColor.secondary,
                                 linkColor: hTextColor.primary,
-                                linkUnderlineStyle: .single,
-                                onUrlClicked: { url in
-                                    onMarkDownClick?(url)
-
-                                }
-                            ),
-                            height: $height
+                                linkUnderlineStyle: .single
+                            ) { url in
+                                onMarkDownClick?(url)
+                            }
                         )
-                        .frame(height: height)
                     }
                     .verticalPadding(0)
                     .padding(.bottom, 24)

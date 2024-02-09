@@ -8,23 +8,49 @@ import UIKit
 import hCore
 import hGraphQL
 
-public struct CustomTextViewRepresentable: UIViewRepresentable {
+public struct MarkdownView: View {
+    private let config: CustomTextViewRepresentableConfig
+    @State private var height: CGFloat = 20
+    @State private var width: CGFloat = 0
+    public init(
+        config: CustomTextViewRepresentableConfig
+    ) {
+        self.config = config
+    }
+    public var body: some View {
+        GeometryReader { geo in
+            Color.clear.background(
+                CustomTextViewRepresentable(
+                    config: config,
+                    fixedWidth: geo.size.width,
+                    height: $height
+                )
+            )
+        }
+        .frame(height: height)
+    }
+}
+
+struct CustomTextViewRepresentable: UIViewRepresentable {
     let config: CustomTextViewRepresentableConfig
+    let fixedWidth: CGFloat
     @Binding private var height: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
-    public init(
+    init(
         config: CustomTextViewRepresentableConfig,
+        fixedWidth: CGFloat,
         height: Binding<CGFloat>
     ) {
         self.config = config
+        self.fixedWidth = fixedWidth
         _height = height
     }
 
-    public func makeUIView(context: Context) -> some UIView {
-        let textView = CustomTextView(config: config, height: $height)
+    func makeUIView(context: Context) -> some UIView {
+        let textView = CustomTextView(config: config, fixedWidth: fixedWidth, height: $height)
         return textView
     }
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
+    func updateUIView(_ uiView: UIViewType, context: Context) {
         if let uiView = uiView as? CustomTextView {
             uiView.setContent(from: config.text)
         }
@@ -33,11 +59,13 @@ public struct CustomTextViewRepresentable: UIViewRepresentable {
 
 class CustomTextView: UIView, UITextViewDelegate {
     let config: CustomTextViewRepresentableConfig
+    let fixedWidth: CGFloat
     let textView: UITextView
     @Binding var height: CGFloat
-    init(config: CustomTextViewRepresentableConfig, height: Binding<CGFloat>) {
+    init(config: CustomTextViewRepresentableConfig, fixedWidth: CGFloat, height: Binding<CGFloat>) {
         _height = height
         self.config = config
+        self.fixedWidth = fixedWidth
         self.textView = UITextView()
         super.init(frame: .zero)
         self.addSubview(textView)
@@ -79,13 +107,13 @@ class CustomTextView: UIView, UITextViewDelegate {
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(schema, .base).color.uiColor()
         )
-
         let attributedString = markdownParser.parse(text)
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
             )
             textView.attributedText = mutableAttributedString
+            textView.textAlignment = config.textAlignment
         }
     }
 
@@ -98,7 +126,7 @@ class CustomTextView: UIView, UITextViewDelegate {
 
     private func getHeight() -> CGFloat {
         let newSize = textView.sizeThatFits(
-            CGSize(width: config.fixedWidth + 12, height: CGFloat.greatestFiniteMagnitude)
+            CGSize(width: fixedWidth + 12, height: CGFloat.greatestFiniteMagnitude)
         )
         return newSize.height
     }
@@ -125,28 +153,28 @@ class CustomTextView: UIView, UITextViewDelegate {
 
 public struct CustomTextViewRepresentableConfig {
     let text: Markdown
-    let fixedWidth: CGFloat
     let fontStyle: HFontTextStyle
     let color: any hColor
     let linkColor: any hColor
     let linkUnderlineStyle: NSUnderlineStyle?
     let onUrlClicked: (_ url: URL) -> Void
+    let textAlignment: NSTextAlignment
 
     public init(
         text: Markdown,
-        fixedWidth: CGFloat,
         fontStyle: HFontTextStyle,
         color: any hColor,
         linkColor: any hColor,
         linkUnderlineStyle: NSUnderlineStyle?,
+        textAlignment: NSTextAlignment = .left,
         onUrlClicked: @escaping (_: URL) -> Void
     ) {
         self.text = text
-        self.fixedWidth = fixedWidth
         self.fontStyle = fontStyle
         self.color = color
         self.linkColor = linkColor
         self.linkUnderlineStyle = linkUnderlineStyle
+        self.textAlignment = textAlignment
         self.onUrlClicked = onUrlClicked
     }
 }
