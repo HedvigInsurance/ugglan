@@ -10,25 +10,39 @@ public struct SubmitClaimSummaryScreen: View {
 
     public var body: some View {
         hForm {
-            hSection {
-                VStack(spacing: 0) {
-                    matter
-                    damageType
-                    damageDate
-                    place
-                    model
-                    dateOfPurchase
-                    purchasePrice
+            VStack(spacing: 16) {
+                hSection {
+                    VStack(spacing: 0) {
+                        matter
+                        damageType
+                        damageDate
+                        place
+                        model
+                        dateOfPurchase
+                        purchasePrice
+                    }
+                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
-                .disableOn(SubmitClaimStore.self, [.postSummary])
-            }
-            .withHeader {
-                HStack {
-                    L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColor.primary)
-                        .padding(.top, 16)
+                .withHeader {
+                    HStack {
+                        L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColor.primary)
+                            .padding(.top, 16)
+                    }
                 }
+                .sectionContainerStyle(.transparent)
+
+                hSection {
+                    hRowDivider()
+                }
+
+                hSection {
+                    uploadedFilesView
+                }
+                .withHeader {
+                    hText("Uploaded files")
+                }
+                .sectionContainerStyle(.transparent)
             }
-            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             hSection {
@@ -135,6 +149,20 @@ public struct SubmitClaimSummaryScreen: View {
             createRow(
                 with: L10n.Claims.Item.Screen.Purchase.Price.button,
                 and: singleItemStep?.returnDisplayStringForSummaryPrice
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var uploadedFilesView: some View {
+        VStack(spacing: 8) {
+            let audioPlayer = AudioPlayer(url: URL(string: ""))
+            TrackPlayerView(
+                audioPlayer: audioPlayer
+            )
+            InfoViewHolder(
+                title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
+                description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
             )
         }
     }

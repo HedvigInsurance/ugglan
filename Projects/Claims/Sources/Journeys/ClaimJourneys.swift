@@ -23,7 +23,8 @@ public class ClaimJourneys {
             if case let .openPhoneNumberScreen(model) = navigationAction {
                 submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
             } else if case let .openDateOfOccurrencePlusLocationScreen(options) = navigationAction {
-                submitClaimOccurrancePlusLocationScreen(options: options).addDismissClaimsFlow()
+                //                submitClaimOccurrancePlusLocationScreen(options: options).addDismissClaimsFlow()
+                openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
             } else if case .openAudioRecordingScreen = navigationAction {
                 openAudioRecordingSceen().addDismissClaimsFlow()
             } else if case .openSuccessScreen = navigationAction {
