@@ -487,7 +487,6 @@ public class CoInusuredInputViewModel: ObservableObject {
             nameFetchedFromSSN = true
         }
         $noSSN.combineLatest($nameFetchedFromSSN).combineLatest($SSNError)
-            //            .delay(for: .milliseconds(0), scheduler: DispatchQueue.main)
             .receive(on: RunLoop.main)
             .sink { _ in
                 for i in 0...10 {

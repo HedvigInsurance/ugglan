@@ -17,38 +17,31 @@ struct HelpCenterQuestionView: View {
 
     var body: some View {
         hForm {
-            VStack(alignment: .leading, spacing: 32) {
-                hSection {
+            hSection {
+                VStack(alignment: .leading, spacing: 32) {
                     VStack(alignment: .leading, spacing: 8) {
                         HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
                         hText(question.question, style: .body)
                     }
-                }
-                .sectionContainerStyle(.transparent)
-                hSection {
                     VStack(alignment: .leading, spacing: 8) {
                         HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                        CustomTextViewRepresentable(
+                        MarkdownView(
                             config: .init(
                                 text: question.answer,
-                                fixedWidth: UIScreen.main.bounds.width - 32,
                                 fontStyle: .standard,
                                 color: hTextColor.secondary,
                                 linkColor: hTextColor.primary,
-                                linkUnderlineStyle: .single,
-                                onUrlClicked: { url in
-                                    store.send(.goToURL(url: url))
-                                }
-                            ),
-                            height: $height
+                                linkUnderlineStyle: .single
+                            ) { url in
+                                store.send(.goToURL(url: url))
+                            }
                         )
-                        .frame(height: height)
                     }
                 }
-                .sectionContainerStyle(.transparent)
                 SupportView(topic: question.topicType)
                     .padding(.top, 8)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .edgesIgnoringSafeArea(.bottom)

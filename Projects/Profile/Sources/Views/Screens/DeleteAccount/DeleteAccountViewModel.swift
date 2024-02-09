@@ -14,11 +14,11 @@ class DeleteAccountViewModel: ObservableObject {
     let contractsStore: ContractStore
     let bag = DisposeBag()
 
-    var activeClaimsSignal: ReadSignal<Bool> {
+    private var activeClaimsSignal: ReadSignal<Bool> {
         self.claimsStore.stateSignal.map { $0.hasActiveClaims }
     }
 
-    var activeContractsSignal: ReadSignal<Bool> {
+    private var activeContractsSignal: ReadSignal<Bool> {
         self.contractsStore.stateSignal.map { $0.hasActiveContracts }
     }
 
@@ -36,7 +36,6 @@ class DeleteAccountViewModel: ObservableObject {
 
         self.hasActiveClaims = activeClaimsSignal.value
         self.hasActiveContracts = activeContractsSignal.value
-
         bag += activeClaimsSignal.distinct(on: .main).onValue { self.hasActiveClaims = $0 }
         bag += activeContractsSignal.distinct(on: .main).onValue { self.hasActiveContracts = $0 }
     }

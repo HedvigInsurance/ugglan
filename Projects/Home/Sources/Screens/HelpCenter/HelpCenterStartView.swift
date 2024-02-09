@@ -135,6 +135,7 @@ public struct HelpCenterStartView: View {
                     .withChevronAccessory
                 }
                 .withoutHorizontalPadding
+                .hSectionMinimumPadding
                 .sectionContainerStyle(.opaque)
                 .onTapGesture {
                     store.send(.openHelpCenterTopicView(commonTopic: item))
