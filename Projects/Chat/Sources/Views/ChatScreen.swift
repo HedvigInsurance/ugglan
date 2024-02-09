@@ -20,6 +20,7 @@ struct ChatScreen: View {
             infoCard
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
+                .padding(.bottom, 16)
         }
         .dismissKeyboard()
     }
