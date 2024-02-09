@@ -313,9 +313,9 @@ struct CoInusuredInput: View {
                     showAsList: true,
                     dateFormatter: .birthDate
                 ),
-                selectedDate: vm.birthday.localYYMMDDDateToDate ?? vm.birthday.localDateToDate
+                selectedDate: vm.birthday.localBirthDateStringToDate ?? vm.birthday.localDateToDate
             ) { date in
-                vm.birthday = date.displayDateYYMMDDFormat ?? ""
+                vm.birthday = date.localBirthDateString
             }
         }
         .sectionContainerStyle(.transparent)
@@ -485,7 +485,6 @@ public class CoInusuredInputViewModel: ObservableObject {
             nameFetchedFromSSN = true
         }
         $noSSN.combineLatest($nameFetchedFromSSN).combineLatest($SSNError)
-            //            .delay(for: .milliseconds(0), scheduler: DispatchQueue.main)
             .receive(on: RunLoop.main)
             .sink { _ in
                 for i in 0...10 {

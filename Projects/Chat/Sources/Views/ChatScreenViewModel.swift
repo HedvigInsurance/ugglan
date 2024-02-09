@@ -46,7 +46,7 @@ class ChatScreenViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().ask()
         }
-
+        log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
         let store: ChatStore = globalPresentableStoreContainer.get()
         storeActionSignal = store.actionSignal.publisher
             .sink(receiveValue: { [weak self] action in guard let self = self else { return }

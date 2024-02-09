@@ -18,28 +18,28 @@ public struct InsurableLimitsSectionView: View {
     public var body: some View {
         hSection(limits, id: \.label) { limit in
             hRow {
-                VStack(alignment: .leading, spacing: 4) {
-                    hText(limit.label)
-                        .frame(maxHeight: .infinity, alignment: .top)
-                        .fixedSize()
-                }
+                hText(limit.label)
             }
             .withCustomAccessory {
-                Spacer()
-                HStack(alignment: .top) {
-                    hText(limit.limit)
-                        .fixedSize()
-                        .foregroundColor(hTextColor.secondary)
-                    Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                        .resizable()
-                        .foregroundColor(hTextColor.secondary)
-                        .frame(width: 16, height: 16)
-                        .padding(.vertical, 4)
-                        .onTapGesture {
-                            didTap(limit)
-                        }
+                HStack(spacing: 0) {
+                    Spacer()
+                    HStack(alignment: .top) {
+                        hText(limit.limit)
+                            .fixedSize()
+                            .foregroundColor(hTextColor.secondary)
+                        Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                            .resizable()
+                            .foregroundColor(hTextColor.secondary)
+                            .frame(width: 16, height: 16)
+                            .padding(.vertical, 4)
+                            .onTapGesture {
+                                didTap(limit)
+                            }
+
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .fixedSize()
                 }
-                .frame(maxHeight: .infinity, alignment: .top)
             }
             .onTap {
                 didTap(limit)

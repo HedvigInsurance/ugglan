@@ -16,7 +16,6 @@ public enum MaskType: String {
     case birthDate = "BirthDate"
     case birthDateCoInsured = "BirthDateCoInsured"
     case personalNumberCoInsured = "PersonalNumberCoInsured"
-    case birthDateReverse = "BirthDateReverse"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
     case euroBonus = "EuroBonus"
@@ -64,7 +63,7 @@ public struct Masking {
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15...130 ~= age
-        case .birthDate, .birthDateReverse:
+        case .birthDate:
             let age = calculateAge(from: text) ?? 0
             return 15...130 ~= age
         case .birthDateCoInsured:
@@ -107,12 +106,6 @@ public struct Masking {
         case .personalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .postalCode: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate: return text
-        case .birthDateReverse:
-            let reverseDateFormatter = DateFormatter()
-            reverseDateFormatter.dateFormat = "dd-MM-yyyy"
-
-            guard let date = reverseDateFormatter.date(from: text) else { return text }
-            return date.localDateString
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
         case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .none: return text
@@ -162,7 +155,7 @@ public struct Masking {
             if let age = calculate("yyyyMMdd", value: String(unmaskedValue.prefix(8))) { return age }
 
             return nil
-        case .birthDateReverse, .birthDate:
+        case .birthDate:
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else { return nil }
             return age
         default:
@@ -178,7 +171,7 @@ public struct Masking {
 
     public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode,
+        case .birthDate, .personalNumber, .norwegianPostalCode,
             .postalCode, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateCoInsured, .personalNumberCoInsured:
             return .numberPad
@@ -223,8 +216,6 @@ public struct Masking {
             return L10n.emailPlaceholder
         case .birthDate, .birthDateCoInsured:
             return nil
-        case .birthDateReverse:
-            return nil
         case .norwegianPostalCode:
             return nil
         case .digits:
@@ -261,8 +252,6 @@ public struct Masking {
         case .email:
             return L10n.emailRowTitle
         case .birthDate, .birthDateCoInsured, .personalNumberCoInsured:
-            return nil
-        case .birthDateReverse:
             return nil
         case .norwegianPostalCode:
             return nil
@@ -369,8 +358,6 @@ public struct Masking {
         case .norwegianPostalCode: return delimitedDigits(delimiterPositions: [], maxCount: 4, delimiter: " ")
         case .birthDate, .birthDateCoInsured:
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
-        case .birthDateReverse:
-            return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
         case .digits: return text.filter { $0.isDigit }
         case .email: return text
         case .norwegianPersonalNumber:

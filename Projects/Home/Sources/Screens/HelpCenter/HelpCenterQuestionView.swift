@@ -25,21 +25,17 @@ struct HelpCenterQuestionView: View {
                 .padding(.horizontal, 16)
                 VStack(alignment: .leading, spacing: 8) {
                     HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                    CustomTextViewRepresentable(
+                    MarkdownView(
                         config: .init(
                             text: question.answer,
-                            fixedWidth: UIScreen.main.bounds.width - 32,
                             fontStyle: .standard,
                             color: hTextColor.secondary,
                             linkColor: hTextColor.primary,
-                            linkUnderlineStyle: .single,
-                            onUrlClicked: { url in
-                                store.send(.goToURL(url: url))
-                            }
-                        ),
-                        height: $height
+                            linkUnderlineStyle: .single
+                        ) { url in
+                            store.send(.goToURL(url: url))
+                        }
                     )
-                    .frame(height: height)
                 }
                 .padding(.horizontal, 16)
                 SupportView(topic: question.topicType)

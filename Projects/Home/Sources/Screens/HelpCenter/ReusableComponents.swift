@@ -132,6 +132,7 @@ struct QuestionsItems: View {
                     }
                 }
                 .withoutHorizontalPadding
+                .hSectionMinimumPadding
                 .sectionContainerStyle(.transparent)
                 .padding(.leading, 2)
             }
