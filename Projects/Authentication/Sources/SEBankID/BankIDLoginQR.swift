@@ -51,41 +51,47 @@ public struct BankIDLoginQR: View {
                                 }
                         }
 
-                        VStack(spacing: 0) {
-                            hText(L10n.authenticationBankidLoginTitle)
-                                .foregroundColor(hTextColor.primaryTranslucent)
-                            hText(L10n.authenticationBankidLoginLabel)
-                                .foregroundColor(hTextColor.secondaryTranslucent)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 16)
+                        hSection {
+                            VStack(spacing: 0) {
+                                hText(L10n.authenticationBankidLoginTitle)
+                                    .foregroundColor(hTextColor.primaryTranslucent)
+                                hSection {
+                                    hText(L10n.authenticationBankidLoginLabel)
+                                        .foregroundColor(hTextColor.secondaryTranslucent)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .sectionContainerStyle(.transparent)
+                            }
                         }
-                        .padding(.horizontal, 16)
+                        .sectionContainerStyle(.transparent)
                     }
                     .padding(.top, UIScreen.main.bounds.size.height / 5.0)
                 }
                 .hDisableScroll
                 .hFormAttachToBottom {
-                    VStack(spacing: 16) {
-                        if vm.hasBankIdApp {
-                            hButton.LargeButton(type: .primary) {
-                                vm.openBankId()
-                            } content: {
-                                HStack(spacing: 8) {
-                                    Image(uiImage: hCoreUIAssets.bankIdSmall.image)
-                                    hText(L10n.authenticationBankidOpenButton)
+                    hSection {
+                        VStack(spacing: 16) {
+                            if vm.hasBankIdApp {
+                                hButton.LargeButton(type: .primary) {
+                                    vm.openBankId()
+                                } content: {
+                                    HStack(spacing: 8) {
+                                        Image(uiImage: hCoreUIAssets.bankIdSmall.image)
+                                        hText(L10n.authenticationBankidOpenButton)
+                                    }
                                 }
                             }
-                        }
 
-                        hButton.LargeButton(type: .ghost) {
-                            store.send(.cancel)
-                            store.send(.bankIdQrResultAction(action: .emailLogin))
-                        } content: {
-                            hText(L10n.BankidMissingLogin.emailButton)
+                            hButton.LargeButton(type: .ghost) {
+                                store.send(.cancel)
+                                store.send(.bankIdQrResultAction(action: .emailLogin))
+                            } content: {
+                                hText(L10n.BankidMissingLogin.emailButton)
+                            }
                         }
+                        .padding(.bottom, 16)
                     }
-                    .padding(.bottom, 16)
-                    .padding(.horizontal, 16)
+                    .sectionContainerStyle(.transparent)
                 }
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             }

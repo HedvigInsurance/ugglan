@@ -17,30 +17,31 @@ struct HelpCenterQuestionView: View {
 
     var body: some View {
         hForm {
-            VStack(alignment: .leading, spacing: 32) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                    hText(question.question, style: .body)
+            hSection {
+                VStack(alignment: .leading, spacing: 32) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
+                        hText(question.question, style: .body)
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
+                        MarkdownView(
+                            config: .init(
+                                text: question.answer,
+                                fontStyle: .standard,
+                                color: hTextColor.secondary,
+                                linkColor: hTextColor.primary,
+                                linkUnderlineStyle: .single
+                            ) { url in
+                                store.send(.goToURL(url: url))
+                            }
+                        )
+                    }
                 }
-                .padding(.horizontal, 16)
-                VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                    MarkdownView(
-                        config: .init(
-                            text: question.answer,
-                            fontStyle: .standard,
-                            color: hTextColor.secondary,
-                            linkColor: hTextColor.primary,
-                            linkUnderlineStyle: .single
-                        ) { url in
-                            store.send(.goToURL(url: url))
-                        }
-                    )
-                }
-                .padding(.horizontal, 16)
                 SupportView(topic: question.topicType)
                     .padding(.top, 8)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .edgesIgnoringSafeArea(.bottom)

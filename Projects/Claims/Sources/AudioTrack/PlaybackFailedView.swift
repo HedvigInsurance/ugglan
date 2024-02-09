@@ -24,10 +24,12 @@ struct PlaybackFailedView: View {
             Button {
                 buttonAction()
             } label: {
-                hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
-                    .foregroundColor(hTextColor.primary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
+                hSection {
+                    hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
+                        .foregroundColor(hTextColor.primary)
+                        .padding(.vertical, 8)
+                }
+                .sectionContainerStyle(.transparent)
             }
             .frame(height: 36)
             .cornerRadius(6)

@@ -72,21 +72,23 @@ public struct ProfileView: View {
         }
         .hFormMergeBottomViewWithContentIfNeeded
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                ConnectPaymentCardView()
-                RenewalCardView(showCoInsured: false)
-                NotificationsCardView()
-                hButton.LargeButton(type: .ghost) {
-                    showLogoutAlert = true
-                } content: {
-                    hText(L10n.logoutButton)
-                        .foregroundColor(hSignalColor.redElement)
-                }
-                .alert(isPresented: $showLogoutAlert) {
-                    logoutAlert
+            hSection {
+                VStack(spacing: 8) {
+                    ConnectPaymentCardView()
+                    RenewalCardView(showCoInsured: false)
+                    NotificationsCardView()
+                    hButton.LargeButton(type: .ghost) {
+                        showLogoutAlert = true
+                    } content: {
+                        hText(L10n.logoutButton)
+                            .foregroundColor(hSignalColor.redElement)
+                    }
+                    .alert(isPresented: $showLogoutAlert) {
+                        logoutAlert
+                    }
                 }
             }
-            .padding(16)
+            .sectionContainerStyle(.transparent)
         }
         .onAppear {
             store.send(.fetchProfileState)

@@ -40,12 +40,14 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 32)
         }
         .hFormAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                store.send(.makeTabActive(deeplink: .home))
-            } content: {
-                hText(L10n.generalCloseButton, style: .body)
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    store.send(.makeTabActive(deeplink: .home))
+                } content: {
+                    hText(L10n.generalCloseButton, style: .body)
+                }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 

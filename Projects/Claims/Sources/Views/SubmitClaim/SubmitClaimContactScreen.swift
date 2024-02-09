@@ -18,8 +18,8 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
         hForm {}
             .hFormTitle(.small, .title1, L10n.claimsConfirmNumberTitle)
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    hSection {
+                hSection {
+                    VStack(spacing: 16) {
                         hFloatingTextField(
                             masking: Masking(type: .digits),
                             value: $phoneNumber,
@@ -27,26 +27,25 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             focusValue: .phoneNumber,
                             placeholder: L10n.phoneNumberRowTitle
                         )
-                    }
-                    .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                        keyboardEnabled = newIsKeyboardEnabled
-                    }
-                    .sectionContainerStyle(.transparent)
-                    .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
-                    LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
-                        if keyboardEnabled {
-                            UIApplication.dismissKeyboard()
-                        } else {
-                            store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
-                            UIApplication.dismissKeyboard()
+                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                            keyboardEnabled = newIsKeyboardEnabled
                         }
-                    } content: {
-                        hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
+                        .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
+                        LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
+                            if keyboardEnabled {
+                                UIApplication.dismissKeyboard()
+                            } else {
+                                store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
+                                UIApplication.dismissKeyboard()
+                            }
+                        } content: {
+                            hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .bottom)
                     }
-                    .frame(maxWidth: .infinity, alignment: .bottom)
-                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
-                .padding(.bottom, 16)
+                .sectionContainerStyle(.transparent)
             }
     }
 }

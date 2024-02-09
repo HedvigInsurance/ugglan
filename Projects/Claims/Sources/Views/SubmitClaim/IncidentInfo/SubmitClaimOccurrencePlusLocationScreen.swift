@@ -18,9 +18,12 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             .hDisableScroll
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
-                    displayFieldsAndNotice
-                        .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
-                    continueButton
+                    hSection {
+                        displayFieldsAndNotice
+                            .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
+                        continueButton
+                    }
+                    .sectionContainerStyle(.transparent)
                 }
             }
     }
@@ -35,16 +38,13 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
         ) { locationStep in
             if let locationStep = locationStep {
-                hSection {
-                    hFloatingField(
-                        value: locationStep.getSelectedOption()?.displayName ?? "",
-                        placeholder: L10n.Claims.Location.Screen.title,
-                        onTap: {
-                            store.send(.navigationAction(action: .openLocationPicker))
-                        }
-                    )
-                }
-                .sectionContainerStyle(.transparent)
+                hFloatingField(
+                    value: locationStep.getSelectedOption()?.displayName ?? "",
+                    placeholder: L10n.Claims.Location.Screen.title,
+                    onTap: {
+                        store.send(.navigationAction(action: .openLocationPicker))
+                    }
+                )
                 .padding(.bottom, 4)
             }
         }
@@ -57,22 +57,19 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         ) { dateOfOccurenceStep in
 
             if let dateOfOccurrenceStep = dateOfOccurenceStep {
-                hSection {
-                    hDatePickerField(
-                        config: .init(
-                            maxDate: dateOfOccurenceStep?.getMaxDate(),
-                            placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                            title: L10n.Claims.Incident.Screen.Date.Of.incident
-                        ),
-                        selectedDate: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate,
-                        placehodlerText: L10n.Claims.Item.Screen.Date.Of.Incident.button
-                    ) { date in
-                        store.send(.setNewDate(dateOfOccurrence: date.localDateString))
-                    }
+                hDatePickerField(
+                    config: .init(
+                        maxDate: dateOfOccurenceStep?.getMaxDate(),
+                        placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                        title: L10n.Claims.Incident.Screen.Date.Of.incident
+                    ),
+                    selectedDate: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate,
+                    placehodlerText: L10n.Claims.Item.Screen.Date.Of.Incident.button
+                ) { date in
+                    store.send(.setNewDate(dateOfOccurrence: date.localDateString))
                 }
-                .sectionContainerStyle(.transparent)
                 InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
-                    .padding(16)
+                    .padding(.vertical, 16)
             }
         }
     }
@@ -85,7 +82,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             hText(L10n.generalContinueButton, style: .body)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
-        .padding([.leading, .trailing], 16)
     }
 }
 

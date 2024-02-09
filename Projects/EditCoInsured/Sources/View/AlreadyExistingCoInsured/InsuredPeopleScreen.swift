@@ -71,9 +71,7 @@ struct InsuredPeopleScreen: View {
                     } content: {
                         hText(L10n.contractAddCoinsured)
                     }
-                    .padding(.horizontal, 16)
                 }
-                .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
             }
         }
@@ -82,8 +80,10 @@ struct InsuredPeopleScreen: View {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
                     ConfirmChangesView()
                 }
-                CancelButton()
-                    .padding(.horizontal, 16)
+                hSection {
+                    CancelButton()
+                }
+                .sectionContainerStyle(.transparent)
             }
         }
         .hFormIgnoreKeyboard()
@@ -153,12 +153,14 @@ struct CancelButton: View {
     @PresentableStore var store: EditCoInsuredStore
 
     var body: some View {
-        hButton.LargeButton(type: .ghost) {
-            store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-        } content: {
-            hText(L10n.generalCancelButton)
+        hSection {
+            hButton.LargeButton(type: .ghost) {
+                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+            } content: {
+                hText(L10n.generalCancelButton)
+            }
         }
-        .padding(.horizontal, 16)
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -172,41 +174,43 @@ struct ConfirmChangesView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 2) {
-                HStack(spacing: 8) {
-                    hText(L10n.contractAddCoinsuredTotal)
-                    Spacer()
-                    if #available(iOS 16.0, *) {
-                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
-                            .strikethrough()
-                            .foregroundColor(hTextColor.secondary)
-                    } else {
-                        hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
-                            .foregroundColor(hTextColor.secondary)
+        hSection {
+            VStack(spacing: 16) {
+                VStack(spacing: 2) {
+                    HStack(spacing: 8) {
+                        hText(L10n.contractAddCoinsuredTotal)
+                        Spacer()
+                        if #available(iOS 16.0, *) {
+                            hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
+                                .strikethrough()
+                                .foregroundColor(hTextColor.secondary)
+                        } else {
+                            hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
+                                .foregroundColor(hTextColor.secondary)
 
+                        }
+                        hText(intentVm.newPremium.formattedAmount + L10n.perMonth)
                     }
-                    hText(intentVm.newPremium.formattedAmount + L10n.perMonth)
+                    hText(
+                        L10n.contractAddCoinsuredStartsFrom(
+                            intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        ),
+                        style: .footnote
+                    )
+                    .foregroundColor(hTextColor.secondary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                hText(
-                    L10n.contractAddCoinsuredStartsFrom(
-                        intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    style: .footnote
-                )
-                .foregroundColor(hTextColor.secondary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            }
 
-            hButton.LargeButton(type: .primary) {
-                store.send(.performCoInsuredChanges(commitId: intentVm.id))
-                store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
-            } content: {
-                hText(L10n.contractAddCoinsuredConfirmChanges)
+                hButton.LargeButton(type: .primary) {
+                    store.send(.performCoInsuredChanges(commitId: intentVm.id))
+                    store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
+                } content: {
+                    hText(L10n.contractAddCoinsuredConfirmChanges)
+                }
+                .hButtonIsLoading(intentVm.isLoading)
             }
-            .hButtonIsLoading(intentVm.isLoading)
         }
-        .padding(.horizontal, 16)
+        .sectionContainerStyle(.transparent)
     }
 }
 
