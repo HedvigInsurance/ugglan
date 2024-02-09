@@ -56,8 +56,11 @@ struct DisplayQuestionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            hText(L10n.terminateContractCommonQuestions)
-                .padding(.leading, 16)
+            hSection {
+                hText(L10n.terminateContractCommonQuestions)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .sectionContainerStyle(.transparent)
             VStack(spacing: 4) {
                 ForEach(
                     (store.state.config?.isDeletion ?? false) ? deletionQuestions : terminationQuestions,
