@@ -129,7 +129,6 @@ open class MockInterceptorProvider: InterceptorProvider {
             CacheReadInterceptor(store: self.store),
             mockNetworkFetchInterceptor,
             ResponseCodeInterceptor(),
-            //            JSONResponseParsingInterceptor(cacheKeyForObject: self.store.cacheKeyForObject),
             AutomaticPersistedQueryInterceptor(),
             CacheWriteInterceptor(store: self.store),
         ]
