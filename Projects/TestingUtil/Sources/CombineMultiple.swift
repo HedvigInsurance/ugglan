@@ -1,4 +1,5 @@
 import Apollo
+import ApolloAPI
 import Foundation
 import hCore
 
