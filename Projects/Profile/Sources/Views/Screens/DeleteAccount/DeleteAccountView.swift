@@ -100,7 +100,7 @@ extension DeleteAccountView {
             claimsStore: claimsStore,
             contractsStore: contractsStore
         )
-        let style: PresentationStyle = .detented(.scrollViewContentSize)  //.modally(presentationStyle: .fullScreen)
+        let style: PresentationStyle = .detented(.scrollViewContentSize)
         return HostingJourney(
             ProfileStore.self,
             rootView: DeleteAccountView(
@@ -128,7 +128,7 @@ extension DeleteAccountView {
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
-            rootView: DeleteRequestLoadingView(screenState: .tryToDelete(with: details))  //,
+            rootView: DeleteRequestLoadingView(screenState: .tryToDelete(with: details))
         ) { action in
             if case .makeTabActive = action {
                 DismissJourney()
