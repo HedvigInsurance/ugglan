@@ -76,7 +76,7 @@ struct DeleteAccountView: View {
                         hButton.LargeButton(type: .alert) { [weak viewModel] in
                             viewModel?.deleteAccount()
                         } content: {
-                            hText(L10n.profileDeleteAccountConfirmDeleteion)
+                            hText(L10n.profileDeleteAccountConfirmDeletion)
                         }
                     }
                     hButton.LargeButton(type: .ghost) {
