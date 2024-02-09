@@ -31,16 +31,18 @@ public struct SubmitClaimSummaryScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                InfoCard(text: L10n.claimsComplementClaim, type: .info)
-                    .padding(.bottom, 8)
-                LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
-                    store.send(.summaryRequest)
-                } content: {
-                    hText(L10n.embarkSubmitClaim)
+            hSection {
+                VStack(spacing: 8) {
+                    InfoCard(text: L10n.claimsComplementClaim, type: .info)
+                        .padding(.bottom, 8)
+                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
+                        store.send(.summaryRequest)
+                    } content: {
+                        hText(L10n.embarkSubmitClaim)
+                    }
                 }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 

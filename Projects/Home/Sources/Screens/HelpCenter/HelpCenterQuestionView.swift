@@ -18,30 +18,34 @@ struct HelpCenterQuestionView: View {
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 32) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                    hText(question.question, style: .body)
+                hSection {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
+                        hText(question.question, style: .body)
+                    }
                 }
-                .padding(.horizontal, 16)
-                VStack(alignment: .leading, spacing: 8) {
-                    HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                    CustomTextViewRepresentable(
-                        config: .init(
-                            text: question.answer,
-                            fixedWidth: UIScreen.main.bounds.width - 32,
-                            fontStyle: .standard,
-                            color: hTextColor.secondary,
-                            linkColor: hTextColor.primary,
-                            linkUnderlineStyle: .single,
-                            onUrlClicked: { url in
-                                store.send(.goToURL(url: url))
-                            }
-                        ),
-                        height: $height
-                    )
-                    .frame(height: height)
+                .sectionContainerStyle(.transparent)
+                hSection {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
+                        CustomTextViewRepresentable(
+                            config: .init(
+                                text: question.answer,
+                                fixedWidth: UIScreen.main.bounds.width - 32,
+                                fontStyle: .standard,
+                                color: hTextColor.secondary,
+                                linkColor: hTextColor.primary,
+                                linkUnderlineStyle: .single,
+                                onUrlClicked: { url in
+                                    store.send(.goToURL(url: url))
+                                }
+                            ),
+                            height: $height
+                        )
+                        .frame(height: height)
+                    }
                 }
-                .padding(.horizontal, 16)
+                .sectionContainerStyle(.transparent)
                 SupportView(topic: question.topicType)
                     .padding(.top, 8)
             }

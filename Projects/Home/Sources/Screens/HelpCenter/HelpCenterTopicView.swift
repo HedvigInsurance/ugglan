@@ -16,15 +16,21 @@ struct HelpCenterTopicView: View {
     var body: some View {
         hForm {
             VStack(spacing: 40) {
-                VStack(spacing: 40) {
-                    QuestionsItems(
-                        questions: commonTopic.commonQuestions,
-                        questionType: .commonQuestions,
-                        source: .topicView
-                    )
-                    QuestionsItems(questions: commonTopic.allQuestions, questionType: .allQuestions, source: .topicView)
+                hSection {
+                    VStack(spacing: 40) {
+                        QuestionsItems(
+                            questions: commonTopic.commonQuestions,
+                            questionType: .commonQuestions,
+                            source: .topicView
+                        )
+                        QuestionsItems(
+                            questions: commonTopic.allQuestions,
+                            questionType: .allQuestions,
+                            source: .topicView
+                        )
+                    }
                 }
-                .padding(.horizontal, 16)
+                .sectionContainerStyle(.transparent)
                 SupportView(topic: commonTopic.type)
             }
         }

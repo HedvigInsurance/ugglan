@@ -64,10 +64,12 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     )
                     .foregroundColor(hTextColor.primary)
                 }
-                hText(L10n.claimsPayoutSuccessLabel, style: .body)
-                    .foregroundColor(hTextColor.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 16)
+                hSection {
+                    hText(L10n.claimsPayoutSuccessLabel, style: .body)
+                        .foregroundColor(hTextColor.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .sectionContainerStyle(.transparent)
             }
             .onAppear {
                 ImpactGenerator.soft()
@@ -173,16 +175,18 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             Spacer()
 
-            hButton.LargeButton(type: .primary) {
-                store.send(.dissmissNewClaimFlow)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    store.send(.submitClaimOpenFreeTextChat)
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    store.send(.dissmissNewClaimFlow)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        store.send(.submitClaimOpenFreeTextChat)
+                    }
+                } content: {
+                    hText(L10n.openChat, style: .body)
                 }
-            } content: {
-                hText(L10n.openChat, style: .body)
+                .cornerRadius(.defaultCornerRadius)
             }
-            .padding(.horizontal, 16)
-            .cornerRadius(.defaultCornerRadius)
+            .sectionContainerStyle(.transparent)
             HStack {
                 Button {
                     store.send(.dissmissNewClaimFlow)

@@ -17,17 +17,19 @@ struct SumitClaimEmergencySelectScreen: View {
         hForm {}
             .hFormTitle(.small, .title1, title())
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    buttonView()
-                    hButton.LargeButton(type: .primary) {
-                        store.send(.emergencyConfirmRequest(isEmergency: selectedValue))
-                    } content: {
-                        hText(L10n.generalContinueButton)
+                hSection {
+                    VStack(spacing: 16) {
+                        buttonView()
+                        hButton.LargeButton(type: .primary) {
+                            store.send(.emergencyConfirmRequest(isEmergency: selectedValue))
+                        } content: {
+                            hText(L10n.generalContinueButton)
+                        }
+                        .hButtonIsLoading(isLoading)
                     }
-                    .hButtonIsLoading(isLoading)
+                    .padding(.bottom, 32)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .sectionContainerStyle(.transparent)
             }
             .hDisableScroll
             .onReceive(

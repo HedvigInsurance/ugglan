@@ -26,17 +26,19 @@ where MainContent: View, BottomContent: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center) {
-                mainContent
-                Spacer()
-                if onSelected != nil {
-                    hCoreUIAssets.chevronRight.view
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColor.secondary)
+            hSection {
+                HStack(alignment: .center) {
+                    mainContent
+                    Spacer()
+                    if onSelected != nil {
+                        hCoreUIAssets.chevronRight.view
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(hTextColor.secondary)
+                    }
                 }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
             .padding(.bottom, 16)
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {

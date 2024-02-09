@@ -31,9 +31,11 @@ public struct ClaimDetailView: View {
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                ClaimStatus(claim: vm.claim, enableTap: false)
-                    .padding(.top, 8)
-                    .padding(.horizontal, 16)
+                hSection {
+                    ClaimStatus(claim: vm.claim, enableTap: false)
+                        .padding(.top, 8)
+                }
+                .sectionContainerStyle(.transparent)
                 hSection {
                     hRow {
                         hText(statusParagraph)
