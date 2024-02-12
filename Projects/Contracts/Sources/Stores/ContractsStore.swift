@@ -73,7 +73,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                         if ApplicationContext.shared.isDemoMode {
                             self.removeLoading(for: .fetchContracts)
                         } else {
-                            self.setError(L10n.General.errorBody, for: .fetchContracts)
+                            self.setError(error.localizedDescription, for: .fetchContracts)
                         }
                         callback(.value(.fetchCompleted))
                     }
