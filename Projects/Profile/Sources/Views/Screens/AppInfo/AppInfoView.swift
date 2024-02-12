@@ -107,7 +107,7 @@ public struct AppInfoView: View {
                     body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
                 ),
                 buttonText: L10n.AppInfo.SubmitBug.button,
-                testSheetPresented: $hasPressedSubmitBugOk,
+                hasAcceptedAlert: $hasPressedSubmitBugOk,
                 hasPressedButton: {
                     showSubmitBugAlert = true
                 }
