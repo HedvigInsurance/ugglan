@@ -11,15 +11,15 @@ extension GraphQLError {
         case .graphQLError(let errors):
             let messages = errors.map { $0.localizedDescription }
             return messages.joined(separator: " ")
-        case .otherError:
-            return "Other error"
+        case .otherError(let error):
+            return "Other error \(error)"
         }
     }
 }
 
 public enum GraphQLError: Error {
     case graphQLError(errors: [Error])
-    case otherError
+    case otherError(error: Error)
 }
 
 func logGraphQLError(error: GraphQLError) {
@@ -48,7 +48,7 @@ extension ApolloClient {
                         completion(.success(data))
                     }
                 case let .failure(error):
-                    completion(.failure(GraphQLError.otherError))
+                    completion(.failure(GraphQLError.otherError(error: error)))
                 }
             }
 
@@ -77,8 +77,8 @@ extension ApolloClient {
                     } else if let data = result.data {
                         inCont.resume(returning: data)
                     }
-                case .failure:
-                    inCont.resume(throwing: GraphQLError.otherError)
+                case let .failure(error):
+                    inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
         }
@@ -140,8 +140,8 @@ extension ApolloClient {
                     } else if let data = result.data {
                         inCont.resume(returning: data)
                     }
-                case .failure:
-                    inCont.resume(throwing: GraphQLError.otherError)
+                case .failure(let error):
+                    inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
         }
