@@ -24,32 +24,97 @@ struct EmailClient {
     }
 }
 
-struct OpenEmailClientButton: View {
-    @State var sheetPresented: Bool = false
+public struct EmailOptions {
+    let recipient: String?
+    let subject: String?
+    let body: String?
 
-    var emailClients = [
-        EmailClient(url: URL(string: "message://"), displayName: "Apple Mail"),
-        EmailClient(url: URL(string: "googlegmail://"), displayName: "Gmail"),
-        EmailClient(url: URL(string: "ms-outlook://"), displayName: "Outlook"),
-    ]
+    public init(
+        recipient: String? = nil,
+        subject: String? = nil,
+        body: String? = nil
+    ) {
+        self.recipient = recipient
+        self.subject = subject
+        self.body = body
+    }
+}
+
+public struct OpenEmailClientButton: View {
+    @State var sheetPresented: Bool = false
+    let options: EmailOptions?
+    let buttonText: String?
+    var hasPressedButton: (() -> Void)?
+    @Binding var hasAcceptedAlert: Bool
+
+    public init(
+        options: EmailOptions? = nil,
+        buttonText: String? = nil,
+        hasAcceptedAlert: Binding<Bool>? = nil,
+        hasPressedButton: (() -> Void)? = nil
+    ) {
+        self.options = options
+        self.buttonText = buttonText
+        self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
+        self.hasPressedButton = hasPressedButton
+
+        emailClients = {
+            let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
+            let gmailURLString = addEmailUrlComponents(baseUrl: "googlegmail:///co?")
+            let outlookURLString = addEmailUrlComponents(baseUrl: "ms-outlook://compose?")
+
+            return [
+                EmailClient(url: URL(string: appleURLString), displayName: "Apple Mail"),
+                EmailClient(url: URL(string: gmailURLString), displayName: "Gmail"),
+                EmailClient(url: URL(string: outlookURLString), displayName: "Outlook"),
+            ]
+        }()
+    }
+
+    func addEmailUrlComponents(baseUrl: String) -> String {
+        var fullUrl = baseUrl
+
+        if let receipient = options?.recipient {
+            fullUrl.append("&to=" + receipient)
+        }
+        if let subject = options?.subject {
+            fullUrl.append("&subject=" + subject)
+        }
+        if let body = options?.body {
+            fullUrl.append("&body=" + body)
+        }
+        return fullUrl
+    }
+
+    var emailClients: [EmailClient] = []
 
     func showButton(state: OTPState) -> Bool {
         !sheetPresented && state.code.isEmpty
     }
 
-    var body: some View {
+    public var body: some View {
         ReadOTPState { state in
             hSection {
                 hButton.LargeButton(type: .primary) {
-                    sheetPresented = true
+                    if hasAcceptedAlert {
+                        sheetPresented = true
+                    } else {
+                        hasPressedButton?()
+                    }
                 } content: {
-                    hText(L10n.Login.openEmailAppButton)
+                    hText(buttonText ?? L10n.Login.openEmailAppButton)
                 }
             }
             .offset(x: 0, y: showButton(state: state) ? 0 : 150)
             .opacity(showButton(state: state) ? 1 : 0)
             .animation(.spring(), value: showButton(state: state))
         }
+        .onUpdate(
+            of: hasAcceptedAlert,
+            perform: { newValue in
+                sheetPresented = true
+            }
+        )
         .actionSheet(isPresented: $sheetPresented) {
             ActionSheet(
                 title: Text(L10n.Login.openEmailAppButton),
@@ -63,6 +128,5 @@ struct OpenEmailClientButton: View {
                 .flatMap { $0 }
             )
         }
-
     }
 }
