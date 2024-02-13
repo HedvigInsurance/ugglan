@@ -25,14 +25,16 @@ public struct GeneralDatePicker: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
-            VStack {
-                hButton.LargeButton(type: .primary) {
-                    model.onDateSelected(dateOfOccurrence)
-                } content: {
-                    hText(model.buttonTitle, style: .body)
+            hSection {
+                VStack {
+                    hButton.LargeButton(type: .primary) {
+                        model.onDateSelected(dateOfOccurrence)
+                    } content: {
+                        hText(model.buttonTitle, style: .body)
+                    }
                 }
-                .padding(.horizontal, 16)
             }
+            .sectionContainerStyle(.transparent)
         }
         .navigationTitle(model.title)
     }

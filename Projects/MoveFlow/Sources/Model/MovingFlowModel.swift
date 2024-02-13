@@ -122,7 +122,7 @@ struct Quote: Codable, Equatable, Hashable {
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         id = UUID().uuidString
         premium = .init(fragment: data.premium.fragments.moneyFragment)
-        startDate = data.startDate.localDateToDate?.displayDateDotFormat ?? data.startDate
+        startDate = data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         displayName = productVariantFragment.displayName
         exposureName = data.exposureName

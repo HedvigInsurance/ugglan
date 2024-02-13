@@ -10,6 +10,24 @@ public struct Perils: Codable, Equatable, Hashable {
     public let exceptions: [String]
 
     public init(
+        id: String?,
+        title: String,
+        description: String,
+        info: String?,
+        color: String?,
+        covered: [String],
+        exceptions: [String]
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.info = info
+        self.color = color
+        self.covered = covered
+        self.exceptions = exceptions
+    }
+
+    public init(
         fragment: OctopusGraphQL.ProductVariantFragment.Peril
     ) {
         id = fragment.id

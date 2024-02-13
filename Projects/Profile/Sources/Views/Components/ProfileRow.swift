@@ -23,12 +23,10 @@ struct ProfileRow: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                 hText(row.title)
+                Spacer()
             }
         }
-        .withCustomAccessory({
-            Spacer()
-            StandaloneChevronAccessory()
-        })
+        .withChevronAccessory
         .onTap {
             store.send(row.action)
         }

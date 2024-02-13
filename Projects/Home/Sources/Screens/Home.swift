@@ -35,6 +35,7 @@ extension HomeView {
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
         store.send(.fetchChatNotifications)
+        store.send(.fetchClaims)
     }
 
     public var body: some View {
@@ -54,7 +55,7 @@ extension HomeView {
                         store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
                     }
                 case .chat, .chatNotification:
-                    store.send(.openFreeTextChat)
+                    store.send(.openFreeTextChat(from: nil))
                 }
             }
         )
@@ -101,9 +102,7 @@ extension HomeView {
                         HomeBottomScrollView(memberId: memberId)
                         VStack(spacing: 8) {
                             startAClaimButton
-                            if Dependencies.featureFlags().isHelpCenterEnabled {
-                                openHelpCenter
-                            }
+                            openHelpCenter
                         }
                     }
                 case .future:
@@ -114,7 +113,7 @@ extension HomeView {
                     }
                 case .terminated:
                     VStack(spacing: 16) {
-                        InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                        HomeBottomScrollView(memberId: memberId)
                         startAClaimButton
                         openHelpCenter
                     }
@@ -137,7 +136,10 @@ extension HomeView {
     @ViewBuilder
     private var openHelpCenter: some View {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember }) {
+        let showHelpCenter =
+            !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+            || contractStore.state.activeContracts.count == 0
+        if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
                 store.send(.openHelpCenter)
             } content: {
@@ -177,6 +179,7 @@ class HomeVM: ObservableObject {
                 using: { _ in
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.fetchChatNotifications)
+                    store.send(.fetchClaims)
                 }
             )
         }
@@ -215,8 +218,8 @@ extension HomeView {
                 .defaults
             ]
         ) { action in
-            if case .openFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
+            if case let .openFreeTextChat(type) = action {
+                resultJourney(.openFreeTextChat(topic: type))
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
             } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
@@ -253,7 +256,7 @@ extension HomeView {
 }
 
 public enum HomeResult {
-    case openFreeTextChat
+    case openFreeTextChat(topic: ChatTopicType?)
     case startNewClaim
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])

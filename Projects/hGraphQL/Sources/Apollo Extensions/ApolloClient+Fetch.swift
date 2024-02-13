@@ -1,33 +1,30 @@
 import Apollo
+import ApolloAPI
 import Combine
 import Flow
 import Foundation
 import Presentation
 import UIKit
 
-extension GraphQLError: LocalizedError {
-    public var errorDescription: String? {
+extension GraphQLError {
+    var logDescription: String? {
         switch self {
         case .graphQLError(let errors):
             let messages = errors.map { $0.localizedDescription }
             return messages.joined(separator: " ")
-        case .otherError:
-            return "Other error"
+        case .otherError(let error):
+            return "Other error \(error)"
         }
     }
 }
 
 public enum GraphQLError: Error {
     case graphQLError(errors: [Error])
-    case otherError
+    case otherError(error: Error)
 }
 
-func logGraphQLError(error: Error) {
-    log.warn(
-        "GraphQL error",
-        error: error,
-        attributes: nil
-    )
+func logGraphQLError(error: GraphQLError) {
+    log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
 }
 
 extension ApolloClient {
@@ -46,16 +43,13 @@ extension ApolloClient {
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
-                        if let error = errors.first {
-                            logGraphQLError(error: error)
-                        }
+                        logGraphQLError(error: .graphQLError(errors: errors))
                         completion(.failure(GraphQLError.graphQLError(errors: errors)))
                     } else if let data = result.data {
                         completion(.success(data))
                     }
                 case let .failure(error):
-                    logGraphQLError(error: error)
-                    completion(.failure(GraphQLError.otherError))
+                    completion(.failure(GraphQLError.otherError(error: error)))
                 }
             }
 
@@ -79,13 +73,13 @@ extension ApolloClient {
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
+                        logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
                         inCont.resume(returning: data)
                     }
-                case .failure:
-                    logGraphQLError(error: GraphQLError.otherError)
-                    inCont.resume(throwing: GraphQLError.otherError)
+                case let .failure(error):
+                    inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
         }
@@ -116,13 +110,10 @@ extension ApolloClient {
                         if let data = result.data {
                             completion(.success(data))
                         } else if let errors = result.errors {
-                            if let error = errors.first {
-                                logGraphQLError(error: error)
-                            }
+                            logGraphQLError(error: .graphQLError(errors: errors))
                             completion(.failure(GraphQLError.graphQLError(errors: errors)))
                         }
                     case let .failure(error):
-                        logGraphQLError(error: error)
                         completion(.failure(error))
                     }
                 }
@@ -145,16 +136,13 @@ extension ApolloClient {
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
-                        if let error = errors.first {
-                            logGraphQLError(error: error)
-                        }
+                        logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
                         inCont.resume(returning: data)
                     }
-                case .failure:
-                    logGraphQLError(error: GraphQLError.otherError)
-                    inCont.resume(throwing: GraphQLError.otherError)
+                case .failure(let error):
+                    inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
         }
@@ -174,13 +162,10 @@ extension ApolloClient {
                     if let data = result.data {
                         callbacker(data)
                     } else if let errors = result.errors {
-                        if let error = errors.first {
-                            logGraphQLError(error: error)
-                        }
+                        logGraphQLError(error: .graphQLError(errors: errors))
                         onError(GraphQLError.graphQLError(errors: errors))
                     }
                 case let .failure(error):
-                    logGraphQLError(error: error)
                     onError(error)
                 }
             }
@@ -204,13 +189,10 @@ extension ApolloClient {
                     if let data = result.data {
                         completion(.success(data))
                     } else if let errors = result.errors {
-                        if let error = errors.first {
-                            logGraphQLError(error: error)
-                        }
+                        logGraphQLError(error: .graphQLError(errors: errors))
                         completion(.failure(GraphQLError.graphQLError(errors: errors)))
                     }
                 case let .failure(error):
-                    logGraphQLError(error: error)
                     completion(.failure(error))
                 }
             }
@@ -238,13 +220,10 @@ extension ApolloClient {
                         if let data = result.data {
                             callbacker(data)
                         } else if let errors = result.errors {
-                            if let error = errors.first {
-                                logGraphQLError(error: error)
-                            }
+                            logGraphQLError(error: .graphQLError(errors: errors))
                             onError(GraphQLError.graphQLError(errors: errors))
                         }
                     case let .failure(error):
-                        logGraphQLError(error: error)
                         onError(error)
                     }
                 }

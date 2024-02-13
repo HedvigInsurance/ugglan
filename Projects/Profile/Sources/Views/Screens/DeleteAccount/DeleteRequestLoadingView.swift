@@ -11,6 +11,7 @@ struct DeleteRequestLoadingView: View {
     enum ScreenState {
         case tryToDelete(with: MemberDetails)
         case success
+        case error(errorMessage: String)
     }
 
     @State var screenState: ScreenState
@@ -39,13 +40,29 @@ struct DeleteRequestLoadingView: View {
             .padding(.horizontal, 32)
         }
         .hFormAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                store.send(.makeTabActive(deeplink: .home))
-            } content: {
-                hText(L10n.generalCloseButton, style: .body)
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    store.send(.makeTabActive(deeplink: .home))
+                } content: {
+                    hText(L10n.generalCloseButton, style: .body)
+                }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
+    }
+
+    @ViewBuilder private func errorState(errorMessage: String) -> some View {
+        GenericErrorView(
+            description: errorMessage,
+            buttons: .init(
+                actionButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        store.send(.makeTabActive(deeplink: .home))
+                    }
+                )
+            )
+        )
     }
 
     private var notAvailableView: some View {
@@ -62,8 +79,10 @@ struct DeleteRequestLoadingView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                     store.send(.dismissScreen(openChatAfter: true))
                                 }
-                            }),
-                        dismissButton: nil)
+                            }
+                        ),
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
                 Spacer()
@@ -87,10 +106,27 @@ struct DeleteRequestLoadingView: View {
 
     var body: some View {
         switch screenState {
-        case .tryToDelete:
-            notAvailableView
+        case let .tryToDelete(memberDetails):
+            sendingState
+                .onAppear {
+                    Task {
+                        await sendSlackMessage(details: memberDetails)
+                    }
+                }
         case .success:
             successState
+        case let .error(errorMessage):
+            errorState(errorMessage: errorMessage)
+        }
+    }
+    @MainActor
+    private func sendSlackMessage(details: MemberDetails) async {
+        do {
+            let data = try await self.octopus.client.perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+            ApolloClient.saveDeleteAccountStatus(for: details.id)
+            screenState = .success
+        } catch let ex {
+            screenState = .error(errorMessage: L10n.General.errorBody)
         }
     }
 }

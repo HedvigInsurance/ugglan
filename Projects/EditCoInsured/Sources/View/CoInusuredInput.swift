@@ -227,15 +227,17 @@ struct CoInusuredInput: View {
                 .padding(.top, 12)
                 .disabled(buttonIsDisabled && !(vm.actionType == .delete))
 
-                hButton.LargeButton(type: .ghost) {
-                    store.send(.coInsuredNavigationAction(action: .dismissEdit))
-                } content: {
-                    hText(L10n.generalCancelButton)
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                    .padding(.top, 4)
+                    .padding(.bottom, 16)
+                    .disabled(vm.isLoading || intentVm.isLoading)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 4)
-                .padding(.bottom, 16)
-                .disabled(vm.isLoading || intentVm.isLoading)
+                .sectionContainerStyle(.transparent)
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
@@ -313,9 +315,9 @@ struct CoInusuredInput: View {
                     showAsList: true,
                     dateFormatter: .birthDate
                 ),
-                selectedDate: vm.birthday.localYYMMDDDateToDate ?? vm.birthday.localDateToDate
+                selectedDate: vm.birthday.localBirthDateStringToDate ?? vm.birthday.localDateToDate
             ) { date in
-                vm.birthday = date.displayDateYYMMDDFormat ?? ""
+                vm.birthday = date.localBirthDateString
             }
         }
         .sectionContainerStyle(.transparent)
@@ -485,7 +487,6 @@ public class CoInusuredInputViewModel: ObservableObject {
             nameFetchedFromSSN = true
         }
         $noSSN.combineLatest($nameFetchedFromSSN).combineLatest($SSNError)
-            //            .delay(for: .milliseconds(0), scheduler: DispatchQueue.main)
             .receive(on: RunLoop.main)
             .sink { _ in
                 for i in 0...10 {
@@ -605,13 +606,15 @@ public class IntentViewModel: ObservableObject {
         do {
             let coInsuredList = coInsured.map { coIn in
                 OctopusGraphQL.CoInsuredInput(
-                    firstName: coIn.firstName,
-                    lastName: coIn.lastName,
-                    ssn: coIn.formattedSSN,
-                    birthdate: coIn.birthDate?.calculate10DigitBirthDate
+                    firstName: GraphQLNullable(optionalValue: coIn.firstName),
+                    lastName: GraphQLNullable(optionalValue: coIn.lastName),
+                    ssn: GraphQLNullable(optionalValue: coIn.formattedSSN),
+                    birthdate: GraphQLNullable(optionalValue: coIn.birthDate?.calculate10DigitBirthDate)
                 )
             }
-            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(coInsuredInputs: coInsuredList)
+            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(
+                coInsuredInputs: GraphQLNullable(optionalValue: coInsuredList)
+            )
             let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
                 contractId: contractId,
                 input: coinsuredInput

@@ -30,8 +30,8 @@ extension AppJourney {
                 }
             ) { result in
                 switch result {
-                case .openFreeTextChat:
-                    AppJourney.freeTextChat().withDismissButton
+                case let .openFreeTextChat(topic):
+                    AppJourney.freeTextChat(withTopic: topic).withDismissButton
                 case .startNewClaim:
                     AppJourney.startClaimsJourney(from: .generic)
                 case .openCrossSells:
@@ -143,6 +143,22 @@ extension AppJourney {
                         Document(url: url, title: L10n.insuranceCertificateTitle),
                         style: .detented(.large)
                     )
+                }
+            }
+            .onAction(ProfileStore.self) { action, pre in
+                if case let .goToURL(url) = action {
+                    if let vc = UIApplication.shared.getTopViewController() {
+                        if let deepLink = DeepLink.getType(from: url) {
+                            if deepLink.tabURL {
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
+                                store.send(.dismissScreen(openChatAfter: false))
+                            }
+                            UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                        } else {
+                            let journey = AppJourney.webRedirect(url: url)
+                            pre.bag += pre.viewController.present(journey)
+                        }
+                    }
                 }
             }
     }
@@ -325,11 +341,8 @@ extension JourneyPresentation {
                         } else {
                             let journey = AppJourney.webRedirect(url: url)
                             pre.bag += pre.viewController.present(journey)
-
                         }
                     }
-                case .redirectAction:
-                    break
                 case .closeChat:
                     break
                 }

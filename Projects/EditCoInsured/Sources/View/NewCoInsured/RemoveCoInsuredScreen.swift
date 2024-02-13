@@ -48,8 +48,10 @@ struct RemoveCoInsuredScreen: View {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
                     ConfirmChangesView()
                 }
-                CancelButton()
-                    .padding(.horizontal, 16)
+                hSection {
+                    CancelButton()
+                }
+                .sectionContainerStyle(.transparent)
             }
         }
         .hFormIgnoreKeyboard()

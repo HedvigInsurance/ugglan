@@ -12,20 +12,24 @@ struct LargeButtonModifier: ViewModifier {
 
 struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .frame(maxHeight: 40)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+        hSection {
+            content
+                .frame(maxHeight: 40)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+        }
+        .sectionContainerStyle(.transparent)
     }
 }
 
 struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .frame(minHeight: 32)
+        hSection {
+            content
+                .padding(.vertical, 8)
+                .frame(minHeight: 32)
+        }
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -94,7 +98,13 @@ struct ButtonFilledStandardBackground: View {
                 Color.clear
             }
         case .alert:
-            hSignalColor.redElement
+            if configuration.isPressed {
+                hSignalColor.redElement
+            } else if isEnabled {
+                hSignalColor.redElement
+            } else {
+                hSignalColor.redElement.opacity(0.2)
+            }
         }
     }
 }
@@ -322,7 +332,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 if isEnabled {
                     hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
                 } else {
-                    hTextColor.disabled
+                    hTextColor.secondary
                 }
             }
         }

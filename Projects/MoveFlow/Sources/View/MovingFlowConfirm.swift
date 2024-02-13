@@ -342,58 +342,23 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         return MovingFlowConfirm()
             .onAppear {
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                let quote = OctopusGraphQL.MoveIntentFragment.Quote.init(
-                    premium: .init(amount: 22, currencyCode: .sek),
-                    startDate: "",
-                    productVariant: .init(
-                        perils: [],
-                        typeOfContract: "SE_HOUSE",
-                        termsVersion: "Id",
-                        documents: [
-                            .init(
-                                displayName: "termsAndConditions",
-                                type: .termsAndConditions,
-                                url: "https://www.hedvig.com"
-                            )
-                        ],
-                        displayName: "display name",
-                        insurableLimits: [
-                            .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
-                            .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
-                        ]
-                    ),
-                    displayItems: []
+                let quote = OctopusGraphQL.MoveIntentFragment.init(
+                    _dataDict: .init(
+                        data: [:],
+                        fulfilledFragments: .init()
+                    )
                 )
                 let quote2 = OctopusGraphQL.MoveIntentFragment.Quote.init(
-                    premium: .init(amount: 33, currencyCode: .sek),
-                    startDate: "",
-                    productVariant: .init(
-                        perils: [],
-                        typeOfContract: "SE_CAT_BASIC",
-                        termsVersion: "Id",
-                        documents: [
-                            .init(
-                                displayName: "termsAndConditions",
-                                type: .termsAndConditions,
-                                url: "https://www.hedvig.com"
-                            )
-                        ],
-                        displayName: "display name 2",
-                        insurableLimits: [
-                            .init(label: "label", limit: "limit", description: "descrtiption", type: .bike),
-                            .init(label: "label 2", limit: "limit 2", description: "descrtiption2", type: .deductible),
-                        ]
-                    ),
-                    displayItems: []
+                    _dataDict: .init(
+                        data: [:],
+                        fulfilledFragments: .init()
+                    )
                 )
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
-                    currentHomeAddresses: [],
-                    extraBuildingTypes: [],
-                    id: "id",
-                    maxMovingDate: "10.10.2023.",
-                    minMovingDate: "10.10.2023.",
-                    suggestedNumberCoInsured: 2,
-                    quotes: [quote, quote2]
+                    _dataDict: .init(
+                        data: [:],
+                        fulfilledFragments: .init()
+                    )
                 )
                 let MovingFlowModel = MovingFlowModel(from: fragment)
                 store.send(.setMoveIntent(with: MovingFlowModel))

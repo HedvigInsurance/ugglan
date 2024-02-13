@@ -9,11 +9,18 @@ import hGraphQL
 
 struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
+    @State var infoViewHeight: CGFloat = 0
+    @State var infoViewWidth: CGFloat = 0
+
+    @PresentableStore private var store: ChatStore
     var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
             messagesContainer(with: proxy)
+            infoCard
+                .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
+                .padding(.bottom, 16)
         }
         .dismissKeyboard()
     }
@@ -32,7 +39,7 @@ struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(spacing: 8) {
                 ForEach(vm.messages, id: \.id) { message in
                     messageView(for: message)
                         .flippedUpsideDown()
@@ -46,6 +53,7 @@ struct ChatScreen: View {
                 }
             }
             .padding([.horizontal, .bottom], 16)
+            .padding(.top, vm.banner != nil ? 8 : 0)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
@@ -62,6 +70,7 @@ struct ChatScreen: View {
             let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
             sheetInteraction?.setValue(false, forKey: "enabled")
         }
+        .padding(.bottom, -8)
     }
 
     private func messageView(for message: Message) -> some View {
@@ -102,12 +111,35 @@ struct ChatScreen: View {
                 }
                 .hTextStyle(.standardSmall)
                 .foregroundColor(hTextColor.tertiary)
+                .padding(.bottom, 3)
+
             }
             if message.sender == .hedvig {
                 Spacer()
             }
         }
         .id(message.id)
+    }
+
+    @ViewBuilder
+    private var infoCard: some View {
+        if let banner = vm.banner {
+            InfoCard(text: "", type: .info)
+                .hInfoCardCustomView {
+                    MarkdownView(
+                        config: .init(
+                            text: banner,
+                            fontStyle: .standardSmall,
+                            color: hSignalColor.blueText,
+                            linkColor: hSignalColor.blueText,
+                            linkUnderlineStyle: .single
+                        ) { url in
+                            store.send(.navigation(action: .linkClicked(url: url)))
+                        }
+                    )
+                }
+                .hInfoCardLayoutStyle(.rectange)
+        }
     }
 }
 
@@ -123,5 +155,5 @@ struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init())
+    return ChatScreen(vm: .init(topicType: nil))
 }

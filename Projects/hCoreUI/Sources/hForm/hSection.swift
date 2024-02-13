@@ -224,6 +224,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHSectionMinimumPadding: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var minimumPadding: Bool {
+        get { self[EnvironmentHSectionMinimumPadding.self] }
+        set { self[EnvironmentHSectionMinimumPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hSectionMinimumPadding: some View {
+        self.environment(\.minimumPadding, true)
+    }
+}
+
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
     static let defaultValue = false
 }
@@ -272,6 +289,7 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.minimumPadding) var minimumPadding
 
     var header: Header?
     var content: Content
@@ -299,7 +317,6 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-
             if header != nil {
                 VStack(alignment: .leading) {
                     header
@@ -322,7 +339,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 16)
+        .padding([.leading, .trailing], minimumPadding ? 16 : (horizontalSizeClass == .regular ? 60 : 16))
     }
 
     /// removes hSection leading and trailing padding

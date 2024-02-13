@@ -33,11 +33,14 @@ public struct FileView: View {
                             .foregroundColor(hTextColor.secondary)
                             .padding(.horizontal, geometry.size.width / 3)
                             .padding(.top, geometry.size.height / 5)
-                        hText(file.name, style: .standardExtraExtraSmall)
-                            .foregroundColor(hTextColor.secondary)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
+
+                        hSection {
+                            hText(file.name, style: .standardExtraExtraSmall)
+                                .foregroundColor(hTextColor.secondary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.center)
+                        }
+                        .sectionContainerStyle(.transparent)
                     }
                 }
                 .background(hFillColor.opaqueOne)

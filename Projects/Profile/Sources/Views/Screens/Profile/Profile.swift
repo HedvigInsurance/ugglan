@@ -6,6 +6,7 @@ import Market
 import Payment
 import Presentation
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 import hGraphQL
@@ -50,6 +51,9 @@ public struct ProfileView: View {
                     if Dependencies.featureFlags().isPaymentScreenEnabled {
                         ProfileRow(row: .payment)
                     }
+                    if store.state.showTravelCertificate {
+                        ProfileRow(row: .travelCertificate)
+                    }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
@@ -68,21 +72,23 @@ public struct ProfileView: View {
         }
         .hFormMergeBottomViewWithContentIfNeeded
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                ConnectPaymentCardView()
-                RenewalCardView(showCoInsured: false)
-                NotificationsCardView()
-                hButton.LargeButton(type: .ghost) {
-                    showLogoutAlert = true
-                } content: {
-                    hText(L10n.logoutButton)
-                        .foregroundColor(hSignalColor.redElement)
-                }
-                .alert(isPresented: $showLogoutAlert) {
-                    logoutAlert
+            hSection {
+                VStack(spacing: 8) {
+                    ConnectPaymentCardView()
+                    RenewalCardView(showCoInsured: false)
+                    NotificationsCardView()
+                    hButton.LargeButton(type: .ghost) {
+                        showLogoutAlert = true
+                    } content: {
+                        hText(L10n.logoutButton)
+                            .foregroundColor(hSignalColor.redElement)
+                    }
+                    .alert(isPresented: $showLogoutAlert) {
+                        logoutAlert
+                    }
                 }
             }
-            .padding(16)
+            .sectionContainerStyle(.transparent)
         }
         .onAppear {
             store.send(.fetchProfileState)
@@ -108,6 +114,7 @@ public enum ProfileResult {
     case openChat
     case logout
     case registerForPushNotifications
+
 }
 
 extension ProfileView {
@@ -156,6 +163,8 @@ extension ProfileView {
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
+            } else if case .openTravelCertificate = action {
+                TravelInsuranceJourney.travelCertificatePush()
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {

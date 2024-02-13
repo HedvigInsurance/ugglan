@@ -12,13 +12,14 @@ protocol Into {
 
 extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
     func into() -> TerminationContractAction {
-        if let step = self.fragments.flowTerminationDateStepFragment {
+
+        if let step = self.asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
             return .stepModelAction(action: .setTerminationDateStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowTerminationDeletionFragment {
+        } else if let step = self.asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
             return .stepModelAction(action: .setTerminationDeletion(model: .init(with: step)))
-        } else if let step = self.fragments.flowTerminationFailedFragment {
+        } else if let step = self.asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowTerminationSuccessFragment {
+        } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openTerminationUpdateAppScreen)

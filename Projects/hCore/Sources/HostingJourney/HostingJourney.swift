@@ -92,7 +92,13 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
                             if let error = error as? JourneyError,
                                 error == JourneyError.dismissed
                             {
-                                presenter.dismisser(error)
+                                if let vc = presenter.viewController.presentedViewController,
+                                    options.contains(.dismissOnlyTopPresentedViewController)
+                                {
+                                    vc.dismiss(animated: true)
+                                } else {
+                                    presenter.dismisser(error)
+                                }
                             }
                         }
                         .addConfiguration { presenter in
@@ -181,5 +187,6 @@ extension View {
 
 extension PresentationOptions {
     public static let ignoreActionWhenNotOnTop = PresentationOptions()
+    public static let dismissOnlyTopPresentedViewController = PresentationOptions()
     public static let ignoreSizeChange = PresentationOptions()
 }

@@ -52,8 +52,10 @@ public struct MovingFlowHousingTypeView: View {
                             buttonTitle: L10n.openChat,
                             buttonAction: {
                                 vm.store.send(.navigation(action: .goToFreeTextChat))
-                            }),
-                        dismissButton: nil)
+                            }
+                        ),
+                        dismissButton: nil
+                    )
                 )
                 .hWithoutTitle
                 VStack {
@@ -106,14 +108,14 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
         }
     }
 
-    var asMoveApartmentSubType: OctopusGraphQL.MoveApartmentSubType {
+    var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
         switch self {
         case .apartmant:
-            return .own
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         case .rental:
-            return .rent
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)
         case .house:
-            return .own
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         }
     }
 }

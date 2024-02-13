@@ -13,16 +13,16 @@ query Discounts {
         ...MoneyFragment
       }
       referrals {
-        ...MemberReferralFragment
+        ...MemberReferralFragment2
       }
       referredBy {
-        ...MemberReferralFragment
+        ...MemberReferralFragment2
       }
     }
   }
 }
 
-fragment MemberReferralFragment on MemberReferral {
+fragment MemberReferralFragment2 on MemberReferral {
         name
         status
         activeDiscount {

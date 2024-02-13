@@ -149,22 +149,3 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     }
 
 }
-
-struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
-    @PresentableStore static var store: MoveFlowStore
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        let fragment = OctopusGraphQL.MoveIntentFragment(
-            currentHomeAddresses: [],
-            extraBuildingTypes: OctopusGraphQL.MoveExtraBuildingType.allCases,
-            id: "id",
-            maxMovingDate: "",
-            minMovingDate: "",
-            suggestedNumberCoInsured: 2,
-            quotes: []
-        )
-        let model = MovingFlowModel(from: fragment)
-        store.send(.setMoveIntent(with: model))
-        return MovingFlowAddExtraBuildingView()
-    }
-}

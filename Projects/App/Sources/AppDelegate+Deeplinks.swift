@@ -3,10 +3,10 @@ import Contracts
 import CoreDependencies
 import Flow
 import Foundation
+import Home
 import Payment
 import Presentation
 import Profile
-import TravelCertificate
 import UIKit
 import hCore
 import hGraphQL
@@ -100,12 +100,13 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
-                    let vc = TravelInsuranceFlowJourney.start {
-                        AppJourney.freeTextChat()
-                    }
+                    let vc = TravelInsuranceJourney.travelCertificateModally()
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }
+        } else if path == .helpCenter {
+            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+            homeStore.send(.openHelpCenter)
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in

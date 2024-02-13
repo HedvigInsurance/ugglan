@@ -69,6 +69,27 @@ extension Logger: Logging {
             Global.rum.addUserAction(type: type.asRUMUserActionType, name: name)
         }
     }
+
+    public func addError(
+        error: Error,
+        type: hGraphQL.ErrorSource,
+        attributes: [hGraphQL.AttributeKey: hGraphQL.AttributeValue]?
+    ) {
+        if let attributes = attributes {
+            Global.rum.addError(error: error, source: type.asRUMErrorSource, attributes: attributes)
+        } else {
+            Global.rum.addError(error: error, source: type.asRUMErrorSource)
+        }
+    }
+}
+
+extension hGraphQL.ErrorSource {
+    var asRUMErrorSource: RUMErrorSource {
+        switch self {
+        case .network:
+            return .network
+        }
+    }
 }
 
 extension LoggingAction {
@@ -76,6 +97,8 @@ extension LoggingAction {
         switch self {
         case .click:
             return .click
+        case .custom:
+            return .custom
         }
     }
 }

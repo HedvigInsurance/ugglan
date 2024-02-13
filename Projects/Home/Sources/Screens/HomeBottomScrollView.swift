@@ -12,16 +12,16 @@ import hGraphQL
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
-    @State var height: CGFloat = 0
+    @StateObject var scrollVM: InfoCardScrollViewModel
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
+        self._scrollVM = StateObject(wrappedValue: .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0))
     }
 
     var body: some View {
         InfoCardScrollView(
-            spacing: 16,
             items: vm.items.sorted(by: { $0.id < $1.id }),
-            previousHeight: height,
+            vm: scrollVM,
             content: { content in
                 switch content.id {
                 case .payment:
@@ -54,16 +54,14 @@ struct HomeBottomScrollView: View {
                         let homeStore: HomeStore = globalPresentableStoreContainer.get()
                         homeStore.send(.openCoInsured(contractIds: contractIds))
                     }
+                case .terminated:
+                    InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
                 }
             }
         )
-        .background(
-            GeometryReader(content: { geo in
-                Color.clear.onReceive(Just(geo.size.height)) { height in
-                    self.height = height
-                }
-            })
-        )
+        .onChange(of: vm.items) { value in
+            scrollVM.updateItems(count: value.count)
+        }
     }
 }
 
@@ -79,6 +77,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         handleImportantMessages()
         handleRenewalCardView()
         handleDeleteRequests(memberId: memberId)
+        handleTerminatedMessage()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -96,18 +95,53 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handlePayments() {
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-
-        paymentStore.stateSignal.plain()
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.stateSignal
+            .map({ $0.memberStateData })
+            .plain()
+            .publisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                switch value.state {
+                case .terminated:
+                    self?.handleItem(.terminated, with: true)
+                default:
+                    self?.handleItem(.terminated, with: false)
+                }
+            })
+            .store(in: &cancellables)
+        switch homeStore.state.memberStateData.state {
+        case .active, .future:
+            handleItem(.terminated, with: true)
+        default:
+            handleItem(.terminated, with: false)
+        }
+        let needsPaymentSetupPublisher = paymentStore.stateSignal.plain()
             .map({ $0.paymentStatusData?.status == .needsSetup })
             .distinct()
             .publisher
+        let memberStatePublisher = homeStore.stateSignal.plain()
+            .map({ $0.memberStateData.state })
+            .distinct()
+            .publisher
+
+        Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] needSetup in
-                self?.handleItem(.payment, with: needSetup)
+            .sink(receiveValue: { [weak self] (paymentStatus, memberState) in
+                self?.setConnectPayments(for: memberState, needSetup: paymentStatus)
             })
             .store(in: &cancellables)
-        handleItem(.payment, with: paymentStore.state.paymentStatusData?.status == .needsSetup)
+        setConnectPayments(
+            for: homeStore.state.memberStateData.state,
+            needSetup: paymentStore.state.paymentStatusData?.status == .needsSetup
+        )
         paymentStore.send(.fetchPaymentStatus)
+    }
+
+    private func setConnectPayments(for userStatus: MemberContractState?, needSetup: Bool) {
+        handleItem(
+            .payment,
+            with: needSetup && [MemberContractState.active, MemberContractState.future].contains(userStatus)
+        )
     }
 
     private func handleImportantMessages() {
@@ -160,7 +194,13 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        handleItem(.deletedView, with: members.contains(memberId))
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        handleItem(
+            .deletedView,
+            with: members.contains(memberId)
+                && (store.state.activeContracts.count == 0 && store.state.pendingContracts.count == 0)
+        )
+
     }
 
     private func handleMissingCoInsured() {
@@ -200,6 +240,29 @@ class HomeButtonScrollViewModel: ObservableObject {
             .isEmpty == false
         handleItem(.missingCoInsured, with: show)
     }
+
+    func handleTerminatedMessage() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .map({ $0.memberStateData })
+            .plain()
+            .publisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                switch value.state {
+                case .terminated:
+                    self?.handleItem(.terminated, with: true)
+                default:
+                    self?.handleItem(.terminated, with: false)
+                }
+            })
+            .store(in: &cancellables)
+        switch store.state.memberStateData.state {
+        case .terminated:
+            handleItem(.terminated, with: true)
+        default:
+            handleItem(.terminated, with: false)
+        }
+    }
 }
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
@@ -221,4 +284,5 @@ enum InfoCardType: Hashable, Comparable {
     case importantMessage(message: String)
     case renewal
     case deletedView
+    case terminated
 }

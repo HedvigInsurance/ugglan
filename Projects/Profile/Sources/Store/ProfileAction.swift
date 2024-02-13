@@ -8,6 +8,7 @@ public enum ProfileAction: ActionProtocol {
     case openProfile
     case openPayment
     case openEuroBonus
+    case openTravelCertificate
     case openChangeEuroBonus
     case dismissChangeEuroBonus
     case openSuccessChangeEuroBonus
@@ -18,6 +19,7 @@ public enum ProfileAction: ActionProtocol {
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
+    case setHasTravelCertificate(has: Bool)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case setOpenAppSettings(to: Bool)
@@ -41,6 +43,7 @@ public enum ProfileAction: ActionProtocol {
     case setPushNotificationsTo(date: Date?)
 
     case registerForPushNotifications
+    case goToURL(url: URL)
 
     case updateLanguage
 }

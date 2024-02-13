@@ -51,48 +51,52 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             ) { audioRecordingStep in
                 if isAudioInput {
-                    VStack(spacing: 8) {
-                        ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.primary)
+                    hSection {
+                        VStack(spacing: 8) {
+                            ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
+                                index,
+                                question in
+                                HStack {
+                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                        .foregroundColor(hTextColor.primary)
+                                }
+                                .padding(16)
+                                .background(
+                                    Squircle.default()
+                                        .fill(hFillColor.opaqueOne)
+                                )
+                                .padding(.trailing, 88)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .slideUpAppearAnimation()
                             }
-                            .padding(16)
-                            .background(
-                                Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
-                            )
-                            .padding(.leading, 16)
-                            .padding(.trailing, 88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
                         }
+                        .padding(.top, 8)
                     }
-                    .padding(.top, 8)
+                    .sectionContainerStyle(.transparent)
                 } else {
-                    VStack(spacing: 8) {
-                        ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.primary)
-                            }
-                            .padding(16)
-                            .background(
-                                Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
-                            )
-                            .padding(.leading, 16)
-                            .padding(.trailing, 88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
+                    hSection {
+                        VStack(spacing: 8) {
+                            ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
+                                index,
+                                question in
+                                HStack {
+                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                        .foregroundColor(hTextColor.primary)
+                                }
+                                .padding(16)
+                                .background(
+                                    Squircle.default()
+                                        .fill(hFillColor.opaqueOne)
+                                )
+                                .padding(.trailing, 88)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .slideUpAppearAnimation()
 
+                            }
                         }
+                        .padding(.top, 8)
                     }
-                    .padding(.top, 8)
+                    .sectionContainerStyle(.transparent)
                 }
             }
         }
@@ -112,44 +116,48 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             ) { audioRecordingStep in
                 if isAudioInput {
-                    ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                        index,
-                        question in
-                        HStack {
-                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColor.primary)
+                    hSection {
+                        ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
+                            index,
+                            question in
+                            HStack {
+                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                    .foregroundColor(hTextColor.primary)
+                            }
+                            .padding(16)
+                            .background(
+                                Squircle.default()
+                                    .fill(hFillColor.opaqueOne)
+                            )
+                            .padding(.vertical, 12)
+                            .padding(.trailing, 88)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .slideUpAppearAnimation()
                         }
-                        .padding(16)
-                        .background(
-                            Squircle.default()
-                                .fill(hFillColor.opaqueOne)
-                        )
-                        .padding(.vertical, 12)
-                        .padding(.leading, 16)
-                        .padding(.trailing, 88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .slideUpAppearAnimation()
                     }
+                    .sectionContainerStyle(.transparent)
                 } else {
-                    ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                        index,
-                        question in
-                        HStack {
-                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColor.primary)
-                        }
-                        .padding(16)
-                        .background(
-                            Squircle.default()
-                                .fill(hFillColor.opaqueOne)
-                        )
-                        .padding(.vertical, 12)
-                        .padding(.leading, 16)
-                        .padding(.trailing, 88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .slideUpAppearAnimation()
+                    hSection {
+                        ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
+                            index,
+                            question in
+                            HStack {
+                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                    .foregroundColor(hTextColor.primary)
+                            }
+                            .padding(16)
+                            .background(
+                                Squircle.default()
+                                    .fill(hFillColor.opaqueOne)
+                            )
+                            .padding(.vertical, 12)
+                            .padding(.trailing, 88)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .slideUpAppearAnimation()
 
+                        }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
             }
         }
@@ -162,131 +170,137 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     private var audioElements: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
-                    VStack(spacing: 12) {
-                        TrackPlayer(audioPlayer: audioPlayer)
-                            .onAppear {
-                                minutes = 0
-                                seconds = 0
-                            }
-                        hButton.LargeButton(type: .primary) {
-                            onSubmit(url)
-                            store.send(.submitAudioRecording(type: .audio(url: url)))
-                        } content: {
-                            hText(L10n.saveAndContinueButtonLabel)
-                        }
-                        .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
-                        hButton.LargeButton(type: .ghost) {
-                            withAnimation(.spring()) {
-                                store.send(.resetAudioRecording)
-                                audioRecorder.restart()
-                            }
-                        } content: {
-                            hText(L10n.embarkRecordAgain)
-                        }
-                        .disableOn(SubmitClaimStore.self, [.postAudioRecording])
-                    }
-                    .padding(.horizontal, 16)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .onAppear {
-                        self.audioPlayer.url = url
-                    }
-                } else {
-                    VStack(spacing: 0) {
-                        RecordButton(isRecording: audioRecorder.isRecording) {
-                            if audioRecorder.isRecording {
-                            } else {
-                            }
-                            withAnimation(.spring()) {
-                                audioRecorder.toggleRecording()
-                            }
-                        }
-                        .frame(height: audioRecorder.isRecording ? 144 : 72)
-                        .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
-                        .transition(
-                            .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
-                        )
-                        if !audioRecorder.isRecording {
-                            PresentableStoreLens(
-                                SubmitClaimStore.self,
-                                getter: { state in
-                                    state.audioRecordingStep
+        hSection {
+            ZStack(alignment: .bottom) {
+                Group {
+                    if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
+                        VStack(spacing: 12) {
+                            TrackPlayer(audioPlayer: audioPlayer)
+                                .onAppear {
+                                    minutes = 0
+                                    seconds = 0
                                 }
-                            ) { audioRecordingStep in
-                                if audioRecordingStep?.optionalAudio == true {
-                                    hButton.LargeButton(type: .ghost) {
-                                        withAnimation {
-                                            self.isAudioInput = false
-                                        }
-                                    } content: {
-                                        hText(L10n.claimsUseTextInstead, style: .body)
-                                            .foregroundColor(hTextColor.primary)
-                                    }
-
+                            hButton.LargeButton(type: .primary) {
+                                onSubmit(url)
+                                store.send(.submitAudioRecording(type: .audio(url: url)))
+                            } content: {
+                                hText(L10n.saveAndContinueButtonLabel)
+                            }
+                            .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
+                            hButton.LargeButton(type: .ghost) {
+                                withAnimation(.spring()) {
+                                    store.send(.resetAudioRecording)
+                                    audioRecorder.restart()
+                                }
+                            } content: {
+                                hText(L10n.embarkRecordAgain)
+                            }
+                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .onAppear {
+                            self.audioPlayer.url = url
+                        }
+                    } else {
+                        VStack(spacing: 0) {
+                            RecordButton(isRecording: audioRecorder.isRecording) {
+                                if audioRecorder.isRecording {
                                 } else {
-                                    hText(L10n.claimsStartRecordingLabel, style: .body)
-                                        .foregroundColor(hTextColor.primary)
-
+                                }
+                                withAnimation(.spring()) {
+                                    audioRecorder.toggleRecording()
                                 }
                             }
-                        } else {
-                            let minutesToString = String(format: "%02d", minutes)
-                            let secondsToString = String(format: "%02d", seconds)
-                            hText("\(minutesToString):\(secondsToString)", style: .body)
-                                .foregroundColor(hTextColor.primary)
-                                .onReceive(timer) { time in
-                                    if ((seconds % 59) == 0) && seconds != 0 {
-                                        minutes += 1
-                                        seconds = 0
+                            .frame(height: audioRecorder.isRecording ? 144 : 72)
+                            .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
+                            .transition(
+                                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
+                            )
+                            if !audioRecorder.isRecording {
+                                PresentableStoreLens(
+                                    SubmitClaimStore.self,
+                                    getter: { state in
+                                        state.audioRecordingStep
+                                    }
+                                ) { audioRecordingStep in
+                                    if audioRecordingStep?.optionalAudio == true {
+                                        hButton.LargeButton(type: .ghost) {
+                                            withAnimation {
+                                                self.isAudioInput = false
+                                            }
+                                        } content: {
+                                            hText(L10n.claimsUseTextInstead, style: .body)
+                                                .foregroundColor(hTextColor.primary)
+                                        }
+
                                     } else {
-                                        seconds += 1
+                                        hText(L10n.claimsStartRecordingLabel, style: .body)
+                                            .foregroundColor(hTextColor.primary)
+
                                     }
                                 }
+                            } else {
+                                let minutesToString = String(format: "%02d", minutes)
+                                let secondsToString = String(format: "%02d", seconds)
+                                hText("\(minutesToString):\(secondsToString)", style: .body)
+                                    .foregroundColor(hTextColor.primary)
+                                    .onReceive(timer) { time in
+                                        if ((seconds % 59) == 0) && seconds != 0 {
+                                            minutes += 1
+                                            seconds = 0
+                                        } else {
+                                            seconds += 1
+                                        }
+                                    }
+                            }
                         }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
+                .padding(.vertical, 16)
             }
-            .padding(.top, 16)
-            .padding(.bottom, 16)
+            .environmentObject(audioRecorder)
         }
-        .environmentObject(audioRecorder)
+        .sectionContainerStyle(.transparent)
     }
 
     private var textElements: some View {
         VStack(spacing: 16) {
             textField
-            hButton.LargeButton(type: .primary) {
-                UIApplication.dismissKeyboard()
-                if validate() {
-                    store.send(.submitAudioRecording(type: .text(text: inputText)))
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    UIApplication.dismissKeyboard()
+                    if validate() {
+                        store.send(.submitAudioRecording(type: .text(text: inputText)))
+                    }
+                } content: {
+                    hText(L10n.saveAndContinueButtonLabel)
                 }
-            } content: {
-                hText(L10n.saveAndContinueButtonLabel)
-            }
-            .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
-
-            hButton.LargeButton(type: .ghost) {
-                withAnimation {
-                    self.isAudioInput = true
+                .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
+                hButton.LargeButton(type: .ghost) {
+                    withAnimation {
+                        self.isAudioInput = true
+                    }
+                } content: {
+                    hText(L10n.claimsUseAudioRecording, style: .body)
                 }
-            } content: {
-                hText(L10n.claimsUseAudioRecording, style: .body)
+                .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
-            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
+            .sectionContainerStyle(.transparent)
         }
-        .padding(16)
+        .padding(.vertical, 16)
         .frame(height: 300)
     }
+
     @ViewBuilder
     private var textField: some View {
-        CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
-            .cornerRadius(12)
-            .frame(height: 128)
-            .padding(.vertical, 16)
-            .addFieldError(animate: $animateField, error: $inputTextError)
+        hSection {
+            CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
+                .cornerRadius(12)
+                .frame(height: 128)
+                .padding(.vertical, 16)
+                .addFieldError(animate: $animateField, error: $inputTextError)
+        }
     }
 
     private func validate() -> Bool {
@@ -309,11 +323,11 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
-                    id: "id",
-                    questions: ["question 1"],
-                    freeText: nil,
-                    freeTextQuestions: [],
-                    freeTextAvailable: true
+                    _dataDict:
+                        .init(
+                            data: [:],
+                            fulfilledFragments: .init()
+                        )
                 )
                 let model = FlowClaimAudioRecordingStepModel(with: graphQL)
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))

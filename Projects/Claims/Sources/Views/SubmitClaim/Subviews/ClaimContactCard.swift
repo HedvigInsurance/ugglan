@@ -64,17 +64,20 @@ struct ClaimContactCard: View {
                 .foregroundColor(hTextColor.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
-            hButton.MediumButton(type: .secondaryAlt) {
-                if let url = URL(string: url) {
-                    UIApplication.shared.open(url)
+
+            hSection {
+                hButton.MediumButton(type: .secondaryAlt) {
+                    if let url = URL(string: url) {
+                        UIApplication.shared.open(url)
+                    }
+                } content: {
+                    hText(buttonText)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(hTextColor.primary)
+                        .colorScheme(.light)
                 }
-            } content: {
-                hText(buttonText)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(hTextColor.primary)
-                    .colorScheme(.light)
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
         .padding(.vertical, 16)
     }

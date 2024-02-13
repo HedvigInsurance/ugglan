@@ -94,30 +94,33 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .sectionContainerStyle(.transparent)
 
-            Divider()
-                .padding(.horizontal, 16)
+            hSection {
+                Divider()
+            }
 
             hSection {
                 if let checkoutStep = singleItemCheckoutStep {
                     let payoutMethods = checkoutStep.payoutMethods
                     let shouldShowCheckmark = payoutMethods.count > 1
                     ForEach(payoutMethods, id: \.id) { element in
-                        hRow {
-                            hText(element.getDisplayName(), style: .title3)
-                                .foregroundColor(hTextColor.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .withSelectedAccessory(
-                            checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
-                        )
-                        .noSpacing()
-                        .padding(.vertical, 9)
-                        .padding(.horizontal, 16)
-                        .onTapGesture {
-                            withAnimation {
-                                store.send(.setPayoutMethod(method: element))
+                        hSection {
+                            hRow {
+                                hText(element.getDisplayName(), style: .title3)
+                                    .foregroundColor(hTextColor.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .withSelectedAccessory(
+                                checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
+                            )
+                            .noSpacing()
+                            .padding(.vertical, 9)
+                            .onTapGesture {
+                                withAnimation {
+                                    store.send(.setPayoutMethod(method: element))
+                                }
                             }
                         }
+                        .sectionContainerStyle(.transparent)
                     }
                 }
             }

@@ -62,6 +62,7 @@ extension Contracts: View {
             ContractTable(showTerminated: showTerminated)
                 .padding(.top, 8)
         }
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hBackgroundColor.primary))
         .onReceive(pollTimer) { _ in
             fetch()
         }
@@ -83,8 +84,11 @@ extension Contracts: View {
         }
         .hFormAttachToBottom {
             if showTerminated {
-                InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
-                    .padding(16)
+                hSection {
+                    InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.vertical, 16)
             }
         }
     }

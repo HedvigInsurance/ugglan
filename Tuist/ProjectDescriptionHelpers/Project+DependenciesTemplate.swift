@@ -4,6 +4,7 @@ import ProjectDescription
 public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
+    case apolloIosCodegen
     case flow
     case form
     case presentation
@@ -11,7 +12,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case runtime
     case hero
     case snapshottesting
     case reveal
@@ -21,6 +21,8 @@ public enum ExternalDependencies: CaseIterable {
     case introspect
     case svgkit
     case unleashProxyClientSwift
+    case argumentParser
+    case packageDescription
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -32,13 +34,12 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+            && self != .apolloIosCodegen
     }
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .runtime:
-            return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
         case .form:
@@ -52,7 +53,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .exact("2.0.22")
+                    .upToNextMajor(from: "2.0.23")
                 )
             ]
         case .dynamiccolor:
@@ -62,9 +63,9 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.6.2"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.10.0"))]
         case .snapkit:
-            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.6.0"))]
+            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.0"))]
         case .markdownkit:
             return [
                 .package(
@@ -103,6 +104,18 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
             ]
+        case .apolloIosCodegen:
+            return [
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.9.0"))
+            ]
+        case .argumentParser:
+            return [
+                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
+            ]
+        case .packageDescription:
+            return [
+                .package(url: "https://github.com/apple/swift-package-manager", .upToNextMajor(from: "0.6.0"))
+            ]
         }
     }
 
@@ -118,7 +131,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .runtime: return [.package(product: "Runtime")]
         case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:
@@ -164,6 +176,12 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:
             return [.package(product: "UnleashProxyClientSwift")]
+        case .apolloIosCodegen:
+            return [.package(product: "ApolloIosCodegen")]
+        case .argumentParser:
+            return [.package(product: "ArgumentParser")]
+        case .packageDescription:
+            return [.package(product: "PackageDescription")]
         }
     }
 }

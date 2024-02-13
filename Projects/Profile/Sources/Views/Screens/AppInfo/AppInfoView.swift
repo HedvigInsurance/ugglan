@@ -1,32 +1,28 @@
 import Apollo
+import Authentication
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct AppInfoView: View {
+    @State var showSubmitBugAlert = false
+    @State var hasPressedSubmitBugOk = false
 
     public init() {}
 
     public var body: some View {
-        PresentableStoreLens(
-            ProfileStore.self,
-            getter: { state in
-                state
+        hForm {
+            hSection {
+                memberId
+                profileVersion
+                deviceId
+                submitBugButton
             }
-        ) { state in
-            hForm {
-                hSection {
-                    memberId
-                    profileVersion
-                    deviceId
-                }
-                .withoutHorizontalPadding
-                .padding(.top, 8)
-            }
-
-            .sectionContainerStyle(.transparent)
+            .withoutHorizontalPadding
+            .padding(.top, 8)
         }
+        .sectionContainerStyle(.transparent)
     }
 
     private var memberId: some View {
@@ -94,6 +90,37 @@ public struct AppInfoView: View {
         .onTap {
             UIPasteboard.general.value = deviceId
             showToaster()
+        }
+    }
+
+    private var submitBugButton: some View {
+
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let memberId = store.state.memberId
+        let systemVersion = UIDevice.current.systemVersion
+
+        return OpenEmailClientButton(
+            options: EmailOptions(
+                recipient: "ios@hedvig.com",
+                subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
+                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
+            ),
+            buttonText: L10n.AppInfo.SubmitBug.button,
+            hasAcceptedAlert: $hasPressedSubmitBugOk,
+            hasPressedButton: {
+                showSubmitBugAlert = true
+            },
+            buttonSize: .secondary
+        )
+        .alert(isPresented: $showSubmitBugAlert) {
+            Alert(
+                title: Text(L10n.AppInfo.SubmitBug.warning),
+                message: nil,
+                primaryButton: .cancel(Text(L10n.alertCancel)),
+                secondaryButton: .destructive(Text(L10n.generalContinueButton)) {
+                    hasPressedSubmitBugOk = true
+                }
+            )
         }
     }
 

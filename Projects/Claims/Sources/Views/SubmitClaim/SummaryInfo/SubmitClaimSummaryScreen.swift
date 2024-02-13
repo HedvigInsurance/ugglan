@@ -31,16 +31,18 @@ public struct SubmitClaimSummaryScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
-                InfoCard(text: L10n.claimsComplementClaim, type: .info)
-                    .padding(.bottom, 8)
-                LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
-                    store.send(.summaryRequest)
-                } content: {
-                    hText(L10n.embarkSubmitClaim)
+            hSection {
+                VStack(spacing: 8) {
+                    InfoCard(text: L10n.claimsComplementClaim, type: .info)
+                        .padding(.bottom, 8)
+                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
+                        store.send(.summaryRequest)
+                    } content: {
+                        hText(L10n.embarkSubmitClaim)
+                    }
                 }
             }
-            .padding(.horizontal, 16)
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -78,7 +80,7 @@ public struct SubmitClaimSummaryScreen: View {
         ) { dateOfOccurenceStep in
             createRow(
                 with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDotFormat
+                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
             )
         }
     }
@@ -117,7 +119,7 @@ public struct SubmitClaimSummaryScreen: View {
         ) { singleItemStep in
             createRow(
                 with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDotFormat
+                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
             )
         }
     }
