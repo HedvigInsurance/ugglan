@@ -148,41 +148,9 @@ struct RenewalCardView_Previews: PreviewProvider {
             .onAppear {
                 let state = MemberStateData(state: .active, name: "NAME")
                 let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                    currentAgreement: .init(
-                        activeFrom: "",
-                        activeTo: "",
-                        creationCause: .midtermChange,
-                        displayItems: [],
-                        premium: .init(amount: 22, currencyCode: .sek),
-                        productVariant: .init(
-                            perils: [],
-                            typeOfContract: "",
-                            termsVersion: "",
-                            documents: [],
-                            displayName: "dispaly name",
-                            insurableLimits: []
-                        )
-                    ),
-                    exposureDisplayName: "exposure dispay name",
-                    id: "",
-                    masterInceptionDate: "",
-                    supportsMoving: true,
-                    supportsCoInsured: true,
-                    supportsTravelCertificate: true,
-                    upcomingChangedAgreement: .init(
-                        activeFrom: "2023-12-10",
-                        activeTo: "2024-12-10",
-                        creationCause: .renewal,
-                        displayItems: [],
-                        premium: .init(amount: 22, currencyCode: .sek),
-                        productVariant: .init(
-                            perils: [],
-                            typeOfContract: "",
-                            termsVersion: "",
-                            documents: [],
-                            displayName: "display name",
-                            insurableLimits: []
-                        )
+                    _dataDict: .init(
+                        data: [:],
+                        fulfilledFragments: .init()
                     )
                 )
 

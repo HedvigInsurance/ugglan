@@ -87,7 +87,7 @@ extension TravelInsuranceSpecification {
 extension TravelInsuranceInfoSpecification {
 
     init(
-        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification
+        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
             .InfoSpecification
     ) {
         title = data.title
@@ -97,7 +97,7 @@ extension TravelInsuranceInfoSpecification {
 
 extension TravelInsuranceContractSpecification {
     init(
-        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification
+        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
             .ContractSpecification
     ) {
         self.contractId = data.contractId

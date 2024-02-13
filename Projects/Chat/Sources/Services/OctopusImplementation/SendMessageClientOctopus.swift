@@ -13,7 +13,7 @@ public class SendMessagesClientOctopus: SendMessageClient {
         case .text(let text):
             let data = try await octopus.client.perform(
                 mutation: OctopusGraphQL.ChatSendTextMutation(
-                    input: .init(text: text, context: topic?.asChatMessageContext)
+                    input: .init(text: text, context: GraphQLNullable(optionalValue: topic?.asChatMessageContext))
                 )
             )
             if let error = data.chatSendText.error?.message {
@@ -30,7 +30,10 @@ public class SendMessagesClientOctopus: SendMessageClient {
             let token = uploadResponse.first?.uploadToken ?? ""
             let data = try await octopus.client.perform(
                 mutation: OctopusGraphQL.ChatSendFileMutation(
-                    input: .init(uploadToken: token, context: topic?.asChatMessageContext)
+                    input: .init(
+                        uploadToken: token,
+                        context: GraphQLNullable(optionalValue: topic?.asChatMessageContext)
+                    )
                 )
             )
             if let error = data.chatSendFile.error?.message {
@@ -47,16 +50,16 @@ public class SendMessagesClientOctopus: SendMessageClient {
 }
 
 extension ChatTopicType {
-    fileprivate var asChatMessageContext: OctopusGraphQL.ChatMessageContext {
+    fileprivate var asChatMessageContext: GraphQLEnum<OctopusGraphQL.ChatMessageContext> {
         switch self {
         case .payments:
-            return .helpCenterPayments
+            return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterPayments)
         case .claims:
-            return .helpCenterClaims
+            return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterClaims)
         case .coverage:
-            return .helpCenterCoverage
+            return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterCoverage)
         case .myInsurance:
-            return .helpCenterMyInsurance
+            return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterMyInsurance)
         }
     }
 }

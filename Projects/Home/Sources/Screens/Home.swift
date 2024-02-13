@@ -35,6 +35,7 @@ extension HomeView {
         store.send(.fetchImportantMessages)
         store.send(.fetchCommonClaims)
         store.send(.fetchChatNotifications)
+        store.send(.fetchClaims)
     }
 
     public var body: some View {
@@ -178,6 +179,7 @@ class HomeVM: ObservableObject {
                 using: { _ in
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.fetchChatNotifications)
+                    store.send(.fetchClaims)
                 }
             )
         }

@@ -73,7 +73,7 @@ public struct PartnerDataSas: Codable, Equatable {
     let eligible: Bool
     let eurobonusNumber: String?
 
-    init(with data: OctopusGraphQL.PartnerDataFragment.PartnerDatum.Sa) {
+    init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber
     }

@@ -49,27 +49,10 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                        currentAgreement: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement(
-                            activeFrom: "",
-                            activeTo: "",
-                            creationCause: .midtermChange,
-                            displayItems: [],
-                            premium: .init(amount: 20, currencyCode: .sek),
-                            productVariant: .init(
-                                perils: [],
-                                typeOfContract: "",
-                                termsVersion: "i",
-                                documents: [],
-                                displayName: "dis name",
-                                insurableLimits: []
-                            )
-                        ),
-                        exposureDisplayName: "DISPLAY NAME",
-                        id: "id",
-                        masterInceptionDate: "2023-11-22",
-                        supportsMoving: true,
-                        supportsCoInsured: true,
-                        supportsTravelCertificate: true
+                        _dataDict: .init(
+                            data: [:],
+                            fulfilledFragments: .init()
+                        )
                     )
 
                     store.send(

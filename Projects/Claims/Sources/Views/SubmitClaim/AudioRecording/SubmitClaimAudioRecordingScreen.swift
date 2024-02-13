@@ -323,11 +323,11 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
-                    id: "id",
-                    questions: ["question 1"],
-                    freeText: nil,
-                    freeTextQuestions: [],
-                    freeTextAvailable: true
+                    _dataDict:
+                        .init(
+                            data: [:],
+                            fulfilledFragments: .init()
+                        )
                 )
                 let model = FlowClaimAudioRecordingStepModel(with: graphQL)
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))

@@ -109,13 +109,10 @@ struct PerilCollection_Previews: PreviewProvider {
             [
                 .init(
                     fragment: .init(
-                        id: "2",
-                        title: "title",
-                        description: "DESC",
-                        info: "info",
-                        covered: [],
-                        exceptions: [],
-                        colorCode: "color"
+                        _dataDict: .init(
+                            data: [:],
+                            fulfilledFragments: .init()
+                        )
                     )
                 )
             ]
