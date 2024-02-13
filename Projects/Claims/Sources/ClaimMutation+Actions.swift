@@ -12,19 +12,19 @@ protocol Into {
 
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
     func into() -> SubmitClaimsAction {
-        if let step = self.fragments.flowClaimPhoneNumberStepFragment {
+        if let step = self.asFlowClaimPhoneNumberStep?.fragments.flowClaimPhoneNumberStepFragment {
             return .stepModelAction(action: .setPhoneNumber(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimAudioRecordingStepFragment {
+        } else if let step = self.asFlowClaimAudioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment {
             return .stepModelAction(action: .setAudioStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimSingleItemStepFragment {
+        } else if let step = self.asFlowClaimSingleItemStep?.fragments.flowClaimSingleItemStepFragment {
             return .stepModelAction(action: .setSingleItem(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimSingleItemCheckoutStepFragment {
+        } else if let step = self.asFlowClaimSingleItemCheckoutStep?.fragments.flowClaimSingleItemCheckoutStepFragment {
             return .stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimLocationStepFragment {
+        } else if let step = self.asFlowClaimLocationStep?.fragments.flowClaimLocationStepFragment {
             return .stepModelAction(action: .setLocation(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimDateOfOccurrenceStepFragment {
+        } else if let step = self.asFlowClaimDateOfOccurrenceStep?.fragments.flowClaimDateOfOccurrenceStepFragment {
             return .stepModelAction(action: .setDateOfOccurence(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimSummaryStepFragment {
+        } else if let step = self.asFlowClaimSummaryStep?.fragments.flowClaimSummaryStepFragment {
             let summaryStep = FlowClaimSummaryStepModel(with: step)
             let singleItemStepModel: FlowClamSingleItemStepModel? = {
                 if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
@@ -44,7 +44,9 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
                     )
                 )
             )
-        } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
+        } else if let step = self.asFlowClaimDateOfOccurrencePlusLocationStep?.fragments
+            .flowClaimDateOfOccurrencePlusLocationStepFragment
+        {
             return .stepModelAction(
                 action: .setDateOfOccurrencePlusLocation(
                     model: .init(
@@ -56,21 +58,21 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
                     )
                 )
             )
-        } else if let step = self.fragments.flowClaimFailedStepFragment {
+        } else if let step = self.asFlowClaimFailedStep?.fragments.flowClaimFailedStepFragment {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimSuccessStepFragment {
+        } else if let step = self.asFlowClaimSuccessStep?.fragments.flowClaimSuccessStepFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimContractSelectStepFragment {
+        } else if let step = self.asFlowClaimContractSelectStep?.fragments.flowClaimContractSelectStepFragment {
             return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimDeflectEmergencyStepFragment {
+        } else if let step = self.asFlowClaimDeflectEmergencyStep?.fragments.flowClaimDeflectEmergencyStepFragment {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimConfirmEmergencyStepFragment {
+        } else if let step = self.asFlowClaimConfirmEmergencyStep?.fragments.flowClaimConfirmEmergencyStepFragment {
             return .stepModelAction(action: .setConfirmDeflectEmergencyStepModel(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimDeflectPestsStepFragment {
+        } else if let step = self.asFlowClaimDeflectPestsStep?.fragments.flowClaimDeflectPestsStepFragment {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimDeflectGlassDamageStepFragment {
+        } else if let step = self.asFlowClaimDeflectGlassDamageStep?.fragments.flowClaimDeflectGlassDamageStepFragment {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
-        } else if let step = self.fragments.flowClaimFileUploadStepFragment {
+        } else if let step = self.asFlowClaimFileUploadStep?.fragments.flowClaimFileUploadStepFragment {
             return .stepModelAction(action: .setFileUploadStep(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openUpdateAppScreen)

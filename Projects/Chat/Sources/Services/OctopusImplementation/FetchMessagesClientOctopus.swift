@@ -7,7 +7,7 @@ public class FetchMessagesClientOctopus: FetchMessagesClient {
     public init() {}
     public func get(_ next: String?) async throws -> ChatData {
         let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.ChatQuery(until: next),
+            query: OctopusGraphQL.ChatQuery(until: GraphQLNullable(optionalValue: next)),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
         return .init(with: data.chat)

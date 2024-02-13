@@ -31,16 +31,16 @@ extension ReferralsData {
         self.discount = .sek(10)
         self.discountPerMember = .init(fragment: data.monthlyDiscountPerReferral.fragments.moneyFragment)
         var referrals: [Referral] = []
-        if let invitedBy = data.referredBy?.fragments.memberReferralFragment {
+        if let invitedBy = data.referredBy?.fragments.memberReferralFragment2 {
             referrals.append(.init(with: invitedBy, invitedYou: true))
         }
-        referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment) }))
+        referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment2) }))
         self.referrals = referrals.reversed()
     }
 }
 
 extension Referral {
-    init(with data: OctopusGraphQL.MemberReferralFragment, invitedYou: Bool = false) {
+    init(with data: OctopusGraphQL.MemberReferralFragment2, invitedYou: Bool = false) {
         self.id = UUID().uuidString
         self.status = data.status.asReferralState
         self.name = data.name
@@ -49,16 +49,19 @@ extension Referral {
     }
 }
 
-extension OctopusGraphQL.MemberReferralStatus {
+extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
     var asReferralState: Referral.State {
         switch self {
-        case .pending:
-            return .pending
-        case .active:
-            return .active
-        case .terminated:
-            return .terminated
-        case .__unknown:
+        case .case(let t):
+            switch t {
+            case .pending:
+                return .pending
+            case .active:
+                return .active
+            case .terminated:
+                return .terminated
+            }
+        case .unknown(let string):
             return .unknown
         }
     }

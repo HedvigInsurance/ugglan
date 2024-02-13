@@ -240,7 +240,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client
                     .fetch(
-                        query: OctopusGraphQL.ChatMessageTimeStampQuery(),
+                        query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
                         cachePolicy: .fetchIgnoringCacheCompletely
                     )
                     .onValue { data in

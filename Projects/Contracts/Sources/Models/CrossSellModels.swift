@@ -76,18 +76,21 @@ extension CrossSell {
     }
 }
 
-extension OctopusGraphQL.CrossSellType {
+extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
     var crossSellType: CrossSellType {
         switch self {
-        case .car:
-            return .car
-        case .home:
-            return .home
-        case .accident:
-            return .accident
-        case .pet:
-            return .pet
-        case .__unknown:
+        case .case(let t):
+            switch t {
+            case .car:
+                return .car
+            case .home:
+                return .home
+            case .accident:
+                return .accident
+            case .pet:
+                return .pet
+            }
+        case .unknown(let string):
             return .unknown
         }
     }

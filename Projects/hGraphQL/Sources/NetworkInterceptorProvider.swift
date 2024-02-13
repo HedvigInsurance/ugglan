@@ -1,4 +1,5 @@
 import Apollo
+import ApolloAPI
 import Foundation
 
 /// use to override the URLSessionClient used by apollo

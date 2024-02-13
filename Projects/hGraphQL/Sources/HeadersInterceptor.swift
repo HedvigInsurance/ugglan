@@ -8,6 +8,7 @@ enum AuthError: Error {
 }
 
 class HeadersInterceptor: ApolloInterceptor {
+    var id: String
     let acceptLanguageHeader: String
     let userAgent: String
     let deviceIdentifier: String
@@ -20,6 +21,7 @@ class HeadersInterceptor: ApolloInterceptor {
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
         self.deviceIdentifier = deviceIdentifier
+        self.id = UUID().uuidString
     }
 
     func interceptAsync<Operation: GraphQLOperation>(

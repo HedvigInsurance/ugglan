@@ -28,16 +28,19 @@ public struct PaymentStatusData: Codable, Equatable {
     }
 }
 
-extension OctopusGraphQL.MemberPaymentConnectionStatus {
+extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
     var asPayinMethodStatus: PayinMethodStatus {
         switch self {
-        case .active:
-            return .active
-        case .pending:
-            return .pending
-        case .needsSetup:
-            return .needsSetup
-        case .__unknown:
+        case .case(let t):
+            switch t {
+            case .active:
+                return .active
+            case .pending:
+                return .pending
+            case .needsSetup:
+                return .needsSetup
+            }
+        case .unknown(let string):
             return .unknown
         }
     }
