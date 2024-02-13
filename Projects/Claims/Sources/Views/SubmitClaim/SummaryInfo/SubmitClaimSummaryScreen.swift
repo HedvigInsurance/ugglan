@@ -5,8 +5,15 @@ import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    @StateObject fileprivate var vm: FilesUploadViewModel = .init(
+        model: .init(id: "", title: "", targetUploadUrl: "", uploads: [])
+    )
 
-    public init() {}
+    public init() {
+        if let fileUploadStep = store.state.fileUploadStep {
+            _vm = StateObject(wrappedValue: FilesUploadViewModel(model: fileUploadStep))
+        }
+    }
 
     public var body: some View {
         hForm {
@@ -155,15 +162,22 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var uploadedFilesView: some View {
-        VStack(spacing: 8) {
-            let audioPlayer = AudioPlayer(url: URL(string: ""))
-            TrackPlayerView(
-                audioPlayer: audioPlayer
-            )
-            InfoViewHolder(
-                title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
-                description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
-            )
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.audioRecordingStep
+            }
+        ) { audioRecordingStep in
+            VStack(spacing: 8) {
+                if let audioRecordingStep {
+                    let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
+                    TrackPlayerView(
+                        audioPlayer: audioPlayer
+                    )
+                }
+                let fileGridVm = FileGridViewModel(files: vm.fileGridViewModel.files, options: .add)
+                FilesGridView(vm: fileGridVm)
+            }
         }
     }
 
