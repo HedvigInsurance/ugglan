@@ -99,29 +99,28 @@ public struct AppInfoView: View {
         let memberId = store.state.memberId
         let systemVersion = UIDevice.current.systemVersion
 
-        return hRow {
-            OpenEmailClientButton(
-                options: EmailOptions(
-                    recipient: "julia.andersson@hedvig.com",
-                    subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
-                    body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
-                ),
-                buttonText: L10n.AppInfo.SubmitBug.button,
-                hasAcceptedAlert: $hasPressedSubmitBugOk,
-                hasPressedButton: {
-                    showSubmitBugAlert = true
+        return OpenEmailClientButton(
+            options: EmailOptions(
+                recipient: "julia.andersson@hedvig.com",
+                subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
+                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
+            ),
+            buttonText: L10n.AppInfo.SubmitBug.button,
+            hasAcceptedAlert: $hasPressedSubmitBugOk,
+            hasPressedButton: {
+                showSubmitBugAlert = true
+            },
+            buttonSize: .secondary
+        )
+        .alert(isPresented: $showSubmitBugAlert) {
+            Alert(
+                title: Text(L10n.AppInfo.SubmitBug.warning),
+                message: nil,
+                primaryButton: .cancel(Text(L10n.alertCancel)),
+                secondaryButton: .destructive(Text(L10n.generalContinueButton)) {
+                    hasPressedSubmitBugOk = true
                 }
             )
-            .alert(isPresented: $showSubmitBugAlert) {
-                Alert(
-                    title: Text(L10n.AppInfo.SubmitBug.warning),
-                    message: nil,
-                    primaryButton: .cancel(Text(L10n.alertCancel)),
-                    secondaryButton: .destructive(Text(L10n.generalContinueButton)) {
-                        hasPressedSubmitBugOk = true
-                    }
-                )
-            }
         }
     }
 

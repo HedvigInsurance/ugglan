@@ -40,23 +40,31 @@ public struct EmailOptions {
     }
 }
 
+public enum OpenEmailButtonType {
+    case secondary
+    case primary
+}
+
 public struct OpenEmailClientButton: View {
     @State var sheetPresented: Bool = false
     let options: EmailOptions?
     let buttonText: String?
     var hasPressedButton: (() -> Void)?
     @Binding var hasAcceptedAlert: Bool
+    let buttonSize: OpenEmailButtonType
 
     public init(
         options: EmailOptions? = nil,
         buttonText: String? = nil,
         hasAcceptedAlert: Binding<Bool>? = nil,
-        hasPressedButton: (() -> Void)? = nil
+        hasPressedButton: (() -> Void)? = nil,
+        buttonSize: OpenEmailButtonType? = .primary
     ) {
         self.options = options
         self.buttonText = buttonText
         self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
+        self.buttonSize = buttonSize ?? .primary
 
         emailClients = {
             let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
@@ -95,15 +103,7 @@ public struct OpenEmailClientButton: View {
     public var body: some View {
         ReadOTPState { state in
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    if hasAcceptedAlert {
-                        sheetPresented = true
-                    } else {
-                        hasPressedButton?()
-                    }
-                } content: {
-                    hText(buttonText ?? L10n.Login.openEmailAppButton)
-                }
+                displayButton
             }
             .offset(x: 0, y: showButton(state: state) ? 0 : 150)
             .opacity(showButton(state: state) ? 1 : 0)
@@ -127,6 +127,33 @@ public struct OpenEmailClientButton: View {
                 ]
                 .flatMap { $0 }
             )
+        }
+    }
+
+    @ViewBuilder
+    public var displayButton: some View {
+        switch buttonSize {
+        case .secondary:
+            hButton.LargeButton(type: .secondary) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
+                }
+            } content: {
+                hText(buttonText ?? L10n.Login.openEmailAppButton)
+            }
+        //            .fixedSize()
+        case .primary:
+            hButton.LargeButton(type: .primary) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
+                }
+            } content: {
+                hText(buttonText ?? L10n.Login.openEmailAppButton)
+            }
         }
     }
 }
