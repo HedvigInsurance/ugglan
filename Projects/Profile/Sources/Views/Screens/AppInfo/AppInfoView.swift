@@ -101,7 +101,7 @@ public struct AppInfoView: View {
 
         return OpenEmailClientButton(
             options: EmailOptions(
-                recipient: "julia.andersson@hedvig.com",
+                recipient: "ios@hedvig.com",
                 subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
                 body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
             ),
