@@ -1,18 +1,15 @@
 import Kingfisher
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @StateObject fileprivate var vm: FilesUploadViewModel = .init(
-        model: .init(id: "", title: "", targetUploadUrl: "", uploads: [])
-    )
+    @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
 
     public init() {
-        if let fileUploadStep = store.state.fileUploadStep {
-            _vm = StateObject(wrappedValue: FilesUploadViewModel(model: fileUploadStep))
-        }
+        _vm = StateObject(wrappedValue: SubmitClaimSummaryScreenViewModel())
     }
 
     public var body: some View {
@@ -46,7 +43,7 @@ public struct SubmitClaimSummaryScreen: View {
                     uploadedFilesView
                 }
                 .withHeader {
-                    hText("Uploaded files")
+                    hText(L10n.ClaimStatusDetail.uploadedFiles)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -175,8 +172,10 @@ public struct SubmitClaimSummaryScreen: View {
                         audioPlayer: audioPlayer
                     )
                 }
-                let fileGridVm = FileGridViewModel(files: vm.fileGridViewModel.files, options: .add)
-                FilesGridView(vm: fileGridVm)
+                if let files = vm.model?.fileGridViewModel.files {
+                    let fileGridVm = FileGridViewModel(files: files, options: [])
+                    FilesGridView(vm: fileGridVm)
+                }
             }
         }
     }
@@ -196,5 +195,18 @@ public struct SubmitClaimSummaryScreen: View {
 struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
     static var previews: some View {
         SubmitClaimSummaryScreen()
+    }
+}
+
+class SubmitClaimSummaryScreenViewModel: ObservableObject {
+    let model: FilesUploadViewModel?
+
+    init() {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        if let fileUploadStep = store.state.fileUploadStep {
+            self.model = FilesUploadViewModel(model: fileUploadStep)
+        } else {
+            self.model = nil
+        }
     }
 }
