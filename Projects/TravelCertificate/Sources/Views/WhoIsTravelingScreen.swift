@@ -31,7 +31,8 @@ struct WhoIsTravelingScreen: View {
                     )
                     var allValues = [(object: insuranceHolder, displayName: insuranceHolder.firstName ?? "")]
                     let allCoInsuredOnContract =
-                        contract?.coInsured.map { (object: $0, displayName: $0.fullName ?? "") } ?? []
+                        contract?.coInsured.filter({ !$0.hasMissingInfo })
+                        .map { (object: $0, displayName: $0.fullName ?? "") } ?? []
                     allValues.append(contentsOf: allCoInsuredOnContract)
                     return allValues
                 }(),
@@ -66,20 +67,21 @@ struct WhoIsTravelingScreen: View {
                     vm.validateAndSubmit()
                 },
                 attachToBottom: true,
-                infoCard: .init(
-                    text: "If you want to add a co-insured to the certificate you need to register them first",
-                    buttons: [
-                        .init(
-                            buttonTitle: "Register now",
-                            buttonAction: {
-                                let url = "https://hedvigtest.page.link/travelCertificate"
-                                if let url = URL(string: url) {
-                                    store.send(.goToDeepLink(url: url))
+                infoCard: vm.showInfoCard
+                    ? .init(
+                        text: L10n.TravelCertificate.missingCoinsuredInfo,
+                        buttons: [
+                            .init(
+                                buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
+                                buttonAction: {
+                                    let url = "https://hedvigtest.page.link/travelCertificate"
+                                    if let url = URL(string: url) {
+                                        store.send(.goToDeepLink(url: url))
+                                    }
                                 }
-                            }
-                        )
-                    ]
-                )
+                            )
+                        ]
+                    ) : nil
             )
             .padding(.bottom, 16)
             .hFormTitle(.standard, .title1, L10n.TravelCertificate.whoIsTraveling)
@@ -95,6 +97,19 @@ class WhoIsTravelingViewModel: ObservableObject {
     init() {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         self.specifications = store.state.travelInsuranceConfig
+    }
+
+    var showInfoCard: Bool {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        let contractId = store.state.travelInsuranceConfig?.contractId
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contract = contractStore.state.contractForId(contractId ?? "")
+
+        if contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false {
+            return true
+        }
+        return false
     }
 
     func validateAndSubmit() {
