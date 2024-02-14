@@ -226,13 +226,17 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         var logMessage = "Got Error when signing in with BankId"
                         if let result = result as? AuthAttemptResultErrorLocalised {
                             localizedMessage = result.reason
-                            logMessage = "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
+                            logMessage =
+                                "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
                         } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
-                            logMessage = "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                            logMessage =
+                                "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
                         } else if let result = result as? AuthAttemptResultErrorIOError {
-                            logMessage = "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
+                            logMessage =
+                                "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
                         } else if let result = result as? AuthAttemptResultErrorUnknownError {
-                            logMessage = "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
+                            logMessage =
+                                "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
                         }
                         let error = NSError(domain: logMessage, code: 1000)
                         log.error(
