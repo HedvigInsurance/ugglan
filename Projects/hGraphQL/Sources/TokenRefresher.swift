@@ -38,7 +38,7 @@ public class TokenRefresher {
         }
 
         return Future { completion in
-        let bag = DisposeBag()
+            let bag = DisposeBag()
 
             log.debug("Checking if access token refresh is needed")
 
