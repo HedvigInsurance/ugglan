@@ -61,6 +61,7 @@ extension AppJourney {
             .configureContractNavigation
             .configureChatNavigation
             .configureTerminationNavigation
+            .configureTravelCertificateNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -317,6 +318,14 @@ extension JourneyPresentation {
                 AppJourney.configureURL(url: url)
             } else if case .goToFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
+            }
+        }
+    }
+
+    public var configureTravelCertificateNavigation: some JourneyPresentation {
+        onAction(TravelInsuranceStore.self) { action in
+            if case let .goToDeepLink(url) = action {
+                AppJourney.configureURL(url: url)
             }
         }
     }

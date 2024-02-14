@@ -5,8 +5,8 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-struct TravelInsuranceState: StateProtocol {
-    init() {}
+public struct TravelInsuranceState: StateProtocol {
+    public init() {}
     var travelInsuranceList: [TravelCertificateModel] = []
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
     @OptionalTransient var travelInsuranceConfigs: TravelInsuranceSpecification?

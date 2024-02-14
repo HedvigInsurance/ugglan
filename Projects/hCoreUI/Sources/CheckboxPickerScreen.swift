@@ -13,6 +13,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let disableIfNoneSelected: Bool
     private let manualInputPlaceholder: String
     private let hButtonText: String
+    private let infoCard: CheckboxInfoCard?
 
     @State var type: CheckboxFieldType? = .inputField
 
@@ -36,7 +37,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
-        hButtonText: String? = L10n.generalSaveButton
+        hButtonText: String? = L10n.generalSaveButton,
+        infoCard: CheckboxInfoCard? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -53,6 +55,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         } else {
             self.fieldSize = .large
         }
+        self.infoCard = infoCard
     }
 
     public var body: some View {
@@ -118,8 +121,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     var bottomContent: some View {
         hSection {
-            VStack(spacing: 8) {
+            VStack(spacing: 16) {
                 bottomAttachedView
+
+                if let infoCard {
+                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                }
+
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
@@ -265,6 +273,19 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             hTextColor.primary
         } else {
             hFillColor.opaqueOne
+        }
+    }
+
+    public struct CheckboxInfoCard {
+        let text: String
+        let buttons: [InfoCardButtonConfig]
+
+        public init(
+            text: String,
+            buttons: [InfoCardButtonConfig]
+        ) {
+            self.text = text
+            self.buttons = buttons
         }
     }
 }

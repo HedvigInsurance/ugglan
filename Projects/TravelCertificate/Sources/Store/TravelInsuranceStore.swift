@@ -5,12 +5,12 @@ import Presentation
 import hCore
 import hGraphQL
 
-final class TravelInsuranceStore: LoadingStateStore<
+public final class TravelInsuranceStore: LoadingStateStore<
     TravelInsuranceState, TravelInsuranceAction, TravelInsuranceLoadingAction
 >
 {
     @Inject var travelInsuranceClient: TravelInsuranceClient
-    override func effects(
+    public override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
     ) -> FiniteSignal<TravelInsuranceAction>? {
@@ -86,7 +86,8 @@ final class TravelInsuranceStore: LoadingStateStore<
         }
     }
 
-    override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState {
+    public override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState
+    {
         var newState = state
         switch action {
         case .getTravelCertificateSpecification:
@@ -120,24 +121,13 @@ final class TravelInsuranceStore: LoadingStateStore<
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
         case .toogleMyselfAsInsured:
-            newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
+            newState.travelInsuranceModel?.isPolicyHolderIncluded = true
         case let .setPolicyCoInsured(data):
             let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
                 .firstIndex(where: { $0.personalNumber == data.personalNumber })
             if indexOfUser == nil {
                 newState.travelInsuranceModel?.policyCoinsuredPersons.append(data)
             }
-        case let .updatePolicyCoInsured(old, new):
-            let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
-                .firstIndex(where: { $0.personalNumber == old.personalNumber })
-            if let indexOfUser {
-                newState.travelInsuranceModel?.policyCoinsuredPersons[indexOfUser] = new
-            }
-        case let .removePolicyCoInsured(data):
-            newState.travelInsuranceModel?.policyCoinsuredPersons
-                .removeAll(where: { model in
-                    model.personalNumber == data.personalNumber
-                })
         case let .setDate(date, type):
             switch type {
             case .startDate:
@@ -178,6 +168,8 @@ final class TravelInsuranceStore: LoadingStateStore<
             case .openCreateNew:
                 break
             }
+        case .goToDeepLink(let url):
+            break
         }
         return newState
     }

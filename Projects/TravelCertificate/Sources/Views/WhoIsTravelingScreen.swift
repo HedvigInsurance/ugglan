@@ -1,3 +1,5 @@
+import Contracts
+import EditCoInsured
 import Flow
 import Foundation
 import Presentation
@@ -7,117 +9,82 @@ import hCoreUI
 
 struct WhoIsTravelingScreen: View {
     @StateObject var vm = WhoIsTravelingViewModel()
+    @PresentableStore var store: TravelInsuranceStore
 
     var body: some View {
-        hForm {}
-            .hFormTitle(.standard, .title1, L10n.TravelCertificate.whoIsTraveling)
-            .hDisableScroll
-            .hFormAttachToBottom {
-                form
-            }
-    }
-
-    @ViewBuilder
-    var form: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
             getter: { state in
-                state.travelInsuranceModel
+                state
             }
-        ) { model in
-            VStack(spacing: 16) {
-                hSection {
-                    hRow {
-                        VStack(alignment: .leading) {
-                            hText(L10n.TravelCertificate.includedMembersTitle, style: .standardSmall)
-                                .foregroundColor(hTextColor.secondary)
-                            VStack(alignment: .leading, spacing: 16) {
-                                Toggle(isOn: vm.isPolicyHolderIncluded.animation(.default)) {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        hText(model?.fullName ?? "", style: .standardLarge)
-                                            .foregroundColor(disabledColorOr(hTextColor.primary))
-                                        hText(model?.email ?? "")
-                                            .foregroundColor(disabledColorOr(hTextColor.secondary))
-                                    }
-                                }
-                                .toggleStyle(ChecboxToggleStyle(.top, spacing: 0))
-                                if model?.policyCoinsuredPersons.count ?? 0 == 0
-                                    && vm.specifications?.numberOfCoInsured ?? 0 > 0
-                                {
-                                    addPeopleButton
-                                }
-                            }
+        ) { state in
+            let travelInsuranceConfig = state.travelInsuranceConfig
+            CheckboxPickerScreen<CoInsuredModel>(
+                items: {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
+
+                    let insuranceHolder = CoInsuredModel(
+                        firstName: state.travelInsuranceModel?.fullName,
+                        SSN: contract?.ssn,
+                        needsMissingInfo: false
+                    )
+                    var allValues = [(object: insuranceHolder, displayName: insuranceHolder.firstName ?? "")]
+                    let allCoInsuredOnContract =
+                        contract?.coInsured.map { (object: $0, displayName: $0.fullName ?? "") } ?? []
+                    allValues.append(contentsOf: allCoInsuredOnContract)
+                    return allValues
+                }(),
+                preSelectedItems: {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let insuranceHolder = CoInsuredModel(
+                        firstName: state.travelInsuranceModel?.fullName,
+                        SSN: contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")?.ssn,
+                        needsMissingInfo: false
+                    )
+                    return [insuranceHolder]
+                },
+                onSelected: { selectedCoInsured in
+                    let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+
+                    selectedCoInsured.forEach { coInsured in
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
+
+                        let newPolicyCoInsured = PolicyCoinsuredPersonModel(
+                            fullName: (coInsured.0?.fullName ?? coInsured.0?.firstName) ?? "",
+                            personalNumber: coInsured.0?.SSN ?? coInsured.0?.birthDate ?? ""
+                        )
+                        store.send(.setPolicyCoInsured(newPolicyCoInsured))
+
+                        if newPolicyCoInsured.fullName == contract?.fullName
+                            && newPolicyCoInsured.personalNumber == contract?.ssn
+                        {
+                            store.send(.toogleMyselfAsInsured)
                         }
                     }
-                    if let coinsuredMembers = model?.policyCoinsuredPersons {
-                        ForEach(Array(coinsuredMembers.enumerated()), id: \.element.personalNumber) {
-                            index,
-                            coinsured in
-                            hRow {
-                                VStack(alignment: .leading) {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            hText(coinsured.fullName, style: .standardLarge)
-                                            Spacer()
-                                            Button {
-                                                vm.removeCoinsured(coinsured)
-                                            } label: {
-                                                Image(uiImage: hCoreUIAssets.close.image).resizable()
-                                                    .frame(width: 16, height: 16)
-                                            }
-                                        }
-                                        .foregroundColor(hTextColor.primary)
-                                        hText(coinsured.personalNumber).foregroundColor(hTextColor.secondary)
-                                    }
-                                    if (model?.policyCoinsuredPersons.count ?? 0 < vm.specifications?.numberOfCoInsured
-                                        ?? 0) && index == coinsuredMembers.count - 1
-                                    {
-                                        addPeopleButton
-                                    }
+                    vm.validateAndSubmit()
+                },
+                attachToBottom: true,
+                infoCard: .init(
+                    text: "If you want to add a co-insured to the certificate you need to register them first",
+                    buttons: [
+                        .init(
+                            buttonTitle: "Register now",
+                            buttonAction: {
+                                let url = "https://hedvigtest.page.link/travelCertificate"
+                                if let url = URL(string: url) {
+                                    store.send(.goToDeepLink(url: url))
                                 }
                             }
-                        }
-                    }
-                }
-                .disableOn(TravelInsuranceStore.self, [.postTravelInsurance])
-
-                hSection {
-                    InfoCard(text: L10n.TravelCertificate.whoIsTravelingInfo, type: .info)
-                }
-                hSection {
-                    hButton.LargeButton(type: .primary) {
-                        vm.validateAndSubmit()
-                    } content: {
-                        hText(L10n.General.submit)
-                    }
-                }
-                .padding(.bottom, 16)
-                .trackLoading(TravelInsuranceStore.self, action: .postTravelInsurance)
-            }
-        }
-        .presentableStoreLensAnimation(.default)
-
-    }
-
-    private var addPeopleButton: some View {
-        hButton.MediumButton(type: .primaryAlt) {
-            vm.addNewCoinsured()
-        } content: {
-            HStack(spacing: 8) {
-                Image(uiImage: hCoreUIAssets.plusSmall.image).resizable().frame(width: 16, height: 16)
-                hText(L10n.TravelCertificate.addPeople)
-            }
-        }
-        .hUseLightMode
-        .fixedSize(horizontal: true, vertical: true)
-    }
-
-    @hColorBuilder
-    func disabledColorOr(_ color: some hColor) -> some hColor {
-        if vm.isPolicyHolderIncluded.wrappedValue {
-            color
-        } else {
-            hTextColor.disabled
+                        )
+                    ]
+                )
+            )
+            .padding(.bottom, 16)
+            .hFormTitle(.standard, .title1, L10n.TravelCertificate.whoIsTraveling)
+            .hDisableScroll
+            .disableOn(TravelInsuranceStore.self, [.postTravelInsurance])
         }
     }
 }
@@ -128,26 +95,6 @@ class WhoIsTravelingViewModel: ObservableObject {
     init() {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         self.specifications = store.state.travelInsuranceConfig
-    }
-
-    var isPolicyHolderIncluded: Binding<Bool> {
-        Binding(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state.travelInsuranceModel?.isPolicyHolderIncluded ?? false
-            },
-            setter: { code in
-                .toogleMyselfAsInsured
-            }
-        )
-    }
-
-    func removeCoinsured(_ coinsured: PolicyCoinsuredPersonModel) {
-        store.send(.removePolicyCoInsured(coinsured))
-    }
-
-    func addNewCoinsured() {
-        store.send(.navigation(.openCoinsured(member: nil)))
     }
 
     func validateAndSubmit() {
