@@ -8,7 +8,7 @@ echo "machine maven.pkg.github.com" > ~/.netrc
 echo "login ${MAVEN_LOGIN}" >> ~/.netrc
 echo "password ${MAVEN_PASSWORD}" >> ~/.netrc
 
-npm install --save-dev @datadog/datadog-ci
+brew install datadog-ci
 
 
 export PATH=$PATH":$CI_PRIMARY_REPOSITORY_PATH/.tuist-bin"
