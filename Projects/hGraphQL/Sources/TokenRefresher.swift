@@ -38,7 +38,7 @@ public class TokenRefresher {
         }
 
         return Future { completion in
-            let bag = DisposeBag()
+        let bag = DisposeBag()
 
             log.debug("Checking if access token refresh is needed")
 
@@ -68,8 +68,9 @@ public class TokenRefresher {
                 log.info("Will start refreshing token")
                 NetworkAuthRepository(
                     environment: Environment.current.authEnvironment,
-                    additionalHttpHeaders: ApolloClient.headers(),
-                    callbacks: Callbacks(successUrl: "", failureUrl: "")
+                    additionalHttpHeadersProvider: { ApolloClient.headers() },
+                    callbacks: Callbacks(successUrl: "", failureUrl: ""),
+                    httpClientEngine: nil
                 )
                 .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
                     if let successResult = result as? AuthTokenResultSuccess {

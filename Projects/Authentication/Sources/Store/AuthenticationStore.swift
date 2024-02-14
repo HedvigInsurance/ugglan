@@ -36,11 +36,12 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeaders: ApolloClient.headers(),
+            additionalHttpHeadersProvider: { ApolloClient.headers() },
             callbacks: Callbacks(
                 successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
                 failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
-            )
+            ),
+            httpClientEngine: nil
         )
     }()
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
@@ -221,13 +222,25 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         )
                         callbacker(.observeLoginStatus(url: statusUrl))
                     } else if let result = result as? AuthAttemptResultError {
-                        let error = NSError(domain: result.message, code: 1000)
+                        var localizedMessage = L10n.General.errorBody
+                        var logMessage = "Got Error when signing in with BankId"
+                        if let result = result as? AuthAttemptResultErrorLocalised {
+                            localizedMessage = result.reason
+                            logMessage = "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
+                        } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
+                            logMessage = "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                        } else if let result = result as? AuthAttemptResultErrorIOError {
+                            logMessage = "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
+                        } else if let result = result as? AuthAttemptResultErrorUnknownError {
+                            logMessage = "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
+                        }
+                        let error = NSError(domain: logMessage, code: 1000)
                         log.error(
-                            "Got Error when signing in with BankId",
+                            logMessage,
                             error: error,
                             attributes: [:]
                         )
-                        callbacker(.loginFailure(message: nil))
+                        callbacker(.loginFailure(message: localizedMessage))
                     } else if let error {
                         log.error(
                             "Got Error when signing in with BankId",
