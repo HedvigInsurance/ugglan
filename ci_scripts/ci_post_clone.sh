@@ -7,7 +7,10 @@ touch ~/.netrc
 echo "machine maven.pkg.github.com" > ~/.netrc
 echo "login ${MAVEN_LOGIN}" >> ~/.netrc
 echo "password ${MAVEN_PASSWORD}" >> ~/.netrc
-echo "$CI_WORKFLOW"
+
+if [ "$CI_WORKFLOW" = "Ugglan" ]; then
+    echo "Right place."
+fi
 export PATH=$PATH":$CI_PRIMARY_REPOSITORY_PATH/.tuist-bin"
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
