@@ -361,7 +361,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             types.append(.firstVet)
         }
 
-        if state.hasAtLeastOneClaim || state.hasSentOrRecievedAtLeastOneMessage {
+        if state.hasAtLeastOneClaim || state.hasSentOrRecievedAtLeastOneMessage
+            || Localization.Locale.currentLocale.market != .se
+        {
             if state.showChatNotification {
                 types.append(.chatNotification)
             } else {
