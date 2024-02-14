@@ -8,7 +8,12 @@ echo "machine maven.pkg.github.com" > ~/.netrc
 echo "login ${MAVEN_LOGIN}" >> ~/.netrc
 echo "password ${MAVEN_PASSWORD}" >> ~/.netrc
 
-brew install --cask datadog-agent
+mkdir build
+TMPDIR=build
+
+
+curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_darwin-x64" --output "$build/datadog-ci" && chmod +x $build/datadog-ci
+
 
 
 export PATH=$PATH":$CI_PRIMARY_REPOSITORY_PATH/.tuist-bin"
