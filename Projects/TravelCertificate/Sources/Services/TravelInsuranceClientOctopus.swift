@@ -62,9 +62,7 @@ extension TravenInsuranceFormDTO {
             contractId: contractId,
             startDate: startDate,
             isMemberIncluded: isMemberIncluded,
-            coInsured: coInsured.compactMap({
-                .init(fullName: $0.fullName, ssn: .some($0.personalNumber), dateOfBirth: .none)
-            }),
+            coInsured: coInsured.compactMap({ .init(fullName: $0.fullName, ssn: .some($0.personalNumber)) }),
             email: email
         )
     }
