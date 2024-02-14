@@ -19,9 +19,12 @@ public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
         self.uploads = uploads
     }
 
-    init(
-        with data: OctopusGraphQL.FlowClaimFileUploadStepFragment
+    init?(
+        with data: OctopusGraphQL.FlowClaimFileUploadStepFragment?
     ) {
+        guard let data else {
+            return nil
+        }
         self.id = data.id
         self.title = data.title
         self.targetUploadUrl = data.targetUploadUrl
