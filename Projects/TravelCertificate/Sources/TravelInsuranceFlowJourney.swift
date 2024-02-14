@@ -49,8 +49,7 @@ public struct TravelInsuranceFlowJourney {
     private static func showContractsList() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ContractsScreen(),
-            style: .modally(presentationStyle: .fullScreen)
+            rootView: ContractsScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openStartDateScreen = navigationAction {
@@ -95,7 +94,7 @@ public struct TravelInsuranceFlowJourney {
                 if case .openProcessingScreen = navigationAction {
                     openProcessingScreen()
                 }
-            } else if case .goToDeepLink = action {
+            } else if case .dismissTravelInsuranceFlow = action {
                 DismissJourney()
             }
         }
@@ -148,6 +147,8 @@ public struct TravelInsuranceFlowJourney {
                 } else if case .goBack = navigationAction {
                     PopJourney()
                 }
+            } else if case .dismissTravelInsuranceFlow = action {
+                DismissJourney()
             }
         }
         .configureTitle(L10n.TravelCertificate.cardTitle)

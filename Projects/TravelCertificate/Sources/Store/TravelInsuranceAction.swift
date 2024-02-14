@@ -21,8 +21,8 @@ public enum TravelInsuranceAction: ActionProtocol, Hashable {
     case navigation(TravelInsuranceNavigationAction)
     case getTravelCertificateSpecification
     case travelCertificateSpecificationSet
-
-    case goToDeepLink(url: URL)
+    case goToEditCoInsured
+    case dismissTravelInsuranceFlow
 }
 
 public enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {

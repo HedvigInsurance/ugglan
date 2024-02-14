@@ -16,7 +16,8 @@ public struct TravenInsuranceFormDTO {
 }
 public struct CoInsuredDto {
     let fullName: String
-    let personalNumber: String
+    let personalNumber: String?
+    let birthDate: String?
 }
 
 enum TravelInsuranceError {

@@ -63,7 +63,11 @@ extension TravenInsuranceFormDTO {
             startDate: startDate,
             isMemberIncluded: isMemberIncluded,
             coInsured: coInsured.compactMap({
-                .init(fullName: $0.fullName, ssn: .some($0.personalNumber), dateOfBirth: .none)
+                .init(
+                    fullName: $0.fullName,
+                    ssn: GraphQLNullable(optionalValue: $0.personalNumber),
+                    dateOfBirth: GraphQLNullable(optionalValue: $0.birthDate)
+                )
             }),
             email: email
         )

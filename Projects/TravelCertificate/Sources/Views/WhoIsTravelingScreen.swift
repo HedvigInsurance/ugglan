@@ -54,7 +54,8 @@ struct WhoIsTravelingScreen: View {
 
                         let newPolicyCoInsured = PolicyCoinsuredPersonModel(
                             fullName: (coInsured.0?.fullName ?? coInsured.0?.firstName) ?? "",
-                            personalNumber: coInsured.0?.SSN ?? coInsured.0?.birthDate ?? ""
+                            personalNumber: coInsured.0?.SSN,
+                            birthDate: coInsured.0?.birthDate
                         )
                         store.send(.setPolicyCoInsured(newPolicyCoInsured))
 
@@ -74,9 +75,9 @@ struct WhoIsTravelingScreen: View {
                             .init(
                                 buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
                                 buttonAction: {
-                                    let url = "https://hedvigtest.page.link/travelCertificate"
-                                    if let url = URL(string: url) {
-                                        store.send(.goToDeepLink(url: url))
+                                    store.send(.dismissTravelInsuranceFlow)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                        store.send(.goToEditCoInsured)
                                     }
                                 }
                             )

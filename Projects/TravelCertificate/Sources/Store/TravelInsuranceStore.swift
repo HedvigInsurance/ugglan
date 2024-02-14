@@ -24,12 +24,13 @@ public final class TravelInsuranceStore: LoadingStateStore<
                     self.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     return disposeBag
                 }
+
                 let dto = TravenInsuranceFormDTO(
                     contractId: config.contractId,
                     startDate: travelInsuranceModel.startDate.localDateString,
                     isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
                     coInsured: travelInsuranceModel.policyCoinsuredPersons.compactMap(
-                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber) }
+                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber, birthDate: $0.birthDate) }
                     ),
                     email: travelInsuranceModel.email
                 )
@@ -124,7 +125,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
             newState.travelInsuranceModel?.isPolicyHolderIncluded = true
         case let .setPolicyCoInsured(data):
             let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
-                .firstIndex(where: { $0.personalNumber == data.personalNumber })
+                .firstIndex(where: { $0.personalNumber == data.personalNumber || $0.birthDate == data.birthDate })
             if indexOfUser == nil {
                 newState.travelInsuranceModel?.policyCoinsuredPersons.append(data)
             }
@@ -168,7 +169,9 @@ public final class TravelInsuranceStore: LoadingStateStore<
             case .openCreateNew:
                 break
             }
-        case .goToDeepLink(let url):
+        case .goToEditCoInsured:
+            break
+        case .dismissTravelInsuranceFlow:
             break
         }
         return newState

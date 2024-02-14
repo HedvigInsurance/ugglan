@@ -324,8 +324,8 @@ extension JourneyPresentation {
 
     public var configureTravelCertificateNavigation: some JourneyPresentation {
         onAction(TravelInsuranceStore.self) { action in
-            if case let .goToDeepLink(url) = action {
-                AppJourney.configureURL(url: url)
+            if case .goToEditCoInsured = action {
+                AppJourney.configureQuickAction(commonClaim: .editCoInsured())
             }
         }
     }

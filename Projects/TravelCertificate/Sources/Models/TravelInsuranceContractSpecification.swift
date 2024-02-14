@@ -60,7 +60,8 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 
 public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
-    var personalNumber: String
+    var personalNumber: String? = nil
+    var birthDate: String? = nil
 }
 
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
