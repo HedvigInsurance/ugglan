@@ -266,7 +266,11 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
-                send(.navigationAction(action: .openSummaryScreen))
+                newState.audioRecordingStep = model.audioRecordingModel
+                newState.fileUploadStep = model.fileUploadModel
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.send(.navigationAction(action: .openSummaryScreen))
+                }
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
                 send(.navigationAction(action: .openCheckoutNoRepairScreen))

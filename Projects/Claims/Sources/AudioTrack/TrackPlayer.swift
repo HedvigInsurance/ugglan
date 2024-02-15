@@ -46,7 +46,7 @@ struct TrackPlayer: View {
                 }
             }
             .padding(.horizontal, 16)
-            .frame(height: 64)
+            .frame(height: 72)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
