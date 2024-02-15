@@ -17,4 +17,4 @@ jobs:
         with:
           xcode-version: "15.1"
       - name: Post checkout
-        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/githooks.sh arch -x86_64 scripts/translations.sh scripts/swiftgen.sh scripts/codegen.sh tuist generate
+        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/githooks.sh arch -x86_64 scripts/translations.sh scripts/swiftgen.sh scripts/codegen.sh tuist generate scripts/configure-embed-app-extensions.sh
