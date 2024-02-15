@@ -15,7 +15,7 @@ public enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
     case toogleMyselfAsInsured
-    case setPolicyCoInsured(PolicyCoinsuredPersonModel)
+    case setPolicyCoInsured([PolicyCoinsuredPersonModel])
     case setDownloadUrl(urL: URL)
 
     case navigation(TravelInsuranceNavigationAction)
@@ -29,8 +29,6 @@ public enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openCreateNew
     case openStartDateScreen
     case openWhoIsTravelingScreen
-    case openCoinsured(member: PolicyCoinsuredPersonModel?)
-    case dismissAddUpdateCoinsured
     case dismissCreateTravelCertificate
     case openFreeTextChat
     case openProcessingScreen

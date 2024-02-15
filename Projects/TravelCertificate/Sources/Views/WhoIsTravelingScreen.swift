@@ -25,11 +25,12 @@ struct WhoIsTravelingScreen: View {
                     let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
 
                     let insuranceHolder = CoInsuredModel(
-                        firstName: state.travelInsuranceModel?.fullName,
+                        firstName: contract?.firstName,
+                        lastName: contract?.lastName,
                         SSN: contract?.ssn,
                         needsMissingInfo: false
                     )
-                    var allValues = [(object: insuranceHolder, displayName: insuranceHolder.firstName ?? "")]
+                    var allValues = [(object: insuranceHolder, displayName: insuranceHolder.fullName ?? "")]
                     let allCoInsuredOnContract =
                         contract?.coInsured.filter({ !$0.hasMissingInfo })
                         .map { (object: $0, displayName: $0.fullName ?? "") } ?? []
@@ -46,25 +47,14 @@ struct WhoIsTravelingScreen: View {
                     return [insuranceHolder]
                 },
                 onSelected: { selectedCoInsured in
-                    let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-
-                    selectedCoInsured.forEach { coInsured in
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
-
-                        let newPolicyCoInsured = PolicyCoinsuredPersonModel(
-                            fullName: (coInsured.0?.fullName ?? coInsured.0?.firstName) ?? "",
-                            personalNumber: coInsured.0?.SSN,
-                            birthDate: coInsured.0?.birthDate
+                    let listOfIncludedTravellers = selectedCoInsured.map {
+                        PolicyCoinsuredPersonModel(
+                            fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
+                            personalNumber: $0.0?.SSN,
+                            birthDate: $0.0?.birthDate
                         )
-                        store.send(.setPolicyCoInsured(newPolicyCoInsured))
-
-                        if newPolicyCoInsured.fullName == contract?.fullName
-                            && newPolicyCoInsured.personalNumber == contract?.ssn
-                        {
-                            store.send(.toogleMyselfAsInsured)
-                        }
                     }
+                    store.send(.setPolicyCoInsured(listOfIncludedTravellers))
                     vm.validateAndSubmit()
                 },
                 attachToBottom: true,

@@ -1,4 +1,5 @@
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import Presentation
@@ -124,10 +125,15 @@ public final class TravelInsuranceStore: LoadingStateStore<
         case .toogleMyselfAsInsured:
             newState.travelInsuranceModel?.isPolicyHolderIncluded = true
         case let .setPolicyCoInsured(data):
-            let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
-                .firstIndex(where: { $0.personalNumber == data.personalNumber || $0.birthDate == data.birthDate })
-            if indexOfUser == nil {
-                newState.travelInsuranceModel?.policyCoinsuredPersons.append(data)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contract = contractStore.state.contractForId(state.travelInsuranceConfig?.contractId ?? "")
+
+            data.forEach { coInsured in
+                if coInsured.fullName == contract?.fullName && coInsured.personalNumber == contract?.ssn {
+                    self.send(.toogleMyselfAsInsured)
+                } else {
+                    newState.travelInsuranceModel?.policyCoinsuredPersons.append(contentsOf: data)
+                }
             }
         case let .setDate(date, type):
             switch type {
@@ -151,10 +157,6 @@ public final class TravelInsuranceStore: LoadingStateStore<
             case .openStartDateScreen:
                 break
             case .openWhoIsTravelingScreen:
-                break
-            case .openCoinsured:
-                break
-            case .dismissAddUpdateCoinsured:
                 break
             case .dismissCreateTravelCertificate:
                 break
