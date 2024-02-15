@@ -39,9 +39,11 @@ struct WhoIsTravelingScreen: View {
                 }(),
                 preSelectedItems: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
                     let insuranceHolder = CoInsuredModel(
-                        firstName: state.travelInsuranceModel?.fullName,
-                        SSN: contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")?.ssn,
+                        firstName: contract?.firstName,
+                        lastName: contract?.lastName,
+                        SSN: contract?.ssn,
                         needsMissingInfo: false
                     )
                     return [insuranceHolder]
