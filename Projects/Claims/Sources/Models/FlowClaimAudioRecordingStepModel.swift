@@ -9,9 +9,12 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let inputTextContent: String?
     let optionalAudio: Bool
 
-    init(
-        with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment
+    init?(
+        with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment?
     ) {
+        guard let data else {
+            return nil
+        }
         self.id = data.id
         self.questions = data.questions
         self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))

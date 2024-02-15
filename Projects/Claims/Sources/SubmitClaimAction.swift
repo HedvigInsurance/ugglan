@@ -122,6 +122,8 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
         let singleItemStepModel: FlowClamSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
+        let audioRecordingModel: FlowClaimAudioRecordingStepModel?
+        let fileUploadModel: FlowClaimFileUploadStepModel?
     }
 
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
@@ -133,11 +135,11 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
     case setSuccessStep(model: FlowClaimSuccessStepModel)
     case setFailedStep(model: FlowClaimFailedStepModel)
-    case setAudioStep(model: FlowClaimAudioRecordingStepModel)
+    case setAudioStep(model: FlowClaimAudioRecordingStepModel?)
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
-    case setFileUploadStep(model: FlowClaimFileUploadStepModel)
+    case setFileUploadStep(model: FlowClaimFileUploadStepModel?)
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
