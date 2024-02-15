@@ -14,7 +14,9 @@ extension AppJourney {
     static func configureQuickAction(commonClaim: CommonClaim) -> some JourneyPresentation {
         switch commonClaim {
         case .changeBank():
-            PaymentSetup(setupType: .initial).journeyThenDismiss
+            if let url = DeepLink.getUrl(from: .directDebit) {
+                configureURL(url: url)
+            }
         case .moving():
             AppJourney.movingFlow()
         case .editCoInsured():

@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public enum DeepLink: String, Codable {
     case forever
@@ -41,11 +42,44 @@ public enum DeepLink: String, Codable {
         }
     }
 
+    private var getName: String {
+        switch self {
+        case .forever:
+            return "forever"
+        case .directDebit:
+            return "direct-debit"
+        case .profile:
+            return "profile"
+        case .insurances:
+            return "insurances"
+        case .home:
+            return "home"
+        case .sasEuroBonus:
+            return "eurobonus"
+        case .payments:
+            return "payments"
+        case .contract:
+            return "contract"
+        case .travelCertificate:
+            return "travelCertificate"
+        case .helpCenter:
+            return "help-center"
+        }
+    }
+
     public static func getType(from url: URL) -> DeepLink? {
         guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {
             return nil
         }
         return type
+    }
+
+    public static func getUrl(from deeplink: DeepLink) -> URL? {
+        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.getName
+        guard let url = URL(string: path) else {
+            return nil
+        }
+        return url
     }
 
     public var tabURL: Bool {
