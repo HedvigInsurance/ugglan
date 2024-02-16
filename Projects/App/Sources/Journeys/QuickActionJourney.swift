@@ -45,7 +45,6 @@ extension AppJourney {
                     vc: SubmitClaimEmergencyScreen.journey
                 )
             } else {
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 let vc = CommonClaimDetail.journey(claim: commonClaim)
                     .withJourneyDismissButton
                     .configureTitle(commonClaim.displayTitle)
