@@ -16,6 +16,9 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "15.1"
+      - name: Setup .netrc file
+        run: |
+          echo -e "machine maven.pkg.github.com\n  login ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}\n  password ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}" > ~/.netrc
       - name: Post checkout
         run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout.sh
       - name: Bump version
