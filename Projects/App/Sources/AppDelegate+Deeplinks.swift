@@ -107,6 +107,14 @@ extension AppDelegate {
         } else if path == .helpCenter {
             let homeStore: HomeStore = globalPresentableStoreContainer.get()
             homeStore.send(.openHelpCenter)
+        } else if path == .moveContract {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
+                    let vc = AppJourney.movingFlow()
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
+                }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in

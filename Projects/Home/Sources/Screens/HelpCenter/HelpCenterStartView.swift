@@ -272,11 +272,7 @@ extension HelpCenterStartView {
             style: .modally(presentationStyle: .overFullScreen),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case let .goToQuickAction(quickAction) = action {
-                if quickAction != .changeBank() {
-                    DismissJourney()
-                }
-            } else if case .openFreeTextChat = action {
+            if case .openFreeTextChat = action {
                 DismissJourney()
             } else if case let .openHelpCenterTopicView(topic) = action {
                 HelpCenterTopicView.journey(commonTopic: topic)

@@ -1,6 +1,7 @@
 import Claims
 import Contracts
 import EditCoInsured
+import Flow
 import Foundation
 import Home
 import Payment
@@ -18,8 +19,11 @@ extension AppJourney {
                 configureURL(url: url)
             }
         case .moving():
-            AppJourney.movingFlow()
+            if let url = DeepLink.getUrl(from: .moveContract) {
+                configureURL(url: url)
+            }
         case .editCoInsured():
+            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsSupportingCoInsured = contractStore.state.activeContracts.filter({ $0.showEditCoInsuredInfo })
@@ -28,17 +32,32 @@ extension AppJourney {
                 })
 
             if !contractsSupportingCoInsured.isEmpty {
-                AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
+                openOnTop(
+                    store: claimsStore,
+                    vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
+                )
             }
         case .travelInsurance():
-            TravelInsuranceJourney.travelCertificateModally()
+            if let url = DeepLink.getUrl(from: .travelCertificate) {
+                configureURL(url: url)
+            }
         default:
             if commonClaim.layout.titleAndBulletPoint == nil {
-                SubmitClaimEmergencyScreen.journey
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                openOnTop(
+                    store: claimsStore,
+                    vc: SubmitClaimEmergencyScreen.journey
+                )
             } else {
-                CommonClaimDetail.journey(claim: commonClaim)
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let vc = CommonClaimDetail.journey(claim: commonClaim)
                     .withJourneyDismissButton
                     .configureTitle(commonClaim.displayTitle)
+
+                openOnTop(
+                    store: homeStore,
+                    vc: vc
+                )
             }
         }
     }
@@ -59,5 +78,23 @@ extension AppJourney {
         } else {
             AppJourney.webRedirect(url: url)
         }
+    }
+
+    @JourneyBuilder
+    static func openOnTop(store: some Store, vc: some JourneyPresentation) -> some JourneyPresentation {
+        let deepLinkDisposeBag = UIApplication.shared.appDelegate.deepLinkDisposeBag
+        DismissJourney()
+            .onPresent {
+                if let fromVc = UIApplication.shared.getTopViewController() {
+                    deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                        .onValue { _ in
+                            deepLinkDisposeBag += store.actionSignal.onValue { action in
+                                deepLinkDisposeBag.dispose()
+                                let disposeBag = DisposeBag()
+                                disposeBag += fromVc.present(vc)
+                            }
+                        }
+                }
+            }
     }
 }
