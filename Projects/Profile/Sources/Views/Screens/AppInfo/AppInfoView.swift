@@ -17,12 +17,19 @@ public struct AppInfoView: View {
                 memberId
                 profileVersion
                 deviceId
-                submitBugButton
             }
             .withoutHorizontalPadding
             .padding(.top, 8)
         }
         .sectionContainerStyle(.transparent)
+        .hFormAttachToBottom {
+            hSection {
+                submitBugButton
+            }
+            .withoutHorizontalPadding
+            .padding(.vertical, 16)
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     private var memberId: some View {
@@ -94,7 +101,6 @@ public struct AppInfoView: View {
     }
 
     private var submitBugButton: some View {
-
         let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberId
         let systemVersion = UIDevice.current.systemVersion
