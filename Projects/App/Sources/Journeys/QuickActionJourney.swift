@@ -23,7 +23,6 @@ extension AppJourney {
                 configureURL(url: url)
             }
         case .editCoInsured():
-            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsSupportingCoInsured = contractStore.state.activeContracts.filter({ $0.showEditCoInsuredInfo })
@@ -33,7 +32,6 @@ extension AppJourney {
 
             if !contractsSupportingCoInsured.isEmpty {
                 openOnTop(
-                    store: claimsStore,
                     vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
                 )
             }
@@ -43,9 +41,7 @@ extension AppJourney {
             }
         default:
             if commonClaim.layout.titleAndBulletPoint == nil {
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 openOnTop(
-                    store: claimsStore,
                     vc: SubmitClaimEmergencyScreen.journey
                 )
             } else {
@@ -55,7 +51,6 @@ extension AppJourney {
                     .configureTitle(commonClaim.displayTitle)
 
                 openOnTop(
-                    store: homeStore,
                     vc: vc
                 )
             }
@@ -81,18 +76,15 @@ extension AppJourney {
     }
 
     @JourneyBuilder
-    static func openOnTop(store: some Store, vc: some JourneyPresentation) -> some JourneyPresentation {
+    static func openOnTop(vc: some JourneyPresentation) -> some JourneyPresentation {
         let deepLinkDisposeBag = UIApplication.shared.appDelegate.deepLinkDisposeBag
         DismissJourney()
             .onPresent {
                 if let fromVc = UIApplication.shared.getTopViewController() {
                     deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                         .onValue { _ in
-                            deepLinkDisposeBag += store.actionSignal.onValue { action in
-                                deepLinkDisposeBag.dispose()
-                                let disposeBag = DisposeBag()
-                                disposeBag += fromVc.present(vc)
-                            }
+                            let disposeBag = DisposeBag()
+                            disposeBag += fromVc.present(vc)
                         }
                 }
             }
