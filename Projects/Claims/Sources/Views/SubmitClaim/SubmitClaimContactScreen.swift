@@ -49,7 +49,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .claimErrorChecker([.postContractSelect])
+            .claimErrorTrackerFor([.postContractSelect])
     }
 }
 

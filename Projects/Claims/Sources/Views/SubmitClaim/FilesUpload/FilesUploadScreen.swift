@@ -137,7 +137,7 @@ struct FilesUploadScreen: View {
             }
             .ignoresSafeArea()
         }
-        .claimErrorChecker([.postUploadFiles])
+        .claimErrorTrackerFor([.postUploadFiles])
     }
 
     private func showFilePickerAlert() {

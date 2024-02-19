@@ -41,7 +41,7 @@ struct SumitClaimEmergencySelectScreen: View {
                     isLoading = value[.postConfirmEmergency] == .loading
                 }
             }
-            .claimErrorChecker([.postConfirmEmergency])
+            .claimErrorTrackerFor([.postConfirmEmergency])
     }
 
     func buttonView() -> some View {

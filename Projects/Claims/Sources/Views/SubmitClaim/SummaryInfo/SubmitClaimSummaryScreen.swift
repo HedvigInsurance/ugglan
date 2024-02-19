@@ -65,7 +65,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .claimErrorChecker([.postSummary])
+        .claimErrorTrackerFor([.postSummary])
     }
 
     @ViewBuilder

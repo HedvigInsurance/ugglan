@@ -46,7 +46,7 @@ public struct SelectClaimEntrypointGroup: View {
                     }
                 }
             }
-            .claimErrorChecker([.fetchClaimEntrypointGroups])
+            .claimErrorTrackerFor([.fetchClaimEntrypointGroups])
     }
 
     var hasClaimEntrypoints: Bool {

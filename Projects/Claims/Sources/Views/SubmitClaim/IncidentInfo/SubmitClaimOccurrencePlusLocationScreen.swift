@@ -26,7 +26,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .claimErrorChecker([.postDateOfOccurrenceAndLocation])
+            .claimErrorTrackerFor([.postDateOfOccurrenceAndLocation])
     }
 
     @ViewBuilder

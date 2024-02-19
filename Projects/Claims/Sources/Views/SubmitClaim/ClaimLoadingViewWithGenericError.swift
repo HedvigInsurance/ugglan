@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>: ViewModifier {
+private struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>: ViewModifier {
     let loading: [StoreType.Loading]
     @PresentableStore var store: SubmitClaimStore
     func body(content: Content) -> some View {
@@ -25,7 +25,7 @@ struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>: ViewMo
 }
 
 extension View {
-    func claimErrorChecker<StoreType: SubmitClaimStore>(_ loading: [StoreType.Loading]) -> some View {
+    func claimErrorTrackerFor<StoreType: SubmitClaimStore>(_ loading: [StoreType.Loading]) -> some View {
         modifier(ClaimLoadingViewWithGenericError<StoreType>(loading: loading))
     }
 }

@@ -37,10 +37,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         if isAudioInput {
             audioInputForm
-                .claimErrorChecker([.postAudioRecording])
+                .claimErrorTrackerFor([.postAudioRecording])
         } else {
             textInputForm
-                .claimErrorChecker([.postAudioRecording])
+                .claimErrorTrackerFor([.postAudioRecording])
         }
     }
 

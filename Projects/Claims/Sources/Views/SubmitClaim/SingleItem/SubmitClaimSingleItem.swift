@@ -37,7 +37,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
         }
-        .claimErrorChecker([.postSingleItem])
+        .claimErrorTrackerFor([.postSingleItem])
     }
 
     @ViewBuilder

@@ -40,7 +40,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
         }
         .presentableStoreLensAnimation(.spring())
-        .claimErrorChecker([.postSingleItemCheckout])
+        .claimErrorTrackerFor([.postSingleItemCheckout])
     }
 
     func getFormContent(from singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
