@@ -137,7 +137,7 @@ public class TerminationFlowJourney {
                 description: L10n.somethingWentWrong,
                 icon: .triangle,
                 buttons: .init(
-                    actionButtonAttachedToBottom: .init(
+                    actionButton: .init(
                         buttonTitle: L10n.openChat,
                         buttonAction: {
                             let store: TerminationContractStore = globalPresentableStoreContainer.get()

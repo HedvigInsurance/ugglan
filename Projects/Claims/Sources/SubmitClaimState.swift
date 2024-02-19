@@ -49,6 +49,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var fileUploadStep: FlowClaimFileUploadStepModel?
     @OptionalTransient var progress: Float?
     @OptionalTransient var previousProgress: Float?
+    @OptionalTransient var retryingAction: SubmitClaimsAction?
     @Transient(defaultValue: EntrypointState()) var entrypoints: EntrypointState
 
     var claimAudioRecordingPath: URL {

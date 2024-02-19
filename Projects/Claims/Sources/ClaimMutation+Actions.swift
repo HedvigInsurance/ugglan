@@ -110,7 +110,9 @@ extension GraphQLMutation {
                             callback(.value(.setProgress(progress: 0.3)))
                         }
                     }
-                    callback(.value(data[keyPath: keyPath].into()))
+                    let action = data[keyPath: keyPath].into()
+                    callback(.value(.setRetryAction(action: action)))
+                    callback(.value(action))
                     store.removeLoading(for: loadingType)
                     callback(.end)
                 }
