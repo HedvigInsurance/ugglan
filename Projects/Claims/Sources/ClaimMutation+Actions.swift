@@ -111,7 +111,6 @@ extension GraphQLMutation {
                         }
                     }
                     let action = data[keyPath: keyPath].into()
-                    callback(.value(.setRetryAction(action: action)))
                     callback(.value(action))
                     store.removeLoading(for: loadingType)
                     callback(.end)

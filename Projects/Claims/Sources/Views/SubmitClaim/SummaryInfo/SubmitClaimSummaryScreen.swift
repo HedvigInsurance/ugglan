@@ -53,15 +53,19 @@ public struct SubmitClaimSummaryScreen: View {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, 8)
-                    LoadingButtonWithContent(SubmitClaimStore.self, .postSummary) {
+                    hButton.LargeButton(type: .primary) {
                         store.send(.summaryRequest)
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
+                    .trackLoading(SubmitClaimStore.self, action: .postSummary)
+                    .presentableStoreLensAnimation(.default)
+
                 }
             }
             .sectionContainerStyle(.transparent)
         }
+        .claimErrorChecker([.postSummary])
     }
 
     @ViewBuilder

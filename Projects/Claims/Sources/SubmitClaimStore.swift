@@ -245,103 +245,67 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .stepModelAction(action):
             switch action {
             case let .setPhoneNumber(model):
+                removeLoading(for: .postPhoneNumber)
                 newState.phoneNumberStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openPhoneNumberScreen(model: model)))
-                }
             case let .setDateOfOccurrencePlusLocation(model):
+                removeLoading(for: .postDateOfOccurrenceAndLocation)
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(
-                        .navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: [.date, .location]))
-                    )
-                }
             case let .setDateOfOccurence(model):
+                removeLoading(for: .postDateOfOccurrenceAndLocation)
                 newState.dateOfOccurenceStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .date)))
-                }
             case let .setLocation(model):
+                removeLoading(for: .postDateOfOccurrenceAndLocation)
                 newState.locationStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .location)))
-                }
             case let .setSingleItem(model):
+                removeLoading(for: .postSingleItem)
                 newState.singleItemStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSingleItemScreen))
-                }
             case let .setSummaryStep(model):
+                removeLoading(for: .postSummary)
                 newState.summaryStep = model.summaryStep
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 newState.audioRecordingStep = model.audioRecordingModel
                 newState.fileUploadStep = model.fileUploadModel
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSummaryScreen))
-                }
             case let .setSingleItemCheckoutStep(model):
+                removeLoading(for: .postSingleItemCheckout)
                 newState.singleItemCheckoutStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openCheckoutNoRepairScreen))
-                }
             case let .setFailedStep(model):
                 newState.failedStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openFailureSceen))
-                }
                 newState.progress = nil
             case let .setSuccessStep(model):
                 newState.successStep = model
                 newState.progress = nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSuccessScreen))
-                }
             case let .setAudioStep(model):
+                removeLoading(for: .postAudioRecording)
                 newState.audioRecordingStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openAudioRecordingScreen))
-                }
             case let .setContractSelectStep(model):
+                removeLoading(for: .postContractSelect)
                 newState.contractStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSelectContractScreen))
-                }
             case let .setConfirmDeflectEmergencyStepModel(model):
+                removeLoading(for: .postConfirmEmergency)
                 newState.emergencyConfirm = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openConfirmEmergencyScreen))
-                }
             case let .setDeflectModel(model):
                 switch model.id {
                 case .FlowClaimDeflectGlassDamageStep:
                     newState.glassDamageStep = model
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.send(.navigationAction(action: .openGlassDamageScreen))
-                    }
                 case .FlowClaimDeflectPestsStep:
                     newState.pestsStep = model
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.send(.navigationAction(action: .openPestsScreen))
-                    }
                 case .FlowClaimDeflectEmergencyStep:
                     newState.emergencyStep = model
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.send(.navigationAction(action: .openEmergencyScreen))
-                    }
                 default:
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.send(.navigationAction(action: .openUpdateAppScreen))
-                    }
+                    break
                 }
             case let .setFileUploadStep(model):
+                removeLoading(for: .postUploadFiles)
                 newState.fileUploadStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    self?.send(.navigationAction(action: .openFileUploadScreen))
-                }
+
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                self?.send(.navigationAction(action: action.nextStepAction))
             }
         case .startClaimRequest:
             setLoading(for: .startClaim)
@@ -423,8 +387,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setProgress(progress):
             newState.previousProgress = newState.progress
             newState.progress = progress
-        case let .setRetryAction(action):
-            newState.retryingAction = action
         default:
             break
         }

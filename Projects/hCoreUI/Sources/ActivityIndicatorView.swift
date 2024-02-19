@@ -207,140 +207,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     }
 }
 
-public enum ButtonStyleForLoading {
-    case filledButton
-    case textButton
-}
-
-public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & Store>: View {
-    var content: () -> Content
-    let buttonAction: () -> Void
-    @PresentableStore var store: StoreType
-    private let actions: [StoreType.Loading]
-    let buttonStyleSelect: ButtonStyleForLoading?
-
-    @State var presentError = false
-    @State var error = ""
-    @State var isLoading = false
-    var disposeBag = DisposeBag()
-
-    public init(
-        _ type: StoreType.Type,
-        _ action: StoreType.Loading,
-        buttonAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping () -> Content,
-        buttonStyleSelect: ButtonStyleForLoading? = .filledButton
-    ) {
-        self.actions = [action]
-        self.buttonAction = buttonAction
-        self.content = content
-        self.buttonStyleSelect = buttonStyleSelect
-    }
-
-    public init(
-        _ type: StoreType.Type,
-        _ actions: [StoreType.Loading],
-        buttonAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping () -> Content,
-        buttonStyleSelect: ButtonStyleForLoading? = .filledButton
-    ) {
-        self.actions = actions
-        self.buttonAction = buttonAction
-        self.content = content
-        self.buttonStyleSelect = buttonStyleSelect
-    }
-
-    public var body: some View {
-        loadingButton
-            .alert(isPresented: $presentError) {
-                Alert(
-                    title: Text(L10n.somethingWentWrong),
-                    message: Text(error),
-                    dismissButton: .default(Text(L10n.alertOk)) {
-                        for action in actions {
-                            store.removeLoading(for: action)
-                        }
-                    }
-                )
-            }
-            .onReceive(
-                store.loadingSignal
-                    .plain()
-                    .publisher
-            ) { value in
-                let actions = value.filter({ self.actions.contains($0.key) })
-                if actions.count > 0 {
-                    if actions.filter({ $0.value == .loading }).count > 0 {
-                        withAnimation {
-                            self.isLoading = true
-                            self.presentError = false
-                        }
-                    } else {
-                        var tempError = ""
-                        for action in actions {
-                            switch action.value {
-                            case .error(let error):
-                                tempError = error
-                            default:
-                                break
-                            }
-                        }
-                        self.error = tempError
-                        self.isLoading = false
-                        self.presentError = true
-                    }
-                } else {
-                    if isLoading == true {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    } else {
-                        withAnimation {
-                            self.isLoading = false
-                            self.presentError = false
-                        }
-                    }
-                }
-            }
-    }
-
-    @ViewBuilder
-    var loadingButton: some View {
-        switch buttonStyleSelect {
-        case .filledButton:
-            hButton.LargeButton(type: .primary) {
-                if !isLoading {
-                    buttonAction()
-                }
-            } content: {
-                if !isLoading {
-                    content()
-                } else {
-                    DotsActivityIndicator(.standard)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        case .textButton:
-            hButton.LargeButton(type: .ghost) {
-                if !isLoading {
-                    buttonAction()
-                }
-            } content: {
-                if !isLoading {
-                    content()
-                } else {
-                    DotsActivityIndicator(.standard)
-                        .useDarkColor
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        case .none:
-            EmptyView()
-        }
-    }
-}
-
 struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     let actions: [StoreType.Loading]
@@ -479,5 +345,133 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
                 self.error = nil
             }
         }
+    }
+}
+
+public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading & Store>: View {
+    var content: () -> Content
+    @PresentableStore var store: StoreType
+    private let actions: [StoreType.Loading]
+    @Environment(\.presentableStoreLensAnimation) var animation
+    @State var presentError = false
+    @State var error = ""
+    @State var isLoading = false
+    let bottomAction: () -> Void
+    private let showLoading: Bool
+    public init(
+        _ type: StoreType.Type,
+        _ actions: [StoreType.Loading],
+        showLoading: Bool = true,
+        bottomAction: @escaping () -> Void,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.actions = actions
+        self.content = content
+        self.showLoading = showLoading
+        self.bottomAction = bottomAction
+        let store: StoreType = globalPresentableStoreContainer.get()
+        if let state = handle(allActions: store.loadingSignal.value) {
+            _isLoading = State(initialValue: state.isLoading)
+            _error = State(initialValue: state.error ?? "")
+            _presentError = State(initialValue: state.presentError)
+        }
+    }
+
+    public var body: some View {
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            if isLoading && showLoading {
+                loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
+            } else if presentError {
+                GenericErrorView(
+                    title: L10n.somethingWentWrong,
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(buttonAction: {
+                            for action in actions {
+                                store.removeLoading(for: action)
+                            }
+                        }),
+                        dismissButton: .init(
+                            buttonTitle: L10n.openChat,
+                            buttonAction: {
+                                bottomAction()
+                            }
+                        )
+                    )
+                )
+            } else {
+                content().transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
+            }
+        }
+        .onReceive(
+            store.loadingSignal
+                .plain()
+                .publisher
+        ) { value in
+            handle(allActions: value)
+        }
+    }
+
+    @discardableResult
+    private func handle(
+        allActions: [StoreType.Loading: LoadingState<String>]
+    ) -> LoadingViewWithGenericError.ChangeStateValue? {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        var state: LoadingViewWithGenericError.ChangeStateValue?
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                state = .init(isLoading: true, presentError: false, error: nil)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                state = .init(isLoading: false, presentError: true, error: tempError)
+            }
+        } else {
+            state = .init(isLoading: false, presentError: false, error: nil)
+        }
+        if let state {
+            changeState(to: state)
+        }
+        return state
+    }
+    private func changeState(to state: LoadingViewWithGenericError.ChangeStateValue) {
+        DispatchQueue.main.async {
+            if let animation {
+                withAnimation(animation) {
+                    self.error = state.error ?? ""
+                    self.isLoading = state.isLoading
+                    self.presentError = state.presentError
+                }
+            } else {
+                self.error = state.error ?? ""
+                self.isLoading = state.isLoading
+                self.presentError = state.presentError
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+
+    private struct ChangeStateValue {
+        let isLoading: Bool
+        let presentError: Bool
+        let error: String?
     }
 }

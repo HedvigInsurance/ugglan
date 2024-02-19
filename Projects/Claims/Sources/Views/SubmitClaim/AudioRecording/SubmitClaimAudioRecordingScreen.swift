@@ -37,8 +37,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         if isAudioInput {
             audioInputForm
+                .claimErrorChecker([.postAudioRecording])
         } else {
             textInputForm
+                .claimErrorChecker([.postAudioRecording])
         }
     }
 
@@ -187,6 +189,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
                             .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
+                            .presentableStoreLensAnimation(.default)
                             hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
                                     store.send(.resetAudioRecording)
@@ -196,6 +199,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10n.embarkRecordAgain)
                             }
                             .disableOn(SubmitClaimStore.self, [.postAudioRecording])
+                            .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .onAppear {

@@ -17,9 +17,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(SubmitClaimStore.self, [.fetchClaimEntrypointGroups], [.fetchEntrypointGroups]) {
-            hForm {
-            }
+        hForm {}
             .hFormTitle(.small, .title1, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
             .hFormAttachToBottom {
@@ -48,8 +46,7 @@ public struct SelectClaimEntrypointGroup: View {
                     }
                 }
             }
-
-        }
+            .claimErrorChecker([.fetchClaimEntrypointGroups])
     }
 
     var hasClaimEntrypoints: Bool {
@@ -258,7 +255,7 @@ struct ShowTagList: View {
                     }
                 }
                 .disableOn(SubmitClaimStore.self, [.startClaim])
-                LoadingButtonWithContent(SubmitClaimStore.self, .startClaim) {
+                hButton.LargeButton(type: .primary) {
                     if selection != nil && selection != "" {
                         notValid = false
                         onButtonClick()
@@ -271,6 +268,8 @@ struct ShowTagList: View {
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                 }
+                .trackLoading(SubmitClaimStore.self, action: .startClaim)
+                .presentableStoreLensAnimation(.default)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

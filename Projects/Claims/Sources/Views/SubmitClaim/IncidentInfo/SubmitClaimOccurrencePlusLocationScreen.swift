@@ -26,6 +26,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
+            .claimErrorChecker([.postDateOfOccurrenceAndLocation])
     }
 
     @ViewBuilder
@@ -76,12 +77,13 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var continueButton: some View {
-        LoadingButtonWithContent(SubmitClaimStore.self, .postDateOfOccurrenceAndLocation) {
+        hButton.LargeButton(type: .primary) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
+        .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
+        .presentableStoreLensAnimation(.default)
     }
 }
 

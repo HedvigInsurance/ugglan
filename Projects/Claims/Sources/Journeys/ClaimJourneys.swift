@@ -608,10 +608,7 @@ public class ClaimJourneys {
                     actionButton: .init(
                         buttonAction: {
                             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                            if let retryAction = store.state.retryingAction {
-                                store.send(.popClaimFlow)
-                                store.send(retryAction)
-                            }
+                            store.send(.popClaimFlow)
                         }
                     ),
                     dismissButton: .init(

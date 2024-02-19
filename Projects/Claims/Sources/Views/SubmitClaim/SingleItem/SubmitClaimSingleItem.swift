@@ -25,17 +25,19 @@ public struct SubmitClaimSingleItem: View {
                     hSection {
                         getFields(singleItemStep: singleItemStep)
                             .disableOn(SubmitClaimStore.self, [.postSingleItem])
-
-                        LoadingButtonWithContent(SubmitClaimStore.self, .postSingleItem) {
+                        hButton.LargeButton(type: .primary) {
                             store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
+                        .trackLoading(SubmitClaimStore.self, action: .postSingleItem)
+                        .presentableStoreLensAnimation(.default)
                     }
                     .sectionContainerStyle(.transparent)
                 }
             }
         }
+        .claimErrorChecker([.postSingleItem])
     }
 
     @ViewBuilder
@@ -54,7 +56,6 @@ public struct SubmitClaimSingleItem: View {
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
         {
-            //            hSection {
             hFloatingField(
                 value: singleItemStep?.getBrandOrModelName() ?? "",
                 placeholder: L10n.singleItemInfoBrand,
@@ -62,13 +63,10 @@ public struct SubmitClaimSingleItem: View {
                     store.send(.navigationAction(action: .openBrandPicker))
                 }
             )
-            //            }
-            //            .sectionContainerStyle(.transparent)
         }
     }
 
     @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
-        //        hSection {
         hDatePickerField(
             config: .init(
                 maxDate: Date(),
@@ -79,13 +77,10 @@ public struct SubmitClaimSingleItem: View {
         ) { date in
             store.send(.setSingleItemPurchaseDate(purchaseDate: date))
         }
-        //        }
-        //        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
         if !(claim?.availableItemProblems.isEmpty ?? true) {
-            //            hSection {
             hFloatingField(
                 value: claim?.getChoosenDamagesAsText() ?? "",
                 placeholder: L10n.Claims.Item.Screen.Damage.button,
@@ -93,14 +88,10 @@ public struct SubmitClaimSingleItem: View {
                     store.send(.navigationAction(action: .openDamagePickerScreen))
                 }
             )
-            //            }
-            //            .sectionContainerStyle(.transparent)
         }
     }
 
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
-
-        //        hSection {
         hFloatingField(
             value: (claim?.purchasePrice != nil)
                 ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
@@ -109,8 +100,6 @@ public struct SubmitClaimSingleItem: View {
                 store.send(.navigationAction(action: .openPriceInput))
             }
         )
-        //        }
-        //        .sectionContainerStyle(.transparent)
     }
 }
 
