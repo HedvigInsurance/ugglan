@@ -32,7 +32,9 @@ public class TokenRefresher {
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             if !isDemoMode {
+                forceLogoutHook()
                 log.info("Access token refresh missing token", error: nil, attributes: nil)
+                return Future(result: .failure(AuthError.refreshTokenExpired))
             }
             return Future(result: .success)
         }
