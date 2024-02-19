@@ -153,7 +153,7 @@ struct FilesUploadScreen: View {
     }
 }
 
-private class FilesUploadViewModel: ObservableObject {
+public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
     @Published var hasFilesToUpload: Bool = false

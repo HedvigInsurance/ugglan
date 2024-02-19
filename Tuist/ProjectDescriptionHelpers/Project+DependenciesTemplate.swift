@@ -22,7 +22,6 @@ public enum ExternalDependencies: CaseIterable {
     case svgkit
     case unleashProxyClientSwift
     case argumentParser
-    case packageDescription
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -86,7 +85,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.20.0"))]
         case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.820240131153351"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1620240214113022"))
             ]
         case .tagkit:
             return [
@@ -111,10 +110,6 @@ public enum ExternalDependencies: CaseIterable {
         case .argumentParser:
             return [
                 .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
-            ]
-        case .packageDescription:
-            return [
-                .package(url: "https://github.com/apple/swift-package-manager", .upToNextMajor(from: "0.6.0"))
             ]
         }
     }
@@ -180,8 +175,6 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ApolloIosCodegen")]
         case .argumentParser:
             return [.package(product: "ArgumentParser")]
-        case .packageDescription:
-            return [.package(product: "PackageDescription")]
         }
     }
 }

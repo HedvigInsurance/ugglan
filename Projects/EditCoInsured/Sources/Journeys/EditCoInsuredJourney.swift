@@ -260,12 +260,17 @@ public class EditCoInsuredJourney {
                     let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                     contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
                 },
-                singleSelect: true
+                singleSelect: true,
+                hButtonText: L10n.generalContinueButton
             ),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            getScreen(for: action)
+            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
         .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }

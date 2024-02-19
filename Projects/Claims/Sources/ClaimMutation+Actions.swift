@@ -40,7 +40,11 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
                         dateOfOccurenceModel: .init(
                             with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
                         ),
-                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
+                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment),
+                        audioRecordingModel: .init(
+                            with: step.audioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment
+                        ),
+                        fileUploadModel: .init(with: step.fileUploadStep?.fragments.flowClaimFileUploadStepFragment)
                     )
                 )
             )

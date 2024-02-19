@@ -68,7 +68,7 @@ public struct ClaimDetailView: View {
                 if vm.showUploadedFiles {
                     hSection {
                         if let player {
-                            ClaimDetailFilesView(
+                            TrackPlayerView(
                                 audioPlayer: player
                             )
                             .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }

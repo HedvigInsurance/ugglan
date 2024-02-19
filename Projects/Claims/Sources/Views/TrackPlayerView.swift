@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ClaimDetailFilesView: View {
+struct TrackPlayerView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
     var body: some View {

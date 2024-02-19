@@ -110,6 +110,9 @@ extension HomeView {
                         HomeBottomScrollView(memberId: memberId)
                         FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
                             .slideUpFadeAppearAnimation()
+                        VStack(spacing: 8) {
+                            openHelpCenter
+                        }
                     }
                 case .terminated:
                     VStack(spacing: 16) {

@@ -189,6 +189,12 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     singleItemStep {
         ...FlowClaimSingleItemStepFragment
     }
+    audioRecordingStep {
+        ...FlowClaimAudioRecordingStepFragment
+    }
+    fileUploadStep {
+        ...FlowClaimFileUploadStepFragment
+    }
 }
 
 fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
