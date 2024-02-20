@@ -1,5 +1,6 @@
 import Apollo
-import Datadog
+import DatadogInternal
+import DatadogRUM
 import Foundation
 import UIKit
 
@@ -26,7 +27,7 @@ struct RUMViewsPredicate: UIKitRUMViewsPredicate {
     }
 }
 
-struct RUMUserActionsPredicate: UIKitRUMUserActionsPredicate {
+struct RUMUserActionsPredicate: UIKitRUMActionsPredicate {
     func rumAction(targetView: UIView) -> RUMAction? {
         if let derivedFromL10N = targetView.accessibilityLabel?.derivedFromL10n {
             return .init(name: derivedFromL10N.key)
@@ -42,7 +43,7 @@ class InterceptingURLSessionClient: URLSessionClient {
         rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil,
         completion: @escaping URLSessionClient.Completion
     ) -> URLSessionTask {
-        guard let instrumentedRequest = URLSessionInterceptor.shared?.modify(request: request) else {
+        guard let instrumentedRequest = URLSessionInterceptor.shared()?.intercept(request: request) else {
             return super
                 .sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
         }
@@ -53,7 +54,7 @@ class InterceptingURLSessionClient: URLSessionClient {
                 rawTaskCompletionHandler: rawTaskCompletionHandler,
                 completion: completion
             )
-        URLSessionInterceptor.shared?.taskCreated(task: task)
+        URLSessionInterceptor.shared()?.intercept(task: task)
 
         return task
     }
@@ -64,17 +65,17 @@ class InterceptingURLSessionClient: URLSessionClient {
         didFinishCollecting metrics: URLSessionTaskMetrics
     ) {
 
-        URLSessionInterceptor.shared?.taskMetricsCollected(task: task, metrics: metrics)
+        URLSessionInterceptor.shared()?.task(task, didFinishCollecting: metrics)
         super.urlSession(session, task: task, didFinishCollecting: metrics)
     }
 
     override func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        URLSessionInterceptor.shared?.taskCompleted(task: task, error: error)
+        URLSessionInterceptor.shared()?.task(task, didCompleteWithError: error)
         super.urlSession(session, task: task, didCompleteWithError: error)
     }
 
     override func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        URLSessionInterceptor.shared?.taskReceivedData(task: dataTask, data: data)
+        URLSessionInterceptor.shared()?.task(dataTask, didReceive: data)
         super.urlSession(session, dataTask: dataTask, didReceive: data)
     }
 }

@@ -3,8 +3,8 @@ import Authentication
 import Chat
 import Claims
 import CoreDependencies
-import Datadog
-import DatadogCrashReporting
+import DatadogInternal
+import DatadogLogs
 import Flow
 import Form
 import Foundation
@@ -197,10 +197,23 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
-        hGraphQL.log = Logger.builder
-            .sendNetworkInfo(true)
-            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
-            .build()
+
+        let config = Logger.Configuration(
+            service: "ios",
+            networkInfoEnabled: true,
+            bundleWithRumEnabled: true,
+            bundleWithTraceEnabled: true,
+            remoteSampleRate: 0,
+            remoteLogThreshold: .info,
+            consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
+        )
+
+        hGraphQL.log = Logger.create(with: config) as? any Logging
+
+        //        hGraphQL.log = Logger.builder
+        //            .sendNetworkInfo(true)
+        //            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+        //            .build()
         setupPresentableStoreLogger()
 
         log.info("Starting app")

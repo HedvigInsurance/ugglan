@@ -1,10 +1,11 @@
+import DatadogLogs
 import Foundation
 
 public typealias AttributeKey = String
 
 public typealias AttributeValue = Encodable
 
-public protocol Logging {
+public protocol Logging: LoggerProtocol {
     /// Sends a DEBUG log message.
     /// - Parameters:
     ///   - message: the message to be logged
