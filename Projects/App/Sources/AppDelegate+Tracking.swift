@@ -3,7 +3,6 @@ import DatadogCrashReporting
 import DatadogLogs
 import DatadogRUM
 import DatadogTrace
-import Foundation
 import hCore
 import hGraphQL
 

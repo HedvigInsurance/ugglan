@@ -3,8 +3,6 @@ import Authentication
 import Chat
 import Claims
 import CoreDependencies
-import DatadogCore
-import DatadogInternal
 import DatadogLogs
 import Flow
 import Form

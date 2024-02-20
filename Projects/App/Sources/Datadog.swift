@@ -1,7 +1,6 @@
 import Apollo
 import DatadogInternal
 import DatadogRUM
-import Foundation
 import UIKit
 
 struct RUMViewsPredicate: UIKitRUMViewsPredicate {

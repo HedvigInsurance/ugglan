@@ -1,6 +1,5 @@
 import DatadogLogs
 import DatadogRUM
-import Foundation
 import hGraphQL
 
 class DatadogLogger: hGraphQL.Logging {
