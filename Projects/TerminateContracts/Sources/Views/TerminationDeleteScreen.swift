@@ -26,8 +26,7 @@ struct TerminationDeleteScreen: View {
                 ),
                 icon: .triangle,
                 buttons: .init(
-                    actionButton: nil,
-                    actionButtonAttachedToBottom: .init(
+                    actionButton: .init(
                         buttonTitle: L10n.terminateContractDeletionContinueButton,
                         buttonAction: {
                             onSelected()
