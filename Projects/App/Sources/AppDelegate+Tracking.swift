@@ -49,20 +49,6 @@ extension AppDelegate {
 
         Logs.enable()
 
-        //        .register(urlSessionHandler: let urlSessionHandler = TracingURLSessionHandler)
-
-        //        Global.rum = RUMMonitor.initialize()
-        //        RUMMonitor.shared().ini
-
-        //        Global.sharedTracer = Tracer.initialize(
-        //            configuration: .init(
-        //                serviceName: "ios",
-        //                sendNetworkInfo: true,
-        //                bundleWithRUM: true,
-        //                globalTags: [:]
-        //            )
-        //        )
-
         RUM.enable(
             with: RUM.Configuration(
                 applicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
@@ -96,13 +82,6 @@ extension AppDelegate {
         )
 
         CrashReporting.enable()
-
-        //        URLSessionInstrumentation.enable(
-        //            with: .init(
-        //                delegateClass: SessionDelegate.self
-        //            )
-        //        )
-        //
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
