@@ -500,6 +500,13 @@ public struct AgreementDisplayItem: Codable, Hashable {
     let displayValue: String
 
     public init(
+        title displayTitle: String,
+        value displayValue: String
+    ) {
+        self.displayTitle = displayTitle
+        self.displayValue = displayValue
+    }
+    public init(
         data: OctopusGraphQL.AgreementDisplayItemFragment
     ) {
         self.displayTitle = data.displayTitle
