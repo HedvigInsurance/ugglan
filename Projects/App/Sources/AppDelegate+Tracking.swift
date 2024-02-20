@@ -1,10 +1,6 @@
 import DatadogCore
 import DatadogCrashReporting
-import DatadogInternal
-//import DatadogSessionReplay
 import DatadogLogs
-//import DatadogObjc
-import DatadogPrivate
 import DatadogRUM
 import DatadogTrace
 import Foundation
@@ -13,21 +9,6 @@ import hGraphQL
 
 extension AppDelegate {
     func setupAnalyticsAndTracking() {
-        //        Datadog.initialize(
-        //            appContext: .init(),
-        //            trackingConsent: .granted,
-        //            configuration: Datadog.Configuration
-        //                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
-        //                .trackUIKitRUMViews(using: RUMViewsPredicate())
-        //                .trackURLSession(firstPartyHosts: [
-        //                    Environment.current.octopusEndpointURL.host ?? "",
-        //                    Environment.current.claimsApiURL.host ?? "",
-        //                    Environment.current.odysseyApiURL.host ?? "",
-        //                ])
-        //                .set(uploadFrequency: .frequent)
-        //                .build()
-        //        )
-        //        requestPermissionForTracking()
         let configuration = Datadog.Configuration(
             clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
             env: Environment.current.datadogName,
