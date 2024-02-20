@@ -158,6 +158,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogLogs"),
                 .package(product: "DatadogCore"),
                 .package(product: "DatadogRUM"),
+                .package(product: "DatadogTrace"),
             ]
         case .authlib:
             return [

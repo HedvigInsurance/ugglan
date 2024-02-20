@@ -5,6 +5,8 @@ import DatadogInternal
 import DatadogLogs
 //import DatadogObjc
 import DatadogPrivate
+import DatadogRUM
+import DatadogTrace
 import Foundation
 import hCore
 import hGraphQL
@@ -15,17 +17,6 @@ extension AppDelegate {
         //            appContext: .init(),
         //            trackingConsent: .granted,
         //            configuration: Datadog.Configuration
-        //                .builderUsing(
-        //                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
-        //                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
-        //                    environment: Environment.current.datadogName
-        //                )
-        //                .set(serviceName: "ios")
-        //                .set(endpoint: .eu1)
-        //                .enableLogging(true)
-        //                .enableTracing(true)
-        //                .enableCrashReporting(using: DDCrashReportingPlugin())
-        //                .enableRUM(true)
         //                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
         //                .trackUIKitRUMViews(using: RUMViewsPredicate())
         //                .trackURLSession(firstPartyHosts: [
@@ -36,21 +27,16 @@ extension AppDelegate {
         //                .set(uploadFrequency: .frequent)
         //                .build()
         //        )
-
+        //        requestPermissionForTracking()
         let configuration = Datadog.Configuration(
             clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
             env: Environment.current.datadogName,
             site: .eu1,
-            service: "iOS",
+            service: "ios",
             bundle: .main,
             batchSize: .medium,
             uploadFrequency: .average,
-            //            proxyConfiguration: [
-            //                Environment.current.octopusEndpointURL.host ?? "",
-            //                Environment.current.claimsApiURL.host ?? "",
-            //                Environment.current.odysseyApiURL.host ?? "",
-            //            ],
-            proxyConfiguration: .none,
+            proxyConfiguration: nil,
             encryption: .none,
             serverDateProvider: .none,
             batchProcessingLevel: .medium,
@@ -58,8 +44,7 @@ extension AppDelegate {
         )
         Datadog.initialize(
             with: configuration,
-            trackingConsent: .granted,
-            instanceName: "iOS"
+            trackingConsent: .granted
         )
 
         Logs.enable()
@@ -78,6 +63,46 @@ extension AppDelegate {
         //            )
         //        )
 
+        RUM.enable(
+            with: RUM.Configuration(
+                applicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
+                uiKitViewsPredicate: DefaultUIKitRUMViewsPredicate(),
+                uiKitActionsPredicate: DefaultUIKitRUMActionsPredicate(),
+                urlSessionTracking: RUM.Configuration.URLSessionTracking(
+                    firstPartyHostsTracing: .trace(
+                        hosts: [
+                            Environment.current.octopusEndpointURL.host ?? "",
+                            Environment.current.claimsApiURL.host ?? "",
+                            Environment.current.odysseyApiURL.host ?? "",
+                        ],
+                        sampleRate: 100
+                    )
+                )
+            )
+        )
+
+        Trace.enable(
+            with: .init(
+                urlSessionTracking: .init(
+                    firstPartyHostsTracing: .trace(
+                        hosts: [
+                            Environment.current.octopusEndpointURL.host ?? "",
+                            Environment.current.claimsApiURL.host ?? "",
+                            Environment.current.odysseyApiURL.host ?? "",
+                        ]
+                    )
+                )
+            )
+        )
+
+        CrashReporting.enable()
+
+        //        URLSessionInstrumentation.enable(
+        //            with: .init(
+        //                delegateClass: SessionDelegate.self
+        //            )
+        //        )
+        //
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
