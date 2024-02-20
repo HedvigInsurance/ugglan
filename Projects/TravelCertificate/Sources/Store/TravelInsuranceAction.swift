@@ -14,7 +14,6 @@ public enum TravelInsuranceAction: ActionProtocol, Hashable {
 
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
-    case toogleMyselfAsInsured
     case setPolicyCoInsured([PolicyCoinsuredPersonModel])
     case setDownloadUrl(urL: URL)
 

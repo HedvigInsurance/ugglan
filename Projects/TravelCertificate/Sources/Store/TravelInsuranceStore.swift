@@ -122,15 +122,13 @@ public final class TravelInsuranceStore: LoadingStateStore<
             newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
-        case .toogleMyselfAsInsured:
-            newState.travelInsuranceModel?.isPolicyHolderIncluded = true
         case let .setPolicyCoInsured(data):
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contract = contractStore.state.contractForId(state.travelInsuranceConfig?.contractId ?? "")
 
             data.forEach { coInsured in
                 if coInsured.fullName == contract?.fullName && coInsured.personalNumber == contract?.ssn {
-                    self.send(.toogleMyselfAsInsured)
+                    newState.travelInsuranceModel?.isPolicyHolderIncluded = true
                 } else {
                     newState.travelInsuranceModel?.policyCoinsuredPersons.append(contentsOf: data)
                 }
