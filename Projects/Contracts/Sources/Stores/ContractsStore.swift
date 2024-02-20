@@ -7,7 +7,7 @@ import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var octopus: hOctopus
-
+    @Inject var fetchContractsService: FetchContractsService
     public override func effects(
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction
@@ -32,51 +32,20 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-                let query = OctopusGraphQL.ContractBundleQuery()
-                disposeBag += self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-                    .onValue { contracts in
-                        let firstName = contracts.currentMember.firstName
-                        let lastName = contracts.currentMember.lastName
-                        let ssn = contracts.currentMember.ssn
-                        let activeContracts = contracts.currentMember.activeContracts.map { contract in
-                            Contract(
-                                contract: contract.fragments.contractFragment,
-                                firstName: firstName,
-                                lastName: lastName,
-                                ssn: ssn
-                            )
-                        }
-                        callback(.value(.setActiveContracts(contracts: activeContracts)))
-
-                        let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
-                            Contract(
-                                contract: contract.fragments.contractFragment,
-                                firstName: firstName,
-                                lastName: lastName,
-                                ssn: ssn
-                            )
-                        }
-                        callback(.value(.setTerminatedContracts(contracts: terminatedContracts)))
-
-                        let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
-                            Contract(
-                                pendingContract: contract,
-                                firstName: firstName,
-                                lastName: lastName,
-                                ssn: ssn
-                            )
-                        }
-                        callback(.value(.setPendingContracts(contracts: pendingContracts)))
+                Task {
+                    do {
+                        let data = try await self.fetchContractsService.getContracts()
+                        callback(.value(.setActiveContracts(contracts: data.activeContracts)))
+                        callback(.value(.setTerminatedContracts(contracts: data.termiantedContracts)))
+                        callback(.value(.setPendingContracts(contracts: data.pendingContracts)))
                         callback(.value(.fetchCompleted))
-                    }
-                    .onError { error in
-                        if ApplicationContext.shared.isDemoMode {
-                            self.removeLoading(for: .fetchContracts)
-                        } else {
-                            self.setError(error.localizedDescription, for: .fetchContracts)
-                        }
+                        callback(.end)
+                    } catch let error {
+                        self.setError(error.localizedDescription, for: .fetchContracts)
                         callback(.value(.fetchCompleted))
+                        callback(.end(error))
                     }
+                }
                 return disposeBag
             }
         case .fetch:

@@ -2,6 +2,7 @@ import Apollo
 import Authentication
 import Chat
 import Claims
+import Contracts
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -326,6 +327,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(
+                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
+                    )
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -335,6 +339,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(
+                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
+                    )
 
                 }
             }

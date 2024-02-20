@@ -1,0 +1,47 @@
+import Foundation
+import hCore
+import hGraphQL
+
+public class FetchContractsServiceOctopus: FetchContractsService {
+    @Inject private var octopus: hOctopus
+    public init() {}
+    public func getContracts() async throws -> ContractsStack {
+        let query = OctopusGraphQL.ContractBundleQuery()
+        let contracts = try await octopus.client.fetch(query: query)
+
+        let firstName = contracts.currentMember.firstName
+        let lastName = contracts.currentMember.lastName
+        let ssn = contracts.currentMember.ssn
+        let activeContracts = contracts.currentMember.activeContracts.map { contract in
+            Contract(
+                contract: contract.fragments.contractFragment,
+                firstName: firstName,
+                lastName: lastName,
+                ssn: ssn
+            )
+        }
+
+        let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
+            Contract(
+                contract: contract.fragments.contractFragment,
+                firstName: firstName,
+                lastName: lastName,
+                ssn: ssn
+            )
+        }
+
+        let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
+            Contract(
+                pendingContract: contract,
+                firstName: firstName,
+                lastName: lastName,
+                ssn: ssn
+            )
+        }
+        return .init(
+            activeContracts: activeContracts,
+            pendingContracts: pendingContracts,
+            termiantedContracts: terminatedContracts
+        )
+    }
+}
