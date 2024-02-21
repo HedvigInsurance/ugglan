@@ -62,10 +62,10 @@ extension AppDelegate {
                             Environment.current.odysseyApiURL.host ?? "",
                         ]
                     )
-                )
+                ),
+                networkInfoEnabled: true
             )
         )
-
         CrashReporting.enable()
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
