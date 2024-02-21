@@ -43,7 +43,7 @@ public class TerminationFlowJourney {
     private static func openProgressScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: ProcessingView<TerminationContractStore, EmptyView>(
+            rootView: ProcessingView<TerminationContractStore>(
                 showSuccessScreen: false,
                 TerminationContractStore.self,
                 loading: .sendTerminationDate,
