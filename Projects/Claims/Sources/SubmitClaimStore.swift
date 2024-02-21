@@ -6,9 +6,8 @@ import hCore
 import hGraphQL
 
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
-
-    @Inject var octopus: hOctopus
     @Inject var fileUploaderClient: FileUploaderClient
+    @Inject var fetchEntrypointsService: hFetchEntrypointsService
 
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
@@ -171,21 +170,21 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             )
             return mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
         case .fetchEntrypointGroups:
-            let query = OctopusGraphQL.EntrypointGroupsQuery(type: GraphQLEnum<OctopusGraphQL.EntrypointType>(.claim))
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag +=
-                    self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-                    .onValue { data in
-                        let model = data.entrypointGroups.map { data in
-                            ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
-                        }
-                        callback(.value(.setClaimEntrypointGroupsForSelection(model)))
+                Task {
+                    do {
+                        let data = try await self.fetchEntrypointsService.get()
+                        callback(.value(.setClaimEntrypointGroupsForSelection(data)))
+
+                    } catch {
+                        callback(
+                            .value(
+                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
+                            )
+                        )
                     }
-                    .onError { [weak self] error in
-                        self?.setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
-                    }
-                    .disposable
+                }
                 return disposeBag
             }
         case let .emergencyConfirmRequest(isEmergency):

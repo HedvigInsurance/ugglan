@@ -2,7 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 
-public enum SubmitClaimsAction: ActionProtocol, Hashable {
+public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case popClaimFlow
     case submitClaimOpenFreeTextChat
@@ -45,6 +45,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
     case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
     case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
+    case setLoadingState(action: SubmitClaimsAction, state: LoadingState<String>?)
 }
 
 public enum SubmitAudioRecordingType: ActionProtocol, Hashable {
