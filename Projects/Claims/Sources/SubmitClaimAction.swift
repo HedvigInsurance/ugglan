@@ -4,6 +4,7 @@ import hCore
 
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
+    case popClaimFlow
     case submitClaimOpenFreeTextChat
 
     case fetchEntrypointGroups
@@ -140,6 +141,50 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
     case setFileUploadStep(model: FlowClaimFileUploadStepModel?)
+}
+
+extension ClaimsStepModelAction {
+    var nextStepAction: SubmitClaimsNavigationAction {
+        switch self {
+        case .setPhoneNumber(let model):
+            return .openPhoneNumberScreen(model: model)
+        case .setDateOfOccurrencePlusLocation(let model):
+            return .openDateOfOccurrencePlusLocationScreen(options: [.date, .location])
+        case .setDateOfOccurence(let model):
+            return .openDateOfOccurrencePlusLocationScreen(options: [.date])
+        case .setLocation(let model):
+            return .openDateOfOccurrencePlusLocationScreen(options: [.location])
+        case .setSingleItem(let model):
+            return .openSingleItemScreen
+        case .setSummaryStep(let model):
+            return .openSummaryScreen
+        case .setSingleItemCheckoutStep(let model):
+            return .openCheckoutNoRepairScreen
+        case .setSuccessStep(let model):
+            return .openSuccessScreen
+        case .setFailedStep(let model):
+            return .openFailureSceen
+        case .setAudioStep(let model):
+            return .openAudioRecordingScreen
+        case .setContractSelectStep(let model):
+            return .openSelectContractScreen
+        case .setConfirmDeflectEmergencyStepModel(let model):
+            return .openConfirmEmergencyScreen
+        case .setDeflectModel(let model):
+            switch model.id {
+            case .FlowClaimDeflectGlassDamageStep:
+                return .openGlassDamageScreen
+            case .FlowClaimDeflectPestsStep:
+                return .openPestsScreen
+            case .FlowClaimDeflectEmergencyStep:
+                return .openEmergencyScreen
+            default:
+                return .openUpdateAppScreen
+            }
+        case .setFileUploadStep(let model):
+            return .openFileUploadScreen
+        }
+    }
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {

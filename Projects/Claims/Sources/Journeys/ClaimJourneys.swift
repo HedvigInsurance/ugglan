@@ -602,25 +602,32 @@ public class ClaimJourneys {
 
     private static func showClaimFailureScreen() -> some JourneyPresentation {
         HostingJourney(
+            SubmitClaimStore.self,
             rootView: GenericErrorView(
                 buttons: .init(
                     actionButton: .init(
-                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                            store.send(.popClaimFlow)
+                        }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.openChat,
                         buttonAction: {
                             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                             store.send(.dissmissNewClaimFlow)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                store.send(.submitClaimOpenFreeTextChat)
+                            }
                         }
-                    ),
-                    dismissButton: .init(buttonAction: {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.dissmissNewClaimFlow)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            store.send(.submitClaimOpenFreeTextChat)
-                        }
-                    })
+                    )
                 )
             )
-        )
+        ) { action in
+            if case .popClaimFlow = action {
+                PopJourney()
+            }
+        }
         .hidesBackButton
     }
 

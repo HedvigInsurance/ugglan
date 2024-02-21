@@ -210,27 +210,26 @@ import hGraphQL
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
-
         forceLogoutHook = {
-            DispatchQueue.main.async {
-                launchView.removeFromSuperview()
+            if ApplicationState.currentState != .notLoggedIn {
+                DispatchQueue.main.async {
+                    launchView.removeFromSuperview()
+                    ApplicationState.preserveState(.notLoggedIn)
 
-                ApplicationState.preserveState(.notLoggedIn)
+                    ApplicationContext.shared.hasFinishedBootstrapping = true
+                    Launch.shared.completeAnimationCallbacker.callAll()
 
-                ApplicationContext.shared.hasFinishedBootstrapping = true
-                Launch.shared.completeAnimationCallbacker.callAll()
+                    UIApplication.shared.appDelegate.logout()
 
-                UIApplication.shared.appDelegate.logout()
-
-                let toast = Toast(
-                    symbol: .icon(hCoreUIAssets.infoShield.image),
-                    body: L10n.forceLogoutMessageTitle,
-                    subtitle: L10n.forceLogoutMessageSubtitle,
-                    textColor: .black,
-                    backgroundColor: .brand(.caution)
-                )
-
-                Toasts.shared.displayToast(toast: toast)
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        body: L10n.forceLogoutMessageTitle,
+                        subtitle: L10n.forceLogoutMessageSubtitle,
+                        textColor: .black,
+                        backgroundColor: .brand(.caution)
+                    )
+                    Toasts.shared.displayToast(toast: toast)
+                }
             }
         }
 

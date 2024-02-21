@@ -31,7 +31,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             keyboardEnabled = newIsKeyboardEnabled
                         }
                         .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
-                        LoadingButtonWithContent(SubmitClaimStore.self, ClaimsLoadingType.postPhoneNumber) {
+                        hButton.LargeButton(type: .primary) {
                             if keyboardEnabled {
                                 UIApplication.dismissKeyboard()
                             } else {
@@ -41,12 +41,15 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         } content: {
                             hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
-                        .frame(maxWidth: .infinity, alignment: .bottom)
+                        .trackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
+                        .presentableStoreLensAnimation(.default)
+
                     }
                     .padding(.bottom, 16)
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .claimErrorTrackerFor([.postContractSelect])
     }
 }
 
