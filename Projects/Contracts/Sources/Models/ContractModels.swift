@@ -11,7 +11,7 @@ public struct ProductVariant: Codable, Hashable {
     let partner: String?
     let perils: [Perils]
     let insurableLimits: [InsurableLimits]
-    let documents: [InsuranceTerm]
+    public let documents: [InsuranceTerm]
     public let displayName: String
 
     init(
@@ -32,7 +32,7 @@ public struct ProductVariant: Codable, Hashable {
         self.displayName = displayName
     }
 
-    init(
+    public init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
         self.displayName = data.displayName

@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
-
     @State var player: AudioPlayer?
     @State var showImagePicker = false
     @State var showFilePicker = false
@@ -36,101 +35,12 @@ public struct ClaimDetailView: View {
                         .padding(.top, 8)
                 }
                 .sectionContainerStyle(.transparent)
-                hSection {
-                    hRow {
-                        hText(statusParagraph)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .multilineTextAlignment(.leading)
-                    }
-                    hRow {
-                        ContactChatView(
-                            store: vm.store,
-                            id: vm.claim.id,
-                            status: vm.claim.status.rawValue
-                        )
-                        .padding(.bottom, 4)
-                    }
-                }
 
-                if let inputText = vm.claim.memberFreeText {
-                    hSection {
-                        hRow {
-                            hText(inputText)
-                        }
-                    }
-                    .withHeader {
-                        hText(L10n.ClaimStatusDetail.submittedMessage)
-                            .padding(.leading, 2)
-                    }
-                    .padding(.top, 16)
-                }
-
-                if vm.showUploadedFiles {
-                    hSection {
-                        if let player {
-                            TrackPlayerView(
-                                audioPlayer: player
-                            )
-                            .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
-                        }
-                    }
-                    .withHeader {
-                        HStack {
-                            hText(L10n.ClaimStatusDetail.uploadedFiles)
-                                .padding(.leading, 2)
-                            Spacer()
-                            InfoViewHolder(
-                                title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
-                                description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
-                            )
-                        }
-                    }
-                    .padding(.top, 16)
-                    if let fetchError = vm.fetchFilesError {
-                        hSection {
-                            GenericErrorView(
-                                description: fetchError,
-                                buttons: .init(
-                                    actionButton: .init(
-                                        buttonAction: {
-                                            Task {
-                                                await vm.fetchFiles()
-                                            }
-                                        }),
-                                    dismissButton: nil
-                                )
-                            )
-                            .hWithoutTitle
-                        }
-                        .sectionContainerStyle(.transparent)
-                    } else {
-                        hSection {
-                            FilesGridView(vm: vm.fileGridViewModel)
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
-                }
-
-                if vm.canAddFiles {
-                    hSection {
-                        Group {
-                            if !vm.hasFiles {
-                                hButton.LargeButton(type: .secondary) {
-                                    showFilePickerAlert()
-                                } content: {
-                                    hText(L10n.ClaimStatusDetail.addFiles)
-                                }
-                            } else {
-                                hButton.LargeButton(type: .secondary) {
-                                    showFilePickerAlert()
-                                } content: {
-                                    hText(L10n.ClaimStatusDetail.addMoreFiles)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
+                infoAndContactSection
+                memberFreeTextSection
+                claimDetailsSection
+                    .padding(.vertical, 16)
+                uploadFilesSection
             }
         }
         .sheet(isPresented: $showImagePicker) {
@@ -164,6 +74,175 @@ public struct ClaimDetailView: View {
 
             }
             .ignoresSafeArea()
+        }
+    }
+
+    @ViewBuilder
+    private var infoAndContactSection: some View {
+        hSection {
+            hRow {
+                hText(statusParagraph)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+            }
+            hRow {
+                ContactChatView(
+                    store: vm.store,
+                    id: vm.claim.id,
+                    status: vm.claim.status.rawValue
+                )
+                .padding(.bottom, 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var memberFreeTextSection: some View {
+        if let inputText = vm.claim.memberFreeText {
+            hSection {
+                hRow {
+                    hText(inputText)
+                }
+            }
+            .withHeader {
+                hText(L10n.ClaimStatusDetail.submittedMessage)
+                    .padding(.leading, 2)
+            }
+            .padding(.top, 16)
+        }
+    }
+
+    @ViewBuilder
+    private var claimDetailsSection: some View {
+        VStack(spacing: 16) {
+            hSection {
+                VStack(spacing: 8) {
+                    claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: vm.claim.claimType)
+                    if let incidentDate = vm.claim.incidentDate {
+                        claimDetailsRow(
+                            title: L10n.ClaimStatus.ClaimDetails.incidentDate,
+                            value: incidentDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        )
+                    }
+                    if let submitted = vm.claim.submittedAt {
+                        claimDetailsRow(
+                            title: L10n.ClaimStatus.ClaimDetails.submitted,
+                            value: submitted.localDateToIso8601Date?.displayDateDDMMMYYYYFormat ?? ""
+                        )
+                    }
+                }
+            }
+            .withHeader {
+                hText(L10n.ClaimStatus.ClaimDetails.title)
+            }
+            .hWithoutDivider
+            .sectionContainerStyle(.transparent)
+
+            termsAndConditions
+        }
+    }
+
+    @ViewBuilder
+    private func claimDetailsRow(title: String, value: String) -> some View {
+        HStack {
+            hText(title)
+                .foregroundColor(hTextColor.secondary)
+            Spacer()
+            hText(value)
+                .foregroundColor(hTextColor.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var termsAndConditions: some View {
+        if let termsAndConditionsDocument = vm.claim.productVariant?.documents.first {
+            hSection {
+                hRow {
+                    hAttributedTextView(
+                        text: AttributedPDF().attributedPDFString(for: termsAndConditionsDocument.displayName)
+                    )
+                    .id("sds_\(String(describing: vm.claim.productVariant?.displayName))")
+                }
+                .withCustomAccessory {
+                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                }
+                .onTap {
+                    if let url = URL(string: termsAndConditionsDocument.url) {
+                        vm.store.send(.openDocument(url: url, title: termsAndConditionsDocument.displayName))
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var uploadFilesSection: some View {
+        VStack(spacing: 16) {
+            if vm.showUploadedFiles {
+                hSection {
+                    if let player {
+                        TrackPlayerView(
+                            audioPlayer: player
+                        )
+                        .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
+                    }
+                }
+                .withHeader {
+                    HStack {
+                        hText(L10n.ClaimStatusDetail.uploadedFiles)
+                            .padding(.leading, 2)
+                        Spacer()
+                        InfoViewHolder(
+                            title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
+                            description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
+                        )
+                    }
+                }
+                if let fetchError = vm.fetchFilesError {
+                    hSection {
+                        GenericErrorView(
+                            description: fetchError,
+                            buttons: .init(
+                                actionButton: .init(
+                                    buttonAction: {
+                                        Task {
+                                            await vm.fetchFiles()
+                                        }
+                                    }),
+                                dismissButton: nil
+                            )
+                        )
+                        .hWithoutTitle
+                    }
+                    .sectionContainerStyle(.transparent)
+                } else {
+                    hSection {
+                        FilesGridView(vm: vm.fileGridViewModel)
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
+            }
+
+            if vm.canAddFiles {
+                hSection {
+                    VStack(spacing: 16) {
+                        hRow {
+                            hText(L10n.ClaimStatus.UploadedFiles.uploadText)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        .verticalPadding(0)
+                        hButton.MediumButton(type: .primary) {
+                            showFilePickerAlert()
+                        } content: {
+                            hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
+                        }
+                        .fixedSize()
+                    }
+                    .padding(.vertical, 32)
+                }
+                .sectionContainerStyle(.transparent)
+            }
         }
     }
 
@@ -205,12 +284,13 @@ struct ClaimDetailView_Previews: PreviewProvider {
             status: .beingHandled,
             outcome: .none,
             submittedAt: "2023-11-11",
-            closedAt: nil,
             signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
-            type: "associated type",
             memberFreeText: nil,
             payoutAmount: nil,
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return ClaimDetailView(claim: claim)
     }
