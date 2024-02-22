@@ -58,7 +58,8 @@ struct ContractDocumentsView: View {
             }
         let certficateUrl = InsuranceTerm(
             displayName: L10n.myDocumentsInsuranceCertificate,
-            url: contract.currentAgreement?.certificateUrl ?? ""
+            url: contract.currentAgreement?.certificateUrl ?? "",
+            type: .unknown
         )
         documents.append(certficateUrl)
         return documents

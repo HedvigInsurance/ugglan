@@ -155,7 +155,9 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var termsAndConditions: some View {
-        if let termsAndConditionsDocument = vm.claim.productVariant?.documents.first {
+        if let termsAndConditionsDocument = vm.claim.productVariant?.documents
+            .first(where: { $0.type == .termsAndConditions })
+        {
             hSection {
                 hRow {
                     hAttributedTextView(
