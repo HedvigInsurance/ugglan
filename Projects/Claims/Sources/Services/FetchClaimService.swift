@@ -119,13 +119,7 @@ extension ClaimModel {
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
         self.targetFileUploadUri = claim.targetFileUploadUri
-        self.productVariant = {
-            if let productVariantFragment = claim.productVariant?.fragments.productVariantFragment {
-                return .init(data: productVariantFragment)
-            } else {
-                return nil
-            }
-        }()
+        self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
     }
 }
 

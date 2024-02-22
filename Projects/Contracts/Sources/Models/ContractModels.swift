@@ -44,6 +44,13 @@ public struct ProductVariant: Codable, Hashable {
         self.documents = data.documents.map({ .init($0) })
     }
 
+    public init?(
+        data: OctopusGraphQL.ProductVariantFragment?
+    ) {
+        guard let data else { return nil }
+        self.init(data: data)
+    }
+
 }
 
 public struct Contract: Codable, Hashable, Equatable {
