@@ -29,16 +29,16 @@ struct CoInusuredInput: View {
         if vm.SSN != "" {
             vm.noSSN = false
             insuredPeopleVm.previousValue = CoInsuredModel(
-                firstName: vm.firstName,
-                lastName: vm.lastName,
+                firstName: vm.personalData.firstName,
+                lastName: vm.personalData.lastName,
                 SSN: vm.SSN,
                 needsMissingInfo: false
             )
         } else if vm.birthday != "" {
             vm.noSSN = true
             insuredPeopleVm.previousValue = CoInsuredModel(
-                firstName: vm.firstName,
-                lastName: vm.lastName,
+                firstName: vm.personalData.firstName,
+                lastName: vm.personalData.lastName,
                 birthDate: vm.birthday,
                 needsMissingInfo: false
             )
@@ -76,13 +76,13 @@ struct CoInusuredInput: View {
                         if vm.actionType == .delete {
                             hButton.LargeButton(type: .alert) {
                                 Task {
-                                    if vm.firstName == "" && vm.SSN == "" {
+                                    if vm.personalData.firstName == "" && vm.SSN == "" {
                                         store.coInsuredViewModel.removeCoInsured(.init())
                                     } else if vm.SSN != "" {
                                         store.coInsuredViewModel.removeCoInsured(
                                             .init(
-                                                firstName: vm.firstName,
-                                                lastName: vm.lastName,
+                                                firstName: vm.personalData.firstName,
+                                                lastName: vm.personalData.lastName,
                                                 SSN: vm.SSN,
                                                 needsMissingInfo: false
                                             )
@@ -90,8 +90,8 @@ struct CoInusuredInput: View {
                                     } else {
                                         store.coInsuredViewModel.removeCoInsured(
                                             .init(
-                                                firstName: vm.firstName,
-                                                lastName: vm.lastName,
+                                                firstName: vm.personalData.firstName,
+                                                lastName: vm.personalData.lastName,
                                                 birthDate: vm.birthday,
                                                 needsMissingInfo: false
                                             )
@@ -111,8 +111,8 @@ struct CoInusuredInput: View {
                                         if vm.noSSN {
                                             store.coInsuredViewModel.undoDeleted(
                                                 .init(
-                                                    firstName: vm.firstName,
-                                                    lastName: vm.lastName,
+                                                    firstName: vm.personalData.firstName,
+                                                    lastName: vm.personalData.lastName,
                                                     birthDate: vm.birthday,
                                                     needsMissingInfo: false
                                                 )
@@ -120,8 +120,8 @@ struct CoInusuredInput: View {
                                         } else {
                                             store.coInsuredViewModel.undoDeleted(
                                                 .init(
-                                                    firstName: vm.firstName,
-                                                    lastName: vm.lastName,
+                                                    firstName: vm.personalData.firstName,
+                                                    lastName: vm.personalData.lastName,
                                                     SSN: vm.SSN,
                                                     needsMissingInfo: false
                                                 )
@@ -147,8 +147,8 @@ struct CoInusuredInput: View {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.editCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             birthDate: vm.birthday,
                                                             needsMissingInfo: false
                                                         )
@@ -156,8 +156,8 @@ struct CoInusuredInput: View {
                                                 } else {
                                                     store.coInsuredViewModel.editCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             SSN: vm.SSN,
                                                             needsMissingInfo: false
                                                         )
@@ -167,8 +167,8 @@ struct CoInusuredInput: View {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.addCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             birthDate: vm.birthday,
                                                             needsMissingInfo: false
                                                         )
@@ -176,8 +176,8 @@ struct CoInusuredInput: View {
                                                 } else {
                                                     store.coInsuredViewModel.addCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             SSN: vm.SSN,
                                                             needsMissingInfo: false
                                                         )
@@ -195,8 +195,8 @@ struct CoInusuredInput: View {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.removeCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             birthDate: vm.birthday,
                                                             needsMissingInfo: false
                                                         )
@@ -204,8 +204,8 @@ struct CoInusuredInput: View {
                                                 } else {
                                                     store.coInsuredViewModel.removeCoInsured(
                                                         .init(
-                                                            firstName: vm.firstName,
-                                                            lastName: vm.lastName,
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
                                                             SSN: vm.SSN,
                                                             needsMissingInfo: false
                                                         )
@@ -271,10 +271,10 @@ struct CoInusuredInput: View {
 
     @ViewBuilder
     var deleteCoInsuredFields: some View {
-        if vm.firstName != "" && vm.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
+        if vm.personalData.firstName != "" && vm.personalData.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
             hSection {
                 hFloatingField(
-                    value: vm.fullName,
+                    value: vm.personalData.fullname,
                     placeholder: L10n.fullNameText,
                     onTap: {}
                 )
@@ -348,14 +348,14 @@ struct CoInusuredInput: View {
             HStack(spacing: 4) {
                 hFloatingTextField(
                     masking: Masking(type: .firstName),
-                    value: $vm.firstName,
+                    value: $vm.personalData.firstName,
                     equals: $vm.type,
                     focusValue: .firstName,
                     placeholder: L10n.contractFirstName
                 )
                 hFloatingTextField(
                     masking: Masking(type: .lastName),
-                    value: $vm.lastName,
+                    value: $vm.personalData.lastName,
                     equals: $vm.type,
                     focusValue: .lastName,
                     placeholder: L10n.contractLastName
@@ -393,8 +393,8 @@ struct CoInusuredInput: View {
     var buttonIsDisabled: Bool {
         if vm.noSSN {
             let birthdayIsValid = Masking(type: .birthDateCoInsured).isValid(text: vm.birthday)
-            let firstNameValid = Masking(type: .firstName).isValid(text: vm.firstName)
-            let lastNameValid = Masking(type: .lastName).isValid(text: vm.lastName)
+            let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
+            let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
             if birthdayIsValid && firstNameValid && lastNameValid {
                 return false
             }
@@ -442,8 +442,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
 }
 
 public class CoInusuredInputViewModel: ObservableObject {
-    @Published var firstName: String
-    @Published var lastName: String
+    @Published var personalData: PersonalData
     @Published var noSSN = false
     @Published var SSNError: String?
     @Published var nameFetchedFromSSN: Bool = false
@@ -455,11 +454,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var actionType: CoInsuredAction
     let contractId: String
     let coInsuredModel: CoInsuredModel?
-    @Inject var octopus: hOctopus
-
-    var fullName: String {
-        return firstName + " " + lastName
-    }
+    @Inject var editCoInsuredService: EditCoInsuredService
 
     var showErrorView: Bool {
         SSNError != nil
@@ -472,8 +467,10 @@ public class CoInusuredInputViewModel: ObservableObject {
         contractId: String
     ) {
         self.coInsuredModel = coInsuredModel
-        self.firstName = coInsuredModel.firstName ?? ""
-        self.lastName = coInsuredModel.lastName ?? ""
+        self.personalData = PersonalData(
+            firstName: coInsuredModel.firstName ?? "",
+            lastName: coInsuredModel.lastName ?? ""
+        )
         self.SSN = coInsuredModel.SSN ?? ""
         self.birthday = coInsuredModel.birthDate ?? ""
         self.actionType = actionType
@@ -518,31 +515,12 @@ public class CoInusuredInputViewModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try await withCheckedThrowingContinuation {
-                (
-                    continuation: CheckedContinuation<
-                        OctopusGraphQL.PersonalInformationQuery.Data.PersonalInformation, Error
-                    >
-                ) -> Void in
-                let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
-                self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.PersonalInformationQuery(input: SSNInput),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { value in
-                        if let data = value.personalInformation {
-                            continuation.resume(with: .success(data))
-                        }
-                    }
-                    .onError { graphQLError in
-                        continuation.resume(throwing: graphQLError)
-                    }
-            }
+            let data = try await editCoInsuredService.getPersonalInformation(SSN: SSN)
             withAnimation {
-                self.firstName = data.firstName
-                self.lastName = data.lastName
-                self.nameFetchedFromSSN = true
+                if let data = data {
+                    self.personalData = data
+                    self.nameFetchedFromSSN = true
+                }
             }
 
         } catch let exception {
@@ -572,11 +550,13 @@ public class CoInusuredInputViewModel: ObservableObject {
 }
 
 public class IntentViewModel: ObservableObject {
-    @Published var activationDate = ""
-    @Published var currentPremium = MonetaryAmount(amount: "", currency: "")
-    @Published var newPremium = MonetaryAmount(amount: "", currency: "")
-    @Published var id = ""
-    @Published var state = ""
+    @Published var intent = Intent(
+        activationDate: "",
+        currentPremium: MonetaryAmount(amount: 0, currency: ""),
+        newPremium: MonetaryAmount(amount: 0, currency: ""),
+        id: "",
+        state: ""
+    )
     @Published var isLoading: Bool = false
     @Published var firstName = ""
     @Published var lastName = ""
@@ -587,7 +567,7 @@ public class IntentViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-    @Inject var octopus: hOctopus
+    @Inject var editCoInsuredService: EditCoInsuredService
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil
@@ -604,36 +584,17 @@ public class IntentViewModel: ObservableObject {
             self.errorMessageForCoinsuredList = nil
         }
         do {
-            let coInsuredList = coInsured.map { coIn in
-                OctopusGraphQL.CoInsuredInput(
-                    firstName: GraphQLNullable(optionalValue: coIn.firstName),
-                    lastName: GraphQLNullable(optionalValue: coIn.lastName),
-                    ssn: GraphQLNullable(optionalValue: coIn.formattedSSN),
-                    birthdate: GraphQLNullable(optionalValue: coIn.birthDate?.calculate10DigitBirthDate)
-                )
-            }
-            let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(
-                coInsuredInputs: GraphQLNullable(optionalValue: coInsuredList)
-            )
-            let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
-                contractId: contractId,
-                input: coinsuredInput
-            )
-            let data = try await octopus.client.perform(mutation: mutation).midtermChangeIntentCreate
+            let data = try await editCoInsuredService.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
-                if let graphQLError = data.userError {
+                if let graphQLErrorMessage = data?.userErrorMessage {
                     switch origin {
                     case .coinsuredSelectList:
-                        self.errorMessageForCoinsuredList = graphQLError.message
+                        self.errorMessageForCoinsuredList = graphQLErrorMessage
                     case .coinsuredInput:
-                        self.errorMessageForInput = graphQLError.message
+                        self.errorMessageForInput = graphQLErrorMessage
                     }
-                } else if let intent = data.intent {
-                    self.activationDate = intent.activationDate
-                    self.currentPremium = .init(fragment: intent.currentPremium.fragments.moneyFragment)
-                    self.newPremium = .init(fragment: intent.newPremium.fragments.moneyFragment)
-                    self.id = intent.id
-                    self.state = intent.state.rawValue
+                } else if let intent = data?.intent {
+                    self.intent = intent
                 }
             }
         } catch let exception {
@@ -643,49 +604,6 @@ public class IntentViewModel: ObservableObject {
                     self.errorMessageForCoinsuredList = exception.localizedDescription
                 case .coinsuredInput:
                     self.errorMessageForInput = exception.localizedDescription
-                }
-            }
-        }
-        withAnimation {
-            self.isLoading = false
-        }
-    }
-
-    @MainActor
-    func getNameFromSSN(SSN: String) async {
-        withAnimation {
-            self.isLoading = true
-        }
-        do {
-            let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
-            let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
-            let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-            guard let data = data.personalInformation else {
-                throw EditCoInsuredError.error(message: L10n.General.errorBody)
-            }
-            withAnimation {
-                self.firstName = data.firstName
-                self.lastName = data.lastName
-                self.nameFetchedFromSSN = true
-            }
-
-        } catch let exception {
-            if let exception = exception as? GraphQLError {
-                switch exception {
-                case .graphQLError:
-                    self.enterManually = true
-                case .otherError:
-                    self.enterManually = false
-                }
-            }
-            withAnimation {
-                if let exception = exception as? GraphQLError {
-                    switch exception {
-                    case .graphQLError:
-                        self.errorMessageForInput = exception.localizedDescription
-                    case .otherError:
-                        self.errorMessageForInput = L10n.General.errorBody
-                    }
                 }
             }
         }

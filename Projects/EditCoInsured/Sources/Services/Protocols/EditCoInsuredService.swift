@@ -1,5 +1,7 @@
 import Foundation
 
 public protocol EditCoInsuredService {
-    func get(commitId: String) async throws
+    func sendMidtermChangeIntentCommit(commitId: String) async throws
+    func getPersonalInformation(SSN: String) async throws -> PersonalData?
+    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> IntentData?
 }

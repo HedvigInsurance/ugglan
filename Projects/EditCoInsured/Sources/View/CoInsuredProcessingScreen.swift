@@ -25,7 +25,7 @@ struct CoInsuredProcessingScreen: View {
             loadingViewText: L10n.contractAddCoinsuredProcessing,
             successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
             successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
                 vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))

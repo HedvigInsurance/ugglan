@@ -23,7 +23,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
                 let disposeBag = DisposeBag()
                 Task {
                     do {
-                        try await self.editCoInsuredService.get(commitId: commitId)
+                        try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
                         self.removeLoading(for: .postCoInsured)
                         callback(.value(.fetchContracts))
                         callback(.end)
