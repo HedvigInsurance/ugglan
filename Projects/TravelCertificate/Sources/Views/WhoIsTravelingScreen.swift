@@ -69,7 +69,7 @@ struct WhoIsTravelingScreen: View {
                                 buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
                                 buttonAction: {
                                     store.send(.dismissTravelInsuranceFlow)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                                         store.send(.goToEditCoInsured)
                                     }
                                 }
