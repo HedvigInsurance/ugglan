@@ -9,9 +9,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         status: ClaimStatus,
         outcome: ClaimOutcome,
         submittedAt: String?,
-        closedAt: String?,
         signedAudioURL: String?,
-        type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
         targetFileUploadUri: String
@@ -20,9 +18,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.status = status
         self.outcome = outcome
         self.submittedAt = submittedAt
-        self.closedAt = closedAt
         self.signedAudioURL = signedAudioURL
-        self.type = type
         self.subtitle = ""
         self.memberFreeText = memberFreeText
         self.payoutAmount = payoutAmount
@@ -37,11 +33,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let status: ClaimStatus
     public let outcome: ClaimOutcome
     public let submittedAt: String?
-    public let closedAt: String?
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
-    public let type: String
     public let targetFileUploadUri: String
     public var statusParagraph: String {
         switch self.status {

@@ -205,9 +205,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
             status: .beingHandled,
             outcome: .none,
             submittedAt: "2023-11-11",
-            closedAt: nil,
             signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
-            type: "associated type",
             memberFreeText: nil,
             payoutAmount: nil,
             targetFileUploadUri: ""
