@@ -158,7 +158,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 })
             )
         } else if selectedItems.count == 0 {
-            onSelected([(object: nil, displayName: manualBrandName)])
+            if manualInput && includeManualInput {
+                onSelected([(object: nil, displayName: manualBrandName)])
+            } else {
+                onSelected([])
+            }
         } else {
             if let object = selectedItems.first {
                 onSelected([(object: object, displayName: nil)])

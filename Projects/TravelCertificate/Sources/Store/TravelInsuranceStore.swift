@@ -125,7 +125,8 @@ public final class TravelInsuranceStore: LoadingStateStore<
         case let .setPolicyCoInsured(data):
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contract = contractStore.state.contractForId(state.travelInsuranceConfig?.contractId ?? "")
-
+            newState.travelInsuranceModel?.isPolicyHolderIncluded = false
+            newState.travelInsuranceModel?.policyCoinsuredPersons = []
             data.forEach { coInsured in
                 if coInsured.fullName == contract?.fullName && coInsured.personalNumber == contract?.ssn {
                     newState.travelInsuranceModel?.isPolicyHolderIncluded = true

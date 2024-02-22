@@ -60,6 +60,7 @@ struct WhoIsTravelingScreen: View {
                     vm.validateAndSubmit()
                 },
                 attachToBottom: true,
+                hButtonText: L10n.General.submit,
                 infoCard: vm.showInfoCard
                     ? .init(
                         text: L10n.TravelCertificate.missingCoinsuredInfo,
@@ -68,7 +69,7 @@ struct WhoIsTravelingScreen: View {
                                 buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
                                 buttonAction: {
                                     store.send(.dismissTravelInsuranceFlow)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                                         store.send(.goToEditCoInsured)
                                     }
                                 }
