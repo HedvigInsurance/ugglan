@@ -1,16 +1,17 @@
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import Presentation
 import hCore
 import hGraphQL
 
-final class TravelInsuranceStore: LoadingStateStore<
+public final class TravelInsuranceStore: LoadingStateStore<
     TravelInsuranceState, TravelInsuranceAction, TravelInsuranceLoadingAction
 >
 {
     @Inject var travelInsuranceClient: TravelInsuranceClient
-    override func effects(
+    public override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
     ) -> FiniteSignal<TravelInsuranceAction>? {
@@ -24,12 +25,13 @@ final class TravelInsuranceStore: LoadingStateStore<
                     self.setError(L10n.General.errorBody, for: .postTravelInsurance)
                     return disposeBag
                 }
+
                 let dto = TravenInsuranceFormDTO(
                     contractId: config.contractId,
                     startDate: travelInsuranceModel.startDate.localDateString,
                     isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
                     coInsured: travelInsuranceModel.policyCoinsuredPersons.compactMap(
-                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber) }
+                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber, birthDate: $0.birthDate) }
                     ),
                     email: travelInsuranceModel.email
                 )
@@ -86,7 +88,8 @@ final class TravelInsuranceStore: LoadingStateStore<
         }
     }
 
-    override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState {
+    public override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState
+    {
         var newState = state
         switch action {
         case .getTravelCertificateSpecification:
@@ -119,25 +122,18 @@ final class TravelInsuranceStore: LoadingStateStore<
             newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
-        case .toogleMyselfAsInsured:
-            newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
-            let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
-                .firstIndex(where: { $0.personalNumber == data.personalNumber })
-            if indexOfUser == nil {
-                newState.travelInsuranceModel?.policyCoinsuredPersons.append(data)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contract = contractStore.state.contractForId(state.travelInsuranceConfig?.contractId ?? "")
+            newState.travelInsuranceModel?.isPolicyHolderIncluded = false
+            newState.travelInsuranceModel?.policyCoinsuredPersons = []
+            data.forEach { coInsured in
+                if coInsured.fullName == contract?.fullName && coInsured.personalNumber == contract?.ssn {
+                    newState.travelInsuranceModel?.isPolicyHolderIncluded = true
+                } else {
+                    newState.travelInsuranceModel?.policyCoinsuredPersons.append(contentsOf: data)
+                }
             }
-        case let .updatePolicyCoInsured(old, new):
-            let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons
-                .firstIndex(where: { $0.personalNumber == old.personalNumber })
-            if let indexOfUser {
-                newState.travelInsuranceModel?.policyCoinsuredPersons[indexOfUser] = new
-            }
-        case let .removePolicyCoInsured(data):
-            newState.travelInsuranceModel?.policyCoinsuredPersons
-                .removeAll(where: { model in
-                    model.personalNumber == data.personalNumber
-                })
         case let .setDate(date, type):
             switch type {
             case .startDate:
@@ -161,10 +157,6 @@ final class TravelInsuranceStore: LoadingStateStore<
                 break
             case .openWhoIsTravelingScreen:
                 break
-            case .openCoinsured:
-                break
-            case .dismissAddUpdateCoinsured:
-                break
             case .dismissCreateTravelCertificate:
                 break
             case .openFreeTextChat:
@@ -178,6 +170,10 @@ final class TravelInsuranceStore: LoadingStateStore<
             case .openCreateNew:
                 break
             }
+        case .goToEditCoInsured:
+            break
+        case .dismissTravelInsuranceFlow:
+            break
         }
         return newState
     }

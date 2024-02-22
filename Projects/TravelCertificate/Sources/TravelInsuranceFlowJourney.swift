@@ -49,8 +49,7 @@ public struct TravelInsuranceFlowJourney {
     private static func showContractsList() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ContractsScreen(),
-            style: .modally(presentationStyle: .fullScreen)
+            rootView: ContractsScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openStartDateScreen = navigationAction {
@@ -94,9 +93,9 @@ public struct TravelInsuranceFlowJourney {
             if case let .navigation(navigationAction) = action {
                 if case .openProcessingScreen = navigationAction {
                     openProcessingScreen()
-                } else if case let .openCoinsured(member) = navigationAction {
-                    openCoinsured(member: member)
                 }
+            } else if case .dismissTravelInsuranceFlow = action {
+                DismissJourney()
             }
         }
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
@@ -108,27 +107,6 @@ public struct TravelInsuranceFlowJourney {
             return hosting.addDismissFlow()
         }
 
-    }
-
-    private static func openCoinsured(member: PolicyCoinsuredPersonModel?) -> some JourneyPresentation {
-        HostingJourney(
-            TravelInsuranceStore.self,
-            rootView: InsuredMemberScreen(member),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar]
-        ) { action in
-            if case let .navigation(navigationAction) = action {
-                if case .dismissAddUpdateCoinsured = navigationAction {
-                    PopJourney()
-                }
-            } else if case .setPolicyCoInsured = action {
-                PopJourney()
-            } else if case .updatePolicyCoInsured = action {
-                PopJourney()
-            } else if case .removePolicyCoInsured = action {
-                PopJourney()
-            }
-        }
     }
 
     private static func openProcessingScreen() -> some JourneyPresentation {
@@ -169,6 +147,8 @@ public struct TravelInsuranceFlowJourney {
                 } else if case .goBack = navigationAction {
                     PopJourney()
                 }
+            } else if case .dismissTravelInsuranceFlow = action {
+                DismissJourney()
             }
         }
         .configureTitle(L10n.TravelCertificate.cardTitle)
