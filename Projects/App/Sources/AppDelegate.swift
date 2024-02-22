@@ -316,6 +316,9 @@ extension ApolloClient {
                 Dependencies.shared.add(
                     module: Module { () -> TravelInsuranceClient in TravelInsuranceClientOctopus() }
                 )
+                Dependencies.shared.add(
+                    module: Module { () -> SubmitClaimService in SubmitClaimServiceOctopus() }
+                )
 
                 switch Environment.current {
                 case .staging:

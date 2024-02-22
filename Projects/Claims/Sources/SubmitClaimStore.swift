@@ -8,7 +8,7 @@ import hGraphQL
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
     @Inject var fileUploaderClient: FileUploaderClient
     @Inject var fetchEntrypointsService: hFetchEntrypointsService
-
+    @Inject var submitClaimService: SubmitClaimService
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
@@ -18,12 +18,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .submitClaimOpenFreeTextChat:
             return nil
         case let .startClaimRequest(entrypointId, entrypointOptionId):
-            let startInput = OctopusGraphQL.FlowClaimStartInput(
-                entrypointId: GraphQLNullable(optionalValue: entrypointId),
-                entrypointOptionId: GraphQLNullable(optionalValue: entrypointOptionId)
-            )
-            let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput, context: GraphQLNullable.none)
-            return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
+            return executeAsFiniteSignal {
+                await self.submitClaimService.startClaim(
+                    entrypointId: entrypointId,
+                    entrypointOptionId: entrypointOptionId
+                )
+            }
         case let .phoneNumberRequest(phoneNumberInput):
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
@@ -390,5 +390,16 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             break
         }
         return newState
+    }
+
+    private func executeAsFiniteSignal(action: @escaping () async -> Void) -> FiniteSignal<SubmitClaimsAction>? {
+        return FiniteSignal { callback in
+            let disposeBag = DisposeBag()
+            Task {
+                await action()
+                callback(.end(nil))
+            }
+            return disposeBag
+        }
     }
 }
