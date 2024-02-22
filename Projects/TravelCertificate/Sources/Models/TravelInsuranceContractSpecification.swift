@@ -6,12 +6,13 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: Date
     var minStartDate: Date
     var maxStartDate: Date
-    var isPolicyHolderIncluded: Bool = true
+    var isPolicyHolderIncluded: Bool = false
     var email: String
     let fullName: String
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 
     func isValidWithMessage() -> (valid: Bool, message: String?) {
+
         let isValid = isPolicyHolderIncluded || policyCoinsuredPersons.count > 0
         var message: String? = nil
         if !isValid {
@@ -57,9 +58,10 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     }
 }
 
-struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
+public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
-    var personalNumber: String
+    var personalNumber: String? = nil
+    var birthDate: String? = nil
 }
 
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
