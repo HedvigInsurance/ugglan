@@ -6,6 +6,6 @@ import hCore
 import hGraphQL
 
 public struct EditCoInsuredState: StateProtocol {
-
+    var loadingStates: [EditCoInsuredAction: LoadingState<String>] = [:]
     public init() {}
 }

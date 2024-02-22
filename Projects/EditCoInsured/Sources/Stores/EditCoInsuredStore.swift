@@ -9,7 +9,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
     EditCoInsuredState, EditCoInsuredAction, EditCoInsuredLoadingAction
 >
 {
-    @Inject var octopus: hOctopus
+    @Inject var editCoInsuredService: EditCoInsuredService
     let coInsuredViewModel = InsuredPeopleNewScreenModel()
     let intentViewModel = IntentViewModel()
 
@@ -19,22 +19,22 @@ public final class EditCoInsuredStore: LoadingStateStore<
     ) -> FiniteSignal<EditCoInsuredAction>? {
         switch action {
         case let .performCoInsuredChanges(commitId):
-            return FiniteSignal { [unowned self] callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        if let graphQLError = data.midtermChangeIntentCommit.userError {
-                            self.setError(graphQLError.message ?? "", for: .postCoInsured)
-                        } else {
-                            self.removeLoading(for: .postCoInsured)
-                            callback(.value(.fetchContracts))
-                            callback(.end)
-                        }
+                Task {
+                    do {
+                        try await self.editCoInsuredService.get(commitId: commitId)
+                        self.removeLoading(for: .postCoInsured)
+                        callback(.value(.fetchContracts))
+                        callback(.end)
+                    } catch {
+                        callback(
+                            .value(
+                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
+                            )
+                        )
                     }
-                    .onError({ error in
-                        self.setError(error.localizedDescription, for: .postCoInsured)
-                    })
+                }
                 return disposeBag
             }
         default:
@@ -44,14 +44,21 @@ public final class EditCoInsuredStore: LoadingStateStore<
     }
 
     public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
+        var newState = state
         switch action {
         case .performCoInsuredChanges:
             setLoading(for: .postCoInsured)
+        case let .setLoadingState(action, state):
+            if let state {
+                newState.loadingStates[action] = state
+            } else {
+                newState.loadingStates.removeValue(forKey: action)
+            }
         default:
             break
         }
 
-        return state
+        return newState
     }
 }
 
