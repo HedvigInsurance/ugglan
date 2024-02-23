@@ -586,14 +586,7 @@ public class IntentViewModel: ObservableObject {
         do {
             let data = try await editCoInsuredService.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
-                if let graphQLErrorMessage = data?.userErrorMessage {
-                    switch origin {
-                    case .coinsuredSelectList:
-                        self.errorMessageForCoinsuredList = graphQLErrorMessage
-                    case .coinsuredInput:
-                        self.errorMessageForInput = graphQLErrorMessage
-                    }
-                } else if let intent = data?.intent {
+                if let intent = data?.intent {
                     self.intent = intent
                 }
             }

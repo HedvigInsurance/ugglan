@@ -47,17 +47,16 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
             input: coinsuredInput
         )
         let data = try await octopus.client.perform(mutation: mutation).midtermChangeIntentCreate
-        if let intent = data.intent {
+
+        if let userError = data.userError {
+            throw EditCoInsuredError.error(message: userError.message ?? L10n.General.errorBody)
+        } else if let intent = data.intent {
             return IntentData(
                 activationDate: intent.activationDate,
                 currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
                 newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
                 id: intent.id,
                 state: intent.state.rawValue
-            )
-        } else if let userError = data.userError {
-            return IntentData(
-                userErrorMessage: userError.message ?? ""
             )
         }
         return nil
