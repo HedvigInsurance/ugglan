@@ -29,7 +29,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                                 .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
                             )
                         )
-                        callback(.value(.fetchProfileStateCompleted))  // remove?
+                        callback(.value(.fetchProfileStateCompleted))
                     }
                 }
                 return disposeBag
