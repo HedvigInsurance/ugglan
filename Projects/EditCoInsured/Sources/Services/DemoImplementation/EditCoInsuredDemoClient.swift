@@ -9,8 +9,8 @@ public class EditCoInsuredDemoClient: EditCoInsuredService {
         return PersonalData(firstName: "first name", lastName: "last name")
     }
 
-    public func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> IntentData? {
-        return IntentData(
+    public func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
+        return Intent(
             activationDate: "2024-02-22",
             currentPremium: MonetaryAmount(amount: "", currency: ""),
             newPremium: MonetaryAmount(amount: "", currency: ""),

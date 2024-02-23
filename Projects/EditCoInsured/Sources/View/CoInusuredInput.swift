@@ -586,9 +586,7 @@ public class IntentViewModel: ObservableObject {
         do {
             let data = try await editCoInsuredService.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
-                if let intent = data?.intent {
-                    self.intent = intent
-                }
+                self.intent = data
             }
         } catch let exception {
             withAnimation {

@@ -30,7 +30,7 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
         return personalData
     }
 
-    public func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> IntentData? {
+    public func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
         let coInsuredList = coInsured.map { coIn in
             OctopusGraphQL.CoInsuredInput(
                 firstName: GraphQLNullable(optionalValue: coIn.firstName),
@@ -51,7 +51,7 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
         if let userError = data.userError {
             throw EditCoInsuredError.error(message: userError.message ?? L10n.General.errorBody)
         } else if let intent = data.intent {
-            return IntentData(
+            return Intent(
                 activationDate: intent.activationDate,
                 currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
                 newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
@@ -59,6 +59,6 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
                 state: intent.state.rawValue
             )
         }
-        return nil
+        throw EditCoInsuredError.error(message: L10n.General.errorBody)
     }
 }
