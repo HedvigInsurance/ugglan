@@ -8,7 +8,6 @@ import DatadogCrashReporting
 import Flow
 import Form
 import Foundation
-import Hero
 import Payment
 import Presentation
 import Profile

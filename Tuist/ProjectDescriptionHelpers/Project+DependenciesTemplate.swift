@@ -12,7 +12,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case hero
     case snapshottesting
     case reveal
     case datadog
@@ -72,7 +71,6 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.7.1")
                 )
             ]
-        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .exact("1.5.0"))]
         case .snapshottesting:
             return [
                 .package(
@@ -126,7 +124,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:
             let path = Path(
