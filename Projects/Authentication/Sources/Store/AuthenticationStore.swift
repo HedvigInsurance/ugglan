@@ -318,7 +318,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             .finite()
         } else if case .logout = action {
             return FiniteSignal { callback in
-                if let token = ApolloClient.retreiveToken() {
+                if let token = try? ApolloClient.retreiveToken() {
                     self.networkAuthRepository.revoke(token: token.refreshToken) { result, _ in
                         if let _ = result as? RevokeResultSuccess {
                             callback(.value(.logoutSuccess))

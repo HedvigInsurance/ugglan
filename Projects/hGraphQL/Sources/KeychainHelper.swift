@@ -25,8 +25,8 @@ final public class KeychainHelper {
     ///   - key: Key which has to be queried
     ///   - type: Transforms the data from keychain to this required type T which has to be a `Codable`
     /// - Returns: Object from the keychain of the type specified
-    public func read<T>(key: String, type: T.Type) -> T? where T: Codable {
-        guard let data = read(key: key) else {
+    public func read<T>(key: String, type: T.Type) throws -> T? where T: Codable {
+        guard let data = try read(key: key) else {
             return nil
         }
 
@@ -82,7 +82,7 @@ final public class KeychainHelper {
         }
     }
 
-    private func read(key: String) -> Data? {
+    private func read(key: String) throws -> Data? {
         let query =
             [
                 kSecAttrService: key,
@@ -92,8 +92,16 @@ final public class KeychainHelper {
             ] as CFDictionary
 
         var result: AnyObject?
-        SecItemCopyMatching(query, &result)
-
-        return (result as? Data)
+        let status = SecItemCopyMatching(query, &result)
+        switch status {
+        case errSecSuccess:
+            let data = result as! Data
+            return data
+        case errSecItemNotFound:
+            return nil
+        default:
+            log.info("Access token refresh missing token EXCEPTION", error: nil, attributes: nil)
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
+        }
     }
 }
