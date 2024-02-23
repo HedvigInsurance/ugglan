@@ -100,8 +100,7 @@ final public class KeychainHelper {
         case errSecItemNotFound:
             return nil
         default:
-            let x: Int32 = 1_718_449_215
-            if let errMsg = SecCopyErrorMessageString(x, nil) as? String {
+            if let errMsg = SecCopyErrorMessageString(status, nil) as? String {
                 log.info(
                     "Access token refresh missing token EXCEPTION",
                     error: NSError(domain: errMsg, code: 1000),
