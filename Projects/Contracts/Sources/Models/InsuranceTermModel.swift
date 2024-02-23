@@ -11,7 +11,7 @@ public struct InsuranceTerm: Codable, Equatable, Hashable {
     ) {
         self.displayName = data.displayName
         self.url = data.url
-        self.type = TypeOfDocument.resolve(for: data.type.rawValue)
+        self.type = data.type.asTypeOfDocument
     }
 
     public init(
@@ -25,24 +25,33 @@ public struct InsuranceTerm: Codable, Equatable, Hashable {
     }
 }
 
-public enum TypeOfDocument: String, Codable {
-    case termsAndConditions = "TERMS_AND_CONDITIONS"
-    case preSaleInfoEuStandard = "PRE_SALE_INFO_EU_STANDARD"
-    case preSaleInfo = "PRE_SALE_INFO"
-    case generalTerms = "GENERAL_TERMS"
-    case privacyPolicy = "PRIVACY_POLICY"
-    case unknown = "UNKNOWN"
+public enum TypeOfDocument: Codable {
+    case termsAndConditions
+    case preSaleInfoEuStandard
+    case preSaleInfo
+    case generalTerms
+    case privacyPolicy
+    case unknown
+}
 
-    static func resolve(for typeOfDocument: String) -> Self {
-        if let concreteTypeOfDocument = Self(rawValue: typeOfDocument) {
-            return concreteTypeOfDocument
+extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
+    var asTypeOfDocument: TypeOfDocument {
+        switch self {
+        case .case(let type):
+            switch type {
+            case .generalTerms:
+                return .generalTerms
+            case .preSaleInfo:
+                return .preSaleInfo
+            case .preSaleInfoEuStandard:
+                return .preSaleInfoEuStandard
+            case .privacyPolicy:
+                return .privacyPolicy
+            case .termsAndConditions:
+                return .termsAndConditions
+            }
+        case .unknown(let string):
+            return .unknown
         }
-
-        log.warn(
-            "Got an unknown type of document \(typeOfDocument) that couldn't be resolved.",
-            error: nil,
-            attributes: nil
-        )
-        return .unknown
     }
 }
