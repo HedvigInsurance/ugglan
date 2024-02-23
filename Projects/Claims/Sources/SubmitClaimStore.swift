@@ -18,16 +18,16 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .submitClaimOpenFreeTextChat:
             return nil
         case let .startClaimRequest(entrypointId, entrypointOptionId):
-            return executeAsFiniteSignal {
-                await self.submitClaimService.startClaim(
+            return executeAsFiniteSignal(loadingType: .startClaim) {
+                try await self.submitClaimService.startClaim(
                     entrypointId: entrypointId,
                     entrypointOptionId: entrypointOptionId
                 )
             }
         case let .phoneNumberRequest(phoneNumberInput):
-            let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
-            let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
-            return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
+            return executeAsFiniteSignal(loadingType: .postContractSelect) {
+                try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
+            }
         case .dateOfOccurrenceAndLocationRequest:
             if let dateOfOccurrenceStep = state.dateOfOccurenceStep, let locationStep = state.locationStep {
                 let location = locationStep.getSelectedOption()?.value
@@ -392,12 +392,28 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         return newState
     }
 
-    private func executeAsFiniteSignal(action: @escaping () async -> Void) -> FiniteSignal<SubmitClaimsAction>? {
+    private func executeAsFiniteSignal(
+        loadingType: ClaimsLoadingType,
+        action: @escaping () async throws -> SubmitClaimStepResponse
+    ) -> FiniteSignal<SubmitClaimsAction>? {
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
             Task {
-                await action()
-                callback(.end(nil))
+                self.setLoading(for: loadingType)
+                do {
+                    let data = try await action()
+                    callback(.value(.setNewClaimId(with: data.claimId)))
+                    callback(.value(.setNewClaimContext(context: data.context)))
+                    if let progress = data.progress {
+                        callback(.value(.setProgress(progress: progress)))
+                    }
+                    callback(.value(data.action))
+                    self.removeLoading(for: loadingType)
+                    callback(.end)
+                } catch let error {
+                    self.setError(error.localizedDescription, for: loadingType)
+                    callback(.end(error))
+                }
             }
             return disposeBag
         }
