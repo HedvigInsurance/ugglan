@@ -224,7 +224,7 @@ import hGraphQL
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
                         textColor: .brand(.secondaryText),
-                        backgroundColor: .brand(.opaqueFillOne),
+                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
                         symbolColor: .brand(.secondaryText)
                     )
                     Toasts.shared.displayToast(toast: toast)
