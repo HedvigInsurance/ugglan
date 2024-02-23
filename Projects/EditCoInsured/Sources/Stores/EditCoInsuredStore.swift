@@ -28,11 +28,8 @@ public final class EditCoInsuredStore: LoadingStateStore<
                         callback(.value(.fetchContracts))
                         callback(.end)
                     } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
+                        self.setError(L10n.General.errorBody, for: .postCoInsured)
+                        callback(.end)
                     }
                 }
                 return disposeBag
@@ -44,21 +41,13 @@ public final class EditCoInsuredStore: LoadingStateStore<
     }
 
     public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
-        var newState = state
         switch action {
         case .performCoInsuredChanges:
             setLoading(for: .postCoInsured)
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
-            }
         default:
             break
         }
-
-        return newState
+        return state
     }
 }
 

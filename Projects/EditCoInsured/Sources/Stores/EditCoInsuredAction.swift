@@ -1,6 +1,6 @@
 import Presentation
 
-public indirect enum EditCoInsuredAction: ActionProtocol, Hashable {
+public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
     case performCoInsuredChanges(commitId: String)
@@ -8,7 +8,6 @@ public indirect enum EditCoInsuredAction: ActionProtocol, Hashable {
 
     case fetchContracts
     case goToFreeTextChat
-    case setLoadingState(action: EditCoInsuredAction, state: LoadingState<String>?)
 }
 
 public enum EditCoInsuredLoadingAction: LoadingProtocol {

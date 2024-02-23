@@ -8,7 +8,10 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
 
     public func sendMidtermChangeIntentCommit(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
-        try await octopus.client.perform(mutation: mutation)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let error = data.midtermChangeIntentCommit.userError {
+            throw EditCoInsuredError.error(message: error.message ?? L10n.General.errorBody)
+        }
     }
 
     public func getPersonalInformation(SSN: String) async throws -> PersonalData? {
@@ -59,56 +62,4 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
         }
         return nil
     }
-}
-
-public struct PersonalData {
-    public var firstName: String
-    public var lastName: String
-    public let fullname: String
-
-    init(
-        firstName: String,
-        lastName: String
-    ) {
-        self.firstName = firstName
-        self.lastName = lastName
-        self.fullname = firstName + " " + lastName
-    }
-}
-
-public struct IntentData {
-    let intent: Intent?
-    let userErrorMessage: String?
-
-    init(
-        activationDate: String,
-        currentPremium: MonetaryAmount,
-        newPremium: MonetaryAmount,
-        id: String,
-        state: String
-    ) {
-        self.intent = Intent(
-            activationDate: activationDate,
-            currentPremium: currentPremium,
-            newPremium: newPremium,
-            id: id,
-            state: state
-        )
-        self.userErrorMessage = nil
-    }
-
-    init(
-        userErrorMessage: String
-    ) {
-        self.intent = nil
-        self.userErrorMessage = userErrorMessage
-    }
-}
-
-public struct Intent {
-    let activationDate: String
-    let currentPremium: MonetaryAmount
-    let newPremium: MonetaryAmount
-    let id: String
-    let state: String
 }
