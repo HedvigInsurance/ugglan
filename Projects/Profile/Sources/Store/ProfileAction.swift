@@ -3,7 +3,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public enum ProfileAction: ActionProtocol {
+public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
     case openProfile
     case openPayment
@@ -15,7 +15,7 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings(animated: Bool)
-    case setMember(id: String, name: String, email: String, phone: String?)
+    case setMember(memberData: MemberDetails)
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
@@ -46,6 +46,7 @@ public enum ProfileAction: ActionProtocol {
     case goToURL(url: URL)
 
     case updateLanguage
+    case setLoadingState(action: ProfileAction, state: LoadingState<String>?)
 }
 
 public enum ProfileLoadingAction: LoadingProtocol {

@@ -138,10 +138,10 @@ class MyInfoViewModel: ObservableObject {
     private let bag = DisposeBag()
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
-        originalPhone = store.state.memberPhone ?? ""
-        originalEmail = store.state.memberEmail
-        phone = store.state.memberPhone ?? ""
-        email = store.state.memberEmail
+        originalPhone = store.state.memberDetails?.phone ?? ""
+        originalEmail = store.state.memberDetails?.email ?? ""
+        phone = store.state.memberDetails?.phone ?? ""
+        email = store.state.memberDetails?.email ?? ""
         $phone
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -300,7 +300,18 @@ class MyInfoViewModel: ObservableObject {
 struct MyInfoView_Previews: PreviewProvider {
     static var previews: some View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.setMember(id: "1", name: "Ma", email: "sladjann@gmail.com", phone: nil))
+        store.send(
+            .setMember(
+                memberData: .init(
+                    id: "1",
+                    firstName: "Ma",
+                    lastName: "",
+                    phone: "",
+                    email: "sladjann@gmail.com",
+                    hasTravelCertificate: true
+                )
+            )
+        )
         return NavigationView {
             MyInfoView()
         }
