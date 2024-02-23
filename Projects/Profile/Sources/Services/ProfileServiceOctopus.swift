@@ -44,13 +44,13 @@ public class ProfileServiceOctopus: ProfileService {
     public func updateLanguage() async throws {
         let locale = Localization.Locale.currentLocale
         let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
-        try await self.octopus.client
-            .perform(
+        do {
+            _ = try await self.octopus.client.perform(
                 mutation: mutation
             )
-            .onValue { _ in }
-            .onError { error in
-                log.warn("Failed updating language", error: error)
-            }
+        } catch let error {
+            log.warn("Failed updating language", error: error)
+            throw error
+        }
     }
 }
