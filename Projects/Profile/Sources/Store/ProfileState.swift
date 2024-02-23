@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 public struct ProfileState: StateProtocol {
-    var loadingStates: [ProfileAction: LoadingState<String>] = [:]
     public var partnerData: PartnerData?
     var openSettingsDirectly = false
     public var memberDetails: MemberDetails?
@@ -74,4 +73,10 @@ public struct PartnerDataSas: Codable, Equatable, Hashable {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber
     }
+}
+
+public enum ProfileLoadingState: LoadingProtocol {
+    case fetchProfileState
+    case fetchMemberDetails
+    case updateLanguage
 }

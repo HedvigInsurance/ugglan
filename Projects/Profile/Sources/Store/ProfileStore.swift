@@ -5,7 +5,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
+public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
     @Inject var profileService: ProfileService
 
     public override func effects(
@@ -19,16 +19,13 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 Task {
                     do {
                         let (member, partner) = try await self.profileService.getProfileState()
+                        self.removeLoading(for: .fetchProfileState)
                         callback(.value(.setEurobonusNumber(partnerData: partner)))
                         callback(.value(.setMember(memberData: member)))
                         callback(.value(.setHasTravelCertificate(has: member.hasTravelCertificate)))
                         callback(.value(.fetchProfileStateCompleted))
                     } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
+                        self.setError(error.localizedDescription, for: .fetchProfileState)
                         callback(.value(.fetchProfileStateCompleted))
                     }
                 }
@@ -40,13 +37,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 Task {
                     do {
                         let memberDetails = try await self.profileService.getMemberDetails()
+                        self.removeLoading(for: .fetchMemberDetails)
                         callback(.value(.setMemberDetails(details: memberDetails)))
                     } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
+                        self.setError(error.localizedDescription, for: .fetchMemberDetails)
                     }
                 }
                 return disposeBag
@@ -63,12 +57,9 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 Task {
                     do {
                         try await self.profileService.getProfileState()
+                        self.removeLoading(for: .updateLanguage)
                     } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
+                        self.setError(error.localizedDescription, for: .updateLanguage)
                     }
                 }
                 return disposeBag
@@ -81,6 +72,12 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
+        case .fetchProfileState:
+            setLoading(for: .fetchProfileState)
+        case .fetchMemberDetails:
+            setLoading(for: .fetchProfileState)
+        case .updateLanguage:
+            setLoading(for: .updateLanguage)
         case let .setMember(memberData):
             newState.memberDetails = memberData
         case .setEurobonusNumber(let partnerData):
@@ -101,12 +98,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.pushNotificationsSnoozeDate = date
         case let .setHasTravelCertificate(hasTravelCertificates):
             newState.hasTravelCertificates = hasTravelCertificates
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
-            }
         default:
             break
         }

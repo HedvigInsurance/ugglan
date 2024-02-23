@@ -46,9 +46,10 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case goToURL(url: URL)
 
     case updateLanguage
-    case setLoadingState(action: ProfileAction, state: LoadingState<String>?)
 }
 
 public enum ProfileLoadingAction: LoadingProtocol {
-    case loading
+    case fetchProfileState
+    case fetchMemberDetails
+    case updateLanguage
 }
