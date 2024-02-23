@@ -52,6 +52,7 @@ extension UIColor {
         case adyenWebViewBg
         case adyenWebViewText
         case datePickerSelectionColor
+        case opaqueFillOne
 
         public var color: UIColor {
             switch self {
@@ -174,6 +175,10 @@ extension UIColor {
                 return BrandColorBase.grayScale25
             case .adyenWebViewText:
                 return BrandColorBase.grayScale1000
+            case .opaqueFillOne:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.grayScale100 : BrandColorBase.grayScale900
+                })
             }
         }
         var textStyle: TextStyle {
@@ -205,6 +210,7 @@ extension UIColor {
             case .alert: return Fonts.fontFor(style: .standard)
             case .adyenWebViewBg, .adyenWebViewText: return Fonts.fontFor(style: .standard)
             case .datePickerSelectionColor: return Fonts.fontFor(style: .standard)
+            case .opaqueFillOne: return Fonts.fontFor(style: .standard)
             }
         }
     }

@@ -221,11 +221,11 @@ import hGraphQL
                     UIApplication.shared.appDelegate.logout()
 
                     let toast = Toast(
-                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
-                        subtitle: L10n.forceLogoutMessageSubtitle,
-                        textColor: .black,
-                        backgroundColor: .brand(.caution)
+                        textColor: .brand(.secondaryText),
+                        backgroundColor: .brand(.opaqueFillOne),
+                        symbolColor: .brand(.secondaryText)
                     )
                     Toasts.shared.displayToast(toast: toast)
                 }
