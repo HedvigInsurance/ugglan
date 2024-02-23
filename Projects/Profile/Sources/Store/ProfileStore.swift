@@ -75,7 +75,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         case .fetchProfileState:
             setLoading(for: .fetchProfileState)
         case .fetchMemberDetails:
-            setLoading(for: .fetchProfileState)
+            setLoading(for: .fetchMemberDetails)
         case .updateLanguage:
             setLoading(for: .updateLanguage)
         case let .setMember(memberData):
