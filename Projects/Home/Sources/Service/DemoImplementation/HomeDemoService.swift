@@ -1,16 +1,16 @@
-import Chat
+import Foundation
 
 public class HomeDemoService: HomeService {
     public func getImportantMessages() async throws -> [ImportantMessage] {
         return [ImportantMessage(id: "", message: "", link: "")]
     }
 
-    public func getMemberState() async throws -> (
-        contracts: [Contract], firstName: String, contractState: MemberContractState, futureState: FutureStatus
-    ) {
+    public func getMemberState() async throws -> MemberState {
         let contract = Contract(upcomingRenewal: .init(renewalDate: "", draftCertificateUrl: ""), displayName: "")
-        return (
-            contracts: [contract], firstName: "", contractState: MemberContractState.active,
+        return .init(
+            contracts: [contract],
+            firstName: "",
+            contractState: MemberContractState.active,
             futureState: FutureStatus.none
         )
     }
@@ -19,7 +19,7 @@ public class HomeDemoService: HomeService {
         return [.editCoInsured(), .moving()]
     }
 
-    public func getChatNotifications() async throws -> [Chat.Message] {
+    public func getLastMessagesDates() async throws -> [Date] {
         return []
     }
 

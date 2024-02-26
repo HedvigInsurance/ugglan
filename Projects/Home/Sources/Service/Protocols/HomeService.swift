@@ -1,11 +1,16 @@
-import Chat
+import Foundation
 
 public protocol HomeService {
     func getImportantMessages() async throws -> [ImportantMessage]
-    func getMemberState() async throws -> (
-        contracts: [Contract], firstName: String, contractState: MemberContractState, futureState: FutureStatus
-    )
+    func getMemberState() async throws -> MemberState
     func getCommonClaims() async throws -> [CommonClaim]
-    func getChatNotifications() async throws -> [Message]
+    func getLastMessagesDates() async throws -> [Date]
     func getNumberOfClaims() async throws -> Int
+}
+
+public struct MemberState {
+    let contracts: [Contract]
+    let firstName: String
+    let contractState: MemberContractState
+    let futureState: FutureStatus
 }

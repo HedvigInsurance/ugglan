@@ -1,4 +1,3 @@
-import Chat
 import Foundation
 import hCore
 import hGraphQL
@@ -20,9 +19,7 @@ public class HomeServiceOctopus: HomeService {
         return []
     }
 
-    public func getMemberState() async throws -> (
-        contracts: [Contract], firstName: String, contractState: MemberContractState, futureState: FutureStatus
-    ) {
+    public func getMemberState() async throws -> MemberState {
         let data = try await self.octopus
             .client
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
@@ -31,7 +28,12 @@ public class HomeServiceOctopus: HomeService {
         let firstName = data.currentMember.firstName
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
-        return (contracts, firstName, contractState, futureStatus)
+        return .init(
+            contracts: contracts,
+            firstName: firstName,
+            contractState: contractState,
+            futureState: futureStatus
+        )
     }
 
     public func getCommonClaims() async throws -> [CommonClaim] {
@@ -46,13 +48,13 @@ public class HomeServiceOctopus: HomeService {
             .unique()
     }
 
-    public func getChatNotifications() async throws -> [Chat.Message] {
+    public func getLastMessagesDates() async throws -> [Date] {
         let data = try await self.octopus.client
             .fetch(
                 query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-        return data.chat.messages.map({ Chat.Message(sentAt: $0.sentAt.localDateToDate ?? Date()) })
+        return data.chat.messages.compactMap({ $0.sentAt.localDateToDate })
     }
 
     public func getNumberOfClaims() async throws -> Int {
