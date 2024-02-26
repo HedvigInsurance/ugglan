@@ -103,6 +103,7 @@ extension HomeView {
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
+                            FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
                         }
                     }
                 case .future:

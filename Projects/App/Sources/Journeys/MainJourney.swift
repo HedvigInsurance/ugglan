@@ -23,7 +23,6 @@ extension AppJourney {
                     AppJourney.loggedIn.onPresent {
                         Launch.shared.completeAnimationCallbacker.callAll()
                         log.info("Logged in screen", error: nil, attributes: nil)
-
                     }
                 case .impersonation:
                     AppJourney.impersonationSettings.onPresent {
