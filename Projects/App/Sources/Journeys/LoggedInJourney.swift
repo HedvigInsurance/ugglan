@@ -201,6 +201,8 @@ extension AppJourney {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ApplicationContext.shared.$isLoggedIn.value = true
                 }
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                profileStore.send(.fetchMemberDetails)
             }
         }
         .onDismiss {

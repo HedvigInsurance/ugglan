@@ -12,7 +12,6 @@ extension AppDelegate {
 
     private var getContext: [String: String] {
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-        profileStore.send(.fetchMemberDetails)
         let memberId = profileStore.state.memberDetails?.id
 
         let optionalDictionary: [String: String?] = [
