@@ -19,6 +19,14 @@ public struct UpcomingRenewal: Codable, Equatable {
     let renewalDate: String?
     let draftCertificateUrl: String?
 
+    public init(
+        renewalDate: String?,
+        draftCertificateUrl: String?
+    ) {
+        self.renewalDate = renewalDate
+        self.draftCertificateUrl = draftCertificateUrl
+    }
+
     public init?(
         upcomingRenewal: OctopusGraphQL.AgreementFragment?
     ) {
@@ -44,6 +52,14 @@ public struct Contract: Codable, Equatable {
             upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
         )
         displayName = contract.exposureDisplayName
+    }
+
+    public init(
+        upcomingRenewal: UpcomingRenewal?,
+        displayName: String
+    ) {
+        self.upcomingRenewal = upcomingRenewal
+        self.displayName = displayName
     }
 }
 
@@ -138,7 +154,7 @@ public enum FutureStatus: Codable, Equatable {
 }
 
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
-    fileprivate var futureStatus: FutureStatus {
+    var futureStatus: FutureStatus {
         let localDate = Date().localDateString.localDateToDate ?? Date()
         let allActiveInFuture = activeContracts.allSatisfy({ contract in
             return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
@@ -163,6 +179,7 @@ public enum HomeLoadingType: LoadingProtocol {
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var octopus: hOctopus
+    @Inject var homeService: HomeService
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -170,84 +187,72 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     ) -> FiniteSignal<HomeAction>? {
         switch action {
         case .fetchImportantMessages:
-            return octopus
-                .client
-                .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
-                .map { data in
-                    var messages = data.currentMember.importantMessages.compactMap({
-                        ImportantMessage(id: $0.id, message: $0.message, link: $0.link)
-                    })
-                    return .setImportantMessages(messages: messages)
-                }
-                .valueThenEndSignal
-        case .fetchMemberState:
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag +=
-                    self.octopus
-                    .client
-                    .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-                    .onValue { data in
-                        let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
+                Task {
+                    do {
+                        let messages = try await self.homeService.getImportantMessages()
+                        callback(.value(.setImportantMessages(messages: messages)))
+                    } catch {}
+                }
+                return disposeBag
+            }
+        case .fetchMemberState:
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
+                let disposeBag = DisposeBag()
+                Task {
+                    do {
+                        let memberData = try await self.homeService.getMemberState()
                         callback(
                             .value(
                                 .setMemberContractState(
                                     state: .init(
-                                        state: data.currentMember.homeState,
-                                        name: data.currentMember.firstName
+                                        state: memberData.contractState,
+                                        name: memberData.firstName
                                     ),
-                                    contracts: contracts
+                                    contracts: memberData.contracts
                                 )
                             )
                         )
-                        callback(.value(.setFutureStatus(status: data.currentMember.futureStatus)))
-                    }
-                    .onError { [weak self] error in
+                        callback(.value(.setFutureStatus(status: memberData.futureState)))
+                    } catch {
                         if ApplicationContext.shared.isDemoMode {
                             callback(.value(.setCommonClaims(commonClaims: [])))
                         } else {
-                            self?.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                            self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                         }
                     }
+                }
                 return disposeBag
             }
         case .fetchCommonClaims:
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.CommonClaimsQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { claimData in
-                        let commonClaims = claimData.currentMember.activeContracts
-                            .flatMap({ $0.currentAgreement.productVariant.commonClaimDescriptions })
-                            .compactMap({ CommonClaim(claim: $0) })
-                            .unique()
+                Task {
+                    do {
+                        let commonClaims = try await self.homeService.getCommonClaims()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
-                    }
-                    .onError { [weak self] error in
+                    } catch {
                         if ApplicationContext.shared.isDemoMode {
                             callback(.value(.setCommonClaims(commonClaims: [])))
                         } else {
-                            self?.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                            self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                         }
                     }
+                }
                 return disposeBag
             }
         case .fetchChatNotifications:
-            return FiniteSignal { callback in
+
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { data in
-                        if let date = data.chat.messages.first?.sentAt.localDateToIso8601Date {
+                Task {
+                    do {
+                        let chatMessages = try await self.homeService.getChatNotifications()
+                        if let date = chatMessages.first?.sentAt {
                             //check if it is auto generated bot message
                             let onlyAutoGeneratedBotMessage =
-                                data.chat.messages.count == 1 && date.addingTimeInterval(2) > Date()
+                                chatMessages.count == 1 && date.addingTimeInterval(2) > Date()
 
                             if onlyAutoGeneratedBotMessage {
                                 callback(.value(.setChatNotification(hasNew: false)))
@@ -261,28 +266,27 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                                 .value(.setHasSentOrRecievedAtLeastOneMessage(hasSent: !onlyAutoGeneratedBotMessage))
                             )
                         }
-                    }
+
+                    } catch {}
+                }
                 return disposeBag
             }
 
         case .fetchClaims:
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.ClaimsFileQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue { data in
-                        if data.currentMember.claims.count != 0 {
+                Task {
+                    do {
+                        let nbOfClaims = try await self.homeService.getNumberOfClaims()
+                        if nbOfClaims != 0 {
                             callback(.value(.setHasAtLeastOneClaim(has: true)))
                         } else {
                             callback(.value(.setHasAtLeastOneClaim(has: false)))
                         }
-                    }
+                    } catch {}
+                }
                 return disposeBag
             }
-
         default:
             return nil
         }
@@ -383,7 +387,7 @@ public enum MemberContractState: String, Codable, Equatable {
 }
 
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
-    fileprivate var homeState: MemberContractState {
+    var homeState: MemberContractState {
         if isFuture {
             return .future
         } else if isTerminated {

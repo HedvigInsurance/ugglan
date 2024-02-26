@@ -9,9 +9,20 @@ public struct Message: Identifiable {
         return (localId ?? remoteId ?? "")
     }
     let sender: MessageSender
-    let sentAt: Date
+    public let sentAt: Date
     let type: MessageType
     var status: MessageStatus
+
+    public init(
+        sentAt: Date
+    ) {
+        self.sentAt = sentAt
+        self.localId = nil
+        self.remoteId = nil
+        self.type = .unknown
+        self.sender = .member
+        self.status = .sent
+    }
 
     init(type: MessageType) {
         self.localId = UUID().uuidString
@@ -75,7 +86,7 @@ enum MessageStatus {
         }
     }
 }
-enum MessageType {
+public enum MessageType {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
