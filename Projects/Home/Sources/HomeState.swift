@@ -7,74 +7,6 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
-
-public struct ImportantMessage: Codable, Equatable {
-    let id: String
-    let message: String?
-    let link: String?
-}
-
-public struct UpcomingRenewal: Codable, Equatable {
-    let renewalDate: String?
-    let draftCertificateUrl: String?
-
-    public init(
-        renewalDate: String?,
-        draftCertificateUrl: String?
-    ) {
-        self.renewalDate = renewalDate
-        self.draftCertificateUrl = draftCertificateUrl
-    }
-
-    public init?(
-        upcomingRenewal: OctopusGraphQL.AgreementFragment?
-    ) {
-        guard let upcomingRenewal, upcomingRenewal.creationCause == .renewal else { return nil }
-        self.renewalDate = upcomingRenewal.activeFrom
-        self.draftCertificateUrl = upcomingRenewal.certificateUrl
-    }
-}
-
-enum RenewalType {
-    case regular
-    case coInsured
-}
-
-public struct Contract: Codable, Equatable {
-    var upcomingRenewal: UpcomingRenewal?
-    var displayName: String
-
-    public init(
-        contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
-    ) {
-        upcomingRenewal = UpcomingRenewal(
-            upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
-        )
-        displayName = contract.exposureDisplayName
-    }
-
-    public init(
-        upcomingRenewal: UpcomingRenewal?,
-        displayName: String
-    ) {
-        self.upcomingRenewal = upcomingRenewal
-        self.displayName = displayName
-    }
-}
-
-public struct MemberStateData: Codable, Equatable {
-    public let state: MemberContractState
-    public let name: String?
-
-    public init(
-        state: MemberContractState,
-        name: String?
-    ) {
-        self.state = state
-        self.name = name
-    }
-}
 
 public struct HomeState: StateProtocol {
     public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
@@ -153,32 +85,11 @@ public enum FutureStatus: Codable, Equatable {
     case none
 }
 
-extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
-    var futureStatus: FutureStatus {
-        let localDate = Date().localDateString.localDateToDate ?? Date()
-        let allActiveInFuture = activeContracts.allSatisfy({ contract in
-            return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
-        })
-
-        let externalInsraunceCancellation = pendingContracts.compactMap({ contract in
-            contract.externalInsuranceCancellationHandledByHedvig
-        })
-
-        if allActiveInFuture && externalInsraunceCancellation.count == 0 {
-            return .activeInFuture(inceptionDate: activeContracts.first?.masterInceptionDate ?? "")
-        } else if let firstExternal = externalInsraunceCancellation.first {
-            return firstExternal ? .pendingSwitchable : .pendingNonswitchable
-        }
-        return .none
-    }
-}
-
 public enum HomeLoadingType: LoadingProtocol {
     case fetchCommonClaim
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
-    @Inject var octopus: hOctopus
     @Inject var homeService: HomeService
 
     public override func effects(
@@ -193,7 +104,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     do {
                         let messages = try await self.homeService.getImportantMessages()
                         callback(.value(.setImportantMessages(messages: messages)))
-                    } catch {}
+                    } catch {
+
+                    }
+                    callback(.end)
                 }
                 return disposeBag
             }
@@ -215,13 +129,16 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                             )
                         )
                         callback(.value(.setFutureStatus(status: memberData.futureState)))
-                    } catch {
+                        callback(.end)
+                    } catch let error {
                         if ApplicationContext.shared.isDemoMode {
                             callback(.value(.setCommonClaims(commonClaims: [])))
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                         }
+                        callback(.end(error))
                     }
+
                 }
                 return disposeBag
             }
@@ -232,18 +149,19 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     do {
                         let commonClaims = try await self.homeService.getCommonClaims()
                         callback(.value(.setCommonClaims(commonClaims: commonClaims)))
+                        callback(.end)
                     } catch {
                         if ApplicationContext.shared.isDemoMode {
                             callback(.value(.setCommonClaims(commonClaims: [])))
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                         }
+                        callback(.end(error))
                     }
                 }
                 return disposeBag
             }
         case .fetchChatNotifications:
-
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
                 Task {
@@ -266,7 +184,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                                 .value(.setHasSentOrRecievedAtLeastOneMessage(hasSent: !onlyAutoGeneratedBotMessage))
                             )
                         }
-
+                        callback(.end)
                     } catch {}
                 }
                 return disposeBag
@@ -284,6 +202,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                             callback(.value(.setHasAtLeastOneClaim(has: false)))
                         }
                     } catch {}
+                    callback(.end)
                 }
                 return disposeBag
             }
@@ -384,29 +303,6 @@ public enum MemberContractState: String, Codable, Equatable {
     case future
     case active
     case loading
-}
-
-extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
-    var homeState: MemberContractState {
-        if isFuture {
-            return .future
-        } else if isTerminated {
-            return .terminated
-        } else {
-            return .active
-        }
-    }
-
-    private var isTerminated: Bool {
-        return activeContracts.count == 0 && pendingContracts.count == 0
-    }
-
-    private var isFuture: Bool {
-        let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
-            return contract.currentAgreement.activeFrom.localDateToDate?.daysBetween(start: Date()) ?? 0 > 0
-        }
-        return !activeContracts.isEmpty && hasActiveContractsInFuture
-    }
 }
 
 extension CommonClaim {

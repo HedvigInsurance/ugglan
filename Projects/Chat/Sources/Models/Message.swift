@@ -75,7 +75,7 @@ enum MessageStatus {
         }
     }
 }
-public enum MessageType {
+enum MessageType {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
