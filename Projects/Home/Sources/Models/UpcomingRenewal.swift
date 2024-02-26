@@ -1,11 +1,3 @@
-//
-//  UpcomingReniewal.swift
-//  Home
-//
-//  Created by Sladan Nimcevic on 2024-02-26.
-//  Copyright © 2024 Hedvig. All rights reserved.
-//
-
 import Foundation
 
 public struct UpcomingRenewal: Codable, Equatable {
