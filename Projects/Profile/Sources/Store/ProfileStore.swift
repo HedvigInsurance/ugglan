@@ -24,9 +24,11 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
                         callback(.value(.setMember(memberData: member)))
                         callback(.value(.setHasTravelCertificate(has: member.hasTravelCertificate)))
                         callback(.value(.fetchProfileStateCompleted))
-                    } catch {
+                        callback(.end)
+                    } catch let error {
                         self.setError(error.localizedDescription, for: .fetchProfileState)
                         callback(.value(.fetchProfileStateCompleted))
+                        callback(.end(error))
                     }
                 }
                 return disposeBag
@@ -39,8 +41,10 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
                         let memberDetails = try await self.profileService.getMemberDetails()
                         self.removeLoading(for: .fetchMemberDetails)
                         callback(.value(.setMemberDetails(details: memberDetails)))
-                    } catch {
+                        callback(.end)
+                    } catch let error {
                         self.setError(error.localizedDescription, for: .fetchMemberDetails)
+                        callback(.end(error))
                     }
                 }
                 return disposeBag
@@ -56,10 +60,12 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
                 let disposeBag = DisposeBag()
                 Task {
                     do {
-                        try await self.profileService.getProfileState()
+                        try await self.profileService.updateLanguage()
                         self.removeLoading(for: .updateLanguage)
-                    } catch {
+                        callback(.end)
+                    } catch let error {
                         self.setError(error.localizedDescription, for: .updateLanguage)
+                        callback(.end(error))
                     }
                 }
                 return disposeBag
@@ -89,9 +95,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         case let .setOpenAppSettings(to):
             newState.openSettingsDirectly = to
         case let .setMemberDetails(details):
-            newState.memberDetails =
-                details
-                ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false)
+            newState.memberDetails = details
         case let .setPushNotificationStatus(status):
             newState.pushNotificationStatus = status
         case let .setPushNotificationsTo(date):

@@ -27,7 +27,7 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case closeLanguagePicker
     case languageChanged
 
-    case setMemberDetails(details: MemberDetails?)
+    case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails
 
     case deleteAccount(details: MemberDetails)

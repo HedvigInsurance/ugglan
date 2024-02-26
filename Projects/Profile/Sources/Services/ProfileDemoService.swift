@@ -7,7 +7,7 @@ public class ProfileDemoService: ProfileService {
         )
     }
 
-    public func getMemberDetails() async throws -> MemberDetails? {
+    public func getMemberDetails() async throws -> MemberDetails {
         return MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false)
     }
 

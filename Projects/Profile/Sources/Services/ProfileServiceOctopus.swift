@@ -29,7 +29,7 @@ public class ProfileServiceOctopus: ProfileService {
         return (memberData, partner)
     }
 
-    public func getMemberDetails() async throws -> MemberDetails? {
+    public func getMemberDetails() async throws -> MemberDetails {
         let query = OctopusGraphQL.MemberDetailsQuery()
         let data = try await self.octopus.client
             .fetch(
@@ -37,8 +37,10 @@ public class ProfileServiceOctopus: ProfileService {
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
 
-        let memberData = MemberDetails(memberData: data.currentMember)
-        return memberData
+        if let memberData = MemberDetails(memberData: data.currentMember) {
+            return memberData
+        }
+        throw ProfileError.error(message: L10n.General.errorBody)
     }
 
     public func updateLanguage() async throws {
@@ -51,6 +53,18 @@ public class ProfileServiceOctopus: ProfileService {
         } catch let error {
             log.warn("Failed updating language", error: error)
             throw error
+        }
+    }
+}
+
+enum ProfileError: Error {
+    case error(message: String)
+}
+
+extension ProfileError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .error(message): return message
         }
     }
 }
