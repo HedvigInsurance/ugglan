@@ -66,8 +66,7 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return DiscountCodeSectionView()
             .onAppear {
-                let foreverData = ForeverData.mock()
-                store.send(.setForeverData(data: foreverData))
+                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverDemoService() })
             }
     }
 }

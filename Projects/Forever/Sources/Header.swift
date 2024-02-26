@@ -86,8 +86,7 @@ struct HeaderView_Previews: PreviewProvider {
     static var previews: some View {
         HeaderView {}
             .onAppear {
-                let foreverData = ForeverData.mock()
-                store.send(.setForeverData(data: foreverData))
+                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverDemoService() })
             }
     }
 }
