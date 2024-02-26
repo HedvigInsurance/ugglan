@@ -58,6 +58,7 @@ final public class KeychainHelper {
                 kSecClass: kSecClassGenericPassword,
                 kSecAttrService: key,
                 kSecAttrAccount: account,
+                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock,
             ] as CFDictionary
 
         let status = SecItemAdd(query, nil)
