@@ -25,12 +25,10 @@ public class HomeServiceOctopus: HomeService {
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
 
         let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
-        let firstName = data.currentMember.firstName
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
         return .init(
             contracts: contracts,
-            firstName: firstName,
             contractState: contractState,
             futureState: futureStatus
         )

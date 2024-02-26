@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 
 public struct HomeState: StateProtocol {
-    public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    public var memberContractState: MemberContractState = .loading
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -47,7 +47,7 @@ public enum HomeAction: ActionProtocol {
     case fetchMemberState
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
-    case setMemberContractState(state: MemberStateData, contracts: [Contract])
+    case setMemberContractState(state: MemberContractState, contracts: [Contract])
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
@@ -120,10 +120,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         callback(
                             .value(
                                 .setMemberContractState(
-                                    state: .init(
-                                        state: memberData.contractState,
-                                        name: memberData.firstName
-                                    ),
+                                    state: memberData.contractState,
                                     contracts: memberData.contracts
                                 )
                             )
@@ -216,7 +213,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         switch action {
         case .setMemberContractState(let memberState, let contracts):
-            newState.memberStateData = memberState
+            newState.memberContractState = memberState
             newState.contracts = contracts
         case .setFutureStatus(let status):
             newState.futureStatus = status
@@ -296,13 +293,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         state.toolbarOptionTypes = types
     }
-}
-
-public enum MemberContractState: String, Codable, Equatable {
-    case terminated
-    case future
-    case active
-    case loading
 }
 
 extension CommonClaim {

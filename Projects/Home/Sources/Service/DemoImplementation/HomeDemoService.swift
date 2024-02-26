@@ -9,7 +9,6 @@ public class HomeDemoService: HomeService {
         let contract = Contract(upcomingRenewal: .init(renewalDate: "", draftCertificateUrl: ""), displayName: "")
         return .init(
             contracts: [contract],
-            firstName: "",
             contractState: MemberContractState.active,
             futureState: FutureStatus.none
         )
