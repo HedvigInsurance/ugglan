@@ -46,32 +46,52 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     }()
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
-            self.networkAuthRepository
-                .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
-                    if let completedResult = result as? LoginStatusResultCompleted {
-                        log.info(
-                            "LOGIN AUTH FINISHED"
-                        )
-                        callbacker(.completed(code: completedResult.authorizationCode.code))
-                    } else if let result = result as? LoginStatusResultFailed {
-                        let message = result.message
-                        log.error(
-                            "LOGIN FAILED",
-                            error: NSError(domain: message, code: 1000),
-                            attributes: [
-                                "message": message,
-                                "statusUrl": statusUrl.absoluteString,
-                            ]
-                        )
-                        callbacker(.failed(message: message))
-                    } else if let pendingResult = result as? LoginStatusResultPending {
-                        callbacker(.pending(statusMessage: pendingResult.statusMessage))
-                    } else {
-                        callbacker(.unknown)
+            let minimumTime = Signal(after: 2).future
+            let signal = Signal<LoginStatus> { loginStatusCallbacker in
+                let bag = DisposeBag()
+                self.networkAuthRepository
+                    .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
+                        if let completedResult = result as? LoginStatusResultCompleted {
+                            log.info(
+                                "LOGIN AUTH FINISHED"
+                            )
+                            loginStatusCallbacker(.completed(code: completedResult.authorizationCode.code))
+                        } else if let result = result as? LoginStatusResultFailed {
+                            let message = result.message
+                            log.error(
+                                "LOGIN FAILED",
+                                error: NSError(domain: message, code: 1000),
+                                attributes: [
+                                    "message": message,
+                                    "statusUrl": statusUrl.absoluteString,
+                                ]
+                            )
+                            loginStatusCallbacker(.failed(message: message))
+                        } else if let pendingResult = result as? LoginStatusResultPending {
+                            self.send(
+                                .seBankIDStateAction(
+                                    action: .setLiveQrCodeData(liveQrCodeData: pendingResult.liveQrCodeData)
+                                )
+                            )
+                            loginStatusCallbacker(.pending(statusMessage: pendingResult.statusMessage))
+                        } else {
+                            loginStatusCallbacker(.unknown)
+                        }
+                    }
+
+                return bag
+            }
+
+            var disposeBag = DisposeBag()
+            disposeBag += combineLatest(signal.future.resultSignal, minimumTime.resultSignal)
+                .onValue { status, minimumTime in
+                    if let data = status.value {
+                        callbacker(data)
+                    } else if let error = status.error {
+                        callbacker(.failed(message: error.localizedDescription))
                     }
                 }
-
-            return NilDisposer()
+            return disposeBag
         }
     }
 
@@ -215,8 +235,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     {
                         callbacker(
                             .seBankIDStateAction(
-                                action: .updateWith(
+                                action: .setAutoStartTokenWith(
                                     autoStartToken: bankIdProperties.autoStartToken
+                                )
+                            )
+                        )
+                        callbacker(
+                            .seBankIDStateAction(
+                                action: .setLiveQrCodeData(
+                                    liveQrCodeData: bankIdProperties.liveQrCodeData
                                 )
                             )
                         )
@@ -394,8 +421,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             switch action {
             case .startSession:
                 newState.seBankIDState.autoStartToken = nil
-            case let .updateWith(autoStartToken):
+            case let .setAutoStartTokenWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
+            case let .setLiveQrCodeData(liveQrCodeData):
+                newState.seBankIDState.liveQrCodeData = liveQrCodeData
             }
         case .cancel:
             newState.seBankIDState = SEBankIDState()
