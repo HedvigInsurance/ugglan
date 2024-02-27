@@ -6,7 +6,8 @@ import hCore
 import hGraphQL
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
-    @Inject var octopus: hOctopus
+    @Inject var moveFlowService: MoveFlowService
+
     var addressInputModel = AddressInputModel()
     var houseInformationInputModel = HouseInformationInputModel()
     public override func effects(
@@ -16,76 +17,67 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
         switch action {
         case .getMoveIntent:
             self.setLoading(for: .fetchMoveIntent)
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                let mutation = OctopusGraphQL.MoveIntentCreateMutation()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .map { data in
-                        if let moveIntent = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
+                Task {
+                    do {
+                        let movingFlowData = try await self.moveFlowService.sendMoveIntent()
+                        if let movingFlowData {
                             self.removeLoading(for: .fetchMoveIntent)
-                            callback(.value(.setMoveIntent(with: .init(from: moveIntent))))
-                            self.addressInputModel.nbOfCoInsured = moveIntent.suggestedNumberCoInsured
+                            callback(.value(.setMoveIntent(with: movingFlowData)))
+                            self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
                             callback(.end)
-                        } else if let userError = data.moveIntentCreate.userError?.message {
-                            self.setError(userError, for: .fetchMoveIntent)
-                            callback(.end(MovingFlowError.serverError(message: userError)))
                         }
-                    }
-                    .onError({ error in
+                    } catch {
                         if let error = error as? MovingFlowError {
                             self.setError(error.localizedDescription, for: .fetchMoveIntent)
                         } else {
                             self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
                         }
-
-                    })
+                    }
+                }
                 return disposeBag
             }
         case .requestMoveIntent:
             self.setLoading(for: .requestMoveIntent)
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                let mutation = self.moveIntentRequestMutation()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue({ [weak self] value in
-                        if let fragment = value.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-                            let model = MovingFlowModel(from: fragment)
-                            self?.send(.setMoveIntent(with: model))
-                            self?.send(.navigation(action: .openConfirmScreen))
-                            self?.removeLoading(for: .requestMoveIntent)
-                        } else if let error = value.moveIntentRequest.userError?.message {
-                            self?.setError(error, for: .requestMoveIntent)
+                Task {
+                    do {
+                        let movingFlowData = try await self.moveFlowService.requestMoveIntent(
+                            intentId: self.state.movingFlowModel?.id ?? "",
+                            addressInputModel: self.addressInputModel,
+                            houseInformationInputModel: self.houseInformationInputModel
+                        )
+                        if let movingFlowData {
+                            self.send(.setMoveIntent(with: movingFlowData))
+                            self.send(.navigation(action: .openConfirmScreen))
+                            self.removeLoading(for: .requestMoveIntent)
                         }
-                    })
-                    .onError({ [weak self] error in
-                        self?.setError(L10n.generalError, for: .requestMoveIntent)
-                    })
+                    } catch {
+                        error
+                        self.setError(error.localizedDescription, for: .requestMoveIntent)
+                    }
+                }
                 return disposeBag
             }
         case .confirmMoveIntent:
             self.setLoading(for: .confirmMoveIntent)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                let intentId = self.state.movingFlowModel?.id ?? ""
-                let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
-                let graphQlMutation = self.octopus.client.perform(mutation: mutation)
-                let minimumTime = Signal(after: 1.5).future
-                disposeBag += combineLatest(graphQlMutation.resultSignal, minimumTime.resultSignal)
-                    .onValue { [weak self] mutation, minimumTime in
-                        if let data = mutation.value {
-                            if let userError = data.moveIntentCommit.userError?.message {
-                                self?.setError(userError, for: .confirmMoveIntent)
-                                callback(.end(MovingFlowError.serverError(message: userError)))
-                            } else {
-                                self?.removeLoading(for: .confirmMoveIntent)
-                                callback(.end)
-                            }
-                        } else if let _ = mutation.error {
-                            self?.setError(L10n.General.errorBody, for: .confirmMoveIntent)
-                        }
-                    }
-                return disposeBag
 
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
+                let disposeBag = DisposeBag()
+                Task {
+                    do {
+                        let intentId = self.state.movingFlowModel?.id ?? ""
+                        try await self.moveFlowService.confirmMoveIntent(intentId: intentId)
+                        self.removeLoading(for: .confirmMoveIntent)
+                        callback(.end)
+                    } catch {
+                        error
+                        self.setError(error.localizedDescription, for: .requestMoveIntent)
+                    }
+                }
+                return disposeBag
             }
         default:
             return nil
@@ -152,62 +144,4 @@ public struct MoveFlowState: StateProtocol {
     @Transient(defaultValue: .apartmant) var selectedHousingType: HousingType
     @OptionalTransient var movingFlowModel: MovingFlowModel?
     @OptionalTransient var movingFromAddressModel: MovingFromAddressModel?
-}
-
-extension MoveFlowStore {
-    func moveIntentRequestMutation() -> OctopusGraphQL.MoveIntentRequestMutation {
-        OctopusGraphQL.MoveIntentRequestMutation(
-            intentId: state.movingFlowModel?.id ?? "",
-            input: moveIntentRequestInput()
-        )
-    }
-
-    private func moveIntentRequestInput() -> OctopusGraphQL.MoveIntentRequestInput {
-        OctopusGraphQL.MoveIntentRequestInput(
-            moveToAddress: .init(
-                street: addressInputModel.address,
-                postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
-            ),
-            moveFromAddressId: state.movingFromAddressModel?.id ?? "",
-            movingDate: addressInputModel.accessDate?.localDateString ?? "",
-            numberCoInsured: addressInputModel.nbOfCoInsured,
-            squareMeters: Int(addressInputModel.squareArea) ?? 0,
-            apartment: GraphQLNullable(optionalValue: apartmentInput()),
-            house: GraphQLNullable(optionalValue: houseInput())
-        )
-    }
-
-    private func apartmentInput() -> OctopusGraphQL.MoveToApartmentInput? {
-        switch state.selectedHousingType {
-        case .apartmant, .rental:
-            return OctopusGraphQL.MoveToApartmentInput(
-                subType: state.selectedHousingType.asMoveApartmentSubType,
-                isStudent: addressInputModel.isStudent
-            )
-        case .house:
-            return nil
-        }
-    }
-
-    private func houseInput() -> OctopusGraphQL.MoveToHouseInput? {
-        switch state.selectedHousingType {
-        case .apartmant, .rental:
-            return nil
-        case .house:
-            return OctopusGraphQL.MoveToHouseInput(
-                ancillaryArea: Int(houseInformationInputModel.ancillaryArea) ?? 0,
-                yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
-                numberOfBathrooms: houseInformationInputModel.bathrooms,
-                isSubleted: houseInformationInputModel.isSubleted,
-                extraBuildings: houseInformationInputModel.extraBuildings.map({
-                    OctopusGraphQL.MoveExtraBuildingInput(
-                        area: $0.livingArea,
-                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
-                        hasWaterConnected: $0.connectedToWater
-                    )
-                })
-
-            )
-        }
-    }
 }

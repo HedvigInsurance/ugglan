@@ -318,6 +318,7 @@ struct MovingFlowConfirm: View {
             } content: {
                 hText(L10n.openChat, style: .body)
             }
+            .fixedSize()
             Spacing(height: 103)
         }
     }

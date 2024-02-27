@@ -8,6 +8,7 @@ import DatadogCrashReporting
 import Flow
 import Form
 import Foundation
+import MoveFlow
 import Payment
 import Presentation
 import Profile
@@ -304,6 +305,7 @@ extension ApolloClient {
                 let networkClient = NetworkClient()
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
+                let moveFlowService = MoveFlowServiceOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
@@ -325,6 +327,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -334,7 +337,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
-
+                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                 }
             }
             .toVoid()
