@@ -14,7 +14,7 @@ struct ActiveSectionView<Claims: View>: View {
         PresentableStoreLens(
             HomeStore.self,
             getter: { state in
-                state.memberStateData
+                state.memberContractState
             }
         ) { memberStateData in
             hSection {

@@ -146,7 +146,7 @@ struct RenewalCardView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return RenewalCardView()
             .onAppear {
-                let state = MemberStateData(state: .active, name: "NAME")
+                let state = MemberContractState.active
                 let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
                     _dataDict: .init(
                         data: [:],

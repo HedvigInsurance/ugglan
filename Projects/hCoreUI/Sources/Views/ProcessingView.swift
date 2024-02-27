@@ -2,7 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
+public struct ProcessingView<S: Store & StoreLoading>: View {
     @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
     var store: S.Type
@@ -17,7 +17,6 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
     var onErrorCancelAction: (() -> Void)?
     var onLoadingDismiss: (() -> Void)?
 
-    var customBottomSuccessView: T?
     var errorViewButtons: ErrorViewButtonConfig?
 
     public init(
@@ -31,7 +30,6 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
         onAppearLoadingView: (() -> Void)? = nil,
         onErrorCancelAction: (() -> Void)? = nil,
         onLoadingDismiss: (() -> Void)? = nil,
-        customBottomSuccessView: T? = nil,
         errorViewButtons: ErrorViewButtonConfig? = nil
     ) {
         self.showSuccessScreen = showSuccessScreen ?? true
@@ -44,7 +42,6 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
         self.onAppearLoadingView = onAppearLoadingView
         self.onErrorCancelAction = onErrorCancelAction
         self.onLoadingDismiss = onLoadingDismiss
-        self.customBottomSuccessView = customBottomSuccessView
         self.errorViewButtons = errorViewButtons
     }
 
@@ -62,7 +59,6 @@ public struct ProcessingView<S: Store & StoreLoading, T>: View where T: View {
                     SuccessScreen(
                         successViewTitle: successViewTitle ?? "",
                         successViewBody: successViewBody ?? "",
-                        customBottomSuccessView: customBottomSuccessView,
                         successViewButtonAction: successViewButtonAction ?? {}
                     )
                 } else {
