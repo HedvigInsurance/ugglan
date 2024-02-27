@@ -6,6 +6,5 @@ import hCore
 import hGraphQL
 
 public struct EditCoInsuredState: StateProtocol {
-
     public init() {}
 }

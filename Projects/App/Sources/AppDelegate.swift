@@ -4,6 +4,7 @@ import Chat
 import Claims
 import CoreDependencies
 import DatadogLogs
+import EditCoInsured
 import Flow
 import Form
 import Foundation
@@ -309,6 +310,7 @@ extension ApolloClient {
                 let networkClient = NetworkClient()
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
+                let editCoInsuredService = EditCoInsuredServiceOctopus()
                 let homeService = HomeServiceOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
@@ -331,6 +333,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
@@ -341,6 +344,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 }
             }
