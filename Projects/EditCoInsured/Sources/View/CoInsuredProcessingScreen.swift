@@ -36,9 +36,11 @@ struct CoInsuredProcessingScreen: View {
             },
             onErrorCancelAction: {
                 store.send(.coInsuredNavigationAction(action: .dismissEdit))
-            },
-            customBottomSuccessView: customBottomSuccessView
+            }
         )
+        .hSuccessBottomAttachedView {
+            customBottomSuccessView
+        }
     }
 
     private var customBottomSuccessView: some View {

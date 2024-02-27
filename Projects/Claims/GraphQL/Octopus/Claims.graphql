@@ -6,8 +6,6 @@ query Claims {
       outcome
       status
       submittedAt
-      associatedTypeOfContract
-      closedAt
       audioUrl
       memberFreeText
       payoutAmount {

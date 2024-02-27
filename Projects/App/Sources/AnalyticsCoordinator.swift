@@ -1,5 +1,5 @@
 import Apollo
-import Datadog
+import DatadogCore
 import Flow
 import Foundation
 import hCore

@@ -94,9 +94,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             status: .beingHandled,
             outcome: .none,
             submittedAt: "2023-10-10",
-            closedAt: nil,
             signedAudioURL: "",
-            type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
             targetFileUploadUri: ""
@@ -117,9 +115,7 @@ struct ClaimReopened_Previews: PreviewProvider {
             status: .reopened,
             outcome: .none,
             submittedAt: "2023-10-10",
-            closedAt: nil,
             signedAudioURL: "",
-            type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
             targetFileUploadUri: ""
@@ -140,9 +136,7 @@ struct ClaimPaid_Previews: PreviewProvider {
             status: .closed,
             outcome: .paid,
             submittedAt: "2023-10-10",
-            closedAt: nil,
             signedAudioURL: "",
-            type: "type",
             memberFreeText: nil,
             payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
             targetFileUploadUri: ""
@@ -163,9 +157,7 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             status: .closed,
             outcome: .notCompensated,
             submittedAt: "2023-10-10",
-            closedAt: nil,
             signedAudioURL: "",
-            type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
             targetFileUploadUri: ""
@@ -186,9 +178,7 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             status: .closed,
             outcome: .notCovered,
             submittedAt: "2023-10-10",
-            closedAt: nil,
             signedAudioURL: "",
-            type: "type",
             memberFreeText: nil,
             payoutAmount: nil,
             targetFileUploadUri: ""

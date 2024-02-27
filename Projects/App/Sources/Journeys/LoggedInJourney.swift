@@ -4,7 +4,6 @@ import Contracts
 import EditCoInsured
 import Flow
 import Forever
-import Form
 import Foundation
 import Home
 import MoveFlow
@@ -61,6 +60,7 @@ extension AppJourney {
             .configureContractNavigation
             .configureChatNavigation
             .configureTerminationNavigation
+            .configureTravelCertificateNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -200,6 +200,8 @@ extension AppJourney {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ApplicationContext.shared.$isLoggedIn.value = true
                 }
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                profileStore.send(.fetchMemberDetails)
             }
         }
         .onDismiss {
@@ -317,6 +319,14 @@ extension JourneyPresentation {
                 AppJourney.configureURL(url: url)
             } else if case .goToFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
+            }
+        }
+    }
+
+    public var configureTravelCertificateNavigation: some JourneyPresentation {
+        onAction(TravelInsuranceStore.self) { action in
+            if case .goToEditCoInsured = action {
+                AppJourney.configureQuickAction(commonClaim: .editCoInsured())
             }
         }
     }

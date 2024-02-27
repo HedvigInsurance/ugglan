@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-enum TravelInsuranceAction: ActionProtocol, Hashable {
+public enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setTravelInsurancesData(specification: TravelInsuranceSpecification)
     case setTravelInsuranceData(specification: TravelInsuranceContractSpecification)
     case postTravelInsuranceForm
@@ -14,23 +14,20 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
 
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
-    case toogleMyselfAsInsured
-    case setPolicyCoInsured(PolicyCoinsuredPersonModel)
-    case updatePolicyCoInsured(PolicyCoinsuredPersonModel, with: PolicyCoinsuredPersonModel)
-    case removePolicyCoInsured(PolicyCoinsuredPersonModel)
+    case setPolicyCoInsured([PolicyCoinsuredPersonModel])
     case setDownloadUrl(urL: URL)
 
     case navigation(TravelInsuranceNavigationAction)
     case getTravelCertificateSpecification
     case travelCertificateSpecificationSet
+    case goToEditCoInsured
+    case dismissTravelInsuranceFlow
 }
 
-enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
+public enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openCreateNew
     case openStartDateScreen
     case openWhoIsTravelingScreen
-    case openCoinsured(member: PolicyCoinsuredPersonModel?)
-    case dismissAddUpdateCoinsured
     case dismissCreateTravelCertificate
     case openFreeTextChat
     case openProcessingScreen
@@ -38,14 +35,14 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openDetails(for: TravelCertificateModel)
 }
 
-enum TravelInsuranceLoadingAction: LoadingProtocol {
+public enum TravelInsuranceLoadingAction: LoadingProtocol {
     case getTravelInsuranceSpecifications
     case getTravelInsurancesList
     case postTravelInsurance
     case downloadCertificate
 }
 
-enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {
+public enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {
     case startDate
     case endDate
 }
