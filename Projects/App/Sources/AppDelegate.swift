@@ -3,8 +3,7 @@ import Authentication
 import Chat
 import Claims
 import CoreDependencies
-import Datadog
-import DatadogCrashReporting
+import DatadogLogs
 import Flow
 import Form
 import Foundation
@@ -197,10 +196,17 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
-        hGraphQL.log = Logger.builder
-            .sendNetworkInfo(true)
-            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
-            .build()
+        let config = Logger.Configuration(
+            service: "ios",
+            networkInfoEnabled: true,
+            bundleWithRumEnabled: true,
+            bundleWithTraceEnabled: true,
+            remoteLogThreshold: .info,
+            consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
+        )
+        let datadogLogger = Logger.create(with: config)
+        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+
         setupPresentableStoreLogger()
 
         log.info("Starting app")
@@ -278,7 +284,6 @@ import hGraphQL
         TokenRefresher.shared.isDemoMode = store.state.isDemoMode
 
         observeNotificationsSettings()
-
         return true
     }
 

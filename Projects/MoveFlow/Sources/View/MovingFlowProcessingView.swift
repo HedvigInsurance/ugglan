@@ -7,7 +7,7 @@ import hGraphQL
 struct MovingFlowProcessingView: View {
     @StateObject var vm = ProcessingViewModel()
     var body: some View {
-        ProcessingView<MoveFlowStore, EmptyView>(
+        ProcessingView<MoveFlowStore>(
             MoveFlowStore.self,
             loading: .confirmMoveIntent,
             loadingViewText: L10n.changeAddressMakingChanges,
