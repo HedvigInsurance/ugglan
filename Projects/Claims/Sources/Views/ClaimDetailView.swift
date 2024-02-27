@@ -133,7 +133,14 @@ public struct ClaimDetailView: View {
                 }
             }
             .withHeader {
-                hText(L10n.ClaimStatus.ClaimDetails.title)
+                HStack {
+                    hText(L10n.ClaimStatus.ClaimDetails.title)
+                    Spacer()
+                    InfoViewHolder(
+                        title: L10n.ClaimStatus.ClaimDetails.title,
+                        description: L10n.ClaimStatus.ClaimDetails.infoText
+                    )
+                }
             }
             .hWithoutDivider
             .sectionContainerStyle(.transparent)
@@ -190,15 +197,8 @@ public struct ClaimDetailView: View {
                     }
                 }
                 .withHeader {
-                    HStack {
-                        hText(L10n.ClaimStatusDetail.uploadedFiles)
-                            .padding(.leading, 2)
-                        Spacer()
-                        InfoViewHolder(
-                            title: L10n.ClaimStatusDetail.uploadedFilesInfoTitle,
-                            description: L10n.ClaimStatusDetail.uploadedFilesInfoDescription
-                        )
-                    }
+                    hText(L10n.ClaimStatusDetail.uploadedFiles)
+                        .padding(.leading, 2)
                 }
                 if let fetchError = vm.fetchFilesError {
                     hSection {
