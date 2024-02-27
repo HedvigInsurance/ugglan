@@ -140,7 +140,7 @@ struct InsuredPeopleScreen: View {
             CoInsuredListType(
                 coInsured: coIn,
                 type: .added,
-                date: (intentVm.activationDate != "") ? intentVm.activationDate : vm.config.activeFrom,
+                date: (intentVm.intent.activationDate != "") ? intentVm.intent.activationDate : vm.config.activeFrom,
                 locallyAdded: true
             )
         }
@@ -181,19 +181,19 @@ struct ConfirmChangesView: View {
                         hText(L10n.contractAddCoinsuredTotal)
                         Spacer()
                         if #available(iOS 16.0, *) {
-                            hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
+                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
                                 .strikethrough()
                                 .foregroundColor(hTextColor.secondary)
                         } else {
-                            hText(intentVm.currentPremium.formattedAmount + L10n.perMonth)
+                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
                                 .foregroundColor(hTextColor.secondary)
 
                         }
-                        hText(intentVm.newPremium.formattedAmount + L10n.perMonth)
+                        hText(intentVm.intent.newPremium.formattedAmount + L10n.perMonth)
                     }
                     hText(
                         L10n.contractAddCoinsuredStartsFrom(
-                            intentVm.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         ),
                         style: .footnote
                     )
@@ -202,7 +202,7 @@ struct ConfirmChangesView: View {
                 }
 
                 hButton.LargeButton(type: .primary) {
-                    store.send(.performCoInsuredChanges(commitId: intentVm.id))
+                    store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
                     store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
                 } content: {
                     hText(L10n.contractAddCoinsuredConfirmChanges)

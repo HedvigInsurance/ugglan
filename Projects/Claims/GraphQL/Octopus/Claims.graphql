@@ -1,16 +1,21 @@
 query Claims {
-  currentMember {
-    claims {
-      targetFileUploadUri
-      id
-      outcome
-      status
-      submittedAt
-      audioUrl
-      memberFreeText
-      payoutAmount {
-        ...MoneyFragment
-      }
+    currentMember {
+        claims {
+            targetFileUploadUri
+            id
+            outcome
+            status
+            submittedAt
+            audioUrl
+            memberFreeText
+            payoutAmount {
+                ...MoneyFragment
+            }
+            productVariant {
+                ...ProductVariantFragment
+            }
+            claimType
+            incidentDate
+        }
     }
-  }
 }

@@ -58,7 +58,7 @@ struct InsuredPeopleNewScreen: View {
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.performCoInsuredChanges(commitId: intentVm.id))
+                            store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
                             store.send(
                                 .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
                             )
