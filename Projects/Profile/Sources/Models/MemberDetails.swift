@@ -1,12 +1,13 @@
 import Foundation
 import hGraphQL
 
-public struct MemberDetails: Codable, Equatable, Identifiable {
+public struct MemberDetails: Codable, Equatable, Identifiable, Hashable {
     public var id: String
     public var phone: String?
     public var email: String?
     public var firstName: String
     public var lastName: String
+    let hasTravelCertificate: Bool
 
     public var displayName: String {
         firstName + " " + lastName
@@ -20,6 +21,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
         self.phone = memberData.phoneNumber
         self.firstName = memberData.firstName
         self.lastName = memberData.lastName
+        self.hasTravelCertificate = false
     }
 
     public init(
@@ -27,12 +29,14 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
         firstName: String,
         lastName: String,
         phone: String,
-        email: String
+        email: String,
+        hasTravelCertificate: Bool
     ) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.phone = phone
         self.email = email
+        self.hasTravelCertificate = hasTravelCertificate
     }
 }

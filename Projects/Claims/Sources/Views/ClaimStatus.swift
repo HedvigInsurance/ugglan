@@ -26,8 +26,8 @@ struct ClaimStatus: View {
                     }
                 } : nil,
             mainContent: ClaimPills(claim: claim),
-            title: claim.title,
-            subTitle: claim.subtitle,
+            title: claim.claimType,
+            subTitle: claim.productVariant?.displayName,
             bottomComponent: {
                 HStack(spacing: 6) {
                     ClaimStatusBar(status: claim.status, outcome: claim.outcome)
@@ -97,7 +97,10 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -118,7 +121,10 @@ struct ClaimReopened_Previews: PreviewProvider {
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -139,7 +145,10 @@ struct ClaimPaid_Previews: PreviewProvider {
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -160,7 +169,10 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -181,7 +193,10 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
-            targetFileUploadUri: ""
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

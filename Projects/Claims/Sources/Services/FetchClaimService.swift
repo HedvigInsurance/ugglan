@@ -19,7 +19,10 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                 signedAudioURL: "https://github.com/robovm/apple-ios-samples/blob/master/avTouch/sample.m4a",
                 memberFreeText: nil,
                 payoutAmount: nil,
-                targetFileUploadUri: ""
+                targetFileUploadUri: "",
+                claimType: "Broken item",
+                incidentDate: "2024-02-15",
+                productVariant: nil
             )
         ]
     }
@@ -111,10 +114,12 @@ extension ClaimModel {
         self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
         self.submittedAt = claim.submittedAt
         self.signedAudioURL = claim.audioUrl ?? ""
-        self.subtitle = ""
+        self.claimType = claim.claimType ?? L10n.Claim.Casetype.insuranceCase
+        self.incidentDate = claim.incidentDate
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
         self.targetFileUploadUri = claim.targetFileUploadUri
+        self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
     }
 }
 
