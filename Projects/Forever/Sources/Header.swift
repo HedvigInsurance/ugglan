@@ -85,7 +85,7 @@ struct HeaderView_Previews: PreviewProvider {
     static var previews: some View {
         HeaderView {}
             .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverDemoService() })
+                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
             }
     }
 }

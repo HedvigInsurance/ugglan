@@ -65,7 +65,7 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return DiscountCodeSectionView()
             .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverDemoService() })
+                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
             }
     }
 }
