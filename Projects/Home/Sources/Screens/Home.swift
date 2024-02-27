@@ -3,7 +3,6 @@ import Combine
 import Contracts
 import EditCoInsured
 import Flow
-import Form
 import Foundation
 import Payment
 import Presentation
@@ -103,7 +102,7 @@ extension HomeView {
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
-                            FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
+                            FutureSectionInfoView()
                         }
                     }
                 case .future:

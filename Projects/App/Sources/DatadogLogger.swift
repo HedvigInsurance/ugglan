@@ -1,5 +1,8 @@
+import Apollo
+import DatadogInternal
 import DatadogLogs
 import DatadogRUM
+import UIKit
 import hGraphQL
 
 class DatadogLogger: hGraphQL.Logging {
@@ -106,5 +109,48 @@ extension LoggingAction {
         case .custom:
             return .custom
         }
+    }
+}
+
+class InterceptingURLSessionClient: URLSessionClient {
+    override func sendRequest(
+        _ request: URLRequest,
+        rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil,
+        completion: @escaping URLSessionClient.Completion
+    ) -> URLSessionTask {
+        guard let instrumentedRequest = URLSessionInterceptor.shared()?.intercept(request: request) else {
+            return super
+                .sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
+        }
+
+        let task = super
+            .sendRequest(
+                instrumentedRequest,
+                rawTaskCompletionHandler: rawTaskCompletionHandler,
+                completion: completion
+            )
+        URLSessionInterceptor.shared()?.intercept(task: task)
+
+        return task
+    }
+
+    override func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didFinishCollecting metrics: URLSessionTaskMetrics
+    ) {
+
+        URLSessionInterceptor.shared()?.task(task, didFinishCollecting: metrics)
+        super.urlSession(session, task: task, didFinishCollecting: metrics)
+    }
+
+    override func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        URLSessionInterceptor.shared()?.task(task, didCompleteWithError: error)
+        super.urlSession(session, task: task, didCompleteWithError: error)
+    }
+
+    override func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        URLSessionInterceptor.shared()?.task(dataTask, didReceive: data)
+        super.urlSession(session, dataTask: dataTask, didReceive: data)
     }
 }

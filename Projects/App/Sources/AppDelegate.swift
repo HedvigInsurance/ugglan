@@ -185,7 +185,6 @@ import hGraphQL
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
 
         AskForRating().registerSession()
-        CrossFrameworkCoordinator.setup()
 
         setupDebugger()
     }
