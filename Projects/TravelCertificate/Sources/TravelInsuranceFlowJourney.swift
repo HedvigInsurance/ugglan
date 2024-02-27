@@ -112,7 +112,7 @@ public struct TravelInsuranceFlowJourney {
     private static func openProcessingScreen() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ProcessingScreen()
+            rootView: TravelCertificateProcessingScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .dismissCreateTravelCertificate = navigationAction {

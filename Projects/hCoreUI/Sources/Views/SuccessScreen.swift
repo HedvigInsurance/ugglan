@@ -2,11 +2,11 @@ import Presentation
 import SwiftUI
 import hCore
 
-public struct SuccessScreen<T>: View where T: View {
+public struct SuccessScreen: View {
     let title: String
     let subTitle: String?
     let withButtons: Bool
-    let customBottomSuccessView: T?
+    @Environment(\.hSuccessBottomAttachedView) var customBottomSuccessView
     let successViewButtonAction: (() -> Void)?
 
     public init(
@@ -15,20 +15,17 @@ public struct SuccessScreen<T>: View where T: View {
         self.title = title
         self.withButtons = false
         self.subTitle = nil
-        self.customBottomSuccessView = nil
         self.successViewButtonAction = nil
     }
 
     public init(
         successViewTitle: String,
         successViewBody: String,
-        customBottomSuccessView: T? = nil,
         successViewButtonAction: @escaping () -> Void
     ) {
         self.withButtons = true
         self.title = successViewTitle
         self.subTitle = successViewBody
-        self.customBottomSuccessView = customBottomSuccessView
         self.successViewButtonAction = successViewButtonAction
     }
 
@@ -92,7 +89,7 @@ public struct SuccessScreen<T>: View where T: View {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SuccessScreen<EmptyView>(title: "SUCCESS")
+        SuccessScreen(title: "SUCCESS")
     }
 }
 
@@ -103,5 +100,22 @@ extension SuccessScreen {
             options: [.prefersNavigationBarHidden(true)]
         )
         .hidesBackButton
+    }
+}
+
+private struct EnvironmentHSuccessBottomAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hSuccessBottomAttachedView: AnyView? {
+        get { self[EnvironmentHSuccessBottomAttachedView.self] }
+        set { self[EnvironmentHSuccessBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
 }

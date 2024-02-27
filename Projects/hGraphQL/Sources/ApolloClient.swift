@@ -30,7 +30,7 @@ extension ApolloClient {
     public static var cache = InMemoryNormalizedCache()
 
     public static func headers() -> [String: String] {
-        if let token = ApolloClient.retreiveToken() {
+        if let token = try? ApolloClient.retreiveToken() {
             return [
                 "Authorization": "Bearer " + token.accessToken,
                 "Accept-Language": acceptLanguageHeader,
@@ -96,8 +96,8 @@ extension ApolloClient {
         KeychainHelper.standard.delete(key: "oAuthorizationToken")
     }
 
-    public static func retreiveToken() -> OAuthorizationToken? {
-        KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
+    public static func retreiveToken() throws -> OAuthorizationToken? {
+        try KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
     }
 
     public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {

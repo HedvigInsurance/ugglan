@@ -3,12 +3,11 @@ import Authentication
 import Chat
 import Claims
 import CoreDependencies
-import Datadog
-import DatadogCrashReporting
+import DatadogLogs
 import Flow
 import Form
 import Foundation
-import Hero
+import Home
 import Payment
 import Presentation
 import Profile
@@ -186,7 +185,6 @@ import hGraphQL
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
 
         AskForRating().registerSession()
-        CrossFrameworkCoordinator.setup()
 
         setupDebugger()
     }
@@ -197,10 +195,17 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
-        hGraphQL.log = Logger.builder
-            .sendNetworkInfo(true)
-            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
-            .build()
+        let config = Logger.Configuration(
+            service: "ios",
+            networkInfoEnabled: true,
+            bundleWithRumEnabled: true,
+            bundleWithTraceEnabled: true,
+            remoteLogThreshold: .info,
+            consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
+        )
+        let datadogLogger = Logger.create(with: config)
+        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+
         setupPresentableStoreLogger()
 
         log.info("Starting app")
@@ -222,11 +227,11 @@ import hGraphQL
                     UIApplication.shared.appDelegate.logout()
 
                     let toast = Toast(
-                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
-                        subtitle: L10n.forceLogoutMessageSubtitle,
-                        textColor: .black,
-                        backgroundColor: .brand(.caution)
+                        textColor: .brand(.secondaryText),
+                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
+                        symbolColor: .brand(.secondaryText)
                     )
                     Toasts.shared.displayToast(toast: toast)
                 }
@@ -278,7 +283,6 @@ import hGraphQL
         TokenRefresher.shared.isDemoMode = store.state.isDemoMode
 
         observeNotificationsSettings()
-
         return true
     }
 
@@ -306,6 +310,7 @@ extension ApolloClient {
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
                 let profileService = ProfileServiceOctopus()
+                let homeService = HomeServiceOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
@@ -328,6 +333,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
+                    Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -338,6 +344,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
+                    Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 }
             }
             .toVoid()

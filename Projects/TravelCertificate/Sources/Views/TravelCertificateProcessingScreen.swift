@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ProcessingScreen: View {
+struct TravelCertificateProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     var body: some View {
         ProcessingView(
@@ -15,9 +15,11 @@ struct ProcessingScreen: View {
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             onErrorCancelAction: {
                 vm.store.send(.navigation(.goBack))
-            },
-            customBottomSuccessView: bottomSuccessView
+            }
         )
+        .hSuccessBottomAttachedView {
+            bottomSuccessView
+        }
     }
 
     private var bottomSuccessView: some View {
@@ -92,7 +94,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        ProcessingScreen()
+        TravelCertificateProcessingScreen()
             .onAppear {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postTravelInsurance)

@@ -12,7 +12,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case hero
     case snapshottesting
     case reveal
     case datadog
@@ -72,7 +71,6 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.7.1")
                 )
             ]
-        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .exact("1.5.0"))]
         case .snapshottesting:
             return [
                 .package(
@@ -82,7 +80,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.20.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.7.1"))]
         case .authlib:
             return [
                 .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1620240219140357"))
@@ -126,7 +124,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:
             let path = Path(
@@ -154,8 +151,11 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .datadog:
             return [
-                .package(product: "DatadogStatic"),
                 .package(product: "DatadogCrashReporting"),
+                .package(product: "DatadogLogs"),
+                .package(product: "DatadogCore"),
+                .package(product: "DatadogRUM"),
+                .package(product: "DatadogTrace"),
             ]
         case .authlib:
             return [

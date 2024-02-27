@@ -4,7 +4,6 @@ import Contracts
 import EditCoInsured
 import Flow
 import Forever
-import Form
 import Foundation
 import Home
 import MoveFlow
@@ -201,6 +200,8 @@ extension AppJourney {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ApplicationContext.shared.$isLoggedIn.value = true
                 }
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                profileStore.send(.fetchMemberDetails)
             }
         }
         .onDismiss {
