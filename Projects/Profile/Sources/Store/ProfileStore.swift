@@ -5,8 +5,8 @@ import Presentation
 import hCore
 import hGraphQL
 
-public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
-    @Inject var octopus: hOctopus
+public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
+    @Inject var profileService: ProfileService
 
     public override func effects(
         _ getState: @escaping () -> ProfileState,
@@ -14,52 +14,39 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     ) -> FiniteSignal<ProfileAction>? {
         switch action {
         case .fetchProfileState:
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                let getProfileData = self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.ProfileQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                disposeBag +=
-                    getProfileData.onValue({ profileData in
-                        let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
-                        let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
+                Task {
+                    do {
+                        let (member, partner) = try await self.profileService.getProfileState()
+                        self.removeLoading(for: .fetchProfileState)
                         callback(.value(.setEurobonusNumber(partnerData: partner)))
-                        callback(
-                            .value(
-                                .setMember(
-                                    id: profileData.currentMember.id,
-                                    name: name,
-                                    email: profileData.currentMember.email,
-                                    phone: profileData.currentMember.phoneNumber
-                                )
-                            )
-                        )
-                        let hasTravelCertificate = !profileData.currentMember.travelCertificates.isEmpty
-                        callback(.value(.setHasTravelCertificate(has: hasTravelCertificate)))
+                        callback(.value(.setMember(memberData: member)))
+                        callback(.value(.setHasTravelCertificate(has: member.hasTravelCertificate)))
                         callback(.value(.fetchProfileStateCompleted))
-                    })
-                    .onError({ error in
-                        //TODO: HANDLE ERROR
+                        callback(.end)
+                    } catch let error {
+                        self.setError(error.localizedDescription, for: .fetchProfileState)
                         callback(.value(.fetchProfileStateCompleted))
-                    })
-
+                        callback(.end(error))
+                    }
+                }
                 return disposeBag
             }
         case .fetchMemberDetails:
-            let query = OctopusGraphQL.MemberDetailsQuery()
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: query,
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .compactMap { details in
-                        let details = MemberDetails(memberData: details.currentMember)
-                        callback(.value(.setMemberDetails(details: details)))
+                Task {
+                    do {
+                        let memberDetails = try await self.profileService.getMemberDetails()
+                        self.removeLoading(for: .fetchMemberDetails)
+                        callback(.value(.setMemberDetails(details: memberDetails)))
+                        callback(.end)
+                    } catch let error {
+                        self.setError(error.localizedDescription, for: .fetchMemberDetails)
+                        callback(.end(error))
                     }
+                }
                 return disposeBag
             }
         case .languageChanged:
@@ -69,18 +56,18 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 return disposeBag
             }
         case .updateLanguage:
-            let locale = Localization.Locale.currentLocale
-            let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
-            return FiniteSignal { callback in
+            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .perform(
-                        mutation: mutation
-                    )
-                    .onValue { _ in }
-                    .onError { error in
-                        log.warn("Failed updating language", error: error)
+                Task {
+                    do {
+                        try await self.profileService.updateLanguage()
+                        self.removeLoading(for: .updateLanguage)
+                        callback(.end)
+                    } catch let error {
+                        self.setError(error.localizedDescription, for: .updateLanguage)
+                        callback(.end(error))
                     }
+                }
                 return disposeBag
             }
         default:
@@ -91,21 +78,24 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case let .setMember(id, name, email, phone):
-            newState.memberId = id
-            newState.memberFullName = name
-            newState.memberPhone = phone
-            newState.memberEmail = email
+        case .fetchProfileState:
+            setLoading(for: .fetchProfileState)
+        case .fetchMemberDetails:
+            setLoading(for: .fetchMemberDetails)
+        case .updateLanguage:
+            setLoading(for: .updateLanguage)
+        case let .setMember(memberData):
+            newState.memberDetails = memberData
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
         case let .setMemberEmail(email):
-            newState.memberEmail = email
+            newState.memberDetails?.email = email
         case let .setMemberPhone(phone):
-            newState.memberPhone = phone
+            newState.memberDetails?.phone = phone
         case let .setOpenAppSettings(to):
             newState.openSettingsDirectly = to
         case let .setMemberDetails(details):
-            newState.memberDetails = details ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+            newState.memberDetails = details
         case let .setPushNotificationStatus(status):
             newState.pushNotificationStatus = status
         case let .setPushNotificationsTo(date):

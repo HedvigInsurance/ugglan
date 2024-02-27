@@ -310,6 +310,7 @@ extension ApolloClient {
                 let networkClient = NetworkClient()
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
+                let profileService = ProfileServiceOctopus()
                 let editCoInsuredService = EditCoInsuredServiceOctopus()
                 let homeService = HomeServiceOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
@@ -333,6 +334,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 case .production, .custom:
@@ -344,6 +346,7 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 }
