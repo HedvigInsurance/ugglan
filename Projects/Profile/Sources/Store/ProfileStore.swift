@@ -3,7 +3,6 @@ import Flow
 import Foundation
 import Presentation
 import hCore
-import hGraphQL
 
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
     @Inject var profileService: ProfileService
