@@ -9,7 +9,7 @@ public final class TerminationContractStore: LoadingStateStore<
     TerminationContractState, TerminationContractAction, TerminationContractLoadingAction
 >
 {
-    @Inject var octopus: hOctopus
+    @Inject var terminateContractsService: TerminateContractsService
 
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
@@ -18,26 +18,15 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-                input: OctopusGraphQL.FlowTerminationStartInput(contractId: config.contractId),
-                context: nil
-            )
-            return mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+            return terminateContractsService.startTermination(contractId: config.contractId)
         case .sendTerminationDate:
             let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-
-            let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-                input: terminationDateInput,
-                context: terminationContext
+            return terminateContractsService.sendTerminationDate(
+                inputDateToString: inputDateToString,
+                terminationContext: terminationContext
             )
-            return mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
         case .sendConfirmDelete:
-            let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-                context: terminationContext,
-                input: GraphQLNullable(optionalValue: state.terminationDeleteStep?.returnDeltionInput())
-            )
-            return mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+            return terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
         default:
             break
         }

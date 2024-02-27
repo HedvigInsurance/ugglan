@@ -3,7 +3,6 @@ import Flow
 import Foundation
 import Presentation
 import hCore
-import hGraphQL
 
 public final class EditCoInsuredStore: LoadingStateStore<
     EditCoInsuredState, EditCoInsuredAction, EditCoInsuredLoadingAction
