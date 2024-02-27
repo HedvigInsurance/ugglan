@@ -235,6 +235,11 @@ extension JourneyPresentation {
                     }
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
+            } else if case let .openDocument(url, title) = action {
+                Journey(
+                    Document(url: url, title: title),
+                    style: .detented(.large)
+                )
             }
         }
     }

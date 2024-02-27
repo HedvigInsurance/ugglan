@@ -9,10 +9,6 @@ import hCoreUI
 import hGraphQL
 
 public struct ProfileState: StateProtocol {
-    var memberId: String = ""
-    var memberFullName: String = ""
-    var memberEmail: String = ""
-    var memberPhone: String?
     public var partnerData: PartnerData?
     var openSettingsDirectly = false
     public var memberDetails: MemberDetails?
@@ -53,7 +49,7 @@ public struct ProfileState: StateProtocol {
     }
 }
 
-public struct PartnerData: Codable, Equatable {
+public struct PartnerData: Codable, Equatable, Hashable {
     public let sas: PartnerDataSas?
 
     public var shouldShowEuroBonus: Bool {
@@ -69,7 +65,7 @@ public struct PartnerData: Codable, Equatable {
     }
 }
 
-public struct PartnerDataSas: Codable, Equatable {
+public struct PartnerDataSas: Codable, Equatable, Hashable {
     let eligible: Bool
     let eurobonusNumber: String?
 
@@ -77,4 +73,10 @@ public struct PartnerDataSas: Codable, Equatable {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber
     }
+}
+
+public enum ProfileLoadingState: LoadingProtocol {
+    case fetchProfileState
+    case fetchMemberDetails
+    case updateLanguage
 }

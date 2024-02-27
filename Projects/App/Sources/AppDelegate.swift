@@ -4,7 +4,9 @@ import Chat
 import Claims
 import CoreDependencies
 import DatadogLogs
+import EditCoInsured
 import Flow
+import Forever
 import Form
 import Foundation
 import Home
@@ -311,6 +313,9 @@ extension ApolloClient {
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
                 let moveFlowService = MoveFlowServiceOctopus()
+                let foreverService = ForeverServiceOctopus()
+                let profileService = ProfileServiceOctopus()
+                let editCoInsuredService = EditCoInsuredServiceOctopus()
                 let homeService = HomeServiceOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
@@ -334,6 +339,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                     Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
+                    Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
+                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
+                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
@@ -345,6 +353,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                     Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
+                    Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
+                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
+                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 }
             }

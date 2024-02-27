@@ -1,6 +1,4 @@
-import Flow
 import Foundation
-import hCore
 import hGraphQL
 
 public struct Referral: Hashable, Codable {
@@ -83,31 +81,5 @@ public enum ForeverChangeCodeError: Error, LocalizedError, Equatable {
         case let .errorMessage(message):
             return message
         }
-    }
-}
-
-public protocol ForeverService {
-    var dataSignal: ReadSignal<ForeverData?> { get }
-    func refetch()
-    func changeDiscountCode(_ value: String) -> Signal<Either<Void, String>>
-}
-
-extension ForeverData {
-    static func mock() -> ForeverData {
-
-        let foreverData = ForeverData(
-            grossAmount: .sek(100),
-            netAmount: .sek(60),
-            otherDiscounts: .sek(10),
-            discountCode: "CODE",
-            monthlyDiscount: .sek(20),
-            referrals: [
-                .init(name: "First", activeDiscount: .sek(10), status: .active),
-                .init(name: "Second", activeDiscount: .sek(10), status: .pending),
-                .init(name: "Third", activeDiscount: .sek(10), status: .terminated),
-            ],
-            monthlyDiscountPerReferral: .sek(10)
-        )
-        return foreverData
     }
 }
