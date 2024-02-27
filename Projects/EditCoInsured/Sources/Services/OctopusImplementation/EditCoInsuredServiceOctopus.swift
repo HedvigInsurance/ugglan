@@ -50,15 +50,16 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
 
         if let userError = data.userError {
             throw EditCoInsuredError.error(message: userError.message ?? L10n.General.errorBody)
-        } else if let intent = data.intent {
-            return Intent(
-                activationDate: intent.activationDate,
-                currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
-                newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
-                id: intent.id,
-                state: intent.state.rawValue
-            )
         }
-        throw EditCoInsuredError.error(message: L10n.General.errorBody)
+        guard let intent = data.intent else {
+            throw EditCoInsuredError.error(message: L10n.General.errorBody)
+        }
+        return Intent(
+            activationDate: intent.activationDate,
+            currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
+            newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
+            id: intent.id,
+            state: intent.state.rawValue
+        )
     }
 }
