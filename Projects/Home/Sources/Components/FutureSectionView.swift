@@ -7,7 +7,6 @@ import hCoreUI
 import hGraphQL
 
 struct FutureSectionInfoView: View {
-    var memberName: String
 
     var body: some View {
         PresentableStoreLens(
@@ -45,7 +44,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
-            FutureSectionInfoView(memberName: "NAME")
+            FutureSectionInfoView()
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
@@ -57,7 +56,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
 
                     store.send(
                         .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
+                            state: .future,
                             contracts: [.init(contract: contract)]
                         )
                     )
@@ -72,12 +71,12 @@ struct PendingSwitchableView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
-            FutureSectionInfoView(memberName: "NAME")
+            FutureSectionInfoView()
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(
                         .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
+                            state: .future,
                             contracts: []
                         )
                     )
@@ -92,12 +91,12 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
-            FutureSectionInfoView(memberName: "NAME")
+            FutureSectionInfoView()
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(
                         .setMemberContractState(
-                            state: .init(state: .future, name: "NAME"),
+                            state: .future,
                             contracts: []
                         )
                     )
