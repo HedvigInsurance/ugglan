@@ -27,28 +27,31 @@ public struct BankIDLoginQR: View {
             } else {
                 hForm {
                     VStack(spacing: 32) {
-                        if let image = vm.image {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: 140)
-                                .foregroundColor(hTextColor.primary)
-                                .transition(.scale)
-                                .alert(isPresented: $vm.showAlert) {
-                                    Alert(
-                                        title: Text(L10n.demoModeStart),
-                                        message: nil,
-                                        primaryButton: .cancel(Text(L10n.demoModeCancel)),
-                                        secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                                            store.send(.cancel)
-                                            ApplicationContext.shared.$isDemoMode.value = true
-                                            store.send(.bankIdQrResultAction(action: .loggedIn))
-                                        }
-                                    )
+                        ZStack {
+                            if let image = vm.image {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 140)
+                                    .foregroundColor(hTextColor.primary)
+                                    .transition(.opacity)
+                                    .id(image.pngData()?.count ?? 0)
+                            }
+                        }
+                        .onLongPressGesture(minimumDuration: 3.0) {
+                            vm.showAlert = true
+                        }
+                        .alert(isPresented: $vm.showAlert) {
+                            Alert(
+                                title: Text(L10n.demoModeStart),
+                                message: nil,
+                                primaryButton: .cancel(Text(L10n.demoModeCancel)),
+                                secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
+                                    store.send(.cancel)
+                                    ApplicationContext.shared.$isDemoMode.value = true
+                                    store.send(.bankIdQrResultAction(action: .loggedIn))
                                 }
-                                .onLongPressGesture(minimumDuration: 3.0) {
-                                    vm.showAlert = true
-                                }
+                            )
                         }
 
                         hSection {
@@ -121,6 +124,17 @@ class BandIDViewModel: ObservableObject {
                 self?.set(token: value)
             }
             .store(in: &cancellables)
+
+        store.stateSignal
+            .plain()
+            .map({ $0.seBankIDState.liveQrCodeData })
+            .distinct()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                self?.set(qrData: value)
+            }
+            .store(in: &cancellables)
     }
 
     deinit {
@@ -179,6 +193,16 @@ class BandIDViewModel: ObservableObject {
 
         withAnimation {
             self.image = generateQRImage(from: "bankid:///?autostarttoken=\(token)")
+        }
+    }
+
+    private func set(qrData: String?) {
+        guard let qrData else {
+            self.image = nil
+            return
+        }
+        withAnimation(.snappy) {
+            self.image = generateQRImage(from: qrData)
         }
     }
 
