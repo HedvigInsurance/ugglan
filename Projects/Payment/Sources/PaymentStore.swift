@@ -52,69 +52,41 @@ public enum LoadingAction: LoadingProtocol {
     case getDiscountsData
     case getHistory
 }
-
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentService
 
-    public override func effects(
-        _ getState: @escaping () -> PaymentState,
-        _ action: PaymentAction
-    ) -> FiniteSignal<PaymentAction>? {
+    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async throws {
         switch action {
         case .load:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let paymentData = try await self.paymentService.getPaymentData()
-                        callback(.value(.setPaymentData(data: paymentData)))
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .getPaymentData)
-                    }
-                }
-                return disposeBag
+            do {
+                let paymentData = try await self.paymentService.getPaymentData()
+                self.send(.setPaymentData(data: paymentData))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .getPaymentData)
             }
         case .fetchPaymentStatus:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let statusData = try await self.paymentService.getPaymentStatusData()
-                        callback(.value(.setPaymentStatus(data: statusData)))
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .getPaymentStatus)
-                    }
-                }
-                return disposeBag
+            do {
+                let statusData = try await self.paymentService.getPaymentStatusData()
+                self.send(.setPaymentStatus(data: statusData))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .getPaymentStatus)
             }
         case .fetchDiscountsData:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let data = try await self.paymentService.getPaymentDiscountsData()
-                        callback(.value(.setDiscountsData(data: data)))
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .getDiscountsData)
-                    }
-                }
-                return disposeBag
+            do {
+                let data = try await self.paymentService.getPaymentDiscountsData()
+                self.send(.setDiscountsData(data: data))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .getDiscountsData)
             }
         case .getHistory:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let data = try await self.paymentService.getPaymentHistoryData()
-                        callback(.value(.setHistory(to: data)))
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .getHistory)
-                    }
-                }
-                return disposeBag
+            do {
+                let data = try await self.paymentService.getPaymentHistoryData()
+                self.send(.setHistory(to: data))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .getHistory)
             }
         default:
-            return nil
+            break
         }
     }
 

@@ -1,9 +1,9 @@
 import Foundation
 import hGraphQL
 
-public protocol FlowClaimStepModel: Codable, Equatable, Hashable {}
+public protocol FlowStepModel: Codable, Equatable, Hashable {}
 
-public struct TerminationFlowDateNextStepModel: FlowClaimStepModel {
+public struct TerminationFlowDateNextStepModel: FlowStepModel {
     let id: String
     let maxDate: String
     let minDate: String

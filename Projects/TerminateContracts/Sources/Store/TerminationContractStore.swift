@@ -9,7 +9,7 @@ public final class TerminationContractStore: LoadingStateStore<
     TerminationContractState, TerminationContractAction, TerminationContractLoadingAction
 >
 {
-    @Inject var octopus: hOctopus
+    @Inject var terminateContractsService: TerminateContractsService
 
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
@@ -18,26 +18,21 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-                input: OctopusGraphQL.FlowTerminationStartInput(contractId: config.contractId),
-                context: nil
-            )
-            return mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+            return executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
+                try await terminateContractsService.startTermination(contractId: config.contractId)
+            }
         case .sendTerminationDate:
-            let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-
-            let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-                input: terminationDateInput,
-                context: terminationContext
-            )
-            return mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
+            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+                let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
+                return try await terminateContractsService.sendTerminationDate(
+                    inputDateToString: inputDateToString,
+                    terminationContext: terminationContext
+                )
+            }
         case .sendConfirmDelete:
-            let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-                context: terminationContext,
-                input: GraphQLNullable(optionalValue: state.terminationDeleteStep?.returnDeltionInput())
-            )
-            return mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+                try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            }
         default:
             break
         }
@@ -90,5 +85,29 @@ public final class TerminationContractStore: LoadingStateStore<
         }
 
         return newState
+    }
+
+    private func executeAsFiniteSignal(
+        loadingType: TerminationContractLoadingAction,
+        action: @escaping () async throws -> TerminateStepResponse
+    ) -> FiniteSignal<TerminationContractAction>? {
+        return FiniteSignal { callback in
+            let disposeBag = DisposeBag()
+            Task {
+                self.setLoading(for: loadingType)
+                do {
+                    let data = try await action()
+                    callback(.value(.setTerminationContext(context: data.context)))
+                    callback(.value(data.action))
+                    self.removeLoading(for: loadingType)
+                    callback(.end)
+                } catch let error {
+                    callback(.value(.navigationAction(action: .openTerminationFailScreen)))
+                    self.setError(error.localizedDescription, for: loadingType)
+                    callback(.end(error))
+                }
+            }
+            return disposeBag
+        }
     }
 }

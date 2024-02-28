@@ -1,9 +1,40 @@
-import Apollo
 import Flow
-import Foundation
 import Presentation
 import hCore
 import hGraphQL
+
+public class TerminateContractsOctopus: TerminateContractsService {
+    public init() {}
+
+    public func startTermination(contractId: String) async throws -> TerminateStepResponse {
+        let mutation = OctopusGraphQL.FlowTerminationStartMutation(
+            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
+            context: nil
+        )
+        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func sendTerminationDate(
+        inputDateToString: String,
+        terminationContext: String
+    ) async throws -> TerminateStepResponse {
+        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
+            input: terminationDateInput,
+            context: terminationContext
+        )
+        return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
+        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+        let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
+            context: terminationContext,
+            input: GraphQLNullable(optionalValue: store.state.terminationDeleteStep?.returnDeltionInput())
+        )
+        return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+    }
+}
 
 protocol Into {
     associatedtype To
@@ -12,7 +43,6 @@ protocol Into {
 
 extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
     func into() -> TerminationContractAction {
-
         if let step = self.asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
             return .stepModelAction(action: .setTerminationDateStep(model: .init(with: step)))
         } else if let step = self.asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
@@ -30,30 +60,16 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
 extension GraphQLMutation {
     func execute<TerminationStep: Into>(
         _ keyPath: KeyPath<Self.Data, TerminationStep>
-    ) -> FiniteSignal<TerminationContractAction>
+    ) async throws -> TerminateStepResponse
     where
-        TerminationStep.To == TerminationContractAction, Self: TerminationStepLoadingType,
+        TerminationStep.To == TerminationContractAction,
         Self.Data: TerminationStepContext
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
-        let loadingType = self.getLoadingType()
-        return FiniteSignal { callback in
-            let disposeBag = DisposeBag()
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            store.setLoading(for: loadingType)
-            disposeBag += octopus.client.perform(mutation: self)
-                .map { data in
-                    callback(.value(.setTerminationContext(context: data.getContext())))
-                    callback(.value(data[keyPath: keyPath].into()))
-                    store.removeLoading(for: loadingType)
-                    callback(.end)
-                }
-                .onError({ error in
-                    store.send(.navigationAction(action: .openTerminationFailScreen))
-                    callback(.end)
-                })
-            return disposeBag
-        }
+        let data = try await octopus.client.perform(mutation: self)
+        let context = data.getContext()
+        let action = data[keyPath: keyPath].into()
+        return .init(context: context, action: action)
     }
 }
 
@@ -76,27 +92,5 @@ extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepCo
 extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
         return self.flowTerminationDeletionNext.context
-    }
-}
-
-protocol TerminationStepLoadingType {
-    func getLoadingType() -> TerminationContractLoadingAction
-}
-
-extension OctopusGraphQL.FlowTerminationStartMutation: TerminationStepLoadingType {
-    func getLoadingType() -> TerminationContractLoadingAction {
-        return .startTermination
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDateNextMutation: TerminationStepLoadingType {
-    func getLoadingType() -> TerminationContractLoadingAction {
-        return .sendTerminationDate
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDeletionNextMutation: TerminationStepLoadingType {
-    func getLoadingType() -> TerminationContractLoadingAction {
-        return .deleteTermination
     }
 }
