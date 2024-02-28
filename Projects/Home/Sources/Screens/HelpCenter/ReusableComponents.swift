@@ -118,9 +118,7 @@ struct QuestionsItems: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .hWithoutHorizontalPadding
-                    .hWithoutDividerPadding
-                    .onTapGesture {
+                    .onTap {
                         let attributes: [String: String] = [
                             "question": item.questionEn,
                             "answer": item.answer,
@@ -130,6 +128,8 @@ struct QuestionsItems: View {
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         store.send(.openHelpCenterQuestionView(question: item))
                     }
+                    .hWithoutHorizontalPadding
+                    .hWithoutDividerPadding
                 }
                 .withoutHorizontalPadding
                 .hSectionMinimumPadding
