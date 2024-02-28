@@ -14,6 +14,7 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TerminateContracts
 import TravelCertificate
 import UIKit
 import UserNotifications
@@ -315,6 +316,7 @@ extension ApolloClient {
                 let profileService = ProfileServiceOctopus()
                 let editCoInsuredService = EditCoInsuredServiceOctopus()
                 let homeService = HomeServiceOctopus()
+                let terminateContractsService = TerminateContractsOctopus()
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
@@ -340,6 +342,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
+                    Dependencies.shared.add(
+                        module: Module { () -> TerminateContractsService in terminateContractsService }
+                    )
                 case .production, .custom:
                     let hFetchClaimService = FetchClaimServiceOctopus()
                     Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -353,6 +358,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                     Dependencies.shared.add(module: Module { () -> HomeService in homeService })
+                    Dependencies.shared.add(
+                        module: Module { () -> TerminateContractsService in terminateContractsService }
+                    )
                 }
             }
             .toVoid()

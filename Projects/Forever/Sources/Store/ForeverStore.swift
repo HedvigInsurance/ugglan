@@ -4,7 +4,6 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
-import hGraphQL
 
 public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, ForeverLoadingType> {
     @Inject var foreverService: ForeverService

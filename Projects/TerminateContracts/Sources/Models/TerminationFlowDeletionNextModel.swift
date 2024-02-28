@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct TerminationFlowDeletionNextModel: FlowClaimStepModel {
+public struct TerminationFlowDeletionNextModel: FlowStepModel {
     let id: String
     let disclaimer: String
     init(
