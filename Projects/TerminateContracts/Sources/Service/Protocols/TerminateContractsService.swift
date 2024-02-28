@@ -1,15 +1,15 @@
 import Flow
 
 public protocol TerminateContractsService {
-    func startTermination(contractId: String) async throws -> TeminateStepResponse
+    func startTermination(contractId: String) async throws -> TerminateStepResponse
     func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
-    ) async throws -> TeminateStepResponse
-    func sendConfirmDelete(terminationContext: String) async throws -> TeminateStepResponse
+    ) async throws -> TerminateStepResponse
+    func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse
 }
 
-public struct TeminateStepResponse {
+public struct TerminateStepResponse {
     let context: String
     let action: TerminationContractAction
 }

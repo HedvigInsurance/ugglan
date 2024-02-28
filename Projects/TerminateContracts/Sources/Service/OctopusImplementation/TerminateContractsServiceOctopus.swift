@@ -6,7 +6,7 @@ import hGraphQL
 public class TerminateContractsOctopus: TerminateContractsService {
     public init() {}
 
-    public func startTermination(contractId: String) async throws -> TeminateStepResponse {
+    public func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
@@ -17,7 +17,7 @@ public class TerminateContractsOctopus: TerminateContractsService {
     public func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
-    ) async throws -> TeminateStepResponse {
+    ) async throws -> TerminateStepResponse {
         let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
         let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
             input: terminationDateInput,
@@ -26,7 +26,7 @@ public class TerminateContractsOctopus: TerminateContractsService {
         return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
     }
 
-    public func sendConfirmDelete(terminationContext: String) async throws -> TeminateStepResponse {
+    public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
         let store: TerminationContractStore = globalPresentableStoreContainer.get()
         let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
             context: terminationContext,
@@ -60,7 +60,7 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
 extension GraphQLMutation {
     func execute<TerminationStep: Into>(
         _ keyPath: KeyPath<Self.Data, TerminationStep>
-    ) async throws -> TeminateStepResponse
+    ) async throws -> TerminateStepResponse
     where
         TerminationStep.To == TerminationContractAction,
         Self.Data: TerminationStepContext

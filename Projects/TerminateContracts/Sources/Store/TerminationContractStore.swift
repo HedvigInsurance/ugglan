@@ -89,7 +89,7 @@ public final class TerminationContractStore: LoadingStateStore<
 
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
-        action: @escaping () async throws -> TeminateStepResponse
+        action: @escaping () async throws -> TerminateStepResponse
     ) -> FiniteSignal<TerminationContractAction>? {
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
