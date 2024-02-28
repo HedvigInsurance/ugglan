@@ -3,7 +3,6 @@ import Flow
 import Foundation
 import Presentation
 import hCore
-import hGraphQL
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
     @Inject var moveFlowService: MoveFlowService
@@ -22,12 +21,10 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                 Task {
                     do {
                         let movingFlowData = try await self.moveFlowService.sendMoveIntent()
-                        if let movingFlowData {
-                            self.removeLoading(for: .fetchMoveIntent)
-                            callback(.value(.setMoveIntent(with: movingFlowData)))
-                            self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
-                            callback(.end)
-                        }
+                        self.removeLoading(for: .fetchMoveIntent)
+                        callback(.value(.setMoveIntent(with: movingFlowData)))
+                        self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
+                        callback(.end)
                     } catch {
                         if let error = error as? MovingFlowError {
                             self.setError(error.localizedDescription, for: .fetchMoveIntent)
@@ -49,13 +46,10 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                             addressInputModel: self.addressInputModel,
                             houseInformationInputModel: self.houseInformationInputModel
                         )
-                        if let movingFlowData {
-                            self.send(.setMoveIntent(with: movingFlowData))
-                            self.send(.navigation(action: .openConfirmScreen))
-                            self.removeLoading(for: .requestMoveIntent)
-                        }
+                        self.send(.setMoveIntent(with: movingFlowData))
+                        self.send(.navigation(action: .openConfirmScreen))
+                        self.removeLoading(for: .requestMoveIntent)
                     } catch {
-                        error
                         self.setError(error.localizedDescription, for: .requestMoveIntent)
                     }
                 }
@@ -73,7 +67,6 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                         self.removeLoading(for: .confirmMoveIntent)
                         callback(.end)
                     } catch {
-                        error
                         self.setError(error.localizedDescription, for: .requestMoveIntent)
                     }
                 }

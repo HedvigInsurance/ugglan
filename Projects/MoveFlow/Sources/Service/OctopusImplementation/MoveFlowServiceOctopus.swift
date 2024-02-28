@@ -8,7 +8,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
 
     public init() {}
 
-    public func sendMoveIntent() async throws -> MovingFlowModel? {
+    public func sendMoveIntent() async throws -> MovingFlowModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
         let data = try await octopus.client.perform(mutation: mutation)
 
@@ -17,14 +17,14 @@ public class MoveFlowServiceOctopus: MoveFlowService {
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
-        return nil
+        throw MovingFlowError.serverError(message: L10n.General.errorBody)
     }
 
     public func requestMoveIntent(
         intentId: String,
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel
-    ) async throws -> MovingFlowModel? {
+    ) async throws -> MovingFlowModel {
 
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             moveToAddress: .init(
@@ -50,7 +50,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
-        return nil
+        throw MovingFlowError.serverError(message: L10n.General.errorBody)
     }
 
     public func confirmMoveIntent(intentId: String) async throws {
