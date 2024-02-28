@@ -52,7 +52,7 @@ public class HomeServiceOctopus: HomeService {
                 query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-        return data.chat.messages.compactMap({ $0.sentAt.localDateToDate })
+        return data.chat.messages.compactMap({ $0.sentAt.localDateToIso8601Date })
     }
 
     public func getNumberOfClaims() async throws -> Int {
