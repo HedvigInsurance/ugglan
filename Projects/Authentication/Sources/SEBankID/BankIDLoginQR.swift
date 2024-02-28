@@ -38,7 +38,7 @@ public struct BankIDLoginQR: View {
                                     .id(image.pngData()?.count ?? 0)
                             }
                         }
-                        .onLongPressGesture(minimumDuration: 2.0) {
+                        .onLongPressGesture(minimumDuration: 3.0) {
                             vm.showAlert = true
                         }
                         .alert(isPresented: $vm.showAlert) {
