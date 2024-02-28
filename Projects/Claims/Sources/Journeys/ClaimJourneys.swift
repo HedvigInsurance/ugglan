@@ -93,7 +93,10 @@ public class ClaimJourneys {
     private static func openGlassDamageScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimGlassDamageScreen()
+            rootView: SubmitClaimDeflectScreen(deflectModel: {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                return store.state.glassDamageStep
+            })
         ) {
             action in
             if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
@@ -124,12 +127,19 @@ public class ClaimJourneys {
     private static func openEmergencyScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimEmergencyScreen()
+            rootView: SubmitClaimDeflectScreen(deflectModel: {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                if let emergencyStep = store.state.emergencyStep {
+                    return emergencyStep
+                }
+                return FlowClaimDeflectStepModel(id: .FlowClaimDeflectEmergencyStep)
+            })
         ) {
             action in
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
+        .configureTitle(L10n.commonClaimEmergencyTitle)
     }
 
     @JourneyBuilder

@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 enum FlowClaimDeflectStepType: Decodable, Encodable {
@@ -8,9 +9,60 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
     case Unknown
 }
 
+public struct FlowClaimDeflectConfig {
+    let infoText: String
+    let infoSectionText: String
+    let infoSectionTitle: String
+    let cardTitle: String
+    let cardText: String
+    let buttonText: String?
+    let questions: [DeflectQuestion]
+}
+
+struct DeflectQuestion {
+    let question: String
+    let answer: String
+}
+
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     let id: FlowClaimDeflectStepType
     let partners: [Partner]
+    var config: FlowClaimDeflectConfig? {
+        if id == .FlowClaimDeflectGlassDamageStep {
+            return FlowClaimDeflectConfig(
+                infoText: L10n.submitClaimGlassDamageInfoLabel,
+                infoSectionText: L10n.submitClaimGlassDamageHowItWorksLabel,
+                infoSectionTitle: L10n.submitClaimHowItWorksTitle,
+                cardTitle: L10n.submitClaimPartnerTitle,
+                cardText: L10n.submitClaimGlassDamageOnlineBookingLabel,
+                buttonText: L10n.submitClaimGlassDamageOnlineBookingButton,
+                questions: [
+                    .init(question: L10n.submitClaimWhatCostTitle, answer: L10n.submitClaimGlassDamageWhatCostLabel),
+                    .init(question: L10n.submitClaimHowBookTitle, answer: L10n.submitClaimGlassDamageHowBookLabel),
+                    .init(question: L10n.submitClaimWorkshopTitle, answer: L10n.submitClaimGlassDamageWorkshopLabel),
+                ]
+            )
+        } else if id == .FlowClaimDeflectEmergencyStep {
+            return FlowClaimDeflectConfig(
+                infoText: L10n.submitClaimEmergencyInfoLabel,
+                infoSectionText: L10n.submitClaimEmergencyInsuranceCoverLabel,
+                infoSectionTitle: L10n.submitClaimEmergencyInsuranceCoverTitle,
+                cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                cardText: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                buttonText: nil,
+                questions: [
+                    .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
+                    .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
+                    .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
+                    .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
+                    .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
+                    .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
+
+                ]
+            )
+        }
+        return nil
+    }
 
     init(
         with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
@@ -31,6 +83,14 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+    }
+
+    init(
+        id: FlowClaimDeflectStepType,
+        partners: [Partner]? = []
+    ) {
+        self.id = id
+        self.partners = partners ?? []
     }
 
     private static func setDeflectType(idIn: String) -> FlowClaimDeflectStepType {

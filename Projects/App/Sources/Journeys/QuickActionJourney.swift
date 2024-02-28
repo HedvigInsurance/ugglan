@@ -42,7 +42,7 @@ extension AppJourney {
         default:
             if commonClaim.layout.titleAndBulletPoint == nil {
                 openOnTop(
-                    vc: SubmitClaimEmergencyScreen.journey
+                    vc: SubmitClaimDeflectScreen.journey
                 )
             } else {
                 let vc = CommonClaimDetail.journey(claim: commonClaim)
