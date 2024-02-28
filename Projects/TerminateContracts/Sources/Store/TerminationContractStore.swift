@@ -18,15 +18,21 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return terminateContractsService.startTermination(contractId: config.contractId)
+            return executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
+                try await terminateContractsService.startTermination(contractId: config.contractId)
+            }
         case .sendTerminationDate:
-            let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-            return terminateContractsService.sendTerminationDate(
-                inputDateToString: inputDateToString,
-                terminationContext: terminationContext
-            )
+            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+                let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
+                return try await terminateContractsService.sendTerminationDate(
+                    inputDateToString: inputDateToString,
+                    terminationContext: terminationContext
+                )
+            }
         case .sendConfirmDelete:
-            return terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+                try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            }
         default:
             break
         }
@@ -79,5 +85,29 @@ public final class TerminationContractStore: LoadingStateStore<
         }
 
         return newState
+    }
+
+    private func executeAsFiniteSignal(
+        loadingType: TerminationContractLoadingAction,
+        action: @escaping () async throws -> TeminateStepResponse
+    ) -> FiniteSignal<TerminationContractAction>? {
+        return FiniteSignal { callback in
+            let disposeBag = DisposeBag()
+            Task {
+                self.setLoading(for: loadingType)
+                do {
+                    let data = try await action()
+                    callback(.value(.setTerminationContext(context: data.context)))
+                    callback(.value(data.action))
+                    self.removeLoading(for: loadingType)
+                    callback(.end)
+                } catch let error {
+                    callback(.value(.navigationAction(action: .openTerminationFailScreen)))
+                    self.setError(error.localizedDescription, for: loadingType)
+                    callback(.end(error))
+                }
+            }
+            return disposeBag
+        }
     }
 }

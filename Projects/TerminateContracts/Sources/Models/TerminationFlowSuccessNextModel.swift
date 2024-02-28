@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct TerminationFlowSuccessNextModel: FlowClaimStepModel {
+public struct TerminationFlowSuccessNextModel: FlowStepModel {
     let terminationDate: String?
     let surveyUrl: String
     init(
