@@ -1,3 +1,4 @@
+import Contracts
 import Foundation
 import hCore
 import hGraphQL
@@ -9,39 +10,37 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         status: ClaimStatus,
         outcome: ClaimOutcome,
         submittedAt: String?,
-        closedAt: String?,
         signedAudioURL: String?,
-        type: String,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
-        targetFileUploadUri: String
+        targetFileUploadUri: String,
+        claimType: String,
+        incidentDate: String?,
+        productVariant: ProductVariant?
     ) {
         self.id = id
         self.status = status
         self.outcome = outcome
         self.submittedAt = submittedAt
-        self.closedAt = closedAt
         self.signedAudioURL = signedAudioURL
-        self.type = type
-        self.subtitle = ""
         self.memberFreeText = memberFreeText
         self.payoutAmount = payoutAmount
         self.targetFileUploadUri = targetFileUploadUri
+        self.claimType = claimType
+        self.incidentDate = incidentDate
+        self.productVariant = productVariant
     }
 
-    public var title: String {
-        L10n.Claim.Casetype.insuranceCase
-    }
-    public let subtitle: String
+    public let claimType: String
+    public let incidentDate: String?
+    public let productVariant: ProductVariant?
     public let id: String
     public let status: ClaimStatus
     public let outcome: ClaimOutcome
     public let submittedAt: String?
-    public let closedAt: String?
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
-    public let type: String
     public let targetFileUploadUri: String
     public var statusParagraph: String {
         switch self.status {

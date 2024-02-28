@@ -12,7 +12,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case hero
     case snapshottesting
     case reveal
     case datadog
@@ -40,19 +39,19 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
         case .flow:
-            return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
         case .form:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.0")
+                    .exact("3.1.1")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.23")
+                    .upToNextMajor(from: "2.0.24")
                 )
             ]
         case .dynamiccolor:
@@ -72,7 +71,6 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.7.1")
                 )
             ]
-        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .exact("1.5.0"))]
         case .snapshottesting:
             return [
                 .package(
@@ -82,10 +80,10 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.20.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.7.1"))]
         case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1620240219140357"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1820240227133804"))
             ]
         case .tagkit:
             return [
@@ -126,7 +124,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:
             let path = Path(
@@ -154,8 +151,11 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .datadog:
             return [
-                .package(product: "DatadogStatic"),
                 .package(product: "DatadogCrashReporting"),
+                .package(product: "DatadogLogs"),
+                .package(product: "DatadogCore"),
+                .package(product: "DatadogRUM"),
+                .package(product: "DatadogTrace"),
             ]
         case .authlib:
             return [

@@ -419,14 +419,7 @@ public class ClaimJourneys {
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
-            rootView: SuccessScreen<EmptyView>(
-                successViewTitle: L10n.claimsSuccessTitle,
-                successViewBody: L10n.claimsSuccessLabel,
-                successViewButtonAction: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.dissmissNewClaimFlow)
-                }
-            )
+            rootView: SubmitClaimSuccessScreen()
         )
         .hidesBackButton
     }
@@ -651,7 +644,7 @@ public class ClaimJourneys {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         return HostingJourney(
             SubmitClaimStore.self,
-            rootView: FilesUploadScreen(model: store.state.fileUploadStep!)
+            rootView: SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
         ) {
             action in
             getScreen(for: action)

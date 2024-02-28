@@ -3,7 +3,6 @@ import Combine
 import Contracts
 import EditCoInsured
 import Flow
-import Form
 import Foundation
 import Payment
 import Presentation
@@ -75,10 +74,10 @@ extension HomeView {
         PresentableStoreLens(
             HomeStore.self,
             getter: { state in
-                state.memberStateData
+                state.memberContractState
             }
-        ) { memberStateData in
-            switch memberStateData.state {
+        ) { memberContractState in
+            switch memberContractState {
             case .active:
                 ActiveSectionView(
                     claimsContent: claimsContent
@@ -96,19 +95,20 @@ extension HomeView {
     private var bottomContent: some View {
         hSection {
             VStack(spacing: 0) {
-                switch vm.memberStateData.state {
+                switch vm.memberContractState {
                 case .active:
                     VStack(spacing: 16) {
                         HomeBottomScrollView(memberId: memberId)
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
+                            FutureSectionInfoView()
                         }
                     }
                 case .future:
                     VStack(spacing: 16) {
                         HomeBottomScrollView(memberId: memberId)
-                        FutureSectionInfoView(memberName: vm.memberStateData.name ?? "")
+                        FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
                         VStack(spacing: 8) {
                             openHelpCenter
@@ -153,19 +153,19 @@ extension HomeView {
 }
 
 class HomeVM: ObservableObject {
-    @Published var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    @Published var memberContractState: MemberContractState = .loading
     private var cancellables = Set<AnyCancellable>()
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
-        memberStateData = store.state.memberStateData
+        memberContractState = store.state.memberContractState
         store.stateSignal
-            .map({ $0.memberStateData })
+            .map({ $0.memberContractState })
             .plain()
             .publisher.receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
-                self?.memberStateData = value
+                self?.memberContractState = value
             })
             .store(in: &cancellables)
         toolbarOptionTypes = store.state.toolbarOptionTypes
@@ -281,7 +281,7 @@ struct Active_Preview: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .active, name: "NAME"),
+                    state: .active,
                     contracts: []
                 )
             )
@@ -305,7 +305,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .future, name: "NAME"),
+                    state: .future,
                     contracts: []
                 )
             )
@@ -328,7 +328,7 @@ struct TerminatedToday_Previews: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .terminated, name: "NAME"),
+                    state: .terminated,
                     contracts: []
                 )
             )
@@ -351,7 +351,7 @@ struct Terminated_Previews: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .terminated, name: "NAME"),
+                    state: .terminated,
                     contracts: []
                 )
             )
@@ -375,7 +375,7 @@ struct Deleted_Previews: PreviewProvider {
             let store: HomeStore = globalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
-                    state: .init(state: .active, name: "NAME"),
+                    state: .active,
                     contracts: []
                 )
             )

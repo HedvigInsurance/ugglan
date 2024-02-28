@@ -10,12 +10,13 @@ public class FetchClaimServiceDemo: hFetchClaimService {
                 status: .beingHandled,
                 outcome: .none,
                 submittedAt: "2023-11-11",
-                closedAt: nil,
                 signedAudioURL: "https://github.com/robovm/apple-ios-samples/blob/master/avTouch/sample.m4a",
-                type: "associated type",
                 memberFreeText: nil,
                 payoutAmount: nil,
-                targetFileUploadUri: ""
+                targetFileUploadUri: "",
+                claimType: "Broken item",
+                incidentDate: "2024-02-15",
+                productVariant: nil
             )
         ]
     }

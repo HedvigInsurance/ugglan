@@ -97,11 +97,11 @@ class HomeButtonScrollViewModel: ObservableObject {
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
-            .map({ $0.memberStateData })
+            .map({ $0.memberContractState })
             .plain()
             .publisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] value in
-                switch value.state {
+            .sink(receiveValue: { [weak self] memberContractState in
+                switch memberContractState {
                 case .terminated:
                     self?.handleItem(.terminated, with: true)
                 default:
@@ -109,7 +109,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        switch homeStore.state.memberStateData.state {
+        switch homeStore.state.memberContractState {
         case .active, .future:
             handleItem(.terminated, with: true)
         default:
@@ -120,7 +120,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             .distinct()
             .publisher
         let memberStatePublisher = homeStore.stateSignal.plain()
-            .map({ $0.memberStateData.state })
+            .map({ $0.memberContractState })
             .distinct()
             .publisher
 
@@ -131,7 +131,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             })
             .store(in: &cancellables)
         setConnectPayments(
-            for: homeStore.state.memberStateData.state,
+            for: homeStore.state.memberContractState,
             needSetup: paymentStore.state.paymentStatusData?.status == .needsSetup
         )
         paymentStore.send(.fetchPaymentStatus)
@@ -244,11 +244,11 @@ class HomeButtonScrollViewModel: ObservableObject {
     func handleTerminatedMessage() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.memberStateData })
+            .map({ $0.memberContractState })
             .plain()
             .publisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] value in
-                switch value.state {
+            .sink(receiveValue: { [weak self] memberContractState in
+                switch memberContractState {
                 case .terminated:
                     self?.handleItem(.terminated, with: true)
                 default:
@@ -256,7 +256,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        switch store.state.memberStateData.state {
+        switch store.state.memberContractState {
         case .terminated:
             handleItem(.terminated, with: true)
         default:

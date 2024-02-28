@@ -1,8 +1,5 @@
 import Apollo
 import Contracts
-import Flow
-import Form
-import Presentation
 import SwiftUI
 import UIKit
 import hCore
@@ -61,7 +58,14 @@ struct SettingsScreen: View {
                 ProfileStore.self,
                 getter: { state in
                     state.memberDetails
-                        ?? MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "")
+                        ?? MemberDetails(
+                            id: "",
+                            firstName: "",
+                            lastName: "",
+                            phone: "",
+                            email: "",
+                            hasTravelCertificate: false
+                        )
                 }
             ) { memberDetails in
                 hButton.LargeButton(type: .ghost) {

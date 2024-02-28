@@ -35,13 +35,13 @@ extension ClaimModel {
         self.status = ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none
         self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
         self.submittedAt = claim.submittedAt
-        self.closedAt = claim.closedAt
         self.signedAudioURL = claim.audioUrl ?? ""
-        self.type = claim.associatedTypeOfContract ?? ""
-        self.subtitle = ""
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
         self.targetFileUploadUri = claim.targetFileUploadUri
+        self.incidentDate = claim.incidentDate
+        self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
+        self.claimType = claim.claimType ?? ""
     }
 }
 
