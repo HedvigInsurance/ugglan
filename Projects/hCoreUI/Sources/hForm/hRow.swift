@@ -167,7 +167,11 @@ extension hRow {
 extension hRow {
     func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
         SwiftUI.Button(
-            action: onTap,
+            action: {
+                onTap()
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+            },
             label: {
                 self
             }
