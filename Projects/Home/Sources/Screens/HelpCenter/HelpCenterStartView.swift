@@ -140,8 +140,6 @@ public struct HelpCenterStartView: View {
                     }
                     .withChevronAccessory
                     .onTap {
-                        let generator = UIImpactFeedbackGenerator(style: .light)
-                        generator.impactOccurred()
                         store.send(.openHelpCenterTopicView(commonTopic: item))
                     }
                 }
