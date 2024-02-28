@@ -146,7 +146,10 @@ public class ClaimJourneys {
     private static func openPestsScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimPestsScreen()
+            rootView: SubmitClaimDeflectScreen(deflectModel: {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                return store.state.pestsStep
+            })
         ) {
             action in
             getScreen(for: action)

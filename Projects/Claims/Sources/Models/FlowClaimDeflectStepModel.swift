@@ -60,6 +60,16 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
 
                 ]
             )
+        } else if id == .FlowClaimDeflectPestsStep {
+            return FlowClaimDeflectConfig(
+                infoText: L10n.submitClaimPestsInfoLabel,
+                infoSectionText: L10n.submitClaimPestsHowItWorksLabel,
+                infoSectionTitle: L10n.submitClaimHowItWorksTitle,
+                cardTitle: L10n.submitClaimPartnerTitle,
+                cardText: L10n.submitClaimPestsCustomerServiceLabel,
+                buttonText: L10n.submitClaimPestsCustomerServiceButton,
+                questions: []
+            )
         }
         return nil
     }
