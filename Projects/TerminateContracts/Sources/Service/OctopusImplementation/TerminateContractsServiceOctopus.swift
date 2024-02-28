@@ -66,8 +66,6 @@ extension GraphQLMutation {
         Self.Data: TerminationStepContext
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
-        let disposeBag = DisposeBag()
-        let store: TerminationContractStore = globalPresentableStoreContainer.get()
         let data = try await octopus.client.perform(mutation: self)
         let context = data.getContext()
         let action = data[keyPath: keyPath].into()
