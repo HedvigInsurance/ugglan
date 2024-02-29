@@ -1,9 +1,21 @@
-import hGraphQL
+import Foundation
 
 public class MoveFlowDemoService: MoveFlowService {
     public func sendMoveIntent() async throws -> MovingFlowModel {
         return MovingFlowModel(
-            from: OctopusGraphQL.MoveIntentFragment(_dataDict: .init(data: [:], fulfilledFragments: .init()))
+            id: "id",
+            isApartmentAvailableforStudent: false,
+            maxApartmentNumberCoInsured: nil,
+            maxApartmentSquareMeters: nil,
+            maxHouseNumberCoInsured: nil,
+            maxHouseSquareMeters: nil,
+            minMovingDate: Date().localDateString,
+            maxMovingDate: "2025-06-01",
+            suggestedNumberCoInsured: 2,
+            currentHomeAddresses: [],
+            quotes: [],
+            faqs: [],
+            extraBuildingTypes: []
         )
     }
 
@@ -13,7 +25,19 @@ public class MoveFlowDemoService: MoveFlowService {
         houseInformationInputModel: HouseInformationInputModel
     ) async throws -> MovingFlowModel {
         return MovingFlowModel(
-            from: OctopusGraphQL.MoveIntentFragment(_dataDict: .init(data: [:], fulfilledFragments: .init()))
+            id: "id",
+            isApartmentAvailableforStudent: false,
+            maxApartmentNumberCoInsured: nil,
+            maxApartmentSquareMeters: nil,
+            maxHouseNumberCoInsured: nil,
+            maxHouseSquareMeters: nil,
+            minMovingDate: Date().localDateString,
+            maxMovingDate: "2025-06-01",
+            suggestedNumberCoInsured: 2,
+            currentHomeAddresses: [],
+            quotes: [],
+            faqs: [],
+            extraBuildingTypes: []
         )
     }
 

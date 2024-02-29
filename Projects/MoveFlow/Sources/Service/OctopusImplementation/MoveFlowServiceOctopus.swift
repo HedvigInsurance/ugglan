@@ -17,7 +17,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
-        throw MovingFlowError.serverError(message: L10n.General.errorBody)
+        throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
     public func requestMoveIntent(
@@ -50,7 +50,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
-        throw MovingFlowError.serverError(message: L10n.General.errorBody)
+        throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
     public func confirmMoveIntent(intentId: String) async throws {
