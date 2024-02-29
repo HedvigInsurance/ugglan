@@ -7,12 +7,15 @@ import hCoreUI
 public struct SubmitClaimDeflectScreen: View {
     let model: FlowClaimDeflectStepModel?
     let isEmergencyStep: Bool
+    let openChat: () -> Void
 
     init(
-        model: FlowClaimDeflectStepModel?
+        model: FlowClaimDeflectStepModel?,
+        openChat: @escaping () -> Void
     ) {
         self.model = model
         self.isEmergencyStep = model?.isEmergencyStep ?? false
+        self.openChat = openChat
     }
 
     public var body: some View {
@@ -68,7 +71,7 @@ public struct SubmitClaimDeflectScreen: View {
                 .animation(.easeOut)
                 .padding(.top, 8)
 
-                SupportView()
+                SupportView(openChat: openChat)
                     .padding(.vertical, 56)
             }
             .padding(.top, 8)
@@ -99,7 +102,13 @@ extension SubmitClaimDeflectScreen {
         }()
         return HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(model: model),
+            rootView: SubmitClaimDeflectScreen(
+                model: model,
+                openChat: {
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    homeStore.send(.openFreeTextChat(from: nil))
+                }
+            ),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -126,5 +135,5 @@ extension SubmitClaimDeflectScreen {
         ],
         isEmergencyStep: true
     )
-    return SubmitClaimDeflectScreen(model: model)
+    return SubmitClaimDeflectScreen(model: model, openChat: {})
 }

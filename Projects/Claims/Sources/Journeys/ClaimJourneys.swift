@@ -91,7 +91,12 @@ public class ClaimJourneys {
         let model = store.state.deflectStepModel
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(model: model)
+            rootView: SubmitClaimDeflectScreen(
+                model: model,
+                openChat: {
+                    store.send(.submitClaimOpenFreeTextChat)
+                }
+            )
         ) {
             action in
             if case let .navigationAction(action: .openInfoScreen(title, description)) = action {

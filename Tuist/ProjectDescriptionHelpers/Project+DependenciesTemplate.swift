@@ -39,19 +39,19 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
         case .flow:
-            return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
         case .form:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.0")
+                    .exact("3.1.1")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.23")
+                    .upToNextMajor(from: "2.0.24")
                 )
             ]
         case .dynamiccolor:
