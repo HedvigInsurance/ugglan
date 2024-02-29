@@ -3,32 +3,32 @@ import Foundation
 import hCore
 
 public protocol FileUploaderClient {
-    func upload(flowId: String, file: UploadFile) throws -> Future<UploadFileResponseModel>
+    func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel
+}
+
+enum FileUploadError: Error {
+    case error(message: String)
+}
+extension FileUploadError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .error(message): return message
+        }
+    }
 }
 
 extension NetworkClient: FileUploaderClient {
-    public func upload(flowId: String, file: UploadFile) -> Future<UploadFileResponseModel> {
-        return Future { [weak self] completion in
-            OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest
-                .onValue { request in
-                    let task = self?.sessionClient
-                        .dataTask(
-                            with: request,
-                            completionHandler: { (data, response, error) in
-                                do {
-                                    if let data: UploadFileResponseModel = try self?
-                                        .handleResponse(data: data, response: response, error: error)
-                                    {
-                                        completion(.success(data))
-                                    }
-                                } catch let error {
-                                    completion(.failure(error))
-                                }
-                            }
-                        )
-                    task?.resume()
-                }
-            return NilDisposer()
+    public func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel {
+        let request = try await OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest()
+        let (data, response) = try await self.sessionClient.data(for: request)
+        let responseModel: UploadFileResponseModel? = try self.handleResponse(
+            data: data,
+            response: response,
+            error: nil
+        )
+        if let responseModel {
+            return responseModel
         }
+        throw FileUploadError.error(message: L10n.General.errorBody)
     }
 }

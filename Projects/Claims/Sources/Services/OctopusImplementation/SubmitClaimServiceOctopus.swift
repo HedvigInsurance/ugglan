@@ -90,24 +90,15 @@ public class SubmitClaimServiceOctopus: SubmitClaimService {
                     let name = audioURL.lastPathComponent
                     let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
 
-                    let fileUploaderData = try fileUploaderClient.upload(
+                    let fileUploaderData = try await fileUploaderClient.upload(
                         flowId: store.state.currentClaimId,
                         file: uploadFile
                     )
 
-                    var mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(input: .init(), context: context)
-
-                    fileUploaderData.onValue { responseModel in
-                        let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                            audioUrl: GraphQLNullable(optionalValue: responseModel.audioUrl)
-                        )
-
-                        mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                            input: audioInput,
-                            context: context
-                        )
-
-                    }
+                    let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
+                        input: .init(audioUrl: GraphQLNullable(optionalValue: fileUploaderData.audioUrl)),
+                        context: context
+                    )
                     return try await mutation.execute(
                         \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
                     )
