@@ -51,14 +51,10 @@ public class ClaimJourneys {
                 showClaimEntrypointOption().addDismissClaimsFlow()
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
-            } else if case .openGlassDamageScreen = navigationAction {
-                openGlassDamageScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimGlassDamageTitle)
-            } else if case .openEmergencyScreen = navigationAction {
-                openEmergencyScreen().addDismissClaimsFlow().configureTitle(L10n.commonClaimEmergencyTitle)
+            } else if case .openDeflectScreen = navigationAction {
+                openDeflectStepScreen().addDismissClaimsFlow()
             } else if case .openConfirmEmergencyScreen = navigationAction {
                 openEmergencySelectScreen().addDismissClaimsFlow()
-            } else if case .openPestsScreen = navigationAction {
-                openPestsScreen().addDismissClaimsFlow().configureTitle(L10n.submitClaimPestsTitle)
             } else if case .openFileUploadScreen = navigationAction {
                 openFileUploadScreen().addDismissClaimsFlow()
             } else if case let .openFilesFor(endPoint, files) = navigationAction {
@@ -90,10 +86,17 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    private static func openGlassDamageScreen() -> some JourneyPresentation {
+    private static func openDeflectStepScreen() -> some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let model = store.state.deflectStepModel
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimGlassDamageScreen()
+            rootView: SubmitClaimDeflectScreen(
+                model: model,
+                openChat: {
+                    store.send(.submitClaimOpenFreeTextChat)
+                }
+            )
         ) {
             action in
             if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
@@ -103,6 +106,7 @@ public class ClaimJourneys {
             }
         }
         .resetProgressToPreviousValueOnDismiss
+        .configureTitle(model?.id.title ?? "")
     }
 
     @JourneyBuilder
@@ -113,30 +117,6 @@ public class ClaimJourneys {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 return store.state.emergencyConfirm?.text ?? ""
             })
-        ) {
-            action in
-            getScreen(for: action)
-        }
-        .resetProgressToPreviousValueOnDismiss
-    }
-
-    @JourneyBuilder
-    private static func openEmergencyScreen() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimEmergencyScreen()
-        ) {
-            action in
-            getScreen(for: action)
-        }
-        .resetProgressToPreviousValueOnDismiss
-    }
-
-    @JourneyBuilder
-    private static func openPestsScreen() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimPestsScreen()
         ) {
             action in
             getScreen(for: action)

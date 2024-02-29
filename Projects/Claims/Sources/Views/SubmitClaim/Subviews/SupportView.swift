@@ -5,6 +5,7 @@ import hCoreUI
 
 struct SupportView: View {
     @PresentableStore var store: SubmitClaimStore
+    let openChat: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -17,7 +18,7 @@ struct SupportView: View {
             hButton.MediumButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    store.send(.submitClaimOpenFreeTextChat)
+                    openChat()
                 }
             } content: {
                 hText(L10n.CrossSell.Info.faqChatButton)
@@ -29,6 +30,6 @@ struct SupportView: View {
 struct SupportView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return SupportView()
+        return SupportView(openChat: {})
     }
 }

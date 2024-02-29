@@ -288,16 +288,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 removeLoading(for: .postConfirmEmergency)
                 newState.emergencyConfirm = model
             case let .setDeflectModel(model):
-                switch model.id {
-                case .FlowClaimDeflectGlassDamageStep:
-                    newState.glassDamageStep = model
-                case .FlowClaimDeflectPestsStep:
-                    newState.pestsStep = model
-                case .FlowClaimDeflectEmergencyStep:
-                    newState.emergencyStep = model
-                default:
-                    break
-                }
+                newState.deflectStepModel = model
             case let .setFileUploadStep(model):
                 removeLoading(for: .postUploadFiles)
                 newState.fileUploadStep = model
