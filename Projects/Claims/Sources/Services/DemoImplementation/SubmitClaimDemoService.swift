@@ -80,4 +80,3 @@ public class SubmitClaimDemoService: SubmitClaimService {
         return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .submitFileUpload(ids: []))
     }
 }
-
