@@ -52,7 +52,7 @@ public class ClaimJourneys {
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
             } else if case .openDeflectScreen = navigationAction {
-                openDeflectStepModel().addDismissClaimsFlow()
+                openDeflectStepScreen().addDismissClaimsFlow()
             } else if case .openConfirmEmergencyScreen = navigationAction {
                 openEmergencySelectScreen().addDismissClaimsFlow()
             } else if case .openFileUploadScreen = navigationAction {
@@ -86,7 +86,7 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    private static func openDeflectStepModel() -> some JourneyPresentation {
+    private static func openDeflectStepScreen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let model = store.state.deflectStepModel
         HostingJourney(
