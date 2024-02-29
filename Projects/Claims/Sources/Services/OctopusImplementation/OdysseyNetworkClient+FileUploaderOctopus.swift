@@ -2,10 +2,6 @@ import Flow
 import Foundation
 import hCore
 
-public protocol FileUploaderClient {
-    func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel
-}
-
 enum FileUploadError: Error {
     case error(message: String)
 }
