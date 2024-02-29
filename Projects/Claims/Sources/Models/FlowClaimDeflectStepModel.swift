@@ -7,6 +7,19 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
     case Unknown
+
+    var title: String {
+        switch self {
+        case .FlowClaimDeflectGlassDamageStep:
+            return L10n.submitClaimGlassDamageTitle
+        case .FlowClaimDeflectPestsStep:
+            return L10n.submitClaimPestsTitle
+        case .FlowClaimDeflectEmergencyStep:
+            return L10n.commonClaimEmergencyTitle
+        case .Unknown:
+            return ""
+        }
+    }
 }
 
 public struct FlowClaimDeflectConfig {
@@ -27,6 +40,8 @@ struct DeflectQuestion {
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     let id: FlowClaimDeflectStepType
     let partners: [Partner]
+    let isEmergencyStep: Bool
+
     var config: FlowClaimDeflectConfig? {
         if id == .FlowClaimDeflectGlassDamageStep {
             return FlowClaimDeflectConfig(
@@ -79,6 +94,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+        self.isEmergencyStep = true
     }
 
     init(
@@ -86,6 +102,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+        self.isEmergencyStep = false
     }
 
     init(
@@ -93,14 +110,17 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     ) {
         self.id = (Self.setDeflectType(idIn: data.id))
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+        self.isEmergencyStep = false
     }
 
     init(
         id: FlowClaimDeflectStepType,
-        partners: [Partner]? = []
+        partners: [Partner]? = [],
+        isEmergencyStep: Bool
     ) {
         self.id = id
         self.partners = partners ?? []
+        self.isEmergencyStep = isEmergencyStep
     }
 
     private static func setDeflectType(idIn: String) -> FlowClaimDeflectStepType {

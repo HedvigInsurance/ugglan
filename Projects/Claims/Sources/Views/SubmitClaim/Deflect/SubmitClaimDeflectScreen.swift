@@ -5,35 +5,17 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimDeflectScreen: View {
-    var model: FlowClaimDeflectStepModel?
-    var isEmergencyStep: Bool = false
+    let model: FlowClaimDeflectStepModel?
+    let isEmergencyStep: Bool
+    let openChat: () -> Void
 
     init(
-        deflectModel: @escaping () -> FlowClaimDeflectStepModel?
+        model: FlowClaimDeflectStepModel?,
+        openChat: @escaping () -> Void
     ) {
-        self.isEmergencyStep = deflectModel()?.id == .FlowClaimDeflectEmergencyStep || deflectModel() == nil
-        self.model = {
-            if deflectModel() == nil {
-                if isEmergencyStep {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let commonClaims = store.state.commonClaims
-                    if let index = commonClaims.firstIndex(where: { $0.layout.emergency?.emergencyNumber != nil }) {
-                        return FlowClaimDeflectStepModel(
-                            id: .FlowClaimDeflectEmergencyStep,
-                            partners: [
-                                .init(
-                                    id: "",
-                                    imageUrl: "",
-                                    url: "",
-                                    phoneNumber: commonClaims[index].layout.emergency?.emergencyNumber
-                                )
-                            ]
-                        )
-                    }
-                }
-            }
-            return deflectModel()
-        }()
+        self.model = model
+        self.isEmergencyStep = model?.isEmergencyStep ?? false
+        self.openChat = openChat
     }
 
     public var body: some View {
@@ -89,7 +71,7 @@ public struct SubmitClaimDeflectScreen: View {
                 .animation(.easeOut)
                 .padding(.top, 8)
 
-                SupportView()
+                SupportView(openChat: openChat)
                     .padding(.vertical, 56)
             }
             .padding(.top, 8)
@@ -99,12 +81,34 @@ public struct SubmitClaimDeflectScreen: View {
 
 extension SubmitClaimDeflectScreen {
     public static var journey: some JourneyPresentation {
-        HostingJourney(
+        let model: FlowClaimDeflectStepModel? = {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            let commonClaims = store.state.commonClaims
+            if let index = commonClaims.firstIndex(where: { $0.layout.emergency?.emergencyNumber != nil }) {
+                return FlowClaimDeflectStepModel(
+                    id: .FlowClaimDeflectEmergencyStep,
+                    partners: [
+                        .init(
+                            id: "",
+                            imageUrl: "",
+                            url: "",
+                            phoneNumber: commonClaims[index].layout.emergency?.emergencyNumber
+                        )
+                    ],
+                    isEmergencyStep: true
+                )
+            }
+            return nil
+        }()
+        return HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(deflectModel: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                return store.state.emergencyStep
-            }),
+            rootView: SubmitClaimDeflectScreen(
+                model: model,
+                openChat: {
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    homeStore.send(.openFreeTextChat(from: nil))
+                }
+            ),
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -119,5 +123,17 @@ extension SubmitClaimDeflectScreen {
 
 #Preview{
     Localization.Locale.currentLocale = .en_SE
-    return SubmitClaimDeflectScreen(deflectModel: { .init(id: .FlowClaimDeflectGlassDamageStep, partners: []) })
+    let model = FlowClaimDeflectStepModel(
+        id: .FlowClaimDeflectEmergencyStep,
+        partners: [
+            .init(
+                id: "",
+                imageUrl: "",
+                url: "",
+                phoneNumber: "+46177272727"
+            )
+        ],
+        isEmergencyStep: true
+    )
+    return SubmitClaimDeflectScreen(model: model, openChat: {})
 }
