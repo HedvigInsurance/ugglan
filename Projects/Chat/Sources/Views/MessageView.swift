@@ -40,13 +40,22 @@ struct MessageView: View {
             }
             switch message.type {
             case let .text(text):
-                ChatTextViewRepresentable(
-                    text: text,
-                    fixedWidth: 300,
-                    height: $height,
-                    width: $width
+                MarkdownView(
+                    config: .init(
+                        text: text,
+                        fontStyle: .standard,
+                        color: hTextColor.primary,
+                        linkColor: hTextColor.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        onUrlClicked: { url in
+                            let store: ChatStore = globalPresentableStoreContainer.get()
+                            store.send(.navigation(action: .linkClicked(url: url)))
+                        }
+                    )
                 )
-                .frame(width: width, height: height)
+                .environment(\.colorScheme, .light)
+
             case let .file(file):
                 ChatFileView(file: file).frame(maxHeight: 200)
             case let .crossSell(url):
@@ -65,13 +74,21 @@ struct MessageView: View {
                         }
                     }
                 } else {
-                    ChatTextViewRepresentable(
-                        text: url.absoluteString,
-                        fixedWidth: 300,
-                        height: $height,
-                        width: $width
+                    MarkdownView(
+                        config: .init(
+                            text: url.absoluteString,
+                            fontStyle: .standard,
+                            color: hTextColor.primary,
+                            linkColor: hTextColor.primary,
+                            linkUnderlineStyle: .thick,
+                            maxWidth: 300,
+                            onUrlClicked: { url in
+                                let store: ChatStore = globalPresentableStoreContainer.get()
+                                store.send(.navigation(action: .linkClicked(url: url)))
+                            }
+                        )
                     )
-                    .frame(width: width, height: height)
+                    .environment(\.colorScheme, .light)
                 }
             case let .otherLink(url):
                 LinkView(
@@ -89,14 +106,21 @@ struct LinkView: View {
     @State var width: CGFloat = 0
     var body: some View {
         if let error = vm.error {
-            ChatTextViewRepresentable(
-                text: error,
-                fixedWidth: 300,
-                height: $height,
-                width: $width
+            MarkdownView(
+                config: .init(
+                    text: error,
+                    fontStyle: .standard,
+                    color: hTextColor.primary,
+                    linkColor: hTextColor.primary,
+                    linkUnderlineStyle: .thick,
+                    maxWidth: 300,
+                    onUrlClicked: { url in
+                        let store: ChatStore = globalPresentableStoreContainer.get()
+                        store.send(.navigation(action: .linkClicked(url: url)))
+                    }
+                )
             )
-            .frame(width: width, height: height)
-            .frame(maxWidth: 300)
+            .environment(\.colorScheme, .light)
             .padding(16)
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
