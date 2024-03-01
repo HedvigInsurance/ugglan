@@ -4,15 +4,11 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimContactScreen: View, KeyboardReadable {
-    @PresentableStore var store: SubmitClaimStore
-    @State var phoneNumber: String
-    @State var type: ClaimsFlowContactType?
-    @State var keyboardEnabled: Bool = false
-
+    @StateObject var vm = SubmitClaimContractViewModel(phoneNumber: "")
     public init(
         model: FlowClaimPhoneNumberStepModel
     ) {
-        self.phoneNumber = model.phoneNumber
+        self._vm = StateObject(wrappedValue: SubmitClaimContractViewModel(phoneNumber: model.phoneNumber))
     }
     public var body: some View {
         hForm {}
@@ -22,27 +18,28 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                     VStack(spacing: 16) {
                         hFloatingTextField(
                             masking: Masking(type: .digits),
-                            value: $phoneNumber,
-                            equals: $type,
+                            value: $vm.phoneNumber,
+                            equals: $vm.type,
                             focusValue: .phoneNumber,
-                            placeholder: L10n.phoneNumberRowTitle
+                            placeholder: L10n.phoneNumberRowTitle,
+                            error: $vm.phoneNumberError
                         )
-                        .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                            keyboardEnabled = newIsKeyboardEnabled
-                        }
                         .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
                         hButton.LargeButton(type: .primary) {
-                            if keyboardEnabled {
-                                UIApplication.dismissKeyboard()
+                            if vm.keyboardEnabled {
+                                withAnimation {
+                                    UIApplication.dismissKeyboard()
+                                }
                             } else {
-                                store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
+                                vm.store.send(.phoneNumberRequest(phoneNumber: vm.phoneNumber))
                                 UIApplication.dismissKeyboard()
                             }
                         } content: {
-                            hText(keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
+                            hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
                         .trackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
                         .presentableStoreLensAnimation(.default)
+                        .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
 
                     }
                     .padding(.bottom, 16)
@@ -50,6 +47,33 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                 .sectionContainerStyle(.transparent)
             }
             .claimErrorTrackerFor([.postContractSelect])
+            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
+                vm.keyboardEnabled = newIsKeyboardEnabled
+            }
+    }
+}
+
+class SubmitClaimContractViewModel: ObservableObject {
+    @Published var phoneNumber: String = ""
+    @Published var enableContinueButton: Bool = false
+    @Published var keyboardEnabled: Bool = false
+    @Published var type: ClaimsFlowContactType?
+    @Published var phoneNumberError: String?
+    @PresentableStore var store: SubmitClaimStore
+    var phoneNumberCancellable: AnyCancellable?
+
+    init(phoneNumber: String) {
+        self.phoneNumber = phoneNumber
+        self.enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
+        phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { (phone, keyboardVisible) in
+                let isValidPhone = phone.isValidPhone
+                self.enableContinueButton = isValidPhone || phone.isEmpty
+                self.phoneNumberError =
+                    (self.enableContinueButton || keyboardVisible) ? nil : L10n.myInfoPhoneNumberMalformedError
+            }
     }
 }
 
@@ -84,5 +108,11 @@ extension KeyboardReadable {
                 .map { _ in false }
         )
         .eraseToAnyPublisher()
+    }
+}
+
+struct SubmitClaimContactScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        SubmitClaimContactScreen(model: .init(id: "", phoneNumber: ""))
     }
 }
