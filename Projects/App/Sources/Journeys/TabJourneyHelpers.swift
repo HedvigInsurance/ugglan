@@ -55,38 +55,9 @@ extension JourneyPresentation where P: Tabable {
     }
 }
 
-struct Loader: Presentable {
-
-    func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        let bag = DisposeBag()
-
-        let scrollView = FormScrollView()
-        let form = FormView()
-        bag += viewController.install(form, scrollView: scrollView)
-
-        let activityIndicatorView = HostingView(
-            rootView: ActivityIndicator(
-                style: .large,
-                color: hTextColor.primary
-            )
-        )
-        scrollView.addSubview(activityIndicatorView)
-
-        return (
-            viewController,
-            scrollView.didLayout {
-                activityIndicatorView.snp.remakeConstraints { make in
-                    make.center.equalTo(scrollView.frameLayoutGuide.snp.center)
-                }
-            }
-        )
-    }
-}
-
 class PlaceholderViewController: UIViewController, PresentingViewController {
     let bag = DisposeBag()
-
+    private let tabController = UITabBarController()
     func present(
         _ viewController: UIViewController,
         options: PresentationOptions
@@ -116,12 +87,47 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         return self
     }
 
+    func setTabBar(hidden: Bool) {
+        tabController.tabBar.isHidden = hidden
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        let tabBarController = UITabBarController()
-        addChild(tabBarController)
-        self.view.addSubview(tabBarController.view)
+        addChild(tabController)
+        self.view.addSubview(tabController.view)
+        tabController.viewControllers = [LoadingLogoScreen().materialize(into: bag)]
+        tabController.tabBar.isHidden = true
+    }
+}
 
-        tabBarController.viewControllers = [Loader().materialize(into: bag)]
+struct LoadingLogoScreen: Presentable {
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        let bag = DisposeBag()
+
+        viewController.view.backgroundColor = .brand(.primaryBackground())
+
+        let containerView = UIView()
+        containerView.backgroundColor = .brand(.primaryBackground())
+
+        let imageView = UIImageView()
+        imageView.image = hCoreUIAssets.wordmark.image
+        imageView.contentMode = .scaleAspectFit
+
+        containerView.addSubview(imageView)
+
+        imageView.snp.makeConstraints { make in make.width.equalTo(140)
+            make.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
+        viewController.view.addSubview(containerView)
+
+        containerView.snp.remakeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        return (
+            viewController,
+            NilDisposer()
+        )
     }
 }

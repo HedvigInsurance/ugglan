@@ -26,6 +26,9 @@ struct ExperimentsLoader: Presentable {
                         if case .fetchCompleted = action {
                             UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
                                 callback(())
+                                DispatchQueue.main.async { [weak viewController] in
+                                    viewController?.setTabBar(hidden: false)
+                                }
                             })
                             bag.dispose()
                         }
