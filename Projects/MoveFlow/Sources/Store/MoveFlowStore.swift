@@ -57,7 +57,6 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             }
         case .confirmMoveIntent:
             self.setLoading(for: .confirmMoveIntent)
-
             return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
                 let disposeBag = DisposeBag()
                 Task {
@@ -67,7 +66,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                         self.removeLoading(for: .confirmMoveIntent)
                         callback(.end)
                     } catch {
-                        self.setError(error.localizedDescription, for: .requestMoveIntent)
+                        self.setError(error.localizedDescription, for: .confirmMoveIntent)
                     }
                 }
                 return disposeBag
