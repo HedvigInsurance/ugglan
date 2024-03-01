@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -14,15 +13,15 @@ public final class TerminationContractStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
         _ action: TerminationContractAction
-    ) -> FiniteSignal<TerminationContractAction>? {
+    ) async throws {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
+            return try await executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
                 try await terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
-            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+            return try await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
                 let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
                 return try await terminateContractsService.sendTerminationDate(
                     inputDateToString: inputDateToString,
@@ -30,13 +29,12 @@ public final class TerminationContractStore: LoadingStateStore<
                 )
             }
         case .sendConfirmDelete:
-            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+            return try await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
                 try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
             }
         default:
             break
         }
-        return nil
     }
 
     public override func reduce(
@@ -90,24 +88,18 @@ public final class TerminationContractStore: LoadingStateStore<
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
         action: @escaping () async throws -> TerminateStepResponse
-    ) -> FiniteSignal<TerminationContractAction>? {
-        return FiniteSignal { callback in
-            let disposeBag = DisposeBag()
-            Task {
-                self.setLoading(for: loadingType)
-                do {
-                    let data = try await action()
-                    callback(.value(.setTerminationContext(context: data.context)))
-                    callback(.value(data.action))
-                    self.removeLoading(for: loadingType)
-                    callback(.end)
-                } catch let error {
-                    callback(.value(.navigationAction(action: .openTerminationFailScreen)))
-                    self.setError(error.localizedDescription, for: loadingType)
-                    callback(.end(error))
-                }
+    ) async throws {
+        Task {
+            self.setLoading(for: loadingType)
+            do {
+                let data = try await action()
+                send(.setTerminationContext(context: data.context))
+                send(data.action)
+                self.removeLoading(for: loadingType)
+            } catch let error {
+                send(.navigationAction(action: .openTerminationFailScreen))
+                self.setError(error.localizedDescription, for: loadingType)
             }
-            return disposeBag
         }
     }
 }

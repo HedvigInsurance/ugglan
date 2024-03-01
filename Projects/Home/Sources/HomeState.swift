@@ -1,7 +1,6 @@
 import Apollo
 import Contracts
 import EditCoInsured
-import Flow
 import Foundation
 import Presentation
 import SwiftUI
@@ -95,116 +94,74 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     public override func effects(
         _ getState: @escaping () -> HomeState,
         _ action: HomeAction
-    ) -> FiniteSignal<HomeAction>? {
+    ) async throws {
         switch action {
         case .fetchImportantMessages:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let messages = try await self.homeService.getImportantMessages()
-                        callback(.value(.setImportantMessages(messages: messages)))
-                    } catch {
+            do {
+                let messages = try await self.homeService.getImportantMessages()
+                send(.setImportantMessages(messages: messages))
+            } catch {
 
-                    }
-                    callback(.end)
-                }
-                return disposeBag
             }
         case .fetchMemberState:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let memberData = try await self.homeService.getMemberState()
-                        callback(
-                            .value(
-                                .setMemberContractState(
-                                    state: memberData.contractState,
-                                    contracts: memberData.contracts
-                                )
-                            )
-                        )
-                        callback(.value(.setFutureStatus(status: memberData.futureState)))
-                        callback(.end)
-                    } catch let error {
-                        if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setCommonClaims(commonClaims: [])))
-                        } else {
-                            self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
-                        }
-                        callback(.end(error))
-                    }
+            do {
+                let memberData = try await self.homeService.getMemberState()
+                send(
+                    .setMemberContractState(
+                        state: memberData.contractState,
+                        contracts: memberData.contracts
+                    )
+                )
 
+                send(.setFutureStatus(status: memberData.futureState))
+            } catch let error {
+                if ApplicationContext.shared.isDemoMode {
+                    send(.setCommonClaims(commonClaims: []))
+                } else {
+                    self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                 }
-                return disposeBag
             }
         case .fetchCommonClaims:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let commonClaims = try await self.homeService.getCommonClaims()
-                        callback(.value(.setCommonClaims(commonClaims: commonClaims)))
-                        callback(.end)
-                    } catch {
-                        if ApplicationContext.shared.isDemoMode {
-                            callback(.value(.setCommonClaims(commonClaims: [])))
-                        } else {
-                            self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
-                        }
-                        callback(.end(error))
-                    }
+            do {
+                let commonClaims = try await self.homeService.getCommonClaims()
+                send(.setCommonClaims(commonClaims: commonClaims))
+            } catch {
+                if ApplicationContext.shared.isDemoMode {
+                    send(.setCommonClaims(commonClaims: []))
+                } else {
+                    self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
                 }
-                return disposeBag
             }
         case .fetchChatNotifications:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let chatMessagesDates = try await self.homeService.getLastMessagesDates()
-                        if let date = chatMessagesDates.first {
-                            //check if it is auto generated bot message
-                            let onlyAutoGeneratedBotMessage =
-                                chatMessagesDates.count == 1 && date.addingTimeInterval(2) > Date()
+            do {
+                let chatMessagesDates = try await self.homeService.getLastMessagesDates()
+                if let date = chatMessagesDates.first {
+                    //check if it is auto generated bot message
+                    let onlyAutoGeneratedBotMessage =
+                        chatMessagesDates.count == 1 && date.addingTimeInterval(2) > Date()
 
-                            if onlyAutoGeneratedBotMessage {
-                                callback(.value(.setChatNotification(hasNew: false)))
-                            } else if self.state.latestChatTimeStamp < date {
-                                callback(.value(.setChatNotification(hasNew: true)))
-                            } else {
-                                callback(.value(.setChatNotification(hasNew: false)))
-                            }
-
-                            callback(
-                                .value(.setHasSentOrRecievedAtLeastOneMessage(hasSent: !onlyAutoGeneratedBotMessage))
-                            )
-                        }
-                        callback(.end)
-                    } catch {}
+                    if onlyAutoGeneratedBotMessage {
+                        send(.setChatNotification(hasNew: false))
+                    } else if self.state.latestChatTimeStamp < date {
+                        send(.setChatNotification(hasNew: true))
+                    } else {
+                        send(.setChatNotification(hasNew: false))
+                    }
+                    send(.setHasSentOrRecievedAtLeastOneMessage(hasSent: !onlyAutoGeneratedBotMessage))
                 }
-                return disposeBag
-            }
+            } catch {}
 
         case .fetchClaims:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let nbOfClaims = try await self.homeService.getNumberOfClaims()
-                        if nbOfClaims != 0 {
-                            callback(.value(.setHasAtLeastOneClaim(has: true)))
-                        } else {
-                            callback(.value(.setHasAtLeastOneClaim(has: false)))
-                        }
-                    } catch {}
-                    callback(.end)
+            do {
+                let nbOfClaims = try await self.homeService.getNumberOfClaims()
+                if nbOfClaims != 0 {
+                    send(.setHasAtLeastOneClaim(has: true))
+                } else {
+                    send(.setHasAtLeastOneClaim(has: false))
                 }
-                return disposeBag
-            }
+            } catch {}
         default:
-            return nil
+            break
         }
     }
 

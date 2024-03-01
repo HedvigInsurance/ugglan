@@ -13,40 +13,34 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
     ) async throws {
         switch action {
         case .fetchProfileState:
-            Task {
-                do {
-                    let (member, partner) = try await self.profileService.getProfileState()
-                    self.removeLoading(for: .fetchProfileState)
+            do {
+                let (member, partner) = try await self.profileService.getProfileState()
+                self.removeLoading(for: .fetchProfileState)
 
-                    send(.setEurobonusNumber(partnerData: partner))
-                    send(.setMember(memberData: member))
-                    send(.setHasTravelCertificate(has: member.hasTravelCertificate))
-                    send(.fetchProfileStateCompleted)
-                } catch let error {
-                    self.setError(error.localizedDescription, for: .fetchProfileState)
-                    send(.fetchProfileStateCompleted)
-                }
+                send(.setEurobonusNumber(partnerData: partner))
+                send(.setMember(memberData: member))
+                send(.setHasTravelCertificate(has: member.hasTravelCertificate))
+                send(.fetchProfileStateCompleted)
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchProfileState)
+                send(.fetchProfileStateCompleted)
             }
         case .fetchMemberDetails:
-            Task {
-                do {
-                    let memberDetails = try await self.profileService.getMemberDetails()
-                    self.removeLoading(for: .fetchMemberDetails)
-                    send(.setMemberDetails(details: memberDetails))
-                } catch let error {
-                    self.setError(error.localizedDescription, for: .fetchMemberDetails)
-                }
+            do {
+                let memberDetails = try await self.profileService.getMemberDetails()
+                self.removeLoading(for: .fetchMemberDetails)
+                send(.setMemberDetails(details: memberDetails))
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchMemberDetails)
             }
         case .languageChanged:
             send(.updateLanguage)
         case .updateLanguage:
-            Task {
-                do {
-                    try await self.profileService.updateLanguage()
-                    self.removeLoading(for: .updateLanguage)
-                } catch let error {
-                    self.setError(error.localizedDescription, for: .updateLanguage)
-                }
+            do {
+                try await self.profileService.updateLanguage()
+                self.removeLoading(for: .updateLanguage)
+            } catch let error {
+                self.setError(error.localizedDescription, for: .updateLanguage)
             }
         default:
             break

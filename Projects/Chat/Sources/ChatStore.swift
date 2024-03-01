@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -22,13 +21,6 @@ public enum ChatNavigationAction: ActionProtocol {
 }
 
 final public class ChatStore: StateStore<ChatState, ChatAction> {
-    public override func effects(
-        _ getState: @escaping () -> ChatState,
-        _ action: ChatAction
-    ) -> FiniteSignal<ChatAction>? {
-
-        return nil
-    }
     public override func reduce(_ state: ChatState, _ action: ChatAction) -> ChatState {
         var newState = state
         switch action {

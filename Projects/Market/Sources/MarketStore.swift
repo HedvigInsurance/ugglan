@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -22,7 +21,7 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
     public override func effects(
         _ getState: @escaping () -> MarketState,
         _ action: MarketAction
-    ) -> FiniteSignal<MarketAction>? {
+    ) async throws {
         switch action {
         case let .selectMarket(market):
             Localization.Locale.currentLocale = market.preferredLanguage
@@ -33,8 +32,6 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         default:
             break
         }
-
-        return nil
     }
 
     public override func reduce(_ state: MarketState, _ action: MarketAction) -> MarketState {

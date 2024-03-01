@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import UIKit
@@ -25,14 +24,6 @@ enum UgglanAction: ActionProtocol {
 }
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {
-    override func effects(
-        _ getState: @escaping () -> UgglanState,
-        _ action: UgglanAction
-    ) -> FiniteSignal<UgglanAction>? {
-
-        return nil
-    }
-
     override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
         var newState = state
 

@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import UIKit
@@ -11,25 +10,18 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
     public override func effects(
         _ getState: @escaping () -> ForeverState,
         _ action: ForeverAction
-    ) -> FiniteSignal<ForeverAction>? {
+    ) async throws {
         switch action {
         case .fetch:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let data = try await self.foreverService.getMemberReferralInformation()
-                        callback(.value(.setForeverData(data: data)))
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .fetchForeverData)
-                    }
-                }
-                return disposeBag
+            do {
+                let data = try await self.foreverService.getMemberReferralInformation()
+                send(.setForeverData(data: data))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .fetchForeverData)
             }
         default:
             break
         }
-        return nil
     }
 
     public override func reduce(_ state: ForeverState, _ action: ForeverAction) -> ForeverState {
