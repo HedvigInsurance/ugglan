@@ -10,67 +10,46 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
     public override func effects(
         _ getState: @escaping () -> ProfileState,
         _ action: ProfileAction
-    ) -> FiniteSignal<ProfileAction>? {
+    ) async throws {
         switch action {
         case .fetchProfileState:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let (member, partner) = try await self.profileService.getProfileState()
-                        self.removeLoading(for: .fetchProfileState)
-                        callback(.value(.setEurobonusNumber(partnerData: partner)))
-                        callback(.value(.setMember(memberData: member)))
-                        callback(.value(.setHasTravelCertificate(has: member.hasTravelCertificate)))
-                        callback(.value(.fetchProfileStateCompleted))
-                        callback(.end)
-                    } catch let error {
-                        self.setError(error.localizedDescription, for: .fetchProfileState)
-                        callback(.value(.fetchProfileStateCompleted))
-                        callback(.end(error))
-                    }
+            Task {
+                do {
+                    let (member, partner) = try await self.profileService.getProfileState()
+                    self.removeLoading(for: .fetchProfileState)
+
+                    send(.setEurobonusNumber(partnerData: partner))
+                    send(.setMember(memberData: member))
+                    send(.setHasTravelCertificate(has: member.hasTravelCertificate))
+                    send(.fetchProfileStateCompleted)
+                } catch let error {
+                    self.setError(error.localizedDescription, for: .fetchProfileState)
+                    send(.fetchProfileStateCompleted)
                 }
-                return disposeBag
             }
         case .fetchMemberDetails:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let memberDetails = try await self.profileService.getMemberDetails()
-                        self.removeLoading(for: .fetchMemberDetails)
-                        callback(.value(.setMemberDetails(details: memberDetails)))
-                        callback(.end)
-                    } catch let error {
-                        self.setError(error.localizedDescription, for: .fetchMemberDetails)
-                        callback(.end(error))
-                    }
+            Task {
+                do {
+                    let memberDetails = try await self.profileService.getMemberDetails()
+                    self.removeLoading(for: .fetchMemberDetails)
+                    send(.setMemberDetails(details: memberDetails))
+                } catch let error {
+                    self.setError(error.localizedDescription, for: .fetchMemberDetails)
                 }
-                return disposeBag
             }
         case .languageChanged:
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                callback(.value(.updateLanguage))
-                return disposeBag
-            }
+            send(.updateLanguage)
         case .updateLanguage:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        try await self.profileService.updateLanguage()
-                        self.removeLoading(for: .updateLanguage)
-                        callback(.end)
-                    } catch let error {
-                        self.setError(error.localizedDescription, for: .updateLanguage)
-                        callback(.end(error))
-                    }
+            Task {
+                do {
+                    try await self.profileService.updateLanguage()
+                    self.removeLoading(for: .updateLanguage)
+                } catch let error {
+                    self.setError(error.localizedDescription, for: .updateLanguage)
                 }
-                return disposeBag
             }
         default:
-            return nil
+            break
         }
     }
 
