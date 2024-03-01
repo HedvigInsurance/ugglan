@@ -1,5 +1,3 @@
-import Flow
-
 public protocol TerminateContractsService {
     func startTermination(contractId: String) async throws -> TerminateStepResponse
     func sendTerminationDate(

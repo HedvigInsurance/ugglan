@@ -1,6 +1,5 @@
 import Apollo
 import DatadogCore
-import Flow
 import Foundation
 import UIKit
 import hCore

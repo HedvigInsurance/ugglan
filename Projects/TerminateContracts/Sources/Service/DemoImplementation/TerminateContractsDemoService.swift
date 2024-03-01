@@ -1,4 +1,3 @@
-import Flow
 import hCore
 
 public class TerminateContractsDemoService: TerminateContractsService {
