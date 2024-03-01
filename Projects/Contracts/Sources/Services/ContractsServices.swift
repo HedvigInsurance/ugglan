@@ -2,6 +2,7 @@ import Foundation
 
 public protocol FetchContractsService {
     func getContracts() async throws -> ContractsStack
+    func getCrossSell() async throws -> [CrossSell]
 }
 
 public struct ContractsStack {

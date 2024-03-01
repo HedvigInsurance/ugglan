@@ -6,7 +6,6 @@ import hCore
 import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var octopus: hOctopus
     @Inject var fetchContractsService: FetchContractsService
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -14,19 +13,18 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     ) -> FiniteSignal<ContractAction>? {
         switch action {
         case .fetchCrossSale:
-            return FiniteSignal { callback in
+            return FiniteSignal { [unowned self] callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(
-                        query: OctopusGraphQL.CrossSellsQuery(),
-                        cachePolicy: .fetchIgnoringCacheCompletely
-                    )
-                    .onValue({ data in
-                        let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({
-                            CrossSell($0)
-                        })
+                Task {
+                    do {
+                        let crossSells = try await self.fetchContractsService.getCrossSell()
                         callback(.value(.setCrossSells(crossSells: crossSells)))
-                    })
+                        callback(.end)
+                    } catch let error {
+                        self.setError(error.localizedDescription, for: .fetchCrossSell)
+                        callback(.end(error))
+                    }
+                }
                 return disposeBag
             }
         case .fetchContracts:

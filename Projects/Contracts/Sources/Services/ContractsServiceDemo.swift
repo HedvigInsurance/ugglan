@@ -1,7 +1,6 @@
 import Foundation
 
 public class FetchContractsServiceDemo: FetchContractsService {
-
     public init() {}
     public func getContracts() async throws -> ContractsStack {
         let variant = ProductVariant(
@@ -65,4 +64,10 @@ public class FetchContractsServiceDemo: FetchContractsService {
         return .init(activeContracts: [contract], pendingContracts: [], termiantedContracts: [])
     }
 
+    public func getCrossSell() async throws -> [CrossSell] {
+        if let url = URL(string: "") {
+            return [CrossSell(title: "", description: "", imageURL: url, blurHash: "", typeOfContract: "", type: .home)]
+        }
+        return []
+    }
 }

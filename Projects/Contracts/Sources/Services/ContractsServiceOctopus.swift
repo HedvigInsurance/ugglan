@@ -44,4 +44,12 @@ public class FetchContractsServiceOctopus: FetchContractsService {
             termiantedContracts: terminatedContracts
         )
     }
+
+    public func getCrossSell() async throws -> [CrossSell] {
+        let query = OctopusGraphQL.CrossSellsQuery()
+        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return crossSells.currentMember.fragments.crossSellFragment.crossSells.compactMap({
+            CrossSell($0)
+        })
+    }
 }
