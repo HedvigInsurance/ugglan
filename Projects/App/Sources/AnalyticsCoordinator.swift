@@ -26,7 +26,7 @@ struct AnalyticsCoordinator {
             id: userId,
             extraInfo: [
                 "member_id": userId,
-                "deviceModel": deviceModel,
+                "device_model": deviceModel,
             ]
         )
     }
