@@ -186,7 +186,7 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
 
 }
 
-class AddressInputModel: ObservableObject {
+public class AddressInputModel: ObservableObject {
     @Published var address: String = ""
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""

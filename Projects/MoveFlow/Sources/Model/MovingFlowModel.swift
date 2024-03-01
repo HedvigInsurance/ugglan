@@ -59,6 +59,36 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         self.faqs = faqs
     }
 
+    init(
+        id: String,
+        isApartmentAvailableforStudent: Bool,
+        maxApartmentNumberCoInsured: Int?,
+        maxApartmentSquareMeters: Int?,
+        maxHouseNumberCoInsured: Int?,
+        maxHouseSquareMeters: Int?,
+        minMovingDate: String,
+        maxMovingDate: String,
+        suggestedNumberCoInsured: Int,
+        currentHomeAddresses: [MoveAddress],
+        quotes: [Quote],
+        faqs: [FAQ],
+        extraBuildingTypes: [ExtraBuildingType]
+    ) {
+        self.id = id
+        self.isApartmentAvailableforStudent = isApartmentAvailableforStudent
+        self.maxApartmentNumberCoInsured = maxApartmentNumberCoInsured
+        self.maxApartmentSquareMeters = maxApartmentSquareMeters
+        self.maxHouseNumberCoInsured = maxHouseNumberCoInsured
+        self.maxHouseSquareMeters = maxHouseSquareMeters
+        self.minMovingDate = minMovingDate
+        self.maxMovingDate = maxMovingDate
+        self.suggestedNumberCoInsured = suggestedNumberCoInsured
+        self.currentHomeAddresses = currentHomeAddresses
+        self.quotes = quotes
+        self.faqs = faqs
+        self.extraBuildingTypes = extraBuildingTypes
+    }
+
     var total: MonetaryAmount {
         let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount })
         return MonetaryAmount(amount: amount, currency: quotes.first?.premium.currency ?? "")
@@ -81,6 +111,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
 
 enum MovingFlowError: Error {
     case serverError(message: String)
+    case missingDataError(message: String)
     case other
 }
 
@@ -88,6 +119,7 @@ extension MovingFlowError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .serverError(message): return message
+        case let .missingDataError(message): return message
         case .other: return L10n.General.errorBody
         }
     }
