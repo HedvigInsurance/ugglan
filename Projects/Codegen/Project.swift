@@ -12,7 +12,7 @@ let project = Project(
             platform: .macOS,
             product: .app,
             bundleId: "com.hedvig.codegen",
-            deploymentTarget: .macOS(targetVersion: "12.0"),
+            deploymentTarget: .macOS(targetVersion: "14.0"),
             infoPlist: "Info.plist",
             sources: ["Sources/**"],
             resources: [],

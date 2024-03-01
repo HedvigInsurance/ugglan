@@ -162,7 +162,7 @@ public struct ClaimFilesView: View {
     }
 
     private var successView: some View {
-        SuccessScreen<EmptyView>(title: L10n.fileUploadFilesAdded)
+        SuccessScreen(title: L10n.fileUploadFilesAdded)
     }
 }
 

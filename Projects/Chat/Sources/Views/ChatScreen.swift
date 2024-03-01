@@ -1,6 +1,5 @@
 import Combine
 import Flow
-import Form
 import Presentation
 import SwiftUI
 import hCore
@@ -11,7 +10,7 @@ struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
-
+    @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @PresentableStore private var store: ChatStore
     var body: some View {
         ScrollViewReader { proxy in
@@ -23,6 +22,9 @@ struct ChatScreen: View {
                 .padding(.bottom, 16)
         }
         .dismissKeyboard()
+        .findScrollView({ sv in
+            sv.delegate = chatScrollViewDelegate
+        })
     }
 
     @ViewBuilder
@@ -61,15 +63,6 @@ struct ChatScreen: View {
             }
         }
         .flippedUpsideDown()
-        .introspectViewController { vc in
-            vc.isModalInPresentation = true
-            let presentationController = vc.navigationController?.presentationController
-            let key = [
-                "_sheet", "Interaction",
-            ]
-            let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-            sheetInteraction?.setValue(false, forKey: "enabled")
-        }
         .padding(.bottom, -8)
     }
 
@@ -156,4 +149,32 @@ struct ChatScreen: View {
         }
     )
     return ChatScreen(vm: .init(topicType: nil))
+}
+
+class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+    let disposeBag = DisposeBag()
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        let vc = scrollView.viewController
+        vc?.isModalInPresentation = true
+        setSheetInteractionState(vc: vc, to: false)
+    }
+
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        let vc = scrollView.viewController
+        vc?.isModalInPresentation = false
+        setSheetInteractionState(vc: vc, to: true)
+    }
+
+    private func setSheetInteractionState(vc: UIViewController?, to: Bool) {
+        let presentationController = vc?.navigationController?.presentationController
+        let key = [
+            "_sheet", "Interaction",
+        ]
+        let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+        sheetInteraction?.setValue(to, forKey: "enabled")
+    }
 }

@@ -84,28 +84,34 @@ public struct HelpCenterStartView: View {
 
     private func quickActionPill(quickAction: CommonClaim?) -> some View {
         HStack(alignment: .center) {
-            hText(quickAction?.displayTitle ?? "")
-                .frame(maxWidth: .infinity, alignment: .center)
+            hSection {
+                hRow {
+                    hText(quickAction?.displayTitle ?? "")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .withEmptyAccessory
+                .onTap {
+                    if let quickAction {
+                        log.addUserAction(
+                            type: .click,
+                            name: "help center quick action",
+                            attributes: ["action": quickAction.id]
+                        )
+                        Task {
+                            store.send(.goToQuickAction(quickAction))
+                        }
+                    }
+                }
+            }
+            .withoutHorizontalPadding
+            .sectionContainerStyle(.transparent)
         }
-        .padding(.vertical, 16)
         .background(
             Squircle.default()
                 .fill(
                     getColor(quickAction: quickAction)
                 )
         )
-        .onTapGesture {
-            if let quickAction {
-                log.addUserAction(
-                    type: .click,
-                    name: "help center quick action",
-                    attributes: ["action": quickAction.id]
-                )
-                Task {
-                    store.send(.goToQuickAction(quickAction))
-                }
-            }
-        }
         .frame(maxHeight: 56)
     }
 
@@ -133,13 +139,13 @@ public struct HelpCenterStartView: View {
                         Spacer()
                     }
                     .withChevronAccessory
+                    .onTap {
+                        store.send(.openHelpCenterTopicView(commonTopic: item))
+                    }
                 }
                 .withoutHorizontalPadding
                 .hSectionMinimumPadding
                 .sectionContainerStyle(.opaque)
-                .onTapGesture {
-                    store.send(.openHelpCenterTopicView(commonTopic: item))
-                }
             }
         }
     }
@@ -272,11 +278,7 @@ extension HelpCenterStartView {
             style: .modally(presentationStyle: .overFullScreen),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
-            if case let .goToQuickAction(quickAction) = action {
-                if quickAction != .changeBank() {
-                    DismissJourney()
-                }
-            } else if case .openFreeTextChat = action {
+            if case .openFreeTextChat = action {
                 DismissJourney()
             } else if case let .openHelpCenterTopicView(topic) = action {
                 HelpCenterTopicView.journey(commonTopic: topic)

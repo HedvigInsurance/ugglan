@@ -1,4 +1,3 @@
-import Flow
 import Presentation
 import SwiftUI
 import hCore
@@ -202,7 +201,7 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 }
 
 public typealias ExtraBuildingType = String
-class HouseInformationInputModel: ObservableObject {
+public class HouseInformationInputModel: ObservableObject {
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""

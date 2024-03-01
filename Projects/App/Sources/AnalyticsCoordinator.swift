@@ -1,7 +1,7 @@
 import Apollo
-import Datadog
-import Flow
+import DatadogCore
 import Foundation
+import UIKit
 import hCore
 import hGraphQL
 
@@ -14,12 +14,19 @@ struct AnalyticsCoordinator {
         octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .compactMap { $0.currentMember.id }
             .onValue { id in
-                Datadog.setUserInfo(
-                    id: id,
-                    extraInfo: [
-                        "member_id": id
-                    ]
-                )
+                setWith(userId: id)
             }
+    }
+
+    func setWith(userId: String?) {
+        let deviceModel = UIDevice.current.name
+        Datadog.setUserInfo()
+        Datadog.setUserInfo(
+            id: userId,
+            extraInfo: [
+                "member_id": userId,
+                "device_model": deviceModel,
+            ]
+        )
     }
 }

@@ -39,7 +39,7 @@ public struct AppInfoView: View {
                 state
             }
         ) { state in
-            let memberId = state.memberId
+            let memberId = state.memberDetails?.id
             hRow {
                 hText(L10n.profileAboutAppMemberId).foregroundColor(hTextColor.primary)
             }
@@ -47,7 +47,7 @@ public struct AppInfoView: View {
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    hText(memberId).foregroundColor(hTextColor.secondary)
+                    hText(memberId ?? "").foregroundColor(hTextColor.secondary)
                 }
             }
             .onTap {
@@ -102,7 +102,7 @@ public struct AppInfoView: View {
 
     private var submitBugButton: some View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
-        let memberId = store.state.memberId
+        let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
 
         return OpenEmailClientButton(
@@ -145,7 +145,18 @@ struct AppInfoView_Previews: PreviewProvider {
         AppInfoView()
             .onAppear {
                 let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setMember(id: "ID", name: "NAME", email: "EMAIL", phone: "PHNE"))
+                store.send(
+                    .setMember(
+                        memberData: .init(
+                            id: "ID",
+                            firstName: "FIRST NAME",
+                            lastName: "LAST NAME",
+                            phone: "PHNE",
+                            email: "EMAIL",
+                            hasTravelCertificate: true
+                        )
+                    )
+                )
             }
     }
 }

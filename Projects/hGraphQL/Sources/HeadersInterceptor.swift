@@ -40,7 +40,7 @@ class HeadersInterceptor: ApolloInterceptor {
 
         TokenRefresher.shared.refreshIfNeeded()
             .onValue {
-                if let token = ApolloClient.retreiveToken() {
+                if let token = try? ApolloClient.retreiveToken() {
                     httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
                 }
 

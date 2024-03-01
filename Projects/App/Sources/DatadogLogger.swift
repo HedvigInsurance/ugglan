@@ -1,10 +1,19 @@
-import Datadog
-import Foundation
+import Apollo
+import DatadogInternal
+import DatadogLogs
+import DatadogRUM
+import UIKit
 import hGraphQL
 
-extension Logger: Logging {
+class DatadogLogger: hGraphQL.Logging {
+    private let datadogLogger: LoggerProtocol
+
+    init(datadogLogger: LoggerProtocol) {
+        self.datadogLogger = datadogLogger
+    }
+
     public func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .debug, message: message, error: error, attributes: attributes)
+        datadogLogger.debug(message, error: error, attributes: attributes)
     }
 
     /// Sends an INFO log message.
@@ -14,7 +23,7 @@ extension Logger: Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .info, message: message, error: error, attributes: attributes)
+        datadogLogger.info(message, error: error, attributes: attributes)
     }
 
     /// Sends a NOTICE log message.
@@ -24,7 +33,7 @@ extension Logger: Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func notice(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .notice, message: message, error: error, attributes: attributes)
+        datadogLogger.notice(message, error: error, attributes: attributes)
     }
 
     /// Sends a WARN log message.
@@ -34,7 +43,7 @@ extension Logger: Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func warn(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .warn, message: message, error: error, attributes: attributes)
+        datadogLogger.warn(message, error: error, attributes: attributes)
     }
 
     /// Sends an ERROR log message.
@@ -44,7 +53,7 @@ extension Logger: Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func error(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .error, message: message, error: error, attributes: attributes)
+        datadogLogger.error(message, error: error, attributes: attributes)
     }
 
     /// Sends a CRITICAL log message.
@@ -54,7 +63,7 @@ extension Logger: Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        self.log(level: .critical, message: message, error: error, attributes: attributes)
+        datadogLogger.critical(message, error: error, attributes: attributes)
     }
 
     public func addUserAction(
@@ -64,9 +73,9 @@ extension Logger: Logging {
         attributes: [AttributeKey: AttributeValue]? = nil
     ) {
         if let attributes {
-            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name, attributes: attributes)
+            RUMMonitor.shared().addAction(type: type.asRUMUserActionType, name: name, attributes: attributes)
         } else {
-            Global.rum.addUserAction(type: type.asRUMUserActionType, name: name)
+            RUMMonitor.shared().addAction(type: type.asRUMUserActionType, name: name)
         }
     }
 
@@ -76,9 +85,9 @@ extension Logger: Logging {
         attributes: [hGraphQL.AttributeKey: hGraphQL.AttributeValue]?
     ) {
         if let attributes = attributes {
-            Global.rum.addError(error: error, source: type.asRUMErrorSource, attributes: attributes)
+            RUMMonitor.shared().addError(error: error, source: type.asRUMErrorSource, attributes: attributes)
         } else {
-            Global.rum.addError(error: error, source: type.asRUMErrorSource)
+            RUMMonitor.shared().addError(error: error, source: type.asRUMErrorSource)
         }
     }
 }
@@ -93,12 +102,55 @@ extension hGraphQL.ErrorSource {
 }
 
 extension LoggingAction {
-    var asRUMUserActionType: RUMUserActionType {
+    var asRUMUserActionType: RUMActionType {
         switch self {
         case .click:
             return .click
         case .custom:
             return .custom
         }
+    }
+}
+
+class InterceptingURLSessionClient: URLSessionClient {
+    override func sendRequest(
+        _ request: URLRequest,
+        rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil,
+        completion: @escaping URLSessionClient.Completion
+    ) -> URLSessionTask {
+        guard let instrumentedRequest = URLSessionInterceptor.shared()?.intercept(request: request) else {
+            return super
+                .sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
+        }
+
+        let task = super
+            .sendRequest(
+                instrumentedRequest,
+                rawTaskCompletionHandler: rawTaskCompletionHandler,
+                completion: completion
+            )
+        URLSessionInterceptor.shared()?.intercept(task: task)
+
+        return task
+    }
+
+    override func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didFinishCollecting metrics: URLSessionTaskMetrics
+    ) {
+
+        URLSessionInterceptor.shared()?.task(task, didFinishCollecting: metrics)
+        super.urlSession(session, task: task, didFinishCollecting: metrics)
+    }
+
+    override func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        URLSessionInterceptor.shared()?.task(task, didCompleteWithError: error)
+        super.urlSession(session, task: task, didCompleteWithError: error)
+    }
+
+    override func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        URLSessionInterceptor.shared()?.task(dataTask, didReceive: data)
+        super.urlSession(session, dataTask: dataTask, didReceive: data)
     }
 }

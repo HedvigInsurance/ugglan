@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Presentation
 import SwiftUI
 import hCore
@@ -17,7 +16,7 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case closeClaimStatus
     case navigation(action: ClaimsNavigationAction)
     case refreshFiles
-
+    case openDocument(url: URL, title: String)
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {

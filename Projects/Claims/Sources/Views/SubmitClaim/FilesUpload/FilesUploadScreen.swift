@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct FilesUploadScreen: View {
+struct SubmitClaimFilesUploadScreen: View {
     @State var showImagePicker = false
     @State var showFilePicker = false
     @State var showCamera = false
@@ -358,5 +358,5 @@ public class FilesUploadViewModel: ObservableObject {
 
 #Preview{
     Localization.Locale.currentLocale = .en_SE
-    return FilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
+    return SubmitClaimFilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
 }
