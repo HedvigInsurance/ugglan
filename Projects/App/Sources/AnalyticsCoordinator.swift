@@ -15,16 +15,19 @@ struct AnalyticsCoordinator {
         octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .compactMap { $0.currentMember.id }
             .onValue { id in
-                Datadog.setUserInfo(
-                    id: id,
-                    extraInfo: [
-                        "member_id": id
-                    ]
-                )
-
-                let deviceModel = UIDevice.current.name
-                let extraConfiguration = ["deviceModel": deviceModel]
-                Datadog.addUserExtraInfo(extraConfiguration)
+                setWith(userId: id)
             }
+    }
+
+    func setWith(userId: String?) {
+        let deviceModel = UIDevice.current.name
+        Datadog.setUserInfo()
+        Datadog.setUserInfo(
+            id: userId,
+            extraInfo: [
+                "member_id": userId,
+                "deviceModel": deviceModel,
+            ]
+        )
     }
 }
