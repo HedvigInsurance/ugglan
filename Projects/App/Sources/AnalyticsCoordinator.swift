@@ -2,6 +2,7 @@ import Apollo
 import DatadogCore
 import Flow
 import Foundation
+import UIKit
 import hCore
 import hGraphQL
 
@@ -20,6 +21,10 @@ struct AnalyticsCoordinator {
                         "member_id": id
                     ]
                 )
+
+                let deviceModel = UIDevice.current.name
+                let extraConfiguration = ["deviceModel": deviceModel]
+                Datadog.addUserExtraInfo(extraConfiguration)
             }
     }
 }
