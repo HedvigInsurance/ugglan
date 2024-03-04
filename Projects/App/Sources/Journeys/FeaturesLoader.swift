@@ -1,68 +1,59 @@
 import Claims
+import Combine
 import Contracts
 import Flow
 import Foundation
 import Presentation
 import Profile
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 
-struct ExperimentsLoader: Presentable {
-    func materialize() -> (UIViewController, Signal<Void>) {
-        let viewController = PlaceholderViewController()
-
-        let bag = DisposeBag()
-
-        return (
-            viewController,
-            Signal { callback in
-                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                profileStore.send(.updateLanguage)
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-                bag += contractStore.actionSignal
-                    .onValue { action in
-                        if case .fetchCompleted = action {
-                            UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
-                                callback(())
-                                DispatchQueue.main.async { [weak viewController] in
-                                    viewController?.setTabBar(hidden: false)
-                                }
-                            })
-                            bag.dispose()
+struct ExperimentsLoaderScreen: View {
+    @State var cancelable: AnyCancellable?
+    var body: some View {
+        VStack {
+            Spacer()
+            Image(uiImage: hCoreUIAssets.wordmark.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 40)
+            Spacer()
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            profileStore.send(.updateLanguage)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            contractStore.send(.fetchContracts)
+            cancelable = contractStore.actionSignal.publisher.sink { _ in
+            } receiveValue: { action in
+                if case .fetchCompleted = action {
+                    cancelable = nil
+                    UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                        DispatchQueue.main.async {
+                            let vc = AppJourney.tabJourney.presentable.materialize().0 as! UIViewController
+                            let window = UIApplication.shared.appDelegate.window
+                            UIView.transition(
+                                with: window,
+                                duration: 0.3,
+                                options: .transitionCrossDissolve,
+                                animations: {}
+                            )
+                            window.rootViewController = vc
                         }
-                    }
-                return bag
+                    })
+                }
             }
-        )
+
+        }
     }
 }
 
-struct StoreLoadingPresentable<S: Store>: Presentable {
-    let action: S.Action
-    let endOn: (S.Action) -> Bool
-
-    func materialize() -> (UIViewController, Signal<S.State>) {
-        let viewController = PlaceholderViewController()
-
-        let bag = DisposeBag()
-
-        return (
-            viewController,
-            Signal { callback in
-                let store: S = self.get()
-                store.send(action)
-
-                bag += store.actionSignal.onValue { action in
-                    if endOn(action) {
-                        callback(store.stateSignal.value)
-                    }
-                }
-
-                return bag
-            }
-        )
+extension ExperimentsLoaderScreen {
+    var journey: some JourneyPresentation {
+        HostingJourney(rootView: ExperimentsLoaderScreen())
     }
 }
 
