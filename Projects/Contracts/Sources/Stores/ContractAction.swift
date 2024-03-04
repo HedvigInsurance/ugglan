@@ -53,6 +53,7 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchContracts
     case postCoInsured
     case fetchNameFromSSN
+    case fetchCrossSell
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {

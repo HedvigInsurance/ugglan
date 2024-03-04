@@ -64,8 +64,8 @@ public struct Contract: Codable, Hashable, Equatable {
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
         supportsTravelCertificate: Bool,
-        upcomingChangedAgreement: Agreement,
-        upcomingRenewal: ContractRenewal,
+        upcomingChangedAgreement: Agreement?,
+        upcomingRenewal: ContractRenewal?,
         firstName: String,
         lastName: String,
         ssn: String?,
@@ -210,8 +210,7 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement = .init(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
-            coInsured: []
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
         )
         masterInceptionDate = nil
         terminationDate = nil
@@ -453,13 +452,12 @@ public struct ContractRenewal: Codable, Hashable {
 
 public struct Agreement: Codable, Hashable {
     public init(
-        certificateUrl: String,
-        activeFrom: String,
-        activeTo: String,
+        certificateUrl: String?,
+        activeFrom: String?,
+        activeTo: String?,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant,
-        coInsured: [CoInsuredModel]
+        productVariant: ProductVariant
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -479,8 +477,7 @@ public struct Agreement: Codable, Hashable {
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant,
-        coInsured: [CoInsuredModel]
+        productVariant: ProductVariant
     ) {
         self.premium = premium
         self.displayItems = displayItems
@@ -509,6 +506,13 @@ public struct AgreementDisplayItem: Codable, Hashable {
     let displayTitle: String
     let displayValue: String
 
+    public init(
+        title displayTitle: String,
+        value displayValue: String
+    ) {
+        self.displayTitle = displayTitle
+        self.displayValue = displayValue
+    }
     public init(
         data: OctopusGraphQL.AgreementDisplayItemFragment
     ) {
