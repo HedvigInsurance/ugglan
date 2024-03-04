@@ -8,31 +8,32 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
     @Inject var fileUploaderClient: FileUploaderClient
     @Inject var fetchEntrypointsService: hFetchEntrypointsService
     @Inject var submitClaimService: SubmitClaimService
+
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
-    ) -> FiniteSignal<SubmitClaimsAction>? {
+    ) async throws {
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:
-            return nil
+            break
         case let .startClaimRequest(entrypointId, entrypointOptionId):
-            return executeAsFiniteSignal(loadingType: .startClaim) {
+            await executeAsync(loadingType: .startClaim) {
                 try await self.submitClaimService.startClaim(
                     entrypointId: entrypointId,
                     entrypointOptionId: entrypointOptionId
                 )
             }
         case let .phoneNumberRequest(phoneNumberInput):
-            return executeAsFiniteSignal(loadingType: .postPhoneNumber) {
+            await executeAsync(loadingType: .postPhoneNumber) {
                 try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
             }
         case .dateOfOccurrenceAndLocationRequest:
-            return executeAsFiniteSignal(loadingType: .postDateOfOccurrenceAndLocation) {
+            await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
                 try await self.submitClaimService.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
             }
         case let .submitAudioRecording(type):
-            return executeAsFiniteSignal(loadingType: .postAudioRecording) {
+            await executeAsync(loadingType: .postAudioRecording) {
                 try await self.submitClaimService.submitAudioRecording(
                     type: type,
                     fileUploaderClient: self.fileUploaderClient,
@@ -40,29 +41,25 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 )
             }
         case let .submitDamage(damages):
-            return FiniteSignal { callback in
-                callback(.value(.setSingleItemDamage(damages: damages)))
-                return NilDisposer()
-            }
-
+            send(.setSingleItemDamage(damages: damages))
         case let .singleItemRequest(purchasePrice):
-            return executeAsFiniteSignal(loadingType: .postSingleItem) {
+            await executeAsync(loadingType: .postSingleItem) {
                 try await self.submitClaimService.singleItemRequest(
                     purchasePrice: purchasePrice,
                     context: newClaimContext
                 )
             }
         case .summaryRequest:
-            return executeAsFiniteSignal(loadingType: .postSummary) {
+            await executeAsync(loadingType: .postSummary) {
                 try await self.submitClaimService.summaryRequest(context: newClaimContext)
             }
         case .singleItemCheckoutRequest:
-            return executeAsFiniteSignal(loadingType: .postSingleItemCheckout) {
+            await executeAsync(loadingType: .postSingleItemCheckout) {
                 try await self.submitClaimService.singleItemCheckoutRequest(context: newClaimContext)
             }
 
         case let .contractSelectRequest(contractId):
-            return executeAsFiniteSignal(loadingType: .postContractSelect) {
+            await executeAsync(loadingType: .postContractSelect) {
                 try await self.submitClaimService.contractSelectRequest(
                     contractId: contractId ?? "",
                     context: newClaimContext
@@ -70,36 +67,25 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             }
 
         case .fetchEntrypointGroups:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let data = try await self.fetchEntrypointsService.get()
-                        callback(.value(.setClaimEntrypointGroupsForSelection(data)))
-
-                    } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
-                    }
-                }
-                return disposeBag
+            do {
+                let data = try await self.fetchEntrypointsService.get()
+                send(.setClaimEntrypointGroupsForSelection(data))
+            } catch {
+                setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
             }
         case let .emergencyConfirmRequest(isEmergency):
-            return executeAsFiniteSignal(loadingType: .postConfirmEmergency) {
+            await executeAsync(loadingType: .postConfirmEmergency) {
                 try await self.submitClaimService.emergencyConfirmRequest(
                     isEmergency: isEmergency,
                     context: newClaimContext
                 )
             }
         case let .submitFileUpload(ids):
-            return executeAsFiniteSignal(loadingType: .postUploadFiles) {
+            await executeAsync(loadingType: .postUploadFiles) {
                 try await self.submitClaimService.submitFileUpload(ids: ids, context: newClaimContext)
             }
         default:
-            return nil
+            break
         }
     }
 
@@ -231,9 +217,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .emergencyConfirmRequest:
             setLoading(for: .postConfirmEmergency)
         case .fetchEntrypointGroups:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                self?.setLoading(for: .fetchClaimEntrypointGroups)
-            }
+            setLoading(for: .fetchClaimEntrypointGroups)
             newState.progress = 0
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
@@ -283,30 +267,22 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         return newState
     }
 
-    private func executeAsFiniteSignal(
+    private func executeAsync(
         loadingType: ClaimsLoadingType,
         action: @escaping () async throws -> SubmitClaimStepResponse
-    ) -> FiniteSignal<SubmitClaimsAction>? {
-        return FiniteSignal { callback in
-            let disposeBag = DisposeBag()
-            Task {
-                self.setLoading(for: loadingType)
-                do {
-                    let data = try await action()
-                    callback(.value(.setNewClaimId(with: data.claimId)))
-                    callback(.value(.setNewClaimContext(context: data.context)))
-                    if let progress = data.progress {
-                        callback(.value(.setProgress(progress: progress)))
-                    }
-                    callback(.value(data.action))
-                    self.removeLoading(for: loadingType)
-                    callback(.end)
-                } catch let error {
-                    self.setError(error.localizedDescription, for: loadingType)
-                    callback(.end(error))
-                }
+    ) async {
+        self.setLoading(for: loadingType)
+        do {
+            let data = try await action()
+            send(.setNewClaimId(with: data.claimId))
+            send(.setNewClaimContext(context: data.context))
+            if let progress = data.progress {
+                send(.setProgress(progress: progress))
             }
-            return disposeBag
+            send(data.action)
+            removeLoading(for: loadingType)
+        } catch let error {
+            self.setError(error.localizedDescription, for: loadingType)
         }
     }
 }
