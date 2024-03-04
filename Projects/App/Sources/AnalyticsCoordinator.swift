@@ -19,11 +19,11 @@ struct AnalyticsCoordinator {
     }
 
     func setWith(userId: String?) {
-        let deviceModel = UIDevice.current.name
-        Datadog.setUserInfo()
+        let deviceModel = UIDevice.modelName
         Datadog.setUserInfo(
             id: userId,
             extraInfo: [
+                "device_id": ApolloClient.getDeviceIdentifier(),
                 "member_id": userId,
                 "device_model": deviceModel,
             ]
