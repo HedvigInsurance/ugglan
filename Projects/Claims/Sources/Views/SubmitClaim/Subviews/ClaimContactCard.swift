@@ -83,6 +83,92 @@ struct ClaimContactCard: View {
     }
 }
 
+struct ClaimEmergencyContactCard: View {
+    @PresentableStore var store: SubmitClaimStore
+    var cardTitle: String?
+    var footnote: String?
+    var imageUrl: String?
+    var image: UIImage?
+    var label: String
+    var phoneNumber: String?
+
+    init(
+        imageUrl: String? = nil,
+        image: UIImage? = nil,
+        label: String,
+        phoneNumber: String? = nil,
+        cardTitle: String? = nil,
+        footnote: String? = nil
+    ) {
+        self.imageUrl = imageUrl
+        self.image = image
+        self.label = label
+        self.phoneNumber = phoneNumber
+        self.cardTitle = cardTitle
+        self.footnote = footnote
+    }
+
+    var body: some View {
+        hSection {
+            VStack(spacing: 16) {
+                Group {
+                    if let imageUrl = URL(string: imageUrl) {
+                        KFImage(imageUrl)
+                            .setProcessor(SVGImageProcessor())
+                            .resizable()
+                    } else if let image {
+                        Image(uiImage: image)
+                            .resizable()
+                    }
+                }
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 80)
+                .foregroundColor(hTextColor.negative)
+                .colorScheme(.light)
+                .padding(.vertical, 8)
+                VStack(spacing: 0) {
+                    if let cardTitle = cardTitle {
+                        hText(cardTitle)
+                            .foregroundColor(hColorScheme(light: hTextColor.negative, dark: hTextColor.primary))
+                    }
+                    hText(label)
+                        .foregroundColor(hTextColor.tertiary)
+                        .colorScheme(.light)
+                        .padding(.horizontal, 24)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.bottom, 8)
+                hSection {
+                    hButton.MediumButton(type: .secondaryAlt) {
+                        if let phoneNumber {
+                            let tel = "tel://"
+                            let formattedString = tel + phoneNumber
+                            if let url = URL(string: formattedString) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    } content: {
+                        hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
+                            .foregroundColor(hTextColor.primary)
+                            .colorScheme(.light)
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+
+                if let footnote = footnote {
+                    hText(footnote, style: .caption1)
+                        .foregroundColor(hTextColor.tertiary)
+                        .colorScheme(.light)
+                }
+            }
+            .padding(.vertical, 24)
+        }
+        .sectionContainerStyle(.black)
+
+    }
+}
+
 struct ClaimContactCard_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE

@@ -10,6 +10,7 @@ import Forever
 import Form
 import Foundation
 import Home
+import MoveFlow
 import Payment
 import Presentation
 import Profile
@@ -313,6 +314,7 @@ extension ApolloClient {
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
                 let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
+                let moveFlowService = MoveFlowServiceOctopus()
                 let foreverService = ForeverServiceOctopus()
                 let profileService = ProfileServiceOctopus()
                 let editCoInsuredService = EditCoInsuredServiceOctopus()
@@ -345,6 +347,7 @@ extension ApolloClient {
                     Dependencies.shared.add(
                         module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
                     )
+                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                     Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
@@ -364,6 +367,7 @@ extension ApolloClient {
                     Dependencies.shared.add(
                         module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
                     )
+                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                     Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                     Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
