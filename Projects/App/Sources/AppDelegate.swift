@@ -2,6 +2,7 @@ import Apollo
 import Authentication
 import Chat
 import Claims
+import Contracts
 import CoreDependencies
 import DatadogLogs
 import EditCoInsured
@@ -340,6 +341,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(
+                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
+                    )
                     Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                     Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
@@ -357,6 +361,10 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(
+                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
+                    )
+
                     Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                     Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
