@@ -33,7 +33,6 @@ struct ExperimentsLoaderScreen: View {
                     cancelable = nil
                     UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
                         DispatchQueue.main.async {
-                            let vc = AppJourney.tabJourney.presentable.materialize().0 as! UIViewController
                             let window = UIApplication.shared.appDelegate.window
                             UIView.transition(
                                 with: window,
@@ -41,7 +40,10 @@ struct ExperimentsLoaderScreen: View {
                                 options: .transitionCrossDissolve,
                                 animations: {}
                             )
-                            window.rootViewController = vc
+                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                                AppJourney.tabJourney
+                            )
+
                         }
                     })
                 }

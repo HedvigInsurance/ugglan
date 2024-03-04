@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct NotLoggedInView: View {
     @ObservedObject var vm = NotLoggedViewModel()
-
+    @State var animateSize = false
     public init(
         onLoad: @escaping () -> Void
     ) {
@@ -14,11 +14,29 @@ public struct NotLoggedInView: View {
     @ViewBuilder
     var marketAndLanguage: some View {
         ZStack {
-            Image(uiImage: hCoreUIAssets.wordmark.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 40)
-                .offset(y: -24)
+            VStack {
+                Spacer()
+                Image(uiImage: hCoreUIAssets.wordmark.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 40)
+                    .scaleEffect(animateSize ? 1.05 : 1)
+                Spacer()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.spring) {
+                                animateSize = true
+                            }
+                        }
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            withAnimation(.spring) {
+                                animateSize = false
+                            }
+                        }
+                    }
+            }
+            .ignoresSafeArea()
             VStack {
                 HStack {
                     Spacer()
