@@ -314,6 +314,7 @@ extension ApolloClient {
                 let networkClient = NetworkClient()
                 let messagesClient = FetchMessagesClientOctopus()
                 let sendMessage = SendMessagesClientOctopus()
+                let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
                 let moveFlowService = MoveFlowServiceOctopus()
                 let foreverService = ForeverServiceOctopus()
                 let profileService = ProfileServiceOctopus()
@@ -330,6 +331,9 @@ extension ApolloClient {
                 Dependencies.shared.add(
                     module: Module { () -> TravelInsuranceClient in TravelInsuranceClientOctopus() }
                 )
+                Dependencies.shared.add(
+                    module: Module { () -> SubmitClaimService in SubmitClaimServiceOctopus() }
+                )
 
                 switch Environment.current {
                 case .staging:
@@ -341,6 +345,9 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
+                    Dependencies.shared.add(
+                        module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
+                    )
                     Dependencies.shared.add(
                         module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
                     )
@@ -362,9 +369,11 @@ extension ApolloClient {
                     Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                     Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
                     Dependencies.shared.add(
+                        module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
+                    )
+                    Dependencies.shared.add(
                         module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
                     )
-
                     Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                     Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
                     Dependencies.shared.add(module: Module { () -> ProfileService in profileService })

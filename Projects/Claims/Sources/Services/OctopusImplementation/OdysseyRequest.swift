@@ -18,7 +18,7 @@ enum OdysseyRequest {
         }
     }
 
-    var asRequest: Future<URLRequest> {
+    func asRequest() async throws -> URLRequest {
         var request: URLRequest!
         switch self {
         case let .uploadAudioFile(flowId, file):
@@ -35,17 +35,12 @@ enum OdysseyRequest {
             request = multipartFormDataRequest.asURLRequest()
         }
         request.httpMethod = self.methodType
-        return Future { completion in
-            TokenRefresher.shared.refreshIfNeeded()
-                .onValue {
-                    var headers = ApolloClient.headers()
-                    headers["Odyssey-Platform"] = "ios"
-                    headers.forEach { element in
-                        request.setValue(element.value, forHTTPHeaderField: element.key)
-                    }
-                    completion(.success(request))
-                }
-            return NilDisposer()
+        try await TokenRefresher.shared.refreshIfNeededAsync()
+        var headers = ApolloClient.headers()
+        headers["Odyssey-Platform"] = "ios"
+        headers.forEach { element in
+            request.setValue(element.value, forHTTPHeaderField: element.key)
         }
+        return request
     }
 }

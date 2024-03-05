@@ -13,6 +13,17 @@ public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
         self.displayName = data.displayName
         self.entrypoints = data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
     }
+
+    init(
+        id: String,
+        displayName: String,
+        entrypoints: [ClaimEntryPointResponseModel]
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.entrypoints = entrypoints
+    }
+
 }
 
 public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
