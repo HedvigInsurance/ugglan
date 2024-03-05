@@ -9,32 +9,17 @@ import hGraphQL
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var fetchClaimService: hFetchClaimService
 
-    public override func effects(
-        _ getState: @escaping () -> ClaimsState,
-        _ action: ClaimsAction
-    ) -> FiniteSignal<ClaimsAction>? {
+    public override func effects(_ getState: @escaping () -> ClaimsState, _ action: ClaimsAction) async throws {
         switch action {
-        case .openFreeTextChat:
-            return nil
         case .fetchClaims:
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let claimData = try await self.fetchClaimService.get()
-                        callback(.value(ClaimsAction.setClaims(claims: claimData)))
-                    } catch {
-                        callback(
-                            .value(
-                                .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
-                    }
-                }
-                return disposeBag
+            do {
+                let claimData = try await self.fetchClaimService.get()
+                self.send(.setClaims(claims: claimData))
+            } catch {
+                self.send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
             }
         default:
-            return nil
+            break
         }
     }
 

@@ -3,204 +3,89 @@ import Flow
 import Presentation
 import SwiftUI
 import hCore
-import hGraphQL
 
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
-
-    @Inject var octopus: hOctopus
     @Inject var fileUploaderClient: FileUploaderClient
+    @Inject var fetchEntrypointsService: hFetchEntrypointsService
+    @Inject var submitClaimService: SubmitClaimService
 
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
-    ) -> FiniteSignal<SubmitClaimsAction>? {
+    ) async throws {
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:
-            return nil
+            break
         case let .startClaimRequest(entrypointId, entrypointOptionId):
-            let startInput = OctopusGraphQL.FlowClaimStartInput(
-                entrypointId: GraphQLNullable(optionalValue: entrypointId),
-                entrypointOptionId: GraphQLNullable(optionalValue: entrypointOptionId)
-            )
-            let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput, context: GraphQLNullable.none)
-            return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
-        case let .phoneNumberRequest(phoneNumberInput):
-            let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
-            let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
-            return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
-        case .dateOfOccurrenceAndLocationRequest:
-            if let dateOfOccurrenceStep = state.dateOfOccurenceStep, let locationStep = state.locationStep {
-                let location = locationStep.getSelectedOption()?.value
-                let date = dateOfOccurrenceStep.dateOfOccurence
-
-                let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
-                    dateOfOccurrence: GraphQLNullable(optionalValue: date),
-                    location: GraphQLNullable(optionalValue: location)
+            await executeAsync(loadingType: .startClaim) {
+                try await self.submitClaimService.startClaim(
+                    entrypointId: entrypointId,
+                    entrypointOptionId: entrypointOptionId
                 )
-                let mutation = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation(
-                    input: dateAndLocationInput,
-                    context: newClaimContext
-                )
-                return mutation.execute(
-                    \.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep
-                )
-            } else if let dateOfOccurrenceStep = state.dateOfOccurenceStep {
-                let dateString = dateOfOccurrenceStep.dateOfOccurence
-                let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(
-                    dateOfOccurrence: GraphQLNullable(optionalValue: dateString)
-                )
-                let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
-                    input: dateOfOccurrenceInput,
-                    context: newClaimContext
-                )
-                return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
-            } else if let locationStep = state.locationStep {
-                let locationInput = OctopusGraphQL.FlowClaimLocationInput(
-                    location: GraphQLNullable(optionalValue: locationStep.location)
-                )
-                let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(
-                    input: locationInput,
-                    context: newClaimContext
-                )
-                return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
             }
-            return nil
+        case let .phoneNumberRequest(phoneNumberInput):
+            await executeAsync(loadingType: .postPhoneNumber) {
+                try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
+            }
+        case .dateOfOccurrenceAndLocationRequest:
+            await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
+                try await self.submitClaimService.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
+            }
         case let .submitAudioRecording(type):
-            switch type {
-            case .audio(let audioURL):
-                return FiniteSignal { [unowned self] callback in
-                    let disposeBag = DisposeBag()
-                    do {
-                        if let url = self.state.audioRecordingStep?.audioContent?.audioUrl {
-                            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                                audioUrl: GraphQLNullable(optionalValue: url)
-                            )
-                            let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                                input: audioInput,
-                                context: newClaimContext
-                            )
-                            disposeBag +=
-                                mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
-                                .onValue({ action in
-                                    callback(.value(action))
-                                })
-                        } else {
-                            let data = try Data(contentsOf: audioURL)
-                            let name = audioURL.lastPathComponent
-                            let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
-                            disposeBag += try self.fileUploaderClient
-                                .upload(flowId: self.state.currentClaimId, file: uploadFile)
-                                .onValue({ responseModel in
-                                    let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                                        audioUrl: GraphQLNullable(optionalValue: responseModel.audioUrl)
-                                    )
-                                    let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                                        input: audioInput,
-                                        context: newClaimContext
-                                    )
-                                    disposeBag +=
-                                        mutation.execute(
-                                            \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
-                                        )
-                                        .onValue({ action in
-                                            callback(.value(action))
-                                        })
-                                })
-                                .onError({ [weak self] error in
-                                    self?.setError(L10n.General.errorBody, for: .postAudioRecording)
-                                })
-                                .disposable
-                        }
-                    } catch _ {
-                        self.setError(L10n.General.errorBody, for: .postAudioRecording)
-                    }
-                    return disposeBag
-                }
-            case let .text(text):
-                let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                    freeText: GraphQLNullable(optionalValue: text)
-                )
-                let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                    input: audioInput,
+            await executeAsync(loadingType: .postAudioRecording) {
+                try await self.submitClaimService.submitAudioRecording(
+                    type: type,
+                    fileUploaderClient: self.fileUploaderClient,
                     context: newClaimContext
                 )
-                return mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
             }
         case let .submitDamage(damages):
-            return FiniteSignal { callback in
-                callback(.value(.setSingleItemDamage(damages: damages)))
-                return NilDisposer()
-            }
-
+            send(.setSingleItemDamage(damages: damages))
         case let .singleItemRequest(purchasePrice):
-            let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
-            let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
-                input: singleItemInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
-        case .summaryRequest:
-            let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
-            let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
-                input: summaryInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
-        case .singleItemCheckoutRequest:
-            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep?.returnSingleItemCheckoutInfo() {
-                let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
-                    input: claimSingleItemCheckoutInput,
+            await executeAsync(loadingType: .postSingleItem) {
+                try await self.submitClaimService.singleItemRequest(
+                    purchasePrice: purchasePrice,
                     context: newClaimContext
                 )
-                return mutation.execute(\.flowClaimSingleItemCheckoutNext.fragments.flowClaimFragment.currentStep)
-            } else {
-                return FiniteSignal { callback in
-                    let disposeBag = DisposeBag()
-                    self.setError(L10n.General.errorBody, for: .postSingleItemCheckout)
-                    return disposeBag
-                }
             }
+        case .summaryRequest:
+            await executeAsync(loadingType: .postSummary) {
+                try await self.submitClaimService.summaryRequest(context: newClaimContext)
+            }
+        case .singleItemCheckoutRequest:
+            await executeAsync(loadingType: .postSingleItemCheckout) {
+                try await self.submitClaimService.singleItemCheckoutRequest(context: newClaimContext)
+            }
+
         case let .contractSelectRequest(contractId):
-            let contractSelectInput = OctopusGraphQL.FlowClaimContractSelectInput(
-                contractId: GraphQLNullable(optionalValue: contractId)
-            )
-            let mutation = OctopusGraphQL.FlowClaimContractSelectNextMutation(
-                input: contractSelectInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
+            await executeAsync(loadingType: .postContractSelect) {
+                try await self.submitClaimService.contractSelectRequest(
+                    contractId: contractId ?? "",
+                    context: newClaimContext
+                )
+            }
+
         case .fetchEntrypointGroups:
-            let query = OctopusGraphQL.EntrypointGroupsQuery(type: GraphQLEnum<OctopusGraphQL.EntrypointType>(.claim))
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag +=
-                    self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-                    .onValue { data in
-                        let model = data.entrypointGroups.map { data in
-                            ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
-                        }
-                        callback(.value(.setClaimEntrypointGroupsForSelection(model)))
-                    }
-                    .onError { [weak self] error in
-                        self?.setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
-                    }
-                    .disposable
-                return disposeBag
+            do {
+                let data = try await self.fetchEntrypointsService.get()
+                send(.setClaimEntrypointGroupsForSelection(data))
+            } catch {
+                setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
             }
         case let .emergencyConfirmRequest(isEmergency):
-            let confirmEmergencyInput = OctopusGraphQL.FlowClaimConfirmEmergencyInput(confirmEmergency: isEmergency)
-            let mutation = OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation(
-                input: confirmEmergencyInput,
-                context: GraphQLNullable(optionalValue: newClaimContext)
-            )
-            return mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
+            await executeAsync(loadingType: .postConfirmEmergency) {
+                try await self.submitClaimService.emergencyConfirmRequest(
+                    isEmergency: isEmergency,
+                    context: newClaimContext
+                )
+            }
         case let .submitFileUpload(ids):
-            let input = OctopusGraphQL.FlowClaimFileUploadInput(fileIds: ids)
-            let mutation = OctopusGraphQL.FlowClaimFileUploadNextMutation(input: input, context: newClaimContext)
-            return mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)
+            await executeAsync(loadingType: .postUploadFiles) {
+                try await self.submitClaimService.submitFileUpload(ids: ids, context: newClaimContext)
+            }
         default:
-            return nil
+            break
         }
     }
 
@@ -332,9 +217,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .emergencyConfirmRequest:
             setLoading(for: .postConfirmEmergency)
         case .fetchEntrypointGroups:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                self?.setLoading(for: .fetchClaimEntrypointGroups)
-            }
+            setLoading(for: .fetchClaimEntrypointGroups)
             newState.progress = 0
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
@@ -382,5 +265,24 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             break
         }
         return newState
+    }
+
+    private func executeAsync(
+        loadingType: ClaimsLoadingType,
+        action: @escaping () async throws -> SubmitClaimStepResponse
+    ) async {
+        self.setLoading(for: loadingType)
+        do {
+            let data = try await action()
+            send(.setNewClaimId(with: data.claimId))
+            send(.setNewClaimContext(context: data.context))
+            if let progress = data.progress {
+                send(.setProgress(progress: progress))
+            }
+            send(data.action)
+            removeLoading(for: loadingType)
+        } catch let error {
+            self.setError(error.localizedDescription, for: loadingType)
+        }
     }
 }
