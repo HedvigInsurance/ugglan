@@ -5,7 +5,7 @@ public class HomeServiceDemo: HomeService {
     public init() {}
 
     public func getImportantMessages() async throws -> [ImportantMessage] {
-        return [ImportantMessage(id: "", message: "", link: "")]
+        return []
     }
 
     public func getMemberState() async throws -> MemberState {
