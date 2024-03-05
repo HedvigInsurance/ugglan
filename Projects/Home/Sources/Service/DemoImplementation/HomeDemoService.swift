@@ -9,9 +9,8 @@ public class HomeServiceDemo: HomeService {
     }
 
     public func getMemberState() async throws -> MemberState {
-        let contract = Contract(upcomingRenewal: .init(renewalDate: "", draftCertificateUrl: ""), displayName: "")
         return .init(
-            contracts: [contract],
+            contracts: [],
             contractState: MemberContractState.active,
             futureState: FutureStatus.none
         )

@@ -59,6 +59,7 @@ extension ApolloClient {
             let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
             let analyticsCoordinator = AnalyticsCoordinatorOctopus()
             let notificationService = NotificationClientOctopus()
+            let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
@@ -83,6 +84,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
+                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -106,6 +108,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
+                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
             }
         }
     }
