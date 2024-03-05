@@ -1,47 +1,65 @@
-import Flow
-import Foundation
+import Combine
 import WebKit
 
-extension WKWebView: WKUIDelegate {
-    private static var _createWebViewWith: UInt8 = 0
+public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
+    public let actionPublished = PassthroughSubject<WKNavigationAction, Never>()
+    public let challengeReceive = PassthroughSubject<URLAuthenticationChallenge, Never>()
+    public let isLoading = PassthroughSubject<Bool, Never>()
+    public let result = PassthroughSubject<URL?, Never>()
+    public let error = PassthroughSubject<Error, Never>()
+    var observer: NSKeyValueObservation?
+    public let decidePolicyForNavigationAction = PassthroughSubject<Bool, Never>()
 
-    public typealias CreateWebViewWithDelegate = Delegate<
-        (WKWebView, WKWebViewConfiguration, WKNavigationAction, WKWindowFeatures), WKWebView?
-    >
+    public init(
+        webView: WKWebView
+    ) {
+        super.init()
+        webView.navigationDelegate = self
+        webView.uiDelegate = self
 
-    public var createWebViewWith: CreateWebViewWithDelegate {
-        if let delegate = objc_getAssociatedObject(self, &WKWebView._createWebViewWith)
-            as? CreateWebViewWithDelegate
-        {
-            return delegate
-        }
-
-        let delegate = CreateWebViewWithDelegate()
-
-        objc_setAssociatedObject(
-            self,
-            &WKWebView._createWebViewWith,
-            delegate,
-            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        observer = webView.observe(
+            \.isLoading,
+            options: [.new],
+            changeHandler: { _, change in
+                self.isLoading.send(change.newValue ?? false)
+            }
         )
-
-        uiDelegate = self
-
-        return delegate
     }
 
     public func webView(
         _ webView: WKWebView,
-        createWebViewWith configuration: WKWebViewConfiguration,
-        for navigationAction: WKNavigationAction,
-        windowFeatures: WKWindowFeatures
-    ) -> WKWebView? {
-        if let delegateWebView = createWebViewWith.call(
-            (webView, configuration, navigationAction, windowFeatures)
-        ) {
-            return delegateWebView
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        self.challengeReceive.send(challenge)
+
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+            let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+            completionHandler(.useCredential, cred)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+    }
+
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        self.error.send(error)
+    }
+
+    public func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction
+    ) async -> WKNavigationActionPolicy {
+        self.actionPublished.send(navigationAction)
+
+        guard let url = navigationAction.request.url else { return .allow }
+        let urlString = String(describing: url)
+
+        if urlString.contains("fail") || urlString.contains("success") {
+            self.decidePolicyForNavigationAction.send(urlString.contains("success") ? true : false)
+            return .cancel
         }
 
-        return nil
+        return .allow
     }
+
 }

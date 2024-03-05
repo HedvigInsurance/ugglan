@@ -5,8 +5,8 @@ import hCore
 import hCoreUI
 
 enum DirectDebitResultType {
-    case success(setupType: PaymentSetup.SetupType)
-    case failure(setupType: PaymentSetup.SetupType)
+    case success(setupType: SetupType)
+    case failure(setupType: SetupType)
 
     var icon: ImageAsset {
         switch self {

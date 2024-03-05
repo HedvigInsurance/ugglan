@@ -255,7 +255,7 @@ extension PaymentsView {
                     let store: PaymentStore = globalPresentableStoreContainer.get()
                     let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
                         .contains(store.state.paymentStatusData?.status ?? .active)
-                    PaymentSetup(setupType: hasAlreadyConnected ? .replacement : .initial).journeyThenDismiss
+                    DirectDebitSetup(setupType: hasAlreadyConnected ? .replacement : .initial).journeyThenDismiss
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {

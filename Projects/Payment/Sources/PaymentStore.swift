@@ -28,6 +28,7 @@ public enum PaymentAction: ActionProtocol {
     case navigation(to: PaymentNavigation)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
+    case dismissPayment
 }
 
 public enum PaymentNavigation: ActionProtocol {

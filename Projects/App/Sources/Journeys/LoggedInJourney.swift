@@ -267,7 +267,7 @@ extension JourneyPresentation {
         onAction(PaymentStore.self) { action in
             if case let .navigation(navigateTo) = action {
                 if case .openConnectPayments = navigateTo {
-                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                    DirectDebitSetup(setupType: .initial).journeyThenDismiss
                 }
             }
         }

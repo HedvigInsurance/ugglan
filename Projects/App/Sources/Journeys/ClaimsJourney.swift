@@ -90,26 +90,6 @@ extension AppJourney {
     }
 }
 
-extension AppJourney {
-    static func notificationJourney<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        Journey(NotificationLoader(), style: .detented(.large, modally: false)) { authorization in
-            switch authorization {
-            case .notDetermined:
-                Journey(
-                    ClaimsAskForPushnotifications(),
-                    style: .detented(.large, modally: false)
-                ) { _ in
-                    next()
-                }
-            default:
-                next()
-            }
-        }
-    }
-}
-
 extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
