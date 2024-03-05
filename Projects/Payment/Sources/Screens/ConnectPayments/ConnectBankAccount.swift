@@ -1,34 +1,31 @@
 import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
 
-public struct ConnectBankAccount {
-    let setupType: PaymentSetup.SetupType
+public struct ConnectBankAccount: View {
+    let setupType: SetupType
     let urlScheme: String
 
     public init(
-        setupType: PaymentSetup.SetupType,
+        setupType: SetupType,
         urlScheme: String = Bundle.main.urlScheme ?? ""
     ) {
         self.setupType = setupType
         self.urlScheme = urlScheme
     }
-}
 
-extension ConnectBankAccount: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, Bool>>) {
+    public var body: some View {
         switch Dependencies.featureFlags().paymentType {
         case .trustly:
-            let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
-            return (viewController, result.map { .left($0) })
+            DirectDebitSetup(setupType: setupType)
         case .adyen:
-            let (viewController, result) = AdyenSetup(setupType: setupType).materialize()
-            return (viewController, result.map { .left($0) })
+            DirectDebitSetup(setupType: setupType)
         }
     }
+
 }
 
 extension ConnectBankAccount {
@@ -36,18 +33,15 @@ extension ConnectBankAccount {
     public func journey<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
-        Journey(
-            self
-        ) { result in
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            if let success = result.left {
-                next(success, store.state.paymentConnectionID)
-            } else if let options = result.right {
-                next(options, store.state.paymentConnectionID)
-            }
+
+        HostingJourney(
+            PaymentStore.self,
+            rootView: ConnectBankAccount(setupType: .initial),
+            style: .detented(.large),
+            options: [.defaults, .autoPopSelfAndSuccessors]
+        ) { action in
+            ContinueJourney()
         }
-        .setStyle(.detented(.large))
-        .setOptions([.defaults, .autoPopSelfAndSuccessors])
     }
 
     /// Sets up payment and then dismisses
