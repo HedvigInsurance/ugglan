@@ -6,6 +6,7 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectGlassDamageStep
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
+    case FlowClaimDeflectTowingStep
     case Unknown
 
     var title: String {
@@ -16,6 +17,8 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
             return L10n.submitClaimPestsTitle
         case .FlowClaimDeflectEmergencyStep:
             return L10n.commonClaimEmergencyTitle
+        case .FlowClaimDeflectTowingStep:
+            return "Towing"
         case .Unknown:
             return ""
         }
@@ -85,6 +88,16 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
                 buttonText: L10n.submitClaimPestsCustomerServiceButton,
                 questions: []
             )
+        } else if id == .FlowClaimDeflectTowingStep {
+            return FlowClaimDeflectConfig(
+                infoText: "",
+                infoSectionText: "",
+                infoSectionTitle: "",
+                cardTitle: "",
+                cardText: "",
+                buttonText: "",
+                questions: []
+            )
         }
         return nil
     }
@@ -114,6 +127,14 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     }
 
     init(
+        with data: OctopusGraphQL.FlowClaimDeflectTowingStepFragment
+    ) {
+        self.id = (Self.setDeflectType(idIn: data.id))
+        self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+        self.isEmergencyStep = false
+    }
+
+    init(
         id: FlowClaimDeflectStepType,
         partners: [Partner]? = [],
         isEmergencyStep: Bool
@@ -131,6 +152,8 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
             return .FlowClaimDeflectPestsStep
         case "FlowClaimDeflectEmergencyStep":
             return .FlowClaimDeflectEmergencyStep
+        case "FlowClaimDeflectTowingStep":
+            return .FlowClaimDeflectTowingStep
         default:
             return .Unknown
         }
