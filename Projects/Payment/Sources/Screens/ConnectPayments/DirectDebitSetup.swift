@@ -18,21 +18,37 @@ private class DirectDebitWebview: UIView {
     let vc = UIViewController()
     var webView = WKWebView()
     var webViewDelgate = WebViewDelegate(webView: .init())
+    @Binding var showErrorAlert: Bool
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(setupType: SetupType) {
+    init(
+        setupType: SetupType,
+        showErrorAlert: Binding<Bool>
+    ) {
         self.setupType = setupType
+        self._showErrorAlert = showErrorAlert
         super.init(frame: .zero)
 
-        vc.hidesBottomBarWhenPushed = true
+        presentWebView()
+        presentActivityIndicator()
+        retryInBroswerFailedToLoad()
+        checkForResult()
 
-        vc.isModalInPresentation = true
+        Task {
+            await startRegistration()
+        }
 
+        self.addSubview(vc.view)
+        vc.view.snp.makeConstraints { make in
+            make.leading.trailing.bottom.top.equalToSuperview()
+        }
+    }
+
+    private func presentWebView() {
         let userContentController = WKUserContentController()
-
         let webViewConfiguration = WKWebViewConfiguration()
         webViewConfiguration.userContentController = userContentController
         webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -65,7 +81,9 @@ private class DirectDebitWebview: UIView {
         )
 
         vc.view = webView
+    }
 
+    private func presentActivityIndicator() {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
         activityIndicator.color = .brand(.primaryText())
@@ -85,18 +103,19 @@ private class DirectDebitWebview: UIView {
             }
             .store(in: &cancellables)
 
-        let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
-        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
-
         webViewDelgate.isLoading
             .sink { _ in
             } receiveValue: { loading in
                 if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
             }
             .store(in: &cancellables)
+    }
+
+    private func retryInBroswerFailedToLoad() {
+        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
+        let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
 
         let publisherDelay = Timer.TimerPublisher(interval: 5.0, runLoop: .main, mode: .default).autoconnect()
-
         Publishers.CombineLatest3(publisherDelay, webViewDelgate.isLoading, webViewDelgate.result)
             .sink { _ in
             } receiveValue: { [weak self] _, isLoading, URL in
@@ -107,7 +126,7 @@ private class DirectDebitWebview: UIView {
                         UIApplication.shared.open(url)
                         didFailToLoadWebViewSignal.value = true
                     } else {
-                        self?.presentAlert()
+                        self?.showErrorAlert = true
                     }
                 }
             }
@@ -122,11 +141,9 @@ private class DirectDebitWebview: UIView {
             shouldDismissViewSignal.value = true
         }
         .store(in: &cancellables)
+    }
 
-        Task {
-            await startRegistration()
-        }
-
+    private func checkForResult() {
         webViewDelgate.decidePolicyForNavigationAction
             .sink { _ in
             } receiveValue: { [weak self] success in
@@ -140,15 +157,6 @@ private class DirectDebitWebview: UIView {
                 )
             }
             .store(in: &cancellables)
-
-        self.addSubview(vc.view)
-        vc.view.snp.makeConstraints { make in
-            make.leading.trailing.bottom.top.equalToSuperview()
-        }
-    }
-
-    deinit {
-        let a = ""
     }
 
     private func showResultScreen(type: DirectDebitResultType) {
@@ -157,7 +165,7 @@ private class DirectDebitWebview: UIView {
         let containerView = UIView()
         containerView.backgroundColor = .brand(.secondaryBackground())
 
-        let directDebitResult = DirectDebitResult(type: type)  //rewrite
+        let directDebitResult = DirectDebitResult(type: type)
 
         switch type {
         case .success:
@@ -198,36 +206,20 @@ private class DirectDebitWebview: UIView {
                 webViewDelgate.result.send(url)
                 webView.load(request)
             } else {
-                presentAlert()
+                self.showErrorAlert = true
             }
         } catch {
-            presentAlert()
+            self.showErrorAlert = true
         }
-    }
-
-    func presentAlert() {
-        Alert(
-            title: L10n.generalError,
-            message: L10n.somethingWentWrong,
-            tintColor: nil,
-            actions: [
-                Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
-                    true
-                },
-                Alert.Action(
-                    title: L10n.alertCancel,
-                    style: UIAlertAction.Style.cancel
-                ) { false },
-            ]
-        )
     }
 }
 
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     let setupType: SetupType
+    @Binding var showErrorAlert: Bool
 
     public func makeUIView(context: Context) -> some UIView {
-        return DirectDebitWebview(setupType: setupType)
+        return DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert)
     }
 
     public func updateUIView(_ uiView: UIViewType, context: Context) {}
@@ -235,7 +227,8 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 
 public struct DirectDebitSetup: View {
     @PresentableStore var paymentStore: PaymentStore
-    @State var showAlert: Bool = false
+    @State var showCancelAlert: Bool = false
+    @State var showErrorAlert: Bool = false
 
     let setupType: SetupType
 
@@ -246,43 +239,50 @@ public struct DirectDebitSetup: View {
     }
 
     public var body: some View {
-        DirectDebitSetupRepresentable(setupType: setupType)
+        DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
             .toolbar {
                 ToolbarItem(
                     placement: .navigationBarLeading
                 ) {
-                    hButton.MediumButton(type: .ghost) {
-                        showAlert = true
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
+                    dismissButton
                 }
             }
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text(L10n.PayInIframeInAppCancelAlert.title),
-                    message: Text(L10n.PayInIframeInAppCancelAlert.body),
-                    primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
-                        paymentStore.send(.dismissPayment)
-                    },
-                    secondaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.dismissButton))
-                )
+            .alert(isPresented: $showCancelAlert) {
+                cancelAlert()
+            }
+            .alert(isPresented: $showErrorAlert) {
+                errorAlert()
             }
     }
 
-    private func makeDismissButton() -> UIBarButtonItem {
-        switch setupType {
-        case .postOnboarding:
-            return UIBarButtonItem(
-                title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandStyle(.navigationButton)
-            )
-        default:
-            return UIBarButtonItem(
-                title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandStyle(.navigationButton)
-            )
+    private var dismissButton: some View {
+        hButton.MediumButton(type: .ghost) {
+            showCancelAlert = true
+        } content: {
+            hText(setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton)
         }
+    }
+
+    private func cancelAlert() -> SwiftUI.Alert {
+        Alert(
+            title: Text(L10n.PayInIframeInAppCancelAlert.title),
+            message: Text(L10n.PayInIframeInAppCancelAlert.body),
+            primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
+                paymentStore.send(.dismissPayment)
+            },
+            secondaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.dismissButton))
+        )
+    }
+
+    private func errorAlert() -> SwiftUI.Alert {
+        return Alert(
+            title: Text(L10n.generalError),
+            message: Text(L10n.somethingWentWrong),
+            primaryButton: .default(Text(L10n.generalRetry)),
+            secondaryButton: .cancel(Text(L10n.alertCancel)) {
+                paymentStore.send(.dismissPayment)
+            }
+        )
     }
 }
 
@@ -309,6 +309,7 @@ extension DirectDebitSetup {
         .configureTitle(
             self.setupType == .replacement ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
         )
+        .enableModalInPresentation
     }
 
     public var journeyThenDismiss: some JourneyPresentation {
