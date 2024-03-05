@@ -1,6 +1,9 @@
 import Foundation
 
-public class HomeDemoService: HomeService {
+public class HomeServiceDemo: HomeService {
+
+    public init() {}
+
     public func getImportantMessages() async throws -> [ImportantMessage] {
         return [ImportantMessage(id: "", message: "", link: "")]
     }

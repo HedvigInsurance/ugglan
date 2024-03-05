@@ -1,4 +1,7 @@
 public class ForeverServiceDemo: ForeverService {
+
+    public init() {}
+
     public func getMemberReferralInformation() async throws -> ForeverData {
         return ForeverData(
             grossAmount: .init(amount: "200", currency: "SEK"),

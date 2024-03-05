@@ -5,7 +5,15 @@ import UIKit
 import hCore
 import hGraphQL
 
-struct AnalyticsCoordinator {
+protocol AnalyticsCoordinator {
+    func setUserId()
+}
+
+struct AnalyticsCoordinatorDemo: AnalyticsCoordinator {
+    func setUserId() {}
+}
+
+struct AnalyticsCoordinatorOctopus: AnalyticsCoordinator {
     @Inject private var octopus: hOctopus
 
     init() {}
