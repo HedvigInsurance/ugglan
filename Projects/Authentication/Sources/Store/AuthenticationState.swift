@@ -20,6 +20,7 @@ struct OTPState: StateProtocol {
 struct SEBankIDState: StateProtocol {
     var autoStartToken: String? = nil
     var liveQrCodeData: String? = nil
+    var liveQrCodeDate: Date? = nil
     public init() {}
 }
 
