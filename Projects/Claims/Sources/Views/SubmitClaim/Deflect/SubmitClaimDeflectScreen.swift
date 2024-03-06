@@ -37,14 +37,19 @@ public struct SubmitClaimDeflectScreen: View {
                         )
                     }
                 } else {
+                    let title =
+                        model?.partners.count == 1 ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
+
                     VStack(spacing: 8) {
                         ForEach(Array((model?.partners ?? []).enumerated()), id: \.element) { index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
                                 label: model?.config?.cardText ?? "",
                                 url: partner.url ?? "",
-                                title: index == 0 ? model?.config?.cardTitle : nil,
-                                buttonText: model?.config?.buttonText ?? ""
+                                title: index == 0 ? title : nil,
+                                buttonText: model?.config?.buttonText ?? "",
+                                infoViewTitle: model?.config?.infoViewTitle ?? "",
+                                infoViewText: model?.config?.infoSectionText ?? ""
                             )
                         }
                     }

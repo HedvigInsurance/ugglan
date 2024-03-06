@@ -12,19 +12,25 @@ struct ClaimContactCard: View {
     var label: String
     var url: String?
     var buttonText: String
+    var infoViewTitle: String
+    var infoViewText: String
 
     init(
         imageUrl: String,
         label: String,
         url: String,
         title: String? = nil,
-        buttonText: String
+        buttonText: String,
+        infoViewTitle: String,
+        infoViewText: String
     ) {
         self.imageUrl = imageUrl
         self.label = label
         self.url = url
         self.title = title
         self.buttonText = buttonText
+        self.infoViewTitle = infoViewTitle
+        self.infoViewText = infoViewText
     }
 
     var body: some View {
@@ -35,6 +41,11 @@ struct ClaimContactCard: View {
             .withHeader({
                 HStack {
                     hText(title)
+                    Spacer()
+                    InfoViewHolder(
+                        title: infoViewTitle,
+                        description: infoViewText
+                    )
                 }
             })
             .sectionContainerStyle(.black)
@@ -173,18 +184,29 @@ struct ClaimContactCard_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return VStack {
-            ClaimContactCard(imageUrl: "", label: "LABEL", url: "BUTTON TEXT", buttonText: "")
+            ClaimContactCard(
+                imageUrl: "",
+                label: "LABEL",
+                url: "BUTTON TEXT",
+                buttonText: "",
+                infoViewTitle: "",
+                infoViewText: ""
+            )
             ClaimContactCard(
                 imageUrl: "",
                 label: "VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT",
                 url: "BUTTON TEXT",
-                buttonText: ""
+                buttonText: "",
+                infoViewTitle: "",
+                infoViewText: ""
             )
             ClaimContactCard(
                 imageUrl: "",
                 label: "LABEL",
                 url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
-                buttonText: ""
+                buttonText: "",
+                infoViewTitle: "",
+                infoViewText: ""
             )
 
         }
