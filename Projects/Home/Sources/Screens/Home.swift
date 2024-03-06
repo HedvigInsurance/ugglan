@@ -101,7 +101,6 @@ extension HomeView {
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
-                            FutureSectionInfoView()
                         }
                     }
                 case .future:
@@ -116,8 +115,10 @@ extension HomeView {
                 case .terminated:
                     VStack(spacing: 16) {
                         HomeBottomScrollView(memberId: memberId)
-                        startAClaimButton
-                        openHelpCenter
+                        VStack(spacing: 8) {
+                            startAClaimButton
+                            openHelpCenter
+                        }
                     }
                 case .loading:
                     EmptyView()
