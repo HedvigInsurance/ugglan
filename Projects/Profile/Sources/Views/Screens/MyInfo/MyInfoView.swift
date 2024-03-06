@@ -119,7 +119,7 @@ struct MyInfoView: View {
 }
 
 class MyInfoViewModel: ObservableObject {
-    @Inject var octopus: hOctopus
+    @Inject var profileService: ProfileService
     @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?
     @Published var phone: String = ""
@@ -161,115 +161,66 @@ class MyInfoViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     func save() async {
-        await withCheckedContinuation { [weak self] continuation in
-            guard let self = self else { return }
-            let updatePhoneFuture = self.getPhoneFuture()
-            let updateEmailFuture = self.getEmailFuture()
-            join(updatePhoneFuture, updateEmailFuture)
-                .onValue { _ in
-                    DispatchQueue.main.async {
-                        Toasts.shared.displayToast(
-                            toast: Toast(
-                                symbol: .icon(hCoreUIAssets.edit.image),
-                                body: L10n.profileMyInfoSaveSuccessToastBody
-                            )
-                        )
+        async let updatePhoneAsync: () = self.getPhoneFuture()
+        async let updateEmailAsync: () = self.getEmailFuture()
+        do {
+            _ = try await [updatePhoneAsync, updateEmailAsync]
+            Toasts.shared.displayToast(
+                toast: Toast(
+                    symbol: .icon(hCoreUIAssets.edit.image),
+                    body: L10n.profileMyInfoSaveSuccessToastBody
+                )
+            )
+        } catch let error {
+            if let error = error as? MyInfoSaveError {
+                switch error {
+                case .emailEmpty, .emailMalformed:
+                    withAnimation {
+                        self.emailError = error.localizedDescription
                     }
-                    continuation.resume()
-                }
-                .onError { error in
-                    if let error = error as? MyInfoSaveError {
-                        switch error {
-                        case .emailEmpty, .emailMalformed:
-                            DispatchQueue.main.async { [weak self] in
-                                withAnimation {
-                                    self?.emailError = error.localizedDescription
-                                }
-                            }
-                        case .phoneNumberEmpty, .phoneNumberMalformed:
-                            DispatchQueue.main.async { [weak self] in
-                                withAnimation {
-                                    self?.phoneError = error.localizedDescription
-                                }
-                            }
-                        }
+                case .phoneNumberEmpty, .phoneNumberMalformed:
+                    withAnimation {
+                        self.phoneError = error.localizedDescription
                     }
-                    continuation.resume()
                 }
+            }
         }
     }
 
-    private func getPhoneFuture() -> Flow.Future<Void> {
-        return Flow.Future<Void> { [weak self] completion in
-            guard let self else { return NilDisposer() }
-            if originalEmail != phone {
-                if phone.isEmpty {
-                    completion(.failure(MyInfoSaveError.phoneNumberEmpty))
-                    return NilDisposer()
-                }
-                let innerBag = bag.innerBag()
-
-                innerBag += self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.MemberUpdatePhoneNumberMutation(
-                            input: OctopusGraphQL.MemberUpdatePhoneNumberInput(phoneNumber: phone)
-                        )
-                    )
-                    .onValue { [weak self] data in
-                        if let phoneNumber = data.memberUpdatePhoneNumber.member?.phoneNumber {
-                            self?.originalPhone = phoneNumber
-                            self?.store.send(.setMemberPhone(phone: phoneNumber))
-                        }
-                        completion(.success)
-                    }
-                    .onError { error in
-                        completion(.failure(MyInfoSaveError.phoneNumberMalformed))
-                    }
-
-                return innerBag
+    private func getPhoneFuture() async throws {
+        if originalPhone != phone {
+            if phone.isEmpty {
+                throw MyInfoSaveError.phoneNumberEmpty
             }
-            completion(.success)
-            return NilDisposer()
+            do {
+                let newPhone = try await profileService.update(phone: phone)
+                self.originalPhone = newPhone
+                self.store.send(.setMemberPhone(phone: newPhone))
+            } catch {
+                throw MyInfoSaveError.phoneNumberMalformed
+            }
+
         }
     }
 
-    private func getEmailFuture() -> Flow.Future<Void> {
-        return Flow.Future<Void> { [weak self] completion in
-            guard let self else { return NilDisposer() }
-            if originalEmail != email {
-                if email.isEmpty {
-                    completion(.failure(MyInfoSaveError.emailEmpty))
-                    return NilDisposer()
-                }
-                if !Masking(type: .email).isValid(text: email) {
-                    completion(.failure(MyInfoSaveError.emailMalformed))
-                    return NilDisposer()
-                }
-                let innerBag = bag.innerBag()
-
-                innerBag += self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.MemberUpdateEmailMutation(
-                            input: OctopusGraphQL.MemberUpdateEmailInput(email: email)
-                        )
-                    )
-                    .onValue { [weak self] data in
-                        if let email = data.memberUpdateEmail.member?.email {
-                            self?.originalEmail = email
-                            self?.store.send(.setMemberEmail(email: email))
-                        }
-                        completion(.success)
-
-                    }
-                    .onError { _ in
-                        completion(.failure(MyInfoSaveError.emailMalformed))
-
-                    }
-                return innerBag
+    private func getEmailFuture() async throws {
+        if originalEmail != email {
+            if email.isEmpty {
+                throw MyInfoSaveError.emailEmpty
             }
-            completion(.success)
-            return NilDisposer()
+            if !Masking(type: .email).isValid(text: email) {
+                throw MyInfoSaveError.emailMalformed
+            }
+            do {
+                let newEmail = try await profileService.update(email: email)
+                self.originalEmail = newEmail
+                self.store.send(.setMemberEmail(email: newEmail))
+            } catch {
+                throw MyInfoSaveError.emailMalformed
+            }
+
         }
     }
 

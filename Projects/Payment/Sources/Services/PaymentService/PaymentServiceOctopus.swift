@@ -31,4 +31,13 @@ public class hPaymentServiceOctopus: hPaymentService {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentHistoryListData.getHistory(with: data.currentMember)
     }
+
+    public func getConnectPaymentUrl() async throws -> URL {
+        let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let url = URL(string: data.registerDirectDebit2.url) {
+            return url
+        }
+        throw PaymentError.missingDataError(message: L10n.General.errorBody)
+    }
 }

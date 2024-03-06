@@ -13,6 +13,10 @@ public class ProfileDemoService: ProfileService {
         return MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false)
     }
 
-    public func updateLanguage() async throws {
-    }
+    public func updateLanguage() async throws {}
+
+    public func postDeleteRequest() async throws {}
+
+    public func update(email: String) async throws -> String { return email }
+    public func update(phone: String) async throws -> String { return phone }
 }

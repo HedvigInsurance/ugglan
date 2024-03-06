@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 public class hPaymentServiceDemo: hPaymentService {
     public init() {}
@@ -188,5 +189,10 @@ public class hPaymentServiceDemo: hPaymentService {
             ]
         )
         return [success, failed]
+    }
+    
+    
+    public func getConnectPaymentUrl() async throws -> URL {
+        throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }
 }
