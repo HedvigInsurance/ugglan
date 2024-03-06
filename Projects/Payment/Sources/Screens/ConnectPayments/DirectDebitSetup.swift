@@ -152,43 +152,42 @@ private class DirectDebitWebview: UIView {
                 }
                 self.showResultScreen(
                     type: success
-                        ? .success(setupType: self.setupType)
-                        : .failure(setupType: self.setupType)
+                        ? .success
+                        : .failure
                 )
             }
             .store(in: &cancellables)
     }
 
     private func showResultScreen(type: DirectDebitResultType) {
-        vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
+        DispatchQueue.main.sync {
+            vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
-        let containerView = UIView()
-        containerView.backgroundColor = .brand(.secondaryBackground())
+            let containerView = UIView()
 
-        let directDebitResult = DirectDebitResult(type: type)
+            let directDebitResult = DirectDebitResult(
+                type: type,
+                retry: {
+                    self.checkForResult()
+                }
+            )
 
-        switch type {
-        case .success:
-            paymentStore.send(.fetchPaymentStatus)
-        case .failure:
-            break
-        }
+            switch type {
+            case .success:
+                paymentStore.send(.fetchPaymentStatus)
+            case .failure:
+                break
+            }
 
-        containerView.add(directDebitResult) { view in
-            view.snp.makeConstraints { make in make.size.equalToSuperview()
+            let debitResultHostingView = UIHostingController(rootView: directDebitResult)
+            containerView.addSubview(debitResultHostingView.view)
+
+            debitResultHostingView.view.snp.makeConstraints { make in make.size.equalToSuperview()
                 make.edges.equalToSuperview()
             }
-        }
-        .onValue { [weak self] success in
-            self?.paymentStore.send(.fetchPaymentStatus)
-        }
-        .onError { [weak self] _ in
-            Task {
-                await self?.startRegistration()
-            }
-        }
 
-        vc.view = containerView
+            vc.view = containerView
+        }
     }
 
     private func startRegistration() async {
