@@ -39,7 +39,7 @@ extension Document: Presentable {
                 [weak activityButton, weak viewController] _, value
                 in guard let activityButton = activityButton, let viewController = viewController else { return }
                 guard let value = value else { return }
-                let activityViewPresentation = transformDataToPresentationn(source: activityButton, data: value)
+                let activityViewPresentation = transformDataToActivityView(source: activityButton, data: value)
                 viewController.present(activityViewPresentation)
             }
         bag += viewController.deallocSignal.onValue({ _ in
@@ -48,7 +48,7 @@ extension Document: Presentable {
         return (viewController, bag)
     }
 
-    private func transformDataToPresentationn(source: UIBarButtonItem, data: Data) -> ActivityView {
+    private func transformDataToActivityView(source: UIBarButtonItem, data: Data) -> ActivityView {
         var thingToShare: Any = data
         let temporaryFileURL = getPathForFile()
         do {
@@ -64,12 +64,6 @@ extension Document: Presentable {
             applicationActivities: nil,
             sourceView: source.view,
             sourceRect: source.bounds
-        )
-
-        let activityViewPresentation = Presentation(
-            activityView,
-            style: .activityView,
-            options: .defaults
         )
         return activityView
     }
