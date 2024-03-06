@@ -190,8 +190,7 @@ public class hPaymentServiceDemo: hPaymentService {
         )
         return [success, failed]
     }
-    
-    
+
     public func getConnectPaymentUrl() async throws -> URL {
         throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }

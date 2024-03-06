@@ -7,6 +7,7 @@ public protocol ProfileService {
     func postDeleteRequest() async throws
     func update(email: String) async throws -> String
     func update(phone: String) async throws -> String
+    func update(eurobonus: String) async throws -> PartnerData
 }
 
 enum ProfileError: Error {
@@ -17,6 +18,23 @@ extension ProfileError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .error(message): return message
+        }
+    }
+}
+
+enum ChangeEuroBonusError: LocalizedError {
+    case error(message: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case let .error(message):
+            return message
+        }
+    }
+    var localizedDescription: String {
+        switch self {
+        case let .error(message):
+            return message
         }
     }
 }

@@ -58,19 +58,18 @@ public struct PartnerData: Codable, Equatable, Hashable {
     var isConnected: Bool {
         return !(sas?.eurobonusNumber ?? "").isEmpty
     }
-    init?(with data: OctopusGraphQL.PartnerDataFragment) {
-        guard let sasData = data.partnerData?.sas else { return nil }
-        self.sas = PartnerDataSas(with: sasData)
+
+    init(sas: PartnerDataSas?) {
+        self.sas = sas
     }
 }
 
 public struct PartnerDataSas: Codable, Equatable, Hashable {
     let eligible: Bool
     let eurobonusNumber: String?
-
-    init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
-        self.eligible = data.eligible
-        self.eurobonusNumber = data.eurobonusNumber
+    init(eligible: Bool, eurobonusNumber: String?) {
+        self.eligible = eligible
+        self.eurobonusNumber = eurobonusNumber
     }
 }
 

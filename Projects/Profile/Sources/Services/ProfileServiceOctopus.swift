@@ -79,76 +79,32 @@ public class ProfileServiceOctopus: ProfileService {
         throw ProfileError.error(message: L10n.General.errorBody)
     }
 
-    //    private func getPhoneFuture() -> Flow.Future<Void> {
-    //        return Flow.Future<Void> { [weak self] completion in
-    //            guard let self else { return NilDisposer() }
-    //            if originalEmail != phone {
-    //                if phone.isEmpty {
-    //                    completion(.failure(MyInfoSaveError.phoneNumberEmpty))
-    //                    return NilDisposer()
-    //                }
-    //                let innerBag = bag.innerBag()
-    //
-    //                innerBag += self.octopus.client
-    //                    .perform(
-    //                        mutation: OctopusGraphQL.MemberUpdatePhoneNumberMutation(
-    //                            input: OctopusGraphQL.MemberUpdatePhoneNumberInput(phoneNumber: phone)
-    //                        )
-    //                    )
-    //                    .onValue { [weak self] data in
-    //                        if let phoneNumber = data.memberUpdatePhoneNumber.member?.phoneNumber {
-    //                            self?.originalPhone = phoneNumber
-    //                            self?.store.send(.setMemberPhone(phone: phoneNumber))
-    //                        }
-    //                        completion(.success)
-    //                    }
-    //                    .onError { error in
-    //                        completion(.failure(MyInfoSaveError.phoneNumberMalformed))
-    //                    }
-    //
-    //                return innerBag
-    //            }
-    //            completion(.success)
-    //            return NilDisposer()
-    //        }
-    //    }
-    //
-    //    private func getEmailFuture() -> Flow.Future<Void> {
-    //        return Flow.Future<Void> { [weak self] completion in
-    //            guard let self else { return NilDisposer() }
-    //            if originalEmail != email {
-    //                if email.isEmpty {
-    //                    completion(.failure(MyInfoSaveError.emailEmpty))
-    //                    return NilDisposer()
-    //                }
-    //                if !Masking(type: .email).isValid(text: email) {
-    //                    completion(.failure(MyInfoSaveError.emailMalformed))
-    //                    return NilDisposer()
-    //                }
-    //                let innerBag = bag.innerBag()
-    //
-    //                innerBag += self.octopus.client
-    //                    .perform(
-    //                        mutation: OctopusGraphQL.MemberUpdateEmailMutation(
-    //                            input: OctopusGraphQL.MemberUpdateEmailInput(email: email)
-    //                        )
-    //                    )
-    //                    .onValue { [weak self] data in
-    //                        if let email = data.memberUpdateEmail.member?.email {
-    //                            self?.originalEmail = email
-    //                            self?.store.send(.setMemberEmail(email: email))
-    //                        }
-    //                        completion(.success)
-    //
-    //                    }
-    //                    .onError { _ in
-    //                        completion(.failure(MyInfoSaveError.emailMalformed))
-    //
-    //                    }
-    //                return innerBag
-    //            }
-    //            completion(.success)
-    //            return NilDisposer()
-    //        }
-    //    }
+    public func update(eurobonus: String) async throws -> PartnerData {
+        let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: eurobonus)
+        let mutation = OctopusGraphQL.UpdateEurobonusNumberMutation(input: input)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let graphQLError = data.memberUpdateEurobonusNumber.userError?.message, !graphQLError.isEmpty {
+            throw ChangeEuroBonusError.error(message: graphQLError)
+        }
+        guard let dataFragment = data.memberUpdateEurobonusNumber.member?.fragments.partnerDataFragment,
+            let partnerData = PartnerData(with: dataFragment)
+        else {
+            throw ChangeEuroBonusError.error(message: L10n.General.errorBody)
+        }
+        return partnerData
+    }
+}
+
+extension PartnerData {
+    fileprivate init?(with data: OctopusGraphQL.PartnerDataFragment) {
+        guard let sasData = data.partnerData?.sas else { return nil }
+        self.sas = PartnerDataSas(with: sasData)
+    }
+}
+
+extension PartnerDataSas {
+    fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
+        self.eligible = data.eligible
+        self.eurobonusNumber = data.eurobonusNumber
+    }
 }

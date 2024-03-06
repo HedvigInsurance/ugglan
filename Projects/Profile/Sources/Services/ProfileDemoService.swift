@@ -1,6 +1,9 @@
 import Foundation
 
 public class ProfileDemoService: ProfileService {
+    public func update(eurobonus: String) async throws -> PartnerData {
+        return PartnerData(sas: .init(eligible: false, eurobonusNumber: nil))
+    }
 
     public init() {}
     public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
