@@ -2,7 +2,6 @@ import Apollo
 import Contracts
 import Foundation
 import Presentation
-import UIKit
 import hCore
 import hGraphQL
 
