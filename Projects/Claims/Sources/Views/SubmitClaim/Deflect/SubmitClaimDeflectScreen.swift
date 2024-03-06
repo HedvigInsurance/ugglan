@@ -44,12 +44,10 @@ public struct SubmitClaimDeflectScreen: View {
                         ForEach(Array((model?.partners ?? []).enumerated()), id: \.element) { index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
-                                label: model?.config?.cardText ?? "",
                                 url: partner.url ?? "",
+                                phoneNumber: partner.phoneNumber,
                                 title: index == 0 ? title : nil,
-                                buttonText: model?.config?.buttonText ?? "",
-                                infoViewTitle: model?.config?.infoViewTitle ?? "",
-                                infoViewText: model?.config?.infoSectionText ?? ""
+                                model: model
                             )
                         }
                     }

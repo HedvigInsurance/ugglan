@@ -7,30 +7,24 @@ import hCoreUI
 
 struct ClaimContactCard: View {
     @PresentableStore var store: SubmitClaimStore
+    var model: FlowClaimDeflectStepModel
     var title: String?
     var imageUrl: String
-    var label: String
     var url: String?
-    var buttonText: String
-    var infoViewTitle: String
-    var infoViewText: String
+    var phoneNumber: String?
 
     init(
         imageUrl: String,
-        label: String,
         url: String,
+        phoneNumber: String?,
         title: String? = nil,
-        buttonText: String,
-        infoViewTitle: String,
-        infoViewText: String
+        model: FlowClaimDeflectStepModel?
     ) {
         self.imageUrl = imageUrl
-        self.label = label
         self.url = url
+        self.phoneNumber = phoneNumber
         self.title = title
-        self.buttonText = buttonText
-        self.infoViewTitle = infoViewTitle
-        self.infoViewText = infoViewText
+        self.model = model ?? .init(id: .Unknown, isEmergencyStep: false)
     }
 
     var body: some View {
@@ -43,8 +37,8 @@ struct ClaimContactCard: View {
                     hText(title)
                     Spacer()
                     InfoViewHolder(
-                        title: infoViewTitle,
-                        description: infoViewText
+                        title: model.config?.infoViewTitle ?? "",
+                        description: model.config?.infoViewText ?? ""
                     )
                 }
             })
@@ -69,7 +63,7 @@ struct ClaimContactCard: View {
                     .padding(.vertical, 16)
             }
 
-            hText(label)
+            hText(model.config?.cardText ?? "")
                 .fixedSize()
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColor.tertiary)
@@ -80,9 +74,15 @@ struct ClaimContactCard: View {
                 hButton.MediumButton(type: .secondaryAlt) {
                     if let url = URL(string: url) {
                         UIApplication.shared.open(url)
+                    } else if let phoneNumber {
+                        let tel = "tel://"
+                        let formattedString = tel + phoneNumber
+                        if let url = URL(string: formattedString) {
+                            UIApplication.shared.open(url)
+                        }
                     }
                 } content: {
-                    hText(buttonText)
+                    hText(model.config?.buttonText ?? "")
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.primary)
                         .colorScheme(.light)
@@ -186,27 +186,21 @@ struct ClaimContactCard_Previews: PreviewProvider {
         return VStack {
             ClaimContactCard(
                 imageUrl: "",
-                label: "LABEL",
                 url: "BUTTON TEXT",
-                buttonText: "",
-                infoViewTitle: "",
-                infoViewText: ""
+                phoneNumber: "",
+                model: nil
             )
             ClaimContactCard(
                 imageUrl: "",
-                label: "VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT VERY LONG LABEL TEXT",
                 url: "BUTTON TEXT",
-                buttonText: "",
-                infoViewTitle: "",
-                infoViewText: ""
+                phoneNumber: "",
+                model: nil
             )
             ClaimContactCard(
                 imageUrl: "",
-                label: "LABEL",
                 url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
-                buttonText: "",
-                infoViewTitle: "",
-                infoViewText: ""
+                phoneNumber: "",
+                model: nil
             )
 
         }
