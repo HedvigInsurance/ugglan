@@ -7,7 +7,7 @@ public class FetchContractsServiceOctopus: FetchContractsService {
     public init() {}
     public func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery()
-        let contracts = try await octopus.client.fetch(query: query)
+        let contracts = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
         let firstName = contracts.currentMember.firstName
         let lastName = contracts.currentMember.lastName

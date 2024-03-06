@@ -16,7 +16,7 @@ class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     let disposeBag = DisposeBag()
     var errorMessage: String?
-    @Inject var octopus: hOctopus
+    @Inject var foreverService: ForeverService
 
     init() {
         let store: ForeverStore = globalPresentableStoreContainer.get()
@@ -30,31 +30,35 @@ class ChangeCodeViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            var errorMessage: String?
-            await withCheckedContinuation { continuation in
-                let octopusRequest = self?.octopus.client
-                    .perform(mutation: OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: text))
-                    .onValue { value in
-                        if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
-                            errorMessage = errorFromGraphQL
-                        } else {
-                            let store: ForeverStore = globalPresentableStoreContainer.get()
-                            store.send(.fetch)
-                            store.send(.showChangeCodeSuccess)
-                        }
-                        continuation.resume()
-                    }
-                    .onError { graphQLError in
-                        errorMessage = graphQLError.localizedDescription
-                        continuation.resume()
-                    }
-                if let octopusRequest {
-                    self?.disposeBag += octopusRequest
-                }
-            }
-            if let errorMessage {
-                throw ForeverChangeCodeError.errorMessage(message: errorMessage)
-            }
+            try await self?.foreverService.changeCode(code: text)
+            let store: ForeverStore = globalPresentableStoreContainer.get()
+            store.send(.fetch)
+            store.send(.showChangeCodeSuccess)
+            //            var errorMessage: String?
+            //            await withCheckedContinuation { continuation in
+            //                let octopusRequest = self?.octopus.client
+            //                    .perform(mutation: OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: text))
+            //                    .onValue { value in
+            //                        if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
+            //                            errorMessage = errorFromGraphQL
+            //                        } else {
+            //                            let store: ForeverStore = globalPresentableStoreContainer.get()
+            //                            store.send(.fetch)
+            //                            store.send(.showChangeCodeSuccess)
+            //                        }
+            //                        continuation.resume()
+            //                    }
+            //                    .onError { graphQLError in
+            //                        errorMessage = graphQLError.localizedDescription
+            //                        continuation.resume()
+            //                    }
+            //                if let octopusRequest {
+            //                    self?.disposeBag += octopusRequest
+            //                }
+            //            }
+            //            if let errorMessage {
+            //                throw ForeverChangeCodeError.errorMessage(message: errorMessage)
+            //            }
         }
     }
 }

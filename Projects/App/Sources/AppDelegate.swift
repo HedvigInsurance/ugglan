@@ -63,7 +63,8 @@ import hGraphQL
 
     func logout() {
         bag.dispose()
-
+        TokenRefresher.shared.isDemoMode = false
+        ApplicationContext.shared.$isDemoMode.value = false
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
         ApplicationContext.shared.$isLoggedIn.value = false
@@ -180,8 +181,14 @@ import hGraphQL
             .onValue { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-                ApolloClient.initAndRegisterClient()
             }
+
+        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            TokenRefresher.shared.isDemoMode = value
+            store.send(.setIsDemoMode(to: value))
+            ApolloClient.initAndRegisterClient()
+        }
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
@@ -227,7 +234,6 @@ import hGraphQL
                     Launch.shared.completeAnimationCallbacker.callAll()
 
                     UIApplication.shared.appDelegate.logout()
-
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
@@ -274,12 +280,6 @@ import hGraphQL
             }
         }
 
-        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
-            let store: UgglanStore = globalPresentableStoreContainer.get()
-            TokenRefresher.shared.isDemoMode = value
-            store.send(.setIsDemoMode(to: value))
-            ApolloClient.initAndRegisterClient()
-        }
         let store: UgglanStore = globalPresentableStoreContainer.get()
         ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
         TokenRefresher.shared.isDemoMode = store.state.isDemoMode

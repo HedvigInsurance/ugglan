@@ -1,5 +1,5 @@
 public class ForeverServiceDemo: ForeverService {
-
+    var code: String = "CODE"
     public init() {}
 
     public func getMemberReferralInformation() async throws -> ForeverData {
@@ -7,11 +7,15 @@ public class ForeverServiceDemo: ForeverService {
             grossAmount: .init(amount: "200", currency: "SEK"),
             netAmount: .init(amount: "200", currency: "SEK"),
             otherDiscounts: .init(amount: "0", currency: "SEK"),
-            discountCode: "CODE",
+            discountCode: code,
             monthlyDiscount: .init(amount: "10", currency: "SEK"),
             referrals: [],
             monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
         )
+    }
 
+    public func changeCode(code: String) async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        self.code = code
     }
 }

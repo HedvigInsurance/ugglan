@@ -83,7 +83,12 @@ public class hPaymentServiceDemo: hPaymentService {
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
         try await Task.sleep(nanoseconds: 1_000_000_000)
-        return PaymentStatusData(status: .needsSetup, nextChargeDate: "2023-11-29", displayName: nil, descriptor: nil)
+        return PaymentStatusData(
+            status: .active,
+            nextChargeDate: "2023-11-29",
+            displayName: "Connected bank",
+            descriptor: "****1234"
+        )
     }
 
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
