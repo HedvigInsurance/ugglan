@@ -37,10 +37,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: { ApolloClient.headers() },
-            callbacks: Callbacks(
-                successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
-                failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
-            ),
             httpClientEngine: nil
         )
     }()
