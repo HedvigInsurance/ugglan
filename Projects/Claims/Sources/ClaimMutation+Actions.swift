@@ -76,6 +76,8 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else if let step = self.asFlowClaimDeflectGlassDamageStep?.fragments.flowClaimDeflectGlassDamageStepFragment {
             return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+        } else if let step = self.asFlowClaimDeflectTowingStep?.fragments.flowClaimDeflectTowingStepFragment {
+            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
         } else if let step = self.asFlowClaimFileUploadStep?.fragments.flowClaimFileUploadStepFragment {
             return .stepModelAction(action: .setFileUploadStep(model: .init(with: step)))
         } else {
