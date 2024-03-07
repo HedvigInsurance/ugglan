@@ -25,6 +25,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
                         try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
                         self.removeLoading(for: .postCoInsured)
                         callback(.value(.fetchContracts))
+                        AskForRating().askForReview()
                         callback(.end)
                     } catch {
                         self.setError(L10n.General.errorBody, for: .postCoInsured)

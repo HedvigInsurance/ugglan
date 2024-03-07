@@ -34,6 +34,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
             )
             do {
                 let url = try await self.travelInsuranceClient.submitForm(dto: dto)
+                AskForRating().askForReview()
                 send(.setDownloadUrl(urL: url))
             } catch _ {
                 self.setError(L10n.General.errorBody, for: .postTravelInsurance)

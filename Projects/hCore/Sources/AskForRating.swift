@@ -11,18 +11,25 @@ public struct AskForRating {
         UserDefaults.standard.set(numberOfSessions, forKey: userDefaultsKey)
     }
 
-    func ask() {
+    public func askAccordingToTheNumberOfSessions() {
         guard !UserDefaults.standard.bool(forKey: userDefaultsCompletedKey) else { return }
 
         let numberOfSessions = UserDefaults.standard.value(forKey: "AskForRating") as? Int ?? 0
 
         if numberOfSessions >= 3 {
-            UserDefaults.standard.set(true, forKey: userDefaultsCompletedKey)
+            askForReview()
+        }
+    }
+
+    public func askForReview() {
+        UserDefaults.standard.set(true, forKey: userDefaultsCompletedKey)
+        DispatchQueue.main.async {
             if let scene = UIApplication.shared.currentScene {
                 SKStoreReviewController.requestReview(in: scene)
             }
         }
     }
+
 }
 
 extension UIApplication {
