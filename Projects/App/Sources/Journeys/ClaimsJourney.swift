@@ -3,7 +3,7 @@ import Contacts
 import Foundation
 import Home
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL

@@ -1,7 +1,6 @@
 import Foundation
 import SnapKit
 import SwiftUI
-import UIKit
 
 struct SafeAreaEdgesModifier: ViewModifier {
     var edgesIgnoringSafeArea: Edge.Set?

@@ -1,6 +1,6 @@
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 
 extension JourneyPresentation {
     /// set title of JourneyPresentations view controller

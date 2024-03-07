@@ -1,7 +1,6 @@
 import AVKit
 import Foundation
 import SwiftUI
-import UIKit
 
 struct LoginVideoView: UIViewRepresentable {
 

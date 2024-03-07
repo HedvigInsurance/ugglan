@@ -3,7 +3,7 @@ import Authentication
 import Foundation
 import Market
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 

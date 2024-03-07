@@ -7,7 +7,7 @@ import Home
 import Payment
 import Presentation
 import Profile
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
 

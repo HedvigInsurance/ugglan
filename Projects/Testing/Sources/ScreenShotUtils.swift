@@ -2,7 +2,7 @@ import Flow
 import Form
 import Foundation
 import SnapshotTesting
-import UIKit
+import SwiftUI
 import XCTest
 import hCore
 import hCoreUI

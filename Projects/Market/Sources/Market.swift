@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
