@@ -12,26 +12,22 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     ) async {
         switch action {
         case .fetchCrossSale:
-            Task {
-                do {
-                    let crossSells = try await self.fetchContractsService.getCrossSell()
-                    send(.setCrossSells(crossSells: crossSells))
-                } catch let error {
-                    self.setError(error.localizedDescription, for: .fetchCrossSell)
-                }
+            do {
+                let crossSells = try await self.fetchContractsService.getCrossSell()
+                send(.setCrossSells(crossSells: crossSells))
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchCrossSell)
             }
         case .fetchContracts:
-            Task {
-                do {
-                    let data = try await self.fetchContractsService.getContracts()
-                    send(.setActiveContracts(contracts: data.activeContracts))
-                    send(.setTerminatedContracts(contracts: data.termiantedContracts))
-                    send(.setPendingContracts(contracts: data.pendingContracts))
-                    send(.fetchCompleted)
-                } catch let error {
-                    self.setError(error.localizedDescription, for: .fetchContracts)
-                    send(.fetchCompleted)
-                }
+            do {
+                let data = try await self.fetchContractsService.getContracts()
+                send(.setActiveContracts(contracts: data.activeContracts))
+                send(.setTerminatedContracts(contracts: data.termiantedContracts))
+                send(.setPendingContracts(contracts: data.pendingContracts))
+                send(.fetchCompleted)
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchContracts)
+                send(.fetchCompleted)
             }
         case .fetch:
             send(.fetchCrossSale)

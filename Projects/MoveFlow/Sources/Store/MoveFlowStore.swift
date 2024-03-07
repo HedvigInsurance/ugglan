@@ -15,18 +15,16 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
         switch action {
         case .getMoveIntent:
             self.setLoading(for: .fetchMoveIntent)
-            Task {
-                do {
-                    let movingFlowData = try await self.moveFlowService.sendMoveIntent()
-                    self.removeLoading(for: .fetchMoveIntent)
-                    send(.setMoveIntent(with: movingFlowData))
-                    self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
-                } catch {
-                    if let error = error as? MovingFlowError {
-                        self.setError(error.localizedDescription, for: .fetchMoveIntent)
-                    } else {
-                        self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
-                    }
+            do {
+                let movingFlowData = try await self.moveFlowService.sendMoveIntent()
+                self.removeLoading(for: .fetchMoveIntent)
+                send(.setMoveIntent(with: movingFlowData))
+                self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
+            } catch {
+                if let error = error as? MovingFlowError {
+                    self.setError(error.localizedDescription, for: .fetchMoveIntent)
+                } else {
+                    self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
                 }
             }
         case .requestMoveIntent:
