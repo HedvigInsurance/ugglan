@@ -357,5 +357,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         if let successResult = data as? AuthTokenResultSuccess {
             return successResult
         }
+        let error = NSError(domain: "", code: 1000)
+        throw error
     }
 }

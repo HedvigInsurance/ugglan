@@ -14,7 +14,7 @@ public final class DebugStore: StateStore<DebugState, DebugAction> {
     public override func effects(
         _ getState: @escaping () -> DebugState,
         _ action: DebugAction
-    ) -> async throws {}
+    ) async throws {}
 
     public override func reduce(_ state: DebugState, _ action: DebugAction) -> DebugState {
         return state
