@@ -122,7 +122,7 @@ extension DirectDebitResult: Viewable {
 
                     bag += continueButton.onTapSignal.onValue { _ in completion(.success(true)) }
 
-                    bag += buttonsContainer.addArranged(continueButton)
+                    //                    bag += buttonsContainer.addArranged(continueButton)
                 } else {
                     let retryButton = Button(
                         title: self.type.mainButtonText,
@@ -146,7 +146,7 @@ extension DirectDebitResult: Viewable {
                         completion(.failure(DirectDebitResult.ResultError.retry))
                     }
 
-                    bag += buttonsContainer.addArranged(retryButton)
+                    //                    bag += buttonsContainer.addArranged(retryButton)
 
                     let skipButton = Button(
                         title: L10n.PayInError.postponeButton,
@@ -158,7 +158,7 @@ extension DirectDebitResult: Viewable {
 
                     bag += skipButton.onTapSignal.onValue { _ in completion(.success(false)) }
 
-                    bag += buttonsContainer.addArranged(skipButton)
+                    //                    bag += buttonsContainer.addArranged(skipButton)
                 }
 
                 return DelayedDisposer(bag, delay: 1)

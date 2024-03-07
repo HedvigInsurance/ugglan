@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import Presentation
 import SafariServices
-import UIKit
 import hCore
 
 public struct Document {
