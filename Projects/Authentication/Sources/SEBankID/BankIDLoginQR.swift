@@ -47,9 +47,9 @@ public struct BankIDLoginQR: View {
                                 message: nil,
                                 primaryButton: .cancel(Text(L10n.demoModeCancel)),
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                                    store.send(.cancel)
                                     ApplicationContext.shared.$isDemoMode.value = true
                                     store.send(.bankIdQrResultAction(action: .loggedIn))
+                                    store.send(.cancel)
                                 }
                             )
                         }
