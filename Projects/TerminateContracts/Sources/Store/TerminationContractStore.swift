@@ -17,20 +17,21 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return await executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
-                try await terminateContractsService.startTermination(contractId: config.contractId)
+            return await executeAsFiniteSignal(loadingType: .startTermination) { [weak self] in
+                try await self?.terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
-                let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-                return try await terminateContractsService.sendTerminationDate(
-                    inputDateToString: inputDateToString,
-                    terminationContext: terminationContext
-                )
+            let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
+                return try await self?.terminateContractsService
+                    .sendTerminationDate(
+                        inputDateToString: inputDateToString,
+                        terminationContext: terminationContext
+                    )
             }
         case .sendConfirmDelete:
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
-                try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
+                try await self?.terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
             }
         default:
             break
@@ -85,21 +86,24 @@ public final class TerminationContractStore: LoadingStateStore<
         return newState
     }
 
+    typealias optionalResponse = (() async throws -> TerminateStepResponse?)?
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
-        action: @escaping () async throws -> TerminateStepResponse
+        action: optionalResponse
     ) async {
-        Task {
-            self.setLoading(for: loadingType)
-            do {
+        self.setLoading(for: loadingType)
+        do {
+            if let action = action {
                 let data = try await action()
-                send(.setTerminationContext(context: data.context))
-                send(data.action)
-                self.removeLoading(for: loadingType)
-            } catch let error {
-                send(.navigationAction(action: .openTerminationFailScreen))
-                self.setError(error.localizedDescription, for: loadingType)
+                if let data = data {
+                    send(.setTerminationContext(context: data.context))
+                    send(data.action)
+                }
             }
+            self.removeLoading(for: loadingType)
+        } catch let error {
+            send(.navigationAction(action: .openTerminationFailScreen))
+            self.setError(error.localizedDescription, for: loadingType)
         }
     }
 }

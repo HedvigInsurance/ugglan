@@ -33,7 +33,7 @@ extension CoreSignal where Kind == Plain {
 }
 
 final class Poll<ReturnValue> {
-    let action: () async throws -> ReturnValue
+    let action: (() async throws -> ReturnValue?)?
     let shouldPull: (_ value: ReturnValue) -> Bool
 
     init(
@@ -44,14 +44,19 @@ final class Poll<ReturnValue> {
         self.shouldPull = shouldPull
     }
 
-    func getValue() async throws -> ReturnValue {
-        let data = try await action()
-        if shouldPull(data) {
-            try? await Task.sleep(nanoseconds: 250_000_000)
-            return try await getValue()
-        } else {
-            return data
+    func getValue() async throws -> ReturnValue? {
+        if let action {
+            let data = try await action()
+            if let data {
+                if shouldPull(data) {
+                    try? await Task.sleep(nanoseconds: 250_000_000)
+                    return try await getValue()
+                } else {
+                    return data
+                }
+            }
         }
+        return nil
     }
 }
 
@@ -247,8 +252,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 send(.loginFailure(message: nil))
             }
         } else if case let .observeLoginStatus(statusUrl) = action {
-            let poll = Poll { [unowned self] in
-                return try await self.checkStatus(statusUrl: statusUrl)
+            let poll = Poll { [weak self] in
+                return try await self?.checkStatus(statusUrl: statusUrl)
             } shouldPull: { loginStatus in
                 if case .pending = loginStatus {
                     return true
