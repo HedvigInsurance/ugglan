@@ -105,8 +105,17 @@ extension AppDelegate {
                     disposeBag += fromVC.present(vc)
                 }
         } else if path == .helpCenter {
-            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-            homeStore.send(.openHelpCenter)
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.makeTabActive(deeplink: .home))
+
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    homeStore.send(.openHelpCenter)
+                    self?.deepLinkDisposeBag.dispose()
+                }
+
         } else if path == .moveContract {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in

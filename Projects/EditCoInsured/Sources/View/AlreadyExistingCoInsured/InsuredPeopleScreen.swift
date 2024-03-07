@@ -244,8 +244,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
     @PresentableStore var store: EditCoInsuredStore
-    @Inject var octopus: hOctopus
-
     func completeList() -> [CoInsuredModel] {
         var filterList: [CoInsuredModel] = []
         let existingList = config.contractCoInsured

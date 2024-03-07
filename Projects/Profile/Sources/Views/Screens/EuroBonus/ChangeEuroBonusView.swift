@@ -20,7 +20,7 @@ struct ChangeEuroBonusView_Previews: PreviewProvider {
 
 private class ChangeEurobonusViewModel: ObservableObject {
     let inputVm: TextInputViewModel
-    @Inject var octopus: hOctopus
+    @Inject var profileService: ProfileService
     let disposeBag = DisposeBag()
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -34,65 +34,15 @@ private class ChangeEurobonusViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            var error: Error?
-            await withCheckedContinuation { continuation in
-                let text = text.toAlphaNumeric
-                if text.isEmpty {
-                    error = ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
-                    continuation.resume()
-                } else {
-                    if Masking(type: .euroBonus).isValid(text: text) {
-                        let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: text)
-
-                        let octopusRequest = self?.octopus.client
-                            .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
-                            .onValue { result in
-                                if let graphQLError = result.memberUpdateEurobonusNumber.userError?.message,
-                                    !graphQLError.isEmpty
-                                {
-                                    error = ChangeEuroBonusError.error(message: graphQLError)
-                                } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
-                                    .partnerDataFragment
-                                {
-                                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                                    store.send(.setEurobonusNumber(partnerData: PartnerData(with: partnerData)))
-                                    store.send(.openSuccessChangeEuroBonus)
-                                }
-                                continuation.resume()
-                            }
-                            .onError { graphQLError in
-                                error = graphQLError
-                                continuation.resume()
-                            }
-                        if let octopusRequest {
-                            self?.disposeBag += octopusRequest
-                        }
-                    } else {
-                        error = ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
-                        continuation.resume()
-                    }
-                }
+            let text = text.toAlphaNumeric
+            guard !text.isEmpty else { throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber) }
+            guard Masking(type: .euroBonus).isValid(text: text) else {
+                throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
             }
-            if let error {
-                throw error
-            }
-        }
-    }
-
-    enum ChangeEuroBonusError: LocalizedError {
-        case error(message: String)
-
-        public var errorDescription: String? {
-            switch self {
-            case let .error(message):
-                return message
-            }
-        }
-        var localizedDescription: String {
-            switch self {
-            case let .error(message):
-                return message
-            }
+            let data = try await self?.profileService.update(eurobonus: text)
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(.setEurobonusNumber(partnerData: data))
+            store.send(.openSuccessChangeEuroBonus)
         }
     }
 }

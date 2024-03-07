@@ -1,8 +1,9 @@
 import Foundation
 import hCore
 
-public class hClaimFileUploadServiceDemo {
-    func upload(
+public class hClaimFileUploadServiceDemo: hClaimFileUploadService {
+    public init() {}
+    public func upload(
         endPoint: String,
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
