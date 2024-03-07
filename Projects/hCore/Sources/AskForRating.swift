@@ -22,6 +22,7 @@ public struct AskForRating {
     }
 
     public func askForReview() {
+        guard !UserDefaults.standard.bool(forKey: userDefaultsCompletedKey) else { return }
         UserDefaults.standard.set(true, forKey: userDefaultsCompletedKey)
         DispatchQueue.main.async {
             if let scene = UIApplication.shared.currentScene {
