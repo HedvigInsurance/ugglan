@@ -1,6 +1,6 @@
 import CoreDependencies
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 
 extension UIApplication {

@@ -18,7 +18,6 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import UIKit
 import UserNotifications
 import hCore
 import hCoreUI

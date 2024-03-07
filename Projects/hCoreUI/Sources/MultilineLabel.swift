@@ -1,7 +1,7 @@
 import Flow
 import Form
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 
 public struct MultilineLabel {

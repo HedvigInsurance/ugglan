@@ -1,8 +1,8 @@
 import Flow
 import Foundation
 import SnapshotTesting
+import SwiftUI
 import Testing
-import UIKit
 import XCTest
 import hCore
 

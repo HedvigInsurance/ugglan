@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIView {
     public func applyRadiusMaskFor(

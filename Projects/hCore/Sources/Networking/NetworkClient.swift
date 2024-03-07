@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public final class NetworkClient {
     public let sessionClient: URLSession

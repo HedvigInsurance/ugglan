@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIView {
     public struct ShadowProperties {

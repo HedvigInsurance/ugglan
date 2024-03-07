@@ -1,4 +1,4 @@
-import UIKit
+import SwiftUI
 
 extension UIImage {
     public convenience init?(

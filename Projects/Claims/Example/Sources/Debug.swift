@@ -1,7 +1,7 @@
-import UIKit
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 
 struct Debug {}
 

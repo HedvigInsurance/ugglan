@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIColor {
     public func asImage(_ size: CGSize = CGSize(width: 1, height: 1 / UIScreen.main.scale)) -> UIImage {

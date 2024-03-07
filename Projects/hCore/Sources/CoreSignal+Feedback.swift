@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 public enum FeedbackType { case error, warning, success, selection, impactLight, impactMedium, impactHeavy }
 

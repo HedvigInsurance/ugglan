@@ -1,7 +1,7 @@
 import Apollo
 import DatadogCore
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
 

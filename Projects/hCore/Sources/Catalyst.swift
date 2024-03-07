@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UITraitCollection {
     public static var isCatalyst: Bool {

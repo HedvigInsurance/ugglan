@@ -1,7 +1,7 @@
 import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 
 public class AccessoryBaseView: UIView {
     public override var intrinsicContentSize: CGSize { CGSize(width: 0, height: 0) }

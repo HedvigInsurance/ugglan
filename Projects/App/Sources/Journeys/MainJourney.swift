@@ -2,7 +2,6 @@ import Authentication
 import Foundation
 import Market
 import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL

@@ -1,6 +1,5 @@
 import Flow
 import Foundation
-import UIKit
 
 public protocol Viewable {
     associatedtype Matter
