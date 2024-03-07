@@ -1,7 +1,6 @@
 import Flow
 import Foundation
 import PDFKit
-import UIKit
 import hCore
 
 public struct PDFViewer {
