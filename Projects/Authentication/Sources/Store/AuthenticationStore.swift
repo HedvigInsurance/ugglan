@@ -53,7 +53,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             )
                             loginStatusCallbacker(.completed(code: completedResult.authorizationCode.code))
                         } else if let result = result as? LoginStatusResultFailed {
-                            let message = result.message
+                            let message = result.localisedMessage
                             log.error(
                                 "LOGIN FAILED",
                                 error: NSError(domain: message, code: 1000),
@@ -66,7 +66,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         } else if let pendingResult = result as? LoginStatusResultPending {
                             self.send(
                                 .seBankIDStateAction(
-                                    action: .setLiveQrCodeData(liveQrCodeData: pendingResult.liveQrCodeData)
+                                    action: .setLiveQrCodeData(liveQrCodeData: pendingResult.bankIdProperties?.liveQrCodeData)
                                 )
                             )
                             loginStatusCallbacker(.pending(statusMessage: pendingResult.statusMessage))
