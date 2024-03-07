@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import UIKit
 
 @resultBuilder
 public struct RowViewBuilder {

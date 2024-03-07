@@ -1,7 +1,6 @@
 import Apollo
 import Contracts
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL

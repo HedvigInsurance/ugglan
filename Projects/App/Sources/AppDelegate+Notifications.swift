@@ -7,7 +7,7 @@ import Foundation
 import Payment
 import Presentation
 import Profile
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL

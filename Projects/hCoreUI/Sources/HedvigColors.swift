@@ -1,7 +1,7 @@
 import DynamicColor
 import Form
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 
 extension UIColor {

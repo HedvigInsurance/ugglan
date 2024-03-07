@@ -3,7 +3,6 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 
 @propertyWrapper
 public struct PresentableStore<S: Store> {

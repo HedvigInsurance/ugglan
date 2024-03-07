@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
 import Kingfisher
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
 

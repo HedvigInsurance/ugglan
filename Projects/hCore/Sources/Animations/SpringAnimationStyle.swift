@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public struct SpringAnimationStyle {
     var duration: TimeInterval

@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 public final class FormScrollView: UIScrollView, GradientScroller {
     let bag = DisposeBag()

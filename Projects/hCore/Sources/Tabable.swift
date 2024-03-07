@@ -1,4 +1,4 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public protocol Tabable { func tabBarItem() -> UITabBarItem }
