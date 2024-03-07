@@ -39,7 +39,7 @@ public enum AuthenticationNavigationAction: ActionProtocol {
 public enum SEBankIDStateAction: ActionProtocol {
     case startSession
     case setAutoStartTokenWith(autoStartToken: String)
-    case setLiveQrCodeData(liveQrCodeData: String?)
+    case setLiveQrCodeData(liveQrCodeData: String?, date: Date)
 }
 
 enum LoginError: Error {

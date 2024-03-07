@@ -5,7 +5,6 @@ import DatadogRUM
 import DatadogTrace
 import Introspect
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
