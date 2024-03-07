@@ -58,6 +58,7 @@ extension ApolloClient {
             let analyticsCoordinator = AnalyticsCoordinatorOctopus()
             let notificationService = NotificationClientOctopus()
             let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
+            let submitClaimService = SubmitClaimServiceOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
@@ -83,6 +84,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
+                Dependencies.shared.add(module: Module { () -> SubmitClaimService in submitClaimService })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -107,6 +109,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
+                Dependencies.shared.add(module: Module { () -> SubmitClaimService in submitClaimService })
             }
         }
     }
