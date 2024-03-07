@@ -34,31 +34,6 @@ class ChangeCodeViewModel: ObservableObject {
             let store: ForeverStore = globalPresentableStoreContainer.get()
             store.send(.fetch)
             store.send(.showChangeCodeSuccess)
-            //            var errorMessage: String?
-            //            await withCheckedContinuation { continuation in
-            //                let octopusRequest = self?.octopus.client
-            //                    .perform(mutation: OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: text))
-            //                    .onValue { value in
-            //                        if let errorFromGraphQL = value.memberReferralInformationCodeUpdate.userError?.message {
-            //                            errorMessage = errorFromGraphQL
-            //                        } else {
-            //                            let store: ForeverStore = globalPresentableStoreContainer.get()
-            //                            store.send(.fetch)
-            //                            store.send(.showChangeCodeSuccess)
-            //                        }
-            //                        continuation.resume()
-            //                    }
-            //                    .onError { graphQLError in
-            //                        errorMessage = graphQLError.localizedDescription
-            //                        continuation.resume()
-            //                    }
-            //                if let octopusRequest {
-            //                    self?.disposeBag += octopusRequest
-            //                }
-            //            }
-            //            if let errorMessage {
-            //                throw ForeverChangeCodeError.errorMessage(message: errorMessage)
-            //            }
         }
     }
 }
