@@ -1,7 +1,7 @@
 import Foundation
 import Presentation
+import SwiftUI
 import TravelCertificate
-import UIKit
 
 public class TravelInsuranceJourney {
     public static func travelCertificatePush() -> some JourneyPresentation {

@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIViewController {
     public func install<V: Viewable, View: UIView>(_ viewable: V) -> Disposable

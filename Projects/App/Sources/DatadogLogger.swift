@@ -2,7 +2,7 @@ import Apollo
 import DatadogInternal
 import DatadogLogs
 import DatadogRUM
-import UIKit
+import SwiftUI
 import hGraphQL
 
 class DatadogLogger: hGraphQL.Logging {

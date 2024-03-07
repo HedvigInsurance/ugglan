@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public class Icon: UIView {
     public let image = UIImageView()

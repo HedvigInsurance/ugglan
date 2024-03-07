@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIControl {
     public func delayedTouchCancel(delay: TimeInterval = 0.2) -> Signal<Void> {

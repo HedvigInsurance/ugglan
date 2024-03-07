@@ -2,7 +2,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 
 extension JourneyPresentation {
     public var withDismissButton: Self {

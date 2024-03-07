@@ -1,6 +1,6 @@
 import Flow
 import Presentation
-import UIKit
+import SwiftUI
 
 extension UIRefreshControl {
     public func store<S: Store>(_ store: S, send: @escaping () -> S.Action, endOn: S.Action...) -> Disposable {
