@@ -154,9 +154,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
 
+                let otpMarket =
+                    switch Localization.Locale.currentLocale.market {
+                    case .se: OtpMarket.se
+                    case .no: OtpMarket.no
+                    case .dk: OtpMarket.dk
+                    }
                 self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
-                    market: Localization.Locale.currentLocale.market.rawValue,
+                    market: otpMarket,
                     personalNumber: personalNumber,
                     email: state.otpState.email
                 ) { result, error in
@@ -220,9 +226,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             return Signal { callbacker in
                 callbacker(.cancel)
 
+                let otpMarket =
+                    switch Localization.Locale.currentLocale.market {
+                    case .se: OtpMarket.se
+                    case .no: OtpMarket.no
+                    case .dk: OtpMarket.dk
+                    }
                 self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .seBankid,
-                    market: Localization.Locale.currentLocale.market.rawValue,
+                    market: otpMarket,
                     personalNumber: nil,
                     email: nil
                 ) { result, error in
@@ -236,13 +248,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                 )
                             )
                         )
-                        callbacker(
-                            .seBankIDStateAction(
-                                action: .setLiveQrCodeData(
-                                    liveQrCodeData: bankIdProperties.liveQrCodeData
-                                )
-                            )
-                        )
                         callbacker(.observeLoginStatus(url: statusUrl))
                     } else if let result = result as? AuthAttemptResultError {
                         var localizedMessage = L10n.General.errorBody
@@ -253,7 +258,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                 "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
                         } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
                             logMessage =
-                                "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                                "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message)"
                         } else if let result = result as? AuthAttemptResultErrorIOError {
                             logMessage =
                                 "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
