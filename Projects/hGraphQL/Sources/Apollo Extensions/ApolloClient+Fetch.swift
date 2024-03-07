@@ -90,7 +90,7 @@ extension ApolloClient {
         refreshControl: UIRefreshControl,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Disposable {
-        refreshControl.onValue { [weak self] _ in guard let self = self else { return {}()}
+        refreshControl.onValue { [weak self] _ in guard let self = self else { return {}() }
             self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue)
                 .onValue { _ in refreshControl.endRefreshing() }
         }
