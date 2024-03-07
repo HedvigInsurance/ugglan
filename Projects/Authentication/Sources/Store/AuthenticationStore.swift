@@ -112,7 +112,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction
-    ) async throws {
+    ) async {
         if case let .otpStateAction(action: .setCode(code)) = action {
             Task {
                 let generator = await UIImpactFeedbackGenerator(style: .light)
@@ -125,14 +125,20 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .otpStateAction(action: .verifyCode) = action {
             let state = getState()
             if let verifyUrl = state.otpState.verifyUrl {
-                try? await Task.sleep(nanoseconds: 5 * 100_000_000)
-                let data = try await networkAuthRepository.submitOtp(
-                    verifyUrl: verifyUrl.absoluteString,
-                    otp: state.otpState.code
-                )
-                if let data = data as? SubmitOtpResultSuccess {
-                    send(.exchange(code: data.loginAuthorizationCode.code))
-                } else {
+                do {
+                    try await Task.sleep(nanoseconds: 5 * 100_000_000)
+                    let data = try await networkAuthRepository.submitOtp(
+                        verifyUrl: verifyUrl.absoluteString,
+                        otp: state.otpState.code
+                    )
+                    if let data = data as? SubmitOtpResultSuccess {
+                        send(.exchange(code: data.loginAuthorizationCode.code))
+                    } else {
+                        send(
+                            .otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid))
+                        )
+                    }
+                } catch {
                     send(.otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)))
                 }
             }
@@ -145,20 +151,25 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .otpStateAction(action: .submitOtpData) = action {
             let state = getState()
             let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
-            let data = try await self.networkAuthRepository.startLoginAttempt(
-                loginMethod: .otp,
-                market: Localization.Locale.currentLocale.market.rawValue,
-                personalNumber: personalNumber,
-                email: state.otpState.email
-            )
-            try? await Task.sleep(nanoseconds: 5 * 100_000_000)
-            if let otpProperties = data as? AuthAttemptResultOtpProperties,
-                let verifyUrl = URL(string: otpProperties.verifyUrl),
-                let resendUrl = URL(string: otpProperties.resendUrl)
-            {
-                send(.navigationAction(action: .otpCode))
-                send(.otpStateAction(action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)))
-            } else {
+            do {
+                let data = try await self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: .otp,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: personalNumber,
+                    email: state.otpState.email
+                )
+                try await Task.sleep(nanoseconds: 5 * 100_000_000)
+                if let otpProperties = data as? AuthAttemptResultOtpProperties,
+                    let verifyUrl = URL(string: otpProperties.verifyUrl),
+                    let resendUrl = URL(string: otpProperties.resendUrl)
+                {
+                    send(.navigationAction(action: .otpCode))
+                    send(.otpStateAction(action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)))
+                } else {
+                    send(.otpStateAction(action: .setLoading(isLoading: false)))
+                    send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
+                }
+            } catch {
                 send(.otpStateAction(action: .setLoading(isLoading: false)))
                 send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
             }
@@ -171,8 +182,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
             if let resendUrl = state.otpState.resendUrl {
-                let data = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
-                send(.otpStateAction(action: .showResentToast))
+                do {
+                    let data = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+                    send(.otpStateAction(action: .showResentToast))
+                } catch {}
             }
         } else if case .otpStateAction(action: .showResentToast) = action {
             Toasts.shared.displayToast(
@@ -245,30 +258,46 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
                 return false
             }
-            let status = try await poll.getValue()
-            if case let .completed(code) = status {
-                send(.exchange(code: code))
-            } else if case let .failed(message) = status {
-                send(.loginFailure(message: message))
+            do {
+                let status = try await poll.getValue()
+                if case let .completed(code) = status {
+                    send(.exchange(code: code))
+                } else if case let .failed(message) = status {
+                    send(.loginFailure(message: message))
+                }
+            } catch {
+                send(.loginFailure(message: nil))
             }
         } else if case let .exchange(code) = action {
-            let successResult = try await self.exchange(code: code)
-            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-            send(.navigationAction(action: .authSuccess))
+            do {
+                let successResult = try await self.exchange(code: code)
+                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                send(.navigationAction(action: .authSuccess))
+            } catch {
+
+            }
         } else if case let .impersonate(code) = action {
-            let successResult = try await self.exchange(code: code)
-            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-            send(.navigationAction(action: .impersonation))
+            do {
+                let successResult = try await self.exchange(code: code)
+                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                send(.navigationAction(action: .impersonation))
+            } catch {
+
+            }
         } else if case .logout = action {
-            if let token = try ApolloClient.retreiveToken() {
-                let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
-                if let data = data as? RevokeResultSuccess {
-                    send(.logoutSuccess)
+            do {
+                if let token = try ApolloClient.retreiveToken() {
+                    let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
+                    if let data = data as? RevokeResultSuccess {
+                        send(.logoutSuccess)
+                    } else {
+                        send(.logoutFailure)
+                    }
                 } else {
-                    send(.logoutFailure)
+                    send(.logoutSuccess)
                 }
-            } else {
-                send(.logoutSuccess)
+            } catch {
+                send(.logoutFailure)
             }
         }
     }

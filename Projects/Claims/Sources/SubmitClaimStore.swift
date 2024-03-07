@@ -12,7 +12,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
-    ) async throws {
+    ) async {
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:

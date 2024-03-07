@@ -10,7 +10,7 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
     public override func effects(
         _ getState: @escaping () -> ForeverState,
         _ action: ForeverAction
-    ) async throws {
+    ) async {
         switch action {
         case .fetch:
             do {

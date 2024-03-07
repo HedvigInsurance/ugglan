@@ -24,7 +24,7 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
     public override func effects(
         _ getState: @escaping () -> ChatState,
         _ action: ChatAction
-    ) async throws {}
+    ) async {}
 
     public override func reduce(_ state: ChatState, _ action: ChatAction) -> ChatState {
         var newState = state

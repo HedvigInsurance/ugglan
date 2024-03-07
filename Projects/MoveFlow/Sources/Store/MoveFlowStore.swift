@@ -11,7 +11,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
     public override func effects(
         _ getState: @escaping () -> MoveFlowState,
         _ action: MoveFlowAction
-    ) async throws {
+    ) async {
         switch action {
         case .getMoveIntent:
             self.setLoading(for: .fetchMoveIntent)

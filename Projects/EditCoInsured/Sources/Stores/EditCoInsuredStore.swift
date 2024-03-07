@@ -14,7 +14,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> EditCoInsuredState,
         _ action: EditCoInsuredAction
-    ) async throws {
+    ) async {
         switch action {
         case let .performCoInsuredChanges(commitId):
             do {

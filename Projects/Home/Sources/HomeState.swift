@@ -94,7 +94,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     public override func effects(
         _ getState: @escaping () -> HomeState,
         _ action: HomeAction
-    ) async throws {
+    ) async {
         switch action {
         case .fetchImportantMessages:
             do {

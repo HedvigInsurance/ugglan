@@ -13,15 +13,15 @@ public final class TerminationContractStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
         _ action: TerminationContractAction
-    ) async throws {
+    ) async {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return try await executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
+            return await executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
                 try await terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
-            return try await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
                 let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
                 return try await terminateContractsService.sendTerminationDate(
                     inputDateToString: inputDateToString,
@@ -29,7 +29,7 @@ public final class TerminationContractStore: LoadingStateStore<
                 )
             }
         case .sendConfirmDelete:
-            return try await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
                 try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
             }
         default:
@@ -88,7 +88,7 @@ public final class TerminationContractStore: LoadingStateStore<
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
         action: @escaping () async throws -> TerminateStepResponse
-    ) async throws {
+    ) async {
         Task {
             self.setLoading(for: loadingType)
             do {

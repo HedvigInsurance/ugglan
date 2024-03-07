@@ -54,7 +54,7 @@ public enum LoadingAction: LoadingProtocol {
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentService
 
-    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async throws {
+    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async {
         switch action {
         case .load:
             do {

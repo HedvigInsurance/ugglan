@@ -21,7 +21,7 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
     public override func effects(
         _ getState: @escaping () -> MarketState,
         _ action: MarketAction
-    ) async throws {
+    ) async {
         switch action {
         case let .selectMarket(market):
             Localization.Locale.currentLocale = market.preferredLanguage

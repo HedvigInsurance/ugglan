@@ -10,7 +10,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
     public override func effects(
         _ getState: @escaping () -> ProfileState,
         _ action: ProfileAction
-    ) async throws {
+    ) async {
         switch action {
         case .fetchProfileState:
             do {

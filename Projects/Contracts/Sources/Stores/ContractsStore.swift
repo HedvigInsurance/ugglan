@@ -9,7 +9,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     public override func effects(
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction
-    ) async throws {
+    ) async {
         switch action {
         case .fetchCrossSale:
             Task {
