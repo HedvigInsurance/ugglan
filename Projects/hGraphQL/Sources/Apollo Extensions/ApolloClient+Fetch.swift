@@ -4,7 +4,7 @@ import Combine
 import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 
 extension GraphQLError {
     var logDescription: String? {

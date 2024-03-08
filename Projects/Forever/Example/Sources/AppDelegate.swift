@@ -1,7 +1,7 @@
 import Flow
 import Forever
 import Foundation
-import UIKit
+import SwiftUI
 import hCoreUI
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {

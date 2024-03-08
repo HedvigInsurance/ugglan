@@ -8,13 +8,13 @@ public var urlSessionClientProvider: () -> URLSessionClient = {
 }
 
 class NetworkInterceptorProvider: DefaultInterceptorProvider {
-    let acceptLanguageHeader: String
+    let acceptLanguageHeader: () -> String
     let userAgent: String
     let deviceIdentifier: String
 
     init(
         store: ApolloStore,
-        acceptLanguageHeader: String,
+        acceptLanguageHeader: @escaping () -> String,
         userAgent: String,
         deviceIdentifier: String
     ) {
@@ -28,7 +28,7 @@ class NetworkInterceptorProvider: DefaultInterceptorProvider {
         var interceptors = super.interceptors(for: operation)
         interceptors.insert(
             HeadersInterceptor(
-                acceptLanguageHeader: acceptLanguageHeader,
+                acceptLanguageHeader: acceptLanguageHeader(),
                 userAgent: userAgent,
                 deviceIdentifier: deviceIdentifier
             ),

@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIView {
     /// Workaround for the UIStackView bug where setting hidden to true with animation doesn't work

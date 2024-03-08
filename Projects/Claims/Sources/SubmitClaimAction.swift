@@ -2,7 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 
-public enum SubmitClaimsAction: ActionProtocol, Hashable {
+public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case popClaimFlow
     case submitClaimOpenFreeTextChat

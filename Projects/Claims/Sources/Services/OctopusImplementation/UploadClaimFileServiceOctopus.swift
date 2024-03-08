@@ -1,27 +1,9 @@
 import Apollo
 import Foundation
 import Kingfisher
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
-
-public protocol hClaimFileUploadService {
-    func upload(
-        endPoint: String,
-        files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [ClaimFileUploadResponse]
-}
-
-public class hClaimFileUploadServiceDemo {
-    func upload(
-        endPoint: String,
-        files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
-    ) async throws -> [ClaimFileUploadResponse] {
-        return []
-    }
-}
 
 extension NetworkClient: hClaimFileUploadService {
     public func upload(

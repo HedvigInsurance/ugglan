@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UITapGestureRecognizer {
     public func didTapRange(in label: UILabel, range: NSRange) -> Bool {

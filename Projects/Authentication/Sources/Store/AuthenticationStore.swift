@@ -2,7 +2,7 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 import authlib
 import hCore
 import hCoreUI
@@ -42,7 +42,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     }()
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
-            let minimumTime = Signal(after: 2).future
+            let minimumTime = Signal(after: 0.2).future
             let signal = Signal<LoginStatus> { loginStatusCallbacker in
                 let bag = DisposeBag()
                 self.networkAuthRepository
@@ -66,7 +66,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         } else if let pendingResult = result as? LoginStatusResultPending {
                             self.send(
                                 .seBankIDStateAction(
-                                    action: .setLiveQrCodeData(liveQrCodeData: pendingResult.bankIdProperties?.liveQrCodeData)
+                                    action: .setLiveQrCodeData(
+                                        liveQrCodeData: pendingResult.bankIdProperties?.liveQrCodeData,
+                                        date: Date()
+                                    )
                                 )
                             )
                             loginStatusCallbacker(.pending(statusMessage: pendingResult.statusMessage))
@@ -424,8 +427,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.seBankIDState.autoStartToken = nil
             case let .setAutoStartTokenWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
-            case let .setLiveQrCodeData(liveQrCodeData):
-                newState.seBankIDState.liveQrCodeData = liveQrCodeData
+            case let .setLiveQrCodeData(liveQrCodeData, date):
+                if (newState.seBankIDState.liveQrCodeDate?.addingTimeInterval(2) ?? date) <= date {
+                    newState.seBankIDState.liveQrCodeData = liveQrCodeData
+                    newState.seBankIDState.liveQrCodeDate = date
+                }
             }
         case .cancel:
             newState.seBankIDState = SEBankIDState()

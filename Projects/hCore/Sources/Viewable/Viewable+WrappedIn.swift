@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 public struct ContainerStackViewable<V: Viewable, Matter: UIView, ContainerView: UIStackView>: Viewable
 where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {

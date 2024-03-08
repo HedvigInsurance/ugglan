@@ -1,4 +1,4 @@
-import UIKit
+import SwiftUI
 import hCore
 
 extension Localization.Locale {

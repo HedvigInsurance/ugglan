@@ -1,7 +1,7 @@
 import SnapshotTesting
+import SwiftUI
 import TestDependencies
 import Testing
-import UIKit
 import XCTest
 import hCore
 import hCoreUI

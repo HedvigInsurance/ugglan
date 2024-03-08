@@ -55,16 +55,56 @@ public class ProfileServiceOctopus: ProfileService {
             throw error
         }
     }
-}
 
-enum ProfileError: Error {
-    case error(message: String)
-}
+    public func postDeleteRequest() async throws {
+        _ = try await octopus.client.perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+    }
 
-extension ProfileError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case let .error(message): return message
+    public func update(email: String) async throws -> String {
+        let input = OctopusGraphQL.MemberUpdateEmailInput(email: email)
+        let mutation = OctopusGraphQL.MemberUpdateEmailMutation(input: input)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let email = data.memberUpdateEmail.member?.email {
+            return email
         }
+        throw ProfileError.error(message: L10n.General.errorBody)
+    }
+    public func update(phone: String) async throws -> String {
+        let input = OctopusGraphQL.MemberUpdatePhoneNumberInput(phoneNumber: phone)
+        let mutation = OctopusGraphQL.MemberUpdatePhoneNumberMutation(input: input)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let phoneNumber = data.memberUpdatePhoneNumber.member?.phoneNumber {
+            return phoneNumber
+        }
+        throw ProfileError.error(message: L10n.General.errorBody)
+    }
+
+    public func update(eurobonus: String) async throws -> PartnerData {
+        let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: eurobonus)
+        let mutation = OctopusGraphQL.UpdateEurobonusNumberMutation(input: input)
+        let data = try await octopus.client.perform(mutation: mutation)
+        if let graphQLError = data.memberUpdateEurobonusNumber.userError?.message, !graphQLError.isEmpty {
+            throw ChangeEuroBonusError.error(message: graphQLError)
+        }
+        guard let dataFragment = data.memberUpdateEurobonusNumber.member?.fragments.partnerDataFragment,
+            let partnerData = PartnerData(with: dataFragment)
+        else {
+            throw ChangeEuroBonusError.error(message: L10n.General.errorBody)
+        }
+        return partnerData
+    }
+}
+
+extension PartnerData {
+    fileprivate init?(with data: OctopusGraphQL.PartnerDataFragment) {
+        guard let sasData = data.partnerData?.sas else { return nil }
+        self.sas = PartnerDataSas(with: sasData)
+    }
+}
+
+extension PartnerDataSas {
+    fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
+        self.eligible = data.eligible
+        self.eurobonusNumber = data.eurobonusNumber
     }
 }

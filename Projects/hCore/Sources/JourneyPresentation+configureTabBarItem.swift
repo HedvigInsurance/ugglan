@@ -1,7 +1,6 @@
-import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 
 extension JourneyPresentation {
     /// set tab bar item with title, image asset and selected image asset

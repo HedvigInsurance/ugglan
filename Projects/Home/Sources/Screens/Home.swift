@@ -2,7 +2,6 @@ import Apollo
 import Combine
 import Contracts
 import EditCoInsured
-import Flow
 import Foundation
 import Payment
 import Presentation
@@ -15,7 +14,7 @@ import hGraphQL
 public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
-
+    @Inject var featureFlags: FeatureFlags
     var claimsContent: Claims
     var memberId: String
 
@@ -102,7 +101,6 @@ extension HomeView {
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
-                            FutureSectionInfoView()
                         }
                     }
                 case .future:
@@ -117,8 +115,10 @@ extension HomeView {
                 case .terminated:
                     VStack(spacing: 16) {
                         HomeBottomScrollView(memberId: memberId)
-                        startAClaimButton
-                        openHelpCenter
+                        VStack(spacing: 8) {
+                            startAClaimButton
+                            openHelpCenter
+                        }
                     }
                 case .loading:
                     EmptyView()
@@ -128,11 +128,14 @@ extension HomeView {
         .padding(.bottom, 16)
     }
 
+    @ViewBuilder
     private var startAClaimButton: some View {
-        hButton.LargeButton(type: .primary) {
-            store.send(.startClaim)
-        } content: {
-            hText(L10n.HomeTab.claimButtonText)
+        if featureFlags.isSubmitClaimEnabled {
+            hButton.LargeButton(type: .primary) {
+                store.send(.startClaim)
+            } content: {
+                hText(L10n.HomeTab.claimButtonText)
+            }
         }
     }
 

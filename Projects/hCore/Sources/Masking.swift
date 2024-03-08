@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import Introspect
 import SwiftUI
-import UIKit
 
 public enum MaskType: String {
     case none = "None"

@@ -1,10 +1,9 @@
 import Claims
 import Contacts
-import Flow
 import Foundation
 import Home
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
@@ -86,26 +85,6 @@ extension AppJourney {
                 }
             } else if case .dissmissNewClaimFlow = action {
                 DismissJourney()
-            }
-        }
-    }
-}
-
-extension AppJourney {
-    static func notificationJourney<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        Journey(NotificationLoader(), style: .detented(.large, modally: false)) { authorization in
-            switch authorization {
-            case .notDetermined:
-                Journey(
-                    ClaimsAskForPushnotifications(),
-                    style: .detented(.large, modally: false)
-                ) { _ in
-                    next()
-                }
-            default:
-                next()
             }
         }
     }
