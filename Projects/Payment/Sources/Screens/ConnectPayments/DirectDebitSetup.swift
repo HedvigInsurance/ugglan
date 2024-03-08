@@ -10,8 +10,7 @@ import hGraphQL
 
 struct DirectDebitSetup {
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var octopus: hOctopus
-
+    @Inject var paymentService: hPaymentService
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -135,24 +134,20 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-            let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
-            bag += octopus.client.perform(mutation: mutation)
-                .onValue({ data in
-                    if let url = URL(string: data.registerDirectDebit2.url) {
-                        let request = URLRequest(
-                            url: url,
-                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-                            timeoutInterval: 10
-                        )
-                        urlSignal.value = url
-                        webView.load(request)
-                    } else {
-                        presentAlert()
-                    }
-                })
-                .onError({ error in
+            Task {
+                do {
+                    let url = try await paymentService.getConnectPaymentUrl()
+                    let request = URLRequest(
+                        url: url,
+                        cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                        timeoutInterval: 10
+                    )
+                    urlSignal.value = url
+                    await webView.load(request)
+                } catch {
                     presentAlert()
-                })
+                }
+            }
         }
 
         bag += combineLatest(Signal(after: 5), webView.isLoadingSignal, urlSignal.future.resultSignal)

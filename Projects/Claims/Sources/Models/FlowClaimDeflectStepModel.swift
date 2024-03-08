@@ -176,7 +176,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
 
 public struct Partner: Codable, Equatable, Hashable {
     let id: String
-    let imageUrl: String
+    let imageUrl: String?
     let url: String?
     let phoneNumber: String?
 

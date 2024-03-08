@@ -108,20 +108,3 @@ extension AppJourney {
         }
     }
 }
-
-extension MenuChildAction {
-    static var login: MenuChildAction {
-        MenuChildAction(identifier: "login")
-    }
-}
-
-extension MenuChild {
-    public static var login: MenuChild {
-        MenuChild(
-            title: L10n.settingsLoginRow,
-            style: .default,
-            image: hCoreUIAssets.memberCard.image,
-            action: .login
-        )
-    }
-}
