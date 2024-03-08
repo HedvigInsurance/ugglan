@@ -45,6 +45,7 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
     case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
     case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
+    case openURL(url: URL)
 }
 
 public enum SubmitAudioRecordingType: ActionProtocol, Hashable {
@@ -74,7 +75,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
-    case openDeflectScreen
+    case openDeflectScreen(isEir: Bool)
     case openConfirmEmergencyScreen
     case openFileUploadScreen
     case openFilesFor(endPoint: String, files: [File])
@@ -172,8 +173,10 @@ extension ClaimsStepModelAction {
             switch model.id {
             case .Unknown:
                 return .openUpdateAppScreen
+            case .FlowClaimDeflectEirStep:
+                return .openDeflectScreen(isEir: true)
             default:
-                return .openDeflectScreen
+                return .openDeflectScreen(isEir: false)
             }
         case .setFileUploadStep(let model):
             return .openFileUploadScreen

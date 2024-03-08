@@ -51,8 +51,12 @@ public class ClaimJourneys {
                 showClaimEntrypointOption().addDismissClaimsFlow()
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
-            } else if case .openDeflectScreen = navigationAction {
-                openDeflectStepScreen().addDismissClaimsFlow()
+            } else if case let .openDeflectScreen(isEir) = navigationAction {
+                if isEir {
+                    openEirDeflectScreen().addDismissClaimsFlow()
+                } else {
+                    openDeflectStepScreen().addDismissClaimsFlow()
+                }
             } else if case .openConfirmEmergencyScreen = navigationAction {
                 openEmergencySelectScreen().addDismissClaimsFlow()
             } else if case .openFileUploadScreen = navigationAction {
@@ -104,6 +108,21 @@ public class ClaimJourneys {
             } else {
                 getScreen(for: action)
             }
+        }
+        .resetProgressToPreviousValueOnDismiss
+        .configureTitle(model?.id.title ?? "")
+    }
+
+    @JourneyBuilder
+    private static func openEirDeflectScreen() -> some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let model = store.state.deflectStepModel
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimCarScreen(model: model)
+        ) {
+            action in
+            getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
         .configureTitle(model?.id.title ?? "")
