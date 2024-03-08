@@ -76,7 +76,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 
     func listenToKeyboardFrame() {
         bag += viewController.view.keyboardSignal(priority: .highest)
-            .onValue { [unowned self] event in
+            .onValue { [weak self] event in guard let self = self else { return }
                 switch event {
                 case let .willShow(frame, _): self.keyboardFrame = frame
                 case .willHide: self.keyboardFrame = .zero
@@ -323,7 +323,7 @@ extension UIViewController {
     }
 
     public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
-        Signal { [unowned self] callback in
+        Signal { [weak self] callback in guard let self = self else { return NilDisposer() }
             let bag = DisposeBag()
 
             bag += (self.view as? UIScrollView)?.panGestureRecognizer

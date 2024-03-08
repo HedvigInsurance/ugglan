@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -12,68 +11,48 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
     public override func effects(
         _ getState: @escaping () -> MoveFlowState,
         _ action: MoveFlowAction
-    ) -> FiniteSignal<MoveFlowAction>? {
+    ) async {
         switch action {
         case .getMoveIntent:
             self.setLoading(for: .fetchMoveIntent)
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let movingFlowData = try await self.moveFlowService.sendMoveIntent()
-                        self.removeLoading(for: .fetchMoveIntent)
-                        callback(.value(.setMoveIntent(with: movingFlowData)))
-                        self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
-                        callback(.end)
-                    } catch {
-                        if let error = error as? MovingFlowError {
-                            self.setError(error.localizedDescription, for: .fetchMoveIntent)
-                        } else {
-                            self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
-                        }
-                    }
+            do {
+                let movingFlowData = try await self.moveFlowService.sendMoveIntent()
+                self.removeLoading(for: .fetchMoveIntent)
+                send(.setMoveIntent(with: movingFlowData))
+                self.addressInputModel.nbOfCoInsured = movingFlowData.suggestedNumberCoInsured
+            } catch {
+                if let error = error as? MovingFlowError {
+                    self.setError(error.localizedDescription, for: .fetchMoveIntent)
+                } else {
+                    self.setError(L10n.General.errorBody, for: .fetchMoveIntent)
                 }
-                return disposeBag
             }
         case .requestMoveIntent:
             self.setLoading(for: .requestMoveIntent)
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let movingFlowData = try await self.moveFlowService.requestMoveIntent(
-                            intentId: self.state.movingFlowModel?.id ?? "",
-                            addressInputModel: self.addressInputModel,
-                            houseInformationInputModel: self.houseInformationInputModel
-                        )
-                        self.send(.setMoveIntent(with: movingFlowData))
-                        self.send(.navigation(action: .openConfirmScreen))
-                        self.removeLoading(for: .requestMoveIntent)
-                    } catch {
-                        self.setError(error.localizedDescription, for: .requestMoveIntent)
-                    }
-                }
-                return disposeBag
+            do {
+                let movingFlowData = try await self.moveFlowService.requestMoveIntent(
+                    intentId: self.state.movingFlowModel?.id ?? "",
+                    addressInputModel: self.addressInputModel,
+                    houseInformationInputModel: self.houseInformationInputModel
+                )
+                self.send(.setMoveIntent(with: movingFlowData))
+                self.send(.navigation(action: .openConfirmScreen))
+                self.removeLoading(for: .requestMoveIntent)
+            } catch {
+                self.setError(error.localizedDescription, for: .requestMoveIntent)
             }
         case .confirmMoveIntent:
             self.setLoading(for: .confirmMoveIntent)
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let intentId = self.state.movingFlowModel?.id ?? ""
-                        try await self.moveFlowService.confirmMoveIntent(intentId: intentId)
-                        self.removeLoading(for: .confirmMoveIntent)
-                        AskForRating().askForReview()
-                        callback(.end)
-                    } catch {
-                        self.setError(error.localizedDescription, for: .confirmMoveIntent)
-                    }
-                }
-                return disposeBag
+            do {
+                let intentId = self.state.movingFlowModel?.id ?? ""
+                try await self.moveFlowService.confirmMoveIntent(intentId: intentId)
+                self.removeLoading(for: .confirmMoveIntent)
+                AskForRating().askForReview()
+            } catch {
+                self.setError(error.localizedDescription, for: .confirmMoveIntent)
             }
         default:
-            return nil
+            break
         }
     }
 

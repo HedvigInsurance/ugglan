@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -15,29 +14,20 @@ public final class EditCoInsuredStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> EditCoInsuredState,
         _ action: EditCoInsuredAction
-    ) -> FiniteSignal<EditCoInsuredAction>? {
+    ) async {
         switch action {
         case let .performCoInsuredChanges(commitId):
-            return FiniteSignal { [weak self] callback in guard let self = self else { return DisposeBag() }
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
-                        self.removeLoading(for: .postCoInsured)
-                        callback(.value(.fetchContracts))
-                        AskForRating().askForReview()
-                        callback(.end)
-                    } catch {
-                        self.setError(L10n.General.errorBody, for: .postCoInsured)
-                        callback(.end)
-                    }
-                }
-                return disposeBag
+            do {
+                try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
+                self.removeLoading(for: .postCoInsured)
+                send(.fetchContracts)
+                AskForRating().askForReview()
+            } catch {
+                self.setError(L10n.General.errorBody, for: .postCoInsured)
             }
         default:
             break
         }
-        return nil
     }
 
     public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
