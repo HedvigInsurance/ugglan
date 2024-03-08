@@ -264,7 +264,7 @@ public class EditCoInsuredJourney {
                 hButtonText: L10n.generalContinueButton
             ),
             style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
+            options: [.largeNavigationBar, .blurredBackground, .ignoreActionWhenNotOnTop]
         ) { action in
             if case .coInsuredNavigationAction(action: .dismissEdit) = action {
                 PopJourney()
