@@ -10,7 +10,7 @@ public class HomeServiceOctopus: HomeService {
     public func getImportantMessages() async throws -> [ImportantMessage] {
         octopus
             .client
-            .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
+            .fetch(query: OctopusGraphQL.ImportantMessagesQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .map { data in
                 return data.currentMember.importantMessages.compactMap({
                     ImportantMessage(id: $0.id, message: $0.message, link: $0.link)
@@ -22,11 +22,12 @@ public class HomeServiceOctopus: HomeService {
     public func getMemberState() async throws -> MemberState {
         let data = try await self.octopus
             .client
-            .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+            .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 
         let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
+
         return .init(
             contracts: contracts,
             contractState: contractState,

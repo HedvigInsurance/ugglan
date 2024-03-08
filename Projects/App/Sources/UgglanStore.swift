@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import SwiftUI
@@ -28,10 +27,7 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
-    ) -> FiniteSignal<UgglanAction>? {
-
-        return nil
-    }
+    ) async {}
 
     override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
         var newState = state
