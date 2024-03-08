@@ -47,6 +47,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                 let intentId = self.state.movingFlowModel?.id ?? ""
                 try await self.moveFlowService.confirmMoveIntent(intentId: intentId)
                 self.removeLoading(for: .confirmMoveIntent)
+                AskForRating().askForReview()
             } catch {
                 self.setError(error.localizedDescription, for: .confirmMoveIntent)
             }
