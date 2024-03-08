@@ -23,7 +23,7 @@ struct SubmitClaimCarScreen: View {
                         .init(type: .primary) {
                             if let url = URL(string: model?.partners.first?.url) {
                                 store.send(.dissmissNewClaimFlow)
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                                     store.send(.openURL(url: url))
                                 }
                             }
