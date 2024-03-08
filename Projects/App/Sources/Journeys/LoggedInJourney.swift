@@ -249,8 +249,6 @@ extension JourneyPresentation {
         onAction(SubmitClaimStore.self) { action in
             if case .submitClaimOpenFreeTextChat = action {
                 AppJourney.freeTextChat().withJourneyDismissButton
-            } else if case let .openURL(url) = action {
-                AppJourney.webRedirect(url: url)
             }
         }
         .onAction(

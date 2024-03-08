@@ -45,7 +45,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
     case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
     case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
-    case openURL(url: URL)
 }
 
 public enum SubmitAudioRecordingType: ActionProtocol, Hashable {
