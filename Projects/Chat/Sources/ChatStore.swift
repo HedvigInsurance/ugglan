@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -25,10 +24,8 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
     public override func effects(
         _ getState: @escaping () -> ChatState,
         _ action: ChatAction
-    ) -> FiniteSignal<ChatAction>? {
+    ) async {}
 
-        return nil
-    }
     public override func reduce(_ state: ChatState, _ action: ChatAction) -> ChatState {
         var newState = state
         switch action {

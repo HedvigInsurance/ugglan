@@ -44,14 +44,14 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.1")
+                    .exact("3.1.2")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.24")
+                    .upToNextMajor(from: "3.0.0")
                 )
             ]
         case .dynamiccolor:

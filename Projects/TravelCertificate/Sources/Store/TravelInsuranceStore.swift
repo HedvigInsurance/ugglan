@@ -13,7 +13,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
-    ) async throws {
+    ) async {
         switch action {
         case .postTravelInsuranceForm:
             guard let config = self.state.travelInsuranceConfig,
