@@ -188,7 +188,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             let state = getState()
             if let resendUrl = state.otpState.resendUrl {
                 do {
-                    let data = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+                    _ = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
                     send(.otpStateAction(action: .showResentToast))
                 } catch {}
             }
