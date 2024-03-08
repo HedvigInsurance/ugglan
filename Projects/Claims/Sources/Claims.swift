@@ -13,10 +13,6 @@ public struct Claims {
 }
 
 extension Claims: View {
-    func fetch() {
-        vm.store.send(.fetchClaims)
-    }
-
     @ViewBuilder
     func claimsSection(_ claims: [ClaimModel]) -> some View {
         VStack {
@@ -47,13 +43,10 @@ extension Claims: View {
         }
         .onReceive(vm.pollTimer) { _ in
             if ApplicationContext.shared.isLoggedIn {
-                fetch()
+                vm.fetch()
             } else {
                 vm.pollTimer.upstream.connect().cancel()
             }
-        }
-        .onAppear {
-            fetch()
         }
     }
 }
@@ -73,5 +66,10 @@ class ClaimsViewModel: ObservableObject {
             }
         }()
         pollTimer = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
+        fetch()
+    }
+
+    func fetch() {
+        store.send(.fetchClaims)
     }
 }
