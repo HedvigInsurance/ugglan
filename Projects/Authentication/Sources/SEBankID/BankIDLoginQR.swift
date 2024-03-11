@@ -21,9 +21,6 @@ public struct BankIDLoginQR: View {
                 .edgesIgnoringSafeArea(.top)
                 .useDarkColor
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
-                .onAppear {
-                    vm.onAppear()
-                }
             } else {
                 hForm {
                     VStack(spacing: 32) {
@@ -98,6 +95,9 @@ public struct BankIDLoginQR: View {
                 }
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             }
+        }
+        .onAppear {
+            vm.onAppear()
         }
     }
 }
