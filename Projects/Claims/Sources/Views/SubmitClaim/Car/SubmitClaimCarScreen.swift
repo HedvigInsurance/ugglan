@@ -19,24 +19,30 @@ struct SubmitClaimCarScreen: View {
                     hText(L10n.submitClaimCarReportClaimTitle)
                     hText(L10n.submitClaimCarReportClaimText)
                         .foregroundColor(hTextColor.secondary)
-                    hButton.LargeButton
-                        .init(type: .primary) {
-                            if let url = URL(string: model?.partners.first?.url) {
-                                store.send(.dissmissNewClaimFlow)
-                                UIApplication.shared.open(url)
-                            }
-                        } content: {
-                            HStack(spacing: 8) {
-                                hText(L10n.submitClaimCarReportClaimButton)
-                                Image(uiImage: hCoreUIAssets.neArrowSmall.image)
-                            }
-                        }
-                        .padding(.top, 65)
-
                 }
             }
             .sectionContainerStyle(.transparent)
             .padding(.top, 16)
+        }
+        .hFormAttachToBottom {
+            hSection {
+                hButton.LargeButton
+                    .init(type: .primary) {
+                        if let url = URL(string: model?.partners.first?.url) {
+                            UIApplication.shared.open(url)
+                            let delayTime = 60.0 * 3
+                            DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
+                                store.send(.dissmissNewClaimFlow)
+                            }
+                        }
+                    } content: {
+                        HStack(spacing: 8) {
+                            hText(L10n.submitClaimCarReportClaimButton)
+                            Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                        }
+                    }
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
