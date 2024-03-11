@@ -73,7 +73,6 @@ public class TokenRefresher {
                     NetworkAuthRepository(
                         environment: Environment.current.authEnvironment,
                         additionalHttpHeadersProvider: { ApolloClient.headers() },
-                        callbacks: Callbacks(successUrl: "", failureUrl: ""),
                         httpClientEngine: nil
                     )
                     .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in

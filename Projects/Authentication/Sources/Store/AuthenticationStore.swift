@@ -65,10 +65,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: { ApolloClient.headers() },
-            callbacks: Callbacks(
-                successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
-                failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
-            ),
             httpClientEngine: nil
         )
     }()
@@ -86,7 +82,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 )
                 return .completed(code: statusData.authorizationCode.code)
             } else if let statusData = statusData as? LoginStatusResultFailed {
-                let message = statusData.message
+                let message = statusData.localisedMessage
                 log.error(
                     "LOGIN FAILED",
                     error: NSError(domain: message, code: 1000),
@@ -100,7 +96,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 self.send(
                     .seBankIDStateAction(
                         action: .setLiveQrCodeData(
-                            liveQrCodeData: statusData.liveQrCodeData,
+                            liveQrCodeData: statusData.bankIdProperties?.liveQrCodeData,
                             date: Date()
                         )
                     )
@@ -159,7 +155,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             do {
                 let data = try await self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
-                    market: Localization.Locale.currentLocale.market.rawValue,
+                    market: Localization.Locale.currentLocale.market.asOtpMarket,
                     personalNumber: personalNumber,
                     email: state.otpState.email
                 )
@@ -204,19 +200,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             do {
                 let data = try await self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .seBankid,
-                    market: Localization.Locale.currentLocale.market.rawValue,
+                    market: Localization.Locale.currentLocale.market.asOtpMarket,
                     personalNumber: nil,
                     email: nil
                 )
                 if let data = data as? AuthAttemptResultBankIdProperties,
                     let statusUrl = URL(string: data.statusUrl.url)
                 {
+
                     send(.seBankIDStateAction(action: .setAutoStartTokenWith(autoStartToken: data.autoStartToken)))
-                    send(
-                        .seBankIDStateAction(
-                            action: .setLiveQrCodeData(liveQrCodeData: data.liveQrCodeData, date: Date())
-                        )
-                    )
                     send(.observeLoginStatus(url: statusUrl))
                 } else if let result = data as? AuthAttemptResultError {
                     var localizedMessage = L10n.General.errorBody
@@ -227,7 +219,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
                     } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
                         logMessage =
-                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message)"
                     } else if let result = result as? AuthAttemptResultErrorIOError {
                         logMessage =
                             "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
@@ -260,7 +252,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 } else if case .unknown = loginStatus {
                     return true
                 }
-
                 return false
             }
             do {
@@ -393,5 +384,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         }
         let error = NSError(domain: "", code: 1000)
         throw error
+    }
+}
+
+extension Localization.Locale.Market {
+    fileprivate var asOtpMarket: OtpMarket {
+        switch self {
+        case .no: return .no
+        case .se: return .se
+        case .dk: return .dk
+        }
     }
 }
