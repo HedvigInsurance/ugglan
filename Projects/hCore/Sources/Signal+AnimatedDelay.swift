@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 extension Signal where Kind == Plain, Value == () {
     // a delay operator that respects slow animations, useful when building interactive animations

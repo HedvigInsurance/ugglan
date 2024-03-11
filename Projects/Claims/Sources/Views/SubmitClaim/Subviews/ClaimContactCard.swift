@@ -9,12 +9,12 @@ struct ClaimContactCard: View {
     @PresentableStore var store: SubmitClaimStore
     var model: FlowClaimDeflectStepModel
     var title: String?
-    var imageUrl: String
+    var imageUrl: String?
     var url: String?
     var phoneNumber: String?
 
     init(
-        imageUrl: String,
+        imageUrl: String?,
         url: String,
         phoneNumber: String?,
         title: String? = nil,

@@ -3,6 +3,7 @@ import hCore
 import hGraphQL
 
 public class ForeverServiceOctopus: ForeverService {
+
     @Inject var octopus: hOctopus
     public init() {}
 
@@ -29,5 +30,13 @@ public class ForeverServiceOctopus: ForeverService {
             )
         )
         return foreverData
+    }
+
+    public func changeCode(code: String) async throws {
+        let mutation = OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: code)
+        let response = try await octopus.client.perform(mutation: mutation)
+        if let errorMessage = response.memberReferralInformationCodeUpdate.userError?.message {
+            throw ForeverChangeCodeError.errorMessage(message: errorMessage)
+        }
     }
 }

@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import SwiftUI
-import UIKit
 
 struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
     var foundView: (_ view: ViewType) -> Void

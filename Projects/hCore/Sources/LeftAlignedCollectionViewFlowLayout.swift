@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
     override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

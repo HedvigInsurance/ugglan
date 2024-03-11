@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 private class DirectDebitWebview: UIView {
-    @Inject var octopus: hOctopus
+    @Inject var paymentService: hPaymentService
     @PresentableStore var paymentStore: PaymentStore
     var cancellables = Set<AnyCancellable>()
     let setupType: SetupType
@@ -192,11 +192,9 @@ private class DirectDebitWebview: UIView {
 
     private func startRegistration() async {
         vc.view = webView
-        let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
-
-        do {
-            let data = try await octopus.client.perform(mutation: mutation)
-            if let url = URL(string: data.registerDirectDebit2.url) {
+        Task {
+            do {
+                let url = try await paymentService.getConnectPaymentUrl()
                 let request = URLRequest(
                     url: url,
                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
@@ -204,11 +202,9 @@ private class DirectDebitWebview: UIView {
                 )
                 webViewDelgate.result.send(url)
                 webView.load(request)
-            } else {
+            } catch {
                 self.showErrorAlert = true
             }
-        } catch {
-            self.showErrorAlert = true
         }
     }
 }

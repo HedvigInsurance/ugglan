@@ -3,7 +3,7 @@ import Authentication
 import Foundation
 import Market
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -106,22 +106,5 @@ extension AppJourney {
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
             authenticationStore.send(.cancel)
         }
-    }
-}
-
-extension MenuChildAction {
-    static var login: MenuChildAction {
-        MenuChildAction(identifier: "login")
-    }
-}
-
-extension MenuChild {
-    public static var login: MenuChild {
-        MenuChild(
-            title: L10n.settingsLoginRow,
-            style: .default,
-            image: hCoreUIAssets.memberCard.image,
-            action: .login
-        )
     }
 }

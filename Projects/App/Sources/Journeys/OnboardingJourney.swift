@@ -1,6 +1,6 @@
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
@@ -15,7 +15,6 @@ extension AppJourney {
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
             .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
-
-        return AppJourney.webRedirect(url: webUrl)
+        return AppJourney.urlHandledBySystem(url: webUrl)
     }
 }

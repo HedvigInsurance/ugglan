@@ -44,14 +44,14 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.1")
+                    .exact("3.1.2")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.24")
+                    .upToNextMajor(from: "3.0.0")
                 )
             ]
         case .dynamiccolor:
@@ -83,7 +83,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.7.1"))]
         case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1820240227133804"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.2120240306171338"))
             ]
         case .tagkit:
             return [

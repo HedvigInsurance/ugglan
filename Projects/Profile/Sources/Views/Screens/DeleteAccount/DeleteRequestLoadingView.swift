@@ -6,8 +6,7 @@ import hGraphQL
 
 struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
-    @Inject var octopus: hOctopus
-
+    @Inject var profileService: ProfileService
     enum ScreenState {
         case tryToDelete(with: MemberDetails)
         case success
@@ -122,10 +121,10 @@ struct DeleteRequestLoadingView: View {
     @MainActor
     private func sendSlackMessage(details: MemberDetails) async {
         do {
-            let data = try await self.octopus.client.perform(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+            try await profileService.postDeleteRequest()
             ApolloClient.saveDeleteAccountStatus(for: details.id)
             screenState = .success
-        } catch let ex {
+        } catch {
             screenState = .error(errorMessage: L10n.General.errorBody)
         }
     }

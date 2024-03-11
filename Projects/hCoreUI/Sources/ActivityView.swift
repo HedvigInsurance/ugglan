@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 
 extension PresentationStyle {
     public static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in

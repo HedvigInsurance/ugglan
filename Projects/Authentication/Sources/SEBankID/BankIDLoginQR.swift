@@ -21,9 +21,6 @@ public struct BankIDLoginQR: View {
                 .edgesIgnoringSafeArea(.top)
                 .useDarkColor
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
-                .onAppear {
-                    vm.onAppear()
-                }
             } else {
                 hForm {
                     VStack(spacing: 32) {
@@ -47,9 +44,9 @@ public struct BankIDLoginQR: View {
                                 message: nil,
                                 primaryButton: .cancel(Text(L10n.demoModeCancel)),
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                                    store.send(.cancel)
                                     ApplicationContext.shared.$isDemoMode.value = true
                                     store.send(.bankIdQrResultAction(action: .loggedIn))
+                                    store.send(.cancel)
                                 }
                             )
                         }
@@ -98,6 +95,9 @@ public struct BankIDLoginQR: View {
                 }
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             }
+        }
+        .onAppear {
+            vm.onAppear()
         }
     }
 }

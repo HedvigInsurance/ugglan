@@ -51,7 +51,7 @@ public class ClaimJourneys {
                 showClaimEntrypointOption().addDismissClaimsFlow()
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
-            } else if case .openDeflectScreen = navigationAction {
+            } else if case let .openDeflectScreen = navigationAction {
                 openDeflectStepScreen().addDismissClaimsFlow()
             } else if case .openConfirmEmergencyScreen = navigationAction {
                 openEmergencySelectScreen().addDismissClaimsFlow()
@@ -89,20 +89,32 @@ public class ClaimJourneys {
     private static func openDeflectStepScreen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let model = store.state.deflectStepModel
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(
-                model: model,
-                openChat: {
-                    store.send(.submitClaimOpenFreeTextChat)
+        GroupJourney {
+            if model?.id == .FlowClaimDeflectEirStep {
+                HostingJourney(
+                    SubmitClaimStore.self,
+                    rootView: SubmitClaimCarScreen(model: model)
+                ) {
+                    action in
+                    getScreen(for: action)
                 }
-            )
-        ) {
-            action in
-            if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
-                openInfoView(title: title, description: description)
             } else {
-                getScreen(for: action)
+                HostingJourney(
+                    SubmitClaimStore.self,
+                    rootView: SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            store.send(.submitClaimOpenFreeTextChat)
+                        }
+                    )
+                ) {
+                    action in
+                    if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
+                        openInfoView(title: title, description: description)
+                    } else {
+                        getScreen(for: action)
+                    }
+                }
             }
         }
         .resetProgressToPreviousValueOnDismiss

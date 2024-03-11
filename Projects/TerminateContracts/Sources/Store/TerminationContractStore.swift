@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -14,29 +13,29 @@ public final class TerminationContractStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
         _ action: TerminationContractAction
-    ) -> FiniteSignal<TerminationContractAction>? {
+    ) async {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return executeAsFiniteSignal(loadingType: .startTermination) { [unowned self] in
-                try await terminateContractsService.startTermination(contractId: config.contractId)
+            return await executeAsFiniteSignal(loadingType: .startTermination) { [weak self] in
+                try await self?.terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
-            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
-                let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-                return try await terminateContractsService.sendTerminationDate(
-                    inputDateToString: inputDateToString,
-                    terminationContext: terminationContext
-                )
+            let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
+                return try await self?.terminateContractsService
+                    .sendTerminationDate(
+                        inputDateToString: inputDateToString,
+                        terminationContext: terminationContext
+                    )
             }
         case .sendConfirmDelete:
-            return executeAsFiniteSignal(loadingType: .sendTerminationDate) { [unowned self] in
-                try await terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
+                try await self?.terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
             }
         default:
             break
         }
-        return nil
     }
 
     public override func reduce(
@@ -87,27 +86,24 @@ public final class TerminationContractStore: LoadingStateStore<
         return newState
     }
 
+    typealias optionalResponse = (() async throws -> TerminateStepResponse?)?
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
-        action: @escaping () async throws -> TerminateStepResponse
-    ) -> FiniteSignal<TerminationContractAction>? {
-        return FiniteSignal { callback in
-            let disposeBag = DisposeBag()
-            Task {
-                self.setLoading(for: loadingType)
-                do {
-                    let data = try await action()
-                    callback(.value(.setTerminationContext(context: data.context)))
-                    callback(.value(data.action))
-                    self.removeLoading(for: loadingType)
-                    callback(.end)
-                } catch let error {
-                    callback(.value(.navigationAction(action: .openTerminationFailScreen)))
-                    self.setError(error.localizedDescription, for: loadingType)
-                    callback(.end(error))
+        action: optionalResponse
+    ) async {
+        self.setLoading(for: loadingType)
+        do {
+            if let action = action {
+                let data = try await action()
+                if let data = data {
+                    send(.setTerminationContext(context: data.context))
+                    send(data.action)
                 }
             }
-            return disposeBag
+            self.removeLoading(for: loadingType)
+        } catch let error {
+            send(.navigationAction(action: .openTerminationFailScreen))
+            self.setError(error.localizedDescription, for: loadingType)
         }
     }
 }

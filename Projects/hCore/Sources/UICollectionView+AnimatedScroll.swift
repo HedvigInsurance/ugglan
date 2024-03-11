@@ -1,7 +1,7 @@
 import CoreMedia
 import Foundation
 import QuartzCore
-import UIKit
+import SwiftUI
 
 protocol AnimatedScroll {
     func setContentOffset(offset: CGPoint, timingFunction: CAMediaTimingFunction, duration: CFTimeInterval)

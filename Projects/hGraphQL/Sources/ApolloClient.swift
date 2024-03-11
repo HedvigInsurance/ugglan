@@ -3,7 +3,7 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 import authlib
 
 public struct hApollo {
@@ -37,7 +37,6 @@ extension ApolloClient {
                 "User-Agent": userAgent,
             ]
         }
-
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
@@ -66,7 +65,7 @@ extension ApolloClient {
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            acceptLanguageHeader: acceptLanguageHeader,
+            acceptLanguageHeader: { acceptLanguageHeader },
             userAgent: userAgent,
             deviceIdentifier: getDeviceIdentifier()
         )

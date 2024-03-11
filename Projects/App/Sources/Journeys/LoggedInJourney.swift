@@ -36,7 +36,7 @@ extension AppJourney {
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
-                            AppJourney.webRedirect(url: url)
+                            AppJourney.urlHandledBySystem(url: url)
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
@@ -71,7 +71,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
-                AppJourney.webRedirect(url: url)
+                AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
                     .onDismiss {
@@ -196,7 +196,8 @@ extension AppJourney {
             }
             .onPresent {
                 ApplicationState.preserveState(.loggedIn)
-                AnalyticsCoordinator().setUserId()
+                let coordinator: AnalyticsCoordinator = Dependencies.shared.resolve()
+                coordinator.setUserId()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ApplicationContext.shared.$isLoggedIn.value = true
                 }

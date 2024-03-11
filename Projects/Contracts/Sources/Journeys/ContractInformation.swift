@@ -4,7 +4,6 @@ import Foundation
 import Presentation
 import SwiftUI
 import TerminateContracts
-import UIKit
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI

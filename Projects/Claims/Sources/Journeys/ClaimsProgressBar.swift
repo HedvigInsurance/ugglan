@@ -1,7 +1,7 @@
 import Flow
 import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -29,7 +29,9 @@ extension JourneyPresentation {
                     progresView.alpha = store.state.progress == nil ? 0 : 1
                     let dispose = store.stateSignal.onValue { state in
                         if let progress = state.progress {
-                            progresView.setProgress(progress, animated: true)
+                            UIView.animate(withDuration: 0.4) {
+                                progresView.setProgress(progress, animated: true)
+                            }
                         }
                         UIView.animate(withDuration: 0.2) {
                             progresView.alpha = state.progress == nil ? 0 : 1

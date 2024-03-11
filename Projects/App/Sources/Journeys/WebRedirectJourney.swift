@@ -1,7 +1,7 @@
 import Foundation
 import Presentation
 import SafariServices
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
@@ -26,6 +26,14 @@ extension AppJourney {
                         UIApplication.shared.open(url)
                     }
                 }
+            }
+    }
+
+    @JourneyBuilder
+    static func urlHandledBySystem(url: URL) -> some JourneyPresentation {
+        ContinueJourney()
+            .onPresent {
+                UIApplication.shared.open(url)
             }
     }
 }

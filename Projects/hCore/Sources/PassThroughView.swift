@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public class PassThroughView: UIView {
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

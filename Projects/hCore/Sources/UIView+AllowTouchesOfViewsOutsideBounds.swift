@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIView {
     public static var outsideOfBoundsKey: UInt8 = 0

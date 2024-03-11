@@ -2,7 +2,6 @@ import Form
 import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 import hCoreUI
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
