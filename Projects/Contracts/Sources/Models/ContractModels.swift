@@ -137,7 +137,6 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public var terminatedInPast: Bool {
-        let localDate = Date().localDateString.localDateToDate
         if let terminationDate = self.terminationDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate
         {
@@ -151,7 +150,7 @@ public struct Contract: Codable, Hashable, Equatable {
 
     public var terminationMessage: String? {
         let terminationDateDisplayValue = terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-        if let terminationDate {
+        if terminationDate != nil {
             if typeOfContract.showValidUntilInsteadOfTerminatedAt {
                 if terminatedToday {
                     return L10n.contractsTrialTerminationDateMessageTomorrow

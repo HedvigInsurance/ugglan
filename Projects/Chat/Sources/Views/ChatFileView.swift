@@ -19,7 +19,7 @@ struct ChatFileView: View {
                 if file.mimeType == .GIF {
                     KFAnimatedImage(
                         source: Kingfisher.Source.network(
-                            Kingfisher.ImageResource(downloadURL: file.url, cacheKey: file.id)
+                            Kingfisher.KF.ImageResource(downloadURL: file.url, cacheKey: file.id)
                         )
                     )
                     .targetCache(ImageCache.default)
@@ -81,7 +81,7 @@ struct ChatFileView: View {
             return Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id))
         case .url(let url):
             return Kingfisher.Source.network(
-                Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id)
+                Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
             )
         }
     }

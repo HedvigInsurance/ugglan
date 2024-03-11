@@ -51,7 +51,7 @@ public class ClaimJourneys {
                 showClaimEntrypointOption().addDismissClaimsFlow()
             } else if case .openSelectContractScreen = navigationAction {
                 openSelectContractScreen().addDismissClaimsFlow()
-            } else if case let .openDeflectScreen = navigationAction {
+            } else if case .openDeflectScreen = navigationAction {
                 openDeflectStepScreen().addDismissClaimsFlow()
             } else if case .openConfirmEmergencyScreen = navigationAction {
                 openEmergencySelectScreen().addDismissClaimsFlow()
