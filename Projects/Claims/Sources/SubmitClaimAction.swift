@@ -74,7 +74,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
-    case openDeflectScreen(isEir: Bool)
+    case openDeflectScreen
     case openConfirmEmergencyScreen
     case openFileUploadScreen
     case openFilesFor(endPoint: String, files: [File])
@@ -172,10 +172,8 @@ extension ClaimsStepModelAction {
             switch model.id {
             case .Unknown:
                 return .openUpdateAppScreen
-            case .FlowClaimDeflectEirStep:
-                return .openDeflectScreen(isEir: true)
             default:
-                return .openDeflectScreen(isEir: false)
+                return .openDeflectScreen
             }
         case .setFileUploadStep(let model):
             return .openFileUploadScreen
