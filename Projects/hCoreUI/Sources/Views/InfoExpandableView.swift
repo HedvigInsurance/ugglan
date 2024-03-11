@@ -20,7 +20,9 @@ public struct InfoExpandableView: View {
         self.onMarkDownClick = onMarkDownClick
     }
 
+    @ViewBuilder
     public var body: some View {
+        let isSelected = selectedFields.contains(title)
         hSection {
             hRow {
                 hText(title)
@@ -28,13 +30,16 @@ public struct InfoExpandableView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .withCustomAccessory({
-                withAnimation(.spring()) {
+                ZStack {
                     Image(
-                        uiImage: selectedFields.contains(title)
-                            ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                        uiImage: hCoreUIAssets.minusSmall.image
                     )
+                    .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 270))
+                    Image(
+                        uiImage: hCoreUIAssets.minusSmall.image
+                    )
+                    .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .transition(.opacity)
             })
             .onTap {
                 withAnimation(.spring) {
@@ -75,9 +80,13 @@ public struct InfoExpandableView: View {
 
 struct InfoExpandableView_Previews: PreviewProvider {
     static var previews: some View {
-        InfoExpandableView(
-            title: "long longlong long long long title",
-            text: "long long long long long long long long long long"
-        )
+        VStack {
+            InfoExpandableView(
+                title: "long longlong long long long title",
+                text:
+                    "long long long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long long"
+            )
+            Spacer()
+        }
     }
 }
