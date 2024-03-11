@@ -388,7 +388,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 }
 
 extension Localization.Locale.Market {
-    var asOtpMarket: OtpMarket {
+    fileprivate var asOtpMarket: OtpMarket {
         switch self {
         case .no: return .no
         case .se: return .se
