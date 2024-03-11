@@ -1,6 +1,8 @@
 import Foundation
 
 public class SubmitClaimDemoService: SubmitClaimService {
+    public init() {}
+
     public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
