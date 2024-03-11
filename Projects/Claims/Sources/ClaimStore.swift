@@ -9,7 +9,7 @@ import hGraphQL
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var fetchClaimService: hFetchClaimService
 
-    public override func effects(_ getState: @escaping () -> ClaimsState, _ action: ClaimsAction) async throws {
+    public override func effects(_ getState: @escaping () -> ClaimsState, _ action: ClaimsAction) async {
         switch action {
         case .fetchClaims:
             do {

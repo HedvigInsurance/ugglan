@@ -43,7 +43,7 @@ class ChatScreenViewModel: ObservableObject {
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            AskForRating().ask()
+            AskForRating().askAccordingToTheNumberOfSessions()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
         let store: ChatStore = globalPresentableStoreContainer.get()
