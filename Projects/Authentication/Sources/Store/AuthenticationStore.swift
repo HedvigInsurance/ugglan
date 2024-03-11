@@ -32,6 +32,34 @@ extension CoreSignal where Kind == Plain {
     }
 }
 
+final class Poll<ReturnValue> {
+    let action: (() async throws -> ReturnValue?)?
+    let shouldPull: (_ value: ReturnValue) -> Bool
+
+    init(
+        action: @escaping () async throws -> ReturnValue,
+        shouldPull: @escaping (_ value: ReturnValue) -> Bool
+    ) {
+        self.action = action
+        self.shouldPull = shouldPull
+    }
+
+    func getValue() async throws -> ReturnValue? {
+        if let action {
+            let data = try await action()
+            if let data {
+                if shouldPull(data) {
+                    try? await Task.sleep(nanoseconds: 250_000_000)
+                    return try await getValue()
+                } else {
+                    return data
+                }
+            }
+        }
+        return nil
+    }
+}
+
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
@@ -40,183 +68,131 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             httpClientEngine: nil
         )
     }()
-    func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
-        return Signal { callbacker in
-            let minimumTime = Signal(after: 0.2).future
-            let signal = Signal<LoginStatus> { loginStatusCallbacker in
-                let bag = DisposeBag()
-                self.networkAuthRepository
-                    .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
-                        if let completedResult = result as? LoginStatusResultCompleted {
-                            log.info(
-                                "LOGIN AUTH FINISHED"
-                            )
-                            loginStatusCallbacker(.completed(code: completedResult.authorizationCode.code))
-                        } else if let result = result as? LoginStatusResultFailed {
-                            let message = result.localisedMessage
-                            log.error(
-                                "LOGIN FAILED",
-                                error: NSError(domain: message, code: 1000),
-                                attributes: [
-                                    "message": message,
-                                    "statusUrl": statusUrl.absoluteString,
-                                ]
-                            )
-                            loginStatusCallbacker(.failed(message: message))
-                        } else if let pendingResult = result as? LoginStatusResultPending {
-                            self.send(
-                                .seBankIDStateAction(
-                                    action: .setLiveQrCodeData(
-                                        liveQrCodeData: pendingResult.bankIdProperties?.liveQrCodeData,
-                                        date: Date()
-                                    )
-                                )
-                            )
-                            loginStatusCallbacker(.pending(statusMessage: pendingResult.statusMessage))
-                        } else {
-                            loginStatusCallbacker(.unknown)
-                        }
-                    }
-
-                return bag
+    func checkStatus(statusUrl: URL) async throws -> LoginStatus {
+        async let sleepTask: () = try Task.sleep(nanoseconds: 2 * 100_000_000)
+        async let statusTask = try self.networkAuthRepository.loginStatus(
+            statusUrl: .init(url: statusUrl.absoluteString)
+        )
+        do {
+            let data = try await [sleepTask, statusTask] as [Any]
+            let statusData = data[1] as! LoginStatusResult
+            if let statusData = statusData as? LoginStatusResultCompleted {
+                log.info(
+                    "LOGIN AUTH FINISHED"
+                )
+                return .completed(code: statusData.authorizationCode.code)
+            } else if let statusData = statusData as? LoginStatusResultFailed {
+                let message = statusData.localisedMessage
+                log.error(
+                    "LOGIN FAILED",
+                    error: NSError(domain: message, code: 1000),
+                    attributes: [
+                        "message": message,
+                        "statusUrl": statusUrl.absoluteString,
+                    ]
+                )
+                return .failed(message: message)
+            } else if let statusData = statusData as? LoginStatusResultPending {
+                self.send(
+                    .seBankIDStateAction(
+                        action: .setLiveQrCodeData(
+                            liveQrCodeData: statusData.bankIdProperties?.liveQrCodeData,
+                            date: Date()
+                        )
+                    )
+                )
+                return .pending(statusMessage: statusData.statusMessage)
+            } else {
+                return .unknown
             }
-
-            var disposeBag = DisposeBag()
-            disposeBag += combineLatest(signal.future.resultSignal, minimumTime.resultSignal)
-                .onValue { status, minimumTime in
-                    if let data = status.value {
-                        callbacker(data)
-                    } else if let error = status.error {
-                        callbacker(.failed(message: error.localizedDescription))
-                    }
-                }
-            return disposeBag
+        } catch let error {
+            return .failed(message: error.localizedDescription)
         }
     }
 
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction
-    ) -> FiniteSignal<AuthenticationAction>? {
+    ) async {
         if case let .otpStateAction(action: .setCode(code)) = action {
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
-
+            Task {
+                let generator = await UIImpactFeedbackGenerator(style: .light)
+                await generator.impactOccurred()
+            }
             if code.count == 6 {
-                return [
-                    .otpStateAction(action: .verifyCode),
-                    .otpStateAction(action: .setLoading(isLoading: true)),
-                ]
-                .emitEachThenEnd
+                send(.otpStateAction(action: .verifyCode))
+                send(.otpStateAction(action: .setLoading(isLoading: true)))
             }
         } else if case .otpStateAction(action: .verifyCode) = action {
             let state = getState()
-
-            return FiniteSignal { callback in
-                let bag = DisposeBag()
-
-                if let verifyUrl = state.otpState.verifyUrl {
-                    bag += Signal(after: 0.5)
-                        .onValue { _ in
-                            self.networkAuthRepository.submitOtp(
-                                verifyUrl: verifyUrl.absoluteString,
-                                otp: state.otpState.code
-                            ) { result, error in
-                                if let success = result as? SubmitOtpResultSuccess {
-                                    callback(.value(.exchange(code: success.loginAuthorizationCode.code)))
-                                } else {
-                                    callback(
-                                        .value(
-                                            .otpStateAction(
-                                                action: .setCodeError(
-                                                    message: L10n.Login.CodeInput.ErrorMsg.codeNotValid
-                                                )
-                                            )
-                                        )
-                                    )
-                                }
-                            }
-                        }
+            if let verifyUrl = state.otpState.verifyUrl {
+                do {
+                    try await Task.sleep(nanoseconds: 5 * 100_000_000)
+                    let data = try await networkAuthRepository.submitOtp(
+                        verifyUrl: verifyUrl.absoluteString,
+                        otp: state.otpState.code
+                    )
+                    if let data = data as? SubmitOtpResultSuccess {
+                        send(.exchange(code: data.loginAuthorizationCode.code))
+                    } else {
+                        send(
+                            .otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid))
+                        )
+                    }
+                } catch {
+                    send(.otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)))
                 }
-
-                return bag
             }
         } else if case .otpStateAction(action: .setCodeError) = action {
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.error)
-
-            return [
-                .otpStateAction(action: .setLoading(isLoading: false))
-            ]
-            .emitEachThenEnd
+            Task {
+                let generator = await UINotificationFeedbackGenerator()
+                await generator.notificationOccurred(.error)
+            }
+            send(.otpStateAction(action: .setLoading(isLoading: false)))
         } else if case .otpStateAction(action: .submitOtpData) = action {
             let state = getState()
-
-            return FiniteSignal { callback in
-                let bag = DisposeBag()
-
-                let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
-
+            let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
+            do {
                 let otpMarket =
                     switch Localization.Locale.currentLocale.market {
                     case .se: OtpMarket.se
                     case .no: OtpMarket.no
                     case .dk: OtpMarket.dk
                     }
-                self.networkAuthRepository.startLoginAttempt(
-                    loginMethod: .otp,
-                    market: otpMarket,
+                let data = try await self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: otpMarket,
+                    market: Localization.Locale.currentLocale.market.rawValue,
                     personalNumber: personalNumber,
                     email: state.otpState.email
-                ) { result, error in
-                    bag += Signal(after: 0.5)
-                        .onValue { _ in
-                            if let otpProperties = result as? AuthAttemptResultOtpProperties,
-                                let verifyUrl = URL(string: otpProperties.verifyUrl),
-                                let resendUrl = URL(string: otpProperties.resendUrl)
-                            {
-                                callback(.value(.navigationAction(action: .otpCode)))
-                                callback(
-                                    .value(
-                                        .otpStateAction(
-                                            action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)
-                                        )
-                                    )
-                                )
-                            } else {
-                                callback(.value(.otpStateAction(action: .setLoading(isLoading: false))))
-                                callback(
-                                    .value(
-                                        .otpStateAction(
-                                            action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)
-                                        )
-                                    )
-                                )
-                            }
-
-                            callback(.end)
-                        }
+                )
+                try await Task.sleep(nanoseconds: 5 * 100_000_000)
+                if let otpProperties = data as? AuthAttemptResultOtpProperties,
+                    let verifyUrl = URL(string: otpProperties.verifyUrl),
+                    let resendUrl = URL(string: otpProperties.resendUrl)
+                {
+                    send(.navigationAction(action: .otpCode))
+                    send(.otpStateAction(action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)))
+                } else {
+                    send(.otpStateAction(action: .setLoading(isLoading: false)))
+                    send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
                 }
-
-                return bag
+            } catch {
+                send(.otpStateAction(action: .setLoading(isLoading: false)))
+                send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
             }
-
         } else if case .navigationAction(action: .authSuccess) = action {
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
+            Task {
+                let generator = await UINotificationFeedbackGenerator()
+                await generator.notificationOccurred(.success)
+            }
             send(.bankIdQrResultAction(action: .loggedIn))
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
-
-            return FiniteSignal { callback in
-                if let resendUrl = state.otpState.resendUrl {
-                    self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString) { _, _ in
-                        callback(.value(.otpStateAction(action: .showResentToast)))
-                        callback(.end)
-                    }
-                }
-
-                return DisposeBag()
+            if let resendUrl = state.otpState.resendUrl {
+                do {
+                    _ = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+                    send(.otpStateAction(action: .showResentToast))
+                } catch {}
             }
         } else if case .otpStateAction(action: .showResentToast) = action {
             Toasts.shared.displayToast(
@@ -226,145 +202,112 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 )
             )
         } else if case .seBankIDStateAction(action: .startSession) = action {
-            return Signal { callbacker in
-                callbacker(.cancel)
-
+            send(.cancel)
+            do {
                 let otpMarket =
                     switch Localization.Locale.currentLocale.market {
                     case .se: OtpMarket.se
                     case .no: OtpMarket.no
                     case .dk: OtpMarket.dk
                     }
-                self.networkAuthRepository.startLoginAttempt(
+                let data = try await self.networkAuthRepository.startLoginAttempt(
                     loginMethod: .seBankid,
                     market: otpMarket,
                     personalNumber: nil,
                     email: nil
-                ) { result, error in
-                    if let bankIdProperties = result as? AuthAttemptResultBankIdProperties,
-                        let statusUrl = URL(string: bankIdProperties.statusUrl.url)
-                    {
-                        callbacker(
-                            .seBankIDStateAction(
-                                action: .setAutoStartTokenWith(
-                                    autoStartToken: bankIdProperties.autoStartToken
-                                )
-                            )
-                        )
-                        callbacker(.observeLoginStatus(url: statusUrl))
-                    } else if let result = result as? AuthAttemptResultError {
-                        var localizedMessage = L10n.General.errorBody
-                        var logMessage = "Got Error when signing in with BankId"
-                        if let result = result as? AuthAttemptResultErrorLocalised {
-                            localizedMessage = result.reason
-                            logMessage =
-                                "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
-                        } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
-                            logMessage =
-                                "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message)"
-                        } else if let result = result as? AuthAttemptResultErrorIOError {
-                            logMessage =
-                                "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
-                        } else if let result = result as? AuthAttemptResultErrorUnknownError {
-                            logMessage =
-                                "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
-                        }
-                        let error = NSError(domain: logMessage, code: 1000)
-                        log.error(
-                            logMessage,
-                            error: error,
-                            attributes: [:]
-                        )
-                        callbacker(.loginFailure(message: localizedMessage))
-                    } else if let error {
-                        log.error(
-                            "Got Error when signing in with BankId",
-                            error: error,
-                            attributes: [:]
-                        )
-                        callbacker(.loginFailure(message: nil))
+                )
+                if let data = data as? AuthAttemptResultBankIdProperties,
+                    let statusUrl = URL(string: data.statusUrl.url)
+                {
+                    send(.seBankIDStateAction(action: .setAutoStartTokenWith(autoStartToken: data.autoStartToken)))
+                    send(.observeLoginStatus(url: statusUrl))
+                } else if let result = data as? AuthAttemptResultError {
+                    var localizedMessage = L10n.General.errorBody
+                    var logMessage = "Got Error when signing in with BankId"
+                    if let result = result as? AuthAttemptResultErrorLocalised {
+                        localizedMessage = result.reason
+                        logMessage =
+                            "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
+                    } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
+                        logMessage =
+                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                    } else if let result = result as? AuthAttemptResultErrorIOError {
+                        logMessage =
+                            "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
+                    } else if let result = result as? AuthAttemptResultErrorUnknownError {
+                        logMessage =
+                            "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
                     }
+                    let error = NSError(domain: logMessage, code: 1000)
+                    log.error(
+                        logMessage,
+                        error: error,
+                        attributes: [:]
+                    )
+                    send(.loginFailure(message: localizedMessage))
+                }
+            } catch let error {
+                log.error(
+                    "Got Error when signing in with BankId",
+                    error: error,
+                    attributes: [:]
+                )
+                send(.loginFailure(message: nil))
+            }
+        } else if case let .observeLoginStatus(statusUrl) = action {
+            let poll = Poll { [weak self] in
+                return try await self?.checkStatus(statusUrl: statusUrl)
+            } shouldPull: { loginStatus in
+                if case .pending = loginStatus {
+                    return true
+                } else if case .unknown = loginStatus {
+                    return true
                 }
 
-                return DisposeBag()
+                return false
             }
-            .finite()
-
-        } else if case let .observeLoginStatus(statusUrl) = action {
-            return FiniteSignal { callbacker in
-                let bag = DisposeBag()
-
-                bag += self.checkStatus(statusUrl: statusUrl)
-                    .poll {
-                        self.checkStatus(statusUrl: statusUrl)
-                    } shouldPoll: { loginStatus in
-                        if case .pending = loginStatus {
-                            return true
-                        } else if case .unknown = loginStatus {
-                            return true
-                        }
-
-                        return false
-                    }
-                    .onValue { loginStatus in
-                        if case let .completed(code) = loginStatus {
-                            callbacker(.value(.exchange(code: code)))
-                            callbacker(.end)
-                        } else if case let .failed(message) = loginStatus {
-                            callbacker(.value(.loginFailure(message: message)))
-                            callbacker(.end(LoginError.failed))
-                        }
-                    }
-
-                bag += self.actionSignal.onValue({ action in
-                    switch action {
-                    case .observeLoginStatus(_),
-                        .cancel,
-                        .navigationAction(action: .authSuccess):
-                        callbacker(.end)
-                    default:
-                        break
-                    }
-                })
-
-                return bag
+            do {
+                let status = try await poll.getValue()
+                if case let .completed(code) = status {
+                    send(.exchange(code: code))
+                } else if case let .failed(message) = status {
+                    send(.loginFailure(message: message))
+                }
+            } catch {
+                send(.loginFailure(message: nil))
             }
         } else if case let .exchange(code) = action {
-            return Signal { callbacker in
-                self.exchange(code: code) { successResult in
-                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                    callbacker(.navigationAction(action: .authSuccess))
-                }
-                return DisposeBag()
+            do {
+                let successResult = try await self.exchange(code: code)
+                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                send(.navigationAction(action: .authSuccess))
+            } catch {
+
             }
-            .finite()
         } else if case let .impersonate(code) = action {
-            return Signal { callbacker in
-                self.exchange(code: code) { successResult in
-                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                    callbacker(.navigationAction(action: .impersonation))
-                }
-                return DisposeBag()
+            do {
+                let successResult = try await self.exchange(code: code)
+                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                send(.navigationAction(action: .impersonation))
+            } catch {
+
             }
-            .finite()
         } else if case .logout = action {
-            return FiniteSignal { callback in
-                if let token = try? ApolloClient.retreiveToken() {
-                    self.networkAuthRepository.revoke(token: token.refreshToken) { result, _ in
-                        if let _ = result as? RevokeResultSuccess {
-                            callback(.value(.logoutSuccess))
-                        } else {
-                            callback(.value(.logoutFailure))
-                        }
+            do {
+                if let token = try ApolloClient.retreiveToken() {
+                    let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
+                    if let data = data as? RevokeResultSuccess {
+                        send(.logoutSuccess)
+                    } else {
+                        send(.logoutFailure)
                     }
                 } else {
-                    callback(.value(.logoutSuccess))
+                    send(.logoutSuccess)
                 }
-
-                return DisposeBag()
+            } catch {
+                send(.logoutFailure)
             }
         }
-        return nil
     }
 
     public override func reduce(_ state: AuthenticationState, _ action: AuthenticationAction) -> AuthenticationState {
@@ -446,19 +389,12 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         return newState
     }
 
-    private func exchange(
-        code: String,
-        onSuccess: @escaping (AuthTokenResultSuccess) -> Void
-    ) {
-        DispatchQueue.main.async {
-            self.networkAuthRepository
-                .exchange(
-                    grant: AuthorizationCodeGrant(code: code)
-                ) { result, error in
-                    if let successResult = result as? AuthTokenResultSuccess {
-                        onSuccess(successResult)
-                    }
-                }
+    private func exchange(code: String) async throws -> AuthTokenResultSuccess {
+        let data = try await self.networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
+        if let successResult = data as? AuthTokenResultSuccess {
+            return successResult
         }
+        let error = NSError(domain: "", code: 1000)
+        throw error
     }
 }

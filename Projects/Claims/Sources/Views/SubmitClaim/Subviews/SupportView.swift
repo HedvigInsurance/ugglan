@@ -14,6 +14,7 @@ struct SupportView: View {
                     .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.submitClaimNeedHelpLabel)
                     .foregroundColor(hTextColor.secondary)
+                    .multilineTextAlignment(.center)
             }
             hButton.MediumButton(type: .primary) {
                 store.send(.dissmissNewClaimFlow)

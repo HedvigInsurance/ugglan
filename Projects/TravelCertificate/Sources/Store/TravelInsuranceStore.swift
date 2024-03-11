@@ -13,7 +13,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
     public override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
-    ) async throws {
+    ) async {
         switch action {
         case .postTravelInsuranceForm:
             guard let config = self.state.travelInsuranceConfig,
@@ -34,6 +34,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
             )
             do {
                 let url = try await self.travelInsuranceClient.submitForm(dto: dto)
+                AskForRating().askForReview()
                 send(.setDownloadUrl(urL: url))
             } catch _ {
                 self.setError(L10n.General.errorBody, for: .postTravelInsurance)
