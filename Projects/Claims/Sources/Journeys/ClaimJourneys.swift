@@ -303,6 +303,8 @@ public class ClaimJourneys {
             { action, pre in
                 if case .setSingleItemModel(_) = action {
                     pre.bag.dispose()
+                } else if case .setItemCustomName(_) = action {
+                    pre.bag.dispose()
                 } else if case .navigationAction(.dismissScreen) = action {
                     pre.bag.dispose()
                 }
@@ -321,11 +323,16 @@ public class ClaimJourneys {
                 preSelectedItems: { return [] },
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if let object = item.first?.0 {
-                        store.send(.setSingleItemModel(modelName: object))
+                    if item.first?.0 == nil {
+                        let customName = item.first?.1 ?? ""
+                        store.send(.setItemCustomName(customName: customName))
                     } else {
-                        let model = ClaimFlowItemModelOptionModel(customName: item.first?.1 ?? "")
-                        store.send(.setSingleItemModel(modelName: model))
+                        if let object = item.first?.0 {
+                            store.send(.setSingleItemModel(modelName: object))
+                        } else {
+                            let model = ClaimFlowItemModelOptionModel(customName: item.first?.1 ?? "")
+                            store.send(.setSingleItemModel(modelName: model))
+                        }
                     }
                 },
                 onCancel: {
@@ -333,8 +340,10 @@ public class ClaimJourneys {
                     store.send(.navigationAction(action: .dismissScreen))
                 },
                 singleSelect: true,
-                showDividers: true
-            ),
+                showDividers: true,
+                manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name
+            )
+            .hIncludeManualInput,
             style: .detented(.large, modally: false),
             options: [.wantsGrabber]
         )

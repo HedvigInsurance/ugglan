@@ -103,12 +103,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setSingleItemDamage(damages):
             newState.singleItemStep?.selectedItemProblems = damages
         case let .setSingleItemModel(model):
-            if let customName = model.customName {
-                newState.singleItemStep?.customName = customName
-            } else {
-                newState.singleItemStep?.customName = nil
-                newState.singleItemStep?.selectedItemModel = model.itemModelId
-            }
+            //            if let customName = model.customName {
+            //                newState.singleItemStep?.customName = customName
+            //            } else {
+            newState.singleItemStep?.customName = nil
+            newState.singleItemStep?.selectedItemModel = model.itemModelId
+        //            }
         case let .setPurchasePrice(priceOfPurchase):
             newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
@@ -116,6 +116,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setItemBrand(brand):
             newState.singleItemStep?.selectedItemModel = nil
             newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
+        case let .setItemCustomName(customName):
+            newState.singleItemStep?.customName = customName
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
         case let .setClaimEntrypointsForSelection(commonClaims):
