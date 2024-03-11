@@ -28,4 +28,12 @@ extension AppJourney {
                 }
             }
     }
+
+    @JourneyBuilder
+    static func urlHandledBySystem(url: URL) -> some JourneyPresentation {
+        ContinueJourney()
+            .onPresent {
+                UIApplication.shared.open(url)
+            }
+    }
 }
