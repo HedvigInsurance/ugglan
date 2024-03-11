@@ -230,7 +230,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
                     } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
                         logMessage =
-                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message). Error code:\(result.httpStatusValue)"
+                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message)"
                     } else if let result = result as? AuthAttemptResultErrorIOError {
                         logMessage =
                             "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
