@@ -7,17 +7,14 @@ import hGraphQL
 
 extension AppJourney {
     static func onboarding() -> some JourneyPresentation {
-        ContinueJourney()
-            .onPresent {
-                var webUrl = Environment.current.webBaseURL
-                webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
-                webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
-                webUrl =
-                    webUrl
-                    .appending("utm_source", value: "ios")
-                    .appending("utm_medium", value: "hedvig-app")
-                    .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
-                UIApplication.shared.open(webUrl)
-            }
+        var webUrl = Environment.current.webBaseURL
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
+        webUrl =
+            webUrl
+            .appending("utm_source", value: "ios")
+            .appending("utm_medium", value: "hedvig-app")
+            .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
+        return AppJourney.urlHandledBySystem(url: webUrl)
     }
 }

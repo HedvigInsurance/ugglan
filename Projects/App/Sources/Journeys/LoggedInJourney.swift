@@ -36,10 +36,7 @@ extension AppJourney {
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
-                            ContinueJourney()
-                                .onPresent {
-                                    UIApplication.shared.open(url)
-                                }
+                            AppJourney.urlHandledBySystem(url: url)
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
@@ -74,10 +71,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
-                ContinueJourney()
-                    .onPresent {
-                        UIApplication.shared.open(url)
-                    }
+                AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
                     .onDismiss {
