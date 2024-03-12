@@ -15,7 +15,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let hButtonText: String
     private let infoCard: CheckboxInfoCard?
 
-    @State var type: CheckboxFieldType? = .inputField
+    @State var type: CheckboxFieldType? = nil
 
     @State private var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
@@ -67,6 +67,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         bottomContent
                     }
                 }
+                .hFormObserveKeyboard
                 .onAppear {
                     selectedItems = items.filter({ preSelectedItems.contains($0.object) })
                         .map({
@@ -80,6 +81,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .hFormAttachToBottom {
                 bottomContent
             }
+            .hFormObserveKeyboard
             .onAppear {
                 selectedItems = items.filter({ preSelectedItems.contains($0.object) })
                     .map({
@@ -115,7 +117,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         masking: Masking(type: .none),
                         value: $manualBrandName,
                         equals: $type,
-                        focusValue: .none,
+                        focusValue: .inputField,
                         placeholder: manualInputPlaceholder
                     )
                 }
@@ -193,6 +195,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 } else {
                     manualInput = true
                     selectedItems = []
+                    type = .inputField
                 }
             }
         } else {
@@ -207,7 +210,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     onTapExecuteFor(item)
                 } else {
                     manualInput = true
-
+                    type = .inputField
                 }
             }
             .hWithoutDivider
@@ -317,6 +320,10 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         ModelForPreview(id: "id2", name: "name2"),
                         ModelForPreview(id: "id3", name: "name3"),
                         ModelForPreview(id: "id4", name: "name4"),
+                        ModelForPreview(id: "id5", name: "name5"),
+                        ModelForPreview(id: "id6", name: "name6"),
+                        ModelForPreview(id: "id7", name: "name7"),
+
                     ]
                     .compactMap({ (object: $0, displayName: $0.name) })
                 }(),
@@ -329,6 +336,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 singleSelect: true,
                 manualInputPlaceholder: "Enter brand name"
             )
+            .hIncludeManualInput
         }
     }
 }
