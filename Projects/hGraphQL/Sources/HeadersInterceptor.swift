@@ -1,6 +1,5 @@
 import Apollo
 import Foundation
-import authlib
 
 enum AuthError: Error {
     case refreshTokenExpired
