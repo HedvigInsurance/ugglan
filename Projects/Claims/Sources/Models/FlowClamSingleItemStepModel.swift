@@ -69,7 +69,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
             itemProblemIds: GraphQLNullable(optionalValue: problemsIds),
             itemBrandInput: GraphQLNullable(optionalValue: itemBrandInput),
             itemModelInput: GraphQLNullable(optionalValue: itemModelInput),
-            customName: GraphQLNullable.none
+            customName: GraphQLNullable(optionalValue: customName)
         )
     }
 
@@ -128,10 +128,6 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         return availableItemModelOptions.filter({ $0.itemBrandId == brandId })
     }
 
-    func shouldShowListOfModels(for brand: ClaimFlowItemBrandOptionModel) -> Bool {
-        return !(self.getListOfModels(for: brand.itemBrandId)?.isEmpty ?? true)
-    }
-
     var returnDisplayStringForSummaryPrice: String? {
         if let purchasePrice {
             return String(Int(purchasePrice)) + " " + (currencyCode ?? "")
@@ -159,7 +155,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
-    let customName: String?
+    //    let customName: String?
 
     init(
         customName: String
@@ -168,7 +164,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemTypeId = ""
         self.itemBrandId = ""
         self.itemModelId = ""
-        self.customName = customName
+        //        self.customName = customName
     }
 
     init(
@@ -178,7 +174,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemBrandId = model.itemBrandId
         self.itemTypeId = model.itemTypeId
         self.itemModelId = model.itemModelId
-        self.customName = nil
+        //        self.customName = nil
     }
 }
 

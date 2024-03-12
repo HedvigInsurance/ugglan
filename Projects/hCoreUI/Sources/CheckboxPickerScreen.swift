@@ -98,14 +98,18 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .disabled(isLoading)
             }
-            if includeManualInput {
+
+            let showOtherCell = includeManualInput && !items.isEmpty
+            let showFreeTextField = (manualInput && includeManualInput) || items.isEmpty
+
+            if showOtherCell {
                 hSection {
                     getCell(displayName: L10n.manualInputListOther)
                 }
                 .disabled(isLoading)
             }
 
-            if manualInput && includeManualInput {
+            if showFreeTextField {
                 hSection {
                     hFloatingTextField(
                         masking: Masking(type: .none),
@@ -114,6 +118,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         focusValue: .none,
                         placeholder: manualInputPlaceholder
                     )
+                }
+                .onAppear {
+                    manualInput = true
+                    selectedItems = []
                 }
             }
         }

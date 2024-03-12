@@ -214,55 +214,6 @@ public class ClaimJourneys {
         }
     }
 
-    static func openBrandPickerScreenCheckbox() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: CheckboxPickerScreen<ClaimFlowItemBrandOptionModel>(
-                items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.availableItemBrandOptions
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
-                }(),
-                preSelectedItems: { [] },
-                onSelected: { item in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    for i in item {
-                        if let item = i.0 {
-                            store.send(.setItemBrand(brand: item))
-                        }
-                    }
-                },
-                singleSelect: true
-            ),
-            style: .detented(.large),
-            options: [.largeNavigationBar]
-        ) {
-            action in
-            if case let .setItemBrand(brand) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
-                } else {
-                    PopJourney()
-                }
-            } else if case .navigationAction(.dismissScreen) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
-        }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case .setSingleItemModel(_) = action {
-                    pre.bag.dispose()
-                } else if case .navigationAction(.dismissScreen) = action {
-                    pre.bag.dispose()
-                }
-            }
-        )
-    }
-
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -285,13 +236,8 @@ public class ClaimJourneys {
             options: [.largeNavigationBar]
         ) {
             action in
-            if case let .setItemBrand(brand) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
-                } else {
-                    PopJourney()
-                }
+            if case .setItemBrand(_) = action {
+                openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
             } else if case .navigationAction(.dismissScreen) = action {
                 PopJourney()
             } else {
@@ -433,19 +379,7 @@ public class ClaimJourneys {
         ) {
             action in
             if case .navigationAction(.openBrandPicker) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let singleItemStep = store.state.singleItemStep
-                let brandsWithModels =
-                    singleItemStep?.availableItemBrandOptions
-                    .filter({
-                        singleItemStep?.shouldShowListOfModels(for: $0) ?? false
-                    }) ?? []
-
-                if !brandsWithModels.isEmpty {
-                    openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
-                } else {
-                    openBrandPickerScreenCheckbox().configureTitle(L10n.claimsChooseBrandTitle)
-                }
+                openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
             } else if case .navigationAction(.openPriceInput) = action {
                 openPriceInputScreen()
             } else {
