@@ -284,10 +284,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             do {
                 if let token = try ApolloClient.retreiveToken() {
                     let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
-                    if let data = data as? RevokeResultSuccess {
-                        send(.logoutSuccess)
-                    } else {
-                        send(.logoutFailure)
+                    switch onEnum(of: data) {
+                    case .error: send(.logoutFailure)
+                    case .success: send(.logoutSuccess)
                     }
                 } else {
                     send(.logoutSuccess)
