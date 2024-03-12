@@ -26,7 +26,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @State var manualInput: Bool = false
 
     private var fieldSize: hFieldSize
-
+    private let manualInputId = "manualInputId"
     public init(
         items: [(object: T, displayName: String)],
         preSelectedItems: @escaping () -> [T],
@@ -37,6 +37,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
+        manualBrandName: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil
     ) {
@@ -49,6 +50,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
+        if let manualBrandName {
+            self.manualBrandName = manualBrandName
+            self.manualInput = true
+        }
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
         if items.count > 3 {
             self.fieldSize = .small
@@ -58,45 +63,56 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.infoCard = infoCard
     }
 
+    @ViewBuilder
     public var body: some View {
-        if attachToBottom {
-            hForm {}
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        content
-                        bottomContent
+        ScrollViewReader { proxy in
+            if attachToBottom {
+                hForm {}
+                    .hFormAttachToBottom {
+                        VStack(spacing: 0) {
+                            content(with: proxy)
+                            bottomContent
+                        }
                     }
+                    .hFormObserveKeyboard
+                    .onAppear {
+                        onAppear(with: proxy)
+                    }
+            } else {
+                hForm {
+                    content(with: proxy)
+                }
+                .hFormAttachToBottom {
+                    bottomContent
                 }
                 .hFormObserveKeyboard
                 .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.object) })
-                        .map({
-                            $0.object
-                        })
+                    onAppear(with: proxy)
                 }
-        } else {
-            hForm {
-                content
-            }
-            .hFormAttachToBottom {
-                bottomContent
-            }
-            .hFormObserveKeyboard
-            .onAppear {
-                selectedItems = items.filter({ preSelectedItems.contains($0.object) })
-                    .map({
-                        $0.object
-                    })
             }
         }
     }
 
-    @ViewBuilder
-    var content: some View {
+    private func onAppear(with proxy: ScrollViewProxy) {
+        selectedItems = items.filter({ preSelectedItems.contains($0.object) })
+            .map({
+                $0.object
+            })
+        if let selectedItem = selectedItems.first, selectedItems.count == 1 {
+            proxy.scrollTo(selectedItem, anchor: .center)
+        }
+
+        if manualInput {
+            proxy.scrollTo(manualInputId, anchor: .center)
+        }
+    }
+
+    private func content(with proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
                     getCell(item: item.object)
+                        .id(item.object)
                 }
                 .disabled(isLoading)
             }
@@ -125,6 +141,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     manualInput = true
                     selectedItems = []
                 }
+                .id(manualInputId)
             }
         }
     }

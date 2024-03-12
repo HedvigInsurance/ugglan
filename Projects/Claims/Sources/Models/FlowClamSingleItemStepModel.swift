@@ -157,15 +157,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemModelId: String
 
     init(
-        customName: String
-    ) {
-        self.displayName = ""
-        self.itemTypeId = ""
-        self.itemBrandId = ""
-        self.itemModelId = ""
-    }
-
-    init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemModel
     ) {
         self.displayName = model.displayName
@@ -193,4 +184,9 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
         self.displayName = model.displayName
         self.itemProblemId = model.itemProblemId
     }
+}
+
+public enum SelectedModel: Codable, Equatable, Hashable {
+    case model(ClaimFlowItemModelOptionModel)
+    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
 }
