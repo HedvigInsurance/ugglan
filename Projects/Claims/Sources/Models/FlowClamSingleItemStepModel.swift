@@ -155,7 +155,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
-    //    let customName: String?
 
     init(
         customName: String
@@ -164,7 +163,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemTypeId = ""
         self.itemBrandId = ""
         self.itemModelId = ""
-        //        self.customName = customName
     }
 
     init(
@@ -174,7 +172,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemBrandId = model.itemBrandId
         self.itemTypeId = model.itemTypeId
         self.itemModelId = model.itemModelId
-        //        self.customName = nil
     }
 }
 

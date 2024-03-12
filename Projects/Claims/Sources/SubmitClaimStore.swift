@@ -103,12 +103,8 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setSingleItemDamage(damages):
             newState.singleItemStep?.selectedItemProblems = damages
         case let .setSingleItemModel(model):
-            //            if let customName = model.customName {
-            //                newState.singleItemStep?.customName = customName
-            //            } else {
             newState.singleItemStep?.customName = nil
             newState.singleItemStep?.selectedItemModel = model.itemModelId
-        //            }
         case let .setPurchasePrice(priceOfPurchase):
             newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
