@@ -234,20 +234,26 @@ public struct DirectDebitSetup: View {
     }
 
     public var body: some View {
-        DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
-            .toolbar {
-                ToolbarItem(
-                    placement: .navigationBarLeading
-                ) {
-                    dismissButton
-                }
+        Group {
+            if showCancelAlert {
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                    .alert(isPresented: $showCancelAlert) {
+                        cancelAlert()
+                    }
+            } else {
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                    .alert(isPresented: $showErrorAlert) {
+                        errorAlert()
+                    }
             }
-            .alert(isPresented: $showCancelAlert) {
-                cancelAlert()
+        }
+        .toolbar {
+            ToolbarItem(
+                placement: .topBarLeading
+            ) {
+                dismissButton
             }
-            .alert(isPresented: $showErrorAlert) {
-                errorAlert()
-            }
+        }
     }
 
     private var dismissButton: some View {
@@ -259,7 +265,7 @@ public struct DirectDebitSetup: View {
     }
 
     private func cancelAlert() -> SwiftUI.Alert {
-        Alert(
+        return Alert(
             title: Text(L10n.PayInIframeInAppCancelAlert.title),
             message: Text(L10n.PayInIframeInAppCancelAlert.body),
             primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
@@ -295,7 +301,7 @@ extension DirectDebitSetup {
             PaymentStore.self,
             rootView: self,
             style: .detented(.large),
-            options: [.defaults, .autoPopSelfAndSuccessors]
+            options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
         ) { action in
             if case .dismissPayment = action {
                 DismissJourney()
