@@ -135,15 +135,8 @@ extension QuickAction {
             .CommonClaimDescription
     ) {
         self.id = data.id
-        self.displayTitle = data.title
-        self.displaySubtitle = {
-            if data.isFirstVet {
-                return L10n.hcQuickActionsFirstvetTitle
-            } else if data.isSickAborad {
-                return L10n.hcQuickActionsSickAbroadSubtitle
-            }
-            return ""
-        }()
+        self.displayTitle = data.displayTitle
+        self.displaySubtitle = data.displaySubtitle
         self.layout = Layout(layout: data.layout)
     }
 }
@@ -180,11 +173,30 @@ extension QuickAction.Layout {
 extension OctopusGraphQL.QuickActionsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
     .CommonClaimDescription
 {
-    var isFirstVet: Bool {
+    fileprivate var isFirstVet: Bool {
         id == "30" || id == "31" || id == "32"
     }
 
-    public var isSickAborad: Bool {
+    fileprivate var isSickAborad: Bool {
         self.layout.asCommonClaimLayoutEmergency?.emergencyNumber != nil
     }
+
+    fileprivate var displayTitle: String {
+        if self.isFirstVet {
+            return L10n.hcQuickActionsFirstvetTitle
+        } else if self.isSickAborad {
+            return L10n.hcQuickActionsSickAbroadTitle
+        }
+        return self.title
+    }
+
+    fileprivate var displaySubtitle: String {
+        if self.isFirstVet {
+            return L10n.hcQuickActionsFirstvetSubtitle
+        } else if self.isSickAborad {
+            return L10n.hcQuickActionsSickAbroadSubtitle
+        }
+        return ""
+    }
+
 }
