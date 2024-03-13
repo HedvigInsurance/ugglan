@@ -14,7 +14,7 @@ extension AppJourney {
     @JourneyBuilder
     static func configureQuickAction(quickAction: QuickAction) -> some JourneyPresentation {
         switch quickAction {
-        case .changeBank():
+        case .payments():
             if let url = DeepLink.getUrl(from: .directDebit) {
                 configureURL(url: url)
             }

@@ -200,11 +200,15 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setAllQuickActions(_ state: inout HomeState) {
         var allQuickActions = [QuickAction]()
-
-        allQuickActions.append(.changeBank())
-
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let contracts = contractStore.state.activeContracts
+
+        if Dependencies.featureFlags().isMovingFlowEnabled
+            && !contracts.filter({ $0.supportsAddressChange }).isEmpty
+        {
+            allQuickActions.append(.moving())
+        }
+        allQuickActions.append(.payments())
 
         if Dependencies.featureFlags().isEditCoInsuredEnabled
             && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
@@ -212,11 +216,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allQuickActions.append(.editCoInsured())
         }
 
-        if Dependencies.featureFlags().isMovingFlowEnabled
-            && !contracts.filter({ $0.supportsAddressChange }).isEmpty
-        {
-            allQuickActions.append(.moving())
-        }
         if Dependencies.featureFlags().isTravelInsuranceEnabled
             && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
@@ -278,11 +277,20 @@ extension QuickAction {
         )
     }
 
-    public static func changeBank() -> QuickAction {
+    public static func payments() -> QuickAction {
         QuickAction(
-            id: "change_bank",
-            displayTitle: L10n.hcQuickActionsChangeBank,
+            id: "payments",
+            displayTitle: L10n.hcQuickActionsPaymentsTitle,
             displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
+            layout: nil
+        )
+    }
+
+    public static func cancelInsurance() -> QuickAction {
+        QuickAction(
+            id: "cancel_insurance",
+            displayTitle: L10n.hcQuickActionsCancellationTitle,
+            displaySubtitle: L10n.hcQuickActionsCancellationSubtitle,
             layout: nil
         )
     }
