@@ -136,6 +136,14 @@ extension QuickAction {
     ) {
         self.id = data.id
         self.displayTitle = data.title
+        self.displaySubtitle = {
+            if data.isFirstVet {
+                return L10n.hcQuickActionsFirstvetTitle
+            } else if data.isSickAborad {
+                return L10n.hcQuickActionsSickAbroadSubtitle
+            }
+            return ""
+        }()
         self.layout = Layout(layout: data.layout)
     }
 }
@@ -166,5 +174,17 @@ extension QuickAction.Layout {
                 bulletPoints: bulletPoints
             )
         }
+    }
+}
+
+extension OctopusGraphQL.QuickActionsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
+    .CommonClaimDescription
+{
+    var isFirstVet: Bool {
+        id == "30" || id == "31" || id == "32"
+    }
+
+    public var isSickAborad: Bool {
+        self.layout.asCommonClaimLayoutEmergency?.emergencyNumber != nil
     }
 }

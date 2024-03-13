@@ -3,15 +3,18 @@ import Foundation
 public struct QuickAction: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     public let displayTitle: String
+    public let displaySubtitle: String?
     public let layout: Layout?
 
     public init(
         id: String,
         displayTitle: String,
+        displaySubtitle: String?,
         layout: Layout?
     ) {
         self.id = id
         self.displayTitle = displayTitle
+        self.displaySubtitle = displaySubtitle
         self.layout = layout
 
     }

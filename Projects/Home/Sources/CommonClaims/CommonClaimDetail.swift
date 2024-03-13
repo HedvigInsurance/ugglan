@@ -80,6 +80,7 @@ extension QuickActionDetailScreen {
         quickAction: QuickAction(
             id: "",
             displayTitle: "",
+            displaySubtitle: "",
             layout: QuickAction.Layout.init(
                 titleAndBulletPoint:
                     .init(
@@ -88,12 +89,10 @@ extension QuickActionDetailScreen {
                             .init(
                                 title: "title",
                                 description: "description"
-                                    //                                icon: nil
                             ),
                             .init(
                                 title: "title",
                                 description: "description"
-                                    //                                icon: nil
                             ),
                         ]
                     ),

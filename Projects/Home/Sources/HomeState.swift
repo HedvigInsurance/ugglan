@@ -108,7 +108,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 )
 
                 send(.setFutureStatus(status: memberData.futureState))
-            } catch let error {
+            } catch _ {
                 if ApplicationContext.shared.isDemoMode {
                     send(.setQuickActions(quickActions: []))
                 } else {
@@ -251,18 +251,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
 extension QuickAction {
     public static func travelInsurance() -> QuickAction {
-        let titleAndBulletPoint = QuickAction.Layout.TitleAndBulletPoints(
-            color: "",
-            buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
-            title: "",
-            bulletPoints: []
-        )
-        let emergency = QuickAction.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
-        let layout = QuickAction.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
         let quickAction = QuickAction(
             id: "travelInsurance",
-            displayTitle: L10n.TravelCertificate.cardTitle,
-            layout: layout
+            displayTitle: L10n.hcQuickActionsTravelCertificate,
+            displaySubtitle: L10n.hcQuickActionsTravelCertificateSubtitle,
+            layout: nil
         )
         return quickAction
     }
@@ -270,16 +263,18 @@ extension QuickAction {
     public static func moving() -> QuickAction {
         return QuickAction(
             id: "moving_flow",
-            displayTitle: L10n.InsuranceDetails.changeAddressButton,
-            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+            displayTitle: L10n.hcQuickActionsChangeAddressTitle,
+            displaySubtitle: L10n.hcQuickActionsChangeAddressSubtitle,
+            layout: nil
         )
     }
 
     public static func editCoInsured() -> QuickAction {
         QuickAction(
             id: "edit_coinsured",
-            displayTitle: L10n.hcQuickActionsEditCoinsured,
-            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+            displayTitle: L10n.hcQuickActionsCoInsuredTitle,
+            displaySubtitle: L10n.hcQuickActionsCoInsuredSubtitle,
+            layout: nil
         )
     }
 
@@ -287,7 +282,8 @@ extension QuickAction {
         QuickAction(
             id: "change_bank",
             displayTitle: L10n.hcQuickActionsChangeBank,
-            layout: .init(titleAndBulletPoint: nil, emergency: nil)
+            displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
+            layout: nil
         )
     }
 }
