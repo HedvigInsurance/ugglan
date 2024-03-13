@@ -145,6 +145,7 @@ private class DirectDebitWebview: UIView {
 
     private func checkForResult() {
         webViewDelgate.decidePolicyForNavigationAction
+            .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] success in
                 guard let self = self else {
@@ -160,10 +161,8 @@ private class DirectDebitWebview: UIView {
     }
 
     private func showResultScreen(type: DirectDebitResultType) {
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
             vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
-
-            let containerView = UIView()
 
             let directDebitResult = DirectDebitResult(
                 type: type,
@@ -178,15 +177,28 @@ private class DirectDebitWebview: UIView {
             case .failure:
                 break
             }
-
             let debitResultHostingView = UIHostingController(rootView: directDebitResult)
-            containerView.addSubview(debitResultHostingView.view)
-
-            debitResultHostingView.view.snp.makeConstraints { make in make.size.equalToSuperview()
-                make.edges.equalToSuperview()
+            let backgrondView = UIView()
+            let schema = UITraitCollection.current.userInterfaceStyle == .light ? ColorScheme.light : .dark
+            backgrondView.backgroundColor = hBackgroundColor.primary.colorFor(schema, .base).color.uiColor()
+            self.addSubview(backgrondView)
+            self.addSubview(debitResultHostingView.view)
+            backgrondView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalToSuperview().inset(-100)
+                make.top.equalToSuperview().inset(-100)
             }
 
-            vc.view = containerView
+            debitResultHostingView.view.snp.makeConstraints { make in
+                make.trailing.leading.top.bottom.equalToSuperview()
+            }
+
+            UIView.transition(
+                with: self,
+                duration: 0.3,
+                options: .transitionCrossDissolve,
+                animations: {}
+            )
         }
     }
 

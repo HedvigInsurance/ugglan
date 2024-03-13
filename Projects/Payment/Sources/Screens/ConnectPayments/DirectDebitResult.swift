@@ -45,7 +45,6 @@ struct DirectDebitResult: View {
                     store.send(.dismissPayment)
                 }
             )
-            .background(Color.red)
         case .failure:
             GenericErrorView(
                 title: type.headingText,
