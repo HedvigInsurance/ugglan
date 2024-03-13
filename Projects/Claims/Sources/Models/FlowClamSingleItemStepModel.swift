@@ -69,7 +69,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
             itemProblemIds: GraphQLNullable(optionalValue: problemsIds),
             itemBrandInput: GraphQLNullable(optionalValue: itemBrandInput),
             itemModelInput: GraphQLNullable(optionalValue: itemModelInput),
-            customName: GraphQLNullable.none
+            customName: GraphQLNullable(optionalValue: customName)
         )
     }
 
@@ -128,10 +128,6 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         return availableItemModelOptions.filter({ $0.itemBrandId == brandId })
     }
 
-    func shouldShowListOfModels(for brand: ClaimFlowItemBrandOptionModel) -> Bool {
-        return !(self.getListOfModels(for: brand.itemBrandId)?.isEmpty ?? true)
-    }
-
     var returnDisplayStringForSummaryPrice: String? {
         if let purchasePrice {
             return String(Int(purchasePrice)) + " " + (currencyCode ?? "")
@@ -159,17 +155,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
-    let customName: String?
-
-    init(
-        customName: String
-    ) {
-        self.displayName = ""
-        self.itemTypeId = ""
-        self.itemBrandId = ""
-        self.itemModelId = ""
-        self.customName = customName
-    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemModel
@@ -178,7 +163,6 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
         self.itemBrandId = model.itemBrandId
         self.itemTypeId = model.itemTypeId
         self.itemModelId = model.itemModelId
-        self.customName = nil
     }
 }
 
@@ -200,4 +184,9 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
         self.displayName = model.displayName
         self.itemProblemId = model.itemProblemId
     }
+}
+
+public enum SelectedModel: Codable, Equatable, Hashable {
+    case model(ClaimFlowItemModelOptionModel)
+    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
 }
