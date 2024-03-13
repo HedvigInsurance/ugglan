@@ -12,8 +12,7 @@ public struct HomeState: StateProtocol {
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessages: [ImportantMessage] = []
-    public var quickActions: [QuickAction] = []
-    public var allQuickActions: [QuickAction] = []
+    public var quickAction: [QuickAction] = []
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
@@ -24,11 +23,6 @@ public struct HomeState: StateProtocol {
     public var hasSentOrRecievedAtLeastOneMessage = false
 
     public var latestChatTimeStamp = Date()
-
-    public var hasFirstVet: Bool {
-        return allQuickActions.first(where: { $0.isFirstVet }) != nil
-    }
-
     func getImportantMessageToShow() -> [ImportantMessage] {
         return importantMessages.filter { importantMessage in
             !hidenImportantMessages.contains(importantMessage.id)
@@ -180,23 +174,23 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setLoading(for: .fetchQuickActions)
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
-            newState.quickActions = quickActions
+            newState.quickAction = quickActions
             setAllQuickActions(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
-            setAllQuickActions(&newState)
+            setToolbarTypes(&newState)
         case let .setHasAtLeastOneClaim(has):
             newState.hasAtLeastOneClaim = has
-            setAllQuickActions(&newState)
+            setToolbarTypes(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
-            setAllQuickActions(&newState)
+            setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
-            setAllQuickActions(&newState)
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -228,13 +222,16 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         {
             allQuickActions.append(.travelInsurance())
         }
-        allQuickActions.append(contentsOf: state.quickActions)
-        state.allQuickActions = allQuickActions
+        allQuickActions.append(contentsOf: state.quickAction)
+        state.quickAction = allQuickActions
+        setToolbarTypes(&state)
+    }
 
+    private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 
-        if state.hasFirstVet {
+        if state.quickAction.vetQuickAction != nil {
             types.append(.firstVet)
         }
 

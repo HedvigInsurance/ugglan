@@ -86,7 +86,7 @@ extension SubmitClaimDeflectScreen {
     public static var journey: some JourneyPresentation {
         let model: FlowClaimDeflectStepModel? = {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let quickActions = store.state.quickActions
+            let quickActions = store.state.quickAction
             if let index = quickActions.firstIndex(where: { $0.layout.emergency?.emergencyNumber != nil }) {
                 return FlowClaimDeflectStepModel(
                     id: .FlowClaimDeflectEmergencyStep,

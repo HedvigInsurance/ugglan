@@ -56,13 +56,11 @@ public struct HelpCenterStartView: View {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                 .padding(.bottom, 4)
 
-            ForEach(store.state.allQuickActions) { quickAction in
+            ForEach(store.state.quickAction) { quickAction in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 4) {
                             hText(quickAction.displayTitle)
-                            hText("Update to a new home address", style: .standardSmall)
-                                .foregroundColor(hTextColor.secondary)
                         }
                         Spacer()
                     }
