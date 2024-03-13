@@ -37,7 +37,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.selectedItemModel = data.selectedItemModel
 
         if self.selectedItemModel == nil && self.customName == nil {
-            let currentDeviceName = "Apple " + UIDevice.modelName
+            let currentDeviceName = UIDevice.modelName
             if let matchingModelWithCurrentDevice = self.availableItemModelOptions.first(where: {
                 $0.displayName == currentDeviceName
             }) {
