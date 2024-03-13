@@ -174,8 +174,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setLoading(for: .fetchQuickActions)
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
-            newState.quickAction = quickActions
-            setAllQuickActions(&newState)
+            setAllQuickActions(with: quickActions, for: &newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
@@ -198,7 +197,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         return newState
     }
 
-    private func setAllQuickActions(_ state: inout HomeState) {
+    private func setAllQuickActions(with appendingQuickActions: [QuickAction], for state: inout HomeState) {
         var allQuickActions = [QuickAction]()
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let contracts = contractStore.state.activeContracts
@@ -221,7 +220,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         {
             allQuickActions.append(.travelInsurance())
         }
-        allQuickActions.append(contentsOf: state.quickAction)
+
+        allQuickActions.append(contentsOf: appendingQuickActions)
+
         state.quickAction = allQuickActions
         setToolbarTypes(&state)
     }
@@ -282,6 +283,15 @@ extension QuickAction {
             id: "payments",
             displayTitle: L10n.hcQuickActionsPaymentsTitle,
             displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
+            layout: nil
+        )
+    }
+
+    public static func cancelInsurance() -> QuickAction {
+        QuickAction(
+            id: "cancel_insurance",
+            displayTitle: L10n.hcQuickActionsCancellationTitle,
+            displaySubtitle: L10n.hcQuickActionsCancellationSubtitle,
             layout: nil
         )
     }
