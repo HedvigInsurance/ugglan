@@ -40,7 +40,7 @@ extension AppJourney {
                 configureURL(url: url)
             }
         default:
-            if quickAction.layout.titleAndBulletPoint == nil {
+            if quickAction.isSickAborad {
                 openOnTop(
                     vc: SubmitClaimDeflectScreen.journey
                 )

@@ -3,12 +3,12 @@ import Foundation
 public struct QuickAction: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     public let displayTitle: String
-    public let layout: Layout
+    public let layout: Layout?
 
     public init(
         id: String,
         displayTitle: String,
-        layout: Layout
+        layout: Layout?
     ) {
         self.id = id
         self.displayTitle = displayTitle
@@ -81,6 +81,10 @@ public struct QuickAction: Codable, Equatable, Hashable, Identifiable {
 extension QuickAction {
     var isFirstVet: Bool {
         id == "30" || id == "31" || id == "32"
+    }
+
+    public var isSickAborad: Bool {
+        self.layout?.emergency?.emergencyNumber != nil
     }
 }
 

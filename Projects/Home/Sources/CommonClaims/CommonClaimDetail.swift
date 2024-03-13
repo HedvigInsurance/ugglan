@@ -16,7 +16,7 @@ public struct QuickActionDetailScreen: View {
 
     public var body: some View {
         hForm {
-            let bulletPoints = quickAction.layout.titleAndBulletPoint?.bulletPoints
+            let bulletPoints = quickAction.layout?.titleAndBulletPoint?.bulletPoints
             VStack(spacing: 8) {
                 ForEach(bulletPoints ?? [], id: \.hashValue) { bulletPoint in
                     hSection {
