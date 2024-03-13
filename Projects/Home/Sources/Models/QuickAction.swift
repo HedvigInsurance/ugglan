@@ -79,7 +79,7 @@ public struct QuickAction: Codable, Equatable, Hashable, Identifiable {
 }
 
 extension QuickAction {
-    public var isFirstVet: Bool {
+    var isFirstVet: Bool {
         id == "30" || id == "31" || id == "32"
     }
 }

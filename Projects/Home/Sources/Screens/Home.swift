@@ -228,7 +228,7 @@ extension HomeView {
                 HelpCenterStartView.journey
             } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
                 if !fromOtherService {
-                    QuickActionDetail.journey(quickAction: quickAction)
+                    QuickActionDetailScreen.journey(quickAction: quickAction)
                         .withJourneyDismissButton
                         .configureTitle(quickAction.displayTitle)
                 }

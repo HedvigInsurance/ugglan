@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct QuickActionDetail: View {
+public struct QuickActionDetailScreen: View {
     @PresentableStore var store: HomeStore
     private let quickAction: QuickAction
 
@@ -60,11 +60,11 @@ public struct QuickActionDetail: View {
     }
 }
 
-extension QuickActionDetail {
+extension QuickActionDetailScreen {
     public static func journey(quickAction: QuickAction) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
-            rootView: QuickActionDetail(quickAction: quickAction),
+            rootView: QuickActionDetailScreen(quickAction: quickAction),
             style: .detented(.large, modally: true),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -76,7 +76,7 @@ extension QuickActionDetail {
 }
 
 #Preview{
-    QuickActionDetail(
+    QuickActionDetailScreen(
         quickAction: QuickAction(
             id: "",
             displayTitle: "",

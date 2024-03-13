@@ -45,7 +45,7 @@ extension AppJourney {
                     vc: SubmitClaimDeflectScreen.journey
                 )
             } else {
-                let vc = QuickActionDetail.journey(quickAction: quickAction)
+                let vc = QuickActionDetailScreen.journey(quickAction: quickAction)
                     .withJourneyDismissButton
                     .configureTitle(quickAction.displayTitle)
 
