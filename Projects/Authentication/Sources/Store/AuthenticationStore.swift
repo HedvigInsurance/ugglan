@@ -15,51 +15,6 @@ enum LoginStatus: Equatable {
     case unknown
 }
 
-extension CoreSignal where Kind == Plain {
-    func poll(
-        poller: @escaping () -> Signal<Value>,
-        shouldPoll: @escaping (_ value: Value) -> Bool
-    ) -> CoreSignal<Plain, Value> {
-        return self.flatMapLatest { value in
-            if shouldPoll(value) {
-                return poller()
-                    .delay(by: 0.25)
-                    .poll(poller: poller, shouldPoll: shouldPoll)
-            }
-
-            return Signal(just: value)
-        }
-    }
-}
-
-final class Poll<ReturnValue> {
-    let action: (() async throws -> ReturnValue?)?
-    let shouldPull: (_ value: ReturnValue) -> Bool
-
-    init(
-        action: @escaping () async throws -> ReturnValue,
-        shouldPull: @escaping (_ value: ReturnValue) -> Bool
-    ) {
-        self.action = action
-        self.shouldPull = shouldPull
-    }
-
-    func getValue() async throws -> ReturnValue? {
-        if let action {
-            let data = try await action()
-            if let data {
-                if shouldPull(data) {
-                    try? await Task.sleep(nanoseconds: 250_000_000)
-                    return try await getValue()
-                } else {
-                    return data
-                }
-            }
-        }
-        return nil
-    }
-}
-
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
@@ -68,47 +23,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             httpClientEngine: nil
         )
     }()
-    func checkStatus(statusUrl: URL) async throws -> LoginStatus {
-        async let sleepTask: () = try Task.sleep(nanoseconds: 2 * 100_000_000)
-        async let statusTask = try self.networkAuthRepository.loginStatus(
-            statusUrl: .init(url: statusUrl.absoluteString)
-        )
-        do {
-            let data = try await [sleepTask, statusTask] as [Any]
-            let statusData = data[1] as! LoginStatusResult
-            if let statusData = statusData as? LoginStatusResultCompleted {
-                log.info(
-                    "LOGIN AUTH FINISHED"
-                )
-                return .completed(code: statusData.authorizationCode.code)
-            } else if let statusData = statusData as? LoginStatusResultFailed {
-                let message = statusData.localisedMessage
-                log.error(
-                    "LOGIN FAILED",
-                    error: NSError(domain: message, code: 1000),
-                    attributes: [
-                        "message": message,
-                        "statusUrl": statusUrl.absoluteString,
-                    ]
-                )
-                return .failed(message: message)
-            } else if let statusData = statusData as? LoginStatusResultPending {
-                self.send(
-                    .seBankIDStateAction(
-                        action: .setLiveQrCodeData(
-                            liveQrCodeData: statusData.bankIdProperties?.liveQrCodeData,
-                            date: Date()
-                        )
-                    )
-                )
-                return .pending(statusMessage: statusData.statusMessage)
-            } else {
-                return .unknown
-            }
-        } catch let error {
-            return .failed(message: error.localizedDescription)
-        }
-    }
 
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
@@ -244,25 +158,38 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 send(.loginFailure(message: nil))
             }
         } else if case let .observeLoginStatus(statusUrl) = action {
-            let poll = Poll { [weak self] in
-                return try await self?.checkStatus(statusUrl: statusUrl)
-            } shouldPull: { loginStatus in
-                if case .pending = loginStatus {
-                    return true
-                } else if case .unknown = loginStatus {
-                    return true
+            for await status in self.networkAuthRepository.observeLoginStatus(
+                statusUrl: .init(url: statusUrl.absoluteString)
+            ) {
+                switch onEnum(of: status) {
+                case .failed(let failed):
+                    let message = failed.localisedMessage
+                    log.error(
+                        "LOGIN FAILED",
+                        error: NSError(domain: message, code: 1000),
+                        attributes: [
+                            "message": message,
+                            "statusUrl": statusUrl.absoluteString,
+                            ]
+                    )
+                    send(.loginFailure(message: failed.localisedMessage))
+                case .exception(let exception):
+                    send(.loginFailure(message: nil))
+                case .completed(let completed):
+                    log.info(
+                        "LOGIN AUTH FINISHED"
+                    )
+                    send(.exchange(code: completed.authorizationCode.code))
+                case .pending(let pending):
+                    self.send(
+                        .seBankIDStateAction(
+                            action: .setLiveQrCodeData(
+                                liveQrCodeData: pending.bankIdProperties?.liveQrCodeData,
+                                date: Date()
+                            )
+                        )
+                    )
                 }
-                return false
-            }
-            do {
-                let status = try await poll.getValue()
-                if case let .completed(code) = status {
-                    send(.exchange(code: code))
-                } else if case let .failed(message) = status {
-                    send(.loginFailure(message: message))
-                }
-            } catch {
-                send(.loginFailure(message: nil))
             }
         } else if case let .exchange(code) = action {
             do {
