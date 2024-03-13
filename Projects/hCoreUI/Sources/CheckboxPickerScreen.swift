@@ -207,10 +207,14 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
-                    manualInput = false
+                    withAnimation {
+                        manualInput = false
+                    }
                     onTapExecuteFor(item)
                 } else {
-                    manualInput = true
+                    withAnimation {
+                        manualInput = true
+                    }
                     selectedItems = []
                     type = .inputField
                 }
@@ -223,11 +227,15 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
-                    manualInput = false
+                    withAnimation {
+                        manualInput = false
+                    }
                     onTapExecuteFor(item)
                 } else {
-                    manualInput = true
-                    type = .inputField
+                    withAnimation {
+                        manualInput = true
+                        type = .inputField
+                    }
                 }
             }
             .hWithoutDivider
