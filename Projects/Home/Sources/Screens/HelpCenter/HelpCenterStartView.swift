@@ -59,9 +59,15 @@ public struct HelpCenterStartView: View {
             ForEach(store.state.quickAction) { quickAction in
                 hSection {
                     hRow {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 0) {
                             hText(quickAction.displayTitle)
+                            if let subtitle = quickAction.displaySubtitle {
+                                hText(subtitle, style: .standardSmall)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+
                         }
+
                         Spacer()
                     }
                     .withChevronAccessory
