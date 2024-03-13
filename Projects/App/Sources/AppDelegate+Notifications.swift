@@ -77,7 +77,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         DirectDebitSetup(
                             setupType: .initial
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 
@@ -90,7 +90,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         DirectDebitSetup(
                             setupType: .replacement
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 

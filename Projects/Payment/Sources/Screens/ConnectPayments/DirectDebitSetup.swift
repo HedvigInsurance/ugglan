@@ -240,9 +240,19 @@ public struct DirectDebitSetup: View {
     let setupType: SetupType
 
     public init(
-        setupType: SetupType = .initial
+        setupType: SetupType? = nil
     ) {
-        self.setupType = setupType
+        let finalSetupType: SetupType = {
+            if let setupType {
+                return setupType
+            }
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                .contains(store.state.paymentStatusData?.status ?? .active)
+            return hasAlreadyConnected ? .replacement : .initial
+        }()
+
+        self.setupType = finalSetupType
     }
 
     public var body: some View {
@@ -306,28 +316,39 @@ public enum SetupType: Equatable {
 }
 
 extension DirectDebitSetup {
-    public func journey(
-        @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> any JourneyPresentation
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: self,
-            style: .detented(.large),
-            options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
-        ) { action in
-            if case .dismissPayment = action {
-                DismissJourney()
+    @JourneyBuilder
+    public func journey() -> some JourneyPresentation {
+        let featureFlags: FeatureFlags = Dependencies.shared.resolve()
+        switch featureFlags.paymentType {
+        case .adyen:
+            ContinueJourney()
+                .onPresent {
+                    Task {
+                        let paymentServcice: AdyenService = Dependencies.shared.resolve()
+                        do {
+                            let url = try await paymentServcice.getAdyenUrl()
+                            paymentStore.send(.navigation(to: .openUrl(url: url)))
+                        } catch {
+                            //we are not so concern about this
+                        }
+                    }
+                }
+        case .trustly:
+            HostingJourney(
+                PaymentStore.self,
+                rootView: self,
+                style: .detented(.large),
+                options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
+            ) { action in
+                if case .dismissPayment = action {
+                    DismissJourney()
+                }
             }
+            .configureTitle(
+                self.setupType == .replacement ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+            )
+            .enableModalInPresentation
         }
-        .configureTitle(
-            self.setupType == .replacement ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
-        )
-        .enableModalInPresentation
-    }
 
-    public var journeyThenDismiss: some JourneyPresentation {
-        journey { _, _ in
-            return PopJourney()
-        }
     }
 }

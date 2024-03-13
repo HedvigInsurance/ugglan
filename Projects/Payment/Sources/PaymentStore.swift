@@ -31,10 +31,9 @@ public enum PaymentAction: ActionProtocol {
 }
 
 public enum PaymentNavigation: ActionProtocol {
-    case openUrl
+    case openUrl(url: URL)
     case openHistory
     case openDiscounts
-    case openConnectBankAccount
     case openConnectPayments
     case openPaymentDetails(data: PaymentData)
     case openInviteFriends(code: String, amount: String)
