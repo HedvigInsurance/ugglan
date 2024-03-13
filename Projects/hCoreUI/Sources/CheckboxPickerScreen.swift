@@ -15,7 +15,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let hButtonText: String
     private let infoCard: CheckboxInfoCard?
 
-    @State var type: CheckboxFieldType? = .inputField
+    @State var type: CheckboxFieldType? = nil
 
     @State private var selectedItems: [T] = []
     @Environment(\.hButtonIsLoading) var isLoading
@@ -26,7 +26,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @State var manualInput: Bool = false
 
     private var fieldSize: hFieldSize
-
+    private let manualInputId = "manualInputId"
     public init(
         items: [(object: T, displayName: String)],
         preSelectedItems: @escaping () -> [T],
@@ -37,6 +37,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
+        manualBrandName: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil
     ) {
@@ -49,6 +50,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
+        if let manualBrandName {
+            self.manualBrandName = manualBrandName
+            self.manualInput = true
+        }
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
         if items.count > 3 {
             self.fieldSize = .small
@@ -58,63 +63,85 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.infoCard = infoCard
     }
 
+    @ViewBuilder
     public var body: some View {
-        if attachToBottom {
-            hForm {}
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        content
-                        bottomContent
+        ScrollViewReader { proxy in
+            if attachToBottom {
+                hForm {}
+                    .hFormAttachToBottom {
+                        VStack(spacing: 0) {
+                            content(with: proxy)
+                            bottomContent
+                        }
                     }
+                    .hFormObserveKeyboard
+                    .onAppear {
+                        onAppear(with: proxy)
+                    }
+            } else {
+                hForm {
+                    content(with: proxy)
                 }
+                .hFormAttachToBottom {
+                    bottomContent
+                }
+                .hFormObserveKeyboard
                 .onAppear {
-                    selectedItems = items.filter({ preSelectedItems.contains($0.object) })
-                        .map({
-                            $0.object
-                        })
+                    onAppear(with: proxy)
                 }
-        } else {
-            hForm {
-                content
-            }
-            .hFormAttachToBottom {
-                bottomContent
-            }
-            .onAppear {
-                selectedItems = items.filter({ preSelectedItems.contains($0.object) })
-                    .map({
-                        $0.object
-                    })
             }
         }
     }
 
-    @ViewBuilder
-    var content: some View {
+    private func onAppear(with proxy: ScrollViewProxy) {
+        selectedItems = items.filter({ preSelectedItems.contains($0.object) })
+            .map({
+                $0.object
+            })
+        if let selectedItem = selectedItems.first, selectedItems.count == 1 {
+            proxy.scrollTo(selectedItem, anchor: .center)
+        }
+
+        if manualInput {
+            proxy.scrollTo(manualInputId, anchor: .center)
+        }
+    }
+
+    private func content(with proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 4) {
             ForEach(items, id: \.object) { item in
                 hSection {
                     getCell(item: item.object)
+                        .id(item.object)
                 }
                 .disabled(isLoading)
             }
-            if includeManualInput {
+
+            let showOtherCell = includeManualInput && !items.isEmpty
+            let showFreeTextField = (manualInput && includeManualInput) || items.isEmpty
+
+            if showOtherCell {
                 hSection {
                     getCell(displayName: L10n.manualInputListOther)
                 }
                 .disabled(isLoading)
             }
 
-            if manualInput && includeManualInput {
+            if showFreeTextField {
                 hSection {
                     hFloatingTextField(
                         masking: Masking(type: .none),
                         value: $manualBrandName,
                         equals: $type,
-                        focusValue: .none,
+                        focusValue: .inputField,
                         placeholder: manualInputPlaceholder
                     )
                 }
+                .onAppear {
+                    manualInput = true
+                    selectedItems = []
+                }
+                .id(manualInputId)
             }
         }
     }
@@ -180,11 +207,16 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
-                    manualInput = false
+                    withAnimation {
+                        manualInput = false
+                    }
                     onTapExecuteFor(item)
                 } else {
-                    manualInput = true
+                    withAnimation {
+                        manualInput = true
+                    }
                     selectedItems = []
+                    type = .inputField
                 }
             }
         } else {
@@ -195,11 +227,15 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
             .onTap {
                 if let item {
-                    manualInput = false
+                    withAnimation {
+                        manualInput = false
+                    }
                     onTapExecuteFor(item)
                 } else {
-                    manualInput = true
-
+                    withAnimation {
+                        manualInput = true
+                        type = .inputField
+                    }
                 }
             }
             .hWithoutDivider
@@ -309,6 +345,10 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         ModelForPreview(id: "id2", name: "name2"),
                         ModelForPreview(id: "id3", name: "name3"),
                         ModelForPreview(id: "id4", name: "name4"),
+                        ModelForPreview(id: "id5", name: "name5"),
+                        ModelForPreview(id: "id6", name: "name6"),
+                        ModelForPreview(id: "id7", name: "name7"),
+
                     ]
                     .compactMap({ (object: $0, displayName: $0.name) })
                 }(),
@@ -321,6 +361,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 singleSelect: true,
                 manualInputPlaceholder: "Enter brand name"
             )
+            .hIncludeManualInput
         }
     }
 }

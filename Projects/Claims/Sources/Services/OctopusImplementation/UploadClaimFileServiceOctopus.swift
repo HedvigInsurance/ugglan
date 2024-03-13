@@ -50,6 +50,7 @@ extension NetworkClient: hClaimFileUploadService {
             }
             task.resume()
         }
+        observation?.invalidate()
         return response
     }
 }

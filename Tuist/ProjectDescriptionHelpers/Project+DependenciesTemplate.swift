@@ -223,6 +223,10 @@ extension Project {
         return Project(
             name: name,
             organizationName: "Hedvig",
+            options: .options(
+                disableBundleAccessors: true,
+                disableSynthesizedResourceAccessors: true
+            ),
             packages: packages,
             settings: .settings(configurations: projectConfigurations),
             targets: [

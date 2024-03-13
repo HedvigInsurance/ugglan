@@ -1,8 +1,4 @@
 xcassets:
-    - inputs: Projects/App/Resources/Assets.xcassets
-      outputs:
-        templateName: swift4
-        output: Projects/App/Sources/Derived/Assets.swift
     - inputs: Projects/hCoreUI/Resources/Assets.xcassets
       outputs:
         templateName: swift4
@@ -10,22 +6,6 @@ xcassets:
         params:
           enumName: hCoreUIAssets
           publicAccess: true
-    - inputs: Projects/Forever/Resources/Assets.xcassets
-      outputs:
-        templateName: swift4
-        output: Projects/Forever/Sources/Derived/Assets.swift
-    - inputs: Projects/Contracts/Resources/Assets.xcassets
-      outputs:
-        templateName: swift4
-        output: Projects/Contracts/Sources/Derived/Assets.swift
-    - inputs: Projects/Home/Resources/Assets.xcassets
-      outputs:
-        templateName: swift4
-        output: Projects/Home/Sources/Derived/Assets.swift
-    - inputs: Projects/Market/Resources/Assets.xcassets
-      outputs:
-        templateName: swift4
-        output: Projects/Market/Sources/Derived/Assets.swift
 strings:
   inputs: 
     - Projects/hCore/Resources/en-SE.lproj

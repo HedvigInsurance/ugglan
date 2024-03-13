@@ -72,7 +72,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
             .start(
                 true,
                 completionHandler: { [weak self] errorResponse in
-                    guard let errorResponse else {
+                    guard errorResponse != nil else {
                         return
                     }
                     self?.loadingExperimentsSuccess(false)

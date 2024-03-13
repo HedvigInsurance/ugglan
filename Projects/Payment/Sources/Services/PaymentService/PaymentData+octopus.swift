@@ -50,7 +50,7 @@ extension PaymentData.PaymentStatus {
                 }
                 return .upcoming
             }
-        case .unknown(let string):
+        case .unknown:
             return .unknown
         case nil:
             return .unknown

@@ -90,7 +90,7 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
             case .pet:
                 return .pet
             }
-        case .unknown(let string):
+        case .unknown:
             return .unknown
         }
     }
