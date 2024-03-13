@@ -4,26 +4,26 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CommonClaimDetail: View {
+public struct QuickActionDetail: View {
     @PresentableStore var store: HomeStore
-    let claim: CommonClaim
+    private let quickAction: QuickAction
 
     public init(
-        claim: CommonClaim
+        quickAction: QuickAction
     ) {
-        self.claim = claim
+        self.quickAction = quickAction
     }
 
     public var body: some View {
         hForm {
-            let bulletPoints = claim.layout.titleAndBulletPoint?.bulletPoints
+            let bulletPoints = quickAction.layout.titleAndBulletPoint?.bulletPoints
             VStack(spacing: 8) {
                 ForEach(bulletPoints ?? [], id: \.hashValue) { bulletPoint in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: 16) {
                                 HStack(spacing: 8) {
-                                    if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                    if quickAction.isFirstVet {
                                         Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
                                     }
                                     hText(bulletPoint.title)
@@ -32,7 +32,7 @@ public struct CommonClaimDetail: View {
                                 hText(bulletPoint.description)
                                     .foregroundColor(hTextColor.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
-                                if claim.id == "30" || claim.id == "31" || claim.id == "32" {
+                                if quickAction.isFirstVet {
                                     hButton.MediumButton(type: .secondaryAlt) {
                                         if let url = URL(
                                             string: "https://app.adjust.com/11u5tuxu"
@@ -60,11 +60,11 @@ public struct CommonClaimDetail: View {
     }
 }
 
-extension CommonClaimDetail {
-    public static func journey(claim: CommonClaim) -> some JourneyPresentation {
+extension QuickActionDetail {
+    public static func journey(quickAction: QuickAction) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
-            rootView: CommonClaimDetail(claim: claim),
+            rootView: QuickActionDetail(quickAction: quickAction),
             style: .detented(.large, modally: true),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -76,26 +76,24 @@ extension CommonClaimDetail {
 }
 
 #Preview{
-    CommonClaimDetail(
-        claim: CommonClaim(
+    QuickActionDetail(
+        quickAction: QuickAction(
             id: "",
-            icon: nil,
-            imageName: "",
             displayTitle: "",
-            layout: CommonClaim.Layout.init(
+            layout: QuickAction.Layout.init(
                 titleAndBulletPoint:
                     .init(
                         color: "",
                         bulletPoints: [
                             .init(
                                 title: "title",
-                                description: "description",
-                                icon: nil
+                                description: "description"
+                                    //                                icon: nil
                             ),
                             .init(
                                 title: "title",
-                                description: "description",
-                                icon: nil
+                                description: "description"
+                                    //                                icon: nil
                             ),
                         ]
                     ),

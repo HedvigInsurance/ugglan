@@ -56,42 +56,19 @@ public struct HelpCenterStartView: View {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                 .padding(.bottom, 4)
 
-            let commonClaimsInPair = store.state.allCommonClaims.chunked(into: 2)
-
-            ForEach(commonClaimsInPair, id: \.self) { pair in
-                HStack(spacing: 4) {
-                    ForEach(pair, id: \.id) { quickAction in
-                        if pair.count > 1 {
-                            quickActionPill(quickAction: quickAction)
-                        } else {
-                            quickActionPill(quickAction: quickAction)
-                            quickActionPill(quickAction: nil)
+            ForEach(store.state.allQuickActions) { quickAction in
+                hSection {
+                    hRow {
+                        VStack(alignment: .leading, spacing: 4) {
+                            hText(quickAction.displayTitle)
+                            hText("Update to a new home address", style: .standardSmall)
+                                .foregroundColor(hTextColor.secondary)
                         }
+                        Spacer()
                     }
-                }
-            }
-        }
-    }
-
-    private func displayCommonTopics() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
-
-            let commonTopics = helpCenterModel.commonTopics
-            commonTopicsItems(commonTopics: commonTopics)
-        }
-    }
-
-    private func quickActionPill(quickAction: CommonClaim?) -> some View {
-        HStack(alignment: .center) {
-            hSection {
-                hRow {
-                    hText(quickAction?.displayTitle ?? "")
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .withEmptyAccessory
-                .onTap {
-                    if let quickAction {
+                    .withChevronAccessory
+                    .verticalPadding(12)
+                    .onTap {
                         log.addUserAction(
                             type: .click,
                             name: "help center quick action",
@@ -102,31 +79,18 @@ public struct HelpCenterStartView: View {
                         }
                     }
                 }
+                .withoutHorizontalPadding
+                .sectionContainerStyle(.opaque)
             }
-            .withoutHorizontalPadding
-            .sectionContainerStyle(.transparent)
         }
-        .background(
-            Squircle.default()
-                .fill(
-                    getColor(quickAction: quickAction)
-                )
-        )
-        .frame(maxHeight: 56)
     }
 
-    @hColorBuilder
-    private func getColor(quickAction: CommonClaim?) -> some hColor {
-        if quickAction != nil {
-            hColorScheme(
-                light: hGrayscaleTranslucent.greyScaleTranslucent100,
-                dark: hGrayscaleColor.greyScale900
-            )
-        } else {
-            hColorScheme(
-                light: hBackgroundColor.clear,
-                dark: hBackgroundColor.clear
-            )
+    private func displayCommonTopics() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
+
+            let commonTopics = helpCenterModel.commonTopics
+            commonTopicsItems(commonTopics: commonTopics)
         }
     }
 

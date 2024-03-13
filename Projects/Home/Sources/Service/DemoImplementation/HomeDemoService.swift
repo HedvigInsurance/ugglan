@@ -16,7 +16,7 @@ public class HomeServiceDemo: HomeService {
         )
     }
 
-    public func getCommonClaims() async throws -> [CommonClaim] {
+    public func getQuickActions() async throws -> [QuickAction] {
         return [.editCoInsured(), .moving()]
     }
 

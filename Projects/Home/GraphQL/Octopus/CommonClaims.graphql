@@ -1,13 +1,10 @@
-query CommonClaims {
+query QuickActions {
   currentMember {
     activeContracts {
       currentAgreement {
         productVariant {
         commonClaimDescriptions {
         id
-        icon {
-          ...IconFragment
-        }
         title
         layout {
           ... on CommonClaimLayoutTitleAndBulletPoints {
@@ -15,9 +12,6 @@ query CommonClaims {
             title
             buttonTitle
             bulletPoints {
-              icon {
-                ...IconFragment
-              }
               title
               description
             }

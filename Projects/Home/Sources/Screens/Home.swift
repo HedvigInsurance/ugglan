@@ -31,7 +31,7 @@ extension HomeView {
     func fetch() {
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
-        store.send(.fetchCommonClaims)
+        store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
         store.send(.fetchClaims)
     }
@@ -47,10 +47,8 @@ extension HomeView {
                 case .newOffer:
                     store.send(.showNewOffer)
                 case .firstVet:
-                    if let claim = store.state.commonClaims.first(where: {
-                        $0.id == "30" || $0.id == "31" || $0.id == "32"
-                    }) {
-                        store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
+                    if let vetQuickAction = store.state.quickActions.vetQuickAction {
+                        store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
                     }
                 case .chat, .chatNotification:
                     store.send(.openFreeTextChat(from: nil))
@@ -228,11 +226,11 @@ extension HomeView {
                 resultJourney(.openFreeTextChat(topic: type))
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
-            } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
+            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
                 if !fromOtherService {
-                    CommonClaimDetail.journey(claim: claim)
+                    QuickActionDetail.journey(quickAction: quickAction)
                         .withJourneyDismissButton
-                        .configureTitle(claim.displayTitle)
+                        .configureTitle(quickAction.displayTitle)
                 }
             } else if case let .openDocument(contractURL) = action {
                 Journey(
@@ -266,7 +264,7 @@ public enum HomeResult {
     case startNewClaim
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
-    case goToQuickAction(quickAction: CommonClaim)
+    case goToQuickAction(quickAction: QuickAction)
     case goToURL(url: URL)
 }
 

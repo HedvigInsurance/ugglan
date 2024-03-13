@@ -12,8 +12,8 @@ public struct HomeState: StateProtocol {
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessages: [ImportantMessage] = []
-    public var commonClaims: [CommonClaim] = []
-    public var allCommonClaims: [CommonClaim] = []
+    public var quickActions: [QuickAction] = []
+    public var allQuickActions: [QuickAction] = []
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
@@ -26,7 +26,7 @@ public struct HomeState: StateProtocol {
     public var latestChatTimeStamp = Date()
 
     public var hasFirstVet: Bool {
-        return commonClaims.first(where: { $0.id == "30" || $0.id == "31" || $0.id == "32" }) != nil
+        return allQuickActions.first(where: { $0.isFirstVet }) != nil
     }
 
     func getImportantMessageToShow() -> [ImportantMessage] {
@@ -50,13 +50,13 @@ public enum HomeAction: ActionProtocol {
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
-    case fetchCommonClaims
-    case setCommonClaims(commonClaims: [CommonClaim])
+    case fetchQuickActions
+    case setQuickActions(quickActions: [QuickAction])
     case startClaim
     case openFreeTextChat(from: ChatTopicType?)
     case openHelpCenter
     case showNewOffer
-    case openCommonClaimDetail(commonClaim: CommonClaim, fromOtherServices: Bool)
+    case openQuickActionDetail(quickActions: QuickAction, fromOtherServices: Bool)
     case openCoInsured(contractIds: [InsuredPeopleConfig])
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
@@ -72,7 +72,7 @@ public enum HomeAction: ActionProtocol {
 
     case openHelpCenterTopicView(commonTopic: CommonTopic)
     case openHelpCenterQuestionView(question: Question)
-    case goToQuickAction(CommonClaim)
+    case goToQuickAction(QuickAction)
     case goToURL(url: URL)
     case dismissHelpCenter
 }
@@ -85,7 +85,7 @@ public enum FutureStatus: Codable, Equatable {
 }
 
 public enum HomeLoadingType: LoadingProtocol {
-    case fetchCommonClaim
+    case fetchQuickActions
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
@@ -116,20 +116,20 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 send(.setFutureStatus(status: memberData.futureState))
             } catch let error {
                 if ApplicationContext.shared.isDemoMode {
-                    send(.setCommonClaims(commonClaims: []))
+                    send(.setQuickActions(quickActions: []))
                 } else {
-                    self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                    self.setError(L10n.General.errorBody, for: .fetchQuickActions)
                 }
             }
-        case .fetchCommonClaims:
+        case .fetchQuickActions:
             do {
-                let commonClaims = try await self.homeService.getCommonClaims()
-                send(.setCommonClaims(commonClaims: commonClaims))
+                let quickActions = try await self.homeService.getQuickActions()
+                send(.setQuickActions(quickActions: quickActions))
             } catch {
                 if ApplicationContext.shared.isDemoMode {
-                    send(.setCommonClaims(commonClaims: []))
+                    send(.setQuickActions(quickActions: []))
                 } else {
-                    self.setError(L10n.General.errorBody, for: .fetchCommonClaim)
+                    self.setError(L10n.General.errorBody, for: .fetchQuickActions)
                 }
             }
         case .fetchChatNotifications:
@@ -176,27 +176,27 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.futureStatus = status
         case .setImportantMessages(let messages):
             newState.importantMessages = messages
-        case .fetchCommonClaims:
-            setLoading(for: .fetchCommonClaim)
-        case let .setCommonClaims(commonClaims):
-            removeLoading(for: .fetchCommonClaim)
-            newState.commonClaims = commonClaims
-            setAllCommonClaims(&newState)
+        case .fetchQuickActions:
+            setLoading(for: .fetchQuickActions)
+        case let .setQuickActions(quickActions):
+            removeLoading(for: .fetchQuickActions)
+            newState.quickActions = quickActions
+            setAllQuickActions(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
-            setAllCommonClaims(&newState)
+            setAllQuickActions(&newState)
         case let .setHasAtLeastOneClaim(has):
             newState.hasAtLeastOneClaim = has
-            setAllCommonClaims(&newState)
+            setAllQuickActions(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
-            setAllCommonClaims(&newState)
+            setAllQuickActions(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
-            setAllCommonClaims(&newState)
+            setAllQuickActions(&newState)
         default:
             break
         }
@@ -204,10 +204,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         return newState
     }
 
-    private func setAllCommonClaims(_ state: inout HomeState) {
-        var allCommonClaims = [CommonClaim]()
+    private func setAllQuickActions(_ state: inout HomeState) {
+        var allQuickActions = [QuickAction]()
 
-        allCommonClaims.append(.changeBank())
+        allQuickActions.append(.changeBank())
 
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let contracts = contractStore.state.activeContracts
@@ -215,21 +215,21 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         if Dependencies.featureFlags().isEditCoInsuredEnabled
             && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
         {
-            allCommonClaims.append(.editCoInsured())
+            allQuickActions.append(.editCoInsured())
         }
 
         if Dependencies.featureFlags().isMovingFlowEnabled
             && !contracts.filter({ $0.supportsAddressChange }).isEmpty
         {
-            allCommonClaims.append(.moving())
+            allQuickActions.append(.moving())
         }
         if Dependencies.featureFlags().isTravelInsuranceEnabled
             && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
-            allCommonClaims.append(.travelInsurance())
+            allQuickActions.append(.travelInsurance())
         }
-        allCommonClaims.append(contentsOf: state.commonClaims)
-        state.allCommonClaims = allCommonClaims
+        allQuickActions.append(contentsOf: state.quickActions)
+        state.allQuickActions = allQuickActions
 
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
@@ -252,51 +252,43 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     }
 }
 
-extension CommonClaim {
-    public static func travelInsurance() -> CommonClaim {
-        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(
+extension QuickAction {
+    public static func travelInsurance() -> QuickAction {
+        let titleAndBulletPoint = QuickAction.Layout.TitleAndBulletPoints(
             color: "",
             buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
             title: "",
             bulletPoints: []
         )
-        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
-        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
-        let commonClaim = CommonClaim(
+        let emergency = QuickAction.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
+        let layout = QuickAction.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
+        let quickAction = QuickAction(
             id: "travelInsurance",
-            icon: nil,
-            imageName: "travelCertificate",
             displayTitle: L10n.TravelCertificate.cardTitle,
             layout: layout
         )
-        return commonClaim
+        return quickAction
     }
 
-    public static func moving() -> CommonClaim {
-        return CommonClaim(
+    public static func moving() -> QuickAction {
+        return QuickAction(
             id: "moving_flow",
-            icon: nil,
-            imageName: nil,
             displayTitle: L10n.InsuranceDetails.changeAddressButton,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }
 
-    public static func editCoInsured() -> CommonClaim {
-        CommonClaim(
+    public static func editCoInsured() -> QuickAction {
+        QuickAction(
             id: "edit_coinsured",
-            icon: nil,
-            imageName: nil,
             displayTitle: L10n.hcQuickActionsEditCoinsured,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
     }
 
-    public static func changeBank() -> CommonClaim {
-        CommonClaim(
+    public static func changeBank() -> QuickAction {
+        QuickAction(
             id: "change_bank",
-            icon: nil,
-            imageName: nil,
             displayTitle: L10n.hcQuickActionsChangeBank,
             layout: .init(titleAndBulletPoint: nil, emergency: nil)
         )
