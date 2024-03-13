@@ -285,13 +285,4 @@ extension QuickAction {
             layout: nil
         )
     }
-
-    public static func cancelInsurance() -> QuickAction {
-        QuickAction(
-            id: "cancel_insurance",
-            displayTitle: L10n.hcQuickActionsCancellationTitle,
-            displaySubtitle: L10n.hcQuickActionsCancellationSubtitle,
-            layout: nil
-        )
-    }
 }
