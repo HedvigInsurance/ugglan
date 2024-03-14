@@ -1,47 +1,80 @@
-import Flow
-import Foundation
+import Combine
 import WebKit
 
-extension WKWebView: WKUIDelegate {
-    private static var _createWebViewWith: UInt8 = 0
+public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
+    private let actionPublishedSubject = PassthroughSubject<WKNavigationAction, Never>()
+    private let challengeReceiveSubject = PassthroughSubject<URLAuthenticationChallenge, Never>()
+    private let isLoadingSubject = PassthroughSubject<Bool, Never>()
+    private let errorSubject = PassthroughSubject<Error, Never>()
 
-    public typealias CreateWebViewWithDelegate = Delegate<
-        (WKWebView, WKWebViewConfiguration, WKNavigationAction, WKWindowFeatures), WKWebView?
-    >
+    public var actionPublished: AnyPublisher<WKNavigationAction, Never> {
+        return actionPublishedSubject.eraseToAnyPublisher()
+    }
+    public var challengeReceive: AnyPublisher<URLAuthenticationChallenge, Never> {
+        return challengeReceiveSubject.eraseToAnyPublisher()
+    }
+    public var isLoading: AnyPublisher<Bool, Never> {
+        return isLoadingSubject.eraseToAnyPublisher()
+    }
 
-    public var createWebViewWith: CreateWebViewWithDelegate {
-        if let delegate = objc_getAssociatedObject(self, &WKWebView._createWebViewWith)
-            as? CreateWebViewWithDelegate
-        {
-            return delegate
-        }
+    public var error: AnyPublisher<Error, Never> {
+        return errorSubject.eraseToAnyPublisher()
+    }
 
-        let delegate = CreateWebViewWithDelegate()
+    var observer: NSKeyValueObservation?
+    public let decidePolicyForNavigationAction = PassthroughSubject<Bool, Never>()
 
-        objc_setAssociatedObject(
-            self,
-            &WKWebView._createWebViewWith,
-            delegate,
-            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+    public init(
+        webView: WKWebView
+    ) {
+        super.init()
+
+        webView.navigationDelegate = self
+        webView.uiDelegate = self
+
+        observer = webView.observe(
+            \.isLoading,
+            options: [.new],
+            changeHandler: { _, change in
+                self.isLoadingSubject.send(change.newValue ?? false)
+            }
         )
-
-        uiDelegate = self
-
-        return delegate
     }
 
     public func webView(
         _ webView: WKWebView,
-        createWebViewWith configuration: WKWebViewConfiguration,
-        for navigationAction: WKNavigationAction,
-        windowFeatures: WKWindowFeatures
-    ) -> WKWebView? {
-        if let delegateWebView = createWebViewWith.call(
-            (webView, configuration, navigationAction, windowFeatures)
-        ) {
-            return delegateWebView
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        self.challengeReceiveSubject.send(challenge)
+
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+            let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+            completionHandler(.useCredential, cred)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+    }
+
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        self.errorSubject.send(error)
+    }
+
+    public func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction
+    ) async -> WKNavigationActionPolicy {
+        self.actionPublishedSubject.send(navigationAction)
+
+        guard let url = navigationAction.request.url else { return .allow }
+        let urlString = String(describing: url)
+
+        if urlString.contains("fail") || urlString.contains("success") {
+            self.decidePolicyForNavigationAction.send(urlString.contains("success") ? true : false)
+            return .cancel
         }
 
-        return nil
+        return .allow
     }
+
 }

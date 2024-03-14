@@ -212,15 +212,7 @@ extension PaymentsView {
             rootView: self
         ) { action in
             if case let .navigation(navigateTo) = action {
-                if case .openConnectBankAccount = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial
-                    )
-                    .journeyThenDismiss
-                } else if case .openHistory = navigateTo {
+                if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
                     PaymentDetails.journey(with: details)
@@ -245,19 +237,8 @@ extension PaymentsView {
             options: .largeNavigationBar
         ) { action in
             if case let .navigation(navigateTo) = action {
-                if case .openConnectBankAccount = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial
-                    )
-                    .journeyThenDismiss
-                } else if case .openConnectPayments = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    PaymentSetup(setupType: hasAlreadyConnected ? .replacement : .initial).journeyThenDismiss
+                if case .openConnectPayments = navigateTo {
+                    DirectDebitSetup().journey()
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
