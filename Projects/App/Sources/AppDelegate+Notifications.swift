@@ -74,10 +74,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 self.window.rootViewController?
                     .present(
-                        PaymentSetup(
+                        DirectDebitSetup(
                             setupType: .initial
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 
@@ -87,10 +87,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 self.window.rootViewController?
                     .present(
-                        PaymentSetup(
+                        DirectDebitSetup(
                             setupType: .replacement
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 
