@@ -115,7 +115,9 @@ struct InvitationRow: View {
     var body: some View {
         hRow {
             HStack(alignment: .top, spacing: 8) {
-                Circle().fill(row.statusColor).frame(width: 14, height: 14)
+                Circle().fill(row.statusColor)
+                    .frame(width: 14, height: 14)
+                    .padding(.top, 5)
                 VStack(alignment: .leading) {
                     hText(row.name)
                         .foregroundColor(hTextColor.primary)

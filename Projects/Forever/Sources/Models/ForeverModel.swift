@@ -25,27 +25,27 @@ public struct Referral: Hashable, Codable {
             self.status = .pending
         }
     }
-    
+
     public init(
         from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.ReferredBy
     ) {
-            self.name = data.name
-            if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-                self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
-            } else {
-                activeDiscount = MonetaryAmount(amount: "", currency: "")
-            }
-        
-            if data.status == .active {
-                self.status = .active
-            } else if data.status == .pending {
-                self.status = .pending
-            } else if data.status == .terminated {
-                self.status = .terminated
-            } else {
-                self.status = .pending
-            }
+        self.name = data.name
+        if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
+            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
+        } else {
+            activeDiscount = MonetaryAmount(amount: "", currency: "")
         }
+
+        if data.status == .active {
+            self.status = .active
+        } else if data.status == .pending {
+            self.status = .pending
+        } else if data.status == .terminated {
+            self.status = .terminated
+        } else {
+            self.status = .pending
+        }
+    }
 
     public init(
         name: String,
@@ -56,7 +56,7 @@ public struct Referral: Hashable, Codable {
         self.activeDiscount = activeDiscount
         self.status = status
     }
-    
+
     public enum State: String, Codable {
         case terminated
         case pending
