@@ -10,7 +10,6 @@ public struct PaymentsView: View {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
-
     }
 
     public var body: some View {
@@ -218,8 +217,7 @@ extension PaymentsView {
                     let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
                         .contains(store.state.paymentStatusData?.status ?? .active)
                     ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial,
-                        urlScheme: schema
+                        setupType: hasAlreadyConnected ? .replacement : .initial
                     )
                     .journeyThenDismiss
                 } else if case .openHistory = navigateTo {
@@ -232,6 +230,11 @@ extension PaymentsView {
             }
         }
         .configureTitle(L10n.myPaymentTitle)
+        .configureTabBarItem(
+            title: L10n.tabPaymentsTitle,
+            image: hCoreUIAssets.paymentsTab.image,
+            selectedImage: hCoreUIAssets.paymentsTabActive.image
+        )
     }
 
     public func detentJourney(schema: String) -> some JourneyPresentation {
@@ -247,8 +250,7 @@ extension PaymentsView {
                     let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
                         .contains(store.state.paymentStatusData?.status ?? .active)
                     ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial,
-                        urlScheme: schema
+                        setupType: hasAlreadyConnected ? .replacement : .initial
                     )
                     .journeyThenDismiss
                 } else if case .openConnectPayments = navigateTo {

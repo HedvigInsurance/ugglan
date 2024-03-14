@@ -7,14 +7,11 @@ import hGraphQL
 
 public struct ConnectBankAccount {
     let setupType: PaymentSetup.SetupType
-    let urlScheme: String
 
     public init(
-        setupType: PaymentSetup.SetupType,
-        urlScheme: String = Bundle.main.urlScheme ?? ""
+        setupType: PaymentSetup.SetupType
     ) {
         self.setupType = setupType
-        self.urlScheme = urlScheme
     }
 }
 
