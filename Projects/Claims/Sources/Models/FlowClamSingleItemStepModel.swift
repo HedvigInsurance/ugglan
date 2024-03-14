@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import hCore
 import hGraphQL
 
@@ -34,6 +35,18 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.currencyCode = data.purchasePrice?.currencyCode.rawValue
         self.selectedItemBrand = data.selectedItemBrand
         self.selectedItemModel = data.selectedItemModel
+
+        if self.selectedItemModel == nil && self.customName == nil {
+            let currentDeviceName = UIDevice.modelName.lowercased()
+            if let matchingModelWithCurrentDevice = self.availableItemModelOptions.first(where: {
+                let name = $0.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                return name == currentDeviceName
+            }) {
+                self.selectedItemModel = matchingModelWithCurrentDevice.itemModelId
+                self.selectedItemBrand = matchingModelWithCurrentDevice.itemBrandId
+            }
+        }
+
         self.selectedItemProblems = data.selectedItemProblems
         self.defaultItemProblems = data.selectedItemProblems
     }
