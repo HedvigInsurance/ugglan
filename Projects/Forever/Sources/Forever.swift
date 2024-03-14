@@ -113,7 +113,23 @@ public struct ForeverView: View {
 }
 
 extension ForeverView {
-    func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
+    public static func journey() -> some JourneyPresentation {
+        HostingJourney(
+            ForeverStore.self,
+            rootView: ForeverView()
+        ) { action in
+            if case .showChangeCodeDetail = action {
+                ChangeCodeView.journey
+            } else if case let .showShareSheetOnly(code, discount) = action {
+                shareSheetJourney(code: code, discount: discount)
+            } else if case let .showInfoSheet(discount) = action {
+                infoSheetJourney(potentialDiscount: discount)
+            }
+        }
+        .configureTitle(L10n.ReferralsInfoSheet.headline)
+    }
+
+    static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
         HostingJourney(
             rootView: InfoView(
                 title: L10n.ReferralsInfoSheet.headline,
@@ -131,6 +147,18 @@ extension ForeverView {
                 DismissJourney()
             }
         }
+    }
+
+    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
+        let url =
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+        let message = L10n.referralSmsMessage(discount, url)
+        return HostingJourney(
+            rootView: ActivityViewController(activityItems: [
+                message
+            ]),
+            style: .activityView
+        )
     }
 }
 

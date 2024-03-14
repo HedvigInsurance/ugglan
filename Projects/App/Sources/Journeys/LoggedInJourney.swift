@@ -173,7 +173,9 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    paymentTab
+                    if Dependencies.featureFlags().isPaymentScreenEnabled {
+                        paymentTab
+                    }
                 },
                 {
                     profileTab

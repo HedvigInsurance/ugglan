@@ -1,5 +1,7 @@
 import Apollo
+import Contracts
 import Flow
+import Forever
 import Home
 import Market
 import Payment
@@ -47,8 +49,11 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if Dependencies.featureFlags().isPaymentScreenEnabled {
-                        ProfileRow(row: .payment)
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                        || contractStore.state.activeContracts.isEmpty
+                    {
+                        ProfileRow(row: .forever)
                     }
                     if store.state.showTravelCertificate {
                         ProfileRow(row: .travelCertificate)
@@ -132,6 +137,8 @@ extension ProfileView {
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
+            } else if case .openForever = action {
+                ForeverView.journey()
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,
