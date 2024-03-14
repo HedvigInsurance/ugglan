@@ -16,6 +16,13 @@ public class ForeverServiceOctopus: ForeverService {
             Referral(from: referral)
         }
 
+        var referredBy: Referral? {
+            if let referral = data.referralInformation.referredBy {
+                return Referral(from: referral)
+            }
+            return nil
+        }
+
         let foreverData = ForeverData(
             grossAmount: .init(fragment: data.insuranceCost.monthlyGross.fragments.moneyFragment),
             netAmount: .init(fragment: data.insuranceCost.monthlyNet.fragments.moneyFragment),
@@ -25,6 +32,7 @@ public class ForeverServiceOctopus: ForeverService {
             discountCode: data.referralInformation.code,
             monthlyDiscount: .init(fragment: data.insuranceCost.monthlyDiscount.fragments.moneyFragment),
             referrals: referrals,
+            referredBy: referredBy,
             monthlyDiscountPerReferral: .init(
                 fragment: data.referralInformation.monthlyDiscountPerReferral.fragments.moneyFragment
             )

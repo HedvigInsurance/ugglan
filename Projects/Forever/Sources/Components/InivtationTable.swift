@@ -19,7 +19,7 @@ extension Referral {
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
-            hTextColor.primary
+            hTextColor.secondary
         case .pending, .terminated:
             hTextColor.tertiary
         }
@@ -57,7 +57,8 @@ struct InvitationTable: View {
             }
         ) { foreverData in
             if let foreverData,
-                !foreverData.referrals.isEmpty || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
+                !foreverData.referrals.isEmpty || foreverData.referredBy != nil
+                    || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
                     || foreverData.grossAmount.amount != foreverData.netAmount.amount
             {
                 hSection(getInvitationRows(for: foreverData), id: \.id) { row in
@@ -71,45 +72,21 @@ struct InvitationTable: View {
     }
     private func getInvitationRows(for foreverData: ForeverData) -> [(id: String, view: AnyView)] {
         var list: [(id: String, view: AnyView)] = []
-        if !foreverData.referrals.isEmpty {
+        if !foreverData.referrals.isEmpty || foreverData.referredBy != nil {
             let headerView = AnyView(hRow { hText(L10n.foreverReferralListLabel) })
             list.append(("header", headerView))
+
+            if let referredBy = foreverData.referredBy {
+                let view = AnyView(InvitationRow(row: referredBy, invitedYou: true))
+                list.append(("\(referredBy.name)", view))
+            }
+
             for referral in foreverData.referrals {
-                let view = AnyView(InvitationRow(row: referral))
+                let view = AnyView(InvitationRow(row: referral, invitedYou: false))
                 list.append(("\(referral.name)", view))
             }
         }
-        list.append(("other", AnyView(getOtherDiscountsRow(foreverData))))
-        list.append(("total", AnyView(getTotalRow(foreverData))))
         return list
-    }
-
-    @ViewBuilder
-    private func getOtherDiscountsRow(_ foreverData: ForeverData) -> some View {
-        if let otherDiscounts = foreverData.otherDiscounts, otherDiscounts.floatAmount > 0 {
-            hRow {
-                hText(L10n.Referrals.yourOtherDiscounts)
-                Spacer()
-                hText("\(otherDiscounts.negative.formattedAmount)")
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func getTotalRow(_ foreverData: ForeverData) -> some View {
-        if foreverData.grossAmount.amount != foreverData.netAmount.amount {
-            hRow {
-                hText(L10n.foreverTabTotalDiscountLabel)
-            }
-            .withCustomAccessory {
-                HStack {
-                    Spacer()
-                    getGrossField(foreverData.grossAmount.formattedAmount.addPerMonth)
-                    hText("\(foreverData.netAmount.formattedAmount)/\(L10n.monthAbbreviationLabel)")
-                }
-            }
-            .hWithoutDivider
-        }
     }
 
     @ViewBuilder
@@ -133,19 +110,28 @@ struct InvitationTable: View {
 
 struct InvitationRow: View {
     let row: Referral
+    let invitedYou: Bool
 
     var body: some View {
         hRow {
-            HStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
                 Circle().fill(row.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
-                    hText(row.name).foregroundColor(hTextColor.primary)
+                    hText(row.name)
+                        .foregroundColor(hTextColor.primary)
+                    if invitedYou {
+                        hText(L10n.ReferallsInviteeStates.invitedYou)
+                            .foregroundColor(hTextColor.secondary)
+                    }
                 }
+                .frame(maxHeight: .infinity, alignment: .top)
             }
+
         }
         .withCustomAccessory({
             Spacer()
-            hText(row.discountLabelText).foregroundColor(row.discountLabelColor)
+            hText(row.discountLabelText)
+                .foregroundColor(row.discountLabelColor)
         })
     }
 }
@@ -170,6 +156,7 @@ struct InvitationTable_Previews: PreviewProvider {
                                 .init(name: "Second", activeDiscount: .sek(10), status: .pending),
                                 .init(name: "Third", activeDiscount: .sek(10), status: .terminated),
                             ],
+                            referredBy: .init(name: "", activeDiscount: nil, status: .active),
                             monthlyDiscountPerReferral: .sek(10)
                         )
                     )
@@ -206,10 +193,10 @@ struct InvitationRow_Previews: PreviewProvider {
 
         Localization.Locale.currentLocale = .en_SE
         return hSection {
-            InvitationRow(row: mockRow)
-            InvitationRow(row: mockRow2)
-            InvitationRow(row: mockRow3)
-            InvitationRow(row: mockRow4)
+            InvitationRow(row: mockRow, invitedYou: false)
+            InvitationRow(row: mockRow2, invitedYou: false)
+            InvitationRow(row: mockRow3, invitedYou: false)
+            InvitationRow(row: mockRow4, invitedYou: false)
         }
         .sectionContainerStyle(.transparent)
         .previewLayout(PreviewLayout.sizeThatFits)
