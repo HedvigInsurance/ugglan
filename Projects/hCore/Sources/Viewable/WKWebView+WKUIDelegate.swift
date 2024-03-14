@@ -2,11 +2,25 @@ import Combine
 import WebKit
 
 public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
-    public let actionPublished = PassthroughSubject<WKNavigationAction, Never>()
-    public let challengeReceive = PassthroughSubject<URLAuthenticationChallenge, Never>()
-    public let isLoading = PassthroughSubject<Bool, Never>()
-    public let result = PassthroughSubject<URL?, Never>()
-    public let error = PassthroughSubject<Error, Never>()
+    private let actionPublishedSubject = PassthroughSubject<WKNavigationAction, Never>()
+    private let challengeReceiveSubject = PassthroughSubject<URLAuthenticationChallenge, Never>()
+    private let isLoadingSubject = PassthroughSubject<Bool, Never>()
+    private let errorSubject = PassthroughSubject<Error, Never>()
+
+    public var actionPublished: AnyPublisher<WKNavigationAction, Never> {
+        return actionPublishedSubject.eraseToAnyPublisher()
+    }
+    public var challengeReceive: AnyPublisher<URLAuthenticationChallenge, Never> {
+        return challengeReceiveSubject.eraseToAnyPublisher()
+    }
+    public var isLoading: AnyPublisher<Bool, Never> {
+        return isLoadingSubject.eraseToAnyPublisher()
+    }
+
+    public var error: AnyPublisher<Error, Never> {
+        return errorSubject.eraseToAnyPublisher()
+    }
+
     var observer: NSKeyValueObservation?
     public let decidePolicyForNavigationAction = PassthroughSubject<Bool, Never>()
 
@@ -14,6 +28,7 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
         webView: WKWebView
     ) {
         super.init()
+
         webView.navigationDelegate = self
         webView.uiDelegate = self
 
@@ -21,7 +36,7 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             \.isLoading,
             options: [.new],
             changeHandler: { _, change in
-                self.isLoading.send(change.newValue ?? false)
+                self.isLoadingSubject.send(change.newValue ?? false)
             }
         )
     }
@@ -31,7 +46,7 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
-        self.challengeReceive.send(challenge)
+        self.challengeReceiveSubject.send(challenge)
 
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
             let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
@@ -42,14 +57,14 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        self.error.send(error)
+        self.errorSubject.send(error)
     }
 
     public func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction
     ) async -> WKNavigationActionPolicy {
-        self.actionPublished.send(navigationAction)
+        self.actionPublishedSubject.send(navigationAction)
 
         guard let url = navigationAction.request.url else { return .allow }
         let urlString = String(describing: url)

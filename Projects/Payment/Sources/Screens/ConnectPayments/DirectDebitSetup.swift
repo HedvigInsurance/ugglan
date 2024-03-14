@@ -13,6 +13,7 @@ import hGraphQL
 private class DirectDebitWebview: UIView {
     @Inject var paymentService: hPaymentService
     @PresentableStore var paymentStore: PaymentStore
+    private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()
     let setupType: SetupType
     let vc = UIViewController()
@@ -34,7 +35,7 @@ private class DirectDebitWebview: UIView {
 
         presentWebView()
         presentActivityIndicator()
-        retryInBroswerFailedToLoad()
+        retryInBrowserFailedToLoad()
         checkForResult()
 
         Task {
@@ -111,20 +112,20 @@ private class DirectDebitWebview: UIView {
             .store(in: &cancellables)
     }
 
-    private func retryInBroswerFailedToLoad() {
-        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
-        let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
+    private func retryInBrowserFailedToLoad() {
+        let didFailToLoadWebViewSignal = CurrentValueSubject<Bool, Never>(false)
+        let shouldDismissViewSignal = CurrentValueSubject<Bool, Never>(false)
 
         let publisherDelay = Timer.TimerPublisher(interval: 5.0, runLoop: .main, mode: .default).autoconnect()
-        Publishers.CombineLatest3(publisherDelay, webViewDelgate.isLoading, webViewDelgate.result)
+        Publishers.CombineLatest3(publisherDelay, webViewDelgate.isLoading, resultSubject)
             .sink { _ in
             } receiveValue: { [weak self] _, isLoading, URL in
                 publisherDelay.upstream.connect().cancel()
                 if isLoading {
-                    didFailToLoadWebViewSignal.value = true
+                    didFailToLoadWebViewSignal.send(true)
                     if let url = URL {
                         UIApplication.shared.open(url)
-                        didFailToLoadWebViewSignal.value = true
+                        didFailToLoadWebViewSignal.send(true)
                     } else {
                         self?.showErrorAlert = true
                     }
@@ -133,14 +134,23 @@ private class DirectDebitWebview: UIView {
             .store(in: &cancellables)
 
         Publishers.CombineLatest(
-            webViewDelgate.error,
+            didFailToLoadWebViewSignal,
             NotificationCenter.Publisher(center: .default, name: UIApplication.willEnterForegroundNotification)
         )
         .sink { _ in
         } receiveValue: { error, _ in
-            shouldDismissViewSignal.value = true
+            shouldDismissViewSignal.send(true)
         }
         .store(in: &cancellables)
+
+        shouldDismissViewSignal
+            .filter({ $0 })
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] value in
+                self?.paymentStore.send(.fetchPaymentStatus)
+                self?.paymentStore.send(.dismissPayment)
+            }
+            .store(in: &cancellables)
     }
 
     private func checkForResult() {
@@ -212,7 +222,7 @@ private class DirectDebitWebview: UIView {
                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                     timeoutInterval: 10
                 )
-                webViewDelgate.result.send(url)
+                resultSubject.send(url)
                 webView.load(request)
             } catch {
                 self.showErrorAlert = true
@@ -341,7 +351,7 @@ extension DirectDebitSetup {
                 options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
             ) { action in
                 if case .dismissPayment = action {
-                    DismissJourney()
+                    PopJourney()
                 }
             }
             .configureTitle(
