@@ -45,7 +45,7 @@ enum ProfileRowType {
         case .travelCertificate:
             return hCoreUIAssets.documentsMultiple.image
         case .forever:
-            return hCoreUIAssets.memberCard.image /* TODO: CHANGE */
+            return hCoreUIAssets.foreverIcon.image
         }
     }
 
