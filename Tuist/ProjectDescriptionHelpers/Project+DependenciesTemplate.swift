@@ -87,7 +87,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .upToNextMajor(from: "0.1.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.1.1"))
             ]
         case .introspect:
             return [
