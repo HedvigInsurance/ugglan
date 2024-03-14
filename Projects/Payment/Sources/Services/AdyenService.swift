@@ -10,32 +10,21 @@ public protocol AdyenService {
 
 extension NetworkClient: AdyenService {
     public func getAdyenUrl() async throws -> URL {
-        return try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<URL, Error>) -> Void in
-            AdyenRequest.getAuthorizationCode.asRequest.onValue { [weak self] request in
-                let task = self?.sessionClient
-                    .dataTask(
-                        with: request,
-                        completionHandler: { [weak self] (data, response, error) in
-                            do {
-                                if let data: AuthorizationModel = try self?
-                                    .handleResponse(data: data, response: response, error: error)
-                                {
-                                    if let paymentUrl = data.paymentUrl {
-                                        inCont.resume(with: .success(paymentUrl))
-                                    } else {
-                                        inCont.resume(
-                                            throwing: NetworkError.parsingError(message: L10n.General.errorBody)
-                                        )
-                                    }
-                                }
-                            } catch let error {
-                                inCont.resume(throwing: error)
-                            }
-                        }
-                    )
-                task?.resume()
+        let request = try await AdyenRequest.getAuthorizationCode.asRequest()
+        let (data, response) = try await self.sessionClient.data(for: request)
+        do {
+            let responseModel: AuthorizationModel? = try self.handleResponse(
+                data: data,
+                response: response,
+                error: nil
+            )
+            if let url = responseModel?.paymentUrl {
+                return url
+            } else {
+                throw NetworkError.parsingError(message: L10n.General.errorBody)
             }
+        } catch _ {
+            throw NetworkError.parsingError(message: L10n.General.errorBody)
         }
     }
 }
@@ -54,7 +43,7 @@ enum AdyenRequest {
         }
     }
 
-    var asRequest: Future<URLRequest> {
+    func asRequest() async throws -> URLRequest {
         var request: URLRequest!
         switch self {
         case .getAuthorizationCode:
@@ -64,17 +53,13 @@ enum AdyenRequest {
             request = URLRequest(url: url)
         }
         request.httpMethod = self.methodType
-        return Future { completion in
-            TokenRefresher.shared.refreshIfNeeded()
-                .onValue {
-                    let headers = ApolloClient.headers()
-                    headers.forEach { element in
-                        request.setValue(element.value, forHTTPHeaderField: element.key)
-                    }
-                    completion(.success(request))
-                }
-            return NilDisposer()
+        try await TokenRefresher.shared.refreshIfNeeded()
+        let headers = ApolloClient.headers()
+        headers.forEach { element in
+            request.setValue(element.value, forHTTPHeaderField: element.key)
         }
+        return request
+
     }
 }
 
