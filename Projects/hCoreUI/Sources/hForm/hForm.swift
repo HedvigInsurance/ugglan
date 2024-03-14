@@ -1,13 +1,15 @@
 import Combine
+import Flow
 import Foundation
 import SwiftUI
+import UIKit
 import hCore
 
 private enum AnimationKeys {
     static let bottomAnimationKey = "bottomAnimationKey"
 }
 
-public struct hForm<Content: View>: View {
+public struct hForm<Content: View>: View, KeyboardReadable {
     @State var bottomAttachedViewHeight: CGFloat = 0
     @State var scrollViewHeight: CGFloat = 0
     @State var contentHeight: CGFloat = 0
@@ -23,11 +25,12 @@ public struct hForm<Content: View>: View {
     @Environment(\.hFormMergeBottomWithContentIfNeeded) var mergeBottomWithContentIfNeeded
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.hObserveKeyboard) var hObserveKeyboard
     @Environment(\.colorScheme) private var colorScheme
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
+    @State var cancellable: AnyCancellable?
     var content: Content
     @Namespace private var animation
-
     public init(
         @ViewBuilder _ builder: () -> Content
     ) {
@@ -163,7 +166,27 @@ public struct hForm<Content: View>: View {
             } else {
                 scrollView.bounces = true
             }
+            if hObserveKeyboard {
+                cancellable = keyboardPublisher.sink { _ in
+                } receiveValue: { [weak scrollView] selected in
+                    if selected {
+                        if let view = UIResponder.currentFirstResponder as? UIView {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
+                                guard let scrollView = scrollView else { return }
+                                let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
+                                let positionToMove = view.convert(pointToCheck, to: scrollView).y
+                                if positionToMove > self.contentHeight - bottomAttachedViewHeight {
+                                    scrollView.scrollRectToVisible(
+                                        .init(x: 0, y: positionToMove + bottomAttachedViewHeight, width: 5, height: 5),
+                                        animated: true
+                                    )
+                                }
+                            }
+                        }
 
+                    }
+                }
+            }
         }
         .background(
             GeometryReader { proxy in
@@ -436,4 +459,21 @@ struct BackgroundBlurView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
+private struct EnvironmentHObserveKeyboard: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hObserveKeyboard: Bool {
+        get { self[EnvironmentHObserveKeyboard.self] }
+        set { self[EnvironmentHObserveKeyboard.self] = newValue }
+    }
+}
+
+extension View {
+    public var hFormObserveKeyboard: some View {
+        self.environment(\.hObserveKeyboard, true)
+    }
 }
