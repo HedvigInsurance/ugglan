@@ -103,7 +103,7 @@ enum ClaimsRequest {
             request = multipartFormDataRequest.asURLRequest()
         }
         request.httpMethod = self.methodType
-        try await TokenRefresher.shared.refreshIfNeededAsync()
+        try await TokenRefresher.shared.refreshIfNeeded()
         let headers = ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)

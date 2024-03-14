@@ -15,22 +15,7 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
-    public func refreshIfNeeded() -> Future<Void> {
-        return Future { completion in
-            let bag = DisposeBag()
-            Task {
-                do {
-                    try await self.refreshIfNeededAsync()
-                    completion(.success)
-                } catch {
-                    completion(.failure(error))
-                }
-            }
-            return bag
-        }
-    }
-
-    public func refreshIfNeededAsync() async throws {
+    public func refreshIfNeeded() async throws {
         let token = try ApolloClient.retreiveToken()
         guard let token = token else {
             if !isDemoMode {
