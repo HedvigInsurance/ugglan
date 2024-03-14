@@ -10,7 +10,7 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
         let data = try await octopus.client.perform(mutation: mutation)
         if let error = data.midtermChangeIntentCommit.userError {
-            throw EditCoInsuredError.graphQLError(message: error.message ?? L10n.General.errorBody)
+            throw EditCoInsuredError.serviceError(message: error.message ?? L10n.General.errorBody)
         }
     }
 
@@ -32,7 +32,7 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
             if let exception = exception as? GraphQLError {
                 switch exception {
                 case .graphQLError:
-                    throw EditCoInsuredError.graphQLError(message: exception.localizedDescription)
+                    throw EditCoInsuredError.serviceError(message: exception.localizedDescription)
                 case .otherError:
                     throw EditCoInsuredError.otherError
                 }
@@ -62,10 +62,10 @@ public class EditCoInsuredServiceOctopus: EditCoInsuredService {
         let data = try await octopus.client.perform(mutation: mutation).midtermChangeIntentCreate
 
         if let userError = data.userError {
-            throw EditCoInsuredError.graphQLError(message: userError.message ?? L10n.General.errorBody)
+            throw EditCoInsuredError.serviceError(message: userError.message ?? L10n.General.errorBody)
         }
         guard let intent = data.intent else {
-            throw EditCoInsuredError.graphQLError(message: L10n.General.errorBody)
+            throw EditCoInsuredError.serviceError(message: L10n.General.errorBody)
         }
         return Intent(
             activationDate: intent.activationDate,

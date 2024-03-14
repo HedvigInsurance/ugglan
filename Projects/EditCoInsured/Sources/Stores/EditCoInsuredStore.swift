@@ -42,7 +42,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
 }
 
 enum EditCoInsuredError: Error {
-    case graphQLError(message: String)
+    case serviceError(message: String)
     case missingSSN
     case otherError
 }
@@ -50,7 +50,7 @@ enum EditCoInsuredError: Error {
 extension EditCoInsuredError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case let .graphQLError(message): return message
+        case let .serviceError(message): return message
         case .missingSSN:
             return L10n.coinsuredSsnNotFound
         case .otherError:

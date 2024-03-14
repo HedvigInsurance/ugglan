@@ -525,7 +525,7 @@ public class CoInusuredInputViewModel: ObservableObject {
         } catch let exception {
             if let exception = exception as? EditCoInsuredError {
                 switch exception {
-                case .missingSSN, .graphQLError:
+                case .missingSSN, .serviceError:
                     self.enterManually = true
                 case .otherError:
                     self.enterManually = false
