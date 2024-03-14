@@ -24,8 +24,7 @@ extension AppDelegate {
                 .onValue { [weak self] _ in
                     UIApplication.shared.getTopViewController()?
                         .present(
-                            PaymentSetup(setupType: .initial)
-                                .journeyThenDismiss
+                            DirectDebitSetup(setupType: .initial).journey()
                         )
                         .onValue { _ in
 
