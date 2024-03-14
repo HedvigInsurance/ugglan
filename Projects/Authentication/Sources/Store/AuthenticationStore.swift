@@ -170,7 +170,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         attributes: [
                             "message": message,
                             "statusUrl": statusUrl.absoluteString,
-                            ]
+                        ]
                     )
                     send(.loginFailure(message: failed.localisedMessage))
                 case .exception(let exception):
