@@ -65,7 +65,6 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
                 itemTypeId: selectedBrand.itemTypeId,
                 itemBrandId: selectedBrand.itemBrandId
             )
-
         }()
 
         let itemModelInput: OctopusGraphQL.FlowClaimItemModelInput? = {
@@ -75,7 +74,6 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         }()
 
         let problemsIds = self.selectedItemProblems ?? defaultItemProblems ?? []
-
         return OctopusGraphQL.FlowClaimSingleItemInput(
             purchasePrice: GraphQLNullable(optionalValue: purchasePrice == 0 ? nil : purchasePrice),
             purchaseDate: GraphQLNullable(optionalValue: purchaseDate?.localDateToDate?.localDateString),
