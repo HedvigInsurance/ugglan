@@ -69,25 +69,19 @@ extension HomeView {
             fetch()
         }
     }
+    @ViewBuilder
     private var centralContent: some View {
-        PresentableStoreLens(
-            HomeStore.self,
-            getter: { state in
-                state.memberContractState
-            }
-        ) { memberContractState in
-            switch memberContractState {
-            case .active:
-                ActiveSectionView(
-                    claimsContent: claimsContent
-                )
-            case .future:
-                hText(L10n.hedvigNameText, style: .title)
-            case .terminated:
-                TerminatedSectionView(claimsContent: claimsContent)
-            case .loading:
-                EmptyView()
-            }
+        switch vm.memberContractState {
+        case .active:
+            ActiveSectionView(
+                claimsContent: claimsContent
+            )
+        case .future:
+            hText(L10n.hedvigNameText, style: .title)
+        case .terminated:
+            TerminatedSectionView(claimsContent: claimsContent)
+        case .loading:
+            EmptyView()
         }
     }
 
