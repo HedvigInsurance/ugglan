@@ -126,15 +126,15 @@ struct InvitationRow: View {
                             .foregroundColor(hTextColor.secondary)
                     }
                 }
-                .frame(maxHeight: .infinity, alignment: .top)
+                .frame(alignment: .top)
+                Spacer()
             }
 
         }
-        .withCustomAccessory({
-            Spacer()
+        .withCustomAccessory {
             hText(row.discountLabelText)
                 .foregroundColor(row.discountLabelColor)
-        })
+        }
     }
 }
 
@@ -186,7 +186,7 @@ struct InvitationRow_Previews: PreviewProvider {
     )
 
     static var mockRow4: Referral = .init(
-        name: "Mock",
+        name: "Mock withc long name that needs two rows",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .terminated
     )
