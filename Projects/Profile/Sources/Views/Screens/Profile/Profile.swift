@@ -113,7 +113,6 @@ public struct ProfileView: View {
 }
 
 public enum ProfileResult {
-    case openPayment
     case resetAppLanguage
     case openChat
     case logout
@@ -132,8 +131,6 @@ extension ProfileView {
             if case .openProfile = action {
                 HostingJourney(rootView: MyInfoView())
                     .configureTitle(L10n.profileMyInfoRowTitle)
-            } else if case .openPayment = action {
-                resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)

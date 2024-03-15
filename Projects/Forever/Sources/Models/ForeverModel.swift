@@ -7,47 +7,6 @@ public struct Referral: Hashable, Codable {
     let status: State
 
     public init(
-        from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.Referral
-    ) {
-        self.name = data.name
-        if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
-        } else {
-            activeDiscount = MonetaryAmount(amount: "", currency: "")
-        }
-        if data.status == .active {
-            self.status = .active
-        } else if data.status == .pending {
-            self.status = .pending
-        } else if data.status == .terminated {
-            self.status = .terminated
-        } else {
-            self.status = .pending
-        }
-    }
-
-    public init(
-        from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.ReferredBy
-    ) {
-        self.name = data.name
-        if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
-        } else {
-            activeDiscount = MonetaryAmount(amount: "", currency: "")
-        }
-
-        if data.status == .active {
-            self.status = .active
-        } else if data.status == .pending {
-            self.status = .pending
-        } else if data.status == .terminated {
-            self.status = .terminated
-        } else {
-            self.status = .pending
-        }
-    }
-
-    public init(
         name: String,
         activeDiscount: MonetaryAmount? = nil,
         status: State

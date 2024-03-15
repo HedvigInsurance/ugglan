@@ -225,7 +225,7 @@ extension PaymentsView {
         .configureTabBarItem(
             title: L10n.tabPaymentsTitle,
             image: hCoreUIAssets.paymentsTab.image,
-            selectedImage: hCoreUIAssets.paymentsTabActive.image
+            selectedImage: hCoreUIAssets.paymentsTab.image
         )
     }
 

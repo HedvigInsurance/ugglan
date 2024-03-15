@@ -106,8 +106,6 @@ extension AppJourney {
         return
             ProfileView.journey { result in
                 switch result {
-                case .openPayment:
-                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
                 case .resetAppLanguage:
                     ContinueJourney()
                         .onPresent {
