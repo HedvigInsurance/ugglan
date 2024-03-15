@@ -12,9 +12,9 @@ import hCore
 
 extension AppJourney {
     @JourneyBuilder
-    static func configureQuickAction(commonClaim: CommonClaim) -> some JourneyPresentation {
-        switch commonClaim {
-        case .changeBank():
+    static func configureQuickAction(quickAction: QuickAction) -> some JourneyPresentation {
+        switch quickAction {
+        case .payments():
             if let url = DeepLink.getUrl(from: .directDebit) {
                 configureURL(url: url)
             }
@@ -40,14 +40,14 @@ extension AppJourney {
                 configureURL(url: url)
             }
         default:
-            if commonClaim.layout.titleAndBulletPoint == nil {
+            if quickAction.isSickAborad {
                 openOnTop(
                     vc: SubmitClaimDeflectScreen.journey
                 )
             } else {
-                let vc = CommonClaimDetail.journey(claim: commonClaim)
+                let vc = QuickActionDetailScreen.journey(quickAction: quickAction)
                     .withJourneyDismissButton
-                    .configureTitle(commonClaim.displayTitle)
+                    .configureTitle(quickAction.displayTitle)
 
                 openOnTop(
                     vc: vc
