@@ -162,9 +162,9 @@ public struct PaymentsView: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.primary)
             hText(displayName)
+            Spacer()
         }
         .withCustomAccessory {
-            Spacer()
             hText(descriptor).foregroundColor(hTextColor.secondary)
         }
         .hWithoutHorizontalPadding
