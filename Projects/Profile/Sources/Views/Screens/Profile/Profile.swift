@@ -1,5 +1,6 @@
 import Apollo
 import Flow
+import Forever
 import Home
 import Market
 import Payment
@@ -47,9 +48,6 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if Dependencies.featureFlags().isPaymentScreenEnabled {
-                        ProfileRow(row: .payment)
-                    }
                     if store.state.showTravelCertificate {
                         ProfileRow(row: .travelCertificate)
                     }
@@ -73,7 +71,6 @@ public struct ProfileView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    ConnectPaymentCardView()
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
                     hButton.LargeButton(type: .ghost) {
@@ -108,7 +105,6 @@ public struct ProfileView: View {
 }
 
 public enum ProfileResult {
-    case openPayment
     case resetAppLanguage
     case openChat
     case logout
@@ -127,11 +123,11 @@ extension ProfileView {
             if case .openProfile = action {
                 HostingJourney(rootView: MyInfoView())
                     .configureTitle(L10n.profileMyInfoRowTitle)
-            } else if case .openPayment = action {
-                resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
+            } else if case .openForever = action {
+                ForeverView.journey()
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,

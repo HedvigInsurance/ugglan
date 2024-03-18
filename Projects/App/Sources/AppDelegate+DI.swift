@@ -42,7 +42,6 @@ extension ApolloClient {
         } else {
             let hApollo = self.createClient()
             let paymentService = hPaymentServiceOctopus()
-            let hForeverCodeService = hForeverCodeServiceOctopus()
             let hCampaignsService = hCampaingsServiceOctopus()
             let networkClient = NetworkClient()
             let messagesClient = FetchMessagesClientOctopus()
@@ -72,7 +71,6 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                 Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                 Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
@@ -97,7 +95,6 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
                 Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
                 Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })

@@ -10,6 +10,7 @@ public class ForeverServiceDemo: ForeverService {
             discountCode: code,
             monthlyDiscount: .init(amount: "10", currency: "SEK"),
             referrals: [],
+            referredBy: .init(name: "", activeDiscount: nil, status: .active),
             monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
         )
     }

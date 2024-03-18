@@ -36,12 +36,11 @@ public enum PaymentNavigation: ActionProtocol {
     case openDiscounts
     case openConnectPayments
     case openPaymentDetails(data: PaymentData)
-    case openInviteFriends(code: String, amount: String)
-    case openChangeCode
     case openAddCampaing
     case openAllReferrals
     case openDeleteCampaing(discount: Discount)
     case goBack
+    case openForever
 }
 
 public enum LoadingAction: LoadingProtocol {
