@@ -89,6 +89,17 @@ extension AppJourney {
         }
     }
 
+    fileprivate static var foreverTab: some JourneyPresentation {
+        ForeverView.journey()
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .forever
+                } else {
+                    return false
+                }
+            }
+    }
+
     fileprivate static var paymentTab: some JourneyPresentation {
         PaymentsView().journey(schema: "")
             .makeTabSelected(UgglanStore.self) { action in
@@ -169,6 +180,14 @@ extension AppJourney {
                 },
                 {
                     contractsTab
+                },
+                {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                        || store.state.activeContracts.isEmpty
+                    {
+                        foreverTab
+                    }
                 },
                 {
                     if Dependencies.featureFlags().isPaymentScreenEnabled {

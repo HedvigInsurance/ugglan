@@ -1,5 +1,4 @@
 import Apollo
-import Contracts
 import Flow
 import Forever
 import Home
@@ -49,12 +48,6 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    if !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
-                        || contractStore.state.activeContracts.isEmpty
-                    {
-                        ProfileRow(row: .forever)
-                    }
                     if store.state.showTravelCertificate {
                         ProfileRow(row: .travelCertificate)
                     }
