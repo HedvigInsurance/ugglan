@@ -12,7 +12,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
-    ) async throws {
+    ) async {
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:
@@ -102,20 +102,21 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.dateOfOccurenceStep?.dateOfOccurence = dateOfOccurrence
         case let .setSingleItemDamage(damages):
             newState.singleItemStep?.selectedItemProblems = damages
-        case let .setSingleItemModel(model):
-            if let customName = model.customName {
-                newState.singleItemStep?.customName = customName
-            } else {
+        case let .setItemModel(model):
+            switch model {
+            case let .model(model):
+                newState.singleItemStep?.selectedItemBrand = model.itemBrandId
                 newState.singleItemStep?.customName = nil
                 newState.singleItemStep?.selectedItemModel = model.itemModelId
+            case let .custom(brand, name):
+                newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
+                newState.singleItemStep?.customName = name
+                newState.singleItemStep?.selectedItemModel = nil
             }
         case let .setPurchasePrice(priceOfPurchase):
             newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
             newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
-        case let .setItemBrand(brand):
-            newState.singleItemStep?.selectedItemModel = nil
-            newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
         case let .setClaimEntrypointsForSelection(commonClaims):

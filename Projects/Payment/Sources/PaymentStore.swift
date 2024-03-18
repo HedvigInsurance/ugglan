@@ -2,7 +2,6 @@ import Apollo
 import Contracts
 import Foundation
 import Presentation
-import SwiftUI
 import hCore
 import hGraphQL
 
@@ -28,13 +27,13 @@ public enum PaymentAction: ActionProtocol {
     case navigation(to: PaymentNavigation)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
+    case dismissPayment
 }
 
 public enum PaymentNavigation: ActionProtocol {
-    case openUrl
+    case openUrl(url: URL)
     case openHistory
     case openDiscounts
-    case openConnectBankAccount
     case openConnectPayments
     case openPaymentDetails(data: PaymentData)
     case openInviteFriends(code: String, amount: String)
@@ -54,7 +53,7 @@ public enum LoadingAction: LoadingProtocol {
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentService
 
-    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async throws {
+    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async {
         switch action {
         case .load:
             do {

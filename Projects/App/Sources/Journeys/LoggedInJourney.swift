@@ -36,13 +36,13 @@ extension AppJourney {
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
-                            AppJourney.webRedirect(url: url)
+                            AppJourney.urlHandledBySystem(url: url)
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
                     AppJourney.editCoInsured(configs: contractIds)
                 case let .goToQuickAction(quickAction):
-                    AppJourney.configureQuickAction(commonClaim: quickAction)
+                    AppJourney.configureQuickAction(quickAction: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
                 }
@@ -71,7 +71,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
-                AppJourney.webRedirect(url: url)
+                AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
                     .onDismiss {
@@ -268,7 +268,9 @@ extension JourneyPresentation {
         onAction(PaymentStore.self) { action in
             if case let .navigation(navigateTo) = action {
                 if case .openConnectPayments = navigateTo {
-                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                    DirectDebitSetup(setupType: .initial).journey()
+                } else if case let .openUrl(url) = navigateTo {
+                    AppJourney.urlHandledBySystem(url: url)
                 }
             }
         }
@@ -332,7 +334,7 @@ extension JourneyPresentation {
     public var configureTravelCertificateNavigation: some JourneyPresentation {
         onAction(TravelInsuranceStore.self) { action in
             if case .goToEditCoInsured = action {
-                AppJourney.configureQuickAction(commonClaim: .editCoInsured())
+                AppJourney.configureQuickAction(quickAction: .editCoInsured())
             }
         }
     }

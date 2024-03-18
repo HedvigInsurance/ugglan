@@ -27,6 +27,7 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimConfirmEmergencyStepFragment
     ...FlowClaimDeflectGlassDamageStepFragment
     ...FlowClaimDeflectTowingStepFragment
+    ...FlowClaimDeflectEirStepFragment
     ...FlowClaimDeflectPestsStepFragment
     ...FlowClaimFileUploadStepFragment
   }
@@ -94,6 +95,13 @@ fragment FlowClaimDeflectGlassDamageStepFragment on FlowClaimDeflectGlassDamageS
 }
 
 fragment FlowClaimDeflectTowingStepFragment on FlowClaimDeflectTowingStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimDeflectEirStepFragment on FlowClaimDeflectEirStep {
     id
     partners {
         ...FlowClaimDeflectPartnerFragment

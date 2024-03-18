@@ -249,7 +249,7 @@ struct ContractInformationView: View {
         {
             hSection {
                 HStack {
-                    if let hasUpCoimingCoInsuredChanges = contract.coInsured.first(where: {
+                    if let _ = contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
                     }), Dependencies.featureFlags().isEditCoInsuredEnabled {
                         InfoCard(

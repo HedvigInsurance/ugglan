@@ -157,8 +157,8 @@ struct PaymentDetails: View {
                     }
                 }
             }
-            .hWithoutHorizontalPadding
         }
+        .hWithoutHorizontalPadding
     }
 
     @ViewBuilder
@@ -211,6 +211,7 @@ struct PaymentDetails: View {
 
 struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
         let data = PaymentData(
             id: "id",
             payment: .init(

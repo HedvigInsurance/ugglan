@@ -28,13 +28,22 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 hText(peril.title, style: .standardLarge)
                     .lineLimit(1)
                 Spacer()
-                Image(
-                    uiImage: selectedPerils.contains(peril)
-                        ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
-                )
-                .resizable()
-                .frame(width: 16, height: 16)
-                .transition(.opacity.animation(.easeOut))
+                ZStack {
+                    Image(
+                        uiImage: hCoreUIAssets.minusSmall.image
+                    )
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                    .transition(.opacity.animation(.easeOut))
+                    .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 270))
+                    Image(
+                        uiImage: hCoreUIAssets.minusSmall.image
+                    )
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                    .transition(.opacity.animation(.easeOut))
+                    .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 180))
+                }
                 .padding(.trailing, 4)
             }
             .padding(.vertical, 13)
@@ -104,12 +113,13 @@ struct PerilCollection_Previews: PreviewProvider {
         let perils: [Perils] =
             [
                 .init(
-                    fragment: .init(
-                        _dataDict: .init(
-                            data: [:],
-                            fulfilledFragments: .init()
-                        )
-                    )
+                    id: "1",
+                    title: "title",
+                    description: "des",
+                    info: nil,
+                    color: nil,
+                    covered: [],
+                    exceptions: []
                 )
             ]
         PerilCollection(

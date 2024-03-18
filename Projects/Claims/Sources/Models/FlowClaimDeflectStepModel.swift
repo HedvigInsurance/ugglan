@@ -7,6 +7,7 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
     case FlowClaimDeflectTowingStep
+    case FlowClaimDeflectEirStep
     case Unknown
 
     var title: String {
@@ -19,6 +20,8 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
             return L10n.commonClaimEmergencyTitle
         case .FlowClaimDeflectTowingStep:
             return L10n.submitClaimTowingTitle
+        case .FlowClaimDeflectEirStep:
+            return L10n.submitClaimCarTitle
         case .Unknown:
             return ""
         }
@@ -149,6 +152,14 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     }
 
     init(
+        with data: OctopusGraphQL.FlowClaimDeflectEirStepFragment
+    ) {
+        self.id = (Self.setDeflectType(idIn: data.id))
+        self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
+        self.isEmergencyStep = false
+    }
+
+    init(
         id: FlowClaimDeflectStepType,
         partners: [Partner]? = [],
         isEmergencyStep: Bool
@@ -168,6 +179,8 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
             return .FlowClaimDeflectEmergencyStep
         case "FlowClaimDeflectTowingStep":
             return .FlowClaimDeflectTowingStep
+        case "FlowClaimDeflectEirStep":
+            return .FlowClaimDeflectEirStep
         default:
             return .Unknown
         }

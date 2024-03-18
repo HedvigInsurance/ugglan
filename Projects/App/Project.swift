@@ -120,6 +120,10 @@ let targetScripts: [TargetScript] = [
 let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig",
+    options: .options(
+        disableBundleAccessors: true,
+        disableSynthesizedResourceAccessors: true
+    ),
     packages: [],
     targets: [
         Target(

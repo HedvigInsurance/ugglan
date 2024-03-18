@@ -35,7 +35,7 @@ enum OdysseyRequest {
             request = multipartFormDataRequest.asURLRequest()
         }
         request.httpMethod = self.methodType
-        try await TokenRefresher.shared.refreshIfNeededAsync()
+        try await TokenRefresher.shared.refreshIfNeeded()
         var headers = ApolloClient.headers()
         headers["Odyssey-Platform"] = "ios"
         headers.forEach { element in

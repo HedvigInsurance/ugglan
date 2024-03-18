@@ -44,14 +44,14 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.1")
+                    .exact("3.1.2")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.24")
+                    .upToNextMajor(from: "3.0.0")
                 )
             ]
         case .dynamiccolor:
@@ -83,11 +83,11 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.7.1"))]
         case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.1820240227133804"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.2120240313135116"))
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .upToNextMajor(from: "0.1.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.1.1"))
             ]
         case .introspect:
             return [
@@ -223,6 +223,10 @@ extension Project {
         return Project(
             name: name,
             organizationName: "Hedvig",
+            options: .options(
+                disableBundleAccessors: true,
+                disableSynthesizedResourceAccessors: true
+            ),
             packages: packages,
             settings: .settings(configurations: projectConfigurations),
             targets: [

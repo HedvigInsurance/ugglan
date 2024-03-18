@@ -15,89 +15,71 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
-    public func refreshIfNeededAsync() async throws {
-        let bag = DisposeBag()
-        try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<Void, Error>) -> Void in
-            bag += refreshIfNeeded()
-                .onValue({ _ in
-                    inCont.resume()
-                })
-                .onError({ error in
-                    inCont.resume(throwing: error)
-                })
+    public func refreshIfNeeded() async throws {
+        let token = try ApolloClient.retreiveToken()
+        guard let token = token else {
+            if !isDemoMode {
+                forceLogoutHook()
+                log.info("Access token refresh missing token", error: nil, attributes: nil)
+                throw AuthError.refreshTokenExpired
+            }
+            return
+        }
+
+        log.debug("Checking if access token refresh is needed")
+        guard self.needRefresh else {
+            log.debug("Access token refresh is not needed")
+            return
+        }
+
+        if self.isRefreshing.value {
+            log.debug("Already refreshing waiting until that is complete")
+            try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
+                let bag = DisposeBag()
+                bag += self.isRefreshing
+                    .filter(predicate: { isRefreshing in
+                        !isRefreshing
+                    })
+                    .onFirstValue({ _ in
+                        log.debug("Refresh completed")
+                        inCont.resume()
+                    })
+            }
+            return
+        } else if Date() > token.refreshTokenExpirationDate {
+            log.info("Refresh token expired at \(token.refreshTokenExpirationDate) forcing logout")
+            forceLogoutHook()
+            throw AuthError.refreshTokenExpired
+        } else {
+            self.isRefreshing.value = true
+            log.info("Will start refreshing token")
+            let repository = NetworkAuthRepository(
+                environment: Environment.current.authEnvironment,
+                additionalHttpHeadersProvider: { ApolloClient.headers() },
+                httpClientEngine: nil
+            )
+            let exchangeResult = try await repository.exchange(grant: RefreshTokenGrant(code: token.refreshToken))
+            switch onEnum(of: exchangeResult) {
+            case .success(let success):
+                log.info("Refresh was sucessfull")
+                ApolloClient.handleAuthTokenSuccessResult(result: success)
+                self.isRefreshing.value = false
+                return
+            case .error(let error):
+                log.error("Refreshing failed \(error.errorMessage), forcing logout")
+                forceLogoutHook()
+                throw AuthError.refreshFailed
+            }
         }
     }
+}
 
-    public func refreshIfNeeded() -> Future<Void> {
-        do {
-            let token = try ApolloClient.retreiveToken()
-            guard let token = token else {
-                if !isDemoMode {
-                    forceLogoutHook()
-                    log.info("Access token refresh missing token", error: nil, attributes: nil)
-                    return Future(result: .failure(AuthError.refreshTokenExpired))
-                }
-                return Future(result: .success)
-            }
-
-            return Future { completion in
-                let bag = DisposeBag()
-
-                log.debug("Checking if access token refresh is needed")
-
-                guard self.needRefresh else {
-                    log.debug("Access token refresh is not needed")
-                    completion(.success)
-                    return bag
-                }
-
-                if self.isRefreshing.value {
-                    log.debug("Already refreshing waiting until that is complete")
-
-                    bag += self.isRefreshing
-                        .filter(predicate: { isRefreshing in
-                            !isRefreshing
-                        })
-                        .onFirstValue({ _ in
-                            log.debug("Refresh completed")
-                            completion(.success)
-                        })
-                } else if Date() > token.refreshTokenExpirationDate {
-                    log.info("Refresh token expired at \(token.refreshTokenExpirationDate) forcing logout")
-                    forceLogoutHook()
-                    completion(.failure(AuthError.refreshTokenExpired))
-                } else {
-                    self.isRefreshing.value = true
-                    log.info("Will start refreshing token")
-                    NetworkAuthRepository(
-                        environment: Environment.current.authEnvironment,
-                        additionalHttpHeadersProvider: { ApolloClient.headers() },
-                        callbacks: Callbacks(successUrl: "", failureUrl: ""),
-                        httpClientEngine: nil
-                    )
-                    .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
-                        if let successResult = result as? AuthTokenResultSuccess {
-                            log.info("Refresh was sucessfull")
-
-                            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                            self.isRefreshing.value = false
-                            completion(.success)
-                        } else {
-                            log.error(
-                                "Refreshing failed \(String(describing: result)), forcing logout",
-                                error: error
-                            )
-                            forceLogoutHook()
-                            completion(.failure(AuthError.refreshFailed))
-                        }
-                    }
-                }
-
-                return bag
-            }
-        } catch {
-            return Future(result: .success)
+extension AuthTokenResultError {
+    fileprivate var errorMessage: String {
+        switch onEnum(of: self) {
+        case .backendErrorResponse(let error): return error.message
+        case .iOError(let ioError): return ioError.message
+        case .unknownError(let unknownError): return unknownError.message
         }
     }
 }
