@@ -1,6 +1,5 @@
 import Foundation
 
-
 private class BundleFinder {}
 
 extension Foundation.Bundle {
