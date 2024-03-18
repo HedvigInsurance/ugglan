@@ -76,7 +76,7 @@ public struct PaymentsView: View {
                                         .foregroundColor(hTextColor.secondary)
                                 }
                                 .foregroundColor(.primary)
-                                hText(L10n.General.due(upcomingPayment.payment.date.displayDate))
+                                hText(upcomingPayment.payment.date.displayDate)
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }
