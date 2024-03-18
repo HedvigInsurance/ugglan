@@ -71,7 +71,6 @@ public struct ProfileView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    ConnectPaymentCardView()
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
                     hButton.LargeButton(type: .ghost) {
