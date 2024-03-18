@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 final class AnyTask: Equatable {
@@ -34,4 +35,10 @@ final class AnyTask: Equatable {
 
 extension Task {
     var eraseToAnyTask: AnyTask { .init(self) }
+}
+
+extension Task {
+    public func eraseToAnyCancellable() -> AnyCancellable {
+        AnyCancellable(cancel)
+    }
 }

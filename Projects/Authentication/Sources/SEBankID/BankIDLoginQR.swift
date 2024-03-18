@@ -46,7 +46,7 @@ public struct BankIDLoginQR: View {
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                                     ApplicationContext.shared.$isDemoMode.value = true
                                     store.send(.bankIdQrResultAction(action: .loggedIn))
-                                    store.send(.cancel)
+                                    vm.cancelLogin()
                                 }
                             )
                         }
@@ -83,8 +83,8 @@ public struct BankIDLoginQR: View {
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                store.send(.cancel)
                                 store.send(.bankIdQrResultAction(action: .emailLogin))
+                                vm.cancelLogin()
                             } content: {
                                 hText(L10n.BankidMissingLogin.emailButton)
                             }
@@ -109,44 +109,44 @@ class BandIDViewModel: ObservableObject {
     @Published var hasBankIdApp = false
     @Published var isLoading = true
     @Published var hasAlreadyOpenedBankId = false
+    private var seBankIdState: SEBankIDState = .init()
+    private let authentificationService = AuthentificationService()
     private var cancellables = Set<AnyCancellable>()
-
+    private var observeLoginTask: AnyCancellable?
     init() {
         checkIfCanOpenBankId()
-        let store: AuthenticationStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .plain()
-            .map({ $0.seBankIDState.autoStartToken })
-            .distinct()
-            .publisher
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.set(token: value)
-            }
-            .store(in: &cancellables)
-
-        store.stateSignal
-            .plain()
-            .map({ $0.seBankIDState.liveQrCodeData })
-            .distinct()
-            .publisher
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.set(qrData: value)
-            }
-            .store(in: &cancellables)
-    }
-
-    deinit {
-        let store: AuthenticationStore = globalPresentableStoreContainer.get()
-        store.send(.cancel)
     }
 
     func onAppear() {
-        let store: AuthenticationStore = globalPresentableStoreContainer.get()
-        if store.state.seBankIDState.autoStartToken == nil {
-            store.send(.seBankIDStateAction(action: .startSession))
+        if seBankIdState.autoStartToken == nil {
+            observeLoginTask = Task { @MainActor [weak self] in
+                do {
+                    try await self?.authentificationService
+                        .startSeBankId { newStatus in
+                            DispatchQueue.main.async {
+                                switch newStatus {
+                                case .started(let code):
+                                    self?.set(token: code)
+                                case .pending(let qrCode):
+                                    self?.set(qrData: qrCode)
+                                case .completed:
+                                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
+                                    store.send(.navigationAction(action: .authSuccess))
+                                }
+                            }
+                        }
+                } catch let error {
+                    self?.seBankIdState = .init()
+                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
+                    store.send(.loginFailure(message: error.localizedDescription))
+                }
+            }
+            .eraseToAnyCancellable()
         }
+    }
+
+    func cancelLogin() {
+        observeLoginTask?.cancel()
     }
 
     private func checkIfCanOpenBankId() {
@@ -196,6 +196,11 @@ class BandIDViewModel: ObservableObject {
         }
     }
 
+    deinit {
+        cancelLogin()
+    }
+
+    @MainActor
     private func set(qrData: String?) {
         guard let qrData else {
             self.image = nil

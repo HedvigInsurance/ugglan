@@ -36,12 +36,6 @@ public enum AuthenticationNavigationAction: ActionProtocol {
     case zignsecWebview(url: URL)
 }
 
-public enum SEBankIDStateAction: ActionProtocol {
-    case startSession
-    case setAutoStartTokenWith(autoStartToken: String)
-    case setLiveQrCodeData(liveQrCodeData: String?, date: Date)
-}
-
 enum LoginError: Error {
     case failed
 }
@@ -54,9 +48,7 @@ public enum AuthenticationAction: ActionProtocol {
     case logoutSuccess
     case logoutFailure
     case loginFailure(message: String?)
-    case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
-    case seBankIDStateAction(action: SEBankIDStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
     case bankIdQrResultAction(action: BankIDLoginQRResult)
 }

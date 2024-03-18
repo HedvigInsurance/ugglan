@@ -3,10 +3,8 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
-import authlib
 import hCore
 import hCoreUI
-import hGraphQL
 
 enum LoginStatus: Equatable {
     case pending(statusMessage: String?)
@@ -16,14 +14,7 @@ enum LoginStatus: Equatable {
 }
 
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
-    lazy var networkAuthRepository: NetworkAuthRepository = {
-        NetworkAuthRepository(
-            environment: Environment.current.authEnvironment,
-            additionalHttpHeadersProvider: { ApolloClient.headers() },
-            httpClientEngine: nil
-        )
-    }()
-
+    private let authentificationService = AuthentificationService()
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction
@@ -39,23 +30,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         } else if case .otpStateAction(action: .verifyCode) = action {
             let state = getState()
-            if let verifyUrl = state.otpState.verifyUrl {
-                do {
-                    try await Task.sleep(nanoseconds: 5 * 100_000_000)
-                    let data = try await networkAuthRepository.submitOtp(
-                        verifyUrl: verifyUrl.absoluteString,
-                        otp: state.otpState.code
-                    )
-                    if let data = data as? SubmitOtpResultSuccess {
-                        send(.exchange(code: data.loginAuthorizationCode.code))
-                    } else {
-                        send(
-                            .otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid))
-                        )
-                    }
-                } catch {
-                    send(.otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)))
-                }
+            do {
+                let code = try await authentificationService.submit(otpState: state.otpState)
+                send(.exchange(code: code))
+            } catch let error {
+                send(.otpStateAction(action: .setCodeError(message: error.localizedDescription)))
             }
         } else if case .otpStateAction(action: .setCodeError) = action {
             Task {
@@ -65,28 +44,12 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             send(.otpStateAction(action: .setLoading(isLoading: false)))
         } else if case .otpStateAction(action: .submitOtpData) = action {
             let state = getState()
-            let personalNumber = state.otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
             do {
-                let data = try await self.networkAuthRepository.startLoginAttempt(
-                    loginMethod: .otp,
-                    market: Localization.Locale.currentLocale.market.asOtpMarket,
-                    personalNumber: personalNumber,
-                    email: state.otpState.email
-                )
-                try await Task.sleep(nanoseconds: 5 * 100_000_000)
-                if let otpProperties = data as? AuthAttemptResultOtpProperties,
-                    let verifyUrl = URL(string: otpProperties.verifyUrl),
-                    let resendUrl = URL(string: otpProperties.resendUrl)
-                {
-                    send(.navigationAction(action: .otpCode))
-                    send(.otpStateAction(action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)))
-                } else {
-                    send(.otpStateAction(action: .setLoading(isLoading: false)))
-                    send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
-                }
-            } catch {
+                let data = try await authentificationService.start(with: state.otpState)
+                send(.otpStateAction(action: .startSession(verifyUrl: data.verifyUrl, resendUrl: data.resendUrl)))
+            } catch let error {
                 send(.otpStateAction(action: .setLoading(isLoading: false)))
-                send(.otpStateAction(action: .setOtpInputError(message: L10n.Login.TextInput.emailErrorNotValid)))
+                send(.otpStateAction(action: .setOtpInputError(message: error.localizedDescription)))
             }
         } else if case .navigationAction(action: .authSuccess) = action {
             Task {
@@ -96,11 +59,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             send(.bankIdQrResultAction(action: .loggedIn))
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
-            if let resendUrl = state.otpState.resendUrl {
-                do {
-                    _ = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
-                    send(.otpStateAction(action: .showResentToast))
-                } catch {}
+            do {
+                try await authentificationService.resend(otp: state.otpState)
+                send(.otpStateAction(action: .showResentToast))
+            } catch _ {
+
             }
         } else if case .otpStateAction(action: .showResentToast) = action {
             Toasts.shared.displayToast(
@@ -109,91 +72,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     body: L10n.Login.Snackbar.codeResent
                 )
             )
-        } else if case .seBankIDStateAction(action: .startSession) = action {
-            send(.cancel)
-            do {
-                let data = try await self.networkAuthRepository.startLoginAttempt(
-                    loginMethod: .seBankid,
-                    market: Localization.Locale.currentLocale.market.asOtpMarket,
-                    personalNumber: nil,
-                    email: nil
-                )
-                if let data = data as? AuthAttemptResultBankIdProperties,
-                    let statusUrl = URL(string: data.statusUrl.url)
-                {
-
-                    send(.seBankIDStateAction(action: .setAutoStartTokenWith(autoStartToken: data.autoStartToken)))
-                    send(.observeLoginStatus(url: statusUrl))
-                } else if let result = data as? AuthAttemptResultError {
-                    var localizedMessage = L10n.General.errorBody
-                    var logMessage = "Got Error when signing in with BankId"
-                    if let result = result as? AuthAttemptResultErrorLocalised {
-                        localizedMessage = result.reason
-                        logMessage =
-                            "Got AuthAttemptResultErrorLocalised when signing in with BankId. Reason:\(result.reason)."
-                    } else if let result = result as? AuthAttemptResultErrorBackendErrorResponse {
-                        logMessage =
-                            "Got AuthAttemptResultErrorBackendErrorResponse when signing in with BankId. Message:\(result.message)"
-                    } else if let result = result as? AuthAttemptResultErrorIOError {
-                        logMessage =
-                            "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
-                    } else if let result = result as? AuthAttemptResultErrorUnknownError {
-                        logMessage =
-                            "Got AuthAttemptResultErrorIOError when signing in with BankId. Message:\(result.message)"
-                    }
-                    let error = NSError(domain: logMessage, code: 1000)
-                    log.error(
-                        logMessage,
-                        error: error,
-                        attributes: [:]
-                    )
-                    send(.loginFailure(message: localizedMessage))
-                }
-            } catch let error {
-                log.error(
-                    "Got Error when signing in with BankId",
-                    error: error,
-                    attributes: [:]
-                )
-                send(.loginFailure(message: nil))
-            }
-        } else if case let .observeLoginStatus(statusUrl) = action {
-            for await status in self.networkAuthRepository.observeLoginStatus(
-                statusUrl: .init(url: statusUrl.absoluteString)
-            ) {
-                switch onEnum(of: status) {
-                case .failed(let failed):
-                    let message = failed.localisedMessage
-                    log.error(
-                        "LOGIN FAILED",
-                        error: NSError(domain: message, code: 1000),
-                        attributes: [
-                            "message": message,
-                            "statusUrl": statusUrl.absoluteString,
-                        ]
-                    )
-                    send(.loginFailure(message: failed.localisedMessage))
-                case .exception(let exception):
-                    send(.loginFailure(message: nil))
-                case .completed(let completed):
-                    log.info(
-                        "LOGIN AUTH FINISHED"
-                    )
-                    send(.exchange(code: completed.authorizationCode.code))
-                case .pending(let pending):
-                    self.send(
-                        .seBankIDStateAction(
-                            action: .setLiveQrCodeData(
-                                liveQrCodeData: pending.bankIdProperties?.liveQrCodeData,
-                                date: Date()
-                            )
-                        )
-                    )
-                }
-            }
         } else if case let .exchange(code) = action {
             do {
-                let successResult = try await self.exchange(code: code)
+                let successResult = try await authentificationService.exchange(code: code)
                 ApolloClient.handleAuthTokenSuccessResult(result: successResult)
                 send(.navigationAction(action: .authSuccess))
             } catch {
@@ -201,7 +82,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         } else if case let .impersonate(code) = action {
             do {
-                let successResult = try await self.exchange(code: code)
+                let successResult = try await authentificationService.exchange(code: code)
                 ApolloClient.handleAuthTokenSuccessResult(result: successResult)
                 send(.navigationAction(action: .impersonation))
             } catch {
@@ -209,16 +90,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         } else if case .logout = action {
             do {
-                if let token = try ApolloClient.retreiveToken() {
-                    let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
-                    switch onEnum(of: data) {
-                    case .error: send(.logoutFailure)
-                    case .success: send(.logoutSuccess)
-                    }
-                } else {
-                    send(.logoutSuccess)
-                }
-            } catch {
+                try await authentificationService.logout()
+                send(.logoutSuccess)
+            } catch let error {
                 send(.logoutFailure)
             }
         }
@@ -278,24 +152,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             default:
                 break
             }
-        case let .seBankIDStateAction(action):
-            switch action {
-            case .startSession:
-                newState.seBankIDState.autoStartToken = nil
-            case let .setAutoStartTokenWith(autoStartToken):
-                newState.seBankIDState.autoStartToken = autoStartToken
-            case let .setLiveQrCodeData(liveQrCodeData, date):
-                if (newState.seBankIDState.liveQrCodeDate?.addingTimeInterval(2) ?? date) <= date {
-                    newState.seBankIDState.liveQrCodeData = liveQrCodeData
-                    newState.seBankIDState.liveQrCodeDate = date
-                }
-            }
-        case .cancel:
-            newState.seBankIDState = SEBankIDState()
-            newState.loginHasFailed = false
-        case .loginFailure:
-            newState.seBankIDState = SEBankIDState()
-            newState.loginHasFailed = true
         default:
             break
         }
@@ -303,22 +159,4 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         return newState
     }
 
-    private func exchange(code: String) async throws -> AuthTokenResultSuccess {
-        let data = try await self.networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
-        if let successResult = data as? AuthTokenResultSuccess {
-            return successResult
-        }
-        let error = NSError(domain: "", code: 1000)
-        throw error
-    }
-}
-
-extension Localization.Locale.Market {
-    fileprivate var asOtpMarket: OtpMarket {
-        switch self {
-        case .no: return .no
-        case .se: return .se
-        case .dk: return .dk
-        }
-    }
 }
