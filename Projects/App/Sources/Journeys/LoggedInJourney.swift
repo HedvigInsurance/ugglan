@@ -42,7 +42,7 @@ extension AppJourney {
                 case let .startCoInsuredFlow(contractIds):
                     AppJourney.editCoInsured(configs: contractIds)
                 case let .goToQuickAction(quickAction):
-                    AppJourney.configureQuickAction(commonClaim: quickAction)
+                    AppJourney.configureQuickAction(quickAction: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
                 }
@@ -329,7 +329,7 @@ extension JourneyPresentation {
     public var configureTravelCertificateNavigation: some JourneyPresentation {
         onAction(TravelInsuranceStore.self) { action in
             if case .goToEditCoInsured = action {
-                AppJourney.configureQuickAction(commonClaim: .editCoInsured())
+                AppJourney.configureQuickAction(quickAction: .editCoInsured())
             }
         }
     }

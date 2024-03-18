@@ -138,8 +138,10 @@ private class DirectDebitWebview: UIView {
             NotificationCenter.Publisher(center: .default, name: UIApplication.willEnterForegroundNotification)
         )
         .sink { _ in
-        } receiveValue: { error, _ in
-            shouldDismissViewSignal.send(true)
+        } receiveValue: { didFail, _ in
+            if didFail {
+                shouldDismissViewSignal.send(true)
+            }
         }
         .store(in: &cancellables)
 
