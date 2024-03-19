@@ -53,16 +53,24 @@ public class TokenRefresher {
         } else {
             self.isRefreshing.value = true
             log.info("Will start refreshing token")
+
             let repository = NetworkAuthRepository(
                 environment: Environment.current.authEnvironment,
                 additionalHttpHeadersProvider: { ApolloClient.headers() },
                 httpClientEngine: nil
             )
+
             let exchangeResult = try await repository.exchange(grant: RefreshTokenGrant(code: token.refreshToken))
             switch onEnum(of: exchangeResult) {
             case .success(let success):
                 log.info("Refresh was sucessfull")
-                ApolloClient.handleAuthTokenSuccessResult(result: success)
+                let accessTokenDto: AuthorizationTokenDto = .init(
+                    accessToken: success.accessToken.token,
+                    accessTokenExpiryIn: Int(success.accessToken.expiryInSeconds),
+                    refreshToken: success.refreshToken.token,
+                    refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
+                )
+                ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
                 self.isRefreshing.value = false
                 return
             case .error(let error):

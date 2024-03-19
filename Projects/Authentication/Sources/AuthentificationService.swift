@@ -4,7 +4,19 @@ import authlib
 import hCore
 import hGraphQL
 
-final class AuthentificationService {
+public protocol AuthentificationService {
+    func submit(otpState: OTPState) async throws -> String
+    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL)
+    func resend(otp otpState: OTPState) async throws
+    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws
+    func logout() async throws
+    func exchange(code: String) async throws -> AuthorizationTokenDto
+}
+
+final public class AuthentificationServiceAuthLib: AuthentificationService {
+
+    public init() {}
+
     lazy private var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
@@ -13,7 +25,7 @@ final class AuthentificationService {
         )
     }()
 
-    func submit(otpState: OTPState) async throws -> String {
+    public func submit(otpState: OTPState) async throws -> String {
         if let verifyUrl = otpState.verifyUrl {
             do {
                 try await Task.sleep(nanoseconds: 5 * 100_000_000)
@@ -34,7 +46,7 @@ final class AuthentificationService {
 
     }
 
-    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL) {
+    public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL) {
         let personalNumber = otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
@@ -57,7 +69,7 @@ final class AuthentificationService {
         }
     }
 
-    func resend(otp otpState: OTPState) async throws {
+    public func resend(otp otpState: OTPState) async throws {
         if let resendUrl = otpState.resendUrl {
             _ = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
         } else {
@@ -65,7 +77,7 @@ final class AuthentificationService {
         }
     }
 
-    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
+    public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
@@ -143,7 +155,7 @@ final class AuthentificationService {
         }
     }
 
-    func logout() async throws {
+    public func logout() async throws {
         do {
             if let token = try ApolloClient.retreiveToken() {
                 let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
@@ -161,10 +173,15 @@ final class AuthentificationService {
         }
     }
 
-    func exchange(code: String) async throws -> AuthTokenResultSuccess {
+    public func exchange(code: String) async throws -> AuthorizationTokenDto {
         let data = try await self.networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
         if let successResult = data as? AuthTokenResultSuccess {
-            return successResult
+            return .init(
+                accessToken: successResult.accessToken.token,
+                accessTokenExpiryIn: Int(successResult.accessToken.expiryInSeconds),
+                refreshToken: successResult.refreshToken.token,
+                refreshTokenExpiryIn: Int(successResult.refreshToken.expiryInSeconds)
+            )
         }
         let error = NSError(domain: "", code: 1000)
         throw error
@@ -182,7 +199,7 @@ extension Localization.Locale.Market {
     }
 }
 
-enum ObserveStatusResponseType {
+public enum ObserveStatusResponseType {
     case started(code: String)
     case pending(qrCode: String?)
     case completed

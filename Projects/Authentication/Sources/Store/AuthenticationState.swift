@@ -2,7 +2,7 @@ import Foundation
 import Presentation
 import hCore
 
-struct OTPState: StateProtocol {
+public struct OTPState: StateProtocol {
     var isLoading = false
     var isResending = false
     var resendUrl: URL? = nil

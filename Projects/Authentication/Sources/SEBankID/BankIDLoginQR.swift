@@ -110,7 +110,7 @@ class BandIDViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var hasAlreadyOpenedBankId = false
     private var seBankIdState: SEBankIDState = .init()
-    private let authentificationService = AuthentificationService()
+    @Inject var authentificationService: AuthentificationService
     private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
     init() {

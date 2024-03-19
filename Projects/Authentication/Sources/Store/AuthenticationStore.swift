@@ -14,7 +14,7 @@ enum LoginStatus: Equatable {
 }
 
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
-    private let authentificationService = AuthentificationService()
+    @Inject var authentificationService: AuthentificationService
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction
@@ -47,6 +47,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             do {
                 let data = try await authentificationService.start(with: state.otpState)
                 send(.otpStateAction(action: .startSession(verifyUrl: data.verifyUrl, resendUrl: data.resendUrl)))
+                send(.navigationAction(action: .otpCode))
             } catch let error {
                 send(.otpStateAction(action: .setLoading(isLoading: false)))
                 send(.otpStateAction(action: .setOtpInputError(message: error.localizedDescription)))

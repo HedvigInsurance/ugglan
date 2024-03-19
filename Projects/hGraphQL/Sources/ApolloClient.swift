@@ -99,22 +99,22 @@ extension ApolloClient {
         try KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
     }
 
-    public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
+    public static func handleAuthTokenSuccessResult(result: AuthorizationTokenDto) {
         let accessTokenExpirationDate = Date()
             .addingTimeInterval(
-                Double(result.accessToken.expiryInSeconds)
+                Double(result.accessTokenExpiryIn)
             )
 
         let refreshTokenExpirationDate = Date()
             .addingTimeInterval(
-                Double(result.refreshToken.expiryInSeconds)
+                Double(result.refreshTokenExpiryIn)
             )
 
         ApolloClient.saveToken(
             token: OAuthorizationToken(
-                accessToken: result.accessToken.token,
+                accessToken: result.accessToken,
                 accessTokenExpirationDate: accessTokenExpirationDate,
-                refreshToken: result.refreshToken.token,
+                refreshToken: result.refreshToken,
                 refreshTokenExpirationDate: refreshTokenExpirationDate
             )
         )
