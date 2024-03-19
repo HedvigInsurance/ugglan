@@ -215,7 +215,7 @@ extension PaymentsView {
                 if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }
@@ -242,7 +242,7 @@ extension PaymentsView {
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }

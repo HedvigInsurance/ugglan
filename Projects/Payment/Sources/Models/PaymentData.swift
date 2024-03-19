@@ -78,6 +78,12 @@ public struct PaymentData: Codable, Equatable {
             self.bank = bank
         }
 
+        init(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
+            self.paymentMethod = L10n.paymentsAutogiroLabel
+            self.account = model.currentMember.paymentInformation.connection?.descriptor ?? ""
+            self.bank = model.currentMember.paymentInformation.connection?.displayName ?? ""
+        }
+
         var getDisplayList: [KeyValue] {
             var list: [KeyValue] = []
             list.append((L10n.paymentsPaymentMethod, paymentMethod))

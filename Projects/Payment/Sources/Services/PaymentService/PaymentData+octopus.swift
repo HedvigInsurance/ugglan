@@ -3,7 +3,10 @@ import hCore
 import hGraphQL
 
 extension PaymentData {
-    init?(with data: OctopusGraphQL.PaymentDataQuery.Data) {
+    init?(
+        with data: OctopusGraphQL.PaymentDataQuery.Data,
+        paymentDetails: PaymentDetails?
+    ) {
         self.id = data.currentMember.futureCharge?.id ?? ""
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
@@ -20,7 +23,7 @@ extension PaymentData {
                 return .init(with: discountBreakdown, discountDto: dto)
             }
         })
-        paymentDetails = nil
+        self.paymentDetails = paymentDetails
         addedToThePayment = []
     }
 }
