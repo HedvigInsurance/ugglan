@@ -29,7 +29,9 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
 
         switch action {
         case .fetch:
-            self.setLoading(for: .fetchForeverData)
+            if newState.foreverData == nil {
+                self.setLoading(for: .fetchForeverData)
+            }
         case let .setForeverData(data):
             self.removeLoading(for: .fetchForeverData)
             newState.foreverData = data

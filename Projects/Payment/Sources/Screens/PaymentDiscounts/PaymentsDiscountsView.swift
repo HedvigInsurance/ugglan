@@ -1,3 +1,4 @@
+import Forever
 import Presentation
 import SwiftUI
 import hCore
@@ -19,7 +20,6 @@ struct PaymentsDiscountsView: View {
                 }
                 Spacing(height: 16)
                 forever
-                DiscountCodeSectionView(code: data.referralsData.code)
             }
             .padding(.vertical, 16)
         }
@@ -56,9 +56,10 @@ struct PaymentsDiscountsView: View {
         }
     }
 
+    @ViewBuilder
     private var forever: some View {
-        hSection(foreverRows, id: \.id) { item in
-            item.view
+        hSection(data.referralsData.referrals, id: \.id) { item in
+            getRefferalView(item)
         }
         .withHeader {
             VStack(alignment: .leading, spacing: 16) {
@@ -88,51 +89,26 @@ struct PaymentsDiscountsView: View {
                     )
                     .foregroundColor(hTextColor.secondary)
                 }
-
-                if data.referralsData.referrals.count == 0 {
-                    InfoCard(
-                        text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
-                        type: .campaign
-                    )
-                    .buttons(
-                        [
-                            .init(
-                                buttonTitle: L10n.ImportantMessage.readMore,
-                                buttonAction: {
-                                    InfoViewHolder.showInfoView(
-                                        with: L10n.paymentsReferralsInfoTitle,
-                                        and: L10n.ReferralsInfoSheet.body(
-                                            store.state.paymentDiscountsData?.referralsData.discountPerMember
-                                                .formattedAmount ?? ""
-                                        )
-                                    )
-                                }
-                            )
-                        ]
-                    )
-                    .padding(.bottom, 8)
-                }
             }
             .padding(.bottom, -16)
         }
-    }
-
-    private var foreverRows: [(id: String, view: AnyView)] {
-        var list: [(id: String, view: AnyView)] = []
-
-        if data.referralsData.referrals.count > 4 {
-            for refferal in data.referralsData.referrals.prefix(3) {
-                let refferalView = getRefferalView(refferal)
-                list.append((refferal.id, AnyView(refferalView)))
-            }
-            list.append(("seeAllInvites", AnyView(seeAllInvitesView)))
-        } else {
-            for refferal in data.referralsData.referrals {
-                let refferalView = getRefferalView(refferal)
-                list.append((refferal.id, AnyView(refferalView)))
-            }
+        hSection {
+            InfoCard(
+                text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
+                type: .campaign
+            )
+            .buttons(
+                [
+                    .init(
+                        buttonTitle: L10n.paymentsInviteFriends,
+                        buttonAction: {
+                            store.send(.navigation(to: .openForever))
+                        }
+                    )
+                ]
+            )
+            .padding(.bottom, 8)
         }
-        return list
     }
 
     private func getRefferalView(_ referral: Referral) -> some View {
@@ -242,10 +218,9 @@ extension PaymentsDiscountsRootView {
             rootView: self
         ) { action in
             if case let .navigation(navigateTo) = action {
-                if case let .openInviteFriends(code, amount) = navigateTo {
-                    PaymentsView.shareSheetJourney(code: code, discount: amount)
-                } else if case .openChangeCode = navigateTo {
-                    ChangeCodeView.journey
+                if case .openForever = navigateTo {
+                    ForeverView.journey()
+                        .hidesBottomBarWhenPushed
                 } else if case .openAddCampaing = navigateTo {
                     AddCampaingCodeView.journey
                 } else if case .openAllReferrals = navigateTo {
@@ -257,62 +232,7 @@ extension PaymentsDiscountsRootView {
         }
         .configureTitle(L10n.paymentsDiscountsSectionTitle)
     }
-}
 
-struct DiscountCodeSectionView: View {
-    let code: String
-    @PresentableStore var store: PaymentStore
-    var body: some View {
-        VStack(spacing: 0) {
-            hSection {
-                hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
-                    UIPasteboard.general.string = code
-                    Toasts.shared.displayToast(
-                        toast: .init(
-                            symbol: .icon(hCoreUIAssets.tick.image),
-                            body: L10n.ReferralsActiveToast.text
-                        )
-                    )
-                }
-                .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.copy.image)
-                }
-            }
-            hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .primary) {
-                        store.send(
-                            .navigation(
-                                to: .openInviteFriends(
-                                    code: code,
-                                    amount: store.state.paymentDiscountsData?.referralsData.discountPerMember
-                                        .formattedAmount ?? ""
-                                )
-                            )
-                        )
-                    } content: {
-                        hText(L10n.paymentsInviteFriends)
-                    }
-
-                    hButton.LargeButton(type: .ghost) {
-                        store.send(.navigation(to: .openChangeCode))
-                    } content: {
-                        hText(L10n.ReferralsChange.changeCode)
-                    }
-                }
-            }
-            .padding(.vertical, 16)
-        }
-        .presentableStoreLensAnimation(.spring())
-        .sectionContainerStyle(.transparent)
-    }
-}
-
-struct DiscountCodeSectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return DiscountCodeSectionView(code: "ASOOJRTW")
-    }
 }
 
 struct ReferralView: View {

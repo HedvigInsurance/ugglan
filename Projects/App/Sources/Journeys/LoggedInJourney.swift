@@ -100,14 +100,23 @@ extension AppJourney {
             }
     }
 
+    fileprivate static var paymentTab: some JourneyPresentation {
+        PaymentsView().journey(schema: "")
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .payments
+                } else {
+                    return false
+                }
+            }
+    }
+
     fileprivate static var profileTab: some JourneyPresentation {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
         return
             ProfileView.journey { result in
                 switch result {
-                case .openPayment:
-                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
                 case .resetAppLanguage:
                     ContinueJourney()
                         .onPresent {
@@ -178,6 +187,11 @@ extension AppJourney {
                         || store.state.activeContracts.isEmpty
                     {
                         foreverTab
+                    }
+                },
+                {
+                    if Dependencies.featureFlags().isPaymentScreenEnabled {
+                        paymentTab
                     }
                 },
                 {

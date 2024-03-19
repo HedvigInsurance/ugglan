@@ -17,12 +17,8 @@ struct HeaderView: View {
                         state.foreverData
                     }
                 ) { data in
-                    if let netAmount = data?.netAmount, let grossAmount = data?.grossAmount {
-                        let discountValue = MonetaryAmount(
-                            amount: grossAmount.value - netAmount.value,
-                            currency: netAmount.currency
-                        )
-                        hText(discountValue.negative.formattedAmount)
+                    if let monthlyDiscount = data?.monthlyDiscount, monthlyDiscount.value == 0 {
+                        hText(monthlyDiscount.negative.formattedAmount)
                             .foregroundColor(hTextColor.secondary)
                     }
                 }
@@ -37,13 +33,15 @@ struct HeaderView: View {
                                 discountCode: "",
                                 monthlyDiscount: .init(amount: 0, currency: ""),
                                 referrals: [],
+                                referredBy: .init(name: "", activeDiscount: nil, status: .active),
                                 monthlyDiscountPerReferral: .init(amount: 0, currency: "")
                             )
                     }
                 ) { data in
                     if let grossAmount = data?.grossAmount,
                         let netAmount = data?.netAmount,
-                        let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral
+                        let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral,
+                        let monthlyDiscount = data?.monthlyDiscount
                     {
                         PieChartView(
                             state: .init(
@@ -55,9 +53,9 @@ struct HeaderView: View {
                         )
                         .frame(width: 215, height: 215, alignment: .center)
 
-                        if grossAmount.amount != netAmount.amount {
+                        if monthlyDiscount.value > 0 {
                             // Discount present
-                            PriceSectionView(netAmount: netAmount, didPressInfo: didPressInfo)
+                            PriceSectionView(monthlyDiscount: monthlyDiscount, didPressInfo: didPressInfo)
                                 .padding(.bottom, 65)
                                 .padding(.top, 8)
                         } else {
@@ -103,6 +101,7 @@ struct HeaderView_Previews2: PreviewProvider {
                     discountCode: "CODE2",
                     monthlyDiscount: .sek(10),
                     referrals: [],
+                    referredBy: .init(name: "", activeDiscount: nil, status: .active),
                     monthlyDiscountPerReferral: .sek(10)
                 )
                 store.send(.setForeverData(data: foreverData))

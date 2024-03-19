@@ -10,7 +10,6 @@ public struct PaymentsView: View {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
-
     }
 
     public var body: some View {
@@ -77,7 +76,7 @@ public struct PaymentsView: View {
                                         .foregroundColor(hTextColor.secondary)
                                 }
                                 .foregroundColor(.primary)
-                                hText(L10n.General.due(upcomingPayment.payment.date.displayDate))
+                                hText(upcomingPayment.payment.date.displayDate)
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }
@@ -223,6 +222,11 @@ extension PaymentsView {
             }
         }
         .configureTitle(L10n.myPaymentTitle)
+        .configureTabBarItem(
+            title: L10n.tabPaymentsTitle,
+            image: hCoreUIAssets.paymentsTab.image,
+            selectedImage: hCoreUIAssets.paymentsTab.image
+        )
     }
 
     public func detentJourney(schema: String) -> some JourneyPresentation {
@@ -246,17 +250,5 @@ extension PaymentsView {
         }
         .configureTitle(L10n.myPaymentTitle)
         .withJourneyDismissButton
-    }
-
-    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
-        let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
-        let message = L10n.referralSmsMessage(discount, url)
-        return HostingJourney(
-            rootView: ActivityViewController(activityItems: [
-                message
-            ]),
-            style: .activityView
-        )
     }
 }
