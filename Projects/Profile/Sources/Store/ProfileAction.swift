@@ -13,6 +13,7 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case openSuccessChangeEuroBonus
     case openFreeTextChat
     case openAppInformation
+    case openForever
     case openAppSettings(animated: Bool)
     case setMember(memberData: MemberDetails)
     case setMemberEmail(email: String)
