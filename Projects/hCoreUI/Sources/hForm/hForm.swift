@@ -25,6 +25,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormMergeBottomWithContentIfNeeded) var mergeBottomWithContentIfNeeded
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.hScrollBackgroundStyle) var scrollBackgroundStyle
     @Environment(\.hObserveKeyboard) var hObserveKeyboard
     @Environment(\.colorScheme) private var colorScheme
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
@@ -112,7 +113,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 }
                 .background(
                     GeometryReader { proxy in
-                        hBackgroundColor.primary
+                        scrollBackgroundStyle.color.colorFor(colorScheme, .base).color
                             .onAppear {
                                 contentHeight = proxy.size.height
                                 recalculateHeight()
@@ -360,6 +361,39 @@ extension EnvironmentValues {
 extension View {
     public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
         self.environment(\.hFormBottomBackgroundStyle, style)
+    }
+}
+
+public enum hScrollBackgroundStyle {
+    case opaque
+    case transparent
+
+    var color: any hColor {
+        switch self {
+        case .opaque:
+            hBackgroundColor.primary
+        case .transparent:
+            hColorScheme(
+                Color.clear
+            )
+        }
+    }
+}
+
+private struct EnvironmentHScollBackgorundColor: EnvironmentKey {
+    static let defaultValue: hScrollBackgroundStyle = .opaque
+}
+
+extension EnvironmentValues {
+    public var hScrollBackgroundStyle: hScrollBackgroundStyle {
+        get { self[EnvironmentHScollBackgorundColor.self] }
+        set { self[EnvironmentHScollBackgorundColor.self] = newValue }
+    }
+}
+
+extension View {
+    public func hScrollBackgroundColor(_ style: hScrollBackgroundStyle) -> some View {
+        self.environment(\.hScrollBackgroundStyle, style)
     }
 }
 
