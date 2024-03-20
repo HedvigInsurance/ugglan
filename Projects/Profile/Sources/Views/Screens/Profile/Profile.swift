@@ -1,6 +1,5 @@
 import Apollo
 import Flow
-import Forever
 import Home
 import Market
 import Payment
@@ -126,8 +125,6 @@ extension ProfileView {
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
-            } else if case .openForever = action {
-                ForeverView.journey()
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,
