@@ -1,4 +1,3 @@
-import Foundation
 import Presentation
 import SwiftUI
 import hCore
@@ -15,12 +14,12 @@ public struct OTPAuthJourney {
         let store: AuthenticationStore = globalPresentableStoreContainer.get()
         return HostingJourney(
             AuthenticationStore.self,
-            rootView: OTPEntry(otpVM: store.otpState)
+            rootView: OTPEntryView(otpVM: store.otpState)
         ) { action in
             if case .navigationAction(action: .otpCode) = action {
                 HostingJourney(
                     AuthenticationStore.self,
-                    rootView: OTPCodeEntry(otpVM: store.otpState)
+                    rootView: OTPCodeEntryView(otpVM: store.otpState)
                 ) { action in
                     if case .navigationAction(action: .authSuccess) = action {
                         next(.success).hidesBackButton

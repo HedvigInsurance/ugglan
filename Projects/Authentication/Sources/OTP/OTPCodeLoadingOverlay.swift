@@ -1,4 +1,3 @@
-import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,12 +6,6 @@ struct OTPCodeLoadingOverlay: View {
     @ObservedObject var otpVM: OTPState
 
     var body: some View {
-        //        PresentableStoreLens(
-        //            AuthenticationStore.self,
-        //            getter: { state in
-        //                state.otpState.isLoading
-        //            }
-        //        ) { isLoading in
         if otpVM.isLoading {
             HStack {
                 WordmarkActivityIndicator(.standard)
@@ -23,6 +16,5 @@ struct OTPCodeLoadingOverlay: View {
             .edgesIgnoringSafeArea(.top)
             .presentableStoreLensAnimation(.default)
         }
-
     }
 }

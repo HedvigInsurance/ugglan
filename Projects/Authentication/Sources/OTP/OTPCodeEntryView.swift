@@ -1,12 +1,8 @@
-import Apollo
-import Combine
-import Foundation
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct OTPCodeEntry: View {
+public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
     @ObservedObject var otpVM: OTPState
     @PresentableStore var store: AuthenticationStore

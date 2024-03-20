@@ -1,10 +1,8 @@
-import Foundation
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct OTPEntry: View {
+struct OTPEntryView: View {
     @StateObject private var vm: OTPEntryViewModel = .init()
     @ObservedObject var otpVM: OTPState
 

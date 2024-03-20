@@ -1,40 +1,19 @@
-import Apollo
 import Authentication
-import Foundation
 import Market
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
-public enum AlternativeLoginMethods {
-    case email
-
-    public var value: String {
-        switch self {
-        case .email:
-            return "email"
-        }
-    }
-
-    public var displayName: String {
-        switch self {
-        case .email:
-            return L10n.emailRowTitle
-        }
-    }
-}
-
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
         AppJourney.loggedIn
     }
 
-    @JourneyBuilder
     fileprivate static var bankIDSweden: some JourneyPresentation {
         HostingJourney(
             AuthenticationStore.self,
-            rootView: BankIDLoginQR(),
+            rootView: BankIDLoginQRView(),
             style: .detented(.large)
         ) { action in
             if case .bankIdQrResultAction(.loggedIn) = action {
@@ -79,9 +58,9 @@ extension AppJourney {
         .withDismissButton
     }
 
-    @JourneyBuilder static var login: some JourneyPresentation {
+    static var login: some JourneyPresentation {
         let marketStore: MarketStore = globalPresentableStoreContainer.get()
-        GroupJourney {
+        return GroupJourney {
             switch marketStore.state.market {
             case .sweden:
                 bankIDSweden

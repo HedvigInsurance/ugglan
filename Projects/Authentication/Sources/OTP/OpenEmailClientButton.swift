@@ -1,4 +1,3 @@
-import Foundation
 import Presentation
 import SwiftUI
 import hCore
@@ -146,7 +145,6 @@ public struct OpenEmailClientButton: View {
             } content: {
                 hText(buttonText ?? L10n.Login.openEmailAppButton)
             }
-        //            .fixedSize()
         case .primary:
             hButton.LargeButton(type: .primary) {
                 if hasAcceptedAlert {

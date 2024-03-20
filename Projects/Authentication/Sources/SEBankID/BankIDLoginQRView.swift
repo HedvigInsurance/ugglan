@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct BankIDLoginQR: View {
+public struct BankIDLoginQRView: View {
     @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
 
@@ -235,6 +235,6 @@ class BandIDViewModel: ObservableObject {
 
 struct BankIDLoginQR_Previews: PreviewProvider {
     static var previews: some View {
-        BankIDLoginQR()
+        BankIDLoginQRView()
     }
 }

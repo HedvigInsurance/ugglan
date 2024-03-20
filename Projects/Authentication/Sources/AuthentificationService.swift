@@ -265,7 +265,7 @@ extension AuthentificationError: LocalizedError {
     }
 }
 
-extension AuthTokenResultError {
+extension authlib.AuthTokenResultError {
     public var errorMessage: String {
         switch onEnum(of: self) {
         case .backendErrorResponse(let error): return error.message
