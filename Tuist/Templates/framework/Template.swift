@@ -31,7 +31,6 @@ let testContents = """
 
 let appDelegateContents = """
         import Foundation
-        import UIKit
 
         @UIApplicationMain
         class AppDelegate: UIResponder, UIApplicationDelegate {
