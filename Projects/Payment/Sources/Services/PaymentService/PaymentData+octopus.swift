@@ -28,6 +28,14 @@ extension PaymentData {
     }
 }
 
+extension PaymentData.PaymentDetails {
+    init(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
+        self.paymentMethod = L10n.paymentsAutogiroLabel
+        self.account = model.currentMember.paymentInformation.connection?.descriptor ?? ""
+        self.bank = model.currentMember.paymentInformation.connection?.displayName ?? ""
+    }
+}
+
 extension PaymentData.PaymentStatus {
     static func getStatus(
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember

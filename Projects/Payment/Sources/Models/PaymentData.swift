@@ -68,20 +68,14 @@ public struct PaymentData: Codable, Equatable {
 
     struct PaymentDetails: Codable, Equatable {
         typealias KeyValue = (key: String, value: String)
-        private let paymentMethod: String
-        private let account: String
-        private let bank: String
+        let paymentMethod: String
+        let account: String
+        let bank: String
 
         init(paymentMethod: String, account: String, bank: String) {
             self.paymentMethod = paymentMethod
             self.account = account
             self.bank = bank
-        }
-
-        init(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
-            self.paymentMethod = L10n.paymentsAutogiroLabel
-            self.account = model.currentMember.paymentInformation.connection?.descriptor ?? ""
-            self.bank = model.currentMember.paymentInformation.connection?.displayName ?? ""
         }
 
         var getDisplayList: [KeyValue] {
