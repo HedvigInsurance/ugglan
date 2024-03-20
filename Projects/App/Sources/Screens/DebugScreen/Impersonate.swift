@@ -33,8 +33,8 @@ struct Impersonate {
         Task {
             do {
                 try await authentificationService.exchange(code: authorizationCode)
+                ApplicationState.preserveState(.impersonation)
                 authenticationStore.send(.navigationAction(action: .impersonation))
-                await UIApplication.shared.appDelegate.presentMainJourney()
             } catch let ex {
 
             }
