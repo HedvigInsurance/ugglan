@@ -29,10 +29,13 @@ extension PaymentData {
 }
 
 extension PaymentData.PaymentDetails {
-    init(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
+    init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
+        guard let account = model.currentMember.paymentInformation.connection?.descriptor,
+            let bank = model.currentMember.paymentInformation.connection?.displayName
+        else { return nil }
         self.paymentMethod = L10n.paymentsAutogiroLabel
-        self.account = model.currentMember.paymentInformation.connection?.descriptor ?? ""
-        self.bank = model.currentMember.paymentInformation.connection?.displayName ?? ""
+        self.account = account
+        self.bank = bank
     }
 }
 
