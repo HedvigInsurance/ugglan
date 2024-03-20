@@ -9,17 +9,18 @@ public enum OTPAuthJourneyNext {
 }
 
 public struct OTPAuthJourney {
-    public static func loginEmail<Next: JourneyPresentation>(
+    public static func login<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ next: OTPAuthJourneyNext) -> Next
     ) -> some JourneyPresentation {
-        HostingJourney(
+        let store: AuthenticationStore = globalPresentableStoreContainer.get()
+        return HostingJourney(
             AuthenticationStore.self,
-            rootView: OTPEmailEntry()
+            rootView: OTPEntry(otpVM: store.otpState)
         ) { action in
             if case .navigationAction(action: .otpCode) = action {
                 HostingJourney(
                     AuthenticationStore.self,
-                    rootView: OTPCodeEntry()
+                    rootView: OTPCodeEntry(otpVM: store.otpState)
                 ) { action in
                     if case .navigationAction(action: .authSuccess) = action {
                         next(.success).hidesBackButton
@@ -29,31 +30,7 @@ public struct OTPAuthJourney {
         }
         .onPresent {
             let store: AuthenticationStore = globalPresentableStoreContainer.get()
-            store.send(.otpStateAction(action: .reset))
-        }
-    }
-
-    public static func loginSSN<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping (_ next: OTPAuthJourneyNext) -> Next
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            AuthenticationStore.self,
-            rootView: OTPSSNEntry()
-        ) { action in
-            if case .navigationAction(action: .otpCode) = action {
-                HostingJourney(
-                    AuthenticationStore.self,
-                    rootView: OTPCodeEntry()
-                ) { action in
-                    if case .navigationAction(action: .authSuccess) = action {
-                        next(.success).hidesBackButton
-                    }
-                }
-            }
-        }
-        .onPresent {
-            let store: AuthenticationStore = globalPresentableStoreContainer.get()
-            store.send(.otpStateAction(action: .reset))
+            store.otpState.reset()
         }
     }
 }

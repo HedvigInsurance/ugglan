@@ -1,4 +1,5 @@
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -46,12 +47,13 @@ public enum OpenEmailButtonType {
 }
 
 public struct OpenEmailClientButton: View {
-    @State var sheetPresented: Bool = false
-    let options: EmailOptions?
-    let buttonText: String?
-    var hasPressedButton: (() -> Void)?
-    @Binding var hasAcceptedAlert: Bool
-    let buttonSize: OpenEmailButtonType
+    @State private var sheetPresented: Bool = false
+    private let options: EmailOptions?
+    private let buttonText: String?
+    private var hasPressedButton: (() -> Void)?
+    @Binding private var hasAcceptedAlert: Bool
+    private let buttonSize: OpenEmailButtonType
+    @ObservedObject var otpVM: OTPState
 
     public init(
         options: EmailOptions? = nil,
@@ -65,7 +67,8 @@ public struct OpenEmailClientButton: View {
         self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
-
+        let store: AuthenticationStore = globalPresentableStoreContainer.get()
+        otpVM = store.otpState
         emailClients = {
             let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
             let gmailURLString = addEmailUrlComponents(baseUrl: "googlegmail:///co?")
@@ -101,14 +104,14 @@ public struct OpenEmailClientButton: View {
     }
 
     public var body: some View {
-        ReadOTPState { state in
-            hSection {
-                displayButton
-            }
-            .offset(x: 0, y: showButton(state: state) ? 0 : 150)
-            .opacity(showButton(state: state) ? 1 : 0)
-            .animation(.spring(), value: showButton(state: state))
+        //        ReadOTPState { state in
+        hSection {
+            displayButton
         }
+        .offset(x: 0, y: showButton(state: otpVM) ? 0 : 150)
+        .opacity(showButton(state: otpVM) ? 1 : 0)
+        .animation(.spring(), value: showButton(state: otpVM))
+        //        }
         .onUpdate(
             of: hasAcceptedAlert,
             perform: { newValue in

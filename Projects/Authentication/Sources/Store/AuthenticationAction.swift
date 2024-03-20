@@ -1,21 +1,6 @@
 import Foundation
 import Presentation
 
-public enum OTPStateAction: ActionProtocol {
-    case setCode(code: String)
-    case verifyCode
-    case setLoading(isLoading: Bool)
-    case setCodeError(message: String?)
-    case setEmail(email: String)
-    case setPersonalNumber(personalNumber: String)
-    case setOtpInputError(message: String?)
-    case startSession(verifyUrl: URL, resendUrl: URL)
-    case submitOtpData
-    case reset
-    case resendCode
-    case showResentToast
-}
-
 public enum BankIDLoginSwedenResult: ActionProtocol {
     case qrCode
     case emailLogin
@@ -48,7 +33,6 @@ public enum AuthenticationAction: ActionProtocol {
     case logoutSuccess
     case logoutFailure
     case loginFailure(message: String?)
-    case otpStateAction(action: OTPStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
     case bankIdQrResultAction(action: BankIDLoginQRResult)
 }

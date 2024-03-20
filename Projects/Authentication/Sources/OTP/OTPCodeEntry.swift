@@ -1,3 +1,4 @@
+import Apollo
 import Combine
 import Foundation
 import Presentation
@@ -6,22 +7,9 @@ import hCore
 import hCoreUI
 
 public struct OTPCodeEntry: View {
+    @StateObject private var vm = OTPCodeEntryViewModel()
+    @ObservedObject var otpVM: OTPState
     @PresentableStore var store: AuthenticationStore
-    @hTextFieldFocusState var focusCodeField: Bool? = true
-
-    var codeBinding: Binding<String> {
-        Binding(
-            AuthenticationStore.self,
-            getter: { state in
-                state.otpState.code
-            },
-            setter: { code in
-                .otpStateAction(action: .setCode(code: code))
-            }
-        )
-    }
-
-    public init() {}
 
     public var body: some View {
         hForm {
@@ -30,70 +18,102 @@ public struct OTPCodeEntry: View {
                     VStack(spacing: 16) {
                         hText(L10n.Login.Title.checkYourEmail, style: .title1)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        ReadOTPState { state in
-                            hText(
-                                L10n.Login.Subtitle.verificationCodeEmail(state.email ?? L10n.authOtpYourEmail),
-                                style: .body
-                            )
-                        }
+                        hText(
+                            L10n.Login.Subtitle.verificationCodeEmail(otpVM.maskedEmail ?? L10n.authOtpYourEmail),
+                            style: .body
+                        )
                     }
-
                     VStack(spacing: 8) {
-                        ReadOTPState { state in
-                            OTPCodeDisplay(
-                                code: state.code,
-                                showRedBorders: state.codeErrorMessage != nil
-                            )
-                            .background(
-                                PasteView {
-                                    guard let pasteBoardValue = UIPasteboard.general.value else {
-                                        return
-                                    }
-
-                                    let onlyDigitsCode =
-                                        pasteBoardValue.components(
-                                            separatedBy: CharacterSet.decimalDigits.inverted
-                                        )
-                                        .joined()
-
-                                    codeBinding.wrappedValue = String(onlyDigitsCode.prefix(6))
+                        OTPCodeDisplay(
+                            code: otpVM.code,
+                            showRedBorders: otpVM.codeErrorMessage != nil
+                        )
+                        .background(
+                            PasteView {
+                                guard let pasteBoardValue = UIPasteboard.general.value else {
+                                    return
                                 }
-                            )
-                            .simultaneousGesture(
-                                TapGesture()
-                                    .onEnded({ _ in
-                                        focusCodeField = true
-                                    })
-                            )
 
-                            if let errorMessage = state.codeErrorMessage {
-                                hText(
-                                    errorMessage,
-                                    style: .footnote
-                                )
-                                .foregroundColor(hSignalColor.redText)
-                                .transition(.opacity)
+                                let onlyDigitsCode =
+                                    pasteBoardValue.components(
+                                        separatedBy: CharacterSet.decimalDigits.inverted
+                                    )
+                                    .joined()
+
+                                otpVM.code = String(onlyDigitsCode.prefix(6))
                             }
+                        )
+                        .simultaneousGesture(
+                            TapGesture()
+                                .onEnded({ _ in
+                                    vm.focusCodeField = true
+                                })
+                        )
 
-                            ResendOTPCode()
+                        if let errorMessage = otpVM.codeErrorMessage {
+                            hText(
+                                errorMessage,
+                                style: .footnote
+                            )
+                            .foregroundColor(hSignalColor.redText)
+                            .transition(.opacity)
                         }
-                        .presentableStoreLensAnimation(.default)
+
+                        ResendOTPCode(otpVM: otpVM)
+                            .environmentObject(store.otpState)
                     }
+                    .presentableStoreLensAnimation(.default)
                 }
             }
             .background(
                 hTextField(
                     masking: .init(type: .digits),
-                    value: codeBinding
+                    value: $otpVM.code
                 )
-                .focused($focusCodeField, equals: true)
+                .focused($vm.focusCodeField, equals: true)
                 .opacity(0)
             )
         }
         .hFormAttachToBottom {
             OpenEmailClientButton()
         }
-        .overlay(OTPCodeLoadingOverlay())
+        .overlay(
+            OTPCodeLoadingOverlay(otpVM: otpVM)
+        )
         .sectionContainerStyle(.transparent)
+        .onChange(of: otpVM.code) { newValue in
+            vm.check(otpState: otpVM)
+        }
+    }
+}
+
+class OTPCodeEntryViewModel: ObservableObject {
+    @PresentableStore private var store: AuthenticationStore
+    @Inject private var service: AuthentificationService
+    @hTextFieldFocusState var focusCodeField: Bool? = true
+
+    func check(otpState: OTPState) {
+        let code = otpState.code
+        Task {
+            let generator = await UIImpactFeedbackGenerator(style: .light)
+            await generator.impactOccurred()
+        }
+        otpState.codeErrorMessage = nil
+        if code.count == 6 {
+            Task { @MainActor [weak self, weak otpState] in
+                otpState?.isLoading = true
+                do {
+                    if let service = self?.service, let otpState = otpState {
+                        let code = try await service.submit(otpState: otpState)
+                        let successResult = try await service.exchange(code: code)
+                        ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                        self?.store.send(.navigationAction(action: .authSuccess))
+                    }
+                } catch let error {
+                    otpState?.codeErrorMessage = error.localizedDescription
+                }
+                otpState?.isLoading = false
+            }
+        }
     }
 }

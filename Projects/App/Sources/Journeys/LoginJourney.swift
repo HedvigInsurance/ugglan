@@ -40,7 +40,7 @@ extension AppJourney {
             if case .bankIdQrResultAction(.loggedIn) = action {
                 loginCompleted
             } else if case .bankIdQrResultAction(action: .emailLogin) = action {
-                otpEmail(style: .detented(.large, modally: false))
+                otp(style: .detented(.large, modally: false))
             } else if case .bankIdQrResultAction(action: .close) = action {
                 DismissJourney()
             } else if case let .loginFailure(message) = action {
@@ -70,19 +70,8 @@ extension AppJourney {
         .mapJourneyDismissToCancel
     }
 
-    fileprivate static func otpEmail(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        OTPAuthJourney.loginEmail { next in
-            switch next {
-            case .success:
-                loginCompleted
-            }
-        }
-        .setStyle(style)
-        .withDismissButton
-    }
-
-    fileprivate static func otpSSN(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-        OTPAuthJourney.loginSSN { next in
+    fileprivate static func otp(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
+        OTPAuthJourney.login { next in
             switch next {
             case .success:
                 loginCompleted
@@ -99,7 +88,7 @@ extension AppJourney {
             case .sweden:
                 bankIDSweden
             case .norway, .denmark:
-                otpSSN()
+                otp()
             }
         }
         .onDismiss {

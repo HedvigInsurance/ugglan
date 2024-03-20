@@ -6,7 +6,7 @@ import hGraphQL
 
 public protocol AuthentificationService {
     func submit(otpState: OTPState) async throws -> String
-    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL)
+    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?)
     func resend(otp otpState: OTPState) async throws
     func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws
     func logout() async throws
@@ -46,21 +46,37 @@ final public class AuthentificationServiceAuthLib: AuthentificationService {
 
     }
 
-    public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL) {
-        let personalNumber = otpState.personalNumber?.replacingOccurrences(of: "-", with: "")
+    public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
+        let personalNumber: String? = {
+            switch Localization.Locale.currentLocale.market {
+            case .no, .dk:
+                return otpState.input.replacingOccurrences(of: "-", with: "")
+            case .se:
+                return nil
+            }
+        }()
+
+        let email: String? = {
+            switch Localization.Locale.currentLocale.market {
+            case .no, .dk:
+                return nil
+            case .se:
+                return otpState.input
+            }
+        }()
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .otp,
                 market: Localization.Locale.currentLocale.market.asOtpMarket,
                 personalNumber: personalNumber,
-                email: otpState.email
+                email: email
             )
             try await Task.sleep(nanoseconds: 5 * 100_000_000)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
                 let verifyUrl = URL(string: otpProperties.verifyUrl),
                 let resendUrl = URL(string: otpProperties.resendUrl)
             {
-                return (verifyUrl, resendUrl)
+                return (verifyUrl, resendUrl, otpProperties.maskedEmail)
             } else {
                 throw AuthentificationError.otpInputError
             }

@@ -4,11 +4,53 @@ import hCore
 import hCoreUI
 
 struct ResendOTPCode: View {
-    @PresentableStore var store: AuthenticationStore
-    @State var canResendAtText: String = ""
+    @StateObject private var vm = ResendOTPCodeViewModel()
+    @ObservedObject var otpVM: OTPState
+
+    var body: some View {
+        Group {
+            if vm.timeUntil(state: otpVM) >= 0 {
+                SwiftUI.Button {
+                    vm.resendCode(for: otpVM)
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(uiImage: hCoreUIAssets.refresh.image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20, height: 20)
+                            .rotationEffect(otpVM.isResending ? Angle(degrees: 0) : Angle(degrees: -360))
+                            .animation(
+                                otpVM.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
+                            )
+                        hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
+                    }
+                }
+                .tint(hTextColor.primary)
+            } else {
+                hText(
+                    vm.canResendAtText,
+                    style: .subheadline
+                )
+                .foregroundColor(hTextColor.tertiary)
+                .onReceive(vm.timer) { _ in
+                    vm.updateText(state: otpVM)
+                }
+                .onAppear {
+                    vm.updateText(state: otpVM)
+                }
+            }
+        }
+        .padding(.top, 44)
+    }
+}
+
+class ResendOTPCodeViewModel: ObservableObject {
+    @Inject private var service: AuthentificationService
+    @Published var canResendAtText: String = ""
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    func updateText(timeUntil: Int) {
+    func updateText(state: OTPState) {
+        let timeUntil = abs(timeUntil(state: state))
         canResendAtText = L10n.Login.MediumButton.Inactive.resendCodeIn(timeUntil)
     }
 
@@ -20,39 +62,35 @@ struct ResendOTPCode: View {
         return Int(Date().timeIntervalSince(date))
     }
 
-    var body: some View {
-        ReadOTPState { state in
-            if timeUntil(state: state) >= 0 {
-                SwiftUI.Button {
-                    store.send(.otpStateAction(action: .resendCode))
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(uiImage: hCoreUIAssets.refresh.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 20, height: 20)
-                            .rotationEffect(state.isResending ? Angle(degrees: 0) : Angle(degrees: -360))
-                            .animation(
-                                state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
-                            )
-                        hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
-                    }
+    func resendCode(for otpState: OTPState) {
+        Task { @MainActor [weak self, weak otpState] in
+            otpState?.code = ""
+            otpState?.codeErrorMessage = nil
+            otpState?.isResending = true
+            do {
+                if let otpState {
+                    try await self?.service.resend(otp: otpState)
+                    otpState.code = ""
+                    otpState.isLoading = false
+                    otpState.codeErrorMessage = nil
+                    otpState.otpInputErrorMessage = nil
+                    otpState.canResendAt = Date().addingTimeInterval(60)
+                    otpState.isResending = false
+                    self?.showToast()
                 }
-                .tint(hTextColor.primary)
-            } else {
-                hText(
-                    canResendAtText,
-                    style: .subheadline
-                )
-                .foregroundColor(hTextColor.tertiary)
-                .onReceive(timer) { _ in
-                    updateText(timeUntil: abs(timeUntil(state: state)))
-                }
-                .onAppear {
-                    updateText(timeUntil: abs(timeUntil(state: state)))
-                }
+            } catch let error {
+                otpState?.codeErrorMessage = error.localizedDescription
             }
+            otpState?.isResending = false
         }
-        .padding(.top, 44)
+    }
+
+    private func showToast() {
+        Toasts.shared.displayToast(
+            toast: .init(
+                symbol: .icon(hCoreUIAssets.refresh.image),
+                body: L10n.Login.Snackbar.codeResent
+            )
+        )
     }
 }
