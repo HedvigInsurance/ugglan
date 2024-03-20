@@ -105,8 +105,7 @@ class OTPCodeEntryViewModel: ObservableObject {
                 do {
                     if let service = self?.service, let otpState = otpState {
                         let code = try await service.submit(otpState: otpState)
-                        let successResult = try await service.exchange(code: code)
-                        ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                        try await service.exchange(code: code)
                         self?.store.send(.navigationAction(action: .authSuccess))
                     }
                 } catch let error {

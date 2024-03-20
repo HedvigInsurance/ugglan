@@ -10,7 +10,8 @@ public protocol AuthentificationService {
     func resend(otp otpState: OTPState) async throws
     func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws
     func logout() async throws
-    func exchange(code: String) async throws -> AuthorizationTokenDto
+    func exchange(code: String) async throws
+    func exchange(refreshToken: String) async throws
 }
 
 final public class AuthentificationServiceAuthLib: AuthentificationService {
@@ -126,8 +127,7 @@ final public class AuthentificationServiceAuthLib: AuthentificationService {
                         log.info(
                             "LOGIN AUTH FINISHED"
                         )
-                        let successResult = try await exchange(code: completed.authorizationCode.code)
-                        ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                        try await exchange(code: completed.authorizationCode.code)
                         updateStatusTo(.completed)
                         return
                     case .pending(let pending):
@@ -192,18 +192,39 @@ final public class AuthentificationServiceAuthLib: AuthentificationService {
         }
     }
 
-    public func exchange(code: String) async throws -> AuthorizationTokenDto {
+    public func exchange(code: String) async throws {
         let data = try await self.networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
         if let successResult = data as? AuthTokenResultSuccess {
-            return .init(
+            let tokenData = AuthorizationTokenDto.init(
                 accessToken: successResult.accessToken.token,
                 accessTokenExpiryIn: Int(successResult.accessToken.expiryInSeconds),
                 refreshToken: successResult.refreshToken.token,
                 refreshTokenExpiryIn: Int(successResult.refreshToken.expiryInSeconds)
             )
+            ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
+            return
         }
         let error = NSError(domain: "", code: 1000)
         throw error
+    }
+
+    public func exchange(refreshToken: String) async throws {
+        let data = try await self.networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
+        switch onEnum(of: data) {
+        case .success(let success):
+            log.info("Refresh was sucessfull")
+            let accessTokenDto: AuthorizationTokenDto = .init(
+                accessToken: success.accessToken.token,
+                accessTokenExpiryIn: Int(success.accessToken.expiryInSeconds),
+                refreshToken: success.refreshToken.token,
+                refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
+            )
+            ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
+        case .error(let error):
+            log.error("Refreshing failed \(error.errorMessage), forcing logout")
+            forceLogoutHook()
+            throw AuthError.refreshFailed
+        }
     }
 
 }
@@ -240,6 +261,26 @@ extension AuthentificationError: LocalizedError {
         case .resendOtpFailed: return nil
         case let .loginFailure(message): return message
         case .logoutFailure: return nil
+        }
+    }
+}
+
+extension AuthTokenResultError {
+    public var errorMessage: String {
+        switch onEnum(of: self) {
+        case .backendErrorResponse(let error): return error.message
+        case .iOError(let ioError): return ioError.message
+        case .unknownError(let unknownError): return unknownError.message
+        }
+    }
+}
+
+extension hGraphQL.Environment {
+    fileprivate var authEnvironment: AuthEnvironment {
+        switch self {
+        case .staging: return .staging
+        case .production: return .production
+        case .custom(_, _, _, _): return .staging
         }
     }
 }

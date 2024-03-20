@@ -203,6 +203,10 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
+        TokenRefresher.shared.onRefresh = { token in
+            let authService: AuthentificationService = Dependencies.shared.resolve()
+            try await authService.exchange(refreshToken: token)
+        }
         let config = Logger.Configuration(
             service: "ios",
             networkInfoEnabled: true,

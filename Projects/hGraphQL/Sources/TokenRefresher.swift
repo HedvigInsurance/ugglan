@@ -1,7 +1,6 @@
 import Apollo
 import Flow
 import Foundation
-import authlib
 
 public class TokenRefresher {
     public static let shared = TokenRefresher()
@@ -54,40 +53,16 @@ public class TokenRefresher {
             self.isRefreshing.value = true
             log.info("Will start refreshing token")
 
-            let repository = NetworkAuthRepository(
-                environment: Environment.current.authEnvironment,
-                additionalHttpHeadersProvider: { ApolloClient.headers() },
-                httpClientEngine: nil
-            )
-
-            let exchangeResult = try await repository.exchange(grant: RefreshTokenGrant(code: token.refreshToken))
-            switch onEnum(of: exchangeResult) {
-            case .success(let success):
-                log.info("Refresh was sucessfull")
-                let accessTokenDto: AuthorizationTokenDto = .init(
-                    accessToken: success.accessToken.token,
-                    accessTokenExpiryIn: Int(success.accessToken.expiryInSeconds),
-                    refreshToken: success.refreshToken.token,
-                    refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
-                )
-                ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
+            do {
+                try await onRefresh?(token.refreshToken)
                 self.isRefreshing.value = false
-                return
-            case .error(let error):
-                log.error("Refreshing failed \(error.errorMessage), forcing logout")
+            } catch let error {
+                log.error("Refreshing failed \(error.localizedDescription), forcing logout")
                 forceLogoutHook()
-                throw AuthError.refreshFailed
+                throw error
             }
         }
     }
-}
 
-extension AuthTokenResultError {
-    fileprivate var errorMessage: String {
-        switch onEnum(of: self) {
-        case .backendErrorResponse(let error): return error.message
-        case .iOError(let ioError): return ioError.message
-        case .unknownError(let unknownError): return unknownError.message
-        }
-    }
+    public var onRefresh: ((_ token: String) async throws -> Void)?
 }

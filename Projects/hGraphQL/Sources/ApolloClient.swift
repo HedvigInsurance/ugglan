@@ -4,7 +4,6 @@ import Disk
 import Flow
 import Foundation
 import SwiftUI
-import authlib
 
 public struct hApollo {
     public let octopus: hOctopus

@@ -41,8 +41,6 @@ extension AppJourney {
                 loginCompleted
             } else if case .bankIdQrResultAction(action: .emailLogin) = action {
                 otp(style: .detented(.large, modally: false))
-            } else if case .bankIdQrResultAction(action: .close) = action {
-                DismissJourney()
             } else if case let .loginFailure(message) = action {
                 HostingJourney(
                     AuthenticationStore.self,

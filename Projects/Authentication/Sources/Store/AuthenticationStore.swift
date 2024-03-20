@@ -26,22 +26,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 await generator.notificationOccurred(.success)
             }
             send(.bankIdQrResultAction(action: .loggedIn))
-        } else if case let .exchange(code) = action {
-            do {
-                let successResult = try await authentificationService.exchange(code: code)
-                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                send(.navigationAction(action: .authSuccess))
-            } catch {
-
-            }
-        } else if case let .impersonate(code) = action {
-            do {
-                let successResult = try await authentificationService.exchange(code: code)
-                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                send(.navigationAction(action: .impersonation))
-            } catch {
-
-            }
         } else if case .logout = action {
             do {
                 try await authentificationService.logout()
