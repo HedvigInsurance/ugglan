@@ -1,7 +1,5 @@
 import EditCoInsured
-import Flow
 import Foundation
-import Introspect
 import Presentation
 import SwiftUI
 import TerminateContracts
@@ -42,7 +40,6 @@ public indirect enum ContractFilter: Equatable, Hashable {
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-    let disposeBag = DisposeBag()
     let showTerminated: Bool
     public init(
         showTerminated: Bool
@@ -68,18 +65,8 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
-        .introspectScrollView { scrollView in
-            let refreshControl = UIRefreshControl()
-            disposeBag.dispose()
-            scrollView.refreshControl = refreshControl
-            disposeBag += refreshControl.store(
-                store,
-                send: {
-                    ContractAction.fetch
-                },
-                endOn: .fetchCompleted
-            )
-
+        .onRefresh {
+            await store.sendAsync(.fetch)
         }
         .hFormAttachToBottom {
             if showTerminated {

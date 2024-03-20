@@ -94,6 +94,9 @@ public struct ForeverView: View {
                         }
                     }
             )
+            .onRefresh {
+                await store.sendAsync(.fetch)
+            }
         }
         .background(
             GeometryReader(content: { proxy in

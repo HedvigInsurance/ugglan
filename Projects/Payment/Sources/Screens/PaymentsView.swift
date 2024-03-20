@@ -46,9 +46,12 @@ public struct PaymentsView: View {
                 }
                 .padding(.vertical, 8)
             }
-            .hDisableScroll
             .hFormAttachToBottom {
                 bottomPart
+            }
+            .onRefresh {
+                await store.sendAsync(.load)
+                await store.sendAsync(.fetchPaymentStatus)
             }
         }
     }
