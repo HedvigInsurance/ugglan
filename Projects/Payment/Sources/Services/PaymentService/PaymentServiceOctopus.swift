@@ -18,8 +18,11 @@ public class hPaymentServiceOctopus: hPaymentService {
             cachePolicy: .fetchIgnoringCacheCompletely
         )
 
-        let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
-        return PaymentData(with: data, paymentDetails: paymentDetails)
+        if paymentDetailsData.currentMember.paymentInformation.connection != nil {
+            let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
+            return PaymentData(with: data, paymentDetails: paymentDetails)
+        }
+        return PaymentData(with: data, paymentDetails: nil)
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
