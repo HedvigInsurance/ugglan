@@ -13,6 +13,7 @@ public enum DeepLink: String, Codable {
     case travelCertificate = "travelCertificate"
     case helpCenter = "help-center"
     case moveContract = "move-contract"
+    case terminateContract = "terminate-contract"
 
     public func wholeText(displayText: String) -> String {
         return L10n.generalGoTo(displayText)
@@ -42,6 +43,8 @@ public enum DeepLink: String, Codable {
             return L10n.hcTitle
         case .moveContract:
             return L10n.InsuranceDetails.changeAddressButton
+        case .terminateContract:
+            return "Terminate contract"
         }
     }
 
@@ -69,6 +72,8 @@ public enum DeepLink: String, Codable {
             return "help-center"
         case .moveContract:
             return "move-contract"
+        case .terminateContract:
+            return "terminate-contract"
         }
     }
 

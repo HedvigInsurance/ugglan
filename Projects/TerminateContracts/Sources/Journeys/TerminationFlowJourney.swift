@@ -15,8 +15,8 @@ public class TerminationFlowJourney {
         if case let .navigationAction(navigationAction) = action {
             if case .openTerminationSuccessScreen = navigationAction {
                 TerminationFlowJourney.openTerminationSuccessScreen()
-            } else if case .openSetTerminationDateScreen = navigationAction {
-                TerminationFlowJourney.openSetTerminationDateScreen()
+            } else if case .openTerminationDatePickerScreen = navigationAction {
+                TerminationFlowJourney.openSetTerminationDatePickerScreen()
             } else if case .openTerminationFailScreen = navigationAction {
                 TerminationFlowJourney.openTerminationFailScreen()
             } else if case .openTerminationUpdateAppScreen = navigationAction {
@@ -27,6 +27,10 @@ public class TerminationFlowJourney {
                 openConfirmTerminationScreen(config: config)
             } else if case .openTerminationProcessingScreen = navigationAction {
                 openProgressScreen()
+            } else if case let .openSelectInsuranceScreen(config) = navigationAction {
+                openSelectInsuranceScreen(config: config)
+            } else if case .openSetTerminationDateLandingScreen = navigationAction {
+                openSetTerminationDateLandingScreen()
             }
         } else if case .dismissTerminationFlow = action {
             withAnimation {
@@ -59,7 +63,7 @@ public class TerminationFlowJourney {
         .hidesBackButton
     }
 
-    private static func openSetTerminationDateScreen() -> some JourneyPresentation {
+    private static func openSetTerminationDatePickerScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: SetTerminationDate(
@@ -67,11 +71,7 @@ public class TerminationFlowJourney {
                     terminationDate in
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.setTerminationDate(terminationDate: terminationDate))
-                    if let config = store.state.config {
-                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
-                    } else {
-                        store.send(.navigationAction(action: .openTerminationFailScreen))
-                    }
+                    store.send(.goBack)
                 },
                 terminationDate: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
@@ -83,9 +83,32 @@ public class TerminationFlowJourney {
             options: [.largeNavigationBarWithoutGrabber, .blurredBackground]
         ) {
             action in
-            getScreen(for: action)
+            if case .goBack = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
         .configureTitle(L10n.setTerminationDateText)
+    }
+
+    private static func openSetTerminationDateLandingScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: SetTerminationDateLandingScreen(onSelected: {
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                if let config = store.state.config {
+                    store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                } else {
+                    store.send(.navigationAction(action: .openTerminationFailScreen))
+                }
+            })
+
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .withJourneyDismissButton
     }
 
     private static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
@@ -102,8 +125,8 @@ public class TerminationFlowJourney {
                     }
                     store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
-            ),
-            style: .modally(presentationStyle: .overFullScreen)
+            )
+            //            style: .modally(presentationStyle: .overFullScreen)
         ) {
             action in
             getScreen(for: action)
@@ -197,6 +220,69 @@ public class TerminationFlowJourney {
                 }
             ),
             style: .detented(.scrollViewContentSize)
+        ) {
+            action in
+            getScreen(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    private static func openSelectInsuranceScreen(config: TerminationContractConfig) -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: CheckboxPickerScreen<TerminationConfirmConfig>(
+                items: {
+                    let items = config.contracts.map({
+                        (
+                            object: $0,
+                            displayName: DisplayString(
+                                title: $0.contractDisplayName,
+                                subTitle: $0.contractExposureName,
+                                extraSubTitle: "add this"
+                            )
+                        )
+                    })
+                    return items
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selected in
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    if let selectedContract = selected.first?.0 {
+                        let config = TerminationConfirmConfig(
+                            contractId: selectedContract.contractId,
+                            image: nil,
+                            contractDisplayName: selectedContract.contractDisplayName,
+                            contractExposureName: selectedContract.contractExposureName
+                        )
+                        store.send(.startTermination(config: config))
+                    }
+                },
+                singleSelect: true,
+                attachToBottom: true,
+                disableIfNoneSelected: true,
+                infoCard: .init(
+                    text: "Note that you can only cancel one insurance at the same time",
+                    buttons: [],
+                    placement: .top
+                ),
+                title: "Cancellation",
+                titleMarker: "1/2",
+                subTitle: "Select the insurance you want to cancel"
+            )
+            .hUseColoredCheckbox
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarLeading
+                ) {
+                    InfoViewHolder(
+                        title: "Cancellation",
+                        description: "test about cancellation",
+                        type: .navigation
+                    )
+                    .foregroundColor(hTextColor.primary)
+                }
+            },
+            style: .detented(.large, modally: false)
         ) {
             action in
             getScreen(for: action)

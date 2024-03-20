@@ -29,10 +29,12 @@ struct WhoIsTravelingScreen: View {
                         SSN: contract?.ssn,
                         needsMissingInfo: false
                     )
-                    var allValues = [(object: insuranceHolder, displayName: insuranceHolder.fullName ?? "")]
+                    var allValues = [
+                        (object: insuranceHolder, displayName: DisplayString(title: insuranceHolder.fullName ?? ""))
+                    ]
                     let allCoInsuredOnContract =
                         contract?.coInsured.filter({ !$0.hasMissingInfo })
-                        .map { (object: $0, displayName: $0.fullName ?? "") } ?? []
+                        .map { (object: $0, displayName: DisplayString(title: $0.fullName ?? "")) } ?? []
                     allValues.append(contentsOf: allCoInsuredOnContract)
                     return allValues
                 }(),
@@ -73,7 +75,8 @@ struct WhoIsTravelingScreen: View {
                                     }
                                 }
                             )
-                        ]
+                        ],
+                        placement: .bottom
                     ) : nil
             )
             .padding(.bottom, 16)

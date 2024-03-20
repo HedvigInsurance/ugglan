@@ -16,7 +16,7 @@ struct SelectContractScreen: View {
             CheckboxPickerScreen<FlowClaimContractSelectOptionModel>(
                 items: {
                     return contractStep?.availableContractOptions
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
                     if let preselected = contractStep?.availableContractOptions

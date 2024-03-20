@@ -23,7 +23,7 @@ struct ContractsScreen: View {
                     CheckboxPickerScreen<TravelInsuranceContractSpecification>(
                         items: {
                             return travelInsuranceModels.map {
-                                (object: $0, displayName: $0.street)
+                                (object: $0, displayName: .init(title: $0.street))
                             }
                         }(),
                         preSelectedItems: {

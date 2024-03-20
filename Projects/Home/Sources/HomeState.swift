@@ -215,6 +215,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allQuickActions.append(.editCoInsured())
         }
 
+        if Dependencies.featureFlags().isTerminationFlowEnabled {
+            allQuickActions.append(.cancellation())
+        }
+
         if Dependencies.featureFlags().isTravelInsuranceEnabled
             && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
@@ -283,6 +287,15 @@ extension QuickAction {
             id: "payments",
             displayTitle: L10n.hcQuickActionsPaymentsTitle,
             displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
+            layout: nil
+        )
+    }
+
+    public static func cancellation() -> QuickAction {
+        QuickAction(
+            id: "cancellation",
+            displayTitle: "Cancellation",
+            displaySubtitle: "No binding time, cancel anytime",
             layout: nil
         )
     }

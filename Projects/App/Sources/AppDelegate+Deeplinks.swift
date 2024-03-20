@@ -8,6 +8,7 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TerminateContracts
 import hCore
 import hGraphQL
 
@@ -120,6 +121,27 @@ extension AppDelegate {
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
                     let vc = AppJourney.movingFlow()
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
+                }
+        } else if path == .terminateContract {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
+
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts.map({
+                        .init(
+                            contractId: $0.id,
+                            image: nil,
+                            contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: $0.exposureDisplayName
+                        )
+                    })
+
+                    let vc = TerminationFlowJourney.start(
+                        for: .openSelectInsuranceScreen(config: .init(contracts: contractsConfig))
+                    )
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }
