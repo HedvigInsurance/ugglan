@@ -121,7 +121,7 @@ extension PaymentHistoryView {
                 if case .goBack = navigateTo {
                     PopJourney()
                 } else if case let .openPaymentDetails(data) = navigateTo {
-                    PaymentDetails.journey(with: data)
+                    PaymentDetailsView.journey(with: data)
                 }
             }
         }

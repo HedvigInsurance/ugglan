@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentDetails: View {
+struct PaymentDetailsView: View {
     private let data: PaymentData
     @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
@@ -183,6 +183,7 @@ struct PaymentDetails: View {
                     hText(item.key)
                     Spacer()
                     hText(item.value)
+                        .foregroundColor(hTextColor.secondary)
                 }
             }
             .hWithoutHorizontalPadding
@@ -309,21 +310,21 @@ struct PaymentDetails_Previews: PreviewProvider {
             paymentDetails: nil,
             addedToThePayment: nil
         )
-        return PaymentDetails(data: data)
+        return PaymentDetailsView(data: data)
     }
 }
 
-extension PaymentDetails {
+extension PaymentDetailsView {
     static func journey(with paymentData: PaymentData) -> some JourneyPresentation {
         HostingJourney(
             PaymentStore.self,
-            rootView: PaymentDetails(data: paymentData)
+            rootView: PaymentDetailsView(data: paymentData)
         ) { action in
             if case let .navigation(navigateTo) = action {
                 if case .goBack = navigateTo {
                     PopJourney()
                 } else if case let .openPaymentDetails(data) = navigateTo {
-                    PaymentDetails.journey(with: data)
+                    PaymentDetailsView.journey(with: data)
                 }
             }
         }
