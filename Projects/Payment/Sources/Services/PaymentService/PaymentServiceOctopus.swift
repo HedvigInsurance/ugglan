@@ -11,7 +11,15 @@ public class hPaymentServiceOctopus: hPaymentService {
     public func getPaymentData() async throws -> PaymentData? {
         let query = OctopusGraphQL.PaymentDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        return PaymentData(with: data)
+
+        let paymentDetailsQuery = OctopusGraphQL.PaymentInformationQuery()
+        let paymentDetailsData = try await octopus.client.fetch(
+            query: paymentDetailsQuery,
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+
+        let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
+        return PaymentData(with: data, paymentDetails: paymentDetails)
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
