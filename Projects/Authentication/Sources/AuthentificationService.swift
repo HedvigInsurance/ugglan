@@ -167,6 +167,9 @@ final public class AuthentificationServiceAuthLib: AuthentificationService {
                 error: error,
                 attributes: [:]
             )
+            if let error = error as? AuthentificationError {
+                throw error
+            }
             throw AuthentificationError.loginFailure(message: nil)
         }
     }
