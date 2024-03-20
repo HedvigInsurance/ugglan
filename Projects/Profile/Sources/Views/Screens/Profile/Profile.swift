@@ -83,7 +83,7 @@ public struct ProfileView: View {
         .onAppear {
             store.send(.fetchProfileState)
         }
-        .onRefresh {
+        .onPullToRefresh {
             await store.sendAsync(.fetchProfileState)
         }
     }

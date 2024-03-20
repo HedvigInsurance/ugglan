@@ -49,7 +49,7 @@ public struct PaymentsView: View {
             .hFormAttachToBottom {
                 bottomPart
             }
-            .onRefresh {
+            .onPullToRefresh {
                 await store.sendAsync(.load)
                 await store.sendAsync(.fetchPaymentStatus)
             }

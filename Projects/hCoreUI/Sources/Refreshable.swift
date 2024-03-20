@@ -43,7 +43,7 @@ struct RefreshableModifier: ViewModifier {
 extension View {
 
     @ViewBuilder
-    public func onRefresh(action: @escaping @Sendable () async -> Void) -> some View {
+    public func onPullToRefresh(action: @escaping @Sendable () async -> Void) -> some View {
         if #available(iOS 15.0, *) {
             self.refreshable {
                 await action()

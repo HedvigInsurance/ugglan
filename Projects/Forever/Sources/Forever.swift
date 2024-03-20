@@ -94,7 +94,7 @@ public struct ForeverView: View {
                         }
                     }
             )
-            .onRefresh {
+            .onPullToRefresh {
                 await store.sendAsync(.fetch)
             }
         }

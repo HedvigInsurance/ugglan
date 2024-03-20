@@ -65,7 +65,7 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
-        .onRefresh {
+        .onPullToRefresh {
             await store.sendAsync(.fetch)
         }
         .hFormAttachToBottom {
