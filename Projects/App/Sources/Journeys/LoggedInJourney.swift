@@ -200,7 +200,6 @@ extension AppJourney {
             )
             .sendActionImmediately(ContractStore.self, .fetch)
             .sendActionImmediately(ForeverStore.self, .fetch)
-            .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
