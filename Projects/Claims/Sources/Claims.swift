@@ -60,7 +60,7 @@ class ClaimsViewModel: ObservableObject {
         pollTimerCancellable?.cancel()
     }
 
-    func configureTimer() {
+    private func configureTimer() {
         pollTimerPublisher = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
         pollTimerCancellable = pollTimerPublisher?
             .sink(receiveValue: { [weak self] _ in
