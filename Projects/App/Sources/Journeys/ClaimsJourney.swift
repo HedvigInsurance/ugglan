@@ -61,6 +61,10 @@ extension AppJourney {
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         honestyPledge(from: origin)
+            .onDismiss {
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimsStore.send(.fetchClaims)
+            }
     }
 
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
