@@ -1,7 +1,6 @@
 import Apollo
 import Flow
 import Foundation
-import authlib
 
 public class TokenRefresher {
     public static let shared = TokenRefresher()
@@ -53,33 +52,17 @@ public class TokenRefresher {
         } else {
             self.isRefreshing.value = true
             log.info("Will start refreshing token")
-            let repository = NetworkAuthRepository(
-                environment: Environment.current.authEnvironment,
-                additionalHttpHeadersProvider: { ApolloClient.headers() },
-                httpClientEngine: nil
-            )
-            let exchangeResult = try await repository.exchange(grant: RefreshTokenGrant(code: token.refreshToken))
-            switch onEnum(of: exchangeResult) {
-            case .success(let success):
-                log.info("Refresh was sucessfull")
-                ApolloClient.handleAuthTokenSuccessResult(result: success)
+
+            do {
+                try await onRefresh?(token.refreshToken)
                 self.isRefreshing.value = false
-                return
-            case .error(let error):
-                log.error("Refreshing failed \(error.errorMessage), forcing logout")
+            } catch let error {
+                log.error("Refreshing failed \(error.localizedDescription), forcing logout")
                 forceLogoutHook()
-                throw AuthError.refreshFailed
+                throw error
             }
         }
     }
-}
 
-extension AuthTokenResultError {
-    fileprivate var errorMessage: String {
-        switch onEnum(of: self) {
-        case .backendErrorResponse(let error): return error.message
-        case .iOError(let ioError): return ioError.message
-        case .unknownError(let unknownError): return unknownError.message
-        }
-    }
+    public var onRefresh: ((_ token: String) async throws -> Void)?
 }

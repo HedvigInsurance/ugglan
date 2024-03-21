@@ -8,7 +8,7 @@ import hGraphQL
 
 struct Impersonate {
     @PresentableStore var authenticationStore: AuthenticationStore
-
+    @Inject var authentificationService: AuthentificationService
     private func getAuthorizationCode(from url: URL) -> String? {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
@@ -30,18 +30,14 @@ struct Impersonate {
 
     func impersonate(with url: URL) {
         guard let authorizationCode = getAuthorizationCode(from: url) else { return }
-
-        let bag = DisposeBag()
-
-        bag += authenticationStore.onAction(
-            .navigationAction(action: .authSuccess),
-            {
+        Task {
+            do {
+                try await authentificationService.exchange(code: authorizationCode)
                 ApplicationState.preserveState(.impersonation)
-                UIApplication.shared.appDelegate.presentMainJourney()
-                bag.dispose()
-            }
-        )
+                authenticationStore.send(.navigationAction(action: .impersonation))
+            } catch let ex {
 
-        authenticationStore.send(.exchange(code: authorizationCode))
+            }
+        }
     }
 }
