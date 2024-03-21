@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Get Version
-        run: cd Projects/App && echo "version=$(echo xcrun agvtool what-marketing-version)"
+        run: cd Projects/App && export version=$(xcrun agvtool what-marketing-version)
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
