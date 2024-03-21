@@ -2,24 +2,22 @@ name: CreateRelease
 
 on:
   workflow_dispatch:
-    inputs:
-      versionNumber:
-        description: "Version number"
-        required: true
 
 jobs:
   deploy:
     runs-on: macos-13
 
     steps:
+      - name: Get Version
+        run: cd Projects/App && version=xcrun agvtool what-marketing-version
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.versionNumber }}
-          release_name: Release-${{ github.event.inputs.versionNumber }}
+          tag_name: ${{ version }}
+          release_name: Release-${{ version }}
           body: Release
           draft: false
           prerelease: false
