@@ -48,7 +48,7 @@ extension Claims: View {
 }
 
 class ClaimsViewModel: ObservableObject {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore private var store: ClaimsStore
     private var pollTimerPublisher: Publishers.Autoconnect<Timer.TimerPublisher>?
     private var pollTimerCancellable: AnyCancellable?
     private var claimsCountCancellable: AnyCancellable?
