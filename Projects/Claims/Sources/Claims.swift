@@ -44,6 +44,9 @@ extension Claims: View {
         .onAppear {
             vm.fetch()
         }
+        .onDisappear {
+            vm.stopTimer()
+        }
     }
 }
 
@@ -51,13 +54,13 @@ class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
     private var pollTimerPublisher: Publishers.Autoconnect<Timer.TimerPublisher>?
     private var pollTimerCancellable: AnyCancellable?
-    private var claimsCountCancellable: AnyCancellable?
     private let refreshOn = 60
 
-    public init() {
-        configureTimerForFetchClaims()
+    func stopTimer() {
+        pollTimerCancellable?.cancel()
     }
-    private func configureTimerForFetchClaims() {
+
+    func configureTimer() {
         pollTimerPublisher = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
         pollTimerCancellable = pollTimerPublisher?
             .sink(receiveValue: { [weak self] _ in
@@ -67,7 +70,6 @@ class ClaimsViewModel: ObservableObject {
                     self?.fetch()
                 } else {
                     self?.pollTimerCancellable?.cancel()
-                    self?.claimsCountCancellable?.cancel()
                 }
             })
     }
@@ -75,6 +77,7 @@ class ClaimsViewModel: ObservableObject {
     func fetch() {
         store.send(.fetchClaims)
         //added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
-        configureTimerForFetchClaims()
+        configureTimer()
     }
+
 }
