@@ -1,0 +1,8 @@
+name: IncreaseVersionNumber
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionNumber:
+        description: "Version number"
+        required: true
