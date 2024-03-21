@@ -52,7 +52,6 @@ extension Claims: View {
 
 class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
-    private var pollTimerPublisher: Publishers.Autoconnect<Timer.TimerPublisher>?
     private var pollTimerCancellable: AnyCancellable?
     private let refreshOn = 60
 
@@ -61,8 +60,8 @@ class ClaimsViewModel: ObservableObject {
     }
 
     private func configureTimer() {
-        pollTimerPublisher = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
-        pollTimerCancellable = pollTimerPublisher?
+        pollTimerCancellable = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common)
+            .autoconnect()
             .sink(receiveValue: { [weak self] _ in
                 //added this check here because we have major memory leak in the tabjourney so when we logout this vm is still alive
                 //TODO: remove after we fix memory leak
