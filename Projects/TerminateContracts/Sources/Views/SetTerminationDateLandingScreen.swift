@@ -48,15 +48,10 @@ struct SetTerminationDateLandingScreen: View {
                         if let config = termination.config {
                             hSection {
                                 hRow {
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            hText(config.contractDisplayName)
-                                            hText(config.contractExposureName, style: .standardSmall)
-                                                .foregroundColor(hTextColor.secondaryTranslucent)
-                                        }
-                                        Spacer()
-                                        Image(uiImage: hCoreUIAssets.lockSmall.image)
-                                            .foregroundColor(hTextColor.secondary)
+                                    VStack(alignment: .leading) {
+                                        hText(config.contractDisplayName)
+                                        hText(config.contractExposureName, style: .standardSmall)
+                                            .foregroundColor(hTextColor.secondaryTranslucent)
                                     }
                                 }
                             }
