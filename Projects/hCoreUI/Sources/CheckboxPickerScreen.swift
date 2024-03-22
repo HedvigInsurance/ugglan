@@ -4,16 +4,13 @@ import hCore
 public struct DisplayString: Hashable {
     let title: String
     let subTitle: String?
-    let extraSubTitle: String?
 
     public init(
         title: String,
-        subTitle: String? = nil,
-        extraSubTitle: String? = nil
+        subTitle: String? = nil
     ) {
         self.title = title
         self.subTitle = subTitle
-        self.extraSubTitle = extraSubTitle
     }
 }
 
@@ -31,7 +28,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let hButtonText: String
     private let infoCard: CheckboxInfoCard?
     private var title: String?
-    private var titleMarker: String?
     private var subTitle: String?
 
     @State var type: CheckboxFieldType? = nil
@@ -61,8 +57,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil,
         title: String? = nil,
-        titleMarker: String? = nil,
-        subTitle: String? = nil
+        subTitle: String? = nil,
+        fieldSize: hFieldSize? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -78,14 +74,18 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             self.manualInput = true
         }
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
-        if items.count > 3 {
-            self.fieldSize = .small
+
+        if fieldSize != nil {
+            self.fieldSize = fieldSize ?? .large
         } else {
-            self.fieldSize = .large
+            if items.count > 3 {
+                self.fieldSize = .small
+            } else {
+                self.fieldSize = .large
+            }
         }
         self.infoCard = infoCard
         self.title = title
-        self.titleMarker = titleMarker
         self.subTitle = subTitle
     }
 
@@ -100,18 +100,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                                 HStack(spacing: 8) {
                                     if let title {
                                         hText(title, style: .title3)
-                                    }
-                                    if let titleMarker {
-                                        HStack {
-                                            hText(titleMarker)
-                                                .foregroundColor(hTextColor.secondary)
-                                        }
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 3)
-                                        .background(
-                                            Squircle.default()
-                                                .fill(hFillColor.opaqueOne)
-                                        )
                                     }
                                 }
 
@@ -318,18 +306,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             VStack(spacing: 0) {
                 Group {
                     let titleFont: HFontTextStyle =
-                        (displayName?.subTitle != nil || displayName?.extraSubTitle != nil) ? .body : .title3
+                        (displayName?.subTitle != nil) ? .body : .title3
 
                     hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
                         .foregroundColor(hTextColor.primary)
 
                     if let subTitle = displayName?.subTitle {
                         hText(subTitle, style: .standardSmall)
-                            .foregroundColor(hTextColor.secondaryTranslucent)
-                    }
-
-                    if let extraSubTitle = displayName?.extraSubTitle {
-                        hText(extraSubTitle, style: .standardSmall)
                             .foregroundColor(hTextColor.secondaryTranslucent)
                     }
                 }
@@ -454,7 +437,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
                         ModelForPreview(
                             id: "id3",
-                            name: .init(title: "title3", subTitle: "subtitle3", extraSubTitle: "extra subtitle")
+                            name: .init(title: "title3", subTitle: "subtitle3")
                         ),
                         ModelForPreview(id: "id4", name: .init(title: "name4")),
                         ModelForPreview(id: "id5", name: .init(title: "name5")),
@@ -473,8 +456,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 singleSelect: true,
                 attachToBottom: true,
                 manualInputPlaceholder: "Enter brand name",
-                title: "title",
-                titleMarker: "1/2"
+                title: "title"
             )
             .hIncludeManualInput
         }

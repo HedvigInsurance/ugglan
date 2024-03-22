@@ -257,8 +257,7 @@ public class TerminationFlowJourney {
                             object: $0,
                             displayName: DisplayString(
                                 title: $0.contractDisplayName,
-                                subTitle: $0.contractExposureName,
-                                extraSubTitle: "add this"
+                                subTitle: $0.contractExposureName
                             )
                         )
                     })
@@ -272,7 +271,6 @@ public class TerminationFlowJourney {
                             contractId: selectedContract.contractId,
                             contractDisplayName: selectedContract.contractDisplayName,
                             contractExposureName: selectedContract.contractExposureName,
-                            titleMarker: "2/2",
                             fromSelectInsurances: true
                         )
                         store.send(.startTermination(config: config))
@@ -281,14 +279,9 @@ public class TerminationFlowJourney {
                 singleSelect: true,
                 attachToBottom: true,
                 disableIfNoneSelected: true,
-                infoCard: .init(
-                    text: "Note that you can only cancel one insurance at the same time",
-                    buttons: [],
-                    placement: .top
-                ),
                 title: "Cancellation",
-                titleMarker: "1/2",
-                subTitle: "Select the insurance you want to cancel"
+                subTitle: "Select the insurance you want to cancel",
+                fieldSize: .small
             )
             .hUseColoredCheckbox
             .toolbar {

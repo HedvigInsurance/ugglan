@@ -53,8 +53,6 @@ struct SetTerminationDateLandingScreen: View {
                                             hText(config.contractDisplayName)
                                             hText(config.contractExposureName, style: .standardSmall)
                                                 .foregroundColor(hTextColor.secondaryTranslucent)
-                                            hText("339 kr/mo ∙ Next renewal on 23 june", style: .standardSmall)
-                                                .foregroundColor(hTextColor.secondaryTranslucent)
                                         }
                                         Spacer()
                                         Image(uiImage: hCoreUIAssets.lockSmall.image)
