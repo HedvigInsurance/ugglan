@@ -2,31 +2,41 @@ import Presentation
 import SwiftUI
 import hCore
 
+public enum SuccessScreenIcon {
+    case tick
+    case circularTick
+}
+
 public struct SuccessScreen: View {
     let title: String
     let subTitle: String?
     let withButtons: Bool
-    @Environment(\.hSuccessBottomAttachedView) var customBottomSuccessView
     let successViewButtonAction: (() -> Void)?
+    @Environment(\.hUsePrimaryButton) var usePrimaryButton
+    let icon: SuccessScreenIcon
 
     public init(
-        title: String
+        title: String,
+        icon: SuccessScreenIcon? = nil
     ) {
         self.title = title
         self.withButtons = false
         self.subTitle = nil
         self.successViewButtonAction = nil
+        self.icon = icon ?? .tick
     }
 
     public init(
         successViewTitle: String,
         successViewBody: String,
-        successViewButtonAction: @escaping () -> Void
+        successViewButtonAction: @escaping () -> Void,
+        icon: SuccessScreenIcon? = nil
     ) {
         self.withButtons = true
         self.title = successViewTitle
         self.subTitle = successViewBody
         self.successViewButtonAction = successViewButtonAction
+        self.icon = icon ?? .tick
     }
 
     public var body: some View {
@@ -37,16 +47,20 @@ public struct SuccessScreen: View {
                     Spacer()
                     Spacer()
                     VStack(spacing: 16) {
-                        Image(uiImage: hCoreUIAssets.tick.image)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(hSignalColor.greenElement)
+                        Image(
+                            uiImage: icon == .tick
+                                ? hCoreUIAssets.tick.image : hCoreUIAssets.circularCheckmarkFilled.image
+                        )
+                        .resizable()
+                        .frame(width: icon == .tick ? 24 : 40, height: icon == .tick ? 24 : 40)
+                        .foregroundColor(hSignalColor.greenElement)
                         hSection {
                             VStack(spacing: 0) {
                                 hText(title)
                                 hText(subTitle ?? "")
                                     .foregroundColor(hTextColor.secondary)
                                     .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 32)
                             }
                         }
                         .sectionContainerStyle(.transparent)
@@ -55,11 +69,16 @@ public struct SuccessScreen: View {
                     Spacer()
                     Spacer()
                 }
-                if customBottomSuccessView != nil {
-                    customBottomSuccessView
-                } else {
-                    hSection {
-                        VStack(spacing: 8) {
+                hSection {
+                    ZStack {
+                        if usePrimaryButton {
+                            hButton.LargeButton(type: .primary) {
+                                successViewButtonAction?()
+                            } content: {
+                                hText(L10n.generalDoneButton)
+                            }
+
+                        } else {
                             hButton.LargeButton(type: .ghost) {
                                 successViewButtonAction?()
                             } content: {
@@ -67,8 +86,8 @@ public struct SuccessScreen: View {
                             }
                         }
                     }
-                    .sectionContainerStyle(.transparent)
                 }
+                .sectionContainerStyle(.transparent)
             }
         } else {
             hSection {
@@ -117,5 +136,22 @@ extension EnvironmentValues {
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
+    }
+}
+
+private struct EnvironmentHUsePrimaryButton: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUsePrimaryButton: Bool {
+        get { self[EnvironmentHUsePrimaryButton.self] }
+        set { self[EnvironmentHUsePrimaryButton.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUsePrimaryButton: some View {
+        self.environment(\.hUsePrimaryButton, true)
     }
 }

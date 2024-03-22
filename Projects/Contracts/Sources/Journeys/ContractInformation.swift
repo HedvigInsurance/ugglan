@@ -326,11 +326,11 @@ struct ContractInformationView: View {
                                 .startTermination(
                                     config: .init(
                                         contractId: id,
-                                        image: contract?.pillowType,
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
                                         contractExposureName: contract?.exposureDisplayName ?? "",
-                                        activeFrom: contract?.currentAgreement?.activeFrom
+                                        fromSelectInsurances: false
+                                            //                                        activeFrom: contract?.currentAgreement?.activeFrom
                                     )
                                 )
                             )

@@ -46,7 +46,6 @@ public final class TerminationContractStore: LoadingStateStore<
         switch action {
         case let .startTermination(config):
             newState.currentTerminationContext = nil
-            newState.terminationContractId = nil
             newState.terminationDateStep = nil
             newState.terminationDeleteStep = nil
             newState.successStep = nil
@@ -54,8 +53,6 @@ public final class TerminationContractStore: LoadingStateStore<
             newState.config = config
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context
-        case let .setTerminationContractId(id):
-            newState.terminationContractId = id
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):

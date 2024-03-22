@@ -215,7 +215,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allQuickActions.append(.editCoInsured())
         }
 
-        if Dependencies.featureFlags().isTerminationFlowEnabled {
+        let canTerminateContracts = !contractStore.state.activeContracts.filter({ $0.canTerminate }).isEmpty
+        if Dependencies.featureFlags().isTerminationFlowEnabled && canTerminateContracts {
             allQuickActions.append(.cancellation())
         }
 

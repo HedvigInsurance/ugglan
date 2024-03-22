@@ -21,9 +21,10 @@ struct TerminationDeleteScreen: View {
         } _: { termination in
             GenericErrorView(
                 title: L10n.General.areYouSure,
-                description: L10n.terminateContractDeletionText(
-                    termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                ),
+                description: "",
+                //                description: L10n.terminateContractDeletionText(
+                //                    termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                //                ),
                 icon: .triangle,
                 buttons: .init(
                     actionButton: .init(

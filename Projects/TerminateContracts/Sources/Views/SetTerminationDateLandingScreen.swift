@@ -5,6 +5,7 @@ import hCoreUI
 struct SetTerminationDateLandingScreen: View {
     @PresentableStore var store: TerminationContractStore
     let onSelected: () -> Void
+    let includeMarker: () -> String?
 
     var body: some View {
         hForm {
@@ -13,16 +14,18 @@ struct SetTerminationDateLandingScreen: View {
                     Group {
                         HStack(spacing: 8) {
                             hText(L10n.terminationFlowCancellationTitle, style: .title3)
-                            HStack {
-                                hText("2/2")
-                                    .foregroundColor(hTextColor.secondary)
+                            if let includeMarker = includeMarker() {
+                                HStack {
+                                    hText(includeMarker)
+                                        .foregroundColor(hTextColor.secondary)
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(
+                                    Squircle.default()
+                                        .fill(hFillColor.opaqueOne)
+                                )
                             }
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 3)
-                            .background(
-                                Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
-                            )
                         }
 
                         hText(L10n.terminationDateText, style: .title3)
@@ -77,13 +80,8 @@ struct SetTerminationDateLandingScreen: View {
                             hButton.LargeButton(type: .primary) {
                                 onSelected()
                             } content: {
-                                hText(
-                                    termination.terminationDateStep?.date != nil
-                                        ? L10n.terminationConfirmButton : L10n.terminationButton,
-                                    style: .standard
-                                )
+                                hText(L10n.generalContinueButton, style: .standard)
                             }
-                            //                    .hButtonIsLoading(isLoading)
                             .disabled(termination.terminationDateStep?.date == nil)
                         }
                     }
@@ -96,5 +94,5 @@ struct SetTerminationDateLandingScreen: View {
 }
 
 #Preview{
-    SetTerminationDateLandingScreen(onSelected: {})
+    SetTerminationDateLandingScreen(onSelected: {}, includeMarker: { return "2/2" })
 }

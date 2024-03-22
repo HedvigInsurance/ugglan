@@ -14,7 +14,10 @@ public class TerminationFlowJourney {
     private static func getScreen(for action: TerminationContractAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
             if case .openTerminationSuccessScreen = navigationAction {
-                TerminationFlowJourney.openTerminationSuccessScreen()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let terminationDate =
+                    store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                TerminationFlowJourney.openTerminationSuccessScreen(terminationDate: terminationDate)
             } else if case .openTerminationDatePickerScreen = navigationAction {
                 TerminationFlowJourney.openSetTerminationDatePickerScreen()
             } else if case .openTerminationFailScreen = navigationAction {
@@ -25,12 +28,15 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openTerminationDeletionScreen()
             } else if case let .openConfirmTerminationScreen(config) = navigationAction {
                 openConfirmTerminationScreen(config: config)
-            } else if case .openTerminationProcessingScreen = navigationAction {
-                openProgressScreen()
+                //            } else if case .openTerminationProcessingScreen = navigationAction {
+                //                openProgressScreen()
             } else if case let .openSelectInsuranceScreen(config) = navigationAction {
                 openSelectInsuranceScreen(config: config)
             } else if case .openSetTerminationDateLandingScreen = navigationAction {
-                openSetTerminationDateLandingScreen()
+
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let fromSelectInsurances = store.state.config?.fromSelectInsurances
+                openSetTerminationDateLandingScreen(fromSelectInsurances: fromSelectInsurances ?? false)
             }
         } else if case .dismissTerminationFlow = action {
             withAnimation {
@@ -43,25 +49,25 @@ public class TerminationFlowJourney {
         }
     }
 
-    @JourneyBuilder
-    private static func openProgressScreen() -> some JourneyPresentation {
-        HostingJourney(
-            TerminationContractStore.self,
-            rootView: ProcessingView<TerminationContractStore>(
-                showSuccessScreen: false,
-                TerminationContractStore.self,
-                loading: .sendTerminationDate,
-                loadingViewText: L10n.terminateContractTerminatingProgress,
-                onErrorCancelAction: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissTerminationFlow)
-                }
-            )
-        ) { action in
-            getScreen(for: action)
-        }
-        .hidesBackButton
-    }
+    //    @JourneyBuilder
+    //    private static func openProgressScreen() -> some JourneyPresentation {
+    //        HostingJourney(
+    //            TerminationContractStore.self,
+    //            rootView: ProcessingView<TerminationContractStore>(
+    //                showSuccessScreen: false,
+    //                TerminationContractStore.self,
+    //                loading: .sendTerminationDate,
+    //                loadingViewText: L10n.terminateContractTerminatingProgress,
+    //                onErrorCancelAction: {
+    //                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+    //                    store.send(.dismissTerminationFlow)
+    //                }
+    //            )
+    //        ) { action in
+    //            getScreen(for: action)
+    //        }
+    //        .hidesBackButton
+    //    }
 
     private static func openSetTerminationDatePickerScreen() -> some JourneyPresentation {
         HostingJourney(
@@ -92,18 +98,24 @@ public class TerminationFlowJourney {
         .configureTitle(L10n.setTerminationDateText)
     }
 
-    private static func openSetTerminationDateLandingScreen() -> some JourneyPresentation {
+    private static func openSetTerminationDateLandingScreen(fromSelectInsurances: Bool) -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: SetTerminationDateLandingScreen(onSelected: {
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let config = store.state.config {
-                    store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
-                } else {
-                    store.send(.navigationAction(action: .openTerminationFailScreen))
+            rootView: SetTerminationDateLandingScreen(
+                onSelected: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    if let config = store.state.config {
+                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    } else {
+                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                    }
+                },
+                includeMarker: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    return store.state.config?.titleMarker
                 }
-            })
-
+            ),
+            style: fromSelectInsurances ? .default : .modally(presentationStyle: .overFullScreen)
         ) {
             action in
             getScreen(for: action)
@@ -126,7 +138,6 @@ public class TerminationFlowJourney {
                     store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             )
-            //            style: .modally(presentationStyle: .overFullScreen)
         ) {
             action in
             getScreen(for: action)
@@ -135,10 +146,20 @@ public class TerminationFlowJourney {
         .withJourneyDismissButton
     }
 
-    private static func openTerminationSuccessScreen() -> some JourneyPresentation {
+    private static func openTerminationSuccessScreen(terminationDate: String) -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: TerminationSuccessScreen()
+            rootView: SuccessScreen(
+                successViewTitle: "Insurance cancelled",
+                successViewBody:
+                    "Your insurance will be cancelled on \(terminationDate). We’ve sent you an e-mail with all the details.",
+                successViewButtonAction: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                },
+                icon: .circularTick
+            )
+            .hUsePrimaryButton
         ) {
             action in
             getScreen(for: action)
@@ -178,8 +199,7 @@ public class TerminationFlowJourney {
                         }
                     )
                 )
-            ),
-            style: .detented(.large, modally: true)
+            )
         ) {
             action in
             getScreen(for: action)
@@ -250,9 +270,10 @@ public class TerminationFlowJourney {
                     if let selectedContract = selected.first?.0 {
                         let config = TerminationConfirmConfig(
                             contractId: selectedContract.contractId,
-                            image: nil,
                             contractDisplayName: selectedContract.contractDisplayName,
-                            contractExposureName: selectedContract.contractExposureName
+                            contractExposureName: selectedContract.contractExposureName,
+                            titleMarker: "2/2",
+                            fromSelectInsurances: true
                         )
                         store.send(.startTermination(config: config))
                     }
@@ -282,7 +303,7 @@ public class TerminationFlowJourney {
                     .foregroundColor(hTextColor.primary)
                 }
             },
-            style: .detented(.large, modally: false)
+            style: .modally(presentationStyle: .overFullScreen)
         ) {
             action in
             getScreen(for: action)
