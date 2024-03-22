@@ -57,7 +57,7 @@ public struct Masking {
 
     public func isValid(text: String) -> Bool {
         switch type {
-        case .norwegianPersonalNumber: return text.count == 11
+        case .norwegianPersonalNumber: return text.replacingOccurrences(of: "-", with: "").count == 11
         case .danishPersonalNumber: return text.count == 11
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0

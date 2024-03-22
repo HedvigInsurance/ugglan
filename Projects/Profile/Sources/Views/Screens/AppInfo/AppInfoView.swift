@@ -104,7 +104,6 @@ public struct AppInfoView: View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
-
         return OpenEmailClientButton(
             options: EmailOptions(
                 recipient: "ios@hedvig.com",

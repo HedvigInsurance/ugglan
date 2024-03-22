@@ -46,9 +46,12 @@ public struct PaymentsView: View {
                 }
                 .padding(.vertical, 8)
             }
-            .hDisableScroll
             .hFormAttachToBottom {
                 bottomPart
+            }
+            .onPullToRefresh {
+                await store.sendAsync(.load)
+                await store.sendAsync(.fetchPaymentStatus)
             }
         }
     }
@@ -215,7 +218,7 @@ extension PaymentsView {
                 if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }
@@ -242,7 +245,7 @@ extension PaymentsView {
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }

@@ -1,4 +1,5 @@
 import Apollo
+import Authentication
 import Chat
 import Claims
 import Contracts
@@ -16,6 +17,8 @@ import hGraphQL
 
 extension ApolloClient {
     public static func initAndRegisterClient() {
+        let authorizationService = AuthentificationServiceAuthLib()
+        Dependencies.shared.add(module: Module { () -> AuthentificationService in authorizationService })
         if ApplicationContext.shared.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
             let hPaymentService = hPaymentServiceDemo()

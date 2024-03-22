@@ -245,7 +245,7 @@ extension HomeView {
             }
         }
         .configureTabBarItem(
-            title: L10n.HomeTab.title,
+            title: L10n.tabHomeTitle,
             image: hCoreUIAssets.homeTab.image,
             selectedImage: hCoreUIAssets.homeTabActive.image
         )

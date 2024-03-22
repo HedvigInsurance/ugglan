@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
 
-enum AuthError: Error {
+public enum AuthError: Error {
     case refreshTokenExpired
     case refreshFailed
 }

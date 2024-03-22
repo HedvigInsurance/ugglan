@@ -24,10 +24,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 send(.setActiveContracts(contracts: data.activeContracts))
                 send(.setTerminatedContracts(contracts: data.termiantedContracts))
                 send(.setPendingContracts(contracts: data.pendingContracts))
-                send(.fetchCompleted)
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchContracts)
-                send(.fetchCompleted)
             }
         case .fetch:
             send(.fetchCrossSale)

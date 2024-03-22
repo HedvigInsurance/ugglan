@@ -1,20 +1,14 @@
 import Apollo
-import Flow
-import Forever
 import Home
 import Market
-import Payment
 import Presentation
 import SwiftUI
-import TravelCertificate
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
-    private let disposeBag = DisposeBag()
 
     public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -89,17 +83,8 @@ public struct ProfileView: View {
         .onAppear {
             store.send(.fetchProfileState)
         }
-        .introspectScrollView { scrollView in
-            let refreshControl = UIRefreshControl()
-            scrollView.refreshControl = refreshControl
-            disposeBag.dispose()
-            disposeBag += refreshControl.store(
-                store,
-                send: {
-                    ProfileAction.fetchProfileState
-                },
-                endOn: .fetchProfileStateCompleted
-            )
+        .onPullToRefresh {
+            await store.sendAsync(.fetchProfileState)
         }
     }
 }
@@ -126,8 +111,6 @@ extension ProfileView {
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)
-            } else if case .openForever = action {
-                ForeverView.journey()
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,

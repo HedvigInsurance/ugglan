@@ -17,19 +17,15 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                profileStore.send(.updateLanguage)
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-                bag += contractStore.actionSignal
-                    .onValue { action in
-                        if case .fetchCompleted = action {
-                            UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
-                                callback(())
-                            })
-                            bag.dispose()
-                        }
-                    }
+                Task {
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    profileStore.send(.updateLanguage)
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    await contractStore.sendAsync(.fetchContracts)
+                    await UIApplication.shared.appDelegate.setupFeatureFlags(onComplete: { success in
+                        callback(())
+                    })
+                }
                 return bag
             }
         )
