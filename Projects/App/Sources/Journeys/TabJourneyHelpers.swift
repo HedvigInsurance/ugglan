@@ -15,8 +15,6 @@ extension JourneyPresentation {
             let store: UgglanStore = self.presentable.get()
             let tabBarController = presenter.matter
 
-            tabBarController.selectedIndex = store.state.selectedTabIndex
-
             presenter.bag += tabBarController.signal(for: \.selectedViewController)
                 .onValue { _ in
                     store.send(.setSelectedTabIndex(index: tabBarController.selectedIndex))
