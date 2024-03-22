@@ -49,7 +49,6 @@ import hGraphQL
         globalPresentableStoreContainer = PresentableStoreContainer()
 
         self.setupSession()
-        ApolloClient.initAndRegisterClient()
         self.bag += self.window.present(AppJourney.main)
         UIView.transition(
             with: self.window,
@@ -62,8 +61,8 @@ import hGraphQL
 
     func logout() {
         bag.dispose()
-        TokenRefresher.shared.isDemoMode = false
-        ApplicationContext.shared.$isDemoMode.value = false
+        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        ugglanStore.send(.setIsDemoMode(to: false))
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
         ApplicationContext.shared.$isLoggedIn.value = false
@@ -172,6 +171,7 @@ import hGraphQL
     }
 
     func setupSession() {
+        ApolloClient.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
@@ -181,13 +181,6 @@ import hGraphQL
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
             }
-
-        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
-            let store: UgglanStore = globalPresentableStoreContainer.get()
-            TokenRefresher.shared.isDemoMode = value
-            store.send(.setIsDemoMode(to: value))
-            ApolloClient.initAndRegisterClient()
-        }
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
@@ -284,15 +277,12 @@ import hGraphQL
         }
 
         let store: UgglanStore = globalPresentableStoreContainer.get()
-        ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
-        TokenRefresher.shared.isDemoMode = store.state.isDemoMode
         setupExperiments()
         observeNotificationsSettings()
         return true
     }
 
     private func setupExperiments() {
-        ApolloClient.initAndRegisterClient()
         self.setupFeatureFlags(onComplete: { success in
             DispatchQueue.main.async {
                 self.bag += self.window.present(AppJourney.main)

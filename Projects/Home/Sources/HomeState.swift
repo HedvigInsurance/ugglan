@@ -109,22 +109,14 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
                 send(.setFutureStatus(status: memberData.futureState))
             } catch _ {
-                if ApplicationContext.shared.isDemoMode {
-                    send(.setQuickActions(quickActions: []))
-                } else {
-                    self.setError(L10n.General.errorBody, for: .fetchQuickActions)
-                }
+                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchQuickActions:
             do {
                 let quickActions = try await self.homeService.getQuickActions()
                 send(.setQuickActions(quickActions: quickActions))
             } catch {
-                if ApplicationContext.shared.isDemoMode {
-                    send(.setQuickActions(quickActions: []))
-                } else {
-                    self.setError(L10n.General.errorBody, for: .fetchQuickActions)
-                }
+                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchChatNotifications:
             do {

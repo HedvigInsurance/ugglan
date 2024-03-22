@@ -5,7 +5,6 @@ import Foundation
 public class TokenRefresher {
     public static let shared = TokenRefresher()
     var isRefreshing: ReadWriteSignal<Bool> = ReadWriteSignal(false)
-    public var isDemoMode = false
     var needRefresh: Bool {
         guard let token = try? ApolloClient.retreiveToken() else {
             return false
@@ -17,12 +16,9 @@ public class TokenRefresher {
     public func refreshIfNeeded() async throws {
         let token = try ApolloClient.retreiveToken()
         guard let token = token else {
-            if !isDemoMode {
-                forceLogoutHook()
-                log.info("Access token refresh missing token", error: nil, attributes: nil)
-                throw AuthError.refreshTokenExpired
-            }
-            return
+            forceLogoutHook()
+            log.info("Access token refresh missing token", error: nil, attributes: nil)
+            throw AuthError.refreshTokenExpired
         }
 
         log.debug("Checking if access token refresh is needed")

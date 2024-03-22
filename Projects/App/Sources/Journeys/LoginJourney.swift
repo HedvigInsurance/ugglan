@@ -1,9 +1,11 @@
+import Apollo
 import Authentication
 import Market
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
@@ -13,7 +15,11 @@ extension AppJourney {
     fileprivate static var bankIDSweden: some JourneyPresentation {
         HostingJourney(
             AuthenticationStore.self,
-            rootView: BankIDLoginQRView(),
+            rootView: BankIDLoginQRView {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                await store.sendAsync(.setIsDemoMode(to: true))
+                ApolloClient.initAndRegisterClient()
+            },
             style: .detented(.large)
         ) { action in
             if case .bankIdQrResultAction(.loggedIn) = action {
