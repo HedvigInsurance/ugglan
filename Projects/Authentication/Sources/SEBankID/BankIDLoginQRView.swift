@@ -8,8 +8,10 @@ import hGraphQL
 public struct BankIDLoginQRView: View {
     @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
-
-    public init() {}
+    private var onStartDemoMode: () async -> Void
+    public init(onStartDemoMode: @escaping () async -> Void) {
+        self.onStartDemoMode = onStartDemoMode
+    }
     public var body: some View {
         Group {
             if vm.isLoading {
@@ -44,9 +46,11 @@ public struct BankIDLoginQRView: View {
                                 message: nil,
                                 primaryButton: .cancel(Text(L10n.demoModeCancel)),
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                                    ApplicationContext.shared.$isDemoMode.value = true
-                                    store.send(.bankIdQrResultAction(action: .loggedIn))
-                                    vm.cancelLogin()
+                                    Task {
+                                        await onStartDemoMode()
+                                        store.send(.bankIdQrResultAction(action: .loggedIn))
+                                        vm.cancelLogin()
+                                    }
                                 }
                             )
                         }
@@ -235,6 +239,6 @@ class BandIDViewModel: ObservableObject {
 
 struct BankIDLoginQR_Previews: PreviewProvider {
     static var previews: some View {
-        BankIDLoginQRView()
+        BankIDLoginQRView {}
     }
 }
