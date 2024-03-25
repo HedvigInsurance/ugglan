@@ -29,6 +29,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
             }
         case .dateOfOccurrenceAndLocationRequest:
+            print("CONTEXT IS SET \(newClaimContext != "")")
             await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
                 try await self.submitClaimService.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
             }
@@ -119,6 +120,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
+            print("CONTEXT IS SET \(context != "")")
         case let .setClaimEntrypointsForSelection(commonClaims):
             newState.claimEntrypoints = commonClaims
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
@@ -275,12 +277,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         self.setLoading(for: loadingType)
         do {
             let data = try await action()
-            send(.setNewClaimId(with: data.claimId))
-            send(.setNewClaimContext(context: data.context))
+            await sendAsync(.setNewClaimId(with: data.claimId))
+            await sendAsync(.setNewClaimContext(context: data.context))
             if let progress = data.progress {
-                send(.setProgress(progress: progress))
+                await sendAsync(.setProgress(progress: progress))
             }
-            send(data.action)
+            await sendAsync(data.action)
             removeLoading(for: loadingType)
         } catch let error {
             self.setError(error.localizedDescription, for: loadingType)
