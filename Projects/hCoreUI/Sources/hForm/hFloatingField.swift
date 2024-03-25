@@ -10,6 +10,7 @@ public struct hFloatingField: View {
     @Binding var error: String?
     private var value: String
     private let onTap: () -> Void
+    private let lockedState: Bool
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
@@ -25,35 +26,39 @@ public struct hFloatingField: View {
         value: String,
         placeholder: String? = nil,
         error: Binding<String?>? = nil,
-        onTap: @escaping () -> Void
+        onTap: @escaping () -> Void,
+        lockedState: Bool = false
     ) {
 
         self.placeholder = placeholder ?? ""
         self.onTap = onTap
         self.value = value
         self._error = error ?? Binding.constant(nil)
+        self.lockedState = lockedState
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                hFieldLabel(
-                    placeholder: placeholder,
-                    animate: $animate,
-                    error: $error,
-                    shouldMoveLabel: shouldMoveLabel
-                )
-                if !value.isEmpty {
-                    HStack {
+            HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: shouldMoveLabel
+                    )
+                    if !value.isEmpty {
                         getTextLabel
                             .frame(height: hWithoutFixedHeight ?? false ? .infinity : HFontTextStyle.title3.fontSize)
-                        Spacer()
-                        fieldTrailingView
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, value.isEmpty ? 0 : 10)
+
+                Spacer()
+                fieldTrailingView
+
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, value.isEmpty ? 0 : 10)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -77,7 +82,7 @@ public struct hFloatingField: View {
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if isEnabled {
+        if isEnabled && !lockedState {
             hTextColor.primary
         } else {
             hTextColor.secondary

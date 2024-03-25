@@ -23,7 +23,7 @@ struct ConfirmTerminationScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 displayInfoSection
-                //                displayPaymentInformation
+                DisplayQuestionView()
             }
             .padding(.top, 8)
         }
@@ -74,6 +74,9 @@ struct ConfirmTerminationScreen: View {
                             store.send(.navigationAction(action: .openTerminationDatePickerScreen))
                         }
                     )
+                    .hFieldTrailingView {
+                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
+                    }
                 }
             }
         }

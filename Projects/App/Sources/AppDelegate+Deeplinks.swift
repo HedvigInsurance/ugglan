@@ -154,7 +154,12 @@ extension AppDelegate {
                             contractExposureName: contractConfig.contractExposureName,
                             fromSelectInsurances: false
                         )
-                        terminationStore.send(.startTermination(config: config))  // not opening
+
+                        let vc = TerminationFlowJourney.start(
+                            for: .openSelectInsuranceScreen(config: .init(contracts: contractsConfig))
+                        )
+
+                        terminationStore.send(.startTermination(config: config))  // TODO: fix
                         self?.deepLinkDisposeBag.dispose()
                     } else {
                         // TODO: display error

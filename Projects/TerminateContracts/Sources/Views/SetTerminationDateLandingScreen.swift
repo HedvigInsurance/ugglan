@@ -59,12 +59,16 @@ struct SetTerminationDateLandingScreen: View {
                         hSection {
                             hFloatingField(
                                 value: termination.terminationDateStep?.date?.displayDateDDMMMYYYYFormat
-                                    ?? "Select date",
+                                    ?? "Select date...",
                                 placeholder: "Termination date",
                                 onTap: {
                                     store.send(.navigationAction(action: .openTerminationDatePickerScreen))
-                                }
+                                },
+                                lockedState: (termination.terminationDateStep?.date != nil) ? false : true
                             )
+                            .hFieldTrailingView {
+                                Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
+                            }
                         }
                     }
 

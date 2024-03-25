@@ -28,12 +28,11 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openTerminationDeletionScreen()
             } else if case let .openConfirmTerminationScreen(config) = navigationAction {
                 openConfirmTerminationScreen(config: config)
-                //            } else if case .openTerminationProcessingScreen = navigationAction {
-                //                openProgressScreen()
+            } else if case .openTerminationProcessingScreen = navigationAction {
+                openProgressScreen()
             } else if case let .openSelectInsuranceScreen(config) = navigationAction {
                 openSelectInsuranceScreen(config: config)
             } else if case .openSetTerminationDateLandingScreen = navigationAction {
-
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 let fromSelectInsurances = store.state.config?.fromSelectInsurances
                 openSetTerminationDateLandingScreen(fromSelectInsurances: fromSelectInsurances ?? false)
@@ -49,25 +48,25 @@ public class TerminationFlowJourney {
         }
     }
 
-    //    @JourneyBuilder
-    //    private static func openProgressScreen() -> some JourneyPresentation {
-    //        HostingJourney(
-    //            TerminationContractStore.self,
-    //            rootView: ProcessingView<TerminationContractStore>(
-    //                showSuccessScreen: false,
-    //                TerminationContractStore.self,
-    //                loading: .sendTerminationDate,
-    //                loadingViewText: L10n.terminateContractTerminatingProgress,
-    //                onErrorCancelAction: {
-    //                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-    //                    store.send(.dismissTerminationFlow)
-    //                }
-    //            )
-    //        ) { action in
-    //            getScreen(for: action)
-    //        }
-    //        .hidesBackButton
-    //    }
+    @JourneyBuilder
+    private static func openProgressScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: ProcessingView<TerminationContractStore>(
+                showSuccessScreen: false,
+                TerminationContractStore.self,
+                loading: .sendTerminationDate,
+                loadingViewText: L10n.terminateContractTerminatingProgress,
+                onErrorCancelAction: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                }
+            )
+        ) { action in
+            getScreen(for: action)
+        }
+        .hidesBackButton
+    }
 
     private static func openSetTerminationDatePickerScreen() -> some JourneyPresentation {
         HostingJourney(
@@ -114,7 +113,22 @@ public class TerminationFlowJourney {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     return store.state.config?.titleMarker
                 }
-            ),
+            )
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarLeading
+                ) {
+                    if !fromSelectInsurances {
+                        InfoViewHolder(
+                            title: "About cancelling your insurance",
+                            description:
+                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
+                            type: .navigation
+                        )
+                        .foregroundColor(hTextColor.primary)
+                    }
+                }
+            },
             style: fromSelectInsurances ? .default : .modally(presentationStyle: .overFullScreen)
         ) {
             action in
@@ -279,6 +293,7 @@ public class TerminationFlowJourney {
                 singleSelect: true,
                 attachToBottom: true,
                 disableIfNoneSelected: true,
+                hButtonText: L10n.generalContinueButton,
                 title: "Cancellation",
                 subTitle: "Select the insurance you want to cancel",
                 fieldSize: .small
@@ -289,8 +304,9 @@ public class TerminationFlowJourney {
                     placement: .topBarLeading
                 ) {
                     InfoViewHolder(
-                        title: "Cancellation",
-                        description: "test about cancellation",
+                        title: "About cancelling your insurance",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
                         type: .navigation
                     )
                     .foregroundColor(hTextColor.primary)
