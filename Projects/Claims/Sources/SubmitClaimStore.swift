@@ -29,7 +29,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
             }
         case .dateOfOccurrenceAndLocationRequest:
-            print("CONTEXT IS SET \(newClaimContext != "")")
             await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
                 try await self.submitClaimService.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
             }
@@ -120,7 +119,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
-            print("CONTEXT IS SET \(context != "")")
         case let .setClaimEntrypointsForSelection(commonClaims):
             newState.claimEntrypoints = commonClaims
         case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
