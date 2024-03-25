@@ -7,7 +7,7 @@ import Foundation
 import Payment
 import Presentation
 import Profile
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
@@ -19,18 +19,10 @@ extension AppDelegate {
     ) {
         bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
             .onValue { _ in
-                let octopus: hOctopus = Dependencies.shared.resolve()
+                let client: NotificationClient = Dependencies.shared.resolve()
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-                octopus.client
-                    .perform(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(token: deviceTokenString))
-                    .onValue({ data in
-                        if data.memberDeviceRegister == true {
-                            log.info("Did register CustomerIO push token for user")
-                        } else {
-                            log.info("Failed to register CustomerIO push token for user")
-                        }
-                    })
+                client.register(for: deviceTokenString)
             }
     }
 
@@ -82,10 +74,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 self.window.rootViewController?
                     .present(
-                        PaymentSetup(
+                        DirectDebitSetup(
                             setupType: .initial
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 
@@ -95,10 +87,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             performPostLoggedIn {
                 self.window.rootViewController?
                     .present(
-                        PaymentSetup(
+                        DirectDebitSetup(
                             setupType: .replacement
                         )
-                        .journeyThenDismiss
+                        .journey()
                     )
                     .onValue({ _ in
 

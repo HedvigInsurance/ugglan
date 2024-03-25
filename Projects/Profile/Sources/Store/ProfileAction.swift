@@ -6,7 +6,6 @@ import hGraphQL
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
     case openProfile
-    case openPayment
     case openEuroBonus
     case openTravelCertificate
     case openChangeEuroBonus

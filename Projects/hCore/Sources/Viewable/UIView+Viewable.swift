@@ -1,6 +1,6 @@
 import Flow
 import Foundation
-import UIKit
+import SwiftUI
 
 public let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 

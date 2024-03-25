@@ -104,7 +104,6 @@ public struct AppInfoView: View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
-
         return OpenEmailClientButton(
             options: EmailOptions(
                 recipient: "ios@hedvig.com",
@@ -158,22 +157,5 @@ struct AppInfoView_Previews: PreviewProvider {
                     )
                 )
             }
-    }
-}
-
-extension MenuChildAction {
-    static public var appInformation: MenuChildAction {
-        MenuChildAction(identifier: "app-information")
-    }
-}
-
-extension MenuChild {
-    public static var appInformation: MenuChild {
-        MenuChild(
-            title: L10n.aboutScreenTitle,
-            style: .default,
-            image: hCoreUIAssets.infoIcon.image,
-            action: .appInformation
-        )
     }
 }

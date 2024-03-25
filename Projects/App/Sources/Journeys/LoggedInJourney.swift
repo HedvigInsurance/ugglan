@@ -36,13 +36,13 @@ extension AppJourney {
                 case .openCrossSells:
                     CrossSellingScreen.journey { result in
                         if case .openCrossSellingWebUrl(let url) = result {
-                            AppJourney.webRedirect(url: url)
+                            AppJourney.urlHandledBySystem(url: url)
                         }
                     }
                 case let .startCoInsuredFlow(contractIds):
                     AppJourney.editCoInsured(configs: contractIds)
                 case let .goToQuickAction(quickAction):
-                    AppJourney.configureQuickAction(commonClaim: quickAction)
+                    AppJourney.configureQuickAction(quickAction: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
                 }
@@ -71,7 +71,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
-                AppJourney.webRedirect(url: url)
+                AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(action):
                 TerminationFlowJourney.start(for: action)
                     .onDismiss {
@@ -100,14 +100,23 @@ extension AppJourney {
             }
     }
 
+    fileprivate static var paymentTab: some JourneyPresentation {
+        PaymentsView().journey(schema: "")
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .payments
+                } else {
+                    return false
+                }
+            }
+    }
+
     fileprivate static var profileTab: some JourneyPresentation {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
         return
             ProfileView.journey { result in
                 switch result {
-                case .openPayment:
-                    PaymentsView().journey(schema: Bundle.main.urlScheme ?? "")
                 case .resetAppLanguage:
                     ContinueJourney()
                         .onPresent {
@@ -184,12 +193,16 @@ extension AppJourney {
                 }
             },
             {
+                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                    paymentTab
+                }
+            },
+            {
                 profileTab
             }
         )
         .sendActionImmediately(ContractStore.self, .fetch)
         .sendActionImmediately(ForeverStore.self, .fetch)
-        .sendActionImmediately(ClaimsStore.self, .fetchClaims)
         .syncTabIndex()
         .onAction(UgglanStore.self) { action in
             if action == .openChat {
@@ -199,7 +212,8 @@ extension AppJourney {
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
-            AnalyticsCoordinator().setUserId()
+            let analyticsService: AnalyticsService = Dependencies.shared.resolve()
+            analyticsService.fetchAndSetUserId()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 ApplicationContext.shared.$isLoggedIn.value = true
             }
@@ -269,7 +283,9 @@ extension JourneyPresentation {
         onAction(PaymentStore.self) { action in
             if case let .navigation(navigateTo) = action {
                 if case .openConnectPayments = navigateTo {
-                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                    DirectDebitSetup(setupType: .initial).journey()
+                } else if case let .openUrl(url) = navigateTo {
+                    AppJourney.urlHandledBySystem(url: url)
                 }
             }
         }
@@ -333,7 +349,7 @@ extension JourneyPresentation {
     public var configureTravelCertificateNavigation: some JourneyPresentation {
         onAction(TravelInsuranceStore.self) { action in
             if case .goToEditCoInsured = action {
-                AppJourney.configureQuickAction(commonClaim: .editCoInsured())
+                AppJourney.configureQuickAction(quickAction: .editCoInsured())
             }
         }
     }

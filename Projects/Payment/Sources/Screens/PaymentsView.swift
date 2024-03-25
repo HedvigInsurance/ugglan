@@ -10,7 +10,6 @@ public struct PaymentsView: View {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
-
     }
 
     public var body: some View {
@@ -47,9 +46,12 @@ public struct PaymentsView: View {
                 }
                 .padding(.vertical, 8)
             }
-            .hDisableScroll
             .hFormAttachToBottom {
                 bottomPart
+            }
+            .onPullToRefresh {
+                await store.sendAsync(.load)
+                await store.sendAsync(.fetchPaymentStatus)
             }
         }
     }
@@ -77,7 +79,7 @@ public struct PaymentsView: View {
                                         .foregroundColor(hTextColor.secondary)
                                 }
                                 .foregroundColor(.primary)
-                                hText(L10n.General.due(upcomingPayment.payment.date.displayDate))
+                                hText(upcomingPayment.payment.date.displayDate)
                                     .foregroundColor(hTextColor.secondary)
                             }
                         }
@@ -162,9 +164,9 @@ public struct PaymentsView: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.primary)
             hText(displayName)
+            Spacer()
         }
         .withCustomAccessory {
-            Spacer()
             hText(descriptor).foregroundColor(hTextColor.secondary)
         }
         .hWithoutHorizontalPadding
@@ -213,25 +215,21 @@ extension PaymentsView {
             rootView: self
         ) { action in
             if case let .navigation(navigateTo) = action {
-                if case .openConnectBankAccount = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial,
-                        urlScheme: schema
-                    )
-                    .journeyThenDismiss
-                } else if case .openHistory = navigateTo {
+                if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }
             }
         }
         .configureTitle(L10n.myPaymentTitle)
+        .configureTabBarItem(
+            title: L10n.tabPaymentsTitle,
+            image: hCoreUIAssets.paymentsTab.image,
+            selectedImage: hCoreUIAssets.paymentsTab.image
+        )
     }
 
     public func detentJourney(schema: String) -> some JourneyPresentation {
@@ -242,24 +240,12 @@ extension PaymentsView {
             options: .largeNavigationBar
         ) { action in
             if case let .navigation(navigateTo) = action {
-                if case .openConnectBankAccount = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    ConnectBankAccount(
-                        setupType: hasAlreadyConnected ? .replacement : .initial,
-                        urlScheme: schema
-                    )
-                    .journeyThenDismiss
-                } else if case .openConnectPayments = navigateTo {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                        .contains(store.state.paymentStatusData?.status ?? .active)
-                    PaymentSetup(setupType: hasAlreadyConnected ? .replacement : .initial).journeyThenDismiss
+                if case .openConnectPayments = navigateTo {
+                    DirectDebitSetup().journey()
                 } else if case .openHistory = navigateTo {
                     PaymentHistoryView.journey
                 } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetails.journey(with: details)
+                    PaymentDetailsView.journey(with: details)
                 } else if case .openDiscounts = navigateTo {
                     PaymentsDiscountsRootView().journey
                 }
@@ -267,17 +253,5 @@ extension PaymentsView {
         }
         .configureTitle(L10n.myPaymentTitle)
         .withJourneyDismissButton
-    }
-
-    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
-        let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
-        let message = L10n.referralSmsMessage(discount, url)
-        return HostingJourney(
-            rootView: ActivityViewController(activityItems: [
-                message
-            ]),
-            style: .activityView
-        )
     }
 }

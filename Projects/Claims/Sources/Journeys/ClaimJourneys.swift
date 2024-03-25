@@ -89,20 +89,32 @@ public class ClaimJourneys {
     private static func openDeflectStepScreen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let model = store.state.deflectStepModel
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(
-                model: model,
-                openChat: {
-                    store.send(.submitClaimOpenFreeTextChat)
+        GroupJourney {
+            if model?.id == .FlowClaimDeflectEirStep {
+                HostingJourney(
+                    SubmitClaimStore.self,
+                    rootView: SubmitClaimCarScreen(model: model)
+                ) {
+                    action in
+                    getScreen(for: action)
                 }
-            )
-        ) {
-            action in
-            if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
-                openInfoView(title: title, description: description)
             } else {
-                getScreen(for: action)
+                HostingJourney(
+                    SubmitClaimStore.self,
+                    rootView: SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            store.send(.submitClaimOpenFreeTextChat)
+                        }
+                    )
+                ) {
+                    action in
+                    if case let .navigationAction(action: .openInfoScreen(title, description)) = action {
+                        openInfoView(title: title, description: description)
+                    } else {
+                        getScreen(for: action)
+                    }
+                }
             }
         }
         .resetProgressToPreviousValueOnDismiss
@@ -202,55 +214,6 @@ public class ClaimJourneys {
         }
     }
 
-    static func openBrandPickerScreenCheckbox() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: CheckboxPickerScreen<ClaimFlowItemBrandOptionModel>(
-                items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.availableItemBrandOptions
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
-                }(),
-                preSelectedItems: { [] },
-                onSelected: { item in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    for i in item {
-                        if let item = i.0 {
-                            store.send(.setItemBrand(brand: item))
-                        }
-                    }
-                },
-                singleSelect: true
-            ),
-            style: .detented(.large),
-            options: [.largeNavigationBar]
-        ) {
-            action in
-            if case let .setItemBrand(brand) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
-                } else {
-                    PopJourney()
-                }
-            } else if case .navigationAction(.dismissScreen) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
-        }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case .setSingleItemModel(_) = action {
-                    pre.bag.dispose()
-                } else if case .navigationAction(.dismissScreen) = action {
-                    pre.bag.dispose()
-                }
-            }
-        )
-    }
-
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -274,12 +237,7 @@ public class ClaimJourneys {
         ) {
             action in
             if case let .setItemBrand(brand) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
-                } else {
-                    PopJourney()
-                }
+                openModelPickerScreen(brand: brand).configureTitle(L10n.claimsChooseModelTitle)
             } else if case .navigationAction(.dismissScreen) = action {
                 PopJourney()
             } else {
@@ -289,7 +247,7 @@ public class ClaimJourneys {
         .onAction(
             SubmitClaimStore.self,
             { action, pre in
-                if case .setSingleItemModel(_) = action {
+                if case .setItemModel(_) = action {
                     pre.bag.dispose()
                 } else if case .navigationAction(.dismissScreen) = action {
                     pre.bag.dispose()
@@ -298,31 +256,41 @@ public class ClaimJourneys {
         )
     }
 
-    static func openModelPickerScreen() -> some JourneyPresentation {
-        HostingJourney(
+    static func openModelPickerScreen(brand: ClaimFlowItemBrandOptionModel) -> some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let step = store.state.singleItemStep
+        let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
+        return HostingJourney(
             rootView: CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
+                    return step?.getListOfModels(for: brand.itemBrandId)?.compactMap({ ($0, $0.displayName) }) ?? []
 
                 }(),
-                preSelectedItems: { return [] },
-                onSelected: { item in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if let object = item.first?.0 {
-                        store.send(.setSingleItemModel(modelName: object))
+                preSelectedItems: {
+                    if let item = step?.getListOfModels()?.first(where: { $0.itemModelId == step?.selectedItemModel }) {
+                        return [item]
+                    }
+                    return []
+                },
+                onSelected: { [weak store] item in guard let store = store else { return }
+                    if item.first?.0 == nil {
+                        let customName = item.first?.1 ?? ""
+                        store.send(.setItemModel(model: .custom(brand: brand, name: customName)))
                     } else {
-                        let model = ClaimFlowItemModelOptionModel(customName: item.first?.1 ?? "")
-                        store.send(.setSingleItemModel(modelName: model))
+                        if let object = item.first?.0 {
+                            store.send(.setItemModel(model: .model(object)))
+                        }
                     }
                 },
-                onCancel: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                onCancel: { [weak store] in guard let store = store else { return }
                     store.send(.navigationAction(action: .dismissScreen))
                 },
                 singleSelect: true,
-                showDividers: true
-            ),
+                showDividers: true,
+                manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
+                manualBrandName: customName
+            )
+            .hIncludeManualInput,
             style: .detented(.large, modally: false),
             options: [.wantsGrabber]
         )
@@ -412,19 +380,7 @@ public class ClaimJourneys {
         ) {
             action in
             if case .navigationAction(.openBrandPicker) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let singleItemStep = store.state.singleItemStep
-                let brandsWithModels =
-                    singleItemStep?.availableItemBrandOptions
-                    .filter({
-                        singleItemStep?.shouldShowListOfModels(for: $0) ?? false
-                    }) ?? []
-
-                if !brandsWithModels.isEmpty {
-                    openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
-                } else {
-                    openBrandPickerScreenCheckbox().configureTitle(L10n.claimsChooseBrandTitle)
-                }
+                openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
             } else if case .navigationAction(.openPriceInput) = action {
                 openPriceInputScreen()
             } else {

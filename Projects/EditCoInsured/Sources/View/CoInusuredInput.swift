@@ -522,25 +522,17 @@ public class CoInusuredInputViewModel: ObservableObject {
                     self.nameFetchedFromSSN = true
                 }
             }
-
         } catch let exception {
-            if let exception = exception as? GraphQLError {
+            if let exception = exception as? EditCoInsuredError {
                 switch exception {
-                case .graphQLError:
+                case .missingSSN, .serviceError:
                     self.enterManually = true
                 case .otherError:
                     self.enterManually = false
                 }
             }
             withAnimation {
-                if let exception = exception as? GraphQLError {
-                    switch exception {
-                    case .graphQLError:
-                        self.SSNError = exception.localizedDescription
-                    case .otherError:
-                        self.SSNError = L10n.General.errorBody
-                    }
-                }
+                self.SSNError = exception.localizedDescription
             }
         }
         withAnimation {

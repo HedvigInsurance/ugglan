@@ -37,14 +37,17 @@ public struct SubmitClaimDeflectScreen: View {
                         )
                     }
                 } else {
+                    let title =
+                        model?.partners.count == 1 ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
+
                     VStack(spacing: 8) {
                         ForEach(Array((model?.partners ?? []).enumerated()), id: \.element) { index, partner in
                             ClaimContactCard(
                                 imageUrl: partner.imageUrl,
-                                label: model?.config?.cardText ?? "",
                                 url: partner.url ?? "",
-                                title: index == 0 ? model?.config?.cardTitle : nil,
-                                buttonText: model?.config?.buttonText ?? ""
+                                phoneNumber: partner.phoneNumber,
+                                title: index == 0 ? title : nil,
+                                model: model
                             )
                         }
                     }
@@ -83,8 +86,8 @@ extension SubmitClaimDeflectScreen {
     public static var journey: some JourneyPresentation {
         let model: FlowClaimDeflectStepModel? = {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let commonClaims = store.state.commonClaims
-            if let index = commonClaims.firstIndex(where: { $0.layout.emergency?.emergencyNumber != nil }) {
+            let quickActions = store.state.quickAction
+            if let sickAbroadQuickAction = quickActions.first(where: { $0.isSickAborad }) {
                 return FlowClaimDeflectStepModel(
                     id: .FlowClaimDeflectEmergencyStep,
                     partners: [
@@ -92,7 +95,7 @@ extension SubmitClaimDeflectScreen {
                             id: "",
                             imageUrl: "",
                             url: "",
-                            phoneNumber: commonClaims[index].layout.emergency?.emergencyNumber
+                            phoneNumber: sickAbroadQuickAction.layout?.emergency?.emergencyNumber
                         )
                     ],
                     isEmergencyStep: true

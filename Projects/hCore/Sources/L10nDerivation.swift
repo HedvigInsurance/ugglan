@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 public protocol TranslationArgumentable { var value: CVarArg { get } }
 

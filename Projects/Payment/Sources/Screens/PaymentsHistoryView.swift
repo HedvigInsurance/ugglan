@@ -2,7 +2,6 @@ import Apollo
 import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
@@ -122,7 +121,7 @@ extension PaymentHistoryView {
                 if case .goBack = navigateTo {
                     PopJourney()
                 } else if case let .openPaymentDetails(data) = navigateTo {
-                    PaymentDetails.journey(with: data)
+                    PaymentDetailsView.journey(with: data)
                 }
             }
         }

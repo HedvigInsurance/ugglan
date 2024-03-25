@@ -68,9 +68,9 @@ public struct PaymentData: Codable, Equatable {
 
     struct PaymentDetails: Codable, Equatable {
         typealias KeyValue = (key: String, value: String)
-        private let paymentMethod: String
-        private let account: String
-        private let bank: String
+        let paymentMethod: String
+        let account: String
+        let bank: String
 
         init(paymentMethod: String, account: String, bank: String) {
             self.paymentMethod = paymentMethod

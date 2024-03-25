@@ -1,19 +1,14 @@
 import Apollo
-import Flow
 import Home
 import Market
-import Payment
 import Presentation
 import SwiftUI
-import TravelCertificate
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
-    private let disposeBag = DisposeBag()
 
     public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -47,9 +42,6 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if Dependencies.featureFlags().isPaymentScreenEnabled {
-                        ProfileRow(row: .payment)
-                    }
                     if store.state.showTravelCertificate {
                         ProfileRow(row: .travelCertificate)
                     }
@@ -73,7 +65,6 @@ public struct ProfileView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    ConnectPaymentCardView()
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
                     hButton.LargeButton(type: .ghost) {
@@ -92,23 +83,13 @@ public struct ProfileView: View {
         .onAppear {
             store.send(.fetchProfileState)
         }
-        .introspectScrollView { scrollView in
-            let refreshControl = UIRefreshControl()
-            scrollView.refreshControl = refreshControl
-            disposeBag.dispose()
-            disposeBag += refreshControl.store(
-                store,
-                send: {
-                    ProfileAction.fetchProfileState
-                },
-                endOn: .fetchProfileStateCompleted
-            )
+        .onPullToRefresh {
+            await store.sendAsync(.fetchProfileState)
         }
     }
 }
 
 public enum ProfileResult {
-    case openPayment
     case resetAppLanguage
     case openChat
     case logout
@@ -127,8 +108,6 @@ extension ProfileView {
             if case .openProfile = action {
                 HostingJourney(rootView: MyInfoView())
                     .configureTitle(L10n.profileMyInfoRowTitle)
-            } else if case .openPayment = action {
-                resultJourney(.openPayment)
             } else if case .openAppInformation = action {
                 HostingJourney(rootView: AppInfoView())
                     .configureTitle(L10n.profileAppInfo)

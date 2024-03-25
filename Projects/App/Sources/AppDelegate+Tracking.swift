@@ -4,8 +4,9 @@ import DatadogLogs
 import DatadogRUM
 import DatadogTrace
 import Introspect
+import Presentation
+import Profile
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
@@ -30,7 +31,11 @@ extension AppDelegate {
             with: configuration,
             trackingConsent: .granted
         )
-
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        if let userId = store.state.memberDetails?.id {
+            let analyticsService: AnalyticsService = Dependencies.shared.resolve()
+            analyticsService.setWith(userId: userId)
+        }
         Logs.enable()
 
         RUM.enable(

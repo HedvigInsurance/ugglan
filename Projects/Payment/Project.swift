@@ -3,8 +3,8 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "Payment",
-    targets: Set([.framework, .tests, .example, .testing]),
-    projects: ["hCore", "hCoreUI", "Contracts"],
+    targets: Set([.framework]),
+    projects: ["hCore", "hCoreUI", "Contracts", "Forever"],
     dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
     sdks: [],
     includesGraphQL: true

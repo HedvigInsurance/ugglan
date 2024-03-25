@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 extension UIBarButtonItem {
     public var bounds: CGRect? {

@@ -2,8 +2,8 @@ import Apollo
 import ExampleUtil
 import Flow
 import Foundation
+import SwiftUI
 import TestingUtil
-import UIKit
 import hCoreUI
 import hGraphQL
 

@@ -50,7 +50,7 @@ extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
             case .termsAndConditions:
                 return .termsAndConditions
             }
-        case .unknown(let string):
+        case .unknown:
             return .unknown
         }
     }

@@ -1,5 +1,4 @@
 import Apollo
-import Flow
 import Foundation
 import Presentation
 import hCore
@@ -10,52 +9,30 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
     public override func effects(
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction
-    ) -> FiniteSignal<ContractAction>? {
+    ) async {
         switch action {
         case .fetchCrossSale:
-            return FiniteSignal { [unowned self] callback in
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let crossSells = try await self.fetchContractsService.getCrossSell()
-                        callback(.value(.setCrossSells(crossSells: crossSells)))
-                        callback(.end)
-                    } catch let error {
-                        self.setError(error.localizedDescription, for: .fetchCrossSell)
-                        callback(.end(error))
-                    }
-                }
-                return disposeBag
+            do {
+                let crossSells = try await self.fetchContractsService.getCrossSell()
+                send(.setCrossSells(crossSells: crossSells))
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchCrossSell)
             }
         case .fetchContracts:
-            return FiniteSignal { [unowned self] callback in
-                let disposeBag = DisposeBag()
-                Task {
-                    do {
-                        let data = try await self.fetchContractsService.getContracts()
-                        callback(.value(.setActiveContracts(contracts: data.activeContracts)))
-                        callback(.value(.setTerminatedContracts(contracts: data.termiantedContracts)))
-                        callback(.value(.setPendingContracts(contracts: data.pendingContracts)))
-                        callback(.value(.fetchCompleted))
-                        callback(.end)
-                    } catch let error {
-                        self.setError(error.localizedDescription, for: .fetchContracts)
-                        callback(.value(.fetchCompleted))
-                        callback(.end(error))
-                    }
-                }
-                return disposeBag
+            do {
+                let data = try await self.fetchContractsService.getContracts()
+                send(.setActiveContracts(contracts: data.activeContracts))
+                send(.setTerminatedContracts(contracts: data.termiantedContracts))
+                send(.setPendingContracts(contracts: data.pendingContracts))
+            } catch let error {
+                self.setError(error.localizedDescription, for: .fetchContracts)
             }
         case .fetch:
-            return [
-                .fetchCrossSale,
-                .fetchContracts,
-            ]
-            .emitEachThenEnd
+            send(.fetchCrossSale)
+            send(.fetchContracts)
         default:
             break
         }
-        return nil
     }
 
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {

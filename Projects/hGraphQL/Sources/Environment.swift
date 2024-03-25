@@ -1,5 +1,4 @@
 import Foundation
-import authlib
 
 public enum Environment: Hashable {
     case production
@@ -155,14 +154,6 @@ public enum Environment: Hashable {
         case .staging: return URL(string: "https://auth.dev.hedvigit.com")!
         case .production: return URL(string: "https://auth.prod.hedvigit.com")!
         case let .custom(_, _, _, _): return URL(string: "https://auth.dev.hedvigit.com")!
-        }
-    }
-
-    public var authEnvironment: AuthEnvironment {
-        switch self {
-        case .staging: return .staging
-        case .production: return .production
-        case .custom(_, _, _, _): return .staging
         }
     }
 }

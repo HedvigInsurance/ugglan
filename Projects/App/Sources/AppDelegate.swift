@@ -18,7 +18,6 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import UIKit
 import UserNotifications
 import hCore
 import hCoreUI
@@ -50,23 +49,20 @@ import hGraphQL
         globalPresentableStoreContainer = PresentableStoreContainer()
 
         self.setupSession()
-
-        self.bag += ApolloClient.initAndRegisterClient()
-            .onValue { _ in
-                self.bag += self.window.present(AppJourney.main)
-                UIView.transition(
-                    with: self.window,
-                    duration: 0.3,
-                    options: .transitionCrossDissolve,
-                    animations: {},
-                    completion: { _ in }
-                )
-            }
+        self.bag += self.window.present(AppJourney.main)
+        UIView.transition(
+            with: self.window,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {},
+            completion: { _ in }
+        )
     }
 
     func logout() {
         bag.dispose()
-
+        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        ugglanStore.send(.setIsDemoMode(to: false))
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
         ApplicationContext.shared.$isLoggedIn.value = false
@@ -175,15 +171,15 @@ import hGraphQL
     }
 
     func setupSession() {
+        ApolloClient.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
         bag += Localization.Locale.$currentLocale
-            .onValue { [weak self] locale in
+            .onValue { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-                self?.bag += ApolloClient.initAndRegisterClient()
             }
 
         ApolloClient.bundle = Bundle.main
@@ -200,6 +196,10 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
+        TokenRefresher.shared.onRefresh = { token in
+            let authService: AuthentificationService = Dependencies.shared.resolve()
+            try await authService.exchange(refreshToken: token)
+        }
         let config = Logger.Configuration(
             service: "ios",
             networkInfoEnabled: true,
@@ -230,7 +230,6 @@ import hGraphQL
                     Launch.shared.completeAnimationCallbacker.callAll()
 
                     UIApplication.shared.appDelegate.logout()
-
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
@@ -276,114 +275,18 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-        setupExperiments()
 
-        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
-            let store: UgglanStore = globalPresentableStoreContainer.get()
-            TokenRefresher.shared.isDemoMode = value
-            store.send(.setIsDemoMode(to: value))
-        }
         let store: UgglanStore = globalPresentableStoreContainer.get()
-        ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
-        TokenRefresher.shared.isDemoMode = store.state.isDemoMode
-
+        setupExperiments()
         observeNotificationsSettings()
         return true
     }
 
     private func setupExperiments() {
-        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-            .atValue { _ in
-                self.setupFeatureFlags(onComplete: { success in
-                    DispatchQueue.main.async {
-                        self.bag += self.window.present(AppJourney.main)
-                    }
-                })
+        self.setupFeatureFlags(onComplete: { success in
+            DispatchQueue.main.async {
+                self.bag += self.window.present(AppJourney.main)
             }
-    }
-}
-
-extension ApolloClient {
-    public static func initAndRegisterClient() -> Future<Void> {
-        Self.initClients()
-            .onValue { hApollo in
-                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-                let paymentService = hPaymentServiceOctopus()
-                let hForeverCodeService = hForeverCodeServiceOctopus()
-                let hCampaignsService = hCampaingsServiceOctopus()
-                let networkClient = NetworkClient()
-                let messagesClient = FetchMessagesClientOctopus()
-                let sendMessage = SendMessagesClientOctopus()
-                let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
-                let moveFlowService = MoveFlowServiceOctopus()
-                let foreverService = ForeverServiceOctopus()
-                let profileService = ProfileServiceOctopus()
-                let editCoInsuredService = EditCoInsuredServiceOctopus()
-                let homeService = HomeServiceOctopus()
-                let terminateContractsService = TerminateContractsOctopus()
-                Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
-                Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
-                let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
-                Dependencies.shared.add(module: Module { hApollo.octopus })
-                Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
-                Dependencies.shared.add(
-                    module: Module { () -> TravelInsuranceClient in TravelInsuranceClientOctopus() }
-                )
-                Dependencies.shared.add(
-                    module: Module { () -> SubmitClaimService in SubmitClaimServiceOctopus() }
-                )
-
-                switch Environment.current {
-                case .staging:
-                    let hFetchClaimService = FetchClaimServiceOctopus()
-                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
-                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
-                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
-                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
-                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
-                    Dependencies.shared.add(
-                        module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
-                    )
-                    Dependencies.shared.add(
-                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
-                    )
-                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
-                    Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
-                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
-                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
-                    Dependencies.shared.add(module: Module { () -> HomeService in homeService })
-                    Dependencies.shared.add(
-                        module: Module { () -> TerminateContractsService in terminateContractsService }
-                    )
-                case .production, .custom:
-                    let hFetchClaimService = FetchClaimServiceOctopus()
-                    Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
-                    Dependencies.shared.add(module: Module { () -> AdyenService in networkClient })
-                    Dependencies.shared.add(module: Module { () -> hPaymentService in paymentService })
-                    Dependencies.shared.add(module: Module { () -> hForeverCodeService in hForeverCodeService })
-                    Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsService })
-                    Dependencies.shared.add(module: Module { () -> hFetchClaimService in hFetchClaimService })
-                    Dependencies.shared.add(module: Module { () -> hClaimFileUploadService in networkClient })
-                    Dependencies.shared.add(
-                        module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService }
-                    )
-                    Dependencies.shared.add(
-                        module: Module { () -> FetchContractsService in FetchContractsServiceOctopus() }
-                    )
-                    Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
-                    Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
-                    Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
-                    Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
-                    Dependencies.shared.add(module: Module { () -> HomeService in homeService })
-                    Dependencies.shared.add(
-                        module: Module { () -> TerminateContractsService in terminateContractsService }
-                    )
-                }
-            }
-            .toVoid()
+        })
     }
 }

@@ -24,16 +24,16 @@ extension View {
 }
 
 struct PriceSectionView: View {
-    @State var netAmount: MonetaryAmount
+    @State var monthlyDiscount: MonetaryAmount
     let didPressInfo: () -> Void
 
-    @State private var netAmountAnimate: MonetaryAmount = .init(amount: 0, currency: "")
+    @State private var monthlyDiscountAnimate: MonetaryAmount = .init(amount: 0, currency: "")
 
     var body: some View {
         VStack(spacing: 0) {
-            hText(L10n.foreverTabMontlyCostLabel)
+            hText(L10n.foreverTabMonthlyDiscount)
             HStack(spacing: 4) {
-                hText(netAmountAnimate.formattedAmount + "/" + L10n.monthAbbreviationLabel)
+                hText(monthlyDiscountAnimate.negative.formattedAmount + "/" + L10n.monthAbbreviationLabel)
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
                     .frame(width: 16, height: 16)
@@ -44,9 +44,9 @@ struct PriceSectionView: View {
             .foregroundColor(hTextColor.secondary)
         }
         .onAppear {
-            netAmount = .init(amount: netAmount.amount, currency: netAmount.currency)
+            monthlyDiscount = .init(amount: monthlyDiscount.amount, currency: monthlyDiscount.currency)
             withAnimation(Animation.easeIn(duration: 0.8).delay(0.7)) {
-                netAmountAnimate = netAmount
+                monthlyDiscountAnimate = monthlyDiscount
             }
         }
     }

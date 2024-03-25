@@ -1,6 +1,6 @@
 import Form
 import Foundation
-import UIKit
+import SwiftUI
 
 extension String {
     // applies a text style to a subset of a string

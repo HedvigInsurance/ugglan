@@ -3,7 +3,7 @@ import Contacts
 import Foundation
 import Home
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
@@ -61,6 +61,10 @@ extension AppJourney {
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         honestyPledge(from: origin)
+            .onDismiss {
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimsStore.send(.fetchClaims)
+            }
     }
 
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
@@ -85,26 +89,6 @@ extension AppJourney {
                 }
             } else if case .dissmissNewClaimFlow = action {
                 DismissJourney()
-            }
-        }
-    }
-}
-
-extension AppJourney {
-    static func notificationJourney<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        Journey(NotificationLoader(), style: .detented(.large, modally: false)) { authorization in
-            switch authorization {
-            case .notDetermined:
-                Journey(
-                    ClaimsAskForPushnotifications(),
-                    style: .detented(.large, modally: false)
-                ) { _ in
-                    next()
-                }
-            default:
-                next()
             }
         }
     }

@@ -1,95 +1,90 @@
 import Apollo
+import Combine
 import Flow
 import Foundation
 import Presentation
 import SafariServices
-import UIKit
+import SwiftUI
 import WebKit
 import hCore
+import hCoreUI
 import hGraphQL
 
-struct DirectDebitSetup {
+private class DirectDebitWebview: UIView {
+    @Inject var paymentService: hPaymentService
     @PresentableStore var paymentStore: PaymentStore
-    @Inject var octopus: hOctopus
+    private let resultSubject = PassthroughSubject<URL?, Never>()
+    var cancellables = Set<AnyCancellable>()
+    let setupType: SetupType
+    let vc = UIViewController()
+    var webView = WKWebView()
+    var webViewDelgate = WebViewDelegate(webView: .init())
+    @Binding var showErrorAlert: Bool
 
-    let setupType: PaymentSetup.SetupType
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-    private func makeDismissButton() -> UIBarButtonItem {
+    init(
+        setupType: SetupType,
+        showErrorAlert: Binding<Bool>
+    ) {
+        self.setupType = setupType
+        self._showErrorAlert = showErrorAlert
+        super.init(frame: .zero)
 
-        switch setupType {
-        case .postOnboarding:
-            return UIBarButtonItem(
-                title: L10n.PayInIframePostSign.skipButton,
-                style: UIColor.brandStyle(.navigationButton)
-            )
-        default:
-            return UIBarButtonItem(
-                title: L10n.PayInIframeInApp.cancelButton,
-                style: UIColor.brandStyle(.navigationButton)
-            )
+        presentWebView()
+        presentActivityIndicator()
+        retryInBrowserFailedToLoad()
+        checkForResult()
+
+        Task {
+            await startRegistration()
+        }
+
+        self.addSubview(vc.view)
+        vc.view.snp.makeConstraints { make in
+            make.leading.trailing.bottom.top.equalToSuperview()
         }
     }
 
-    init(setupType: PaymentSetup.SetupType = .initial) { self.setupType = setupType }
-}
-
-extension DirectDebitSetup: Presentable {
-    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
-        let bag = DisposeBag()
-        let viewController = UIViewController()
-        viewController.hidesBottomBarWhenPushed = true
-
-        viewController.isModalInPresentation = true
-
-        switch setupType {
-        case .replacement: viewController.title = L10n.PayInIframeInApp.connectPayment
-        case .postOnboarding, .initial, .preOnboarding: viewController.title = L10n.PayInIframePostSign.title
-        }
-
-        let dismissButton = makeDismissButton()
-
+    private func presentWebView() {
         let userContentController = WKUserContentController()
-
         let webViewConfiguration = WKWebViewConfiguration()
         webViewConfiguration.userContentController = userContentController
         webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        webViewConfiguration.addOpenBankIDBehaviour(viewController)
+        webViewConfiguration.addOpenBankIDBehaviour(vc)
 
-        let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
+        webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
         webView.backgroundColor = .brand(.secondaryBackground())
         webView.isOpaque = false
 
-        bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
-            if navigationAction.targetFrame == nil {
-                if let url = navigationAction.request.url {
-                    viewController.present(
-                        SFSafariViewController(url: url),
-                        animated: true,
-                        completion: nil
-                    )
+        webViewDelgate = WebViewDelegate(webView: webView)
+        webViewDelgate.actionPublished
+            .sink { _ in
+            } receiveValue: { [weak self] navigationAction in
+                if navigationAction.targetFrame == nil {
+                    if let url = navigationAction.request.url {
+                        self?.vc
+                            .present(
+                                SFSafariViewController(url: url),
+                                animated: true,
+                                completion: nil
+                            )
+                    }
                 }
             }
-
-            return nil
-        }
+            .store(in: &cancellables)
 
         userContentController.add(
             TrustlyWKScriptOpenURLScheme(webView: webView),
             name: TrustlyWKScriptOpenURLScheme.NAME
         )
 
-        viewController.view = webView
+        vc.view = webView
+    }
 
-        bag += webView.didReceiveAuthenticationChallenge.set { _, challenge in
-            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-                let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
-
-                return (.useCredential, cred)
-            }
-
-            return (.performDefaultHandling, nil)
-        }
-
+    private func presentActivityIndicator() {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
         activityIndicator.color = .brand(.primaryText())
@@ -101,190 +96,271 @@ extension DirectDebitSetup: Presentable {
         activityIndicator.snp.makeConstraints { make in make.edges.equalToSuperview()
             make.size.equalToSuperview()
         }
-        let urlSignal = ReadWriteSignal<URL?>(nil)
-        bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
-            if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
-        }
-        let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
-        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
-        func presentAlert() {
-            let alert = Alert(
-                title: L10n.generalError,
-                message: L10n.somethingWentWrong,
-                tintColor: nil,
-                actions: [
-                    Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
-                        true
-                    },
-                    Alert.Action(
-                        title: L10n.alertCancel,
-                        style: UIAlertAction.Style.cancel
-                    ) { false },
-                ]
-            )
-            bag += viewController.present(alert)
-                .onValue { shouldRetry in
-                    if shouldRetry {
-                        startRegistration()
-                    } else {
-                        shouldDismissViewSignal.value = true
-                    }
-                }
 
-        }
-        func startRegistration() {
-            viewController.view = webView
-            viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-            let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
-            bag += octopus.client.perform(mutation: mutation)
-                .onValue({ data in
-                    if let url = URL(string: data.registerDirectDebit2.url) {
-                        let request = URLRequest(
-                            url: url,
-                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-                            timeoutInterval: 10
-                        )
-                        urlSignal.value = url
-                        webView.load(request)
-                    } else {
-                        presentAlert()
-                    }
-                })
-                .onError({ error in
-                    presentAlert()
-                })
-        }
+        webViewDelgate.isLoading
+            .sink { _ in
+            } receiveValue: { loading in
+                if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
+            }
+            .store(in: &cancellables)
 
-        bag += combineLatest(Signal(after: 5), webView.isLoadingSignal, urlSignal.future.resultSignal)
-            .onValue { _, isLoading, url in
+        webViewDelgate.isLoading
+            .sink { _ in
+            } receiveValue: { loading in
+                if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func retryInBrowserFailedToLoad() {
+        let didFailToLoadWebViewSignal = CurrentValueSubject<Bool, Never>(false)
+        let shouldDismissViewSignal = CurrentValueSubject<Bool, Never>(false)
+
+        let publisherDelay = Timer.TimerPublisher(interval: 5.0, runLoop: .main, mode: .default).autoconnect()
+        Publishers.CombineLatest3(publisherDelay, webViewDelgate.isLoading, resultSubject)
+            .sink { _ in
+            } receiveValue: { [weak self] _, isLoading, URL in
+                publisherDelay.upstream.connect().cancel()
                 if isLoading {
-                    didFailToLoadWebViewSignal.value = true
-                    if let url = url.value, let urlToOpen = url {
-                        UIApplication.shared.open(urlToOpen)
-                        didFailToLoadWebViewSignal.value = true
+                    didFailToLoadWebViewSignal.send(true)
+                    if let url = URL {
+                        UIApplication.shared.open(url)
+                        didFailToLoadWebViewSignal.send(true)
                     } else {
-                        presentAlert()
+                        self?.showErrorAlert = true
                     }
-
                 }
             }
+            .store(in: &cancellables)
 
-        bag += combineLatest(
-            didFailToLoadWebViewSignal.future.resultSignal,
-            NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
+        Publishers.CombineLatest(
+            didFailToLoadWebViewSignal,
+            NotificationCenter.Publisher(center: .default, name: UIApplication.willEnterForegroundNotification)
         )
-        .onValue { (didFailToLoad, _) in
-            if didFailToLoad.value == true {
-                shouldDismissViewSignal.value = true
+        .sink { _ in
+        } receiveValue: { didFail, _ in
+            if didFail {
+                shouldDismissViewSignal.send(true)
             }
         }
-        startRegistration()
-        return (
-            viewController,
-            FiniteSignal { callback in
-                bag +=
-                    shouldDismissViewSignal
-                    .filter(predicate: { $0 })
-                    .onValue({ _ in
-                        paymentStore.send(.fetchPaymentStatus)
-                        callback(.value(true))
-                    })
+        .store(in: &cancellables)
 
-                bag += dismissButton.onValue {
-                    var alert: Alert<Bool>
+        shouldDismissViewSignal
+            .filter({ $0 })
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] value in
+                self?.paymentStore.send(.fetchPaymentStatus)
+                self?.paymentStore.send(.dismissPayment)
+            }
+            .store(in: &cancellables)
+    }
 
-                    switch self.setupType {
-                    case .initial, .preOnboarding:
-                        alert = Alert<Bool>(
-                            title: L10n.PayInIframeInAppCancelAlert.title,
-                            message: L10n.PayInIframeInAppCancelAlert.body,
-                            actions: [
-                                Alert.Action(
-                                    title: L10n.PayInIframeInAppCancelAlert
-                                        .proceedButton
-                                ) { true },
-                                Alert.Action(
-                                    title: L10n.PayInIframeInAppCancelAlert
-                                        .dismissButton
-                                ) { false },
-                            ]
-                        )
-                    case .postOnboarding:
-                        alert = Alert<Bool>(
-                            title: L10n.PayInIframePostSignSkipAlert.title,
-                            message: L10n.PayInIframePostSignSkipAlertDirectDebit.body,
-                            actions: [
-                                Alert.Action(
-                                    title: L10n.PayInIframePostSignSkipAlert
-                                        .proceedButton
-                                ) { true },
-                                Alert.Action(
-                                    title: L10n.PayInIframePostSignSkipAlert
-                                        .dismissButton
-                                ) { false },
-                            ]
-                        )
-                    case .replacement:
-                        callback(.value(true))
-                        return
-                    }
-                    bag += viewController.present(alert)
-                        .onValue { shouldDismiss in
-                            if shouldDismiss {
-                                callback(.value(true))
-                            }
-                        }
-
+    private func checkForResult() {
+        webViewDelgate.decidePolicyForNavigationAction
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] success in
+                guard let self = self else {
+                    return
                 }
+                self.showResultScreen(
+                    type: success
+                        ? .success
+                        : .failure
+                )
+            }
+            .store(in: &cancellables)
+    }
 
-                func showResultScreen(type: DirectDebitResultType) {
-                    viewController.navigationItem.setLeftBarButtonItems(nil, animated: true)
+    private func showResultScreen(type: DirectDebitResultType) {
+        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+            vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
-                    let containerView = UIView()
-                    containerView.backgroundColor = .brand(.secondaryBackground())
-
-                    let directDebitResult = DirectDebitResult(type: type)
-
-                    switch type {
-                    case .success:
-                        paymentStore.send(.fetchPaymentStatus)
-                    case .failure:
-                        break
-                    }
-
-                    bag +=
-                        containerView.add(directDebitResult) { view in
-                            view.snp.makeConstraints { make in make.size.equalToSuperview()
-                                make.edges.equalToSuperview()
-                            }
-                        }
-                        .onValue { success in
-                            paymentStore.send(.fetchPaymentStatus)
-                            callback(.value(success))
-                        }
-                        .onError { _ in
-                            bag += Signal(after: 0.5).onValue { _ in startRegistration() }
-                        }
-
-                    viewController.view = containerView
+            let directDebitResult = DirectDebitResult(
+                type: type,
+                retry: {
+                    self.checkForResult()
                 }
-                bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
-                    guard let url = navigationAction.request.url else { return .allow }
-                    let urlString = String(describing: url)
+            )
 
-                    if urlString.contains("fail") || urlString.contains("success") {
-                        showResultScreen(
-                            type: urlString.contains("success")
-                                ? .success(setupType: self.setupType)
-                                : .failure(setupType: self.setupType)
-                        )
-                        return .cancel
+            switch type {
+            case .success:
+                paymentStore.send(.fetchPaymentStatus)
+            case .failure:
+                break
+            }
+            let debitResultHostingView = UIHostingController(rootView: directDebitResult)
+            let backgrondView = UIView()
+            let schema = UITraitCollection.current.userInterfaceStyle == .light ? ColorScheme.light : .dark
+            backgrondView.backgroundColor = hBackgroundColor.primary.colorFor(schema, .base).color.uiColor()
+            self.addSubview(backgrondView)
+            self.addSubview(debitResultHostingView.view)
+            backgrondView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalToSuperview().inset(-100)
+                make.top.equalToSuperview().inset(-100)
+            }
+
+            debitResultHostingView.view.snp.makeConstraints { make in
+                make.trailing.leading.top.bottom.equalToSuperview()
+            }
+
+            UIView.transition(
+                with: self,
+                duration: 0.3,
+                options: .transitionCrossDissolve,
+                animations: {}
+            )
+        }
+    }
+
+    private func startRegistration() async {
+        vc.view = webView
+        Task {
+            do {
+                let url = try await paymentService.getConnectPaymentUrl()
+                let request = URLRequest(
+                    url: url,
+                    cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                    timeoutInterval: 10
+                )
+                resultSubject.send(url)
+                webView.load(request)
+            } catch {
+                self.showErrorAlert = true
+            }
+        }
+    }
+}
+
+struct DirectDebitSetupRepresentable: UIViewRepresentable {
+    let setupType: SetupType
+    @Binding var showErrorAlert: Bool
+
+    public func makeUIView(context: Context) -> some UIView {
+        return DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert)
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+}
+
+public struct DirectDebitSetup: View {
+    @PresentableStore var paymentStore: PaymentStore
+    @State var showCancelAlert: Bool = false
+    @State var showErrorAlert: Bool = false
+
+    let setupType: SetupType
+
+    public init(
+        setupType: SetupType? = nil
+    ) {
+        let finalSetupType: SetupType = {
+            if let setupType {
+                return setupType
+            }
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
+                .contains(store.state.paymentStatusData?.status ?? .active)
+            return hasAlreadyConnected ? .replacement : .initial
+        }()
+
+        self.setupType = finalSetupType
+    }
+
+    public var body: some View {
+        Group {
+            if showCancelAlert {
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                    .alert(isPresented: $showCancelAlert) {
+                        cancelAlert()
                     }
+            } else {
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                    .alert(isPresented: $showErrorAlert) {
+                        errorAlert()
+                    }
+            }
+        }
+        .toolbar {
+            ToolbarItem(
+                placement: .topBarLeading
+            ) {
+                dismissButton
+            }
+        }
+    }
 
-                    return .allow
-                }
-                return DelayedDisposer(bag, delay: 1)
+    private var dismissButton: some View {
+        hButton.MediumButton(type: .ghost) {
+            showCancelAlert = true
+        } content: {
+            hText(setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton)
+        }
+    }
+
+    private func cancelAlert() -> SwiftUI.Alert {
+        return Alert(
+            title: Text(L10n.PayInIframeInAppCancelAlert.title),
+            message: Text(L10n.PayInIframeInAppCancelAlert.body),
+            primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
+                paymentStore.send(.dismissPayment)
+            },
+            secondaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.dismissButton))
+        )
+    }
+
+    private func errorAlert() -> SwiftUI.Alert {
+        return Alert(
+            title: Text(L10n.generalError),
+            message: Text(L10n.somethingWentWrong),
+            primaryButton: .default(Text(L10n.generalRetry)),
+            secondaryButton: .cancel(Text(L10n.alertCancel)) {
+                paymentStore.send(.dismissPayment)
             }
         )
+    }
+}
+
+public enum SetupType: Equatable {
+    case initial
+    case preOnboarding(monthlyNetCost: MonetaryAmount?)
+    case replacement, postOnboarding
+}
+
+extension DirectDebitSetup {
+    @JourneyBuilder
+    public func journey() -> some JourneyPresentation {
+        let featureFlags: FeatureFlags = Dependencies.shared.resolve()
+        switch featureFlags.paymentType {
+        case .adyen:
+            ContinueJourney()
+                .onPresent {
+                    Task {
+                        let paymentServcice: AdyenService = Dependencies.shared.resolve()
+                        do {
+                            let url = try await paymentServcice.getAdyenUrl()
+                            paymentStore.send(.navigation(to: .openUrl(url: url)))
+                        } catch {
+                            //we are not so concern about this
+                        }
+                    }
+                }
+        case .trustly:
+            HostingJourney(
+                PaymentStore.self,
+                rootView: self,
+                style: .detented(.large),
+                options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
+            ) { action in
+                if case .dismissPayment = action {
+                    PopJourney()
+                }
+            }
+            .configureTitle(
+                self.setupType == .replacement ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+            )
+            .enableModalInPresentation
+        }
+
     }
 }

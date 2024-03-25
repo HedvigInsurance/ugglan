@@ -27,9 +27,9 @@ public enum DeepLink: String, Codable {
         case .profile:
             return L10n.tabProfileTitle
         case .insurances:
-            return L10n.InsurancesTab.title
+            return L10n.tabInsurancesTitle
         case .home:
-            return L10n.HomeTab.title
+            return L10n.tabHomeTitle
         case .sasEuroBonus:
             return L10n.SasIntegration.title
         case .payments:

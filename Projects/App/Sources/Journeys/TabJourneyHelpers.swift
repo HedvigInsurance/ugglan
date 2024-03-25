@@ -5,7 +5,7 @@ import Form
 import Foundation
 import Home
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -14,8 +14,6 @@ extension JourneyPresentation {
         return addConfiguration { presenter in
             let store: UgglanStore = self.presentable.get()
             let tabBarController = presenter.matter
-
-            tabBarController.selectedIndex = store.state.selectedTabIndex
 
             presenter.bag += tabBarController.signal(for: \.selectedViewController)
                 .onValue { _ in

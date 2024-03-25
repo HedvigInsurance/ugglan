@@ -14,7 +14,7 @@ import hGraphQL
 public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
-
+    @Inject var featureFlags: FeatureFlags
     var claimsContent: Claims
     var memberId: String
 
@@ -31,7 +31,7 @@ extension HomeView {
     func fetch() {
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
-        store.send(.fetchCommonClaims)
+        store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
         store.send(.fetchClaims)
     }
@@ -47,10 +47,8 @@ extension HomeView {
                 case .newOffer:
                     store.send(.showNewOffer)
                 case .firstVet:
-                    if let claim = store.state.commonClaims.first(where: {
-                        $0.id == "30" || $0.id == "31" || $0.id == "32"
-                    }) {
-                        store.send(.openCommonClaimDetail(commonClaim: claim, fromOtherServices: false))
+                    if let vetQuickAction = store.state.quickAction.vetQuickAction {
+                        store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
                     }
                 case .chat, .chatNotification:
                     store.send(.openFreeTextChat(from: nil))
@@ -69,25 +67,19 @@ extension HomeView {
             fetch()
         }
     }
+    @ViewBuilder
     private var centralContent: some View {
-        PresentableStoreLens(
-            HomeStore.self,
-            getter: { state in
-                state.memberContractState
-            }
-        ) { memberContractState in
-            switch memberContractState {
-            case .active:
-                ActiveSectionView(
-                    claimsContent: claimsContent
-                )
-            case .future:
-                hText(L10n.hedvigNameText, style: .title)
-            case .terminated:
-                TerminatedSectionView(claimsContent: claimsContent)
-            case .loading:
-                EmptyView()
-            }
+        switch vm.memberContractState {
+        case .active:
+            ActiveSectionView(
+                claimsContent: claimsContent
+            )
+        case .future:
+            hText(L10n.hedvigNameText, style: .title)
+        case .terminated:
+            TerminatedSectionView(claimsContent: claimsContent)
+        case .loading:
+            EmptyView()
         }
     }
 
@@ -128,11 +120,14 @@ extension HomeView {
         .padding(.bottom, 16)
     }
 
+    @ViewBuilder
     private var startAClaimButton: some View {
-        hButton.LargeButton(type: .primary) {
-            store.send(.startClaim)
-        } content: {
-            hText(L10n.HomeTab.claimButtonText)
+        if featureFlags.isSubmitClaimEnabled {
+            hButton.LargeButton(type: .primary) {
+                store.send(.startClaim)
+            } content: {
+                hText(L10n.HomeTab.claimButtonText)
+            }
         }
     }
 
@@ -225,11 +220,11 @@ extension HomeView {
                 resultJourney(.openFreeTextChat(topic: type))
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
-            } else if case let .openCommonClaimDetail(claim, fromOtherService) = action {
+            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
                 if !fromOtherService {
-                    CommonClaimDetail.journey(claim: claim)
+                    QuickActionDetailScreen.journey(quickAction: quickAction)
                         .withJourneyDismissButton
-                        .configureTitle(claim.displayTitle)
+                        .configureTitle(quickAction.displayTitle)
                 }
             } else if case let .openDocument(contractURL) = action {
                 Journey(
@@ -250,7 +245,7 @@ extension HomeView {
             }
         }
         .configureTabBarItem(
-            title: L10n.HomeTab.title,
+            title: L10n.tabHomeTitle,
             image: hCoreUIAssets.homeTab.image,
             selectedImage: hCoreUIAssets.homeTabActive.image
         )
@@ -263,7 +258,7 @@ public enum HomeResult {
     case startNewClaim
     case openCrossSells
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
-    case goToQuickAction(quickAction: CommonClaim)
+    case goToQuickAction(quickAction: QuickAction)
     case goToURL(url: URL)
 }
 

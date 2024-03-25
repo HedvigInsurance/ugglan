@@ -28,21 +28,24 @@ public struct ForeverView: View {
             ScrollViewReader { value in
                 hForm {
                     VStack(spacing: 0) {
-                        HeaderView { scrollTo = 2 }.id(0)
-                            .padding(.bottom, 16)
-                            .background(
-                                GeometryReader(content: { proxy in
-                                    Color.clear
-                                        .onAppear {
-                                            print(proxy.size)
-                                            headerHeight = proxy.size.height
-                                        }
-                                        .onChange(of: proxy.size) { size in
-                                            print(proxy.size)
-                                            headerHeight = size.height
-                                        }
-                                })
-                            )
+                        HeaderView {
+                            scrollTo = 2
+                        }
+                        .id(0)
+                        .padding(.bottom, 16)
+                        .background(
+                            GeometryReader(content: { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        print(proxy.size)
+                                        headerHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        print(proxy.size)
+                                        headerHeight = size.height
+                                    }
+                            })
+                        )
                         Spacing(height: Float(spacing))
                         DiscountCodeSectionView().id(1)
                             .background(
@@ -71,7 +74,7 @@ public struct ForeverView: View {
                 }
             }
             .onAppear {
-                //                store.send(.fetch)
+                store.send(.fetch)
             }
             .navigationBarItems(
                 trailing:
@@ -91,6 +94,9 @@ public struct ForeverView: View {
                         }
                     }
             )
+            .onPullToRefresh {
+                await store.sendAsync(.fetch)
+            }
         }
         .background(
             GeometryReader(content: { proxy in

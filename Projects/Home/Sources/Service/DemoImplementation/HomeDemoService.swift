@@ -1,20 +1,22 @@
 import Foundation
 
-public class HomeDemoService: HomeService {
+public class HomeServiceDemo: HomeService {
+
+    public init() {}
+
     public func getImportantMessages() async throws -> [ImportantMessage] {
-        return [ImportantMessage(id: "", message: "", link: "")]
+        return []
     }
 
     public func getMemberState() async throws -> MemberState {
-        let contract = Contract(upcomingRenewal: .init(renewalDate: "", draftCertificateUrl: ""), displayName: "")
         return .init(
-            contracts: [contract],
+            contracts: [],
             contractState: MemberContractState.active,
             futureState: FutureStatus.none
         )
     }
 
-    public func getCommonClaims() async throws -> [CommonClaim] {
+    public func getQuickActions() async throws -> [QuickAction] {
         return [.editCoInsured(), .moving()]
     }
 

@@ -32,10 +32,10 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
     case setPurchasePrice(priceOfPurchase: Double?)
-    case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
     case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
+    case setItemModel(model: SelectedModel)
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
     case setProgress(progress: Float?)
@@ -146,27 +146,27 @@ extension ClaimsStepModelAction {
         switch self {
         case .setPhoneNumber(let model):
             return .openPhoneNumberScreen(model: model)
-        case .setDateOfOccurrencePlusLocation(let model):
+        case .setDateOfOccurrencePlusLocation:
             return .openDateOfOccurrencePlusLocationScreen(options: [.date, .location])
-        case .setDateOfOccurence(let model):
+        case .setDateOfOccurence:
             return .openDateOfOccurrencePlusLocationScreen(options: [.date])
-        case .setLocation(let model):
+        case .setLocation:
             return .openDateOfOccurrencePlusLocationScreen(options: [.location])
-        case .setSingleItem(let model):
+        case .setSingleItem:
             return .openSingleItemScreen
-        case .setSummaryStep(let model):
+        case .setSummaryStep:
             return .openSummaryScreen
-        case .setSingleItemCheckoutStep(let model):
+        case .setSingleItemCheckoutStep:
             return .openCheckoutNoRepairScreen
-        case .setSuccessStep(let model):
+        case .setSuccessStep:
             return .openSuccessScreen
-        case .setFailedStep(let model):
+        case .setFailedStep:
             return .openFailureSceen
-        case .setAudioStep(let model):
+        case .setAudioStep:
             return .openAudioRecordingScreen
-        case .setContractSelectStep(let model):
+        case .setContractSelectStep:
             return .openSelectContractScreen
-        case .setConfirmDeflectEmergencyStepModel(let model):
+        case .setConfirmDeflectEmergencyStepModel:
             return .openConfirmEmergencyScreen
         case .setDeflectModel(let model):
             switch model.id {
@@ -175,7 +175,7 @@ extension ClaimsStepModelAction {
             default:
                 return .openDeflectScreen
             }
-        case .setFileUploadStep(let model):
+        case .setFileUploadStep:
             return .openFileUploadScreen
         }
     }

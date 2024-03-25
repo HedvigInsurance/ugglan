@@ -1,8 +1,7 @@
 import Apollo
 import Foundation
-import authlib
 
-enum AuthError: Error {
+public enum AuthError: Error {
     case refreshTokenExpired
     case refreshFailed
 }
@@ -30,17 +29,18 @@ class HeadersInterceptor: ApolloInterceptor {
         response: HTTPResponse<Operation>?,
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
     ) {
-        var httpAdditionalHeaders = [
-            "Accept-Language": acceptLanguageHeader,
-            "hedvig-language": acceptLanguageHeader,
-            "User-Agent": userAgent,
-            "hedvig-device-id": deviceIdentifier,
-            "Hedvig-TimeZone": TimeZone.current.identifier,
-        ]
 
-        TokenRefresher.shared.refreshIfNeeded()
-            .onValue {
-                if let token = try? ApolloClient.retreiveToken() {
+        Task {
+            do {
+                try await TokenRefresher.shared.refreshIfNeeded()
+                var httpAdditionalHeaders = [
+                    "Accept-Language": acceptLanguageHeader,
+                    "hedvig-language": acceptLanguageHeader,
+                    "User-Agent": userAgent,
+                    "hedvig-device-id": deviceIdentifier,
+                    "Hedvig-TimeZone": TimeZone.current.identifier,
+                ]
+                if let token = try ApolloClient.retreiveToken() {
                     httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
                 }
 
@@ -51,8 +51,7 @@ class HeadersInterceptor: ApolloInterceptor {
                     response: response,
                     completion: completion
                 )
-            }
-            .onError { error in
+            } catch let error {
                 chain.handleErrorAsync(
                     error,
                     request: request,
@@ -60,5 +59,6 @@ class HeadersInterceptor: ApolloInterceptor {
                     completion: completion
                 )
             }
+        }
     }
 }

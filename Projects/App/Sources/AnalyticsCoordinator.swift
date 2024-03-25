@@ -1,16 +1,26 @@
 import Apollo
 import DatadogCore
 import Foundation
-import UIKit
+import SwiftUI
 import hCore
 import hGraphQL
 
-struct AnalyticsCoordinator {
+protocol AnalyticsService {
+    func fetchAndSetUserId()
+    func setWith(userId: String)
+}
+
+struct AnalyticsServiceDemo: AnalyticsService {
+    func fetchAndSetUserId() {}
+    func setWith(userId: String) {}
+}
+
+struct AnalyticsServiceOctopus: AnalyticsService {
     @Inject private var octopus: hOctopus
 
     init() {}
 
-    func setUserId() {
+    func fetchAndSetUserId() {
         octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .compactMap { $0.currentMember.id }
             .onValue { id in
@@ -18,7 +28,7 @@ struct AnalyticsCoordinator {
             }
     }
 
-    func setWith(userId: String?) {
+    func setWith(userId: String) {
         let deviceModel = UIDevice.modelName
         Datadog.setUserInfo(
             id: userId,

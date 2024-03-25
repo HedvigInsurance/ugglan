@@ -1,5 +1,5 @@
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -8,7 +8,7 @@ extension JourneyPresentation {
         configureTabBarItemWithDot(
             ContractStore.self,
             tabBarItem: UITabBarItem(
-                title: L10n.InsurancesTab.title,
+                title: L10n.tabInsurancesTitle,
                 image: hCoreUIAssets.contractTab.image,
                 selectedImage: hCoreUIAssets.contractTabActive.image
             )

@@ -4,21 +4,7 @@ import hCore
 public class FetchClaimServiceDemo: hFetchClaimService {
     public init() {}
     public func get() async throws -> [ClaimModel] {
-        return [
-            ClaimModel(
-                id: "claimId",
-                status: .beingHandled,
-                outcome: .none,
-                submittedAt: "2023-11-11",
-                signedAudioURL: "https://github.com/robovm/apple-ios-samples/blob/master/avTouch/sample.m4a",
-                memberFreeText: nil,
-                payoutAmount: nil,
-                targetFileUploadUri: "",
-                claimType: "Broken item",
-                incidentDate: "2024-02-15",
-                productVariant: nil
-            )
-        ]
+        return []
     }
     public func getFiles() async throws -> [String: [File]] {
         let fileArray: [File] = [

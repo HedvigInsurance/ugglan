@@ -2,7 +2,6 @@ import Foundation
 import MarkdownKit
 import SnapKit
 import SwiftUI
-import UIKit
 import hCore
 import hGraphQL
 
@@ -36,6 +35,7 @@ public struct MarkdownView: View {
                 )
             }
             .frame(height: height)
+
         }
     }
 }
@@ -100,6 +100,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         configureTextView()
         setContent(from: config.text)
         calculateHeight()
+        self.clipsToBounds = false
     }
 
     private func configureTextView() {
@@ -110,6 +111,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.isSelectable = true
         textView.backgroundColor = .clear
         textView.dataDetectorTypes = [.address, .link, .phoneNumber]
+        textView.clipsToBounds = false
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         linkTextAttributes[.underlineColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
@@ -120,7 +122,7 @@ class CustomTextView: UIView, UITextViewDelegate {
         textView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(-6)
             make.trailing.equalToSuperview().offset(6)
-            make.bottom.top.equalToSuperview()
+            make.top.equalToSuperview()
         }
         textView.textContainerInset = .zero
         textView.delegate = self
