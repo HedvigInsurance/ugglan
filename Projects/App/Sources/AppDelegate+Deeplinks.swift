@@ -128,6 +128,8 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+
                     let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                         .filter({ $0.canTerminate })
                         .map({
@@ -159,10 +161,16 @@ extension AppDelegate {
                             for: .openSelectInsuranceScreen(config: .init(contracts: contractsConfig))
                         )
 
-                        terminationStore.send(.startTermination(config: config))  // TODO: fix
+                        homeStore.send(.dismissHelpCenter)
+
+                        terminationStore.send(.startTermination(config: config))
                         self?.deepLinkDisposeBag.dispose()
                     } else {
-                        // TODO: display error
+                        homeStore.send(.dismissHelpCenter)
+                        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                        ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                        contractStore.send(.openTerminationErrorScreen)
+                        self?.deepLinkDisposeBag.dispose()
                     }
                 }
         } else {

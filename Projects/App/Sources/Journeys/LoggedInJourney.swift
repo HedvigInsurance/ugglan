@@ -45,6 +45,8 @@ extension AppJourney {
                     AppJourney.configureQuickAction(quickAction: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
+                case .dismissHelpCenter:
+                    DismissJourney()
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in
