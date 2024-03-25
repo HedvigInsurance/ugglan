@@ -119,13 +119,7 @@ public class TerminationFlowJourney {
                     placement: .topBarLeading
                 ) {
                     if !fromSelectInsurances {
-                        InfoViewHolder(
-                            title: "About cancelling your insurance",
-                            description:
-                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
-                            type: .navigation
-                        )
-                        .foregroundColor(hTextColor.primary)
+                        tabBarInfoView
                     }
                 }
             },
@@ -165,8 +159,7 @@ public class TerminationFlowJourney {
             TerminationContractStore.self,
             rootView: SuccessScreen(
                 successViewTitle: "Insurance cancelled",
-                successViewBody:
-                    "Your insurance will be cancelled on \(terminationDate). We’ve sent you an e-mail with all the details.",
+                successViewBody: L10n.terminateContractConfirmationInfoText(terminationDate),
                 successViewButtonAction: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
@@ -294,8 +287,8 @@ public class TerminationFlowJourney {
                 attachToBottom: true,
                 disableIfNoneSelected: true,
                 hButtonText: L10n.generalContinueButton,
-                title: "Cancellation",
-                subTitle: "Select the insurance you want to cancel",
+                title: L10n.terminationFlowCancellationTitle,
+                subTitle: L10n.terminationFlowChooseContractSubtitle,
                 fieldSize: .small
             )
             .hUseColoredCheckbox
@@ -303,13 +296,7 @@ public class TerminationFlowJourney {
                 ToolbarItem(
                     placement: .topBarLeading
                 ) {
-                    InfoViewHolder(
-                        title: "About cancelling your insurance",
-                        description:
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
-                        type: .navigation
-                    )
-                    .foregroundColor(hTextColor.primary)
+                    tabBarInfoView
                 }
             },
             style: .modally(presentationStyle: .overFullScreen)
@@ -318,5 +305,15 @@ public class TerminationFlowJourney {
             getScreen(for: action)
         }
         .withJourneyDismissButton
+    }
+
+    private static var tabBarInfoView: some View {
+        InfoViewHolder(
+            title: "About cancelling your insurance",
+            description:
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
+            type: .navigation
+        )
+        .foregroundColor(hTextColor.primary)
     }
 }
