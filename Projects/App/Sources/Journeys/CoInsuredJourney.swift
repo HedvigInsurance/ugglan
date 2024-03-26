@@ -1,6 +1,7 @@
 import Contracts
 import EditCoInsured
 import Presentation
+import hCore
 
 extension AppJourney {
     @JourneyBuilder

@@ -1,5 +1,4 @@
 import Combine
-import EditCoInsured
 import Foundation
 import Presentation
 import SwiftUI
@@ -390,5 +389,33 @@ private class ContractsInformationViewModel: ObservableObject {
                     locallyAdded: false
                 )
             }
+    }
+}
+
+public struct CoInsuredInfoView: View {
+    @PresentableStore var store: ContractStore
+
+    let text: String
+    let config: InsuredPeopleConfig
+    public init(
+        text: String,
+        config: InsuredPeopleConfig
+    ) {
+        self.text = text
+        self.config = config
+    }
+
+    public var body: some View {
+        InfoCard(text: text, type: .attention)
+            .buttons([
+                .init(
+                    buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                    buttonAction: {
+                        store.send(
+                            .openEditCoInsured(config: config, fromInfoCard: true)
+                        )
+                    }
+                )
+            ])
     }
 }

@@ -1,4 +1,3 @@
-import EditCoInsured
 import Foundation
 import Presentation
 import SwiftUI
@@ -85,6 +84,8 @@ public enum ContractsResult {
     case openFreeTextChat
     case openCrossSellingWebUrl(url: URL)
     case startNewTermination(type: TerminationNavigationAction)
+    case handleCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
+    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
 }
 
 extension Contracts {
@@ -114,17 +115,9 @@ extension Contracts {
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
             } else if case let .openEditCoInsured(config, fromInfoCard) = action {
-                EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
-                    }
+                resultJourney(.handleCoInsured(config: config, fromInfoCard: fromInfoCard))
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(config)) = action {
-                EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
-                    }
+                resultJourney(.openMissingCoInsuredAlert(config: config))
             } else if case let .startTermination(navigationAction) = action {
                 resultJourney(.startNewTermination(type: navigationAction))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {

@@ -1,13 +1,11 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
 public struct ContractOwnerField: View {
     let enabled: Bool?
     let hasContentBelow: Bool
     let fullName: String
     let SSN: String
-    @PresentableStore var store: EditCoInsuredStore
 
     public init(
         enabled: Bool? = false,
@@ -152,19 +150,7 @@ public struct CoInsuredField<Content: View>: View {
     }
 }
 
-public enum StatusPillType {
-    case added
-    case deleted
-
-    func text(date: String) -> String {
-        switch self {
-        case .added:
-            return L10n.contractAddCoinsuredActiveFrom(date)
-        case .deleted:
-            return L10n.contractAddCoinsuredActiveUntil(date)
-        }
-    }
-
+extension StatusPillType {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
@@ -183,11 +169,5 @@ public enum StatusPillType {
         case .deleted:
             hSignalColor.redFill
         }
-    }
-}
-
-struct ContractOwnerField_Previews: PreviewProvider {
-    static var previews: some View {
-        ContractOwnerField(hasContentBelow: true, fullName: "", SSN: "")
     }
 }
