@@ -2,7 +2,6 @@ import EditCoInsured
 import Foundation
 import Presentation
 import SwiftUI
-import TerminateContracts
 import hCore
 import hCoreUI
 import hGraphQL
@@ -84,7 +83,7 @@ public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
     case openCrossSellingWebUrl(url: URL)
-    case startNewTermination(type: TerminationNavigationAction)
+    case startNewTermination(config: TerminationConfirmConfig)
 }
 
 extension Contracts {
@@ -125,8 +124,8 @@ extension Contracts {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetch)
                     }
-            } else if case let .startTermination(navigationAction) = action {
-                resultJourney(.startNewTermination(type: navigationAction))
+            } else if case let .startTermination(config) = action {
+                resultJourney(.startNewTermination(config: config))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,

@@ -3,7 +3,6 @@ import EditCoInsured
 import Foundation
 import Presentation
 import SwiftUI
-import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
@@ -11,7 +10,6 @@ import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
 
     let id: String
@@ -319,34 +317,40 @@ struct ContractInformationView: View {
                     state.contractForId(id)
                 }
             ) { contract in
-                if contract?.canTerminate ?? false {
-                    hSection {
-                        hButton.LargeButton(type: .ghost) {
-                            terminationContractStore.send(
-                                .startTermination(
-                                    config: .init(
-                                        contractId: id,
-                                        image: contract?.pillowType,
-                                        contractDisplayName: contract?.currentAgreement?.productVariant.displayName
-                                            ?? "",
-                                        contractExposureName: contract?.exposureDisplayName ?? "",
-                                        activeFrom: contract?.currentAgreement?.activeFrom
+
+                if let contract = contract {
+
+                    if contract.canTerminate {
+                        hSection {
+                            hButton.LargeButton(type: .ghost) {
+
+                                store.send(
+                                    .startTermination(
+                                        config: .init(
+                                            contractId: id,
+                                            image: contract.pillowType,
+                                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
+                                                ?? "",
+                                            contractExposureName: contract.exposureDisplayName,
+                                            activeFrom: contract.currentAgreement?.activeFrom
+                                        )
                                     )
                                 )
-                            )
-                            vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
-                                if case let .navigationAction(navigationAction) = action {
-                                    store.send(.startTermination(action: navigationAction))
-                                    self.vm.cancellable = nil
+
+                                vm.cancellable = store.actionSignal.publisher.sink { action in
+                                    if case let .startTerminationNav(action: navigationAction) = action {
+                                        store.send(.startTerminationNav(action: navigationAction))
+                                        self.vm.cancellable = nil
+                                    }
                                 }
+                            } content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTextColor.secondary)
                             }
-                        } content: {
-                            hText(L10n.terminationButton, style: .body)
-                                .foregroundColor(hTextColor.secondary)
+                            .trackLoading(ContractStore.self, action: .startTermination)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .startTermination)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
                 }
             }
         }

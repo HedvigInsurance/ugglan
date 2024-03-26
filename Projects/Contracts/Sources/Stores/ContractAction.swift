@@ -43,7 +43,8 @@ public enum ContractAction: ActionProtocol, Hashable {
     case dismissContractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
-    case startTermination(action: TerminationNavigationAction)
+    case startTerminationNav(action: TerminationNavigationAction)
+    case startTermination(config: TerminationConfirmConfig)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
 }
 
@@ -53,6 +54,8 @@ public enum ContractLoadingAction: LoadingProtocol {
     case postCoInsured
     case fetchNameFromSSN
     case fetchCrossSell
+    
+    case startTermination
 }
 
 public enum EditType: String, Codable, Hashable, CaseIterable {
@@ -98,4 +101,11 @@ public enum CoInsuredAction: Codable {
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
+}
+
+public enum TerminationNavigationAction: ActionProtocol, Hashable {
+    case openTerminationUpdateAppScreen
+    case openTerminationFailScreen
+    case openTerminationDeletionScreen
+    case openSetTerminationDateScreen
 }

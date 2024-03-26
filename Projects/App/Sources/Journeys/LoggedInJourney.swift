@@ -72,8 +72,8 @@ extension AppJourney {
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
                 AppJourney.urlHandledBySystem(url: url)
-            case let .startNewTermination(action):
-                TerminationFlowJourney.start(for: action)
+            case let .startNewTermination(config):
+                TerminationFlowJourney.start(for: .openSetTerminationDateScreen, config: config)
                     .onDismiss {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetch)

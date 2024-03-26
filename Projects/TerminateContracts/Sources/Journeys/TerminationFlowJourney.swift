@@ -6,8 +6,15 @@ import hCoreUI
 
 public class TerminationFlowJourney {
 
-    public static func start(for action: TerminationNavigationAction) -> some JourneyPresentation {
-        getScreen(for: .navigationAction(action: action)).hidesBackButton
+    public static func start(
+        for action: TerminationNavigationAction,
+        config: TerminationConfirmConfig
+    ) -> some JourneyPresentation {
+
+        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+        store.send(.startTermination(config: config))
+
+        return getScreen(for: .navigationAction(action: action)).hidesBackButton
     }
 
     @JourneyBuilder
