@@ -51,11 +51,9 @@ struct ConfirmTerminationScreen: View {
 
     func terminationText(config: TerminationConfirmConfig?) -> String {
         if config?.isDeletion ?? false {
-            return L10n.terminationFlowConfirmationSubtitleTermination(
-                config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-            )
+            return L10n.terminationFlowConfirmationSubtitleDeletion
         }
-        return L10n.terminateContractDeletionText(
+        return L10n.terminationFlowConfirmationSubtitleTermination(
             config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
         )
     }

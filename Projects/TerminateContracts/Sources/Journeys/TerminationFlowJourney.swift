@@ -17,7 +17,10 @@ public class TerminationFlowJourney {
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 let terminationDate =
                     store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                TerminationFlowJourney.openTerminationSuccessScreen(terminationDate: terminationDate)
+                TerminationFlowJourney.openTerminationSuccessScreen(
+                    isDeletion: store.state.config?.isDeletion ?? false,
+                    terminationDate: terminationDate
+                )
             } else if case .openTerminationDatePickerScreen = navigationAction {
                 TerminationFlowJourney.openSetTerminationDatePickerScreen()
             } else if case .openTerminationFailScreen = navigationAction {
@@ -122,12 +125,17 @@ public class TerminationFlowJourney {
         .withJourneyDismissButton
     }
 
-    private static func openTerminationSuccessScreen(terminationDate: String) -> some JourneyPresentation {
+    private static func openTerminationSuccessScreen(
+        isDeletion: Bool,
+        terminationDate: String
+    ) -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
             rootView: SuccessScreen(
                 successViewTitle: L10n.terminationFlowSuccessTitle,
-                successViewBody: L10n.terminationFlowSuccessSubtitle(terminationDate),
+                successViewBody: isDeletion
+                    ? L10n.terminationFlowSuccessSubtitleWithoutDate
+                    : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
                 successViewButtonAction: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
@@ -281,9 +289,8 @@ public class TerminationFlowJourney {
 
     private static var tabBarInfoView: some View {
         InfoViewHolder(
-            title: "About cancelling your insurance",
-            description:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec lobortis est. Maecenas fermentum, sapien at venenatis cursus, diam neque tristique nulla, ac tempor purus magna et magna.",
+            title: L10n.terminationFlowCancelInfoTitle,
+            description: L10n.terminationFlowCancelInfoText,
             type: .navigation
         )
         .foregroundColor(hTextColor.primary)

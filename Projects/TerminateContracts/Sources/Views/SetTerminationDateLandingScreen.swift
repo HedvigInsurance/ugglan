@@ -137,7 +137,7 @@ struct SetTerminationDateLandingScreen: View {
 
                     HStack {
                         hRow {
-                            hText(L10n.terminationFlowImportantInformationText)
+                            hText(L10n.terminationFlowIUnderstandText)
                             Spacer()
                             if hasAgreedToTerms {
                                 HStack {
