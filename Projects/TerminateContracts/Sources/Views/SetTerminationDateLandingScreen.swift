@@ -21,7 +21,8 @@ struct SetTerminationDateLandingScreen: View {
                 subTitle: .init(
                     .standard,
                     .title3,
-                    (termination.config?.isDeletion ?? false) ? "Confirm your information" : L10n.terminationDateText
+                    (termination.config?.isDeletion ?? false)
+                        ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
                 )
             )
         }
@@ -79,8 +80,8 @@ struct SetTerminationDateLandingScreen: View {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingField(
-                        value: "Today",
-                        placeholder: "Termination date",
+                        value: L10n.startDateToday,
+                        placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
                         }
                     )
@@ -92,7 +93,7 @@ struct SetTerminationDateLandingScreen: View {
 
                     InfoCard(
                         text:
-                            "Since this insurance is not active yet it will be cancelled and removed today. You won’t be charged anything.",
+                            L10n.terminationFlowDeletionInfoCard,
                         type: .info
                     )
                 }
@@ -103,8 +104,8 @@ struct SetTerminationDateLandingScreen: View {
                 hSection {
                     hFloatingField(
                         value: termination.terminationDateStep?.date?.displayDateDDMMMYYYYFormat
-                            ?? "Select date...",
-                        placeholder: "Termination date",
+                            ?? L10n.terminationFlowDateFieldPlaceholder,
+                        placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
                             store.send(.navigationAction(action: .openTerminationDatePickerScreen))
                         },
@@ -125,7 +126,7 @@ struct SetTerminationDateLandingScreen: View {
                 VStack(spacing: 16) {
                     VStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 4) {
-                            hText("Important information")
+                            hText(L10n.terminationFlowImportantInformationTitle)
                             hText(
                                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus nibh risus. Duis at pharetra arcu, vel gravida mi. Proin lacus orci, interdum sed.",
                                 style: .standardSmall
