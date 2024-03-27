@@ -128,7 +128,7 @@ struct SetTerminationDateLandingScreen: View {
                         VStack(alignment: .leading, spacing: 4) {
                             hText(L10n.terminationFlowImportantInformationTitle)
                             hText(
-                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus nibh risus. Duis at pharetra arcu, vel gravida mi. Proin lacus orci, interdum sed.",
+                                L10n.terminationFlowImportantInformationText,
                                 style: .standardSmall
                             )
                             .foregroundColor(hTextColor.secondary)
@@ -137,7 +137,7 @@ struct SetTerminationDateLandingScreen: View {
 
                     HStack {
                         hRow {
-                            hText("I understand")
+                            hText(L10n.terminationFlowImportantInformationText)
                             Spacer()
                             if hasAgreedToTerms {
                                 HStack {
