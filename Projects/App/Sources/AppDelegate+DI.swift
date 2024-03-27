@@ -9,6 +9,7 @@ import Foundation
 import Home
 import MoveFlow
 import Payment
+import Presentation
 import Profile
 import TerminateContracts
 import TravelCertificate
@@ -19,7 +20,8 @@ extension ApolloClient {
     public static func initAndRegisterClient() {
         let authorizationService = AuthentificationServiceAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthentificationService in authorizationService })
-        if ApplicationContext.shared.isDemoMode {
+        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        if ugglanStore.state.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
             let hPaymentService = hPaymentServiceDemo()
             let fetchClaimService = FetchClaimServiceDemo()
@@ -28,7 +30,7 @@ extension ApolloClient {
             let foreverService = ForeverServiceDemo()
             let profileDemoService = ProfileDemoService()
             let homeServiceDemo = HomeServiceDemo()
-            let analyticsCoordinator = AnalyticsCoordinatorDemo()
+            let analyticsService = AnalyticsServiceDemo()
             let notificationClient = NotificationClientDemo()
             let submitClaimDemoService = SubmitClaimDemoService()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
@@ -39,7 +41,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ForeverService in foreverService })
             Dependencies.shared.add(module: Module { () -> ProfileService in profileDemoService })
             Dependencies.shared.add(module: Module { () -> HomeService in homeServiceDemo })
-            Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
+            Dependencies.shared.add(module: Module { () -> AnalyticsService in analyticsService })
             Dependencies.shared.add(module: Module { () -> NotificationClient in notificationClient })
             Dependencies.shared.add(module: Module { () -> SubmitClaimService in submitClaimDemoService })
         } else {
@@ -59,7 +61,7 @@ extension ApolloClient {
             let hFetchClaimService = FetchClaimServiceOctopus()
             let travelInsuranceService = TravelInsuranceClientOctopus()
             let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
-            let analyticsCoordinator = AnalyticsCoordinatorOctopus()
+            let analyticsService = AnalyticsServiceOctopus()
             let notificationService = NotificationClientOctopus()
             let hFetchEntrypointsService = FetchEntrypointsServiceOctopus()
             let submitClaimService = SubmitClaimServiceOctopus()
@@ -84,7 +86,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                 Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
-                Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
+                Dependencies.shared.add(module: Module { () -> AnalyticsService in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimService in submitClaimService })
@@ -108,7 +110,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                 Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
-                Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in analyticsCoordinator })
+                Dependencies.shared.add(module: Module { () -> AnalyticsService in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsService in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimService in submitClaimService })

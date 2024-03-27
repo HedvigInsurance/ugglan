@@ -211,8 +211,8 @@ extension AppJourney {
             }
             .onPresent {
                 ApplicationState.preserveState(.loggedIn)
-                let coordinator: AnalyticsCoordinator = Dependencies.shared.resolve()
-                coordinator.setUserId()
+                let analyticsService: AnalyticsService = Dependencies.shared.resolve()
+                analyticsService.fetchAndSetUserId()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ApplicationContext.shared.$isLoggedIn.value = true
                 }

@@ -275,12 +275,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         self.setLoading(for: loadingType)
         do {
             let data = try await action()
-            send(.setNewClaimId(with: data.claimId))
-            send(.setNewClaimContext(context: data.context))
+            await sendAsync(.setNewClaimId(with: data.claimId))
+            await sendAsync(.setNewClaimContext(context: data.context))
             if let progress = data.progress {
-                send(.setProgress(progress: progress))
+                await sendAsync(.setProgress(progress: progress))
             }
-            send(data.action)
+            await sendAsync(data.action)
             removeLoading(for: loadingType)
         } catch let error {
             self.setError(error.localizedDescription, for: loadingType)
