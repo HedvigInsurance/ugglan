@@ -21,14 +21,12 @@ struct ConfirmTerminationScreen: View {
         } _: { termination in
             GenericErrorView(
                 title: L10n.General.areYouSure,
-                description: L10n.terminateContractDeletionText(
-                    termination.config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                ),
+                description: terminationText(config: termination.config),
                 icon: .triangle,
                 buttons: .init(
                     actionButtonAttachedToBottom:
                         .init(
-                            buttonTitle: "Yes, cancel",
+                            buttonTitle: L10n.terminationFlowConfirmButton,
                             buttonAction: {
                                 onSelected()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -50,6 +48,18 @@ struct ConfirmTerminationScreen: View {
         .hide($isHidden)
 
     }
+
+    func terminationText(config: TerminationConfirmConfig?) -> String {
+        if config?.isDeletion ?? false {
+            return L10n.terminationFlowConfirmationSubtitleTermination(
+                config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+            )
+        }
+        return L10n.terminateContractDeletionText(
+            config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+        )
+    }
+
 }
 
 struct TerminationDeleteScreen_Previews: PreviewProvider {

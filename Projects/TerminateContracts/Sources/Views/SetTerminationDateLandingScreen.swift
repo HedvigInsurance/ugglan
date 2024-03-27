@@ -80,7 +80,7 @@ struct SetTerminationDateLandingScreen: View {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingField(
-                        value: L10n.startDateToday,
+                        value: L10n.terminationFlowToday,
                         placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
                         }

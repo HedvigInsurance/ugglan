@@ -126,8 +126,8 @@ public class TerminationFlowJourney {
         HostingJourney(
             TerminationContractStore.self,
             rootView: SuccessScreen(
-                successViewTitle: "Insurance cancelled",
-                successViewBody: L10n.terminateContractConfirmationInfoText(terminationDate),
+                successViewTitle: L10n.terminationFlowSuccessTitle,
+                successViewBody: L10n.terminationFlowSuccessSubtitle(terminationDate),
                 successViewButtonAction: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
