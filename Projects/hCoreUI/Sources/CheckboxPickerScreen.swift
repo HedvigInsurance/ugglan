@@ -94,25 +94,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         ScrollViewReader { proxy in
             if attachToBottom {
                 hForm {
-                    hSection {
-                        VStack {
-                            Group {
-                                HStack(spacing: 8) {
-                                    if let title {
-                                        hText(title, style: .title3)
-                                    }
-                                }
-
-                                if let subTitle {
-                                    hText(subTitle, style: .title3)
-                                        .foregroundColor(hTextColor.secondary)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
                 }
+                .hFormTitle(
+                    title: .init(.standard, .title3, title ?? "", alignment: .leading),
+                    subTitle: .init(.standard, .title3, subTitle ?? "")
+                )
                 .hFormAttachToBottom {
                     VStack(spacing: 0) {
                         VStack(spacing: 16) {

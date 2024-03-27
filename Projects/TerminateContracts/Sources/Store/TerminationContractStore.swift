@@ -61,8 +61,11 @@ public final class TerminationContractStore: LoadingStateStore<
                     self.send(.navigationAction(action: .openSetTerminationDateLandingScreen))
                 }
             case let .setTerminationDeletion(model):
+                newState.config?.isDeletion = true
                 newState.terminationDeleteStep = model
-                send(.navigationAction(action: .openTerminationDeletionScreen))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.send(.navigationAction(action: .openSetTerminationDateLandingScreen))
+                }
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])
@@ -74,8 +77,6 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
-        case .setTerminationisDeletion:
-            newState.config?.isDeletion = true
         default:
             break
         }

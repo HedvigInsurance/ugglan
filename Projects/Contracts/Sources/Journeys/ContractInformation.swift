@@ -329,8 +329,8 @@ struct ContractInformationView: View {
                                         contractDisplayName: contract?.currentAgreement?.productVariant.displayName
                                             ?? "",
                                         contractExposureName: contract?.exposureDisplayName ?? "",
+                                        activeFrom: contract?.currentAgreement?.activeFrom,
                                         fromSelectInsurances: false
-                                            //                                        activeFrom: contract?.currentAgreement?.activeFrom
                                     )
                                 )
                             )

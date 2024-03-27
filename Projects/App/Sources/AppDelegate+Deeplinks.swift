@@ -137,6 +137,7 @@ extension AppDelegate {
                                 contractId: $0.id,
                                 contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
                                 contractExposureName: $0.exposureDisplayName,
+                                activeFrom: $0.currentAgreement?.activeFrom,
                                 fromSelectInsurances: true
                             )
                         })
@@ -154,6 +155,7 @@ extension AppDelegate {
                             contractId: contractConfig.contractId,
                             contractDisplayName: contractConfig.contractDisplayName,
                             contractExposureName: contractConfig.contractExposureName,
+                            activeFrom: contractConfig.activeFrom,
                             fromSelectInsurances: false
                         )
 

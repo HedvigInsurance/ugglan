@@ -24,10 +24,8 @@ public class TerminationFlowJourney {
                 TerminationFlowJourney.openTerminationFailScreen()
             } else if case .openTerminationUpdateAppScreen = navigationAction {
                 TerminationFlowJourney.openUpdateAppTerminationScreen()
-            } else if case .openTerminationDeletionScreen = navigationAction {
-                TerminationFlowJourney.openTerminationDeletionScreen()
-            } else if case let .openConfirmTerminationScreen(config) = navigationAction {
-                openConfirmTerminationScreen(config: config)
+            } else if case .openConfirmTerminationScreen = navigationAction {
+                TerminationFlowJourney.openConfirmTerminationScreen()
             } else if case .openTerminationProcessingScreen = navigationAction {
                 openProgressScreen()
             } else if case let .openSelectInsuranceScreen(config) = navigationAction {
@@ -61,7 +59,8 @@ public class TerminationFlowJourney {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
                 }
-            )
+            ),
+            style: .modally(presentationStyle: .overFullScreen)
         ) { action in
             getScreen(for: action)
         }
@@ -103,15 +102,7 @@ public class TerminationFlowJourney {
             rootView: SetTerminationDateLandingScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    if let config = store.state.config {
-                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
-                    } else {
-                        store.send(.navigationAction(action: .openTerminationFailScreen))
-                    }
-                },
-                includeMarker: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    return store.state.config?.titleMarker
+                    store.send(.navigationAction(action: .openConfirmTerminationScreen))
                 }
             )
             .toolbar {
@@ -128,29 +119,6 @@ public class TerminationFlowJourney {
             action in
             getScreen(for: action)
         }
-        .withJourneyDismissButton
-    }
-
-    private static func openConfirmTerminationScreen(config: TerminationConfirmConfig) -> some JourneyPresentation {
-        HostingJourney(
-            TerminationContractStore.self,
-            rootView: ConfirmTerminationScreen(
-                config: config,
-                onSelected: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    if store.state.config?.isDeletion ?? false {
-                        store.send(.sendConfirmDelete)
-                    } else {
-                        store.send(.sendTerminationDate)
-                    }
-                    store.send(.navigationAction(action: .openTerminationProcessingScreen))
-                }
-            )
-        ) {
-            action in
-            getScreen(for: action)
-        }
-        .configureTitle(L10n.terminationConfirmButton)
         .withJourneyDismissButton
     }
 
@@ -171,8 +139,6 @@ public class TerminationFlowJourney {
             action in
             getScreen(for: action)
         }
-        .configureTitle(L10n.terminateContractConfirmationTitle)
-        .withJourneyDismissButton
         .hidesBackButton
         .onDismiss {
             @PresentableStore var store: TerminationContractStore
@@ -232,24 +198,29 @@ public class TerminationFlowJourney {
         .hidesBackButton
     }
 
-    private static func openTerminationDeletionScreen() -> some JourneyPresentation {
+    private static func openConfirmTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             TerminationContractStore.self,
-            rootView: TerminationDeleteScreen(
+            rootView: ConfirmTerminationScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    if let config = store.state.config {
-                        store.send(.setTerminationisDeletion)
-                        store.send(.navigationAction(action: .openConfirmTerminationScreen(config: config)))
+                    if store.state.config?.isDeletion ?? false {
+                        store.send(.sendConfirmDelete)
                     } else {
-                        store.send(.navigationAction(action: .openTerminationFailScreen))
+                        store.send(.sendTerminationDate)
                     }
+                    store.send(.navigationAction(action: .openTerminationProcessingScreen))
                 }
             ),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground]
         ) {
             action in
-            getScreen(for: action)
+            if case .goBack = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
         .withJourneyDismissButton
     }
@@ -278,6 +249,7 @@ public class TerminationFlowJourney {
                             contractId: selectedContract.contractId,
                             contractDisplayName: selectedContract.contractDisplayName,
                             contractExposureName: selectedContract.contractExposureName,
+                            activeFrom: selectedContract.activeFrom,
                             fromSelectInsurances: true
                         )
                         store.send(.startTermination(config: config))

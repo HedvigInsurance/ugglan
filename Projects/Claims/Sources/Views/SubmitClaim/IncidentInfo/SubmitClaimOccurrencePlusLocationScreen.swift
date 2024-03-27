@@ -14,7 +14,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .title1, options.title)
+            .hFormTitle(title: .init(.small, .title1, options.title))
             .hDisableScroll
             .hFormAttachToBottom {
                 VStack(spacing: 0) {

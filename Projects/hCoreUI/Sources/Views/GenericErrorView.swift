@@ -9,6 +9,7 @@ public struct GenericErrorView: View {
     private let buttons: ErrorViewButtonConfig
     @Environment(\.hWithoutTitle) var withoutTitle
     @Environment(\.hExtraBottomPadding) var extraBottomPadding
+    @Environment(\.hWithLargeIcon) var useLargeIcon
 
     public init(
         title: String? = nil,
@@ -63,11 +64,12 @@ public struct GenericErrorView: View {
             switch icon {
             case .triangle:
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .frame(width: useLargeIcon ? 40 : 24, height: useLargeIcon ? 40 : 24)
                     .foregroundColor(hSignalColor.amberElement)
             case .circle:
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: useLargeIcon ? 40 : 24, height: useLargeIcon ? 40 : 24)
                     .foregroundColor(hSignalColor.blueElement)
             }
             VStack {
@@ -180,5 +182,22 @@ extension EnvironmentValues {
 extension GenericErrorView {
     public var hExtraBottomPadding: some View {
         self.environment(\.hExtraBottomPadding, true)
+    }
+}
+
+private struct EnvironmenthWithLargeIcon: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hWithLargeIcon: Bool {
+        get { self[EnvironmenthWithLargeIcon.self] }
+        set { self[EnvironmenthWithLargeIcon.self] = newValue }
+    }
+}
+
+extension GenericErrorView {
+    public var hWithLargeIcon: some View {
+        self.environment(\.hWithLargeIcon, true)
     }
 }

@@ -18,7 +18,6 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case sendTerminationDate
     case sendConfirmDelete
     case setTerminationContext(context: String)
-    case setTerminationisDeletion
 
     case sendTermination(terminationDate: Date, surveyUrl: String)
     case dismissTerminationFlow
@@ -31,9 +30,8 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationSuccessScreen
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
-    case openTerminationDeletionScreen
     case openTerminationDatePickerScreen
-    case openConfirmTerminationScreen(config: TerminationConfirmConfig)
+    case openConfirmTerminationScreen
     case openTerminationProcessingScreen
     case openSelectInsuranceScreen(config: TerminationContractConfig)
     case openSetTerminationDateLandingScreen

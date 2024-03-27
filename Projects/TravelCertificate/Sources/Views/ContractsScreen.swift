@@ -42,7 +42,7 @@ struct ContractsScreen: View {
                         attachToBottom: true,
                         hButtonText: L10n.generalContinueButton
                     )
-                    .hFormTitle(.standard, .title1, L10n.TravelCertificate.selectContractTitle)
+                    .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))
                     .hButtonIsLoading(isLoading)
                     .hDisableScroll
                     .onReceive(

@@ -80,7 +80,7 @@ struct WhoIsTravelingScreen: View {
                     ) : nil
             )
             .padding(.bottom, 16)
-            .hFormTitle(.standard, .title1, L10n.TravelCertificate.whoIsTraveling)
+            .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
             .hDisableScroll
             .disableOn(TravelInsuranceStore.self, [.postTravelInsurance])
         }
