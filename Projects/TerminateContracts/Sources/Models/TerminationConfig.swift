@@ -1,13 +1,3 @@
-public struct TerminationContractConfig: Codable & Equatable & Hashable {
-    let contracts: [TerminationConfirmConfig]
-
-    public init(
-        contracts: [TerminationConfirmConfig]
-    ) {
-        self.contracts = contracts
-    }
-}
-
 public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
     public var contractId: String
     public var contractDisplayName: String

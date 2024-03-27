@@ -127,6 +127,7 @@ extension AppDelegate {
         } else if path == .terminateContract {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
 
@@ -141,39 +142,9 @@ extension AppDelegate {
                                 fromSelectInsurances: true
                             )
                         })
-
-                    if contractsConfig.count > 1 {
-                        self?.deepLinkDisposeBag.dispose()
-                        let vc = TerminationFlowJourney.start(
-                            for: .openSelectInsuranceScreen(config: .init(contracts: contractsConfig))
-                        )
-                        let disposeBag = DisposeBag()
-                        disposeBag += fromVC.present(vc)
-                    } else if contractsConfig.count == 1, let contractConfig = contractsConfig.first {
-                        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
-                        let config = TerminationConfirmConfig(
-                            contractId: contractConfig.contractId,
-                            contractDisplayName: contractConfig.contractDisplayName,
-                            contractExposureName: contractConfig.contractExposureName,
-                            activeFrom: contractConfig.activeFrom,
-                            fromSelectInsurances: false
-                        )
-
-                        let vc = TerminationFlowJourney.start(
-                            for: .openSelectInsuranceScreen(config: .init(contracts: contractsConfig))
-                        )
-
-                        homeStore.send(.dismissHelpCenter)
-
-                        terminationStore.send(.startTermination(config: config))
-                        self?.deepLinkDisposeBag.dispose()
-                    } else {
-                        homeStore.send(.dismissHelpCenter)
-                        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                        ugglanStore.send(.makeTabActive(deeplink: .insurances))
-                        contractStore.send(.openTerminationErrorScreen)
-                        self?.deepLinkDisposeBag.dispose()
-                    }
+                    let vc = TerminationFlowJourney.start(for: contractsConfig)
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
                 }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

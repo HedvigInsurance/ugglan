@@ -44,7 +44,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case dismissContractDetailNavigation
     case contractEditInfo(id: String)
     case dismissEditInfo(type: EditType?)
-    case startTermination(action: TerminationNavigationAction)
+    case startTermination(contract: Contract)
     case coInsuredNavigationAction(action: CoInsuredNavigationAction)
 }
 

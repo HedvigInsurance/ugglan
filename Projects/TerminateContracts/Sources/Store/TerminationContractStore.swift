@@ -17,7 +17,7 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return await executeAsFiniteSignal(loadingType: .startTermination) { [weak self] in
+            return await executeAsFiniteSignal(loadingType: .getInitialStep) { [weak self] in
                 try await self?.terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
@@ -57,15 +57,9 @@ public final class TerminationContractStore: LoadingStateStore<
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSetTerminationDateLandingScreen))
-                }
             case let .setTerminationDeletion(model):
                 newState.config?.isDeletion = true
                 newState.terminationDeleteStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSetTerminationDateLandingScreen))
-                }
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])

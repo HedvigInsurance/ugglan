@@ -17,12 +17,19 @@ public class TerminateContractsOctopus: TerminateContractsService {
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
-        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-            input: terminationDateInput,
-            context: terminationContext
+        try await Task.sleep(nanoseconds: 4_500_000_000)
+        //        return (.init(context: "", action: .))
+
+        //        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+        //        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
+        //            input: terminationDateInput,
+        //            context: terminationContext
+        //        )
+        //        return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
+        return .init(
+            context: "",
+            action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: nil, surveyUrl: "")))
         )
-        return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
     }
 
     public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {

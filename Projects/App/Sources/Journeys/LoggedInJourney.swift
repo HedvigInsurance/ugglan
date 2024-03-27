@@ -74,12 +74,18 @@ extension AppJourney {
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
                 AppJourney.urlHandledBySystem(url: url)
-            case let .startNewTermination(action):
-                TerminationFlowJourney.start(for: action)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
-                    }
+            case let .startNewTermination(contract):
+                TerminationFlowJourney.start(
+                    for: [
+                        TerminationConfirmConfig(
+                            contractId: contract.id,
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: contract.exposureDisplayName,
+                            activeFrom: contract.currentAgreement?.activeFrom,
+                            fromSelectInsurances: true
+                        )
+                    ]
+                )
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

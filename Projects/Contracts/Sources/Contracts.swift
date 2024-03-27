@@ -84,7 +84,7 @@ public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
     case openCrossSellingWebUrl(url: URL)
-    case startNewTermination(type: TerminationNavigationAction)
+    case startNewTermination(for: Contract)
 }
 
 extension Contracts {
@@ -133,8 +133,8 @@ extension Contracts {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetch)
                     }
-            } else if case let .startTermination(navigationAction) = action {
-                resultJourney(.startNewTermination(type: navigationAction))
+            } else if case let .startTermination(contract) = action {
+                resultJourney(.startNewTermination(for: contract))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,

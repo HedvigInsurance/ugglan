@@ -57,6 +57,8 @@ struct SetTerminationDateLandingScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
                 .padding(.top, 16)
+                .disableOn(TerminationContractStore.self, [.getInitialStep])
+                .trackLoading(TerminationContractStore.self, action: .sendTerminationDate)
             }
         }
     }
