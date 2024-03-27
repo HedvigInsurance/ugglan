@@ -173,50 +173,52 @@ extension AppJourney {
     }
 
     static var loggedIn: some JourneyPresentation {
-        Journey(ExperimentsLoader(), options: []) { _ in
-            TabbedJourney(
+        ExperimentsLoaderScreen().journey
+    }
+
+    static var tabJourney: some JourneyPresentation {
+        TabbedJourney(
+            {
+                homeTab
+            },
+            {
+                contractsTab
+            },
+            {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                    || store.state.activeContracts.isEmpty
                 {
-                    homeTab
-                },
-                {
-                    contractsTab
-                },
-                {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
-                        || store.state.activeContracts.isEmpty
-                    {
-                        foreverTab
-                    }
-                },
-                {
-                    if Dependencies.featureFlags().isPaymentScreenEnabled {
-                        paymentTab
-                    }
-                },
-                {
-                    profileTab
+                    foreverTab
                 }
-            )
-            .sendActionImmediately(ContractStore.self, .fetch)
-            .sendActionImmediately(ForeverStore.self, .fetch)
-            .syncTabIndex()
-            .onAction(UgglanStore.self) { action in
-                if action == .openChat {
-                    freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
-                        .withDismissButton
+            },
+            {
+                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                    paymentTab
                 }
+            },
+            {
+                profileTab
             }
-            .onPresent {
-                ApplicationState.preserveState(.loggedIn)
-                let analyticsService: AnalyticsService = Dependencies.shared.resolve()
-                analyticsService.fetchAndSetUserId()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    ApplicationContext.shared.$isLoggedIn.value = true
-                }
-                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                profileStore.send(.fetchMemberDetails)
+        )
+        .sendActionImmediately(ContractStore.self, .fetch)
+        .sendActionImmediately(ForeverStore.self, .fetch)
+        .syncTabIndex()
+        .onAction(UgglanStore.self) { action in
+            if action == .openChat {
+                freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
+                    .withDismissButton
             }
+        }
+        .onPresent {
+            ApplicationState.preserveState(.loggedIn)
+            let analyticsService: AnalyticsService = Dependencies.shared.resolve()
+            analyticsService.fetchAndSetUserId()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                ApplicationContext.shared.$isLoggedIn.value = true
+            }
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            profileStore.send(.fetchMemberDetails)
         }
         .onDismiss {
             ApplicationContext.shared.$isLoggedIn.value = false
