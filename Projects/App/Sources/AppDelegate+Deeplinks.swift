@@ -145,12 +145,12 @@ extension AppDelegate {
                         if success {
                             let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                             ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.dismissHelpCenter)
+                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                            chatStore.send(.navigation(action: .closeChat))
                             guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
                             else { return }
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.dismissHelpCenter)
-                            chatStore.send(.navigation(action: .closeChat))
 
                             guard let navigation = tabBar.selectedViewController as? UINavigationController else {
                                 return
