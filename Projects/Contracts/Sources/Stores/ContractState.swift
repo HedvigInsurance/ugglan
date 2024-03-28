@@ -1,9 +1,7 @@
 import Apollo
-import EditCoInsured
+import EditCoInsuredShared
 import Presentation
 import SwiftUI
-import hCore
-import hGraphQL
 
 public struct ContractState: StateProtocol {
 

@@ -1,76 +1,5 @@
 import SwiftUI
-import hCore
 import hCoreUI
-
-public struct ContractOwnerField: View {
-    let enabled: Bool?
-    let hasContentBelow: Bool
-    let fullName: String
-    let SSN: String
-    @PresentableStore var store: EditCoInsuredStore
-
-    public init(
-        enabled: Bool? = false,
-        hasContentBelow: Bool,
-        fullName: String,
-        SSN: String
-    ) {
-        self.enabled = enabled
-        self.hasContentBelow = hasContentBelow
-        self.fullName = fullName
-        self.SSN = SSN.displayFormatSSN ?? ""
-    }
-
-    public init(
-        enabled: Bool? = false,
-        hasContentBelow: Bool,
-        config: InsuredPeopleConfig
-    ) {
-        self.enabled = enabled
-        self.hasContentBelow = hasContentBelow
-        self.fullName = config.holderFullName
-        self.SSN = config.holderSSN?.displayFormatSSN ?? ""
-    }
-
-    public var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(fullName)
-                        .foregroundColor(getTitleColor)
-                    Spacer()
-                    Image(uiImage: hCoreUIAssets.lockSmall.image)
-                        .foregroundColor(hTextColor.tertiary)
-                }
-                hText(SSN, style: .footnote)
-                    .foregroundColor(getSubTitleColor)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            if hasContentBelow {
-                Divider()
-            }
-        }
-        .padding(.bottom, hasContentBelow ? 0 : 16)
-    }
-
-    @hColorBuilder
-    var getTitleColor: some hColor {
-        if enabled ?? false {
-            hTextColor.primary
-        } else {
-            hTextColor.tertiary
-        }
-    }
-
-    @hColorBuilder
-    var getSubTitleColor: some hColor {
-        if enabled ?? false {
-            hTextColor.secondary
-        } else {
-            hTextColor.tertiary
-        }
-    }
-}
 
 public struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
@@ -152,19 +81,7 @@ public struct CoInsuredField<Content: View>: View {
     }
 }
 
-public enum StatusPillType {
-    case added
-    case deleted
-
-    func text(date: String) -> String {
-        switch self {
-        case .added:
-            return L10n.contractAddCoinsuredActiveFrom(date)
-        case .deleted:
-            return L10n.contractAddCoinsuredActiveUntil(date)
-        }
-    }
-
+extension StatusPillType {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
@@ -183,11 +100,5 @@ public enum StatusPillType {
         case .deleted:
             hSignalColor.redFill
         }
-    }
-}
-
-struct ContractOwnerField_Previews: PreviewProvider {
-    static var previews: some View {
-        ContractOwnerField(hasContentBelow: true, fullName: "", SSN: "")
     }
 }

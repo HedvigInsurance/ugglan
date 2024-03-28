@@ -1,6 +1,7 @@
 import Claims
 import Contracts
 import EditCoInsured
+import EditCoInsuredShared
 import Flow
 import Foundation
 import Home
@@ -29,7 +30,6 @@ extension AppJourney {
                 .compactMap({
                     InsuredPeopleConfig(contract: $0)
                 })
-
             if !contractsSupportingCoInsured.isEmpty {
                 openOnTop(
                     vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)

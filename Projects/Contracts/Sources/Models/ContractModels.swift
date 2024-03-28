@@ -1,4 +1,4 @@
-import EditCoInsured
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import hCore

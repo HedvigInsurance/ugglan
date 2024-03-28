@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import hCore
 import hGraphQL
 
@@ -53,7 +54,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.terminatesOn = terminatesOn
     }
 
-    var formattedSSN: String? {
+    public var formattedSSN: String? {
         return SSN?.replacingOccurrences(of: "-", with: "")
     }
 
@@ -68,53 +69,42 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
     }
 }
 
-public struct CoInsureIntentdModel: Codable, Hashable, Equatable {
-    let id: String
-    let activationDate: String
-    let currentPremium: MonetaryAmount
-    let newPremium: MonetaryAmount
-    let state: String
+public enum StatusPillType {
+    case added
+    case deleted
+
+    public func text(date: String) -> String {
+        switch self {
+        case .added:
+            return L10n.contractAddCoinsuredActiveFrom(date)
+        case .deleted:
+            return L10n.contractAddCoinsuredActiveUntil(date)
+        }
+    }
 }
 
-extension String {
-    // converts to a 12 digit personal number
-    var calculate12DigitSSN: String {
-        let formattedSSN = self.replacingOccurrences(of: "-", with: "")
-        if formattedSSN.count == 10 {
-            let ssnLastTwoDigitsOfYear = formattedSSN.prefix(2)
-            let currentYear = Calendar.current.component(.year, from: Date())
-            let firstTwoDigitsOfTheYear = currentYear / 100
-            let lastTwoDigitsOfTheYear = currentYear % 100
-
-            if let ssnLastTwoDigits = Int(ssnLastTwoDigitsOfYear),
-                ssnLastTwoDigits > lastTwoDigitsOfTheYear
-            {
-                return String(firstTwoDigitsOfTheYear - 1) + self
-            } else {
-                return String(firstTwoDigitsOfTheYear) + self
-            }
-        } else {
-            return self
-        }
+public struct CoInsuredListType: Hashable, Identifiable {
+    public let id = UUID().uuidString
+    public init(
+        coInsured: CoInsuredModel,
+        type: StatusPillType? = nil,
+        date: String? = nil,
+        locallyAdded: Bool,
+        isContractOwner: Bool? = nil,
+        isEmpty: Bool? = false
+    ) {
+        self.coInsured = coInsured
+        self.type = type
+        self.date = date
+        self.locallyAdded = locallyAdded
+        self.isContractOwner = isContractOwner
+        self.isEmpty = isEmpty
     }
 
-    var calculate10DigitBirthDate: String {
-        if let date = self.localDateToDate ?? self.localBirthDateStringToDate {
-            return date.localDateString
-        }
-        return ""
-    }
-
-    var birtDateDisplayFormat: String {
-        if let date = self.localDateToDate ?? self.localBirthDateStringToDate {
-            return date.localBirthDateString
-        }
-        return ""
-    }
-
-    var displayFormatSSN: String? {
-        let birthDate = self.prefix(8)
-        let lastFourDigits = String(self.suffix(4))
-        return birthDate + "-" + lastFourDigits
-    }
+    public var coInsured: CoInsuredModel
+    public var type: StatusPillType?
+    public var date: String?
+    public var locallyAdded: Bool
+    var isContractOwner: Bool?
+    public var isEmpty: Bool?
 }
