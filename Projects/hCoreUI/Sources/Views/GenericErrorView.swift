@@ -60,16 +60,17 @@ public struct GenericErrorView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 16) {
+        let imageDimension: CGFloat = useLargeIcon ? 40 : 24
+        return VStack(spacing: 16) {
             switch icon {
             case .triangle:
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                    .frame(width: useLargeIcon ? 40 : 24, height: useLargeIcon ? 40 : 24)
+                    .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.amberElement)
             case .circle:
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
-                    .frame(width: useLargeIcon ? 40 : 24, height: useLargeIcon ? 40 : 24)
+                    .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.blueElement)
             }
             VStack {
