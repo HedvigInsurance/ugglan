@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Foundation
 import hCore
 

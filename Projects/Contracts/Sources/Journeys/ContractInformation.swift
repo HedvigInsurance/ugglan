@@ -1,4 +1,5 @@
 import Combine
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import SwiftUI
@@ -6,7 +7,6 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore

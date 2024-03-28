@@ -2,7 +2,7 @@ import Foundation
 
 extension String {
     // converts to a 12 digit personal number
-    var calculate12DigitSSN: String {
+    public var calculate12DigitSSN: String {
         let formattedSSN = self.replacingOccurrences(of: "-", with: "")
         if formattedSSN.count == 10 {
             let ssnLastTwoDigitsOfYear = formattedSSN.prefix(2)

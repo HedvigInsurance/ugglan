@@ -1,5 +1,6 @@
 import Contracts
 import EditCoInsured
+import EditCoInsuredShared
 import Presentation
 import hCore
 

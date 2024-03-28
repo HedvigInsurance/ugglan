@@ -1,5 +1,5 @@
+import EditCoInsuredShared
 import Presentation
-import hCore
 
 public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)

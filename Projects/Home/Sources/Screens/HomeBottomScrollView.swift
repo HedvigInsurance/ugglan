@@ -1,12 +1,12 @@
 import Apollo
 import Combine
 import Contracts
+import EditCoInsuredShared
 import Payment
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel

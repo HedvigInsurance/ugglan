@@ -2,6 +2,7 @@ import Chat
 import Claims
 import Contracts
 import EditCoInsured
+import EditCoInsuredShared
 import Flow
 import Forever
 import Foundation

@@ -1,5 +1,6 @@
 import Apollo
 import Contracts
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import SwiftUI
