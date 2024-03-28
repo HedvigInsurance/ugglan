@@ -287,7 +287,7 @@ extension QuickAction {
     public static func cancellation() -> QuickAction {
         QuickAction(
             id: "cancellation",
-            displayTitle: L10n.hcQuickActionsTitle,
+            displayTitle: L10n.hcQuickActionsTerminationTitle,
             displaySubtitle: L10n.hcQuickActionsTerminationSubtitle,
             layout: nil
         )

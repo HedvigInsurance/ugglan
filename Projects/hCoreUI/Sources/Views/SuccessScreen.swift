@@ -11,8 +11,7 @@ public struct SuccessScreen: View {
     let title: String
     let subTitle: String?
     let withButtons: Bool
-    let successViewButtonAction: (() -> Void)?
-    @Environment(\.hUsePrimaryButton) var usePrimaryButton
+    let buttons: SuccessScreenButtonConfig?
     let icon: SuccessScreenIcon
 
     public init(
@@ -22,20 +21,20 @@ public struct SuccessScreen: View {
         self.title = title
         self.withButtons = false
         self.subTitle = nil
-        self.successViewButtonAction = nil
+        self.buttons = nil
         self.icon = icon ?? .tick
     }
 
     public init(
         successViewTitle: String,
         successViewBody: String,
-        successViewButtonAction: @escaping () -> Void,
+        buttons: SuccessScreenButtonConfig? = nil,
         icon: SuccessScreenIcon? = nil
     ) {
-        self.withButtons = true
         self.title = successViewTitle
         self.subTitle = successViewBody
-        self.successViewButtonAction = successViewButtonAction
+        self.buttons = buttons
+        self.withButtons = buttons != nil
         self.icon = icon ?? .tick
     }
 
@@ -70,19 +69,19 @@ public struct SuccessScreen: View {
                     Spacer()
                 }
                 hSection {
-                    ZStack {
-                        if usePrimaryButton {
+                    VStack(spacing: 8) {
+                        if let primaryButton = buttons?.primaryButton {
                             hButton.LargeButton(type: .primary) {
-                                successViewButtonAction?()
+                                primaryButton.buttonAction()
                             } content: {
-                                hText(L10n.generalDoneButton)
+                                hText(primaryButton.buttonTitle ?? L10n.generalDoneButton)
                             }
-
-                        } else {
+                        }
+                        if let ghostButton = buttons?.ghostButton {
                             hButton.LargeButton(type: .ghost) {
-                                successViewButtonAction?()
+                                ghostButton.buttonAction()
                             } content: {
-                                hText(L10n.generalCloseButton)
+                                hText(ghostButton.buttonTitle ?? L10n.generalCloseButton)
                             }
                         }
                     }
@@ -106,9 +105,32 @@ public struct SuccessScreen: View {
     }
 }
 
+public struct SuccessScreenButtonConfig {
+    fileprivate let primaryButton: SuccessScreenButton?
+    fileprivate let ghostButton: SuccessScreenButton?
+
+    public init(
+        primaryButton: SuccessScreenButton? = nil,
+        ghostButton: SuccessScreenButton? = nil
+    ) {
+        self.primaryButton = primaryButton
+        self.ghostButton = ghostButton
+    }
+
+    public struct SuccessScreenButton {
+        fileprivate let buttonTitle: String?
+        fileprivate let buttonAction: () -> Void
+
+        public init(buttonTitle: String? = nil, buttonAction: @escaping () -> Void) {
+            self.buttonTitle = buttonTitle
+            self.buttonAction = buttonAction
+        }
+    }
+}
+
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SuccessScreen(title: "SUCCESS")
+        SuccessScreen(successViewTitle: "SUCCESS", successViewBody: "success")
     }
 }
 
@@ -136,22 +158,5 @@ extension EnvironmentValues {
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
-    }
-}
-
-private struct EnvironmentHUsePrimaryButton: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hUsePrimaryButton: Bool {
-        get { self[EnvironmentHUsePrimaryButton.self] }
-        set { self[EnvironmentHUsePrimaryButton.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUsePrimaryButton: some View {
-        self.environment(\.hUsePrimaryButton, true)
     }
 }

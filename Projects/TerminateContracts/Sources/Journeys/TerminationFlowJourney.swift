@@ -3,6 +3,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public class TerminationFlowJourney {
 
@@ -155,13 +156,27 @@ public class TerminationFlowJourney {
                 successViewBody: isDeletion
                     ? L10n.terminationFlowSuccessSubtitleWithoutDate
                     : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
-                successViewButtonAction: {
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.dismissTerminationFlow(afterCancellationFinished: true))
-                },
+                buttons: .init(
+                    primaryButton: .init(buttonAction: {
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        store.send(.dismissTerminationFlow(afterCancellationFinished: true))
+                    }),
+                    ghostButton: .init(
+                        buttonTitle: "Share feedback",
+                        buttonAction: {
+                            log.addUserAction(type: .click, name: "terminationSurvey")
+                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                            if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
+                                store.send(.dismissTerminationFlow(afterCancellationFinished: true))
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                    store.send(.goToUrl(url: surveyToURL))
+                                }
+                            }
+                        }
+                    )
+                ),
                 icon: .circularTick
             )
-            .hUsePrimaryButton
         ) {
             action in
             getScreen(for: action)

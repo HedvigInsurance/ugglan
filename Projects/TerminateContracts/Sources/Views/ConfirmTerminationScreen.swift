@@ -57,7 +57,6 @@ struct ConfirmTerminationScreen: View {
             config?.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
         )
     }
-
 }
 
 struct TerminationDeleteScreen_Previews: PreviewProvider {
