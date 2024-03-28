@@ -129,7 +129,6 @@ extension AppDelegate {
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
 
                     let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                         .filter({ $0.canTerminate })

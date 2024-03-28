@@ -12,8 +12,10 @@ public class TerminationFlowJourney {
         GroupJourney {
             if configs.count == 1, let config = configs.first {
                 openSetTerminationDateLandingScreen(config: config, style: .modally(presentationStyle: .overFullScreen))
-            } else {
+            } else if configs.count > 1 {
                 openSelectInsuranceScreen(configs: configs)
+            } else {
+                openTerminationFailScreen()
             }
         }
         .onAction(TerminationContractStore.self) { action, pre in
