@@ -140,11 +140,14 @@ struct SetTerminationDateLandingScreen: View {
                     HStack {
                         hRow {
                             hText(L10n.terminationFlowIUnderstandText)
+                                .foregroundColor(hColorScheme(light: hTextColor.primary, dark: hTextColor.negative))
                             Spacer()
                             if hasAgreedToTerms {
                                 HStack {
                                     Image(uiImage: hCoreUIAssets.tick.image)
-                                        .foregroundColor(hTextColor.negative)
+                                        .foregroundColor(
+                                            hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
+                                        )
                                 }
                                 .frame(width: 24, height: 24)
                                 .background(
@@ -157,15 +160,27 @@ struct SetTerminationDateLandingScreen: View {
                                     .frame(width: 24, height: 24)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                                            .strokeBorder(hBorderColor.translucentTwo, lineWidth: 2)
+                                            .strokeBorder(
+                                                hColorScheme(
+                                                    light: hBorderColor.translucentTwo,
+                                                    dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
+                                                ),
+                                                lineWidth: 2
+                                            )
                                             .animation(.easeInOut)
                                     )
+                                    .hUseLightMode
 
                             }
                         }
                         .background(
                             Squircle.default()
-                                .fill(Color.white)
+                                .fill(
+                                    hColorScheme(
+                                        light: hGrayscaleTranslucent.offWhiteTranslucentInverted,
+                                        dark: hTextColor.primaryTranslucent
+                                    )
+                                )
                         )
                     }
                 }
