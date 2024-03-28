@@ -41,9 +41,11 @@ struct DirectDebitResult: View {
             SuccessScreen(
                 successViewTitle: type.headingText,
                 successViewBody: type.messageText,
-                successViewButtonAction: {
-                    store.send(.dismissPayment)
-                }
+                buttons: .init(
+                    ghostButton: .init(buttonAction: {
+                        store.send(.dismissPayment)
+                    })
+                )
             )
         case .failure:
             GenericErrorView(

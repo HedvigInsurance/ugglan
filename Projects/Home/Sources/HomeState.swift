@@ -207,6 +207,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             allQuickActions.append(.editCoInsured())
         }
 
+        let canTerminateContracts = !contractStore.state.activeContracts.filter({ $0.canTerminate }).isEmpty
+        if Dependencies.featureFlags().isTerminationFlowEnabled && canTerminateContracts {
+            allQuickActions.append(.cancellation())
+        }
+
         if Dependencies.featureFlags().isTravelInsuranceEnabled
             && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
         {
@@ -275,6 +280,15 @@ extension QuickAction {
             id: "payments",
             displayTitle: L10n.hcQuickActionsPaymentsTitle,
             displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
+            layout: nil
+        )
+    }
+
+    public static func cancellation() -> QuickAction {
+        QuickAction(
+            id: "cancellation",
+            displayTitle: L10n.hcQuickActionsTerminationTitle,
+            displaySubtitle: L10n.hcQuickActionsTerminationSubtitle,
             layout: nil
         )
     }

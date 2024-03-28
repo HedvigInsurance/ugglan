@@ -13,6 +13,7 @@ public struct hFloatingField: View {
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
+    @Environment(\.hFieldLockedState) var isLocked
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -36,24 +37,26 @@ public struct hFloatingField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                hFieldLabel(
-                    placeholder: placeholder,
-                    animate: $animate,
-                    error: $error,
-                    shouldMoveLabel: shouldMoveLabel
-                )
-                if !value.isEmpty {
-                    HStack {
+            HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: shouldMoveLabel
+                    )
+                    if !value.isEmpty {
                         getTextLabel
                             .frame(height: hWithoutFixedHeight ?? false ? .infinity : HFontTextStyle.title3.fontSize)
-                        Spacer()
-                        fieldTrailingView
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, value.isEmpty ? 0 : 10)
+
+                Spacer()
+                fieldTrailingView
+
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, value.isEmpty ? 0 : 10)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -77,7 +80,7 @@ public struct hFloatingField: View {
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if isEnabled {
+        if isEnabled && !isLocked {
             hTextColor.primary
         } else {
             hTextColor.secondary
@@ -161,5 +164,9 @@ extension EnvironmentValues {
 extension View {
     public var hFieldLockedState: some View {
         self.environment(\.hFieldLockedState, true)
+    }
+
+    public func hFieldSetLockedState(to value: Bool) -> some View {
+        self.environment(\.hFieldLockedState, value)
     }
 }

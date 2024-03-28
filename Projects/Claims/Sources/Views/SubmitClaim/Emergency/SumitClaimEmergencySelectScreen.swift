@@ -15,7 +15,7 @@ struct SumitClaimEmergencySelectScreen: View {
     }
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .title1, title())
+            .hFormTitle(title: .init(.small, .title1, title()))
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {

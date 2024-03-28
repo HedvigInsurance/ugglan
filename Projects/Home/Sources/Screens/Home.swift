@@ -218,6 +218,8 @@ extension HomeView {
         ) { action in
             if case let .openFreeTextChat(type) = action {
                 resultJourney(.openFreeTextChat(topic: type))
+            } else if case .dismissHelpCenter = action {
+                resultJourney(.dismissHelpCenter)
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
             } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
@@ -260,6 +262,7 @@ public enum HomeResult {
     case startCoInsuredFlow(configs: [InsuredPeopleConfig])
     case goToQuickAction(quickAction: QuickAction)
     case goToURL(url: URL)
+    case dismissHelpCenter
 }
 
 struct Active_Preview: PreviewProvider {

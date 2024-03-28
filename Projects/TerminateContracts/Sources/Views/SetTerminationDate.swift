@@ -34,7 +34,7 @@ struct SetTerminationDate: View {
                             }
                         },
                         cancelAction: {
-                            store.send(.dismissTerminationFlow)
+                            store.send(.goBack)
                         },
                         date: $terminationDate,
                         config: .init(

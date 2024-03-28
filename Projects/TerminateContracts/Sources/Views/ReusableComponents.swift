@@ -3,24 +3,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DisplayContractTable: View {
-    let config: TerminationConfirmConfig?
-    let terminationDate: String
-
-    var body: some View {
-        hSection {
-            if let config = config {
-                ContractRow(
-                    image: config.image?.bgImage,
-                    terminationMessage: L10n.contractStatusToBeTerminated(terminationDate),
-                    contractDisplayName: config.contractDisplayName,
-                    contractExposureName: config.contractExposureName
-                )
-            }
-        }
-    }
-}
-
 struct DisplayQuestionView: View {
     @PresentableStore var store: TerminationContractStore
     let terminationQuestions: [TerminationQuestion] = [

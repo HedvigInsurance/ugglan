@@ -106,7 +106,7 @@ public struct MovingFlowJourneyNew {
                 items: {
                     let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     return store.state.movingFlowModel?.extraBuildingTypes
-                        .compactMap({ (object: $0, displayName: $0.translatedValue) }) ?? []
+                        .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
                 }(),
                 preSelectedItems: {
                     if let currentlySelected {

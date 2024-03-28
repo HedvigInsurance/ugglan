@@ -786,6 +786,13 @@ public struct hGrayscaleTranslucent {
         )
     }
 
+    public static var offWhiteTranslucentInverted: some hColor {
+        return hColorScheme(
+            light: Color(hexString: "FFFFFF").opacity(0.9),
+            dark: Color(hexString: "#121212").opacity(0.2)
+        )
+    }
+
     public static var greyScaleTranslucent50: some hColor {
         return hColorScheme(
             light: Color(hexString: "#121212").opacity(0.02),
@@ -811,6 +818,12 @@ public struct hGrayscaleTranslucent {
         return hColorScheme(
             light: Color(hexString: "#121212").opacity(0.11),
             dark: Color(hexString: "#FAFAFA").opacity(0.89)
+        )
+    }
+
+    public static var greyScaleTranslucent300Light: some hColor {
+        return hColorScheme(
+            Color(hexString: "#121212").opacity(0.11)
         )
     }
 

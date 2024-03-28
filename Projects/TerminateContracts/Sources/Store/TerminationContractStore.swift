@@ -17,7 +17,7 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return await executeAsFiniteSignal(loadingType: .startTermination) { [weak self] in
+            return await executeAsFiniteSignal(loadingType: .getInitialStep) { [weak self] in
                 try await self?.terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
@@ -46,7 +46,6 @@ public final class TerminationContractStore: LoadingStateStore<
         switch action {
         case let .startTermination(config):
             newState.currentTerminationContext = nil
-            newState.terminationContractId = nil
             newState.terminationDateStep = nil
             newState.terminationDeleteStep = nil
             newState.successStep = nil
@@ -54,18 +53,13 @@ public final class TerminationContractStore: LoadingStateStore<
             newState.config = config
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context
-        case let .setTerminationContractId(id):
-            newState.terminationContractId = id
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSetTerminationDateScreen))
-                }
             case let .setTerminationDeletion(model):
+                newState.config?.isDeletion = true
                 newState.terminationDeleteStep = model
-                send(.navigationAction(action: .openTerminationDeletionScreen))
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])
@@ -77,8 +71,6 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
-        case .setTerminationisDeletion:
-            newState.config?.isDeletion = true
         default:
             break
         }

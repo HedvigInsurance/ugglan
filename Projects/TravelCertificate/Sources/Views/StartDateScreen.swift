@@ -20,7 +20,7 @@ struct StartDateScreen: View {
         ) { travelInsuranceModel in
             hForm {}
                 .sectionContainerStyle(.transparent)
-                .hFormTitle(.standard, .title1, L10n.TravelCertificate.whenIsYourTrip)
+                .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whenIsYourTrip))
                 .hDisableScroll
                 .hFormAttachToBottom {
                     VStack(spacing: 16) {
