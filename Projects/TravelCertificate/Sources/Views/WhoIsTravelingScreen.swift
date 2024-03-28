@@ -30,11 +30,11 @@ struct WhoIsTravelingScreen: View {
                         needsMissingInfo: false
                     )
                     var allValues = [
-                        (object: insuranceHolder, displayName: DisplayString(title: insuranceHolder.fullName ?? ""))
+                        (object: insuranceHolder, displayName: CheckboxItemModel(title: insuranceHolder.fullName ?? ""))
                     ]
                     let allCoInsuredOnContract =
                         contract?.coInsured.filter({ !$0.hasMissingInfo })
-                        .map { (object: $0, displayName: DisplayString(title: $0.fullName ?? "")) } ?? []
+                        .map { (object: $0, displayName: CheckboxItemModel(title: $0.fullName ?? "")) } ?? []
                     allValues.append(contentsOf: allCoInsuredOnContract)
                     return allValues
                 }(),

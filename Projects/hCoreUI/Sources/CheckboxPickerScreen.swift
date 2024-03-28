@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct DisplayString: Hashable {
+public struct CheckboxItemModel: Hashable {
     let title: String
     let subTitle: String?
 
@@ -15,7 +15,7 @@ public struct DisplayString: Hashable {
 }
 
 public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
-    typealias PickerModel = (object: T, displayName: DisplayString)
+    typealias PickerModel = (object: T, displayName: CheckboxItemModel)
     private var items: [PickerModel]
     private let preSelectedItems: [T]
     private let onSelected: ([(object: T?, displayName: String?)]) -> Void
@@ -37,6 +37,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
     @Environment(\.hUseColoredCheckbox) var coloredCheckBox
+    //    @Environment(\.hFieldSize) var size
 
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
@@ -44,7 +45,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private var fieldSize: hFieldSize
     private let manualInputId = "manualInputId"
     public init(
-        items: [(object: T, displayName: DisplayString)],
+        items: [(object: T, displayName: CheckboxItemModel)],
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
@@ -84,6 +85,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 self.fieldSize = .large
             }
         }
+
         self.infoCard = infoCard
         self.title = title
         self.subTitle = subTitle
@@ -412,7 +414,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
 
     struct ModelForPreview: Equatable, Hashable {
         let id: String
-        let name: DisplayString
+        let name: CheckboxItemModel
     }
     static var previews: some View {
         VStack {

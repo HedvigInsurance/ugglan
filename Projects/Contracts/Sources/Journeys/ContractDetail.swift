@@ -210,30 +210,6 @@ extension ContractDetail {
             }
         }
     }
-
-    public var terminationErrorJourney: some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: GenericErrorView(
-                description: L10n.contractDetailsError,
-                buttons: .init(
-                    actionButton: .init(
-                        buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissContractDetailNavigation)
-                        }
-                    )
-                )
-            )
-        ) { action in
-            if case .goToFreeTextChat = action {
-                DismissJourney()
-            } else if case .dismissContractDetailNavigation = action {
-                DismissJourney()
-            }
-        }
-    }
 }
 
 class ContractDetailsViewModel: ObservableObject {

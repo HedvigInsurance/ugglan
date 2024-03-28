@@ -110,9 +110,9 @@ struct SetTerminationDateLandingScreen: View {
                         placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
                             store.send(.navigationAction(action: .openTerminationDatePickerScreen))
-                        },
-                        lockedState: (termination.terminationDateStep?.date != nil) ? false : true
+                        }
                     )
+                    .hFieldSetLockedState(to: (termination.terminationDateStep?.date != nil) ? false : true)
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                     }

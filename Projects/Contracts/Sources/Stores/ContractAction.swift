@@ -38,7 +38,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
     case openContractDetailErrorScreen
-    case openTerminationErrorScreen
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
     case dismissContractDetailNavigation

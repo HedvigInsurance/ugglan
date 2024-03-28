@@ -283,7 +283,7 @@ public class TerminationFlowJourney {
                     let items = configs.map({
                         (
                             object: $0,
-                            displayName: DisplayString(
+                            displayName: CheckboxItemModel(
                                 title: $0.contractDisplayName,
                                 subTitle: $0.contractExposureName
                             )
@@ -309,10 +309,10 @@ public class TerminationFlowJourney {
                 disableIfNoneSelected: true,
                 hButtonText: L10n.generalContinueButton,
                 title: L10n.terminationFlowCancellationTitle,
-                subTitle: L10n.terminationFlowChooseContractSubtitle,
-                fieldSize: .small
+                subTitle: L10n.terminationFlowChooseContractSubtitle
             )
             .hUseColoredCheckbox
+            .hFieldSize(.small)
             .toolbar {
                 ToolbarItem(
                     placement: .topBarLeading

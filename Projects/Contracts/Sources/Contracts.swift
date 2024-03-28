@@ -107,14 +107,6 @@ extension Contracts {
                 )
             } else if case .openContractDetailErrorScreen = action {
                 ContractDetail(id: "", title: "").contractDetailErrorJourney
-            } else if case .openTerminationErrorScreen = action {
-                HostingJourney(
-                    rootView: GenericErrorView(
-                        title: "Couldn'terminate contract",
-                        description: "description",
-                        buttons: .init()
-                    )
-                )
             } else if case let .openCrossSellingWebUrl(url) = action {
                 resultJourney(.openCrossSellingWebUrl(url: url))
             } else if case .goToFreeTextChat = action {

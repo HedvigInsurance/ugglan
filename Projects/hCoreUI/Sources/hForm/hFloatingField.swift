@@ -10,10 +10,10 @@ public struct hFloatingField: View {
     @Binding var error: String?
     private var value: String
     private let onTap: () -> Void
-    private let lockedState: Bool
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
+    @Environment(\.hFieldLockedState) var isLocked
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -26,15 +26,13 @@ public struct hFloatingField: View {
         value: String,
         placeholder: String? = nil,
         error: Binding<String?>? = nil,
-        onTap: @escaping () -> Void,
-        lockedState: Bool = false
+        onTap: @escaping () -> Void
     ) {
 
         self.placeholder = placeholder ?? ""
         self.onTap = onTap
         self.value = value
         self._error = error ?? Binding.constant(nil)
-        self.lockedState = lockedState
     }
 
     public var body: some View {
@@ -82,7 +80,7 @@ public struct hFloatingField: View {
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if isEnabled && !lockedState {
+        if isEnabled && !isLocked {
             hTextColor.primary
         } else {
             hTextColor.secondary
@@ -166,5 +164,9 @@ extension EnvironmentValues {
 extension View {
     public var hFieldLockedState: some View {
         self.environment(\.hFieldLockedState, true)
+    }
+
+    public func hFieldSetLockedState(to value: Bool) -> some View {
+        self.environment(\.hFieldLockedState, value)
     }
 }

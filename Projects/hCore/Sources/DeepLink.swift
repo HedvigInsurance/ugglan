@@ -44,7 +44,7 @@ public enum DeepLink: String, Codable {
         case .moveContract:
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
-            return "Terminate contract"
+            return L10n.hcQuickActionsTerminationTitle
         }
     }
 
