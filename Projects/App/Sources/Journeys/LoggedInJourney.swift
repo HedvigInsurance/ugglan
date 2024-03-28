@@ -77,13 +77,7 @@ extension AppJourney {
             case let .startNewTermination(contract):
                 TerminationFlowJourney.start(
                     for: [
-                        TerminationConfirmConfig(
-                            contractId: contract.id,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                            contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.currentAgreement?.activeFrom,
-                            fromSelectInsurances: true
-                        )
+                        contract.asTerminationConfirmConfig
                     ]
                 ) { success in
                     if success {

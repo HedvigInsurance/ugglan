@@ -299,8 +299,7 @@ public class TerminationFlowJourney {
                             contractId: selectedContract.contractId,
                             contractDisplayName: selectedContract.contractDisplayName,
                             contractExposureName: selectedContract.contractExposureName,
-                            activeFrom: selectedContract.activeFrom,
-                            fromSelectInsurances: true
+                            activeFrom: selectedContract.activeFrom
                         )
                         store.send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
                     }

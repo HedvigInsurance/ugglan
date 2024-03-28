@@ -133,13 +133,7 @@ extension AppDelegate {
                     let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                         .filter({ $0.canTerminate })
                         .map({
-                            .init(
-                                contractId: $0.id,
-                                contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
-                                contractExposureName: $0.exposureDisplayName,
-                                activeFrom: $0.currentAgreement?.activeFrom,
-                                fromSelectInsurances: true
-                            )
+                            $0.asTerminationConfirmConfig
                         })
                     let vc = TerminationFlowJourney.start(for: contractsConfig) { success in
                         if success {
