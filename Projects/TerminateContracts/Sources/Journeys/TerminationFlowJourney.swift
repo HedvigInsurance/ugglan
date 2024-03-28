@@ -8,21 +8,28 @@ import hGraphQL
 public class TerminationFlowJourney {
 
     @JourneyBuilder
-    public static func start(for configs: [TerminationConfirmConfig]) -> some JourneyPresentation {
+    public static func start(
+        for configs: [TerminationConfirmConfig],
+        onDismissing: @escaping (_ success: Bool) -> Void
+    ) -> some JourneyPresentation {
         GroupJourney {
             if configs.count == 1, let config = configs.first {
                 openSetTerminationDateLandingScreen(config: config, style: .modally(presentationStyle: .overFullScreen))
-            } else if configs.count > 1 {
-                openSelectInsuranceScreen(configs: configs)
             } else {
-                openTerminationFailScreen()
+                openSelectInsuranceScreen(configs: configs)
             }
         }
         .onAction(TerminationContractStore.self) { action, pre in
-            if case .dismissTerminationFlow = action {
-                pre.bag.dispose(on: .main, after: TimeInterval(0))
+            if case let .dismissTerminationFlow(success) = action {
+                pre.viewController.dismiss(animated: true) {
+                    pre.bag.dispose()
+                    onDismissing(success)
+                }
             } else if case .goToFreeTextChat = action {
-                pre.bag.dispose(on: .main, after: TimeInterval(0))
+                pre.viewController.dismiss(animated: true) {
+                    pre.bag.dispose()
+                    onDismissing(false)
+                }
             }
         }
     }

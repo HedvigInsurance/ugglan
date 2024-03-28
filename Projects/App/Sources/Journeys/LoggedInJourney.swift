@@ -85,7 +85,15 @@ extension AppJourney {
                             fromSelectInsurances: true
                         )
                     ]
-                )
+                ) { success in
+                    if success {
+                        guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
+                            return
+                        }
+                        guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
+                        navigation.popToRootViewController(animated: true)
+                    }
+                }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

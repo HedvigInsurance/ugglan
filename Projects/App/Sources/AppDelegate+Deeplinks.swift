@@ -141,7 +141,23 @@ extension AppDelegate {
                                 fromSelectInsurances: true
                             )
                         })
-                    let vc = TerminationFlowJourney.start(for: contractsConfig)
+                    let vc = TerminationFlowJourney.start(for: contractsConfig) { success in
+                        if success {
+                            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                            ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                            guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
+                            else { return }
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.dismissHelpCenter)
+                            chatStore.send(.navigation(action: .closeChat))
+
+                            guard let navigation = tabBar.selectedViewController as? UINavigationController else {
+                                return
+                            }
+                            navigation.popToRootViewController(animated: true)
+                        }
+                    }
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }
