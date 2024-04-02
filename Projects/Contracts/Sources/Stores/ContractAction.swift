@@ -32,8 +32,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
 
-    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
-
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
     case openTerminatedContracts
@@ -98,4 +96,5 @@ public enum CoInsuredAction: Codable {
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
+    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
 }

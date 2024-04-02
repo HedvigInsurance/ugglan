@@ -59,10 +59,10 @@ struct ContractInformationView: View {
                                             && Dependencies.featureFlags().isEditCoInsuredEnabled
                                         {
                                             store.send(
-                                                .openEditCoInsured(
+                                                .coInsuredNavigationAction(action:                                                 .openEditCoInsured(
                                                     config: .init(contract: contract),
                                                     fromInfoCard: false
-                                                )
+                                                ))
                                             )
                                         } else {
                                             store.send(.contractEditInfo(id: id))
@@ -202,7 +202,7 @@ struct ContractInformationView: View {
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
                 store.send(
-                    .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
+                    .coInsuredNavigationAction(action: .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true))
                 )
             }
         }
@@ -412,7 +412,7 @@ public struct CoInsuredInfoView: View {
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
                         store.send(
-                            .openEditCoInsured(config: config, fromInfoCard: true)
+                            .coInsuredNavigationAction(action: .openEditCoInsured(config: config, fromInfoCard: true))
                         )
                     }
                 )

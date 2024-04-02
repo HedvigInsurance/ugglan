@@ -115,7 +115,7 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .openEditCoInsured(config, fromInfoCard) = action {
+            } else if case let .coInsuredNavigationAction(action: .openEditCoInsured(config, fromInfoCard)) = action {
                 resultJourney(.handleCoInsured(config: config, fromInfoCard: fromInfoCard))
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(config)) = action {
                 resultJourney(.openMissingCoInsuredAlert(config: config))
