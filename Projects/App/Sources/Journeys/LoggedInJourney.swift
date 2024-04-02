@@ -13,7 +13,7 @@ import Profile
 import SafariServices
 import SwiftUI
 import TerminateContracts
-import TravelCertificate
+import TravelCertificateShared
 import hCore
 import hCoreUI
 

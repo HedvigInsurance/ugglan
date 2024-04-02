@@ -17,7 +17,6 @@ import Presentation
 import Profile
 import SwiftUI
 import TerminateContracts
-import TravelCertificate
 import UserNotifications
 import hCore
 import hCoreUI
@@ -275,8 +274,6 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-
-        let store: UgglanStore = globalPresentableStoreContainer.get()
         setupExperiments()
         observeNotificationsSettings()
         return true

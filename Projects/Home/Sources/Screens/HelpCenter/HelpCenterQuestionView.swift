@@ -1,6 +1,5 @@
 import Presentation
 import SwiftUI
-import TravelCertificate
 import hCore
 import hCoreUI
 

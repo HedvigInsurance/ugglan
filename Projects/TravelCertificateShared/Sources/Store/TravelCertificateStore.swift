@@ -10,6 +10,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
 >
 {
     @Inject var travelInsuranceClient: TravelInsuranceClient
+
     public override func effects(
         _ getState: @escaping () -> TravelInsuranceState,
         _ action: TravelInsuranceAction
@@ -68,7 +69,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
         case .travelCertificateSpecificationSet:
             break
         case let .setTravelInsurancesData(config):
-            removeLoading(for: .getTravelInsuranceSpecifications)
+            //            removeLoading(for: .getTravelInsuranceSpecifications)
             if let contractSpecification = config.travelCertificateSpecifications.first {
                 newState.travelInsuranceConfig = contractSpecification
                 newState.travelInsuranceModel = TravelInsuranceModel(
@@ -83,6 +84,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
 
             }
         case let .setTravelInsuranceData(config):
+
             newState.travelInsuranceModel = TravelInsuranceModel(
                 startDate: config.minStartDate,
                 minStartDate: config.minStartDate,
@@ -113,6 +115,7 @@ public final class TravelInsuranceStore: LoadingStateStore<
                 break
             }
         case .postTravelInsuranceForm:
+            break
             setLoading(for: .postTravelInsurance)
         case let .setDownloadUrl(url):
             newState.downloadURL = url

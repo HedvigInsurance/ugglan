@@ -2,9 +2,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "TravelCertificate",
+    name: "TravelCertificateShared",
     targets: Set([.framework]),
-    projects: ["hCore", "hCoreUI", "Contracts", "TravelCertificateShared"],
+    projects: ["hCore", "hCoreUI", "Contracts"],
     sdks: [],
-    includesGraphQL: false
+    includesGraphQL: true
 )

@@ -8,6 +8,7 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TravelCertificateShared
 import hCore
 import hGraphQL
 
@@ -99,7 +100,10 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
-                    let vc = TravelInsuranceJourney.travelCertificateModally()
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    let vc = TravelInsuranceJourney.travelCertificateModally(
+                        canCreateTravelInsurance: store.state.canCreateTravelInsurance
+                    )
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }

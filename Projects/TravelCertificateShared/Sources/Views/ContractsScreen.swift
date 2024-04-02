@@ -19,7 +19,7 @@ struct ContractsScreen: View {
                     state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
                 }
             ) { travelInsuranceModels in
-                if !travelInsuranceModels.isEmpty {
+                if !(travelInsuranceModels.isEmpty) {
                     CheckboxPickerScreen<TravelInsuranceContractSpecification>(
                         items: {
                             return travelInsuranceModels.map {

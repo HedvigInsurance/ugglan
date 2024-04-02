@@ -87,6 +87,7 @@ struct WhoIsTravelingScreen: View {
 class WhoIsTravelingViewModel: ObservableObject {
     let specifications: TravelInsuranceContractSpecification?
     @PresentableStore var store: TravelInsuranceStore
+
     init() {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         self.specifications = store.state.travelInsuranceConfig

@@ -6,6 +6,7 @@ import hCoreUI
 
 struct ListScreen: View {
     @PresentableStore var store: TravelInsuranceStore
+
     let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
     init(

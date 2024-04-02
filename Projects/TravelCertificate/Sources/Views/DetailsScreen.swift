@@ -1,4 +1,5 @@
 import SwiftUI
+import TravelCertificateShared
 import hCoreUI
 
 struct DetailsScreen: View {

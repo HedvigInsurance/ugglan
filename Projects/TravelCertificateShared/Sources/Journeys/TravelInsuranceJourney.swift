@@ -1,9 +1,29 @@
 import Flow
-import Foundation
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+
+public class TravelInsuranceJourney {
+    public static func travelCertificatePush(canCreateTravelInsurance: Bool) -> some JourneyPresentation {
+        return
+            TravelInsuranceFlowJourney.list(
+                canAddTravelInsurance: canCreateTravelInsurance,
+                style: .default,
+                infoButtonPlacement: .navigationBarTrailing
+            )
+            .showsBackButton
+    }
+    public static func travelCertificateModally(canCreateTravelInsurance: Bool) -> some JourneyPresentation {
+        return
+            TravelInsuranceFlowJourney.list(
+                canAddTravelInsurance: canCreateTravelInsurance,
+                style: .modally(presentationStyle: .overFullScreen),
+                infoButtonPlacement: .navigationBarLeading
+            )
+            .withJourneyDismissButton
+    }
+}
 
 public struct TravelInsuranceFlowJourney {
     static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
@@ -22,6 +42,7 @@ public struct TravelInsuranceFlowJourney {
             disposeBag.add(disposable)
         }
     }
+
     @JourneyBuilder
     static func start() -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()

@@ -12,7 +12,7 @@ import Payment
 import Presentation
 import Profile
 import TerminateContracts
-import TravelCertificate
+import TravelCertificateShared
 import hCore
 import hGraphQL
 

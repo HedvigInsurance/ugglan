@@ -3,6 +3,7 @@ import Home
 import Market
 import Presentation
 import SwiftUI
+import TravelCertificateShared
 import hCore
 import hCoreUI
 
@@ -142,7 +143,10 @@ extension ProfileView {
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
             } else if case .openTravelCertificate = action {
-                TravelInsuranceJourney.travelCertificatePush()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                TravelInsuranceJourney.travelCertificatePush(
+                    canCreateTravelInsurance: store.state.canCreateTravelInsurance
+                )
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {
