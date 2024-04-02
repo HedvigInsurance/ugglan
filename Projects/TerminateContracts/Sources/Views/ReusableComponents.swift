@@ -45,7 +45,7 @@ struct DisplayQuestionView: View {
             .sectionContainerStyle(.transparent)
             VStack(spacing: 4) {
                 ForEach(
-                    (store.state.config?.isDeletion ?? false) ? deletionQuestions : terminationQuestions,
+                    store.state.isDeletion ? deletionQuestions : terminationQuestions,
                     id: \.question
                 ) { question in
                     InfoExpandableView(
@@ -53,7 +53,7 @@ struct DisplayQuestionView: View {
                         text: question.answer,
                         questionClicked: {
                             let stringToLog =
-                                (store.state.config?.isDeletion ?? false)
+                                store.state.isDeletion
                                 ? "deletion question clicked" : "termination question clicked"
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }

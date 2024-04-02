@@ -18,10 +18,10 @@ struct ConfirmTerminationScreen: View {
             TerminationContractStore.self
         ) { state in
             state
-        } _: { termination in
+        } _: { state in
             GenericErrorView(
                 title: L10n.General.areYouSure,
-                description: terminationText(termination: termination),
+                description: terminationText(state: state),
                 icon: .triangle,
                 buttons: .init(
                     actionButtonAttachedToBottom:
@@ -49,12 +49,12 @@ struct ConfirmTerminationScreen: View {
 
     }
 
-    func terminationText(termination: TerminationContractState?) -> String {
-        if termination?.config?.isDeletion ?? false {
+    func terminationText(state: TerminationContractState) -> String {
+        if state.isDeletion {
             return L10n.terminationFlowConfirmationSubtitleDeletion
         }
         return L10n.terminationFlowConfirmationSubtitleTermination(
-            termination?.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
+            state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
         )
     }
 }

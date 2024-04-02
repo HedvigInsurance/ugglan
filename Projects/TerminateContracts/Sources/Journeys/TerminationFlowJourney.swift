@@ -42,7 +42,7 @@ public class TerminationFlowJourney {
                 let terminationDate =
                     store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 TerminationFlowJourney.openTerminationSuccessScreen(
-                    isDeletion: store.state.config?.isDeletion ?? false,
+                    isDeletion: store.state.isDeletion,
                     terminationDate: terminationDate
                 )
             } else if case .openTerminationDatePickerScreen = navigationAction {
@@ -255,7 +255,7 @@ public class TerminationFlowJourney {
             rootView: ConfirmTerminationScreen(
                 onSelected: {
                     let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    if store.state.config?.isDeletion ?? false {
+                    if store.state.isDeletion {
                         store.send(.sendConfirmDelete)
                     } else {
                         store.send(.sendTerminationDate)

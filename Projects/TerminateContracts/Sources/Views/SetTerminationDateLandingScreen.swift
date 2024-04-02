@@ -11,108 +11,112 @@ struct SetTerminationDateLandingScreen: View {
         PresentableStoreLens(
             TerminationContractStore.self,
             getter: { state in
+                state.isDeletion
+            }
+        ) { isDeletion in
+            hForm {}
+                .hFormTitle(
+                    title: .init(.standard, .title3, L10n.terminationFlowCancellationTitle, alignment: .leading),
+                    subTitle: .init(
+                        .standard,
+                        .title3,
+                        isDeletion ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
+                    )
+                )
+                .hFormAttachToBottom {
+                    VStack(spacing: 16) {
+                        VStack(spacing: 4) {
+                            displayInsuranceField
+                            displayTerminationDateField(isDeletion: isDeletion)
+                            displayImportantInformation
+                        }
+
+                        hSection {
+                            PresentableStoreLens(
+                                TerminationContractStore.self,
+                                getter: { state in
+                                    state
+                                }
+                            ) { state in
+                                VStack(spacing: 16) {
+                                    hButton.LargeButton(type: .primary) {
+                                        onSelected()
+                                    } content: {
+                                        hText(L10n.terminationButton, style: .standard)
+                                    }
+                                    .disabled(isCancelButtonDisabled(state: state))
+                                }
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                    .padding(.top, 16)
+                }
+        }
+        .presentableStoreLensAnimation(.default)
+    }
+
+    private var displayInsuranceField: some View {
+        PresentableStoreLens(
+            TerminationContractStore.self,
+            getter: { state in
+                state.config
+            }
+        ) { config in
+            if let config {
+                hSection {
+                    hRow {
+                        VStack(alignment: .leading) {
+                            hText(config.contractDisplayName)
+                            hText(config.contractExposureName, style: .standardSmall)
+                                .foregroundColor(hTextColor.secondaryTranslucent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func displayTerminationDateField(isDeletion: Bool) -> some View {
+        PresentableStoreLens(
+            TerminationContractStore.self,
+            getter: { state in
                 state
             }
-        ) { termination in
-            hForm {
-            }
-            .hFormTitle(
-                title: .init(.standard, .title3, L10n.terminationFlowCancellationTitle, alignment: .leading),
-                subTitle: .init(
-                    .standard,
-                    .title3,
-                    (termination.config?.isDeletion ?? false)
-                        ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
-                )
-            )
-        }
-        .hFormAttachToBottom {
-            PresentableStoreLens(
-                TerminationContractStore.self,
-                getter: { state in
-                    state
-                }
-            ) { termination in
-                VStack(spacing: 16) {
+        ) { state in
+            if isDeletion {
+                hSection {
                     VStack(spacing: 4) {
-                        if let config = termination.config {
-                            displayInsuranceField(config: config)
-                        }
-                        displayTerminationDateField(termination: termination)
-                        if let terminationDate = termination.terminationDateStep?.date {
-                            displayImportantInformation(terminationDate: terminationDate)
-                        }
-                    }
-
-                    hSection {
-                        VStack(spacing: 16) {
-                            hButton.LargeButton(type: .primary) {
-                                onSelected()
-                            } content: {
-                                hText(L10n.terminationButton, style: .standard)
+                        hFloatingField(
+                            value: L10n.terminationFlowToday,
+                            placeholder: L10n.terminationFlowDateFieldText,
+                            onTap: {
                             }
-                            .disabled(disableCancelButton(termination: termination))
+                        )
+                        .hFieldTrailingView {
+                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                .frame(width: 24, height: 24)
                         }
+                        .hFieldLockedState
+
+                        InfoCard(
+                            text:
+                                L10n.terminationFlowDeletionInfoCard,
+                            type: .info
+                        )
                     }
-                    .sectionContainerStyle(.transparent)
                 }
-                .padding(.top, 16)
-                .disableOn(TerminationContractStore.self, [.getInitialStep])
-                .trackLoading(TerminationContractStore.self, action: .sendTerminationDate)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func displayInsuranceField(config: TerminationConfirmConfig) -> some View {
-        hSection {
-            hRow {
-                VStack(alignment: .leading) {
-                    hText(config.contractDisplayName)
-                    hText(config.contractExposureName, style: .standardSmall)
-                        .foregroundColor(hTextColor.secondaryTranslucent)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func displayTerminationDateField(termination: TerminationContractState) -> some View {
-        if termination.config?.isDeletion ?? false {
-            hSection {
-                VStack(spacing: 4) {
-                    hFloatingField(
-                        value: L10n.terminationFlowToday,
-                        placeholder: L10n.terminationFlowDateFieldText,
-                        onTap: {
-                        }
-                    )
-                    .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lockSmall.image)
-                            .frame(width: 24, height: 24)
-                    }
-                    .hFieldLockedState
-
-                    InfoCard(
-                        text:
-                            L10n.terminationFlowDeletionInfoCard,
-                        type: .info
-                    )
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        } else {
-            VStack(spacing: 4) {
+                .sectionContainerStyle(.transparent)
+            } else if let terminationDateStep = state.terminationDateStep {
                 hSection {
                     hFloatingField(
-                        value: termination.terminationDateStep?.date?.displayDateDDMMMYYYYFormat
+                        value: terminationDateStep.date?.displayDateDDMMMYYYYFormat
                             ?? L10n.terminationFlowDateFieldPlaceholder,
                         placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
                             store.send(.navigationAction(action: .openTerminationDatePickerScreen))
                         }
                     )
-                    .hFieldSetLockedState(to: (termination.terminationDateStep?.date != nil) ? false : true)
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                     }
@@ -121,85 +125,95 @@ struct SetTerminationDateLandingScreen: View {
         }
     }
 
-    @ViewBuilder
-    private func displayImportantInformation(terminationDate: Date) -> some View {
-        hSection {
-            hRow {
-                VStack(spacing: 16) {
-                    VStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            hText(L10n.terminationFlowImportantInformationTitle)
-                            hText(
-                                L10n.terminationFlowImportantInformationText,
-                                style: .standardSmall
-                            )
-                            .foregroundColor(hTextColor.secondary)
-                        }
-                    }
-
-                    HStack {
-                        hRow {
-                            hText(L10n.terminationFlowIUnderstandText)
-                                .foregroundColor(hColorScheme(light: hTextColor.primary, dark: hTextColor.negative))
-                            Spacer()
-                            if hasAgreedToTerms {
-                                HStack {
-                                    Image(uiImage: hCoreUIAssets.tick.image)
-                                        .foregroundColor(
-                                            hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
-                                        )
+    private var displayImportantInformation: some View {
+        PresentableStoreLens(
+            TerminationContractStore.self,
+            getter: { state in
+                state.terminationDateStep?.date
+            }
+        ) { terminationDate in
+            if terminationDate != nil {
+                hSection {
+                    hRow {
+                        VStack(spacing: 16) {
+                            VStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    hText(L10n.terminationFlowImportantInformationTitle)
+                                    hText(
+                                        L10n.terminationFlowImportantInformationText,
+                                        style: .standardSmall
+                                    )
+                                    .foregroundColor(hTextColor.secondary)
                                 }
-                                .frame(width: 24, height: 24)
+                            }
+
+                            HStack {
+                                hRow {
+                                    hText(L10n.terminationFlowIUnderstandText)
+                                        .foregroundColor(
+                                            hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+                                        )
+                                    Spacer()
+                                    if hasAgreedToTerms {
+                                        HStack {
+                                            Image(uiImage: hCoreUIAssets.tick.image)
+                                                .foregroundColor(
+                                                    hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
+                                                )
+                                        }
+                                        .frame(width: 24, height: 24)
+                                        .background(
+                                            Squircle.default()
+                                                .fill(hSignalColor.greenElement)
+                                        )
+                                    } else {
+                                        Circle()
+                                            .fill(hBackgroundColor.clear)
+                                            .frame(width: 24, height: 24)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                                                    .strokeBorder(
+                                                        hColorScheme(
+                                                            light: hBorderColor.translucentTwo,
+                                                            dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
+                                                        ),
+                                                        lineWidth: 2
+                                                    )
+                                                    .animation(.easeInOut)
+                                            )
+                                            .hUseLightMode
+
+                                    }
+                                }
                                 .background(
                                     Squircle.default()
-                                        .fill(hSignalColor.greenElement)
-                                )
-                            } else {
-                                Circle()
-                                    .fill(hBackgroundColor.clear)
-                                    .frame(width: 24, height: 24)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                                            .strokeBorder(
-                                                hColorScheme(
-                                                    light: hBorderColor.translucentTwo,
-                                                    dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
-                                                ),
-                                                lineWidth: 2
+                                        .fill(
+                                            hColorScheme(
+                                                light: hGrayscaleTranslucent.offWhiteTranslucentInverted,
+                                                dark: hTextColor.primaryTranslucent
                                             )
-                                            .animation(.easeInOut)
-                                    )
-                                    .hUseLightMode
-
+                                        )
+                                )
                             }
                         }
-                        .background(
-                            Squircle.default()
-                                .fill(
-                                    hColorScheme(
-                                        light: hGrayscaleTranslucent.offWhiteTranslucentInverted,
-                                        dark: hTextColor.primaryTranslucent
-                                    )
-                                )
-                        )
                     }
-                }
-            }
-            .onTapGesture {
-                if !hasAgreedToTerms {
-                    hasAgreedToTerms = true
-                } else {
-                    hasAgreedToTerms = false
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            if !hasAgreedToTerms {
+                                hasAgreedToTerms = true
+                            } else {
+                                hasAgreedToTerms = false
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    private func disableCancelButton(termination: TerminationContractState) -> Bool {
-        let isDeletion = termination.config?.isDeletion ?? false
-        let hasSetTerminationDate = termination.terminationDateStep?.date != nil
-
-        return !isDeletion && (!hasSetTerminationDate || !hasAgreedToTerms)
+    private func isCancelButtonDisabled(state: TerminationContractState) -> Bool {
+        let hasSetTerminationDate = state.terminationDateStep?.date != nil
+        return !state.isDeletion && (!hasSetTerminationDate || !hasAgreedToTerms)
     }
 
     @hColorBuilder

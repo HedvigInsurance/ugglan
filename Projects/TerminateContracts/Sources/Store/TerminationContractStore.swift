@@ -58,7 +58,6 @@ public final class TerminationContractStore: LoadingStateStore<
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
             case let .setTerminationDeletion(model):
-                newState.config?.isDeletion = true
                 newState.terminationDeleteStep = model
             case let .setSuccessStep(model):
                 newState.successStep = model

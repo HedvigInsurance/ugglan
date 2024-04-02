@@ -3,7 +3,6 @@ public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
     public var contractDisplayName: String
     public var contractExposureName: String
     public var activeFrom: String?
-    public var isDeletion: Bool?
 
     public init(
         contractId: String,
