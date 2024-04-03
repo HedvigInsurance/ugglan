@@ -1,6 +1,7 @@
 import Foundation
 
 public class FeatureFlagsDemo: FeatureFlags {
+
     public init() {}
 
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
@@ -16,6 +17,7 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var paymentType: PaymentType = .trustly
     public var isHelpCenterEnabled: Bool = false
     public var isSubmitClaimEnabled: Bool = false
+    public var osVersionTooLow: Bool = false
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         loadingExperimentsSuccess = onComplete
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

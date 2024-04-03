@@ -16,6 +16,7 @@ public protocol FeatureFlags {
     var isSubmitClaimEnabled: Bool { get set }
     func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
     func updateContext(context: [String: String])
+    var osVersionTooLow: Bool { get set }
 }
 
 public enum PaymentType {

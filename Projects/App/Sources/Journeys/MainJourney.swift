@@ -13,6 +13,10 @@ extension AppJourney {
                 UpdateAppScreen.journey.onPresent {
                     Launch.shared.completeAnimationCallbacker.callAll()
                 }
+            } else if Dependencies.featureFlags().osVersionTooLow {
+                UpdateOSScreen.journey.onPresent {
+                    Launch.shared.completeAnimationCallbacker.callAll()
+                }
             } else {
                 switch ApplicationState.currentState {
                 case .onboardingChat, .onboarding, .offer:

@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import Profile
+import SwiftUI
 import hCore
 
 extension AppDelegate {
@@ -18,6 +19,7 @@ extension AppDelegate {
             "memberId": memberId,
             "appVersion": Bundle.main.appVersion,
             "market": Localization.Locale.currentLocale.market.rawValue,
+            "osVersion": UIDevice.current.systemVersion,
         ]
 
         let requiredDictionary = optionalDictionary.compactMapValues { $0 }
