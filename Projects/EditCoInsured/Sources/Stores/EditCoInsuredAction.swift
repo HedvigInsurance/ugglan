@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Presentation
 
 public enum EditCoInsuredAction: ActionProtocol, Hashable {

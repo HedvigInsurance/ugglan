@@ -1,5 +1,5 @@
 import Combine
-import EditCoInsured
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import SwiftUI
@@ -7,7 +7,6 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -60,9 +59,11 @@ struct ContractInformationView: View {
                                             && Dependencies.featureFlags().isEditCoInsuredEnabled
                                         {
                                             store.send(
-                                                .openEditCoInsured(
-                                                    config: .init(contract: contract),
-                                                    fromInfoCard: false
+                                                .coInsuredNavigationAction(
+                                                    action: .openEditCoInsured(
+                                                        config: .init(contract: contract),
+                                                        fromInfoCard: false
+                                                    )
                                                 )
                                             )
                                         } else {
@@ -203,7 +204,9 @@ struct ContractInformationView: View {
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
                 store.send(
-                    .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
+                    .coInsuredNavigationAction(
+                        action: .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
+                    )
                 )
             }
         }
@@ -390,5 +393,33 @@ private class ContractsInformationViewModel: ObservableObject {
                     locallyAdded: false
                 )
             }
+    }
+}
+
+public struct CoInsuredInfoView: View {
+    @PresentableStore var store: ContractStore
+
+    let text: String
+    let config: InsuredPeopleConfig
+    public init(
+        text: String,
+        config: InsuredPeopleConfig
+    ) {
+        self.text = text
+        self.config = config
+    }
+
+    public var body: some View {
+        InfoCard(text: text, type: .attention)
+            .buttons([
+                .init(
+                    buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                    buttonAction: {
+                        store.send(
+                            .coInsuredNavigationAction(action: .openEditCoInsured(config: config, fromInfoCard: true))
+                        )
+                    }
+                )
+            ])
     }
 }

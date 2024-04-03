@@ -1,5 +1,5 @@
 import Apollo
-import EditCoInsured
+import EditCoInsuredShared
 import Presentation
 import SwiftUI
 import TerminateContracts
@@ -31,8 +31,6 @@ public enum ContractAction: ActionProtocol, Hashable {
     case goToMovingFlow
     case goToFreeTextChat
     case openCrossSellingWebUrl(url: URL)
-
-    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
 
     case hasSeenCrossSells(value: Bool)
     case openDetail(contractId: String, title: String)
@@ -98,4 +96,5 @@ public enum CoInsuredAction: Codable {
 
 public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
     case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
+    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
 }

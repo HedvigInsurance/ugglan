@@ -59,9 +59,12 @@ struct EditContract: View {
                                 if Dependencies.featureFlags().isEditCoInsuredEnabled {
                                     if let contract {
                                         store.send(
-                                            .openEditCoInsured(
-                                                config: .init(contract: contract),
-                                                fromInfoCard: false
+                                            .coInsuredNavigationAction(
+                                                action:
+                                                    .openEditCoInsured(
+                                                        config: .init(contract: contract),
+                                                        fromInfoCard: false
+                                                    )
                                             )
                                         )
                                     }
