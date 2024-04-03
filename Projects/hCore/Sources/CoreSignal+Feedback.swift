@@ -37,7 +37,7 @@ extension CoreSignal {
                 case .impactHeavy: Feedback.generateImpact(.heavy)
                 }
             }
-            
+
             return bag
         } else {
             return NilDisposer()
