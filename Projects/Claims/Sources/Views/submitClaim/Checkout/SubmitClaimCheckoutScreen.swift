@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct SubmitClaimCheckoutNoRepairScreen: View {
+public struct SubmitClaimCheckoutScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
     public init() {}
@@ -21,7 +21,10 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
-                        InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                        let repairCost = singleItemCheckoutStep?.repairCostAmount
+                        if repairCost == nil {
+                            InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                        }
                         hButton.LargeButton(type: .primary) {
                             store.send(.singleItemCheckoutRequest)
                             store.send(.navigationAction(action: .openCheckoutTransferringScreen))
@@ -63,40 +66,71 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .padding(.bottom, 8)
 
+            let repairCost = singleItemCheckoutStep?.repairCostAmount
+
             hSection {
-                displayField(
-                    withTitle: L10n.keyGearItemViewValuationPageTitle,
-                    andFor: singleItemCheckoutStep?.price
-                )
-                displayField(
-                    withTitle: L10n.Claims.Payout.Age.deduction,
-                    andFor: singleItemCheckoutStep?.depreciation.negative
-                )
-                displayField(
-                    withTitle: L10n.Claims.Payout.Age.deductable,
-                    andFor: singleItemCheckoutStep?.deductible.negative
-                )
+                VStack {
+                    if let repairCost {
+                        PresentableStoreLens(
+                            SubmitClaimStore.self,
+                            getter: { state in
+                                state.singleItemStep
+                            }
+                        ) { singleItemStep in
+                            displayField(
+                                withTitle: L10n.claimsCheckoutRepairTitle(singleItemStep?.getBrandOrModelName() ?? ""),
+                                andFor: repairCost
+                            )
+                        }
+                    } else {
+                        displayField(
+                            withTitle: L10n.keyGearItemViewValuationPageTitle,
+                            andFor: singleItemCheckoutStep?.price
+                        )
+                        displayField(
+                            withTitle: L10n.Claims.Payout.Age.deduction,
+                            andFor: singleItemCheckoutStep?.depreciation.negative
+                        )
+                    }
+                    displayField(
+                        withTitle: L10n.Claims.Payout.Age.deductable,
+                        andFor: singleItemCheckoutStep?.deductible.negative
+                    )
+                }
             }
             .withHeader {
                 HStack {
                     hText(L10n.claimsCheckoutCountTitle, style: .body)
                         .foregroundColor(hTextColor.primary)
+                    Spacer()
+                    InfoViewHolder(
+                        title: L10n.claimsCheckoutCountTitle,
+                        description: repairCost != nil
+                            ? L10n.claimsCheckoutRepairCalculationText : L10n.claimsCheckoutNoRepairCalculationText
+                    )
                 }
             }
             .sectionContainerStyle(.transparent)
             .padding(.bottom, 16)
 
             hSection {
-                displayField(
-                    withTitle: L10n.claimsPayoutHedvigLabel,
-                    useDarkTitle: true,
-                    andFor: singleItemCheckoutStep?.payoutAmount
-                )
+                VStack(spacing: 16) {
+                    displayField(
+                        withTitle: L10n.claimsPayoutHedvigLabel,
+                        useDarkTitle: true,
+                        andFor: singleItemCheckoutStep?.payoutAmount
+                    )
+                    if repairCost != nil {
+                        InfoCard(text: L10n.claimsCheckoutRepairInfoText, type: .info)
+                    }
+                }
             }
             .sectionContainerStyle(.transparent)
 
-            hSection {
-                Divider()
+            if repairCost == nil {
+                hSection {
+                    Divider()
+                }
             }
 
             hSection {
@@ -129,6 +163,11 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 HStack {
                     hText(L10n.Claims.Payout.Summary.method, style: .body)
                         .foregroundColor(hTextColor.primary)
+                    Spacer()
+                    InfoViewHolder(
+                        title: L10n.Claims.Payout.Summary.method,
+                        description: L10n.claimsCheckoutPayoutText
+                    )
                 }
             }
         }
@@ -173,7 +212,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .padding(.bottom, 4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-                //                .background(hBackgroundColor.tertiary)
                 .cornerRadius(.defaultCornerRadius)
                 .padding(.bottom, 8)
             }
@@ -183,6 +221,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimCheckoutNoRepairScreen()
+        SubmitClaimCheckoutScreen()
     }
 }

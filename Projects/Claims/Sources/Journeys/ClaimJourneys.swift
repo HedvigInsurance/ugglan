@@ -432,7 +432,7 @@ public class ClaimJourneys {
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimCheckoutNoRepairScreen()
+            rootView: SubmitClaimCheckoutScreen()
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {

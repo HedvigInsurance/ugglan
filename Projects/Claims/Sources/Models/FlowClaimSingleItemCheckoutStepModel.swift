@@ -8,6 +8,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let depreciation: MonetaryAmount
     let payoutAmount: MonetaryAmount
     let price: MonetaryAmount
+    let repairCostAmount: MonetaryAmount?
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
 
@@ -19,6 +20,12 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.depreciation = .init(fragment: data.depreciation.fragments.moneyFragment)
         self.payoutAmount = .init(fragment: data.payoutAmount.fragments.moneyFragment)
         self.price = .init(fragment: data.price.fragments.moneyFragment)
+
+        if let repairCostFragment = data.repairCostAmount?.fragments.moneyFragment {
+            self.repairCostAmount = .init(fragment: repairCostFragment)
+        } else {
+            self.repairCostAmount = nil
+        }
 
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
