@@ -24,10 +24,8 @@ public enum FeedbackType { case error, warning, success, selection, impactLight,
 extension CoreSignal {
     /// Generate haptic feedback
     public func feedback(type: FeedbackType) -> Disposable {
-        if #available(iOS 10.0, *), !UITraitCollection.isCatalyst {
+        if !UITraitCollection.isCatalyst {
             let bag = DisposeBag()
-            // hello
-
             bag += onValue { _ in
                 switch type {
                 case .error: Feedback.generateNotification(.error)
@@ -39,7 +37,7 @@ extension CoreSignal {
                 case .impactHeavy: Feedback.generateImpact(.heavy)
                 }
             }
-
+            
             return bag
         } else {
             return NilDisposer()

@@ -91,10 +91,7 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
     public func body(content: Content) -> some View {
         content.findScrollView { scrollView in
             self.scrollView = scrollView
-
-            if #available(iOS 15.0, *) {
-                scrollView.viewController?.setContentScrollView(scrollView)
-            }
+            scrollView.viewController?.setContentScrollView(scrollView)
         }
         .onReceive(contentOffsetPublisher) { _ in
             scrollView?.verticalScrollIndicatorInsets.bottom =

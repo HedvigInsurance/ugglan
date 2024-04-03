@@ -76,12 +76,10 @@ extension AskForPushnotifications {
             rootView: AskForPushnotifications(
                 text: L10n.claimsActivateNotificationsBody,
                 onActionExecuted: {
-                    if #available(iOS 15.0, *) {
-                        let vc = UIApplication.shared.getTopViewController()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                            vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                            vc?.sheetPresentationController?.detents = [.medium()]
-                        }
+                    let vc = UIApplication.shared.getTopViewController()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
+                        vc?.sheetPresentationController?.detents = [.medium()]
                     }
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))

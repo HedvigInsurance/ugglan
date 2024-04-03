@@ -65,12 +65,8 @@ struct MessageView: View {
                         let store: ChatStore = globalPresentableStoreContainer.get()
                         store.send(.navigation(action: .linkClicked(url: url)))
                     } label: {
-                        if #available(iOS 15.0, *) {
-                            Text(type.title(displayText: url.contractName ?? type.importantText))
-                                .multilineTextAlignment(.leading)
-                        } else {
-                            hText(type.wholeText(displayText: url.contractName ?? type.importantText))
-                        }
+                        Text(type.title(displayText: url.contractName ?? type.importantText))
+                            .multilineTextAlignment(.leading)
                     }
                 } else {
                     MarkdownView(

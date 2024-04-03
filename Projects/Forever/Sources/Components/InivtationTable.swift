@@ -91,13 +91,9 @@ struct InvitationTable: View {
 
     @ViewBuilder
     private func getGrossField(_ text: String) -> some View {
-        if #available(iOS 15.0, *) {
-            Text(attributedString(text))
-                .foregroundColor(hTextColor.secondary)
-                .modifier(hFontModifier(style: .standard))
-        } else {
-            hText(text).foregroundColor(hTextColor.secondary)
-        }
+        Text(attributedString(text))
+            .foregroundColor(hTextColor.secondary)
+            .modifier(hFontModifier(style: .standard))
     }
 
     @available(iOS 15, *)
