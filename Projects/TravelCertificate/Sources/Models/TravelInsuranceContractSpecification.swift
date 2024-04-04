@@ -23,7 +23,6 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
 }
 
 public struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
-    let infoSpecifications: [TravelInsuranceInfoSpecification]
     let travelCertificateSpecifications: [TravelInsuranceContractSpecification]
     let email: String?
     let fullName: String
