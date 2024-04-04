@@ -49,12 +49,9 @@ public struct MarqueeText: View {
                                 alignment: .topLeading
                             )
                     }
-                    .onValueChanged(
-                        of: self.text,
-                        perform: { text in
-                            self.animate = geo.size.width < stringWidth
-                        }
-                    )
+                    .onChange(of: text) { text in
+                        self.animate = geo.size.width < stringWidth
+                    }
 
                     .offset(x: leftFade)
                     .mask(
@@ -89,12 +86,9 @@ public struct MarqueeText: View {
                 } else {
                     Text(self.text)
                         .font(.init(font))
-                        .onValueChanged(
-                            of: self.text,
-                            perform: { text in
-                                self.animate = geo.size.width < stringWidth
-                            }
-                        )
+                        .onChange(of: text) { text in
+                            self.animate = geo.size.width < stringWidth
+                        }
                         .frame(
                             minWidth: 0,
                             maxWidth: .infinity,
@@ -148,13 +142,6 @@ extension String {
         let fontAttributes = [NSAttributedString.Key.font: font]
         let size = self.size(withAttributes: fontAttributes)
         return size.height
-    }
-}
-
-extension View {
-    /// A backwards compatible wrapper for iOS 14 `onChange`
-    @ViewBuilder func onValueChanged<T: Equatable>(of value: T, perform onChange: @escaping (T) -> Void) -> some View {
-        self.onChange(of: value, perform: onChange)
     }
 }
 
