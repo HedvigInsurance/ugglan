@@ -1,5 +1,9 @@
+import Contracts
 import Forever
 import Home
+import Payment
+import Presentation
+import Profile
 import SwiftUI
 import hCore
 import hCoreUI
@@ -37,31 +41,70 @@ struct NewApp: App {
             //            if hasLaunchFinished {
 
             TabView(selection: $selectedItem) {
-                HomeView(
-                    claimsContent: EmptyView(),
-                    memberId: {
-                        return ""
-                    },
-                    pathState: pathState,
-                    onNavigation: { isHomeNavigation in
-                        return getNavigationView(isHomeNavigation: isHomeNavigation)
-                    }
-                )
-                .tabItem {
-                    Image(uiImage: hCoreUIAssets.homeTab.image)
-                    hText("Home")
+                homeTab
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                    || store.state.activeContracts.isEmpty
+                {
+                    foreverTab
                 }
-                .tag(1)
 
-                ForeverView()
-                    .tabItem {
-                        Image(uiImage: hCoreUIAssets.foreverTab.image)
-                        hText("Forever")
-                    }
-                    .foregroundColor(hTextColor.primary)
-                    .accentColor(.black)
+                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                    paymentsTab
+                }
             }
+            .foregroundColor(hTextColor.primary)
+            .accentColor(.black)
         }
+    }
+
+    var homeTab: some View {
+        HomeView(
+            claimsContent: EmptyView(),
+            memberId: {
+                return ""
+            },
+            pathState: pathState,
+            onNavigation: { isHomeNavigation in
+                return getNavigationView(isHomeNavigation: isHomeNavigation)
+            }
+        )
+        .tabItem {
+            Image(uiImage: hCoreUIAssets.homeTab.image)
+            hText(L10n.tabHomeTitle)  // hCoreUIAssets.homeTabActive.image
+        }
+    }
+
+    var contractsTab: some View {
+        Contracts(showTerminated: false)
+            .tabItem {
+                Image(uiImage: hCoreUIAssets.contractTab.image)  // hCoreUIAssets.contractTabActive.image
+                hText(L10n.tabInsurancesTitle)
+            }
+    }
+
+    var foreverTab: some View {
+        ForeverView()
+            .tabItem {
+                Image(uiImage: hCoreUIAssets.foreverTab.image)  // hCoreUIAssets.foreverTabActive.image
+                hText(L10n.tabReferralsTitle)
+            }
+    }
+
+    var paymentsTab: some View {
+        PaymentsView()
+            .tabItem {
+                Image(uiImage: hCoreUIAssets.foreverTab.image)  // hCoreUIAssets.foreverTabActive.image
+                hText(L10n.tabPaymentsTitle)
+            }
+    }
+
+    var profileTab: some View {
+        ProfileView()
+            .tabItem {
+                Image(uiImage: hCoreUIAssets.profileTab.image)  // hCoreUIAssets.profileTabActive.image
+                hText(L10n.ProfileTab.title)
+            }
     }
 }
 
