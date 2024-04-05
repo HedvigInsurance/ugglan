@@ -37,7 +37,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
     @Environment(\.hUseColoredCheckbox) var coloredCheckBox
-    //    @Environment(\.hFieldSize) var size
 
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
@@ -98,8 +97,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hForm {
                 }
                 .hFormTitle(
-                    title: .init(.standard, .title3, title ?? "", alignment: .leading),
-                    subTitle: .init(.standard, .title3, subTitle ?? "")
+                    title: .init(.small, .title3, title ?? "", alignment: .leading),
+                    subTitle: .init(.small, .title3, subTitle ?? "")
                 )
                 .hFormAttachToBottom {
                     VStack(spacing: 0) {
