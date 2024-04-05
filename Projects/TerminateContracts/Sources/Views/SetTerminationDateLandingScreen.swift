@@ -97,7 +97,10 @@ struct SetTerminationDateLandingScreen: View {
                             Image(uiImage: hCoreUIAssets.lockSmall.image)
                                 .frame(width: 24, height: 24)
                         }
+                        .hFontSize(.standard)
                         .hFieldLockedState
+                        .hWithoutDisabledColor
+                        .disabled(true)
 
                         InfoCard(
                             text:
@@ -117,6 +120,7 @@ struct SetTerminationDateLandingScreen: View {
                             store.send(.navigationAction(action: .openTerminationDatePickerScreen))
                         }
                     )
+                    .hFontSize(.standard)
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                     }

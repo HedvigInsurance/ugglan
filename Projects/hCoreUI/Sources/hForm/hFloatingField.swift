@@ -14,6 +14,9 @@ public struct hFloatingField: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
     @Environment(\.hFieldLockedState) var isLocked
+    @Environment(\.hFieldSize) var size
+    @Environment(\.hFontSize) var fontSize
+    @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -74,13 +77,13 @@ public struct hFloatingField: View {
         }
     }
     private var getTextLabel: some View {
-        hText(value, style: .title3)
+        hText(value, style: fontSize)
             .foregroundColor(foregroundColor)
     }
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if isEnabled && !isLocked {
+        if (isEnabled && !isLocked) || withoutDisabledColor {
             hTextColor.primary
         } else {
             hTextColor.secondary
@@ -168,5 +171,22 @@ extension View {
 
     public func hFieldSetLockedState(to value: Bool) -> some View {
         self.environment(\.hFieldLockedState, value)
+    }
+}
+
+private struct EnvironmentHFontSize: EnvironmentKey {
+    static let defaultValue: HFontTextStyle = .title3
+}
+
+extension EnvironmentValues {
+    public var hFontSize: HFontTextStyle {
+        get { self[EnvironmentHFontSize.self] }
+        set { self[EnvironmentHFontSize.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFontSize(_ size: HFontTextStyle) -> some View {
+        self.environment(\.hFontSize, size)
     }
 }
