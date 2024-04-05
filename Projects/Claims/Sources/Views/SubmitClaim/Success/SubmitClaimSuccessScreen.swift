@@ -8,10 +8,12 @@ struct SubmitClaimSuccessScreen: View {
         SuccessScreen(
             successViewTitle: L10n.claimsSuccessTitle,
             successViewBody: L10n.claimsSuccessLabel,
-            successViewButtonAction: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.dissmissNewClaimFlow)
-            }
+            buttons: .init(
+                ghostButton: .init(buttonAction: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                })
+            )
         )
     }
 }

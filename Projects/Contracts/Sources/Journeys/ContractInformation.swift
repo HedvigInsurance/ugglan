@@ -325,29 +325,13 @@ struct ContractInformationView: View {
                 if contract?.canTerminate ?? false {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
-                            terminationContractStore.send(
-                                .startTermination(
-                                    config: .init(
-                                        contractId: id,
-                                        image: contract?.pillowType,
-                                        contractDisplayName: contract?.currentAgreement?.productVariant.displayName
-                                            ?? "",
-                                        contractExposureName: contract?.exposureDisplayName ?? "",
-                                        activeFrom: contract?.currentAgreement?.activeFrom
-                                    )
-                                )
-                            )
-                            vm.cancellable = terminationContractStore.actionSignal.publisher.sink { action in
-                                if case let .navigationAction(navigationAction) = action {
-                                    store.send(.startTermination(action: navigationAction))
-                                    self.vm.cancellable = nil
-                                }
+                            if let contract {
+                                store.send(.startTermination(contract: contract))
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body)
                                 .foregroundColor(hTextColor.secondary)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .startTermination)
                     }
                     .sectionContainerStyle(.transparent)
                 }

@@ -17,21 +17,32 @@ public final class TerminationContractStore: LoadingStateStore<
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case let .startTermination(config):
-            return await executeAsFiniteSignal(loadingType: .startTermination) { [weak self] in
+            return await executeAsFiniteSignal(loadingType: .getInitialStep) { [weak self] in
                 try await self?.terminateContractsService.startTermination(contractId: config.contractId)
             }
         case .sendTerminationDate:
             let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
-                return try await self?.terminateContractsService
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
+                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+                async let request = try self.terminateContractsService
                     .sendTerminationDate(
                         inputDateToString: inputDateToString,
                         terminationContext: terminationContext
                     )
+                let data = try await [minimumTime, request] as [Any]
+
+                let terminateStepResponse = data[1] as! TerminateStepResponse
+                return terminateStepResponse
             }
         case .sendConfirmDelete:
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
-                try await self?.terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
+                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+                async let request = try self.terminateContractsService.sendConfirmDelete(
+                    terminationContext: terminationContext
+                )
+                let data = try await [minimumTime, request] as [Any]
+                let terminateStepResponse = data[1] as! TerminateStepResponse
+                return terminateStepResponse
             }
         default:
             break
@@ -46,7 +57,6 @@ public final class TerminationContractStore: LoadingStateStore<
         switch action {
         case let .startTermination(config):
             newState.currentTerminationContext = nil
-            newState.terminationContractId = nil
             newState.terminationDateStep = nil
             newState.terminationDeleteStep = nil
             newState.successStep = nil
@@ -54,18 +64,12 @@ public final class TerminationContractStore: LoadingStateStore<
             newState.config = config
         case let .setTerminationContext(context):
             newState.currentTerminationContext = context
-        case let .setTerminationContractId(id):
-            newState.terminationContractId = id
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.send(.navigationAction(action: .openSetTerminationDateScreen))
-                }
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
-                send(.navigationAction(action: .openTerminationDeletionScreen))
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])
@@ -77,8 +81,6 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
-        case .setTerminationisDeletion:
-            newState.config?.isDeletion = true
         default:
             break
         }
