@@ -309,7 +309,8 @@ public class TerminationFlowJourney {
                 disableIfNoneSelected: true,
                 hButtonText: L10n.generalContinueButton,
                 title: L10n.terminationFlowTitle,
-                subTitle: L10n.terminationFlowBody
+                subTitle: L10n.terminationFlowBody,
+                fieldSize: .small
             )
             .hUseColoredCheckbox
             .hFieldSize(.small)
