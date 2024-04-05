@@ -15,65 +15,67 @@ class WebMetaDataProvider {
             let data = try await withCheckedThrowingContinuation {
                 (inCont: CheckedContinuation<WebMetaDataProviderData, Error>) -> Void in
                 let metadataProvider = LPMetadataProvider()
-                metadataProvider.startFetchingMetadata(for: url) { [weak self] metadata, error in
-                    if let metadata {
-                        if #available(iOS 16.0, *) {
-                            if let imageProvider = metadata.imageProvider {
-                                _ =
-                                    imageProvider
-                                    .loadDataRepresentation(
-                                        for: .image,
-                                        completionHandler: { [weak self] data, error in
-                                            if let data, let image = UIImage(data: data) {
-                                                self?.cache[url] = WebMetaDataProviderData(
-                                                    title: metadata.title ?? "",
-                                                    image: image
-                                                )
-                                            } else {
-                                                self?.cache[url] = WebMetaDataProviderData(
-                                                    title: metadata.title ?? "",
-                                                    image: nil
-                                                )
+                DispatchQueue.main.async {
+                    metadataProvider.startFetchingMetadata(for: url) { [weak self] metadata, error in
+                        if let metadata {
+                            if #available(iOS 16.0, *) {
+                                if let imageProvider = metadata.imageProvider {
+                                    _ =
+                                        imageProvider
+                                        .loadDataRepresentation(
+                                            for: .image,
+                                            completionHandler: { [weak self] data, error in
+                                                if let data, let image = UIImage(data: data) {
+                                                    self?.cache[url] = WebMetaDataProviderData(
+                                                        title: metadata.title ?? "",
+                                                        image: image
+                                                    )
+                                                } else {
+                                                    self?.cache[url] = WebMetaDataProviderData(
+                                                        title: metadata.title ?? "",
+                                                        image: nil
+                                                    )
+                                                }
+                                                if let data = self?.cache[url], let data = data {
+                                                    inCont.resume(returning: data)
+                                                } else {
+                                                    inCont.resume(
+                                                        throwing: WebMetaDataProviderError.somethingWentWrong(url: url)
+                                                    )
+                                                }
                                             }
-                                            if let data = self?.cache[url], let data = data {
-                                                inCont.resume(returning: data)
-                                            } else {
-                                                inCont.resume(
-                                                    throwing: WebMetaDataProviderError.somethingWentWrong(url: url)
-                                                )
-                                            }
-                                        }
+                                        )
+                                } else if let title = metadata.title {
+                                    self?.cache[url] = WebMetaDataProviderData(
+                                        title: title,
+                                        image: nil
                                     )
-                            } else if let title = metadata.title {
+                                    if let data = self?.cache[url], let data = data {
+                                        inCont.resume(returning: data)
+                                    } else {
+                                        inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
+                                    }
+                                } else {
+                                    self?.failedURLs.append(url)
+                                    inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
+                                }
+                            } else {
                                 self?.cache[url] = WebMetaDataProviderData(
-                                    title: title,
+                                    title: metadata.title ?? "",
                                     image: nil
                                 )
+
                                 if let data = self?.cache[url], let data = data {
                                     inCont.resume(returning: data)
                                 } else {
                                     inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
                                 }
-                            } else {
-                                self?.failedURLs.append(url)
-                                inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
                             }
                         } else {
-                            self?.cache[url] = WebMetaDataProviderData(
-                                title: metadata.title ?? "",
-                                image: nil
-                            )
-
-                            if let data = self?.cache[url], let data = data {
-                                inCont.resume(returning: data)
-                            } else {
-                                inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
-                            }
+                            inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
                         }
-                    } else {
-                        inCont.resume(throwing: WebMetaDataProviderError.somethingWentWrong(url: url))
-                    }
 
+                    }
                 }
             }
             return data

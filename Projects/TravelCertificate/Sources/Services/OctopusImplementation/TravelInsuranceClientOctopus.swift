@@ -81,23 +81,9 @@ extension TravelInsuranceSpecification {
     ) {
         self.email = email
         self.fullName = data.firstName + " " + data.lastName
-        infoSpecifications = data.travelCertificateSpecifications.infoSpecifications.map({
-            TravelInsuranceInfoSpecification($0)
-        })
         travelCertificateSpecifications = data.travelCertificateSpecifications.contractSpecifications.map({
             TravelInsuranceContractSpecification($0)
         })
-    }
-}
-
-extension TravelInsuranceInfoSpecification {
-
-    init(
-        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
-            .InfoSpecification
-    ) {
-        title = data.title
-        body = data.body
     }
 }
 
