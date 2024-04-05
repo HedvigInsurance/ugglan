@@ -19,6 +19,7 @@ struct SetTerminationDateLandingScreen: View {
             .useDarkColor
         } else {
             hForm {}
+                .hDisableScroll
                 .hFormTitle(
                     title: .init(.standard, .title3, L10n.terminationFlowCancellationTitle, alignment: .leading),
                     subTitle: .init(
