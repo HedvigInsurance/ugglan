@@ -1,6 +1,7 @@
 import EditCoInsuredShared
 import Foundation
 import Presentation
+import TerminateContracts
 import hCore
 import hCoreUI
 import hGraphQL
@@ -554,6 +555,17 @@ extension InsuredPeopleConfig {
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn
+        )
+    }
+}
+
+extension Contract {
+    public var asTerminationConfirmConfig: TerminationConfirmConfig {
+        return .init(
+            contractId: id,
+            contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
+            contractExposureName: exposureDisplayName,
+            activeFrom: currentAgreement?.activeFrom
         )
     }
 }

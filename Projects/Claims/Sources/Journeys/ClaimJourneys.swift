@@ -179,7 +179,7 @@ public class ClaimJourneys {
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.locationStep?.options
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -263,7 +263,8 @@ public class ClaimJourneys {
         return HostingJourney(
             rootView: CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
-                    return step?.getListOfModels(for: brand.itemBrandId)?.compactMap({ ($0, $0.displayName) }) ?? []
+                    return step?.getListOfModels(for: brand.itemBrandId)?
+                        .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
 
                 }(),
                 preSelectedItems: {
@@ -303,7 +304,7 @@ public class ClaimJourneys {
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.availableItemProblems
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()

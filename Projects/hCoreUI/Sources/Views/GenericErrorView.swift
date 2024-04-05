@@ -9,6 +9,8 @@ public struct GenericErrorView: View {
     private let buttons: ErrorViewButtonConfig
     @Environment(\.hWithoutTitle) var withoutTitle
     @Environment(\.hExtraBottomPadding) var extraBottomPadding
+    @Environment(\.hExtraTopPadding) var extraTopPadding
+    @Environment(\.hWithLargeIcon) var useLargeIcon
 
     public init(
         title: String? = nil,
@@ -29,6 +31,7 @@ public struct GenericErrorView: View {
             hForm {
                 content
                     .padding(.bottom, 32)
+                    .padding(.top, extraTopPadding ? 32 : 0)
             }
             .hFormContentPosition(.center)
             .hFormAttachToBottom {
@@ -59,15 +62,17 @@ public struct GenericErrorView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 16) {
+        let imageDimension: CGFloat = useLargeIcon ? 40 : 24
+        return VStack(spacing: 16) {
             switch icon {
             case .triangle:
                 Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                    .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.amberElement)
             case .circle:
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.blueElement)
             }
             VStack {
@@ -78,6 +83,7 @@ public struct GenericErrorView: View {
                 }
                 if let description {
                     hText(description, style: .body)
+                        .padding(.horizontal, 32)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.secondaryTranslucent)
                 }
@@ -180,5 +186,39 @@ extension EnvironmentValues {
 extension GenericErrorView {
     public var hExtraBottomPadding: some View {
         self.environment(\.hExtraBottomPadding, true)
+    }
+}
+
+private struct EnvironmenthWithLargeIcon: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hWithLargeIcon: Bool {
+        get { self[EnvironmenthWithLargeIcon.self] }
+        set { self[EnvironmenthWithLargeIcon.self] = newValue }
+    }
+}
+
+extension GenericErrorView {
+    public var hWithLargeIcon: some View {
+        self.environment(\.hWithLargeIcon, true)
+    }
+}
+
+private struct EnvironmenthExtraTopPadding: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hExtraTopPadding: Bool {
+        get { self[EnvironmenthExtraTopPadding.self] }
+        set { self[EnvironmenthExtraTopPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hExtraTopPadding: some View {
+        self.environment(\.hExtraTopPadding, true)
     }
 }

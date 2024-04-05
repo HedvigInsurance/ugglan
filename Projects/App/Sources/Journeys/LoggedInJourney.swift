@@ -45,6 +45,8 @@ extension AppJourney {
                     AppJourney.configureQuickAction(quickAction: quickAction)
                 case let .goToURL(url):
                     AppJourney.configureURL(url: url)
+                case .dismissHelpCenter:
+                    DismissJourney()
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in
@@ -72,12 +74,20 @@ extension AppJourney {
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingWebUrl(url):
                 AppJourney.urlHandledBySystem(url: url)
-            case let .startNewTermination(action):
-                TerminationFlowJourney.start(for: action)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
+            case let .startNewTermination(contract):
+                TerminationFlowJourney.start(
+                    for: [
+                        contract.asTerminationConfirmConfig
+                    ]
+                ) { success in
+                    if success {
+                        guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
+                            return
+                        }
+                        guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
+                        navigation.popToRootViewController(animated: true)
                     }
+                }
             case let .handleCoInsured(config, fromInfoCard):
                 EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
                     .onDismiss {

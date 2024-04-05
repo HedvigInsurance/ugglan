@@ -1,8 +1,21 @@
 import SwiftUI
 import hCore
 
+public struct CheckboxItemModel: Hashable {
+    let title: String
+    let subTitle: String?
+
+    public init(
+        title: String,
+        subTitle: String? = nil
+    ) {
+        self.title = title
+        self.subTitle = subTitle
+    }
+}
+
 public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
-    typealias PickerModel = (object: T, displayName: String)
+    typealias PickerModel = (object: T, displayName: CheckboxItemModel)
     private var items: [PickerModel]
     private let preSelectedItems: [T]
     private let onSelected: ([(object: T?, displayName: String?)]) -> Void
@@ -14,6 +27,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let manualInputPlaceholder: String
     private let hButtonText: String
     private let infoCard: CheckboxInfoCard?
+    private var title: String?
+    private var subTitle: String?
 
     @State var type: CheckboxFieldType? = nil
 
@@ -21,6 +36,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
+    @Environment(\.hUseColoredCheckbox) var coloredCheckBox
 
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
@@ -28,7 +44,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private var fieldSize: hFieldSize
     private let manualInputId = "manualInputId"
     public init(
-        items: [(object: T, displayName: String)],
+        items: [(object: T, displayName: CheckboxItemModel)],
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
@@ -39,7 +55,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         manualInputPlaceholder: String? = "",
         manualBrandName: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
-        infoCard: CheckboxInfoCard? = nil
+        infoCard: CheckboxInfoCard? = nil,
+        title: String? = nil,
+        subTitle: String? = nil,
+        fieldSize: hFieldSize? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -55,29 +74,56 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             self.manualInput = true
         }
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
-        if items.count > 3 {
-            self.fieldSize = .small
+
+        if fieldSize != nil {
+            self.fieldSize = fieldSize ?? .large
         } else {
-            self.fieldSize = .large
+            if items.count > 3 {
+                self.fieldSize = .small
+            } else {
+                self.fieldSize = .large
+            }
         }
+
         self.infoCard = infoCard
+        self.title = title
+        self.subTitle = subTitle
     }
 
     @ViewBuilder
     public var body: some View {
         ScrollViewReader { proxy in
             if attachToBottom {
-                hForm {}
-                    .hFormAttachToBottom {
-                        VStack(spacing: 0) {
+                hForm {
+                }
+                .hFormTitle(
+                    title: .init(.small, .title3, title ?? "", alignment: .leading),
+                    subTitle: .init(.small, .title3, subTitle ?? "")
+                )
+                .hFormAttachToBottom {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 16) {
+                            if let infoCard, infoCard.placement == .top {
+                                hSection {
+                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                }
+                                .sectionContainerStyle(.transparent)
+                            }
                             content(with: proxy)
-                            bottomContent
+                            if let infoCard, infoCard.placement == .bottom {
+                                hSection {
+                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                }
+                                .sectionContainerStyle(.transparent)
+                            }
                         }
+                        bottomContent
                     }
-                    .hFormObserveKeyboard
-                    .onAppear {
-                        onAppear(with: proxy)
-                    }
+                }
+                .hFormObserveKeyboard
+                .onAppear {
+                    onAppear(with: proxy)
+                }
             } else {
                 hForm {
                     content(with: proxy)
@@ -150,10 +196,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         hSection {
             VStack(spacing: 16) {
                 bottomAttachedView
-
-                if let infoCard {
-                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                }
 
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
@@ -248,8 +290,21 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         let displayName = items.first(where: { $0.object == item })?.displayName
 
         HStack(spacing: 0) {
-            hText(displayName ?? itemDisplayName ?? "", style: .title3)
-                .foregroundColor(hTextColor.primary)
+            VStack(spacing: 0) {
+                Group {
+                    let titleFont: HFontTextStyle =
+                        (displayName?.subTitle != nil) ? .body : .title3
+
+                    hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
+                        .foregroundColor(hTextColor.primary)
+
+                    if let subTitle = displayName?.subTitle {
+                        hText(subTitle, style: .standardSmall)
+                            .foregroundColor(hTextColor.secondaryTranslucent)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
             Spacer()
             checkBox(isSelected: isSelected)
         }
@@ -279,12 +334,24 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     func checkBox(isSelected: Bool) -> some View {
         Group {
             if singleSelect ?? false {
-                Circle()
-                    .strokeBorder(
-                        RadioFieldsColors().getBorderColor(isSelected: isSelected),
-                        lineWidth: isSelected ? 0 : 1.5
-                    )
-                    .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
+                ZStack {
+                    Circle()
+                        .strokeBorder(
+                            RadioFieldsColors().getBorderColor(isSelected: isSelected),
+                            lineWidth: isSelected ? 0 : 1.5
+                        )
+                        .background(Circle().foregroundColor(getFillColor(isSelected: isSelected)))
+
+                    if isSelected && coloredCheckBox {
+                        Circle()
+                            .strokeBorder(
+                                RadioFieldsColors().getBorderColor(isSelected: isSelected),
+                                lineWidth: isSelected ? 0 : 1.5
+                            )
+                            .background(Circle().foregroundColor(hFillColor.opaqueOne))
+                            .frame(height: 8)
+                    }
+                }
             } else {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
@@ -294,7 +361,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         )
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(retColor(isSelected: isSelected))
+                                .foregroundColor(getFillColor(isSelected: isSelected))
                         )
 
                     if isSelected {
@@ -308,9 +375,13 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @hColorBuilder
-    func retColor(isSelected: Bool) -> some hColor {
+    func getFillColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            if coloredCheckBox {
+                hSignalColor.greenElement
+            } else {
+                hTextColor.primary
+            }
         } else {
             hFillColor.opaqueOne
         }
@@ -319,13 +390,21 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     public struct CheckboxInfoCard {
         let text: String
         let buttons: [InfoCardButtonConfig]
+        let placement: InfoCardPlacement
 
         public init(
             text: String,
-            buttons: [InfoCardButtonConfig]
+            buttons: [InfoCardButtonConfig],
+            placement: InfoCardPlacement
         ) {
             self.text = text
             self.buttons = buttons
+            self.placement = placement
+        }
+
+        public enum InfoCardPlacement {
+            case top
+            case bottom
         }
     }
 }
@@ -334,20 +413,23 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
 
     struct ModelForPreview: Equatable, Hashable {
         let id: String
-        let name: String
+        let name: CheckboxItemModel
     }
     static var previews: some View {
         VStack {
             CheckboxPickerScreen<ModelForPreview>(
                 items: {
                     return [
-                        ModelForPreview(id: "id", name: "name"),
-                        ModelForPreview(id: "id2", name: "name2"),
-                        ModelForPreview(id: "id3", name: "name3"),
-                        ModelForPreview(id: "id4", name: "name4"),
-                        ModelForPreview(id: "id5", name: "name5"),
-                        ModelForPreview(id: "id6", name: "name6"),
-                        ModelForPreview(id: "id7", name: "name7"),
+                        ModelForPreview(id: "id", name: .init(title: "name1")),
+                        ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
+                        ModelForPreview(
+                            id: "id3",
+                            name: .init(title: "title3", subTitle: "subtitle3")
+                        ),
+                        ModelForPreview(id: "id4", name: .init(title: "name4")),
+                        ModelForPreview(id: "id5", name: .init(title: "name5")),
+                        ModelForPreview(id: "id6", name: .init(title: "name6")),
+                        ModelForPreview(id: "id7", name: .init(title: "name7")),
 
                     ]
                     .compactMap({ (object: $0, displayName: $0.name) })
@@ -359,7 +441,9 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 onCancel: {
                 },
                 singleSelect: true,
-                manualInputPlaceholder: "Enter brand name"
+                attachToBottom: true,
+                manualInputPlaceholder: "Enter brand name",
+                title: "title"
             )
             .hIncludeManualInput
         }
@@ -415,5 +499,22 @@ extension EnvironmentValues {
 extension View {
     public var hIncludeManualInput: some View {
         self.environment(\.hIncludeManualInput, true)
+    }
+}
+
+private struct EnvironmentHUseColoredCheckbox: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUseColoredCheckbox: Bool {
+        get { self[EnvironmentHUseColoredCheckbox.self] }
+        set { self[EnvironmentHUseColoredCheckbox.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUseColoredCheckbox: some View {
+        self.environment(\.hUseColoredCheckbox, true)
     }
 }

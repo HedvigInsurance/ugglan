@@ -37,7 +37,7 @@ struct MovingFlowHouseView: View {
             .padding(.top, 16)
 
         }
-        .hFormTitle(.standard, .title1, L10n.changeAddressInformationAboutYourHouse)
+        .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressInformationAboutYourHouse))
         .sectionContainerStyle(.transparent)
         .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
         .presentableStoreLensAnimation(.default)

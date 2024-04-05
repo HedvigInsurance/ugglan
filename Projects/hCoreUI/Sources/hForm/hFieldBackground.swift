@@ -79,17 +79,21 @@ struct hFieldLabel: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
     @Environment(\.hFieldLockedState) var isLocked
+    @Environment(\.hFontSize) var fontSize
 
     var body: some View {
         let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        return hText(placeholder, style: size == .large ? .title3 : .standard)
-            .foregroundColor(getTextColor())
-            .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-            .frame(height: sizeToScaleFrom)
-            .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
-            .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
+        return hText(
+            placeholder,
+            style: size == .large ? .title3 : (fontSize == .standard ? .standardSmall : .standard)
+        )
+        .foregroundColor(getTextColor())
+        .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
+        .frame(height: sizeToScaleFrom)
+        .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
+        .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }
 
     @hColorBuilder

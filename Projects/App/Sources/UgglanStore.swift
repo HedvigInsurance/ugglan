@@ -18,6 +18,7 @@ enum UgglanAction: ActionProtocol {
     case showLoggedIn
     case openChat
     case closeChat
+    case dismissHelpCenter
     case dismissScreen
 
     case setIsDemoMode(to: Bool)

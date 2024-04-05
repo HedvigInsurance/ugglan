@@ -228,7 +228,7 @@ public class EditCoInsuredJourney {
             rootView: CheckboxPickerScreen<InsuredPeopleConfig>(
                 items: {
                     return configs.compactMap({
-                        (object: $0, displayName: $0.displayName)
+                        (object: $0, displayName: .init(title: $0.displayName))
                     })
                 }(),
                 preSelectedItems: {
