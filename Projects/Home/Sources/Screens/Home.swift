@@ -18,15 +18,15 @@ import hGraphQL
 
 @available(iOS 16.0, *)
 public struct HomeView<Claims: View, Content: View>: View {
-    
+
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
-    
+
     private var onNavigation: (Bool) -> Content
-    
-    @ObservedObject private var pathState = MyModelObject() // make stored property?
-    
+
+    @ObservedObject private var pathState = MyModelObject()  // make stored property?
+
     var claimsContent: Claims
     var memberId: String
 
@@ -45,7 +45,7 @@ public struct HomeView<Claims: View, Content: View>: View {
 
 //@available(iOS 16.0, *)
 //extension MyModelObject {
-//    
+//
 //    @ViewBuilder
 //    func getHomeView(pathState: MyModelObject) -> some View {
 //        switch currentHomeRoute {
@@ -53,7 +53,7 @@ public struct HomeView<Claims: View, Content: View>: View {
 //            HelpCenterStartView()
 //        case .submitClaim:
 //            pathState.getAppView(pathState: pathState)
-//            
+//
 //        default:
 //            EmptyView()
 //        }
@@ -106,12 +106,12 @@ extension HomeView {
                 onNavigation(true)
             }
             .navigationDestination(for: NavigationViews.self) { view in
-                let _ = pathState.changeRoute(view) //??
+                let _ = pathState.changeRoute(view)  //??
                 onNavigation(false)
             }
         }
     }
-    
+
     @ViewBuilder
     private var centralContent: some View {
         switch vm.memberContractState {
@@ -169,10 +169,10 @@ extension HomeView {
     private var startAClaimButton: some View {
         if featureFlags.isSubmitClaimEnabled {
             hButton.LargeButton(type: .primary) {
-//                store.send(.startClaim)
-//                pathState.changeRoute(.submitClaim)
+                //                store.send(.startClaim)
+                //                pathState.changeRoute(.submitClaim)
             } content: {
-//                NavigationLink(value: NavigationHomeView.submitClaim) {
+                //                NavigationLink(value: NavigationHomeView.submitClaim) {
                 NavigationLink(value: NavigationViews.submitClaim) {
                     hText(L10n.HomeTab.claimButtonText)
                 }
@@ -188,7 +188,7 @@ extension HomeView {
             || contractStore.state.activeContracts.count == 0
         if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
-//                store.send(.openHelpCenter)
+                //                store.send(.openHelpCenter)
             } content: {
                 NavigationLink(value: NavigationHomeView.helpCenter) {
                     hText(L10n.HomeTab.getHelp)
@@ -262,8 +262,9 @@ extension HomeView {
             HomeStore.self,
             rootView: HomeView(
                 claimsContent: claimsContent,
-                memberId: memberId, 
-                pathState: .init(), onNavigation: { _ in EmptyView() as! Content }
+                memberId: memberId,
+                pathState: .init(),
+                onNavigation: { _ in EmptyView() as! Content }
             ),
             options: [
                 .defaults
@@ -325,7 +326,8 @@ struct Active_Preview: PreviewProvider {
             memberId: {
                 "ID"
             },
-            pathState: .init(), onNavigation: {_ in EmptyView()}
+            pathState: .init(),
+            onNavigation: { _ in EmptyView() }
         )
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -350,7 +352,8 @@ struct ActiveInFuture_Previews: PreviewProvider {
             memberId: {
                 "ID"
             },
-            pathState: .init(), onNavigation: {_ in EmptyView()}
+            pathState: .init(),
+            onNavigation: { _ in EmptyView() }
         )
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
