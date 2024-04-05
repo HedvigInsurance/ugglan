@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 
 @testable import EditCoInsured
+@testable import EditCoInsuredShared
 
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
 

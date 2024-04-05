@@ -88,6 +88,18 @@ extension AppJourney {
                         navigation.popToRootViewController(animated: true)
                     }
                 }
+            case let .handleCoInsured(config, fromInfoCard):
+                EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
+                    .onDismiss {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetch)
+                    }
+            case let .openMissingCoInsuredAlert(config):
+                EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
+                    .onDismiss {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetch)
+                    }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

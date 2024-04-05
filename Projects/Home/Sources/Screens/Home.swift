@@ -1,7 +1,7 @@
 import Apollo
 import Combine
 import Contracts
-import EditCoInsured
+import EditCoInsuredShared
 import Foundation
 import Payment
 import Presentation
