@@ -14,7 +14,12 @@ struct ContractTable {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
         } else {
-            let activeContractsToShow = state.activeContracts.compactMap { $0 }
+            let activeTerminatedContractsToShow = state.activeContracts.compactMap { $0 }
+                .filter({ $0.terminationDate != nil })
+            let activeNonTerminatedContractsToShow = state.activeContracts.compactMap { $0 }
+                .filter({ $0.terminationDate == nil })
+            let activeContractsToShow = activeTerminatedContractsToShow + activeNonTerminatedContractsToShow
+
             let pendingContractsToShow = state.pendingContracts.compactMap { $0 }
             if !(activeContractsToShow + pendingContractsToShow).isEmpty {
                 DispatchQueue.main.async {
