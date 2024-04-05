@@ -22,16 +22,27 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case .sendTerminationDate:
             let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
-                return try await self?.terminateContractsService
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
+                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+                async let request = try self.terminateContractsService
                     .sendTerminationDate(
                         inputDateToString: inputDateToString,
                         terminationContext: terminationContext
                     )
+                let data = try await [minimumTime, request] as [Any]
+
+                let terminateStepResponse = data[1] as! TerminateStepResponse
+                return terminateStepResponse
             }
         case .sendConfirmDelete:
-            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) { [weak self] in
-                try await self?.terminateContractsService.sendConfirmDelete(terminationContext: terminationContext)
+            return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
+                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+                async let request = try self.terminateContractsService.sendConfirmDelete(
+                    terminationContext: terminationContext
+                )
+                let data = try await [minimumTime, request] as [Any]
+                let terminateStepResponse = data[1] as! TerminateStepResponse
+                return terminateStepResponse
             }
         default:
             break
@@ -44,6 +55,14 @@ public final class TerminationContractStore: LoadingStateStore<
     ) -> TerminationContractState {
         var newState = state
         switch action {
+        case let .navigationAction(navigationAction):
+            switch navigationAction {
+            case .openSetTerminationDateLandingScreen(let with):
+                newState.terminationDateStep = nil
+                newState.terminationDeleteStep = nil
+            default:
+                break
+            }
         case let .startTermination(config):
             newState.currentTerminationContext = nil
             newState.terminationDateStep = nil
@@ -56,6 +75,7 @@ public final class TerminationContractStore: LoadingStateStore<
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):
+                print("TERMINATION DATE SET")
                 newState.terminationDateStep = model
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
