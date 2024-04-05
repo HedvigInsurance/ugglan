@@ -264,7 +264,7 @@ public class TerminationFlowJourney {
                 }
             ),
             style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
+            options: [.blurredBackground, .wantsGrabber]
         ) { action in
             if case .goBack = action {
                 PopJourney()

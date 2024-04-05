@@ -43,6 +43,7 @@ struct ConfirmTerminationScreen: View {
                 )
             )
             .hWithLargeIcon
+            .hExtraTopPadding
         }
         .hDisableScroll
         .hide($isHidden)
