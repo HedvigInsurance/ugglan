@@ -11,7 +11,6 @@ public enum TerminationStepModelAction: ActionProtocol, Hashable {
 public enum TerminationContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
-    case terminationInitialNavigation(action: TerminationNavigationAction)
 
     case startTermination(config: TerminationConfirmConfig)
     case setTerminationDate(terminationDate: Date)

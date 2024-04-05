@@ -55,14 +55,6 @@ public final class TerminationContractStore: LoadingStateStore<
     ) -> TerminationContractState {
         var newState = state
         switch action {
-        case let .navigationAction(navigationAction):
-            switch navigationAction {
-            case .openSetTerminationDateLandingScreen(let with):
-                newState.terminationDateStep = nil
-                newState.terminationDeleteStep = nil
-            default:
-                break
-            }
         case let .startTermination(config):
             newState.currentTerminationContext = nil
             newState.terminationDateStep = nil
@@ -75,7 +67,6 @@ public final class TerminationContractStore: LoadingStateStore<
         case let .stepModelAction(step):
             switch step {
             case let .setTerminationDateStep(model):
-                print("TERMINATION DATE SET")
                 newState.terminationDateStep = model
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
