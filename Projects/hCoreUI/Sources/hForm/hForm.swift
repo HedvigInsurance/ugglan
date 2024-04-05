@@ -99,11 +99,18 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
                     if let hFormTitle {
-                        hText(hFormTitle.2, style: hFormTitle.1)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.topMargin)
-                            .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.0.bottomMargin)
-                            .padding([.leading, .trailing], 16)
+                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center) {
+                            hText(hFormTitle.title.text, style: hFormTitle.title.fontSize)
+                            if let subTitle = hFormTitle.subTitle {
+                                hText(subTitle.text, style: subTitle.fontSize)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
+                        .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
+                        .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
+                        .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.bottomMargin)
+                        .padding(.horizontal, 16)
                     }
                     if contentPosition == .bottom {
                         Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
@@ -277,7 +284,7 @@ struct hForm_Previews: PreviewProvider {
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
-        .hFormTitle(.small, .standard, "TITLE")
+        .hFormTitle(title: .init(.small, .standard, "TITLE"))
     }
 }
 
@@ -396,7 +403,7 @@ extension View {
 }
 
 private struct EnvironmentHFormTitle: EnvironmentKey {
-    static let defaultValue: (type: HFormTitleSpacingType, fontSize: HFontTextStyle, title: String)? = nil
+    static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
 }
 
 public enum HFormTitleSpacingType {
@@ -422,16 +429,35 @@ public enum HFormTitleSpacingType {
     }
 }
 
+public struct hTitle {
+    var type: HFormTitleSpacingType
+    var fontSize: HFontTextStyle
+    var text: String
+    var alignment: Alignment
+
+    public init(
+        _ type: HFormTitleSpacingType,
+        _ fontSize: HFontTextStyle,
+        _ text: String,
+        alignment: Alignment? = .center
+    ) {
+        self.type = type
+        self.fontSize = fontSize
+        self.text = text
+        self.alignment = alignment ?? .center
+    }
+}
+
 extension EnvironmentValues {
-    public var hFormTitle: (HFormTitleSpacingType, HFontTextStyle, String)? {
+    public var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
         get { self[EnvironmentHFormTitle.self] }
         set { self[EnvironmentHFormTitle.self] = newValue }
     }
 }
 
 extension View {
-    public func hFormTitle(_ type: HFormTitleSpacingType, _ fontSize: HFontTextStyle, _ title: String) -> some View {
-        self.environment(\.hFormTitle, (type, fontSize, title))
+    public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
+        self.environment(\.hFormTitle, (title, subTitle))
     }
 }
 

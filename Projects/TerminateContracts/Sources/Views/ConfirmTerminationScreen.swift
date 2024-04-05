@@ -4,68 +4,64 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @PresentableStore var store: TerminationContractStore
-    let config: TerminationConfirmConfig
+    @State private var isHidden = false
     let onSelected: () -> Void
 
-    var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                DisplayContractTable(
-                    config: config,
-                    terminationDate: (store.state.config?.isDeletion ?? false)
-                        ? Date().displayDateDDMMMYYYYFormat ?? ""
-                        : store.state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
-                )
-                DisplayQuestionView()
-            }
-        }
-        .hFormAttachToBottom {
-            hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .alert) {
-                        onSelected()
-                    } content: {
-                        hText(L10n.terminationConfirmButton)
-                    }
-                    hButton.LargeButton(type: .ghost) {
-                        store.send(.dismissTerminationFlow)
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
-            .padding(.top, 16)
-        }
-    }
-}
-
-public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
-    public var contractId: String
-    public var image: PillowType?
-    public var contractDisplayName: String
-    public var contractExposureName: String
-    public var activeFrom: String?
-    public var isDeletion: Bool?
-
-    public init(
-        contractId: String,
-        image: PillowType?,
-        contractDisplayName: String,
-        contractExposureName: String,
-        activeFrom: String? = nil
+    init(
+        onSelected: @escaping () -> Void
     ) {
-        self.contractId = contractId
-        self.image = image
-        self.contractDisplayName = contractDisplayName
-        self.contractExposureName = contractExposureName
-        self.activeFrom = activeFrom
+        self.onSelected = onSelected
+    }
+
+    var body: some View {
+        PresentableStoreLens(
+            TerminationContractStore.self
+        ) { state in
+            state
+        } _: { state in
+            GenericErrorView(
+                title: L10n.General.areYouSure,
+                description: terminationText(state: state),
+                icon: .triangle,
+                buttons: .init(
+                    actionButtonAttachedToBottom:
+                        .init(
+                            buttonTitle: L10n.terminationFlowConfirmButton,
+                            buttonAction: {
+                                onSelected()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    self.isHidden = true
+                                }
+                            }
+                        ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            store.send(.goBack)
+                        }
+                    )
+                )
+            )
+            .hWithLargeIcon
+            .hExtraTopPadding
+        }
+        .hDisableScroll
+        .hide($isHidden)
+
+    }
+
+    func terminationText(state: TerminationContractState) -> String {
+        if state.isDeletion {
+            return L10n.terminationFlowConfirmation
+        }
+        return L10n.terminationFlowConfirmationSubtitleTermination(
+            state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""
+        )
     }
 }
 
-#Preview{
-    ConfirmTerminationScreen(
-        config: .init(contractId: "", image: .home, contractDisplayName: "", contractExposureName: ""),
-        onSelected: {}
-    )
+struct TerminationDeleteScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        ConfirmTerminationScreen(onSelected: {})
+    }
 }

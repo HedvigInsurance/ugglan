@@ -84,7 +84,7 @@ public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
     case openCrossSellingWebUrl(url: URL)
-    case startNewTermination(type: TerminationNavigationAction)
+    case startNewTermination(for: Contract)
     case handleCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
     case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
 }
@@ -119,8 +119,8 @@ extension Contracts {
                 resultJourney(.handleCoInsured(config: config, fromInfoCard: fromInfoCard))
             } else if case let .coInsuredNavigationAction(.openMissingCoInsuredAlert(config)) = action {
                 resultJourney(.openMissingCoInsuredAlert(config: config))
-            } else if case let .startTermination(navigationAction) = action {
-                resultJourney(.startNewTermination(type: navigationAction))
+            } else if case let .startTermination(contract) = action {
+                resultJourney(.startNewTermination(for: contract))
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
                 InfoView(
                     title: L10n.contractCoverageMoreInfo,

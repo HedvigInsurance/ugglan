@@ -23,7 +23,7 @@ struct ContractsScreen: View {
                     CheckboxPickerScreen<TravelInsuranceContractSpecification>(
                         items: {
                             return travelInsuranceModels.map {
-                                (object: $0, displayName: $0.street)
+                                (object: $0, displayName: .init(title: $0.street))
                             }
                         }(),
                         preSelectedItems: {
@@ -42,7 +42,7 @@ struct ContractsScreen: View {
                         attachToBottom: true,
                         hButtonText: L10n.generalContinueButton
                     )
-                    .hFormTitle(.standard, .title1, L10n.TravelCertificate.selectContractTitle)
+                    .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))
                     .hButtonIsLoading(isLoading)
                     .hDisableScroll
                     .onReceive(

@@ -11,18 +11,17 @@ public enum TerminationStepModelAction: ActionProtocol, Hashable {
 public enum TerminationContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
-    case terminationInitialNavigation(action: TerminationNavigationAction)
 
     case startTermination(config: TerminationConfirmConfig)
     case setTerminationDate(terminationDate: Date)
     case sendTerminationDate
     case sendConfirmDelete
     case setTerminationContext(context: String)
-    case setTerminationContractId(id: String)
-    case setTerminationisDeletion
 
     case sendTermination(terminationDate: Date, surveyUrl: String)
-    case dismissTerminationFlow
+    case dismissTerminationFlow(afterCancellationFinished: Bool)
+    case dismissDatePicker
+    case goBack
     case goToFreeTextChat
     case goToUrl(url: URL)
 }
@@ -31,14 +30,14 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationSuccessScreen
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
-    case openTerminationDeletionScreen
-    case openSetTerminationDateScreen
-    case openConfirmTerminationScreen(config: TerminationConfirmConfig)
+    case openTerminationDatePickerScreen
+    case openConfirmTerminationScreen
     case openTerminationProcessingScreen
+    case openSelectInsuranceScreen(configs: [TerminationConfirmConfig])
+    case openSetTerminationDateLandingScreen(with: TerminationConfirmConfig)
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {
-    case startTermination
+    case getInitialStep
     case sendTerminationDate
-    case deleteTermination
 }

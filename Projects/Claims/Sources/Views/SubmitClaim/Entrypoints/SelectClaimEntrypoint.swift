@@ -18,7 +18,7 @@ public struct SelectClaimEntrypointGroup: View {
 
     public var body: some View {
         hForm {}
-            .hFormTitle(.small, .title1, L10n.claimTriagingNavigationTitle)
+            .hFormTitle(title: .init(.small, .title1, L10n.claimTriagingNavigationTitle))
             .hDisableScroll
             .hFormAttachToBottom {
                 PresentableStoreLens(
@@ -74,7 +74,7 @@ struct SelectClaimEntrypointType: View {
     var body: some View {
         hForm {
         }
-        .hFormTitle(.small, .title1, L10n.claimsTriagingWhatHappenedTitle)
+        .hFormTitle(title: .init(.small, .title1, L10n.claimsTriagingWhatHappenedTitle))
         .hDisableScroll
         .hFormAttachToBottom {
 
@@ -153,7 +153,7 @@ struct SelectClaimEntrypointOption: View {
     var body: some View {
         hForm {
         }
-        .hFormTitle(.small, .title1, L10n.claimsTriagingWhatItemTitle)
+        .hFormTitle(title: .init(.small, .title1, L10n.claimsTriagingWhatItemTitle))
         .hDisableScroll
         .hFormAttachToBottom {
             PresentableStoreLens(
