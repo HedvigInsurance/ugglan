@@ -7,6 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@available(iOS 16.0, *)
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
         AppJourney.loggedIn

@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
 extension AppJourney {
     static var impersonationSettings: some JourneyPresentation {
         HostingJourney(

@@ -17,11 +17,13 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         return
-            HomeView.journey(
+            HomeView<Claims, EmptyView>
+            .journey(
                 claimsContent: claims,
                 memberId: {
                     let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
@@ -132,9 +134,9 @@ extension AppJourney {
                 case .resetAppLanguage:
                     ContinueJourney()
                         .onPresent {
-                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                                AppJourney.main
-                            )
+                            //                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                            //                                AppJourney.main
+                            //                            )
                         }
                 case .openChat:
                     AppJourney.freeTextChat().withDismissButton

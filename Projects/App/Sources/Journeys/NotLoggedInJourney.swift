@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 
+@available(iOS 16.0, *)
 extension AppJourney {
     static var notLoggedIn: some JourneyPresentation {
         HostingJourney(

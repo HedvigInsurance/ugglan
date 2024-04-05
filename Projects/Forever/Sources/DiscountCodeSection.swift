@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
     var body: some View {
@@ -43,9 +44,11 @@ struct DiscountCodeSectionView: View {
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                store.send(.showChangeCodeDetail)
+                                //                                                                    store.send(.showChangeCodeDetail)
                             } content: {
-                                hText(L10n.ReferralsChange.changeCode)
+                                NavigationLink(value: NavigationForeverView.changeCodeView) {
+                                    hText(L10n.ReferralsChange.changeCode)
+                                }
                             }
                         }
                     }
@@ -58,13 +61,13 @@ struct DiscountCodeSectionView: View {
     }
 }
 
-struct DiscountCodeSectionView_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return DiscountCodeSectionView()
-            .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
-            }
-    }
-}
+//struct DiscountCodeSectionView_Previews: PreviewProvider {
+//    @PresentableStore static var store: ForeverStore
+//    static var previews: some View {
+//        Localization.Locale.currentLocale = .en_SE
+//        return DiscountCodeSectionView()
+//            .onAppear {
+//                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
+//            }
+//    }
+//}

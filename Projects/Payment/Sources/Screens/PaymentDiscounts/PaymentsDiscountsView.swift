@@ -219,8 +219,13 @@ extension PaymentsDiscountsRootView {
         ) { action in
             if case let .navigation(navigateTo) = action {
                 if case .openForever = navigateTo {
-                    ForeverView.journey()
-                        .hidesBottomBarWhenPushed
+                    if #available(iOS 16.0, *) {
+                        ForeverView.journey()
+                            .hidesBottomBarWhenPushed
+                    } else {
+                        // Fallback on earlier versions
+                        DismissJourney()
+                    }
                 } else if case .openAddCampaing = navigateTo {
                     AddCampaingCodeView.journey
                 } else if case .openAllReferrals = navigateTo {
