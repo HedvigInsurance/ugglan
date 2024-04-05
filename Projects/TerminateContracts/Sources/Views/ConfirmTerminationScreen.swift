@@ -51,7 +51,7 @@ struct ConfirmTerminationScreen: View {
 
     func terminationText(state: TerminationContractState) -> String {
         if state.isDeletion {
-            return L10n.terminationFlowConfirmationSubtitleDeletion
+            return L10n.terminationFlowConfirmation
         }
         return L10n.terminationFlowConfirmationSubtitleTermination(
             state.terminationDateStep?.date?.displayDateDDMMMYYYYFormat ?? ""

@@ -163,7 +163,7 @@ public class TerminationFlowJourney {
             rootView: SuccessScreen(
                 successViewTitle: L10n.terminationFlowSuccessTitle,
                 successViewBody: isDeletion
-                    ? L10n.terminationFlowSuccessSubtitleWithoutDate
+                    ? L10n.terminateContractTerminationComplete
                     : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
                 buttons: .init(
                     primaryButton: .init(buttonAction: {
@@ -308,8 +308,8 @@ public class TerminationFlowJourney {
                 attachToBottom: true,
                 disableIfNoneSelected: true,
                 hButtonText: L10n.generalContinueButton,
-                title: L10n.terminationFlowCancellationTitle,
-                subTitle: L10n.terminationFlowChooseContractSubtitle
+                title: L10n.terminationFlowTitle,
+                subTitle: L10n.terminationFlowBody
             )
             .hUseColoredCheckbox
             .hFieldSize(.small)
