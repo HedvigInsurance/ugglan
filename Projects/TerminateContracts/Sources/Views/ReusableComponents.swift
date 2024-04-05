@@ -3,24 +3,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DisplayContractTable: View {
-    let config: TerminationConfirmConfig?
-    let terminationDate: String
-
-    var body: some View {
-        hSection {
-            if let config = config {
-                ContractRow(
-                    image: config.image?.bgImage,
-                    terminationMessage: L10n.contractStatusToBeTerminated(terminationDate),
-                    contractDisplayName: config.contractDisplayName,
-                    contractExposureName: config.contractExposureName
-                )
-            }
-        }
-    }
-}
-
 struct DisplayQuestionView: View {
     @PresentableStore var store: TerminationContractStore
     let terminationQuestions: [TerminationQuestion] = [
@@ -63,7 +45,7 @@ struct DisplayQuestionView: View {
             .sectionContainerStyle(.transparent)
             VStack(spacing: 4) {
                 ForEach(
-                    (store.state.config?.isDeletion ?? false) ? deletionQuestions : terminationQuestions,
+                    store.state.isDeletion ? deletionQuestions : terminationQuestions,
                     id: \.question
                 ) { question in
                     InfoExpandableView(
@@ -71,7 +53,7 @@ struct DisplayQuestionView: View {
                         text: question.answer,
                         questionClicked: {
                             let stringToLog =
-                                (store.state.config?.isDeletion ?? false)
+                                store.state.isDeletion
                                 ? "deletion question clicked" : "termination question clicked"
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }

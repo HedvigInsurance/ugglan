@@ -8,6 +8,7 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TerminateContracts
 import hCore
 import hGraphQL
 
@@ -120,6 +121,37 @@ extension AppDelegate {
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
                     let vc = AppJourney.movingFlow()
+                    let disposeBag = DisposeBag()
+                    disposeBag += fromVC.present(vc)
+                }
+        } else if path == .terminateContract {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue { [weak self] _ in
+                    self?.deepLinkDisposeBag.dispose()
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+                    let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+                        .filter({ $0.canTerminate })
+                        .map({
+                            $0.asTerminationConfirmConfig
+                        })
+                    let vc = TerminationFlowJourney.start(for: contractsConfig) { success in
+                        if success {
+                            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                            ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.dismissHelpCenter)
+                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                            chatStore.send(.navigation(action: .closeChat))
+                            guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
+                            else { return }
+
+                            guard let navigation = tabBar.selectedViewController as? UINavigationController else {
+                                return
+                            }
+                            navigation.popToRootViewController(animated: true)
+                        }
+                    }
                     let disposeBag = DisposeBag()
                     disposeBag += fromVC.present(vc)
                 }

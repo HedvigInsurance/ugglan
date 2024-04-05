@@ -38,6 +38,10 @@ extension AppJourney {
             if let url = DeepLink.getUrl(from: .travelCertificate) {
                 configureURL(url: url)
             }
+        case .cancellation():
+            if let url = DeepLink.getUrl(from: .terminateContract) {
+                configureURL(url: url)
+            }
         default:
             if quickAction.isSickAborad {
                 openOnTop(

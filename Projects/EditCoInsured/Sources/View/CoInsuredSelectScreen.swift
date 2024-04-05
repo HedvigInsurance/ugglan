@@ -45,7 +45,7 @@ struct CoInsuredSelectScreen: View {
                 return
                     alreadyAddedCoinsuredMembers
                     .compactMap {
-                        ((object: $0, displayName: $0.fullName ?? ""))
+                        ((object: $0, displayName: .init(title: $0.fullName ?? "")))
                     }
             }(),
             preSelectedItems: { [] },

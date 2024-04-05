@@ -16,7 +16,7 @@ struct SelectContractScreen: View {
             CheckboxPickerScreen<FlowClaimContractSelectOptionModel>(
                 items: {
                     return contractStep?.availableContractOptions
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
                     if let preselected = contractStep?.availableContractOptions
@@ -36,7 +36,7 @@ struct SelectContractScreen: View {
                 attachToBottom: true
             )
             .padding(.bottom, 16)
-            .hFormTitle(.small, .title1, L10n.claimTriagingAboutTitile)
+            .hFormTitle(title: .init(.small, .title1, L10n.claimTriagingAboutTitile))
             .hButtonIsLoading(isLoading)
             .hDisableScroll
             .onReceive(

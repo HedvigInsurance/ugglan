@@ -373,6 +373,8 @@ extension HelpCenterStartView {
                 HelpCenterTopicView.journey(commonTopic: topic)
             } else if case let .openHelpCenterQuestionView(question) = action {
                 HelpCenterQuestionView.journey(question: question, title: nil)
+            } else if case .dismissHelpCenter = action {
+                DismissJourney()
             }
         }
         .configureTitle(L10n.hcTitle)
