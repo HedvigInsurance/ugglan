@@ -171,7 +171,7 @@ public class TerminationFlowJourney {
                         store.send(.dismissTerminationFlow(afterCancellationFinished: true))
                     }),
                     ghostButton: .init(
-                        buttonTitle: "Share feedback",
+                        buttonTitle: L10n.terminationFlowShareFeedback,
                         buttonAction: {
                             log.addUserAction(type: .click, name: "terminationSurvey")
                             let store: TerminationContractStore = globalPresentableStoreContainer.get()
