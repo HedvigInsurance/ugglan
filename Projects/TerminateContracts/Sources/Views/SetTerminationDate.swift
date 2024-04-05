@@ -14,7 +14,7 @@ struct SetTerminationDate: View {
         terminationDate: () -> Date
     ) {
         self.onSelected = onSelected
-        self._terminationDate = State(wrappedValue: terminationDate())
+        self._terminationDate = State(wrappedValue: store.state.terminationDateStep?.date ?? Date())
     }
 
     var body: some View {
@@ -45,7 +45,7 @@ struct SetTerminationDate: View {
                             title: L10n.terminationDateText,
                             showAsList: false,
                             dateFormatter: .none,
-                            buttonText: L10n.generalContinueButton
+                            buttonText: L10n.generalSaveButton
                         )
                     )
                 }
