@@ -5,6 +5,19 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
+extension MyModelObject {
+    @ViewBuilder
+    public func getTravelCertificateView(pathState: MyModelObject) -> some View {
+        switch currentTravelCertificateRoute {
+        case .showList:
+            ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
+        case .createNewTravelCertificate:
+            EmptyView()  // change
+        }
+    }
+}
+
 public struct TravelInsuranceFlowJourney {
     static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
         let disposeBag = DisposeBag()
@@ -125,33 +138,39 @@ public struct TravelInsuranceFlowJourney {
         .hidesBackButton
     }
 
+    @JourneyBuilder
     private static func showListScreen(
         canAddTravelInsurance: Bool,
         style: PresentationStyle,
         infoButtonPlacement: ToolbarItemPlacement
     ) -> some JourneyPresentation {
-        HostingJourney(
-            TravelInsuranceStore.self,
-            rootView: ListScreen(
-                canAddTravelInsurance: canAddTravelInsurance,
-                infoButtonPlacement: infoButtonPlacement
-            ),
-            style: style,
-            options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
-        ) { action in
-            if case let .navigation(navigationAction) = action {
-                if case let .openDetails(model) = navigationAction {
-                    showDetails(for: model)
-                } else if case .openCreateNew = navigationAction {
-                    start()
-                } else if case .goBack = navigationAction {
-                    PopJourney()
+        if #available(iOS 16.0, *) {
+            HostingJourney(
+                TravelInsuranceStore.self,
+                rootView: ListScreen(
+                    canAddTravelInsurance: canAddTravelInsurance,
+                    infoButtonPlacement: infoButtonPlacement
+                ),
+                style: style,
+                options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
+            ) { action in
+                if case let .navigation(navigationAction) = action {
+                    if case let .openDetails(model) = navigationAction {
+                        showDetails(for: model)
+                    } else if case .openCreateNew = navigationAction {
+                        start()
+                    } else if case .goBack = navigationAction {
+                        PopJourney()
+                    }
+                } else if case .dismissTravelInsuranceFlow = action {
+                    DismissJourney()
                 }
-            } else if case .dismissTravelInsuranceFlow = action {
-                DismissJourney()
             }
+            .configureTitle(L10n.TravelCertificate.cardTitle)
+        } else {
+            //            // Fallback on earlier versions
+            DismissJourney()
         }
-        .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 
     private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {

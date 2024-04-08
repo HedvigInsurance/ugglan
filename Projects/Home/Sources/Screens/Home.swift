@@ -11,11 +11,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-//extension NavigationViews {
-////    public static let submitClaim = NavigationViews(rawValue: "submitClaim(argument: String)")
-//    public static let helpCenter = NavigationViews(rawValue: "helpCenter")
-//}
-
 @available(iOS 16.0, *)
 public struct HomeView<Claims: View, Content: View>: View {
 
@@ -42,23 +37,6 @@ public struct HomeView<Claims: View, Content: View>: View {
         self.onNavigation = onNavigation
     }
 }
-
-//@available(iOS 16.0, *)
-//extension MyModelObject {
-//
-//    @ViewBuilder
-//    func getHomeView(pathState: MyModelObject) -> some View {
-//        switch currentHomeRoute {
-//        case .helpCenter:
-//            HelpCenterStartView()
-//        case .submitClaim:
-//            pathState.getAppView(pathState: pathState)
-//
-//        default:
-//            EmptyView()
-//        }
-//    }
-//}
 
 @available(iOS 16.0, *)
 extension HomeView {

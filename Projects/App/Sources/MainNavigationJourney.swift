@@ -1,3 +1,4 @@
+import Claims
 import Contracts
 import Forever
 import Home
@@ -5,17 +6,18 @@ import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 
 @available(iOS 16.0, *)
 @main
-struct NewApp: App {
+struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var pathState = MyModelObject()
     @State private var hasLaunchFinished = false
 
-    @State private var selectedItem = 1
+    @State private var selectedTab = 0
 
     @ViewBuilder
     func getNavigationView(isHomeNavigation: Bool) -> some View {
@@ -26,8 +28,16 @@ struct NewApp: App {
         }
     }
 
-    var body: some Scene {
+    @ViewBuilder
+    func getNavigationViewFromProfile(isProfileNavigation: Bool) -> some View {
+        if isProfileNavigation {
+            pathState.getProfileView(pathState: pathState)
+        } else {
+            pathState.getAppView(pathState: pathState)
+        }
+    }
 
+    var body: some Scene {
         WindowGroup {
             //            Launch()
             //                .onAppear{
@@ -40,27 +50,33 @@ struct NewApp: App {
 
             //            if hasLaunchFinished {
 
-            TabView(selection: $selectedItem) {
-                homeTab
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
-                    || store.state.activeContracts.isEmpty
-                {
-                    foreverTab
-                }
+            TabView(selection: $selectedTab) {
+                Group {
+                    homeTab
+                    contractsTab
 
-                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                        || store.state.activeContracts.isEmpty
+                    {
+                        foreverTab
+                    }
+
+                    //                if Dependencies.featureFlags().isPaymentScreenEnabled {
                     paymentsTab
+                    //                }
+                    profileTab
                 }
             }
-            .foregroundColor(hTextColor.primary)
-            .accentColor(.black)
+            .tint(hTextColor.primary)
         }
     }
 
     var homeTab: some View {
-        HomeView(
-            claimsContent: EmptyView(),
+        let claims = Claims()
+
+        return HomeView(
+            claimsContent: claims,
             memberId: {
                 return ""
             },
@@ -70,41 +86,55 @@ struct NewApp: App {
             }
         )
         .tabItem {
-            Image(uiImage: hCoreUIAssets.homeTab.image)
-            hText(L10n.tabHomeTitle)  // hCoreUIAssets.homeTabActive.image
+            Image(uiImage: selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
+            hText(L10n.tabHomeTitle)
         }
+        .tag(0)
     }
 
     var contractsTab: some View {
         Contracts(showTerminated: false)
             .tabItem {
-                Image(uiImage: hCoreUIAssets.contractTab.image)  // hCoreUIAssets.contractTabActive.image
+                Image(
+                    uiImage: selectedTab == 1 ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
+                )
                 hText(L10n.tabInsurancesTitle)
             }
+            .tag(1)
     }
 
     var foreverTab: some View {
         ForeverView()
             .tabItem {
-                Image(uiImage: hCoreUIAssets.foreverTab.image)  // hCoreUIAssets.foreverTabActive.image
+                Image(uiImage: selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image)
                 hText(L10n.tabReferralsTitle)
             }
+            .tag(2)
     }
 
     var paymentsTab: some View {
         PaymentsView()
             .tabItem {
-                Image(uiImage: hCoreUIAssets.foreverTab.image)  // hCoreUIAssets.foreverTabActive.image
+                Image(
+                    uiImage: selectedTab == 3 ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
+                )
                 hText(L10n.tabPaymentsTitle)
             }
+            .tag(3)
     }
 
     var profileTab: some View {
-        ProfileView()
-            .tabItem {
-                Image(uiImage: hCoreUIAssets.profileTab.image)  // hCoreUIAssets.profileTabActive.image
-                hText(L10n.ProfileTab.title)
+        ProfileView(
+            pathState: pathState,
+            onNavigation: { isProfileNavigation in
+                return getNavigationViewFromProfile(isProfileNavigation: isProfileNavigation)
             }
+        )
+        .tabItem {
+            Image(uiImage: selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image)
+            hText(L10n.ProfileTab.title)
+        }
+        .tag(4)
     }
 }
 
@@ -124,6 +154,10 @@ extension MyModelObject {
         case .submitClaim:
             let _ = pathState.changeClaimsRoute(.honestyPledge)
             getClaimsView(pathState: pathState)
+        case .travelCertificate:
+            let _ = pathState.changeRoute(.homeView)
+            let _ = pathState.changeTravelCertificateRoute(.showList)
+            getTravelCertificateView(pathState: pathState)
         default:
             EmptyView()
         }

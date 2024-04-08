@@ -14,6 +14,7 @@ public struct NavigationViews: RawRepresentable, Hashable {
     public static let foreverView = NavigationViews(rawValue: "foreverView")
 
     public static let submitClaim = NavigationViews(rawValue: "submitClaim")
+    public static let travelCertificate = NavigationViews(rawValue: "travelCertificate")
 }
 
 public enum NavigationForeverView {
@@ -28,6 +29,18 @@ public enum NavigationClaimsView {
     case honestyPledge
 }
 
+public enum NavigationProfileView {
+    case profileInfo
+    case appInfo
+    case settings
+    case travelCertificate
+}
+
+public enum NavigationTravelCertificateView {
+    case showList
+    case createNewTravelCertificate
+}
+
 @available(iOS 16.0, *)
 public class MyModelObject: ObservableObject {
 
@@ -36,6 +49,8 @@ public class MyModelObject: ObservableObject {
     public var currentForeverRoute: NavigationForeverView = .changeCodeView
     public var currentHomeRoute: NavigationHomeView = .helpCenter
     public var currentClaimsRoute: NavigationClaimsView = .honestyPledge
+    public var currentProfileRoute: NavigationProfileView = .settings
+    public var currentTravelCertificateRoute: NavigationTravelCertificateView = .showList
 
     public init() {
         self.path = NavigationPath()
@@ -56,6 +71,14 @@ public class MyModelObject: ObservableObject {
 
     public func changeClaimsRoute(_ route: NavigationClaimsView) {
         currentClaimsRoute = route
+    }
+
+    public func changeProfileRoute(_ route: NavigationProfileView) {
+        currentProfileRoute = route
+    }
+
+    public func changeTravelCertificateRoute(_ route: NavigationTravelCertificateView) {
+        currentTravelCertificateRoute = route
     }
 
     public func backRoute() {

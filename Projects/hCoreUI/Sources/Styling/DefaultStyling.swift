@@ -328,99 +328,94 @@ extension DefaultStyling {
 
         // set tab bar colors
         if #available(iOS 15.0, *) {
-            // background colors
             UITabBar.appearance().barTintColor = tabBarBackgroundColor
             UITabBar.appearance().backgroundColor = tabBarBackgroundColor
-
-            // icon colors
-            //            UITabBar.appearance().tintColor = .brand(.primaryText())
-            UITabBar.appearance().tintColor = .red
             UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
-            //            UITabBar.appearance().toolbarCo
         }
 
-        //        let standard = UITabBarAppearance()
-        //        let scrollEdgeAppearance = UITabBarAppearance()
-        //        scrollEdgeAppearance.configureWithOpaqueBackground()
-        //        scrollEdgeAppearance.backgroundColor = UIColor.brand(.primaryBackground())
-        //        standard.configureWithOpaqueBackground()
-        //        standard.backgroundColor = UIColor.brand(.primaryBackground())
-        //
-        //        func configureTabBar(appearance: UITabBarItemStateAppearance) {
-        //            appearance.badgeBackgroundColor = .clear
-        //            appearance.badgePositionAdjustment.horizontal = 0
-        //            appearance.badgePositionAdjustment.vertical = -4
-        //            appearance.badgeTextAttributes = [
-        //                NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
-        //                NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
-        //            ]
-        //        }
-        //        configureTabBar(appearance: standard.stackedLayoutAppearance.normal)
-        //        configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
-        //        configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
-        //        configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
-        //
-        //        UITabBar.appearance().standardAppearance = standard
-        //        if #available(iOS 15.0, *) {
-        //            UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        //        }
+        let standard = UITabBarAppearance()
+        let scrollEdgeAppearance = UITabBarAppearance()
+        scrollEdgeAppearance.configureWithOpaqueBackground()
+        scrollEdgeAppearance.backgroundColor = UIColor.brand(.primaryBackground())
+        standard.configureWithOpaqueBackground()
+        standard.backgroundColor = UIColor.brand(.primaryBackground())
+
+        func configureTabBar(appearance: UITabBarItemStateAppearance) {
+            appearance.badgeBackgroundColor = .clear
+            appearance.badgePositionAdjustment.horizontal = 0
+            appearance.badgePositionAdjustment.vertical = -4
+            appearance.badgeTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
+            ]
+        }
+        configureTabBar(appearance: standard.stackedLayoutAppearance.normal)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.selected)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.focused)
+        configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
+
+        UITabBar.appearance().standardAppearance = standard
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        }
         //        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
-        //        UITabBar.appearance().tintColor = .brand(.primaryText())
-        //        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .dark)
-        //        )
-        //        .backgroundImage =
-        //            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
-        //            .asImage()
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .light)
-        //        )
-        //        .backgroundImage =
-        //            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-        //            .asImage()
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .dark)
-        //        )
-        //        .shadowImage = UIColor.brand(.primaryText())
-        //            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .light)
-        //        )
-        //        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
-        //            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-        //
-        //        if #available(iOS 15.0, *) {
-        //            UITabBar.appearance(
-        //                for: UITraitCollection(userInterfaceStyle: .light)
-        //            )
-        //            .scrollEdgeAppearance?
-        //            .shadowImage = UIColor.brand(.primaryText())
-        //                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-        //        }
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .dark)
-        //        )
-        //        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
-        //            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-        //
-        //        UITabBar.appearance(
-        //            for: UITraitCollection(userInterfaceStyle: .dark)
-        //        )
-        //
-        //        if #available(iOS 15.0, *) {
-        //            UITabBar.appearance(
-        //                for: UITraitCollection(userInterfaceStyle: .dark)
-        //            )
-        //            .scrollEdgeAppearance?
-        //            .shadowImage = UIColor.brand(.primaryText())
-        //                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-        //        }
+        UITabBar.appearance().unselectedItemTintColor = .red
+        UITabBar.appearance().tintColor = .brand(.primaryText())
+        UITabBar.appearance().backgroundColor = tabBarBackgroundColor
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+            .asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .shadowImage = UIColor.brand(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brand(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        }
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .standardAppearance.shadowImage = UIColor.brand(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brand(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        }
     }
 
     private static func setSegmentedControllAppearance() {

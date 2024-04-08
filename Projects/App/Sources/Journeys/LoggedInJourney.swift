@@ -139,7 +139,8 @@ extension AppJourney {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
         return
-            ProfileView.journey { result in
+            ProfileView<EmptyView>
+            .journey { result in
                 switch result {
                 case .resetAppLanguage:
                     ContinueJourney()

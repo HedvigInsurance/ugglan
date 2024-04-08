@@ -56,6 +56,21 @@ enum ProfileRowType {
         }
     }
 
+    var profileViewType: NavigationProfileView {
+        switch self {
+        case .myInfo:
+            return NavigationProfileView.profileInfo
+        case .appInfo:
+            return NavigationProfileView.appInfo
+        case .settings:
+            return NavigationProfileView.settings
+        case .travelCertificate:
+            return NavigationProfileView.travelCertificate
+        case .eurobonus:
+            return NavigationProfileView.travelCertificate
+        }
+    }
+
     var imageSize: CGFloat {
         switch self {
         case .myInfo, .appInfo, .settings, .travelCertificate:

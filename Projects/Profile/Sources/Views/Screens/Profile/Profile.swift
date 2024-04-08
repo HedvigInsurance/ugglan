@@ -6,11 +6,18 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ProfileView: View {
+@available(iOS 16.0, *)
+public struct ProfileView<Content: View>: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
 
-    public init() {
+    @ObservedObject private var pathState = MyModelObject()  // make stored property?
+    private var onNavigation: (Bool) -> Content
+
+    public init(
+        pathState: MyModelObject,
+        onNavigation: @escaping (Bool) -> Content
+    ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if store.state.openSettingsDirectly {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -18,6 +25,9 @@ public struct ProfileView: View {
             }
             store.send(.setOpenAppSettings(to: false))
         }
+
+        self.pathState = pathState
+        self.onNavigation = onNavigation
     }
 
     private var logoutAlert: SwiftUI.Alert {
@@ -33,58 +43,90 @@ public struct ProfileView: View {
     }
 
     public var body: some View {
-        hForm {
-            PresentableStoreLens(
-                ProfileStore.self,
-                getter: { state in
-                    state
-                }
-            ) { stateData in
-                hSection {
-                    ProfileRow(row: .myInfo)
-                    if store.state.showTravelCertificate {
+        NavigationStack(path: $pathState.path) {
+            hForm {
+                PresentableStoreLens(
+                    ProfileStore.self,
+                    getter: { state in
+                        state
+                    }
+                ) { stateData in
+                    hSection {
+                        ProfileRow(row: .myInfo)
+                        //                        if store.state.showTravelCertificate {
                         ProfileRow(row: .travelCertificate)
+                        //                        }
+                        if store.state.partnerData?.shouldShowEuroBonus ?? false {
+                            let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
+                            let hasEntereNumber = !number.isEmpty
+                            ProfileRow(
+                                row: .eurobonus(hasEnteredNumber: hasEntereNumber)
+                            )
+                        }
+                        ProfileRow(row: .appInfo)
+                        ProfileRow(row: .settings)
+                            .hWithoutDivider
                     }
-                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
-                        let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
-                        let hasEntereNumber = !number.isEmpty
-                        ProfileRow(
-                            row: .eurobonus(hasEnteredNumber: hasEntereNumber)
-                        )
-                    }
-                    ProfileRow(row: .appInfo)
-                    ProfileRow(row: .settings)
-                        .hWithoutDivider
+                    .withoutHorizontalPadding
+                    .sectionContainerStyle(.transparent)
+                    .padding(.top, 16)
                 }
-                .withoutHorizontalPadding
+            }
+            .hFormMergeBottomViewWithContentIfNeeded
+            .hFormAttachToBottom {
+                hSection {
+                    VStack(spacing: 8) {
+                        RenewalCardView(showCoInsured: false)
+                        NotificationsCardView()
+                        hButton.LargeButton(type: .ghost) {
+                            showLogoutAlert = true
+                        } content: {
+                            hText(L10n.logoutButton)
+                                .foregroundColor(hSignalColor.redElement)
+                        }
+                        .alert(isPresented: $showLogoutAlert) {
+                            logoutAlert
+                        }
+                    }
+                }
                 .sectionContainerStyle(.transparent)
-                .padding(.top, 16)
             }
-        }
-        .hFormMergeBottomViewWithContentIfNeeded
-        .hFormAttachToBottom {
-            hSection {
-                VStack(spacing: 8) {
-                    RenewalCardView(showCoInsured: false)
-                    NotificationsCardView()
-                    hButton.LargeButton(type: .ghost) {
-                        showLogoutAlert = true
-                    } content: {
-                        hText(L10n.logoutButton)
-                            .foregroundColor(hSignalColor.redElement)
-                    }
-                    .alert(isPresented: $showLogoutAlert) {
-                        logoutAlert
-                    }
+            .onAppear {
+                store.send(.fetchProfileState)
+            }
+            .onPullToRefresh {
+                await store.sendAsync(.fetchProfileState)
+            }
+            .navigationDestination(for: NavigationProfileView.self) { view in
+                if view == NavigationProfileView.travelCertificate {
+                    let _ = pathState.changeRoute(.travelCertificate)
+                    onNavigation(false)
+                } else {
+                    let _ = pathState.changeProfileRoute(view)
+                    onNavigation(true)
                 }
             }
-            .sectionContainerStyle(.transparent)
+            //            .navigationDestination(for: NavigationViews.self) { view in
+            //                let _ = pathState.changeRoute(view)
+            //                onNavigation(false)
+            //            }
         }
-        .onAppear {
-            store.send(.fetchProfileState)
-        }
-        .onPullToRefresh {
-            await store.sendAsync(.fetchProfileState)
+    }
+}
+
+@available(iOS 16.0, *)
+extension MyModelObject {
+    @ViewBuilder
+    public func getProfileView(pathState: MyModelObject) -> some View {
+        switch currentProfileRoute {
+        case .profileInfo:
+            MyInfoView()
+        case .appInfo:
+            AppInfoView()
+        case .settings:
+            SettingsScreen()
+        case .travelCertificate:
+            EmptyView()
         }
     }
 }
@@ -97,13 +139,14 @@ public enum ProfileResult {
 
 }
 
+@available(iOS 16.0, *)
 extension ProfileView {
     public static func journey<ResultJourney: JourneyPresentation>(
         @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
-            rootView: ProfileView()
+            rootView: ProfileView<EmptyView>(pathState: MyModelObject(), onNavigation: { _ in return EmptyView() })
         ) { action in
             if case .openProfile = action {
                 HostingJourney(rootView: MyInfoView())
