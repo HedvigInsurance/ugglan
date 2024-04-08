@@ -50,7 +50,7 @@ extension AppJourney {
             openOnTop(
                 vc: vc
             )
-        case let .sickAbroad(partners):
+        case .sickAbroad:
             openOnTop(
                 vc: SubmitClaimDeflectScreen.journey
             )
