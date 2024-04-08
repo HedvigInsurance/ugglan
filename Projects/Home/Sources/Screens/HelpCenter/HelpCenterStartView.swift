@@ -56,7 +56,7 @@ public struct HelpCenterStartView: View {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                 .padding(.bottom, 4)
 
-            ForEach(store.state.quickAction, id: \.displayTitle) { quickAction in
+            ForEach(store.state.quickActions, id: \.displayTitle) { quickAction in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 0) {

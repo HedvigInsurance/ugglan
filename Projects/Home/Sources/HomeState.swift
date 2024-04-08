@@ -12,7 +12,7 @@ public struct HomeState: StateProtocol {
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessages: [ImportantMessage] = []
-    public var quickAction: [QuickAction] = []
+    public var quickActions: [QuickAction] = []
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
@@ -166,7 +166,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setLoading(for: .fetchQuickActions)
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
-            newState.quickAction = quickActions
+            newState.quickActions = quickActions
             setToolbarTypes(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
@@ -194,7 +194,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 
-        if state.quickAction.hasFirstVet {
+        if state.quickActions.hasFirstVet {
             types.append(.firstVet)
         }
 
