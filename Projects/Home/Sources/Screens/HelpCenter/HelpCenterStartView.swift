@@ -63,9 +63,9 @@ public struct HelpCenterStartView: View {
                             hText(quickAction.displayTitle)
                             hText(quickAction.displaySubtitle, style: .standardSmall)
                                 .foregroundColor(hTextColor.secondary)
-                            
+
                         }
-                        
+
                         Spacer()
                     }
                     .withChevronAccessory
