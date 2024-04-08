@@ -5,9 +5,9 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimDeflectScreen: View {
-    let model: FlowClaimDeflectStepModel?
-    let isEmergencyStep: Bool
-    let openChat: () -> Void
+    private let model: FlowClaimDeflectStepModel?
+    private let isEmergencyStep: Bool
+    private let openChat: () -> Void
 
     init(
         model: FlowClaimDeflectStepModel?,
@@ -87,17 +87,18 @@ extension SubmitClaimDeflectScreen {
         let model: FlowClaimDeflectStepModel? = {
             let store: HomeStore = globalPresentableStoreContainer.get()
             let quickActions = store.state.quickAction
-            if let sickAbroadQuickAction = quickActions.first(where: { $0.isSickAborad }) {
+            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?.sickAboardPartners
+            {
                 return FlowClaimDeflectStepModel(
                     id: .FlowClaimDeflectEmergencyStep,
-                    partners: [
+                    partners: sickAbroadPartners.compactMap({
                         .init(
                             id: "",
                             imageUrl: "",
                             url: "",
-                            phoneNumber: sickAbroadQuickAction.layout?.emergency?.emergencyNumber
+                            phoneNumber: $0.phoneNumber
                         )
-                    ],
+                    }),
                     isEmergencyStep: true
                 )
             }

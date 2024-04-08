@@ -4,44 +4,39 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct QuickActionDetailScreen: View {
+public struct FirstVetView: View {
     @PresentableStore var store: HomeStore
-    private let quickAction: QuickAction
+    private let partners: [FirstVetPartner]
 
     public init(
-        quickAction: QuickAction
+        partners: [FirstVetPartner]
     ) {
-        self.quickAction = quickAction
+        self.partners = partners
     }
 
     public var body: some View {
         hForm {
-            let bulletPoints = quickAction.layout?.titleAndBulletPoint?.bulletPoints
             VStack(spacing: 8) {
-                ForEach(bulletPoints ?? [], id: \.hashValue) { bulletPoint in
+                ForEach(partners, id: \.id) { partner in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: 16) {
                                 HStack(spacing: 8) {
-                                    if quickAction.isFirstVet {
-                                        Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
-                                    }
-                                    hText(bulletPoint.title)
+                                    Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
+                                    hText(partner.title ?? "")
                                     Spacer()
                                 }
-                                hText(bulletPoint.description)
+                                hText(partner.description ?? "")
                                     .foregroundColor(hTextColor.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
-                                if quickAction.isFirstVet {
-                                    hButton.MediumButton(type: .secondaryAlt) {
-                                        if let url = URL(
-                                            string: "https://app.adjust.com/11u5tuxu"
-                                        ) {
-                                            UIApplication.shared.open(url)
-                                        }
-                                    } content: {
-                                        hText(L10n.commonClaimButton)
+                                hButton.MediumButton(type: .secondaryAlt) {
+                                    if let url = URL(
+                                        string: partner.url
+                                    ) {
+                                        UIApplication.shared.open(url)
                                     }
+                                } content: {
+                                    hText(L10n.commonClaimButton)
                                 }
                             }
                         }
@@ -60,11 +55,11 @@ public struct QuickActionDetailScreen: View {
     }
 }
 
-extension QuickActionDetailScreen {
-    public static func journey(quickAction: QuickAction) -> some JourneyPresentation {
+extension FirstVetView {
+    public static func journey(partners: [FirstVetPartner]) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
-            rootView: QuickActionDetailScreen(quickAction: quickAction),
+            rootView: FirstVetView(partners: partners),
             style: .detented(.large, modally: true),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
@@ -76,28 +71,5 @@ extension QuickActionDetailScreen {
 }
 
 #Preview{
-    QuickActionDetailScreen(
-        quickAction: QuickAction(
-            id: "",
-            displayTitle: "",
-            displaySubtitle: "",
-            layout: QuickAction.Layout.init(
-                titleAndBulletPoint:
-                    .init(
-                        color: "",
-                        bulletPoints: [
-                            .init(
-                                title: "title",
-                                description: "description"
-                            ),
-                            .init(
-                                title: "title",
-                                description: "description"
-                            ),
-                        ]
-                    ),
-                emergency: nil
-            )
-        )
-    )
+    FirstVetView(partners: [])
 }

@@ -369,7 +369,7 @@ extension JourneyPresentation {
     public var configureTravelCertificateNavigation: some JourneyPresentation {
         onAction(TravelInsuranceStore.self) { action in
             if case .goToEditCoInsured = action {
-                AppJourney.configureQuickAction(quickAction: .editCoInsured())
+                AppJourney.configureQuickAction(quickAction: .editCoInsured)
             }
         }
     }

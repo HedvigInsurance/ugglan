@@ -14,15 +14,15 @@ extension AppJourney {
     @JourneyBuilder
     static func configureQuickAction(quickAction: QuickAction) -> some JourneyPresentation {
         switch quickAction {
-        case .payments():
+        case .connectPayments:
             if let url = DeepLink.getUrl(from: .directDebit) {
                 configureURL(url: url)
             }
-        case .moving():
+        case .changeAddress:
             if let url = DeepLink.getUrl(from: .moveContract) {
                 configureURL(url: url)
             }
-        case .editCoInsured():
+        case .editCoInsured:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsSupportingCoInsured = contractStore.state.activeContracts.filter({ $0.showEditCoInsuredInfo })
@@ -34,28 +34,26 @@ extension AppJourney {
                     vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
                 )
             }
-        case .travelInsurance():
+        case .travelInsurance:
             if let url = DeepLink.getUrl(from: .travelCertificate) {
                 configureURL(url: url)
             }
-        case .cancellation():
+        case .cancellation:
             if let url = DeepLink.getUrl(from: .terminateContract) {
                 configureURL(url: url)
             }
-        default:
-            if quickAction.isSickAborad {
-                openOnTop(
-                    vc: SubmitClaimDeflectScreen.journey
-                )
-            } else {
-                let vc = QuickActionDetailScreen.journey(quickAction: quickAction)
-                    .withJourneyDismissButton
-                    .configureTitle(quickAction.displayTitle)
+        case let .firstVet(partners):
+            let vc = FirstVetView.journey(partners: partners)
+                .withJourneyDismissButton
+                .configureTitle(quickAction.displayTitle)
 
-                openOnTop(
-                    vc: vc
-                )
-            }
+            openOnTop(
+                vc: vc
+            )
+        case let .sickAbroad(partners):
+            openOnTop(
+                vc: SubmitClaimDeflectScreen.journey
+            )
         }
     }
 

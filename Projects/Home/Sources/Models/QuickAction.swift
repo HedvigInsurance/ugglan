@@ -1,99 +1,109 @@
 import Foundation
+import hCore
 
-public struct QuickAction: Codable, Equatable, Hashable, Identifiable {
+public enum QuickAction: Codable, Equatable, Hashable {
+    case sickAbroad(partners: [SickAbroadPartner])
+    case firstVet(partners: [FirstVetPartner])
+    case travelInsurance
+    case changeAddress
+    case editCoInsured
+    case connectPayments
+    case cancellation
+
+    public var displayTitle: String {
+        switch self {
+        case .sickAbroad:
+            return L10n.hcQuickActionsSickAbroadTitle
+        case .firstVet:
+            return L10n.hcQuickActionsFirstvetTitle
+        case .travelInsurance:
+            return L10n.hcQuickActionsTravelCertificate
+        case .changeAddress:
+            return L10n.hcQuickActionsChangeAddressTitle
+        case .editCoInsured:
+            return L10n.hcQuickActionsCoInsuredTitle
+        case .connectPayments:
+            return L10n.hcQuickActionsPaymentsTitle
+        case .cancellation:
+            return L10n.hcQuickActionsTerminationTitle
+        }
+    }
+
+    public var displaySubtitle: String {
+        switch self {
+        case .sickAbroad:
+            return L10n.hcQuickActionsSickAbroadSubtitle
+        case .firstVet:
+            return L10n.hcQuickActionsFirstvetSubtitle
+        case .travelInsurance:
+            return L10n.hcQuickActionsTravelCertificateSubtitle
+        case .changeAddress:
+            return L10n.hcQuickActionsChangeAddressSubtitle
+        case .editCoInsured:
+            return L10n.hcQuickActionsCoInsuredSubtitle
+        case .connectPayments:
+            return L10n.hcQuickActionsPaymentsSubtitle
+        case .cancellation:
+            return L10n.hcQuickActionsTerminationSubtitle
+        }
+    }
+
+    var id: String {
+        return displayTitle
+    }
+}
+public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable {
     public let id: String
-    public let displayTitle: String
-    public let displaySubtitle: String?
-    public let layout: Layout?
+    let imageUrl: String?
+    public let phoneNumber: String?
+    let url: String?
+}
 
-    public init(
-        id: String,
-        displayTitle: String,
-        displaySubtitle: String?,
-        layout: Layout?
-    ) {
-        self.id = id
-        self.displayTitle = displayTitle
-        self.displaySubtitle = displaySubtitle
-        self.layout = layout
+public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable {
+    public let id: String
+    let buttonTitle: String?
+    let description: String?
+    let url: String?
+    let title: String?
+}
 
+extension Sequence where Iterator.Element == QuickAction {
+    var hasFirstVet: Bool {
+        self.first(where: { $0.isFirstVet }) != nil
     }
 
-    public struct Layout: Codable, Equatable, Hashable {
-        public var titleAndBulletPoint: TitleAndBulletPoints?
-        public var emergency: Emergency?
-
-        public init(
-            titleAndBulletPoint: TitleAndBulletPoints?,
-            emergency: Emergency?
-        ) {
-            self.titleAndBulletPoint = titleAndBulletPoint
-            self.emergency = emergency
-        }
-
-        public struct TitleAndBulletPoints: Codable, Equatable, Hashable {
-            public let color: String
-            public var buttonTitle: String?
-            public var title: String?
-            public var bulletPoints: [BulletPoint]
-
-            public init(
-                color: String,
-                buttonTitle: String? = nil,
-                title: String? = nil,
-                bulletPoints: [BulletPoint]
-            ) {
-                self.color = color
-                self.buttonTitle = buttonTitle
-                self.title = title
-                self.bulletPoints = bulletPoints
-            }
-
-            public struct BulletPoint: Codable, Hashable, Equatable {
-                public let title: String
-                public let description: String
-
-                public init(
-                    title: String,
-                    description: String
-                ) {
-                    self.title = title
-                    self.description = description
-                }
-            }
-        }
-
-        public struct Emergency: Codable, Hashable, Equatable {
-            public let title: String
-            public let color: String
-            public let emergencyNumber: String?
-
-            public init(
-                title: String,
-                color: String,
-                emergencyNumber: String? = nil
-            ) {
-                self.title = title
-                self.color = color
-                self.emergencyNumber = emergencyNumber
-            }
-        }
+    var getFirstVetPartners: [FirstVetPartner]? {
+        return self.first(where: { $0.isFirstVet })?.firstVetPartners
     }
+
 }
 
 extension QuickAction {
     var isFirstVet: Bool {
-        id == "30" || id == "31" || id == "32"
+        switch self {
+        case .firstVet:
+            return true
+        default:
+            return false
+        }
     }
 
-    public var isSickAborad: Bool {
-        self.layout?.emergency?.emergencyNumber != nil
+    public var firstVetPartners: [FirstVetPartner]? {
+        switch self {
+        case .firstVet(let partners):
+            return partners
+        default:
+            return nil
+        }
     }
-}
 
-extension Sequence where Iterator.Element == QuickAction {
-    var vetQuickAction: QuickAction? {
-        return self.first(where: { $0.isFirstVet })
+    public var sickAboardPartners: [SickAbroadPartner]? {
+        switch self {
+        case .sickAbroad(let partners):
+            return partners
+        default:
+            return nil
+        }
     }
 
 }
