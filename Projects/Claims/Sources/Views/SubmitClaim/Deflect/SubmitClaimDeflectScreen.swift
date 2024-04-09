@@ -29,8 +29,7 @@ public struct SubmitClaimDeflectScreen: View {
                     ForEach(model?.partners ?? [], id: \.id) { partner in
                         ClaimEmergencyContactCard(
                             imageUrl: partner.imageUrl,
-                            image: partner.imageUrl == "" ? hCoreUIAssets.hedvigBigLogo.image : nil,
-                            label: model?.config?.cardText ?? "",
+                            label: model?.config?.cardText,
                             phoneNumber: partner.phoneNumber,
                             cardTitle: model?.config?.cardTitle,
                             footnote: L10n.submitClaimGlobalAssistanceFootnote
@@ -94,7 +93,7 @@ extension SubmitClaimDeflectScreen {
                     partners: sickAbroadPartners.compactMap({
                         .init(
                             id: "",
-                            imageUrl: "",
+                            imageUrl: $0.imageUrl,
                             url: "",
                             phoneNumber: $0.phoneNumber
                         )

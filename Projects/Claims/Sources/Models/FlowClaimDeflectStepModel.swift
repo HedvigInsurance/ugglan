@@ -200,7 +200,7 @@ public struct Partner: Codable, Equatable, Hashable {
 
     init(
         id: String,
-        imageUrl: String,
+        imageUrl: String?,
         url: String?,
         phoneNumber: String?
     ) {

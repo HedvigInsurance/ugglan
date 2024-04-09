@@ -54,7 +54,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
 }
 public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable {
     public let id: String
-    let imageUrl: String?
+    public let imageUrl: String?
     public let phoneNumber: String?
     let url: String?
 }

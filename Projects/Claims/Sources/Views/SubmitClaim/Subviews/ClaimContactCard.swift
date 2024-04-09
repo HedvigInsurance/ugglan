@@ -99,20 +99,17 @@ struct ClaimEmergencyContactCard: View {
     var cardTitle: String?
     var footnote: String?
     var imageUrl: String?
-    var image: UIImage?
-    var label: String
+    var label: String?
     var phoneNumber: String?
 
     init(
         imageUrl: String? = nil,
-        image: UIImage? = nil,
-        label: String,
+        label: String?,
         phoneNumber: String? = nil,
         cardTitle: String? = nil,
         footnote: String? = nil
     ) {
         self.imageUrl = imageUrl
-        self.image = image
         self.label = label
         self.phoneNumber = phoneNumber
         self.cardTitle = cardTitle
@@ -127,8 +124,8 @@ struct ClaimEmergencyContactCard: View {
                         KFImage(imageUrl)
                             .setProcessor(SVGImageProcessor())
                             .resizable()
-                    } else if let image {
-                        Image(uiImage: image)
+                    } else {
+                        hCoreUIAssets.hedvigBigLogo.view
                             .resizable()
                     }
                 }
@@ -142,7 +139,7 @@ struct ClaimEmergencyContactCard: View {
                         hText(cardTitle)
                             .foregroundColor(hColorScheme(light: hTextColor.negative, dark: hTextColor.primary))
                     }
-                    hText(label)
+                    hText(label ?? "")
                         .foregroundColor(hTextColor.tertiary)
                         .colorScheme(.light)
                         .padding(.horizontal, 24)
