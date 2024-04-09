@@ -88,20 +88,6 @@ struct InvitationTable: View {
         }
         return list
     }
-
-    @ViewBuilder
-    private func getGrossField(_ text: String) -> some View {
-        Text(attributedString(text))
-            .foregroundColor(hTextColor.secondary)
-            .modifier(hFontModifier(style: .standard))
-    }
-
-    @available(iOS 15, *)
-    private func attributedString(_ text: String) -> AttributedString {
-        let attributes = AttributeContainer([NSAttributedString.Key.strikethroughStyle: 1])
-        let result = AttributedString(text, attributes: attributes)
-        return result
-    }
 }
 
 struct InvitationRow: View {

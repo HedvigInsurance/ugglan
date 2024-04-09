@@ -4,7 +4,7 @@ import SwiftUI
 
 public enum FeedbackType { case error, warning, success, selection, impactLight, impactMedium, impactHeavy }
 
-@available(iOS 10.0, *) private enum Feedback {
+private enum Feedback {
     static func generateNotification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(type)
