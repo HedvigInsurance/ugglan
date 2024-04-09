@@ -198,7 +198,6 @@ extension HelpCenterStartView {
                                     CoverageQuestions.q13,
                                     CoverageQuestions.q14,
                                     CoverageQuestions.q15,
-                                    CoverageQuestions.q16,
                                     CoverageQuestions.q17,
                                     CoverageQuestions.q18,
                                     CoverageQuestions.q19,
