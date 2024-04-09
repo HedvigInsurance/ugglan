@@ -95,7 +95,6 @@ public struct HelpCenterStartView: View {
                         CoverageQuestions.q13,
                         CoverageQuestions.q14,
                         CoverageQuestions.q15,
-                        CoverageQuestions.q16,
                         CoverageQuestions.q17,
                         CoverageQuestions.q18,
                         CoverageQuestions.q19,
@@ -196,15 +195,13 @@ public struct HelpCenterStartView: View {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                 .padding(.bottom, 4)
 
-            ForEach(store.state.quickAction) { quickAction in
+            ForEach(store.state.quickActions, id: \.displayTitle) { quickAction in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 0) {
                             hText(quickAction.displayTitle)
-                            if let subtitle = quickAction.displaySubtitle {
-                                hText(subtitle, style: .standardSmall)
-                                    .foregroundColor(hTextColor.secondary)
-                            }
+                            hText(quickAction.displaySubtitle, style: .standardSmall)
+                                .foregroundColor(hTextColor.secondary)
                         }
                         Spacer()
                     }
@@ -218,15 +215,11 @@ public struct HelpCenterStartView: View {
                         )
 
                         switch quickAction {
-                        case .payments():
+                        case .connectPayments:
                             homeVm.isPaymentsPresented = true
                         default:
                             break
                         }
-
-                        //                        Task {
-                        //                            store.send(.goToQuickAction(quickAction))
-                        //                        }
                     }
                 }
                 .withoutHorizontalPadding
@@ -264,149 +257,6 @@ public struct HelpCenterStartView: View {
         }
     }
 }
-
-//extension HelpCenterStartView {
-//    public static var journey: some JourneyPresentation {
-//        //        let commonQuestions: [Question] = [
-//        //            ClaimsQuestions.q1,
-//        //            InsuranceQuestions.q5,
-//        //            PaymentsQuestions.q1,
-//        //            InsuranceQuestions.q3,
-//        //            InsuranceQuestions.q1,
-//        //        ]
-//        return HostingJourney(
-//            HomeStore.self,
-//            rootView: HelpCenterStartView(),
-//            //            rootView: HelpCenterStartView(
-//            //                helpCenterModel:
-//            //                    .init(
-//            //                        title: L10n.hcHomeViewQuestion,
-//            //                        description:
-//            //                            L10n.hcHomeViewAnswer,
-//            //                        commonTopics: [
-//            //                            .init(
-//            //                                title: L10n.hcPaymentsTitle,
-//            //                                type: .payments,
-//            //                                commonQuestions: [
-//            //                                    PaymentsQuestions.q1,
-//            //                                    PaymentsQuestions.q2,
-//            //                                    PaymentsQuestions.q3,
-//            //                                ],
-//            //                                allQuestions: [
-//            //                                    PaymentsQuestions.q4,
-//            //                                    PaymentsQuestions.q5,
-//            //                                    PaymentsQuestions.q6,
-//            //                                    PaymentsQuestions.q7,
-//            //                                    PaymentsQuestions.q8,
-//            //                                    PaymentsQuestions.q9,
-//            //                                    PaymentsQuestions.q10,
-//            //                                    PaymentsQuestions.q11,
-//            //                                    PaymentsQuestions.q12,
-//            //                                    PaymentsQuestions.q13,
-//            //                                    PaymentsQuestions.q14,
-//            //                                ]
-//            //                            ),
-//            //                            .init(
-//            //                                title: L10n.hcClaimsTitle,
-//            //                                type: .claims,
-//            //                                commonQuestions: [
-//            //                                    ClaimsQuestions.q1,
-//            //                                    ClaimsQuestions.q2,
-//            //                                    ClaimsQuestions.q3,
-//            //                                ],
-//            //                                allQuestions: [
-//            //                                    ClaimsQuestions.q4,
-//            //                                    ClaimsQuestions.q5,
-//            //                                    ClaimsQuestions.q6,
-//            //                                    ClaimsQuestions.q7,
-//            //                                    ClaimsQuestions.q8,
-//            //                                    ClaimsQuestions.q9,
-//            //                                    ClaimsQuestions.q10,
-//            //                                    ClaimsQuestions.q11,
-//            //                                    ClaimsQuestions.q12,
-//            //                                ]
-//            //                            ),
-//            //                            .init(
-//            //                                title: L10n.hcCoverageTitle,
-//            //                                type: .coverage,
-//            //                                commonQuestions: [
-//            //                                    CoverageQuestions.q1,
-//            //                                    CoverageQuestions.q2,
-//            //                                    CoverageQuestions.q3,
-//            //                                ],
-//            //                                allQuestions: [
-//            //                                    CoverageQuestions.q4,
-//            //                                    CoverageQuestions.q5,
-//            //                                    CoverageQuestions.q6,
-//            //                                    CoverageQuestions.q7,
-//            //                                    CoverageQuestions.q8,
-//            //                                    CoverageQuestions.q9,
-//            //                                    CoverageQuestions.q10,
-//            //                                    CoverageQuestions.q11,
-//            //                                    CoverageQuestions.q12,
-//            //                                    CoverageQuestions.q13,
-//            //                                    CoverageQuestions.q14,
-//            //                                    CoverageQuestions.q15,
-//            //                                    CoverageQuestions.q16,
-//            //                                    CoverageQuestions.q17,
-//            //                                    CoverageQuestions.q18,
-//            //                                    CoverageQuestions.q19,
-//            //                                    CoverageQuestions.q20,
-//            //                                    CoverageQuestions.q21,
-//            //                                    CoverageQuestions.q22,
-//            //                                ]
-//            //                            ),
-//            //                            .init(
-//            //                                title: L10n.hcInsurancesTitle,
-//            //                                type: .myInsurance,
-//            //                                commonQuestions: [
-//            //                                    InsuranceQuestions.q1,
-//            //                                    InsuranceQuestions.q2,
-//            //                                    InsuranceQuestions.q3,
-//            //                                ],
-//            //                                allQuestions: [
-//            //                                    InsuranceQuestions.q4,
-//            //                                    InsuranceQuestions.q5,
-//            //                                    InsuranceQuestions.q6,
-//            //                                    InsuranceQuestions.q7,
-//            //                                    InsuranceQuestions.q8,
-//            //                                    InsuranceQuestions.q9,
-//            //                                    InsuranceQuestions.q10,
-//            //                                ]
-//            //                            ),
-//            //                            .init(
-//            //                                title: L10n.hcGeneralTitle,
-//            //                                type: nil,
-//            //                                commonQuestions: [
-//            //                                    OtherQuestions.q1,
-//            //                                    OtherQuestions.q2,
-//            //                                    OtherQuestions.q3,
-//            //                                ],
-//            //                                allQuestions: [
-//            //                                    OtherQuestions.q4
-//            //                                ]
-//            //                            ),
-//            //                        ],
-//            //                        commonQuestions: commonQuestions
-//            //                    )
-//            //            ),
-//            style: .modally(presentationStyle: .overFullScreen),
-//            options: [.largeNavigationBar, .blurredBackground]
-//        ) { action in
-//            if case .openFreeTextChat = action {
-//                DismissJourney()
-//            } else if case let .openHelpCenterTopicView(topic) = action {
-//                HelpCenterTopicView.journey(commonTopic: topic)
-//            } else if case let .openHelpCenterQuestionView(question) = action {
-//                HelpCenterQuestionView.journey(question: question, title: nil)
-//            } else if case .dismissHelpCenter = action {
-//                DismissJourney()
-//            }
-//        }
-//        .configureTitle(L10n.hcTitle)
-//        .withJourneyDismissButton
-//    }
-//}
 
 //#Preview{
 //    let commonQuestions: [Question] = [

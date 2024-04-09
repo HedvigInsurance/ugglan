@@ -96,14 +96,16 @@ class WhoIsTravelingViewModel: ObservableObject {
     }
 
     var showInfoCard: Bool {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        let contractId = store.state.travelInsuranceConfig?.contractId
+        if Dependencies.featureFlags().isEditCoInsuredEnabled {
+            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+            let contractId = store.state.travelInsuranceConfig?.contractId
 
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contract = contractStore.state.contractForId(contractId ?? "")
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contract = contractStore.state.contractForId(contractId ?? "")
 
-        if contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false {
-            return true
+            if contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false {
+                return true
+            }
         }
         return false
     }

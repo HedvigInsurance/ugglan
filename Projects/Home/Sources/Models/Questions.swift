@@ -336,14 +336,6 @@ enum CoverageQuestions {
             topicType: .coverage
         )
     }
-    static var q16: Question {
-        return .init(
-            question: L10n.hcCoverageQ16,
-            questionEn: L10n.hcCoverageQ16_en,
-            answer: L10n.hcCoverageA16,
-            topicType: .coverage
-        )
-    }
     static var q17: Question {
         return .init(
             question: L10n.hcCoverageQ17,

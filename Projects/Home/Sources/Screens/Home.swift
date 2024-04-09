@@ -68,8 +68,8 @@ extension HomeView {
                 case .newOffer:
                     store.send(.showNewOffer)
                 case .firstVet:
-                    if let vetQuickAction = store.state.quickAction.vetQuickAction {
-                        store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
+                    if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
+                        store.send(.openFirstVet(partners: hasVetPartners))
                     }
                 case .chat, .chatNotification:
                     navigationVm.isChatPresented = true
