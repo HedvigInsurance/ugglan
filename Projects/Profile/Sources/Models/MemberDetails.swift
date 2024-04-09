@@ -7,21 +7,10 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable {
     public var email: String?
     public var firstName: String
     public var lastName: String
-    let hasTravelCertificate: Bool
+    let isTravelCertificateEnabled: Bool
 
     public var displayName: String {
         firstName + " " + lastName
-    }
-
-    public init?(
-        memberData: OctopusGraphQL.MemberDetailsQuery.Data.CurrentMember
-    ) {
-        self.id = memberData.id
-        self.email = memberData.email
-        self.phone = memberData.phoneNumber
-        self.firstName = memberData.firstName
-        self.lastName = memberData.lastName
-        self.hasTravelCertificate = false
     }
 
     public init(
@@ -37,6 +26,6 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable {
         self.lastName = lastName
         self.phone = phone
         self.email = email
-        self.hasTravelCertificate = hasTravelCertificate
+        self.isTravelCertificateEnabled = hasTravelCertificate
     }
 }

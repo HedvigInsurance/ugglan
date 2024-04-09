@@ -1,0 +1,36 @@
+query MemberActions {
+  currentMember {
+    memberActions {
+      sickAbroadAction {
+        partners {
+          id
+          imageUrl
+          phoneNumber
+          url
+        }
+      }
+      isTravelCertificateEnabled
+      isMovingEnabled
+      isConnectPaymentEnabled
+      isEditCoInsuredEnabled
+      isCancelInsuranceEnabled
+      firstVetAction {
+        sections {
+          buttonTitle
+          description
+          url
+          title
+        }
+      }
+    }
+  }
+}
+
+query ChatMessageTimeStamp($until: Instant) {
+  chat(until: $until) {
+    messages {
+        sentAt
+        sender
+    }
+  }
+}

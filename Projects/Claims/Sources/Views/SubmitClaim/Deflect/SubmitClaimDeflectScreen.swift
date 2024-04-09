@@ -5,9 +5,9 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimDeflectScreen: View {
-    let model: FlowClaimDeflectStepModel?
-    let isEmergencyStep: Bool
-    let openChat: () -> Void
+    private let model: FlowClaimDeflectStepModel?
+    private let isEmergencyStep: Bool
+    private let openChat: () -> Void
 
     init(
         model: FlowClaimDeflectStepModel?,
@@ -29,8 +29,7 @@ public struct SubmitClaimDeflectScreen: View {
                     ForEach(model?.partners ?? [], id: \.id) { partner in
                         ClaimEmergencyContactCard(
                             imageUrl: partner.imageUrl,
-                            image: partner.imageUrl == "" ? hCoreUIAssets.hedvigBigLogo.image : nil,
-                            label: model?.config?.cardText ?? "",
+                            label: model?.config?.cardText,
                             phoneNumber: partner.phoneNumber,
                             cardTitle: model?.config?.cardTitle,
                             footnote: L10n.submitClaimGlobalAssistanceFootnote
@@ -86,18 +85,19 @@ extension SubmitClaimDeflectScreen {
     public static var journey: some JourneyPresentation {
         let model: FlowClaimDeflectStepModel? = {
             let store: HomeStore = globalPresentableStoreContainer.get()
-            let quickActions = store.state.quickAction
-            if let sickAbroadQuickAction = quickActions.first(where: { $0.isSickAborad }) {
+            let quickActions = store.state.quickActions
+            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?.sickAboardPartners
+            {
                 return FlowClaimDeflectStepModel(
                     id: .FlowClaimDeflectEmergencyStep,
-                    partners: [
+                    partners: sickAbroadPartners.compactMap({
                         .init(
                             id: "",
-                            imageUrl: "",
+                            imageUrl: $0.imageUrl,
                             url: "",
-                            phoneNumber: sickAbroadQuickAction.layout?.emergency?.emergencyNumber
+                            phoneNumber: $0.phoneNumber
                         )
-                    ],
+                    }),
                     isEmergencyStep: true
                 )
             }

@@ -22,7 +22,7 @@ public class ProfileServiceOctopus: ProfileService {
                 lastName: currentMember.lastName,
                 phone: currentMember.phoneNumber ?? "",
                 email: currentMember.email,
-                hasTravelCertificate: !currentMember.travelCertificates.isEmpty
+                hasTravelCertificate: currentMember.memberActions?.isTravelCertificateEnabled ?? false
             )
 
         let partner = PartnerData(with: data.currentMember.fragments.partnerDataFragment)
@@ -106,5 +106,18 @@ extension PartnerDataSas {
     fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber
+    }
+}
+
+extension MemberDetails {
+    init?(
+        memberData: OctopusGraphQL.MemberDetailsQuery.Data.CurrentMember
+    ) {
+        self.id = memberData.id
+        self.email = memberData.email
+        self.phone = memberData.phoneNumber
+        self.firstName = memberData.firstName
+        self.lastName = memberData.lastName
+        self.isTravelCertificateEnabled = false
     }
 }
