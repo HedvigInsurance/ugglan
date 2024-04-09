@@ -16,22 +16,16 @@ struct ProfileRow: View {
     }
 
     public var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationLink(value: row.profileViewType) {
-                hRow {
-                    HStack(spacing: 16) {
-                        Image(uiImage: row.icon)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                        hText(row.title)
-                        Spacer()
-                    }
-                }
-                .withChevronAccessory
+        hRow {
+            HStack(spacing: 16) {
+                Image(uiImage: row.icon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
+                hText(row.title)
+                Spacer()
             }
-        } else {
-            EmptyView()
         }
+        .withChevronAccessory
     }
 }

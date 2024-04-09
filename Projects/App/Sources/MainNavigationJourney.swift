@@ -10,32 +10,16 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-@available(iOS 16.0, *)
+class MainNavigationViewModel: ObservableObject {
+    @Published var selectedTab = 0
+}
+
 @main
 struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var pathState = MyModelObject()
-    @State private var hasLaunchFinished = false
-
-    @State private var selectedTab = 0
-
-    @ViewBuilder
-    func getNavigationView(isHomeNavigation: Bool) -> some View {
-        if isHomeNavigation {
-            pathState.getHomeView(pathState: pathState)
-        } else {
-            pathState.getAppView(pathState: pathState)
-        }
-    }
-
-    @ViewBuilder
-    func getNavigationViewFromProfile(isProfileNavigation: Bool) -> some View {
-        if isProfileNavigation {
-            pathState.getProfileView(pathState: pathState)
-        } else {
-            pathState.getAppView(pathState: pathState)
-        }
-    }
+    @StateObject var vm = MainNavigationViewModel()
+    @StateObject var homeNavigationVm = HomeNavigationViewModel()
+    //    @State private var hasLaunchFinished = false
 
     var body: some Scene {
         WindowGroup {
@@ -43,14 +27,12 @@ struct MainNavigationJourney: App {
             //                .onAppear{
             //                    DispatchQueue.main.asyncAfter(deadline: .now()+2.0) {
             //                        hasLaunchFinished = true
-            ////                        print("path state: ", pathState.path)
-            ////                        pathState.changeRoute(.tabBarView)
             //                    }
             //                }
 
             //            if hasLaunchFinished {
 
-            TabView(selection: $selectedTab) {
+            TabView(selection: $vm.selectedTab) {
                 Group {
                     homeTab
                     contractsTab
@@ -75,18 +57,31 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return HomeView(
-            claimsContent: claims,
-            memberId: {
-                return ""
-            },
-            pathState: pathState,
-            onNavigation: { isHomeNavigation in
-                return getNavigationView(isHomeNavigation: isHomeNavigation)
+        return NavigationStack(path: $homeNavigationVm.externalNavigationRedirect) {
+            HomeView(
+                claimsContent: claims,
+                memberId: {
+                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
+                    return profileStrore.state.memberDetails?.id ?? ""
+                }
+            )
+            .environmentObject(homeNavigationVm)
+            .sheet(isPresented: $homeNavigationVm.isSubmitClaimPresented) {
+                HonestyPledge(onConfirmAction: {})
+                    .presentationDetents([.large, .medium])
             }
-        )
+            .navigationDestination(for: ClaimModel.self) { claim in
+                ClaimDetailView(claim: claim)
+            }
+            .fullScreenCover(
+                isPresented: $homeNavigationVm.isHelpCenterPresented,
+                content: {
+                    HelpCenterStartView()
+                }
+            )
+        }
         .tabItem {
-            Image(uiImage: selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
+            Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
             hText(L10n.tabHomeTitle)
         }
         .tag(0)
@@ -96,7 +91,8 @@ struct MainNavigationJourney: App {
         Contracts(showTerminated: false)
             .tabItem {
                 Image(
-                    uiImage: selectedTab == 1 ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
+                    uiImage: vm.selectedTab == 1
+                        ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
                 )
                 hText(L10n.tabInsurancesTitle)
             }
@@ -106,7 +102,9 @@ struct MainNavigationJourney: App {
     var foreverTab: some View {
         ForeverView()
             .tabItem {
-                Image(uiImage: selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image)
+                Image(
+                    uiImage: vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image
+                )
                 hText(L10n.tabReferralsTitle)
             }
             .tag(2)
@@ -116,7 +114,8 @@ struct MainNavigationJourney: App {
         PaymentsView()
             .tabItem {
                 Image(
-                    uiImage: selectedTab == 3 ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
+                    uiImage: vm.selectedTab == 3
+                        ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
                 )
                 hText(L10n.tabPaymentsTitle)
             }
@@ -124,46 +123,16 @@ struct MainNavigationJourney: App {
     }
 
     var profileTab: some View {
-        ProfileView(
-            pathState: pathState,
-            onNavigation: { isProfileNavigation in
-                return getNavigationViewFromProfile(isProfileNavigation: isProfileNavigation)
+        ProfileView()
+            .tabItem {
+                Image(
+                    uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
+                )
+                hText(L10n.ProfileTab.title)
             }
-        )
-        .tabItem {
-            Image(uiImage: selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image)
-            hText(L10n.ProfileTab.title)
-        }
-        .tag(4)
+            .tag(4)
     }
 }
-
-@available(iOS 16.0, *)
-extension MyModelObject {
-    @ViewBuilder
-    func getHomeView(pathState: MyModelObject) -> some View {
-        switch currentHomeRoute {
-        case .helpCenter:
-            HelpCenterStartView()
-        }
-    }
-
-    @ViewBuilder
-    func getAppView(pathState: MyModelObject) -> some View {
-        switch currentMainRoute {
-        case .submitClaim:
-            let _ = pathState.changeClaimsRoute(.honestyPledge)
-            getClaimsView(pathState: pathState)
-        case .travelCertificate:
-            let _ = pathState.changeRoute(.homeView)
-            let _ = pathState.changeTravelCertificateRoute(.showList)
-            getTravelCertificateView(pathState: pathState)
-        default:
-            EmptyView()
-        }
-    }
-}
-
 #Preview{
     Launch()
 }

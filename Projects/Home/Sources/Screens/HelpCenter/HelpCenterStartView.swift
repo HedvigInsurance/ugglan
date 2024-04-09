@@ -10,7 +10,7 @@ public struct HelpCenterStartView: View {
     private var helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
 
-    public init(//        helpCenterModel: HelpCenterModel
+    public init(  //        helpCenterModel: HelpCenterModel
         )
     {
         //        self.helpCenterModel = helpCenterModel
@@ -137,38 +137,49 @@ public struct HelpCenterStartView: View {
     }
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 0) {
-                hSection {
-                    VStack(spacing: 40) {
-                        Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
-                            .resizable()
-                            .frame(width: 160, height: 160)
-                            .padding(.bottom, 26)
-                            .padding(.top, 39)
+        NavigationStack {
+            hForm {
+                VStack(spacing: 0) {
+                    hSection {
+                        VStack(spacing: 40) {
+                            Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                                .resizable()
+                                .frame(width: 160, height: 160)
+                                .padding(.bottom, 26)
+                                .padding(.top, 39)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            hText(helpCenterModel.title)
-                            hText(helpCenterModel.description)
-                                .foregroundColor(hTextColor.secondary)
+                            VStack(alignment: .leading, spacing: 8) {
+                                hText(helpCenterModel.title)
+                                hText(helpCenterModel.description)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+
+                            displayQuickActions()
+                            displayCommonTopics()
+
+                            QuestionsItems(
+                                questions: helpCenterModel.commonQuestions,
+                                questionType: .commonQuestions,
+                                source: .homeView
+                            )
                         }
-
-                        displayQuickActions()
-                        displayCommonTopics()
-                        QuestionsItems(
-                            questions: helpCenterModel.commonQuestions,
-                            questionType: .commonQuestions,
-                            source: .homeView
-                        )
                     }
+                    .sectionContainerStyle(.transparent)
+                    SupportView(topic: nil)
+                        .padding(.top, 40)
                 }
-                .sectionContainerStyle(.transparent)
-                SupportView(topic: nil)
-                    .padding(.top, 40)
             }
+            .navigationTitle(L10n.hcTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(
+                for: CommonTopic.self,
+                destination: { topic in
+                    HelpCenterTopicView(commonTopic: topic)
+                }
+            )
+            .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+            .edgesIgnoringSafeArea(.bottom)
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
-        .edgesIgnoringSafeArea(.bottom)
     }
 
     private func displayQuickActions() -> some View {
@@ -221,20 +232,24 @@ public struct HelpCenterStartView: View {
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
         VStack(spacing: 4) {
             ForEach(commonTopics, id: \.self) { item in
+                //                NavigationLink(value: item) {
                 hSection {
                     hRow {
-                        hText(item.title)
+                        NavigationLink(value: item) {
+                            hText(item.title)
+                        }
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap {
-                        store.send(.openHelpCenterTopicView(commonTopic: item))
-                    }
+                    //                        .onTap {
+                    //                            store.send(.openHelpCenterTopicView(commonTopic: item))
+                    //                        }
                 }
                 .withoutHorizontalPadding
                 .hSectionMinimumPadding
                 .sectionContainerStyle(.opaque)
             }
+            //            }
         }
     }
 }

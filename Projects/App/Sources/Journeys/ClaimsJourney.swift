@@ -8,19 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-@available(iOS 16.0, *)
-extension MyModelObject {
-    @ViewBuilder
-    func getClaimsView(pathState: MyModelObject) -> some View {
-        switch currentClaimsRoute {
-        case .honestyPledge:
-            AppJourney.honestyPledge(from: .generic)
-        }
-    }
-}
-
 extension AppJourney {
-
     static func claimDetailJourney(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,

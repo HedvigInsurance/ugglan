@@ -61,11 +61,11 @@ where MainContent: View, BottomContent: View {
             Squircle.default()
                 .fill(hFillColor.opaqueOne)
         )
-        .onTapGesture {
-            if let onSelected = onSelected {
-                onSelected()
-            }
-        }
+        //        .onTapGesture {
+        //            if let onSelected = onSelected {
+        //                onSelected()
+        //            }
+        //        }
     }
 
     @ViewBuilder

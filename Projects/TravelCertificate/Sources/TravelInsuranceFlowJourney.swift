@@ -5,19 +5,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-@available(iOS 16.0, *)
-extension MyModelObject {
-    @ViewBuilder
-    public func getTravelCertificateView(pathState: MyModelObject) -> some View {
-        switch currentTravelCertificateRoute {
-        case .showList:
-            ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
-        case .createNewTravelCertificate:
-            EmptyView()  // change
-        }
-    }
-}
-
 public struct TravelInsuranceFlowJourney {
     static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
         let disposeBag = DisposeBag()

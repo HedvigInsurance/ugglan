@@ -44,11 +44,9 @@ struct DiscountCodeSectionView: View {
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                //                                                                    store.send(.showChangeCodeDetail)
+                                store.send(.showChangeCodeDetail)
                             } content: {
-                                NavigationLink(value: NavigationForeverView.changeCodeView) {
-                                    hText(L10n.ReferralsChange.changeCode)
-                                }
+                                hText(L10n.ReferralsChange.changeCode)
                             }
                         }
                     }

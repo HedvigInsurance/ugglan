@@ -11,34 +11,34 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-@available(iOS 16.0, *)
-public struct HomeView<Claims: View, Content: View>: View {
+public class HomeNavigationViewModel: ObservableObject {
+    public init() {}
+
+    @Published public var isSubmitClaimPresented = false
+    @Published public var isHelpCenterPresented = false
+    @Published public var externalNavigationRedirect = NavigationPath()
+}
+
+public struct HomeView<Claims: View>: View {
 
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
 
-    private var onNavigation: (Bool) -> Content
-
-    @ObservedObject private var pathState = MyModelObject()  // make stored property?
+    @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     var claimsContent: Claims
     var memberId: String
 
     public init(
         claimsContent: Claims,
-        memberId: @escaping () -> String,
-        pathState: MyModelObject,
-        onNavigation: @escaping (Bool) -> Content
+        memberId: @escaping () -> String
     ) {
         self.claimsContent = claimsContent
         self.memberId = memberId()
-        self.pathState = pathState
-        self.onNavigation = onNavigation
     }
 }
 
-@available(iOS 16.0, *)
 extension HomeView {
     func fetch() {
         store.send(.fetchMemberState)
@@ -49,44 +49,34 @@ extension HomeView {
     }
 
     public var body: some View {
-        NavigationStack(path: $pathState.path) {
-            hForm {
-                centralContent
-            }
-            .setHomeNavigationBars(
-                with: $vm.toolbarOptionTypes,
-                action: { type in
-                    switch type {
-                    case .newOffer:
-                        store.send(.showNewOffer)
-                    case .firstVet:
-                        if let vetQuickAction = store.state.quickAction.vetQuickAction {
-                            store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
-                        }
-                    case .chat, .chatNotification:
-                        store.send(.openFreeTextChat(from: nil))
+        hForm {
+            centralContent
+        }
+        .setHomeNavigationBars(
+            with: $vm.toolbarOptionTypes,
+            action: { type in
+                switch type {
+                case .newOffer:
+                    store.send(.showNewOffer)
+                case .firstVet:
+                    if let vetQuickAction = store.state.quickAction.vetQuickAction {
+                        store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
                     }
-                }
-            )
-            .hFormAttachToBottom {
-                VStack(spacing: 0) {
-                    bottomContent
+                case .chat, .chatNotification:
+                    store.send(.openFreeTextChat(from: nil))
                 }
             }
-            .sectionContainerStyle(.transparent)
-            .hFormContentPosition(.center)
-            .hFormMergeBottomViewWithContentIfNeeded
-            .onAppear {
-                fetch()
+        )
+        .hFormAttachToBottom {
+            VStack(spacing: 0) {
+                bottomContent
             }
-            .navigationDestination(for: NavigationHomeView.self) { view in
-                let _ = pathState.changeHomeRoute(view)
-                onNavigation(true)
-            }
-            .navigationDestination(for: NavigationViews.self) { view in
-                let _ = pathState.changeRoute(view)  //??
-                onNavigation(false)
-            }
+        }
+        .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.center)
+        .hFormMergeBottomViewWithContentIfNeeded
+        .onAppear {
+            fetch()
         }
     }
 
@@ -147,13 +137,9 @@ extension HomeView {
     private var startAClaimButton: some View {
         if featureFlags.isSubmitClaimEnabled {
             hButton.LargeButton(type: .primary) {
-                //                store.send(.startClaim)
-                //                pathState.changeRoute(.submitClaim)
+                navigationVm.isSubmitClaimPresented = true
             } content: {
-                //                NavigationLink(value: NavigationHomeView.submitClaim) {
-                NavigationLink(value: NavigationViews.submitClaim) {
-                    hText(L10n.HomeTab.claimButtonText)
-                }
+                hText(L10n.HomeTab.claimButtonText)
             }
         }
     }
@@ -166,11 +152,9 @@ extension HomeView {
             || contractStore.state.activeContracts.count == 0
         if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
-                //                store.send(.openHelpCenter)
+                navigationVm.isHelpCenterPresented = true
             } content: {
-                NavigationLink(value: NavigationHomeView.helpCenter) {
-                    hText(L10n.HomeTab.getHelp)
-                }
+                hText(L10n.HomeTab.getHelp)
             }
         }
     }
@@ -229,63 +213,60 @@ class HomeVM: ObservableObject {
     }
 }
 
-@available(iOS 16.0, *)
-extension HomeView {
-    public static func journey<ResultJourney: JourneyPresentation>(
-        claimsContent: Claims,
-        memberId: @escaping () -> String,
-        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: HomeView(
-                claimsContent: claimsContent,
-                memberId: memberId,
-                pathState: .init(),
-                onNavigation: { _ in EmptyView() as! Content }
-            ),
-            options: [
-                .defaults
-            ]
-        ) { action in
-            if case let .openFreeTextChat(type) = action {
-                resultJourney(.openFreeTextChat(topic: type))
-            } else if case .dismissHelpCenter = action {
-                resultJourney(.dismissHelpCenter)
-            } else if case .openHelpCenter = action {
-                HelpCenterStartView.journey
-            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
-                if !fromOtherService {
-                    QuickActionDetailScreen.journey(quickAction: quickAction)
-                        .withJourneyDismissButton
-                        .configureTitle(quickAction.displayTitle)
-                }
-            } else if case let .openDocument(contractURL) = action {
-                Journey(
-                    Document(url: contractURL, title: L10n.insuranceCertificateTitle),
-                    style: .detented(.large),
-                    options: .defaults
-                )
-            } else if case .startClaim = action {
-                resultJourney(.startNewClaim)
-            } else if case .showNewOffer = action {
-                resultJourney(.openCrossSells)
-            } else if case let .openCoInsured(configs) = action {
-                resultJourney(.startCoInsuredFlow(configs: configs))
-            } else if case let .goToQuickAction(quickAction) = action {
-                resultJourney(.goToQuickAction(quickAction: quickAction))
-            } else if case let .goToURL(url) = action {
-                resultJourney(.goToURL(url: url))
-            }
-        }
-        .configureTabBarItem(
-            title: L10n.tabHomeTitle,
-            image: hCoreUIAssets.homeTab.image,
-            selectedImage: hCoreUIAssets.homeTabActive.image
-        )
-        .configureHomeScroll()
-    }
-}
+//extension HomeView {
+//    public static func journey<ResultJourney: JourneyPresentation>(
+//        claimsContent: Claims,
+//        memberId: @escaping () -> String,
+//        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
+//    ) -> some JourneyPresentation {
+//        HostingJourney(
+//            HomeStore.self,
+//            rootView: HomeView(
+//                claimsContent: claimsContent,
+//                memberId: memberId
+//            ),
+//            options: [
+//                .defaults
+//            ]
+//        ) { action in
+//            if case let .openFreeTextChat(type) = action {
+//                resultJourney(.openFreeTextChat(topic: type))
+//            } else if case .dismissHelpCenter = action {
+//                resultJourney(.dismissHelpCenter)
+//            } else if case .openHelpCenter = action {
+//                HelpCenterStartView.journey
+//            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
+//                if !fromOtherService {
+//                    QuickActionDetailScreen.journey(quickAction: quickAction)
+//                        .withJourneyDismissButton
+//                        .configureTitle(quickAction.displayTitle)
+//                }
+//            } else if case let .openDocument(contractURL) = action {
+//                Journey(
+//                    Document(url: contractURL, title: L10n.insuranceCertificateTitle),
+//                    style: .detented(.large),
+//                    options: .defaults
+//                )
+//            } else if case .startClaim = action {
+//                resultJourney(.startNewClaim)
+//            } else if case .showNewOffer = action {
+//                resultJourney(.openCrossSells)
+//            } else if case let .openCoInsured(configs) = action {
+//                resultJourney(.startCoInsuredFlow(configs: configs))
+//            } else if case let .goToQuickAction(quickAction) = action {
+//                resultJourney(.goToQuickAction(quickAction: quickAction))
+//            } else if case let .goToURL(url) = action {
+//                resultJourney(.goToURL(url: url))
+//            }
+//        }
+//        .configureTabBarItem(
+//            title: L10n.tabHomeTitle,
+//            image: hCoreUIAssets.homeTab.image,
+//            selectedImage: hCoreUIAssets.homeTabActive.image
+//        )
+//        .configureHomeScroll()
+//    }
+//}
 
 public enum HomeResult {
     case openFreeTextChat(topic: ChatTopicType?)
@@ -297,18 +278,15 @@ public enum HomeResult {
     case dismissHelpCenter
 }
 
-@available(iOS 16.0, *)
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
 
-        return HomeView<Text, EmptyView>(
+        return HomeView(
             claimsContent: Text(""),
             memberId: {
                 "ID"
-            },
-            pathState: .init(),
-            onNavigation: { _ in EmptyView() }
+            }
         )
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -324,17 +302,14 @@ struct Active_Preview: PreviewProvider {
     }
 }
 
-@available(iOS 16.0, *)
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return HomeView<Text, EmptyView>(
+        return HomeView(
             claimsContent: Text(""),
             memberId: {
                 "ID"
-            },
-            pathState: .init(),
-            onNavigation: { _ in EmptyView() }
+            }
         )
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
@@ -351,78 +326,72 @@ struct ActiveInFuture_Previews: PreviewProvider {
     }
 }
 
-//@available(iOS 16.0, *)
-//struct TerminatedToday_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Localization.Locale.currentLocale = .en_SE
-//        return HomeView(
-//            claimsContent: Text(""),
-//            memberId: {
-//                "ID"
-//            },
-//            pathState: .init()
-//        )
-//        .onAppear {
-//            let store: HomeStore = globalPresentableStoreContainer.get()
-//            store.send(
-//                .setMemberContractState(
-//                    state: .terminated,
-//                    contracts: []
-//                )
-//            )
-//            store.send(.setFutureStatus(status: .pendingSwitchable))
-//        }
-//
-//    }
-//}
+struct TerminatedToday_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .terminated,
+                    contracts: []
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
 
-//@available(iOS 16.0, *)
-//struct Terminated_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Localization.Locale.currentLocale = .en_SE
-//        return HomeView(
-//            claimsContent: Text(""),
-//            memberId: {
-//                "ID"
-//            },
-//            pathState: .init()
-//        )
-//        .onAppear {
-//            let store: HomeStore = globalPresentableStoreContainer.get()
-//            store.send(
-//                .setMemberContractState(
-//                    state: .terminated,
-//                    contracts: []
-//                )
-//            )
-//            store.send(.setFutureStatus(status: .pendingSwitchable))
-//        }
-//
-//    }
-//}
+    }
+}
 
-//@available(iOS 16.0, *)
-//struct Deleted_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Localization.Locale.currentLocale = .en_SE
-//        return HomeView(
-//            claimsContent: Text(""),
-//            memberId: {
-//                "ID"
-//            },
-//            pathState: .init()
-//        )
-//        .onAppear {
-//            ApolloClient.saveDeleteAccountStatus(for: "ID")
-//            let store: HomeStore = globalPresentableStoreContainer.get()
-//            store.send(
-//                .setMemberContractState(
-//                    state: .active,
-//                    contracts: []
-//                )
-//            )
-//            store.send(.setFutureStatus(status: .pendingSwitchable))
-//        }
-//
-//    }
-//}
+struct Terminated_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .terminated,
+                    contracts: []
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
+
+    }
+}
+
+struct Deleted_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return HomeView(
+            claimsContent: Text(""),
+            memberId: {
+                "ID"
+            }
+        )
+        .onAppear {
+            ApolloClient.saveDeleteAccountStatus(for: "ID")
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .active,
+                    contracts: []
+                )
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
+
+    }
+}

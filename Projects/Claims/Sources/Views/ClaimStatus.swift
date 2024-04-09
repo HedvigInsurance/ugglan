@@ -1,3 +1,4 @@
+import Home
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,12 +8,14 @@ struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
 
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
+
     @PresentableStore
     var store: ClaimsStore
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in
-            store.send(.openClaimDetails(claim: claim))
+            homeVm.externalNavigationRedirect.append(claim)
         }
     }
 
