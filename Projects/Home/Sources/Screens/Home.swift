@@ -47,8 +47,8 @@ extension HomeView {
                 case .newOffer:
                     store.send(.showNewOffer)
                 case .firstVet:
-                    if let vetQuickAction = store.state.quickAction.vetQuickAction {
-                        store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
+                    if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
+                        store.send(.openFirstVet(partners: hasVetPartners))
                     }
                 case .chat, .chatNotification:
                     store.send(.openFreeTextChat(from: nil))
@@ -222,12 +222,11 @@ extension HomeView {
                 resultJourney(.dismissHelpCenter)
             } else if case .openHelpCenter = action {
                 HelpCenterStartView.journey
-            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
-                if !fromOtherService {
-                    QuickActionDetailScreen.journey(quickAction: quickAction)
-                        .withJourneyDismissButton
-                        .configureTitle(quickAction.displayTitle)
-                }
+            } else if case let .openFirstVet(partners) = action {
+                FirstVetView.journey(partners: partners)
+                    .withJourneyDismissButton
+                    .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+
             } else if case let .openDocument(contractURL) = action {
                 Journey(
                     Document(url: contractURL, title: L10n.insuranceCertificateTitle),

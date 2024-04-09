@@ -25,6 +25,7 @@ public struct ProfileState: StateProtocol {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         return !contractStore.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
+
     public init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in

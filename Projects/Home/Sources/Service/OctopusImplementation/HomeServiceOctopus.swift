@@ -4,7 +4,7 @@ import hGraphQL
 
 public class HomeServiceOctopus: HomeService {
     @Inject var octopus: hOctopus
-
+    @Inject var featureFlags: FeatureFlags
     public init() {}
 
     public func getImportantMessages() async throws -> [ImportantMessage] {
@@ -38,13 +38,52 @@ public class HomeServiceOctopus: HomeService {
     public func getQuickActions() async throws -> [QuickAction] {
         let data = try await self.octopus.client
             .fetch(
-                query: OctopusGraphQL.QuickActionsQuery(),
+                query: OctopusGraphQL.MemberActionsQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-        return data.currentMember.activeContracts
-            .flatMap({ $0.currentAgreement.productVariant.commonClaimDescriptions })
-            .compactMap({ QuickAction(from: $0) })
-            .unique()
+
+        var quickActions = [QuickAction]()
+        let actions = data.currentMember.memberActions
+        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
+            quickActions.append(.changeAddress)
+        }
+        if actions?.isConnectPaymentEnabled == true {
+            quickActions.append(.connectPayments)
+        }
+        if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
+            quickActions.append(.editCoInsured)
+        }
+        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
+            quickActions.append(.cancellation)
+        }
+        if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
+            quickActions.append(.travelInsurance)
+        }
+        if let firstVetSections = actions?.firstVetAction?.sections {
+            let firstVetPartners = firstVetSections.compactMap({
+                FirstVetPartner(
+                    id: $0.title ?? "",
+                    buttonTitle: $0.buttonTitle,
+                    description: $0.description,
+                    url: $0.url,
+                    title: $0.title
+                )
+            })
+            quickActions.append(.firstVet(partners: firstVetPartners))
+        }
+
+        if let sickAbroadPartners = actions?.sickAbroadAction?.partners {
+            let firstVetPartners = sickAbroadPartners.compactMap({
+                SickAbroadPartner(
+                    id: $0.id,
+                    imageUrl: $0.imageUrl,
+                    phoneNumber: $0.phoneNumber,
+                    url: $0.url
+                )
+            })
+            quickActions.append(.sickAbroad(partners: firstVetPartners))
+        }
+        return quickActions
     }
 
     public func getLastMessagesDates() async throws -> [Date] {
@@ -127,76 +166,4 @@ extension UpcomingRenewal {
         guard let upcomingRenewal, upcomingRenewal.creationCause == .renewal else { return nil }
         self.init(renewalDate: upcomingRenewal.activeFrom, draftCertificateUrl: upcomingRenewal.certificateUrl)
     }
-}
-
-extension QuickAction {
-    init(
-        from data: OctopusGraphQL.QuickActionsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
-            .CommonClaimDescription
-    ) {
-        self.id = data.id
-        self.displayTitle = data.displayTitle
-        self.displaySubtitle = data.displaySubtitle
-        self.layout = Layout(layout: data.layout)
-    }
-}
-
-extension QuickAction.Layout {
-    init(
-        layout: OctopusGraphQL.QuickActionsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
-            .CommonClaimDescription.Layout
-    ) {
-        if let emergency = layout.asCommonClaimLayoutEmergency {
-            self.emergency = Emergency(
-                title: emergency.title,
-                color: emergency.color.rawValue,
-                emergencyNumber: emergency.emergencyNumber
-            )
-        } else if let content = layout.asCommonClaimLayoutTitleAndBulletPoints {
-            let bulletPoints: [TitleAndBulletPoints.BulletPoint] = content.bulletPoints.map {
-                TitleAndBulletPoints.BulletPoint(
-                    title: $0.title,
-                    description: $0.description
-                )
-            }
-
-            self.titleAndBulletPoint = TitleAndBulletPoints(
-                color: content.color.rawValue,
-                buttonTitle: content.buttonTitle,
-                title: content.title,
-                bulletPoints: bulletPoints
-            )
-        }
-    }
-}
-
-extension OctopusGraphQL.QuickActionsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
-    .CommonClaimDescription
-{
-    fileprivate var isFirstVet: Bool {
-        id == "30" || id == "31" || id == "32"
-    }
-
-    fileprivate var isSickAborad: Bool {
-        self.layout.asCommonClaimLayoutEmergency?.emergencyNumber != nil
-    }
-
-    fileprivate var displayTitle: String {
-        if self.isFirstVet {
-            return L10n.hcQuickActionsFirstvetTitle
-        } else if self.isSickAborad {
-            return L10n.hcQuickActionsSickAbroadTitle
-        }
-        return self.title
-    }
-
-    fileprivate var displaySubtitle: String {
-        if self.isFirstVet {
-            return L10n.hcQuickActionsFirstvetSubtitle
-        } else if self.isSickAborad {
-            return L10n.hcQuickActionsSickAbroadSubtitle
-        }
-        return ""
-    }
-
 }

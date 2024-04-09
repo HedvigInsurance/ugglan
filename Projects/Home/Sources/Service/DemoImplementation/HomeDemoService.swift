@@ -17,7 +17,7 @@ public class HomeServiceDemo: HomeService {
     }
 
     public func getQuickActions() async throws -> [QuickAction] {
-        return [.editCoInsured(), .moving()]
+        return [.editCoInsured, .changeAddress]
     }
 
     public func getLastMessagesDates() async throws -> [Date] {

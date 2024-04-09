@@ -19,7 +19,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
 
                 send(.setEurobonusNumber(partnerData: partner))
                 send(.setMember(memberData: member))
-                send(.setHasTravelCertificate(has: member.hasTravelCertificate))
+                send(.isTravelCertificateEnabled(has: member.isTravelCertificateEnabled))
                 send(.fetchProfileStateCompleted)
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchProfileState)
@@ -72,7 +72,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.pushNotificationStatus = status
         case let .setPushNotificationsTo(date):
             newState.pushNotificationsSnoozeDate = date
-        case let .setHasTravelCertificate(hasTravelCertificates):
+        case let .isTravelCertificateEnabled(hasTravelCertificates):
             newState.hasTravelCertificates = hasTravelCertificates
         default:
             break
