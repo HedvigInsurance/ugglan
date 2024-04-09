@@ -148,15 +148,15 @@ public struct MovingFlowJourneyNew {
             rootView: MovingFlowConfirm()
         ) {
             action in
-            if case let .navigation(.document(url, title)) = action {
-                Journey(
-                    Document(url: url, title: title),
-                    style: .detented(.large)
-                )
-                .withDismissButton
-            } else {
-                getMovingFlowScreen(for: action).hidesBackButton
-            }
+            //            if case let .navigation(.document(url, title)) = action {
+            //                Journey(
+            //                    Document(url: url, title: title),
+            //                    style: .detented(.large)
+            //                )
+            //                .withDismissButton
+            //            } else {
+            getMovingFlowScreen(for: action).hidesBackButton
+            //            }
         }
         .configureTitle(L10n.changeAddressSummaryTitle)
         .withJourneyDismissButton

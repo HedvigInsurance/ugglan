@@ -1,3 +1,4 @@
+import Home
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,6 +7,8 @@ struct ContactChatView: View {
     let store: ClaimsStore
     let id: String
     let status: String
+
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     init(
         store: ClaimsStore,
@@ -27,9 +30,8 @@ struct ContactChatView: View {
             Spacer()
 
             Button {
-                store.send(.openFreeTextChat)
+                homeVm.isChatPresented = true
             } label: {
-
             }
             .buttonStyle(ChatButtonStyle())
         }

@@ -161,12 +161,13 @@ public struct TravelInsuranceFlowJourney {
     }
 
     private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
-        let document = Document(url: model.url, title: model.title)
-        return Journey(
-            document,
-            style: .detented(.large)
-        )
-        .withDismissButton
+        //        let document = Document(url: model.url, title: model.title)
+        //        return Journey(
+        ////            document,
+        //            style: .detented(.large)
+        //        )
+        //        .withDismissButton
+        return HostingJourney(rootView: EmptyView())
     }
 }
 

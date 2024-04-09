@@ -1,3 +1,4 @@
+import Chat
 import Claims
 import Contracts
 import Forever
@@ -70,13 +71,28 @@ struct MainNavigationJourney: App {
                 HonestyPledge(onConfirmAction: {})
                     .presentationDetents([.large, .medium])
             }
+            .sheet(isPresented: $homeNavigationVm.isChatPresented) {
+                ChatScreen(vm: .init(topicType: nil))
+                    .presentationDetents([.large, .medium])
+            }
+            .sheet(isPresented: $homeNavigationVm.isDocumentPresented) {
+                if let document = homeNavigationVm.document, let url = URL(string: document.url) {
+                    DocumentRepresentable(document: .init(url: url, title: document.displayName))
+                }
+            }
+            .sheet(isPresented: $homeNavigationVm.isPaymentsPresented) {
+                PaymentsView()
+                    .presentationDetents([.large, .medium])
+            }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
+                    .environmentObject(homeNavigationVm)
             }
             .fullScreenCover(
                 isPresented: $homeNavigationVm.isHelpCenterPresented,
                 content: {
                     HelpCenterStartView()
+                        .environmentObject(homeNavigationVm)
                 }
             )
         }

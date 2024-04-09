@@ -6,13 +6,20 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ChatScreen: View {
+public struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @PresentableStore private var store: ChatStore
-    var body: some View {
+
+    public init(
+        vm: ChatScreenViewModel
+    ) {
+        self._vm = StateObject(wrappedValue: vm)
+    }
+
+    public var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
             messagesContainer(with: proxy)

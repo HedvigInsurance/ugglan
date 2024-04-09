@@ -155,62 +155,62 @@ public struct ContractDetail: View {
     }
 }
 
-extension ContractDetail {
-    public func journey<ResultJourney: JourneyPresentation>(
-        style: PresentationStyle = .default,
-        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
-        options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: self.environmentObject(TabControllerContext()),
-            style: style,
-            options: options
-        ) { action in
-            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
-                Journey(
-                    Document(url: url, title: title),
-                    style: .detented(.large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .openInsuranceUpdate(contract)) = action {
-                UpcomingChangesScreen.journey(contract: contract)
-            } else if case .goToFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
-            }
-        }
-        .configureTitle(title)
-    }
-
-    public var contractDetailErrorJourney: some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: GenericErrorView(
-                description: L10n.contractDetailsError,
-                buttons: .init(
-                    actionButton: .init(
-                        buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissContractDetailNavigation)
-                        }
-                    ),
-                    dismissButton: .init(
-                        buttonAction: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.goToFreeTextChat)
-                        })
-                )
-            )
-        ) { action in
-            if case .goToFreeTextChat = action {
-                DismissJourney()
-            } else if case .dismissContractDetailNavigation = action {
-                DismissJourney()
-            }
-        }
-    }
-}
+//extension ContractDetail {
+//    public func journey<ResultJourney: JourneyPresentation>(
+//        style: PresentationStyle = .default,
+//        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
+//        options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+//    ) -> some JourneyPresentation {
+//        HostingJourney(
+//            ContractStore.self,
+//            rootView: self.environmentObject(TabControllerContext()),
+//            style: style,
+//            options: options
+//        ) { action in
+//            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
+//                Journey(
+//                    Document(url: url, title: title),
+//                    style: .detented(.large)
+//                )
+//                .withDismissButton
+//            } else if case let .contractDetailNavigationAction(action: .openInsuranceUpdate(contract)) = action {
+//                UpcomingChangesScreen.journey(contract: contract)
+//            } else if case .goToFreeTextChat = action {
+//                resultJourney(.openFreeTextChat)
+//            }
+//        }
+//        .configureTitle(title)
+//    }
+//
+//    public var contractDetailErrorJourney: some JourneyPresentation {
+//        HostingJourney(
+//            ContractStore.self,
+//            rootView: GenericErrorView(
+//                description: L10n.contractDetailsError,
+//                buttons: .init(
+//                    actionButton: .init(
+//                        buttonTitle: L10n.generalCloseButton,
+//                        buttonAction: {
+//                            let store: ContractStore = globalPresentableStoreContainer.get()
+//                            store.send(.dismissContractDetailNavigation)
+//                        }
+//                    ),
+//                    dismissButton: .init(
+//                        buttonAction: {
+//                            let store: ContractStore = globalPresentableStoreContainer.get()
+//                            store.send(.goToFreeTextChat)
+//                        })
+//                )
+//            )
+//        ) { action in
+//            if case .goToFreeTextChat = action {
+//                DismissJourney()
+//            } else if case .dismissContractDetailNavigation = action {
+//                DismissJourney()
+//            }
+//        }
+//    }
+//}
 
 class ContractDetailsViewModel: ObservableObject {
     private let id: String

@@ -16,6 +16,15 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
+
+    //claim details
+    @Published public var isChatPresented = false
+    @Published public var isDocumentPresented = false
+    @Published public var document: InsuranceTerm? = nil
+
+    //help center
+    @Published public var isPaymentsPresented = false
+
     @Published public var externalNavigationRedirect = NavigationPath()
 }
 
@@ -63,7 +72,7 @@ extension HomeView {
                         store.send(.openQuickActionDetail(quickActions: vetQuickAction, fromOtherServices: false))
                     }
                 case .chat, .chatNotification:
-                    store.send(.openFreeTextChat(from: nil))
+                    navigationVm.isChatPresented = true
                 }
             }
         )
