@@ -80,10 +80,6 @@ struct MainNavigationJourney: App {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
                 }
             }
-            .sheet(isPresented: $homeNavigationVm.isPaymentsPresented) {
-                PaymentsView()
-                    .presentationDetents([.large, .medium])
-            }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
@@ -92,7 +88,6 @@ struct MainNavigationJourney: App {
                 isPresented: $homeNavigationVm.isHelpCenterPresented,
                 content: {
                     HelpCenterStartView()
-                        .environmentObject(homeNavigationVm)
                 }
             )
         }

@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 
 enum FlowClaimDeflectStepType: Decodable, Encodable {
@@ -26,23 +27,6 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
             return ""
         }
     }
-}
-
-public struct FlowClaimDeflectConfig {
-    let infoText: String
-    let infoSectionText: String
-    let infoSectionTitle: String
-    let cardTitle: String?
-    let cardText: String
-    let buttonText: String?
-    let infoViewTitle: String?
-    let infoViewText: String?
-    let questions: [DeflectQuestion]
-}
-
-struct DeflectQuestion {
-    let question: String
-    let answer: String
 }
 
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
@@ -183,30 +167,15 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     }
 }
 
-public struct Partner: Codable, Equatable, Hashable {
-    let id: String
-    let imageUrl: String?
-    let url: String?
-    let phoneNumber: String?
-
+extension Partner {
     init(
         with data: OctopusGraphQL.FlowClaimDeflectPartnerFragment
     ) {
-        self.id = data.id
-        self.imageUrl = data.imageUrl
-        self.url = data.url
-        self.phoneNumber = data.phoneNumber
-    }
-
-    init(
-        id: String,
-        imageUrl: String?,
-        url: String?,
-        phoneNumber: String?
-    ) {
-        self.id = id
-        self.imageUrl = imageUrl
-        self.url = url
-        self.phoneNumber = phoneNumber
+        self.init(
+            id: data.id,
+            imageUrl: data.imageUrl,
+            url: data.url,
+            phoneNumber: data.phoneNumber
+        )
     }
 }

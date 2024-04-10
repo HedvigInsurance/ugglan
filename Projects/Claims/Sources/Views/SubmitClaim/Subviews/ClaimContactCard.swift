@@ -5,94 +5,94 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ClaimContactCard: View {
-    @PresentableStore var store: SubmitClaimStore
-    var model: FlowClaimDeflectStepModel
-    var title: String?
-    var imageUrl: String?
-    var url: String?
-    var phoneNumber: String?
-
-    init(
-        imageUrl: String?,
-        url: String,
-        phoneNumber: String?,
-        title: String? = nil,
-        model: FlowClaimDeflectStepModel?
-    ) {
-        self.imageUrl = imageUrl
-        self.url = url
-        self.phoneNumber = phoneNumber
-        self.title = title
-        self.model = model ?? .init(id: .Unknown, isEmergencyStep: false)
-    }
-
-    var body: some View {
-        if let title {
-            hSection {
-                sectionContent
-            }
-            .withHeader({
-                HStack {
-                    hText(title)
-                    Spacer()
-                    InfoViewHolder(
-                        title: model.config?.infoViewTitle ?? "",
-                        description: model.config?.infoViewText ?? ""
-                    )
-                }
-            })
-            .sectionContainerStyle(.black)
-        } else {
-            hSection {
-                sectionContent
-            }
-            .sectionContainerStyle(.black)
-        }
-    }
-
-    private var sectionContent: some View {
-        VStack(spacing: 8) {
-            if let imageUrl = URL(string: imageUrl) {
-                KFImage(imageUrl)
-                    .setProcessor(SVGImageProcessor())
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 40)
-                    .foregroundColor(hTextColor.negative)
-                    .padding(.vertical, 16)
-            }
-
-            hText(model.config?.cardText ?? "")
-                .fixedSize()
-                .multilineTextAlignment(.center)
-                .foregroundColor(hTextColor.tertiary)
-                .padding(.bottom, 8)
-                .padding(.horizontal, 8)
-
-            hSection {
-                hButton.MediumButton(type: .secondaryAlt) {
-                    if let url = URL(string: url) {
-                        UIApplication.shared.open(url)
-                    } else if let phoneNumber {
-                        let tel = "tel://"
-                        let formattedString = tel + phoneNumber
-                        if let url = URL(string: formattedString) {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                } content: {
-                    hText(model.config?.buttonText ?? "")
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.primary)
-                        .colorScheme(.light)
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        }
-        .padding(.vertical, 16)
-    }
-}
+//struct ClaimContactCard: View {
+//    @PresentableStore var store: SubmitClaimStore
+//    var model: FlowClaimDeflectStepModel
+//    var title: String?
+//    var imageUrl: String?
+//    var url: String?
+//    var phoneNumber: String?
+//
+//    init(
+//        imageUrl: String?,
+//        url: String,
+//        phoneNumber: String?,
+//        title: String? = nil,
+//        model: FlowClaimDeflectStepModel?
+//    ) {
+//        self.imageUrl = imageUrl
+//        self.url = url
+//        self.phoneNumber = phoneNumber
+//        self.title = title
+//        self.model = model ?? .init(id: .Unknown, isEmergencyStep: false)
+//    }
+//
+//    var body: some View {
+//        if let title {
+//            hSection {
+//                sectionContent
+//            }
+//            .withHeader({
+//                HStack {
+//                    hText(title)
+//                    Spacer()
+//                    InfoViewHolder(
+//                        title: model.config?.infoViewTitle ?? "",
+//                        description: model.config?.infoViewText ?? ""
+//                    )
+//                }
+//            })
+//            .sectionContainerStyle(.black)
+//        } else {
+//            hSection {
+//                sectionContent
+//            }
+//            .sectionContainerStyle(.black)
+//        }
+//    }
+//
+//    private var sectionContent: some View {
+//        VStack(spacing: 8) {
+//            if let imageUrl = URL(string: imageUrl) {
+//                KFImage(imageUrl)
+//                    .setProcessor(SVGImageProcessor())
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//                    .frame(height: 40)
+//                    .foregroundColor(hTextColor.negative)
+//                    .padding(.vertical, 16)
+//            }
+//
+//            hText(model.config?.cardText ?? "")
+//                .fixedSize()
+//                .multilineTextAlignment(.center)
+//                .foregroundColor(hTextColor.tertiary)
+//                .padding(.bottom, 8)
+//                .padding(.horizontal, 8)
+//
+//            hSection {
+//                hButton.MediumButton(type: .secondaryAlt) {
+//                    if let url = URL(string: url) {
+//                        UIApplication.shared.open(url)
+//                    } else if let phoneNumber {
+//                        let tel = "tel://"
+//                        let formattedString = tel + phoneNumber
+//                        if let url = URL(string: formattedString) {
+//                            UIApplication.shared.open(url)
+//                        }
+//                    }
+//                } content: {
+//                    hText(model.config?.buttonText ?? "")
+//                        .multilineTextAlignment(.center)
+//                        .foregroundColor(hTextColor.primary)
+//                        .colorScheme(.light)
+//                }
+//            }
+//            .sectionContainerStyle(.transparent)
+//        }
+//        .padding(.vertical, 16)
+//    }
+//}
 
 struct ClaimEmergencyContactCard: View {
     @PresentableStore var store: SubmitClaimStore
@@ -177,30 +177,30 @@ struct ClaimEmergencyContactCard: View {
     }
 }
 
-struct ClaimContactCard_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return VStack {
-            ClaimContactCard(
-                imageUrl: "",
-                url: "BUTTON TEXT",
-                phoneNumber: "",
-                model: nil
-            )
-            ClaimContactCard(
-                imageUrl: "",
-                url: "BUTTON TEXT",
-                phoneNumber: "",
-                model: nil
-            )
-            ClaimContactCard(
-                imageUrl: "",
-                url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
-                phoneNumber: "",
-                model: nil
-            )
-
-        }
-
-    }
-}
+//struct ClaimContactCard_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Localization.Locale.currentLocale = .en_SE
+//        return VStack {
+//            ClaimContactCard(
+//                imageUrl: "",
+//                url: "BUTTON TEXT",
+//                phoneNumber: "",
+//                model: nil
+//            )
+//            ClaimContactCard(
+//                imageUrl: "",
+//                url: "BUTTON TEXT",
+//                phoneNumber: "",
+//                model: nil
+//            )
+//            ClaimContactCard(
+//                imageUrl: "",
+//                url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
+//                phoneNumber: "",
+//                model: nil
+//            )
+//
+//        }
+//
+//    }
+//}

@@ -55,20 +55,20 @@ public struct FirstVetView: View {
     }
 }
 
-extension FirstVetView {
-    public static func journey(partners: [FirstVetPartner]) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: FirstVetView(partners: partners),
-            style: .detented(.large, modally: true),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dismissOtherServices = action {
-                DismissJourney()
-            }
-        }
-    }
-}
+//extension FirstVetView {
+//    public static func journey(partners: [FirstVetPartner]) -> some JourneyPresentation {
+//        HostingJourney(
+//            HomeStore.self,
+//            rootView: FirstVetView(partners: partners),
+//            style: .detented(.large, modally: true),
+//            options: [.largeNavigationBar, .blurredBackground]
+//        ) { action in
+//            if case .dismissOtherServices = action {
+//                DismissJourney()
+//            }
+//        }
+//    }
+//}
 
 #Preview{
     FirstVetView(partners: [])

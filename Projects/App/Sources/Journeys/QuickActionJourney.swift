@@ -29,11 +29,13 @@ extension AppJourney {
                 .compactMap({
                     InsuredPeopleConfig(contract: $0)
                 })
-            if !contractsSupportingCoInsured.isEmpty {
-                openOnTop(
-                    vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
-                )
-            }
+
+            DismissJourney()
+        //            if !contractsSupportingCoInsured.isEmpty {
+        //                openOnTop(
+        //                    vc: AppJourney.editCoInsured(configs: contractsSupportingCoInsured)
+        //                )
+        //            }
         case .travelInsurance:
             if let url = DeepLink.getUrl(from: .travelCertificate) {
                 configureURL(url: url)
@@ -43,17 +45,19 @@ extension AppJourney {
                 configureURL(url: url)
             }
         case let .firstVet(partners):
-            let vc = FirstVetView.journey(partners: partners)
-                .withJourneyDismissButton
-                .configureTitle(quickAction.displayTitle)
+            //            let vc = FirstVetView.journey(partners: partners)
+            //                .withJourneyDismissButton
+            //                .configureTitle(quickAction.displayTitle)
 
-            openOnTop(
-                vc: vc
-            )
+            //            openOnTop(
+            //                vc: vc
+            //            )
+            DismissJourney()
         case .sickAbroad:
-            openOnTop(
-                vc: SubmitClaimDeflectScreen.journey
-            )
+            //            openOnTop(
+            //                vc: SubmitClaimDeflectScreen.journey
+            //            )
+            DismissJourney()
         }
     }
 

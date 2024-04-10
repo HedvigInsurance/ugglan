@@ -89,17 +89,20 @@ extension AskForPushnotifications {
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                        .onAction(SubmitClaimStore.self) { action in
-                            if case .dissmissNewClaimFlow = action {
-                                DismissJourney()
-                            }
-                        }
+                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                    //                        .onAction(SubmitClaimStore.self) { action in
+                    //                            if case .dissmissNewClaimFlow = action {
+                    //                                DismissJourney()
+                    //                            }
+                    //                        }
+                    DismissJourney()
                 } else if case .openTriagingGroupScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                    DismissJourney()
                 }
             } else {
-                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                //                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                DismissJourney()
             }
         }
         .hidesBackButton

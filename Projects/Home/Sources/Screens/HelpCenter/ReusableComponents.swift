@@ -143,7 +143,7 @@ struct QuestionsItems: View {
 
 struct SupportView: View {
     let topic: ChatTopicType?
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
+    @EnvironmentObject var helpCenterVm: HelpCenterNavigationViewModel
 
     var body: some View {
         HStack {
@@ -155,7 +155,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    homeVm.isChatPresented = true
+                    helpCenterVm.isChatPresented = true
                 } content: {
                     hText(L10n.hcChatButton)
                 }

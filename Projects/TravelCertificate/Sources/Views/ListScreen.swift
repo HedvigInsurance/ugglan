@@ -4,12 +4,12 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ListScreen: View {
+public struct ListScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
 
-    init(
+    public init(
         canAddTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement
     ) {
