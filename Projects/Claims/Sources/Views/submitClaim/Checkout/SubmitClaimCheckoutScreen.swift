@@ -51,7 +51,7 @@ public struct SubmitClaimCheckoutScreen: View {
         VStack(spacing: 16) {
             hSection {
                 VStack(alignment: .center) {
-                    hText(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
+                    hText(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .standardExtraExtraLarge)
                         .foregroundColor(hTextColor.primary)
                 }
                 .background(
