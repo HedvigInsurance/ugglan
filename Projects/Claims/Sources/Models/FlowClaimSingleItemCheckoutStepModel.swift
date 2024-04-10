@@ -13,6 +13,26 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     var selectedPayoutMethod: AvailableCheckoutMethod?
 
     init(
+        id: String,
+        deductible: MonetaryAmount,
+        depreciation: MonetaryAmount,
+        payoutAmount: MonetaryAmount,
+        price: MonetaryAmount,
+        repairCostAmount: MonetaryAmount?,
+        payoutMethods: [AvailableCheckoutMethod],
+        selectedPayoutMethod: AvailableCheckoutMethod? = nil
+    ) {
+        self.id = id
+        self.deductible = deductible
+        self.depreciation = depreciation
+        self.payoutAmount = payoutAmount
+        self.price = price
+        self.repairCostAmount = repairCostAmount
+        self.payoutMethods = payoutMethods
+        self.selectedPayoutMethod = selectedPayoutMethod
+    }
+
+    init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
         self.id = data.id
@@ -80,6 +100,16 @@ struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable, Hashable {
     let id: String
     let amount: MonetaryAmount
     let displayName: String
+
+    init(
+        id: String,
+        amount: MonetaryAmount,
+        displayName: String
+    ) {
+        self.id = id
+        self.amount = amount
+        self.displayName = displayName
+    }
 
     init(
         with data: OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment

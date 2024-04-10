@@ -1,3 +1,4 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -219,8 +220,116 @@ public struct SubmitClaimCheckoutScreen: View {
     }
 }
 
+struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return SubmitClaimCheckoutScreen()
+            .onAppear {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .stepModelAction(
+                        action: .setSingleItemCheckoutStep(
+                            model: .init(
+                                id: "id",
+                                deductible: .sek(20),
+                                depreciation: .sek(30),
+                                payoutAmount: .sek(100),
+                                price: .sek(300),
+                                repairCostAmount: .sek(250),
+                                payoutMethods: [
+                                    .init(
+                                        id: "id",
+                                        autogiro: .init(
+                                            id: "autogiroId",
+                                            amount: .sek(100),
+                                            displayName: "Auto giro"
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    )
+                )
+                store.send(
+                    .stepModelAction(
+                        action: .setSingleItem(
+                            model: .init(
+                                id: "Test",
+                                availableItemBrandOptions: [],
+                                availableItemModelOptions: [
+                                    .init(
+                                        displayName: "Model display name",
+                                        itemBrandId: "testBrand",
+                                        itemTypeId: "testModel",
+                                        itemModelId: "testModel"
+                                    )
+                                ],
+                                availableItemProblems: [],
+                                prefferedCurrency: "sek",
+                                currencyCode: "SEK",
+                                selectedItemModel: "testModel",
+                                defaultItemProblems: []
+                            )
+                        )
+                    )
+                )
+            }
+    }
+}
+
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimCheckoutScreen()
+        Localization.Locale.currentLocale = .en_SE
+        return SubmitClaimCheckoutScreen()
+            .onAppear {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .stepModelAction(
+                        action: .setSingleItemCheckoutStep(
+                            model: .init(
+                                id: "id",
+                                deductible: .sek(20),
+                                depreciation: .sek(30),
+                                payoutAmount: .sek(100),
+                                price: .sek(300),
+                                repairCostAmount: nil,
+                                payoutMethods: [
+                                    .init(
+                                        id: "id",
+                                        autogiro: .init(
+                                            id: "autogiroId",
+                                            amount: .sek(100),
+                                            displayName: "Auto giro"
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    )
+                )
+                store.send(
+                    .stepModelAction(
+                        action: .setSingleItem(
+                            model: .init(
+                                id: "Test",
+                                availableItemBrandOptions: [],
+                                availableItemModelOptions: [
+                                    .init(
+                                        displayName: "Model display name",
+                                        itemBrandId: "testBrand",
+                                        itemTypeId: "testModel",
+                                        itemModelId: "testModel"
+                                    )
+                                ],
+                                availableItemProblems: [],
+                                prefferedCurrency: "sek",
+                                currencyCode: "SEK",
+                                selectedItemModel: "testModel",
+                                defaultItemProblems: []
+                            )
+                        )
+                    )
+                )
+            }
     }
 }

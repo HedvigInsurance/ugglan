@@ -19,6 +19,36 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     let defaultItemProblems: [String]?
 
     init(
+        id: String,
+        availableItemBrandOptions: [ClaimFlowItemBrandOptionModel],
+        availableItemModelOptions: [ClaimFlowItemModelOptionModel],
+        availableItemProblems: [ClaimFlowItemProblemOptionModel],
+        customName: String? = nil,
+        prefferedCurrency: String?,
+        purchaseDate: String? = nil,
+        purchasePrice: Double? = nil,
+        currencyCode: String?,
+        selectedItemBrand: String? = nil,
+        selectedItemModel: String? = nil,
+        selectedItemProblems: [String]? = nil,
+        defaultItemProblems: [String]?
+    ) {
+        self.id = id
+        self.availableItemBrandOptions = availableItemBrandOptions
+        self.availableItemModelOptions = availableItemModelOptions
+        self.availableItemProblems = availableItemProblems
+        self.customName = customName
+        self.prefferedCurrency = prefferedCurrency
+        self.purchaseDate = purchaseDate
+        self.purchasePrice = purchasePrice
+        self.currencyCode = currencyCode
+        self.selectedItemBrand = selectedItemBrand
+        self.selectedItemModel = selectedItemModel
+        self.selectedItemProblems = selectedItemProblems
+        self.defaultItemProblems = defaultItemProblems
+    }
+
+    init(
         with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
     ) {
         self.id = data.id
@@ -166,6 +196,18 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
+
+    init(
+        displayName: String,
+        itemBrandId: String,
+        itemTypeId: String,
+        itemModelId: String
+    ) {
+        self.displayName = displayName
+        self.itemBrandId = itemBrandId
+        self.itemTypeId = itemTypeId
+        self.itemModelId = itemModelId
+    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemModel
