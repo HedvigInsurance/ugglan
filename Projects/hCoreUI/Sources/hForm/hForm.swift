@@ -164,9 +164,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             if mergeBottomWithContentIfNeeded {
                 self.scrollView = scrollView
             }
-            if #available(iOS 15, *) {
-                scrollView.viewController?.setContentScrollView(scrollView)
-            }
+            scrollView.viewController?.setContentScrollView(scrollView)
 
             if hDisableScroll || additionalSpaceFromTop > 0 {
                 scrollView.bounces = false

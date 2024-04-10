@@ -44,12 +44,8 @@ extension View {
 
     @ViewBuilder
     public func onPullToRefresh(action: @escaping @Sendable () async -> Void) -> some View {
-        if #available(iOS 15.0, *) {
-            self.refreshable {
-                await action()
-            }
-        } else {
-            self.modifier(RefreshableModifier(action: action))
+        self.refreshable {
+            await action()
         }
     }
 }

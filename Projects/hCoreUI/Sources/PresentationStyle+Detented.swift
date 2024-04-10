@@ -298,9 +298,7 @@ extension UIViewController {
                 }
             }
 
-            if #available(iOS 15, *),
-                let sheetPresentationController = presentationController as? UISheetPresentationController
-            {
+            if let sheetPresentationController = presentationController as? UISheetPresentationController {
                 sheetPresentationController.animateChanges {
                     apply()
                 }
@@ -440,15 +438,11 @@ extension PresentationStyle {
                     + (hasNavigationBar ? navigationBarHeight : 0)
                     + additionalNavigationHeight
                     + additionalViewHeight
-                if #available(iOS 15.0, *) {
-                    if keyboardHeight > 0 {
-                        if let window = UIApplication.shared.windows.first {
-                            let bottomPadding = window.safeAreaInsets.bottom
-                            totalHeight -= bottomPadding
-                        }
+                if keyboardHeight > 0 {
+                    if let window = UIApplication.shared.windows.first {
+                        let bottomPadding = window.safeAreaInsets.bottom
+                        totalHeight -= bottomPadding
                     }
-                } else {
-                    totalHeight += keyboardHeight + 10
                 }
                 return totalHeight
             }
@@ -518,36 +512,11 @@ extension PresentationStyle {
                     }
                 }
             }
-
-            if #available(iOS 15.0, *) {
-                if unanimated {
-                    apply()
-                } else if let sheetPresentationController = presentationController as? UISheetPresentationController {
-                    sheetPresentationController.animateChanges {
-                        apply()
-                    }
-                }
-            } else {
-                func forceLayout() {
-                    presentationController.containerView?.layoutSuperviewsIfNeeded()
-                }
-
+            if unanimated {
                 apply()
-
-                if let keyboardAnimation = keyboardAnimation {
-                    keyboardAnimation.animate { forceLayout() }
-                } else if unanimated {
-                    forceLayout()
-                } else {
-                    UIView.animate(
-                        withDuration: 0.5,
-                        delay: 0,
-                        usingSpringWithDamping: 5,
-                        initialSpringVelocity: 1,
-                        options: .allowUserInteraction,
-                        animations: { forceLayout() },
-                        completion: nil
-                    )
+            } else if let sheetPresentationController = presentationController as? UISheetPresentationController {
+                sheetPresentationController.animateChanges {
+                    apply()
                 }
             }
         }
