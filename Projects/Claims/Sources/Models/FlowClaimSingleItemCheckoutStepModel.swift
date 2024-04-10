@@ -41,11 +41,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.payoutAmount = .init(fragment: data.payoutAmount.fragments.moneyFragment)
         self.price = .init(fragment: data.price.fragments.moneyFragment)
 
-        if let repairCostFragment = data.repairCostAmount?.fragments.moneyFragment {
-            self.repairCostAmount = .init(fragment: repairCostFragment)
-        } else {
-            self.repairCostAmount = nil
-        }
+        self.repairCostAmount = .init(optionalFragment: data.repairCostAmount?.fragments.moneyFragment)
 
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
