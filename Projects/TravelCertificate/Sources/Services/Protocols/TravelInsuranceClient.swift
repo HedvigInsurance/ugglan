@@ -2,7 +2,7 @@ import Foundation
 import hCore
 
 public protocol TravelInsuranceClient {
-    func getSpecifications() async throws -> TravelInsuranceSpecification
+    func getSpecifications() async throws -> [TravelInsuranceContractSpecification]
     func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL
     func getList() async throws -> [TravelCertificateModel]
 }

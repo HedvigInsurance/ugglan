@@ -27,8 +27,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private let manualInputPlaceholder: String
     private let hButtonText: String
     private let infoCard: CheckboxInfoCard?
-    private var title: String?
-    private var subTitle: String?
 
     @State var type: CheckboxFieldType? = nil
 
@@ -56,8 +54,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         manualBrandName: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil,
-        title: String? = nil,
-        subTitle: String? = nil,
         fieldSize: hFieldSize? = nil
     ) {
         self.items = items
@@ -86,8 +82,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
 
         self.infoCard = infoCard
-        self.title = title
-        self.subTitle = subTitle
     }
 
     @ViewBuilder
@@ -96,10 +90,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             if attachToBottom {
                 hForm {
                 }
-                .hFormTitle(
-                    title: .init(.small, .title3, title ?? "", alignment: .leading),
-                    subTitle: .init(.small, .title3, subTitle ?? "")
-                )
                 .hFormAttachToBottom {
                     VStack(spacing: 0) {
                         VStack(spacing: 16) {
@@ -442,8 +432,10 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 },
                 singleSelect: true,
                 attachToBottom: true,
-                manualInputPlaceholder: "Enter brand name",
-                title: "title"
+                manualInputPlaceholder: "Enter brand name"
+            )
+            .hFormTitle(
+                title: .init(.small, .title3, "title", alignment: .leading)
             )
             .hIncludeManualInput
         }
