@@ -25,6 +25,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var paymentType: PaymentType = .trustly
     public var isHelpCenterEnabled: Bool = false
     public var isSubmitClaimEnabled: Bool = true
+    public var osVersionTooLow: Bool = false
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
@@ -113,9 +114,13 @@ public class FeatureFlagsUnleash: FeatureFlags {
         isTerminationFlowEnabled = unleashClient.isEnabled(name: terminationFlowKey)
         featureFlags[terminationFlowKey] = isTerminationFlowEnabled
 
-        let updateNecessaryeKey = "update_necessary"
-        isUpdateNecessary = unleashClient.isEnabled(name: updateNecessaryeKey)
-        featureFlags[updateNecessaryeKey] = isUpdateNecessary
+        let updateNecessaryKey = "update_necessary"
+        isUpdateNecessary = unleashClient.isEnabled(name: updateNecessaryKey)
+        featureFlags[updateNecessaryKey] = isUpdateNecessary
+
+        let osVersionTooLowKey = "update_os_version"
+        osVersionTooLow = unleashClient.isEnabled(name: osVersionTooLowKey)
+        featureFlags[osVersionTooLowKey] = osVersionTooLow
 
         let disableChatKey = "disable_chat"
         isChatDisabled = unleashClient.isEnabled(name: disableChatKey)

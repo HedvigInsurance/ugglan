@@ -255,11 +255,9 @@ extension HonestyPledge {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .openNotificationsPermissionScreen))
             } else {
-                if #available(iOS 15.0, *) {
-                    let vc = UIApplication.shared.getTopViewController()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                    }
+                let vc = UIApplication.shared.getTopViewController()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                 }
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))

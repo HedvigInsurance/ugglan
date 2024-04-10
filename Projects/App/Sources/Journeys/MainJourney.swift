@@ -10,8 +10,14 @@ extension AppJourney {
     static var main: some JourneyPresentation {
         GroupJourney {
             if Dependencies.featureFlags().isUpdateNecessary {
-                UpdateAppScreen.journey.onPresent {
-                    Launch.shared.completeAnimationCallbacker.callAll()
+                if Dependencies.featureFlags().osVersionTooLow {
+                    UpdateOSScreen.journey.onPresent {
+                        Launch.shared.completeAnimationCallbacker.callAll()
+                    }
+                } else {
+                    UpdateAppScreen.journey.onPresent {
+                        Launch.shared.completeAnimationCallbacker.callAll()
+                    }
                 }
             } else {
                 switch ApplicationState.currentState {

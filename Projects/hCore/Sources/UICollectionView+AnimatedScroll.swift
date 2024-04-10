@@ -197,11 +197,7 @@ extension UICollectionView: AnimatedScroll {
 
         if displayLink == nil {
             displayLink = CADisplayLink(target: self, selector: #selector(updateContentOffset))
-            if #available(iOS 10, *) {
-                displayLink!.preferredFramesPerSecond = 60
-            } else {
-                displayLink!.frameInterval = 1
-            }
+            displayLink!.preferredFramesPerSecond = 60
             displayLink?.add(to: RunLoop.current, forMode: RunLoop.Mode.default)
         } else {
             displayLink!.isPaused = false
