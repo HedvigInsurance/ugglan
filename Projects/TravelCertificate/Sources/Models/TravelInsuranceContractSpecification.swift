@@ -2,16 +2,6 @@ import Foundation
 import hCore
 import hCoreUI
 
-struct TravelInsuranceModel: Codable, Equatable, Hashable {
-    var startDate: Date
-    var minStartDate: Date
-    var maxStartDate: Date
-    var isPolicyHolderIncluded: Bool = false
-    var email: String
-    let fullName: String
-    var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
-}
-
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable {
     let contractId: String
     let minStartDate: Date
@@ -21,6 +11,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     let street: String
     let email: String?
     let fullName: String
+
     init(
         contractId: String,
         minStartDate: Date,
