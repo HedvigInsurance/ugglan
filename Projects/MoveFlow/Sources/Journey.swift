@@ -8,4 +8,3 @@ public struct MovingFlowViewJourney: View {
         MovingFlowHousingTypeView()
     }
 }
-
