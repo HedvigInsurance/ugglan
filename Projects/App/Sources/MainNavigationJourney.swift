@@ -88,6 +88,7 @@ struct MainNavigationJourney: App {
                 isPresented: $homeNavigationVm.isHelpCenterPresented,
                 content: {
                     HelpCenterStartView()
+                        .environmentObject(homeNavigationVm)
                 }
             )
         }

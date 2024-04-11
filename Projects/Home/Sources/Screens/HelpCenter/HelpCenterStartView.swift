@@ -31,6 +31,7 @@ public struct HelpCenterStartView: View {
     private var helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
     @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     public init() {
 
@@ -262,7 +263,9 @@ public struct HelpCenterStartView: View {
                 )
 
                 SubmitClaimDeflectScreen(
-                    openChat: {},
+                    openChat: {
+                        homeVm.isChatPresented = true
+                    },
                     isEmergencyStep: true,
                     partners: sickAbroadPartners ?? [],
                     config: config

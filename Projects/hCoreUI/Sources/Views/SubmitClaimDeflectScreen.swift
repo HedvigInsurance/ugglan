@@ -7,7 +7,6 @@ public struct SubmitClaimDeflectScreen: View {
     private let openChat: () -> Void
 
     private let partners: [Partner]
-
     private let config: FlowClaimDeflectConfig?
 
     public init(
