@@ -1,6 +1,8 @@
 import Chat
 import Claims
 import Contracts
+import EditCoInsured
+import EditCoInsuredShared
 import Forever
 import Home
 import Payment
@@ -78,7 +80,31 @@ struct MainNavigationJourney: App {
             .sheet(isPresented: $homeNavigationVm.isDocumentPresented) {
                 if let document = homeNavigationVm.document, let url = URL(string: document.url) {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
+                        .presentationDetents([.large, .medium])
                 }
+            }
+            .sheet(isPresented: $homeNavigationVm.navBarItems.isFirstVetPresented) {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
+                    FirstVetView(partners: hasVetPartners)
+                        .presentationDetents([.large])
+                }
+            }
+            .sheet(isPresented: $homeNavigationVm.navBarItems.isNewOfferPresented) {
+                CrossSellingScreen()
+                    .presentationDetents([.medium])
+            }
+            .sheet(isPresented: $homeNavigationVm.isCoInsuredPresented) {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+                let contractsSupportingCoInsured = contractStore.state.activeContracts
+                    .filter({ $0.showEditCoInsuredInfo })
+                    .compactMap({
+                        InsuredPeopleConfig(contract: $0)
+                    })
+
+                EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
+                    .presentationDetents([.large, .medium])
             }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)

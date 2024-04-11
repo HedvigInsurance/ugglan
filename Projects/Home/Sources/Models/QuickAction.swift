@@ -72,7 +72,7 @@ extension Sequence where Iterator.Element == QuickAction {
         self.first(where: { $0.isFirstVet }) != nil
     }
 
-    var getFirstVetPartners: [FirstVetPartner]? {
+    public var getFirstVetPartners: [FirstVetPartner]? {
         return self.first(where: { $0.isFirstVet })?.firstVetPartners
     }
 

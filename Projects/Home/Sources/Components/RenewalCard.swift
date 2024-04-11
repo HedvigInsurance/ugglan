@@ -12,6 +12,8 @@ public struct RenewalCardView: View {
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     let showCoInsured: Bool?
+    
+    @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     public init(
         showCoInsured: Bool? = true
@@ -33,7 +35,9 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
         {
-            store.send(.openDocument(contractURL: url))
+            navigationVm.isDocumentPresented = true
+            navigationVm.document = InsuranceTerm(displayName: contract.displayName, url: contract.upcomingRenewal?.draftCertificateUrl ?? "", type: .unknown)
+            
         } else {
             showFailedToOpenUrlAlert = true
         }
@@ -72,14 +76,12 @@ public struct RenewalCardView: View {
                             buttonTitle: L10n.contractViewCertificateButton,
                             buttonAction: {
                                 let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                                if let url = URL(string: certificateURL) {
-                                    store.send(
-                                        .openContractCertificate(
-                                            url: url,
-                                            title: L10n.myDocumentsInsuranceCertificate
-                                        )
-                                    )
-                                }
+                                openDocument(Contract(
+                                    upcomingRenewal: .init(
+                                        renewalDate: contract.upcomingChangedAgreement?.activeFrom,
+                                        draftCertificateUrl: certificateURL
+                                    ),
+                                    displayName: contract.upcomingChangedAgreement?.productVariant.displayName ?? ""))
                             }
                         )
                     ])

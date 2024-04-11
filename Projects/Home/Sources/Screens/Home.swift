@@ -16,13 +16,24 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
+    @Published public var isChatPresented = false
+
+    // scroll view cards
+    @Published public var isCoInsuredPresented = false
+    @Published public var isConnectPayments = false
 
     //claim details
-    @Published public var isChatPresented = false
     @Published public var isDocumentPresented = false
     @Published public var document: InsuranceTerm? = nil
 
     @Published public var externalNavigationRedirect = NavigationPath()
+
+    @Published public var navBarItems = NavBarItems()
+
+    public struct NavBarItems {
+        public var isFirstVetPresented = false
+        public var isNewOfferPresented = false
+    }
 }
 
 public struct HomeView<Claims: View>: View {
@@ -63,11 +74,9 @@ extension HomeView {
             action: { type in
                 switch type {
                 case .newOffer:
-                    store.send(.showNewOffer)
+                    navigationVm.navBarItems.isNewOfferPresented = true
                 case .firstVet:
-                    if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
-                        store.send(.openFirstVet(partners: hasVetPartners))
-                    }
+                    navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
                     navigationVm.isChatPresented = true
                 }
@@ -274,15 +283,15 @@ class HomeVM: ObservableObject {
 //    }
 //}
 
-public enum HomeResult {
-    case openFreeTextChat(topic: ChatTopicType?)
-    case startNewClaim
-    case openCrossSells
-    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
-    case goToQuickAction(quickAction: QuickAction)
-    case goToURL(url: URL)
-    case dismissHelpCenter
-}
+//public enum HomeResult {
+//    case openFreeTextChat(topic: ChatTopicType?)
+//    case startNewClaim
+////    case openCrossSells
+//    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
+//    case goToQuickAction(quickAction: QuickAction)
+//    case goToURL(url: URL)
+//    case dismissHelpCenter
+//}
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {

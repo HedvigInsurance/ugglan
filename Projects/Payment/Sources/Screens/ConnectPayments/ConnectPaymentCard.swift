@@ -4,8 +4,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+public class ConnectPaymentsNavigationViewModel: ObservableObject {
+    @Published public var isConnectPaymentPresented = false
+}
+
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
+    @StateObject var connectPaymentsVm = ConnectPaymentsNavigationViewModel()
 
     public init() {}
     public var body: some View {
@@ -26,24 +31,30 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            store.send(.navigation(to: .openConnectPayments))
+                            connectPaymentsVm.isConnectPaymentPresented = true
                         }
                     )
                 ])
             } else if paymentStatusData?.status == .needsSetup {
-                InfoCard(
-                    text: L10n.InfoCardMissingPayment.body,
-                    type: .attention
-                )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.PayInExplainer.buttonText,
-                        buttonAction: {
-                            store.send(.navigation(to: .openConnectPayments))
-                        }
+                NavigationStack {
+                    InfoCard(
+                        text: L10n.InfoCardMissingPayment.body,
+                        type: .attention
                     )
-                ]
-                )
+                    .buttons([
+                        .init(
+                            buttonTitle: L10n.PayInExplainer.buttonText,
+                            buttonAction: {
+                                connectPaymentsVm.isConnectPaymentPresented = true
+                            }
+                        )
+                    ]
+                    )
+                    .sheet(isPresented: $connectPaymentsVm.isConnectPaymentPresented) {
+                        DirectDebitSetup()
+                            .presentationDetents([.medium])
+                    }
+                }
             }
         }
         .onAppear {

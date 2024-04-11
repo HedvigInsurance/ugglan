@@ -17,6 +17,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
     }
 
     public var body: some View {
+        let _ = print("items is: ", items)
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .bottom, spacing: vm.spacing) {
                 ForEach(items) { item in

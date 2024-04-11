@@ -11,6 +11,9 @@ import hCoreUI
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
     @StateObject var scrollVM: InfoCardScrollViewModel
+
+    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
         self._scrollVM = StateObject(wrappedValue: .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0))
@@ -38,19 +41,7 @@ struct HomeBottomScrollView: View {
                     }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractIds: [InsuredPeopleConfig] = contractStore.state.activeContracts
-                            .filter({
-                                $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo
-                            }
-                            )
-                            .compactMap {
-                                InsuredPeopleConfig(
-                                    contract: $0
-                                )
-                            }
-                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                        homeStore.send(.openCoInsured(contractIds: contractIds))
+                        navigationVm.isCoInsuredPresented = true
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
