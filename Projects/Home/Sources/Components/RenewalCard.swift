@@ -12,7 +12,7 @@ public struct RenewalCardView: View {
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     let showCoInsured: Bool?
-    
+
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     public init(
@@ -36,8 +36,12 @@ public struct RenewalCardView: View {
             let url = URL(string: draftCertificateUrl)
         {
             navigationVm.isDocumentPresented = true
-            navigationVm.document = InsuranceTerm(displayName: contract.displayName, url: contract.upcomingRenewal?.draftCertificateUrl ?? "", type: .unknown)
-            
+            navigationVm.document = InsuranceTerm(
+                displayName: contract.displayName,
+                url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
+                type: .unknown
+            )
+
         } else {
             showFailedToOpenUrlAlert = true
         }
@@ -76,12 +80,15 @@ public struct RenewalCardView: View {
                             buttonTitle: L10n.contractViewCertificateButton,
                             buttonAction: {
                                 let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                                openDocument(Contract(
-                                    upcomingRenewal: .init(
-                                        renewalDate: contract.upcomingChangedAgreement?.activeFrom,
-                                        draftCertificateUrl: certificateURL
-                                    ),
-                                    displayName: contract.upcomingChangedAgreement?.productVariant.displayName ?? ""))
+                                openDocument(
+                                    Contract(
+                                        upcomingRenewal: .init(
+                                            renewalDate: contract.upcomingChangedAgreement?.activeFrom,
+                                            draftCertificateUrl: certificateURL
+                                        ),
+                                        displayName: contract.upcomingChangedAgreement?.productVariant.displayName ?? ""
+                                    )
+                                )
                             }
                         )
                     ])
