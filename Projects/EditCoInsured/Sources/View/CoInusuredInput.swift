@@ -334,7 +334,8 @@ struct CoInusuredInput: View {
                 value: $vm.SSN,
                 equals: $vm.type,
                 focusValue: .SSN,
-                placeholder: L10n.contractPersonalIdentity
+                placeholder: L10n.contractPersonalIdentity,
+                textFieldPlaceholder: L10n.editCoinsuredSsnPlaceholder
             )
         }
         .disabled(vm.isLoading)
@@ -400,10 +401,9 @@ struct CoInusuredInput: View {
                 return false
             }
         } else {
-            let personalNumberValid = Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN)
-            if personalNumberValid {
-                return false
-            }
+            let masking = Masking(type: .personalNumber)
+            let personalNumberValid = masking.isValid(text: vm.SSN)
+            return !personalNumberValid
         }
         return true
     }
