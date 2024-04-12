@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct ContractCoverageView: View {
-    @PresentableStore var store: ContractStore
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     let id: String
 
     var body: some View {
@@ -21,7 +21,7 @@ struct ContractCoverageView: View {
                     InsurableLimitsSectionView(
                         limits: contract.currentAgreement?.productVariant.insurableLimits ?? []
                     ) { limit in
-                        store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
+                        contractsNavigationVm.insurableLimit = limit
                     }
                     Spacer()
                     PerilCollection(perils: contract.currentAgreement?.productVariant.perils ?? []) { peril in

@@ -5,10 +5,12 @@ import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Home
+import MoveFlow
 import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TerminateContracts
 import TravelCertificate
 import hCore
 import hCoreUI
@@ -22,6 +24,8 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
+    @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
+    @StateObject var tabBarControlContext = TabControllerContext()
     //    @State private var hasLaunchFinished = false
 
     var body: some Scene {
@@ -77,8 +81,8 @@ struct MainNavigationJourney: App {
                 ChatScreen(vm: .init(topicType: nil))
                     .presentationDetents([.large, .medium])
             }
-            .sheet(isPresented: $homeNavigationVm.isDocumentPresented) {
-                if let document = homeNavigationVm.document, let url = URL(string: document.url) {
+            .sheet(item: $homeNavigationVm.document) { document in
+                if let url = URL(string: document.url) {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
                         .presentationDetents([.large, .medium])
                 }
@@ -100,7 +104,7 @@ struct MainNavigationJourney: App {
                 let contractsSupportingCoInsured = contractStore.state.activeContracts
                     .filter({ $0.showEditCoInsuredInfo })
                     .compactMap({
-                        InsuredPeopleConfig(contract: $0)
+                        InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                     })
 
                 EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
@@ -126,15 +130,88 @@ struct MainNavigationJourney: App {
     }
 
     var contractsTab: some View {
-        Contracts(showTerminated: false)
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 1
-                        ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
-                )
-                hText(L10n.tabInsurancesTitle)
-            }
-            .tag(1)
+        return NavigationStack(path: $contractsNavigationVm.externalNavigationRedirect) {
+            Contracts(showTerminated: false)
+                .environmentObject(contractsNavigationVm)
+                .navigationDestination(for: Contract.self) { contract in
+                    ContractDetail(id: contract.id, title: contract.currentAgreement?.productVariant.displayName ?? "")
+                        .environmentObject(tabBarControlContext)
+                        .environmentObject(contractsNavigationVm)
+                        .presentationDetents([.medium])
+                }
+                //                .navigationDestination(for: [Contract].self) { contract in
+                //                    Contracts(showTerminated: true)
+                //                        .presentationDetents([.medium])
+                //                }
+                .sheet(item: $contractsNavigationVm.insurableLimit) { insurableLimit in
+                    InfoView(
+                        title: L10n.contractCoverageMoreInfo,
+                        description: insurableLimit.description,
+                        onDismiss: {
+                            contractsNavigationVm.insurableLimit = nil
+                        }
+                    )
+                }
+                .sheet(
+                    item: $contractsNavigationVm.document,
+                    onDismiss: {
+                        contractsNavigationVm.document = nil
+                    }
+                ) { document in
+                    if let url = URL(string: document.url) {
+                        DocumentRepresentable(document: .init(url: url, title: document.displayName))
+                            .presentationDetents([.large, .medium])
+                    }
+                }
+                .sheet(item: $contractsNavigationVm.changeYourInformationContract) { contract in
+                    EditContract(id: contract.id)
+                        .presentationDetents([.medium])
+                        .environmentObject(contractsNavigationVm)
+                }
+                .sheet(isPresented: $contractsNavigationVm.isChatPresented) {
+                    ChatScreen(vm: .init(topicType: nil))
+                        .presentationDetents([.large, .medium])
+                }
+                .sheet(
+                    item: $contractsNavigationVm.renewalDocument,
+                    onDismiss: {
+                        contractsNavigationVm.renewalDocument = nil
+                    }
+                ) { renewalDocument in
+                    DocumentRepresentable(document: .init(url: renewalDocument.url, title: renewalDocument.title))
+                        .presentationDetents([.large, .medium])
+                }
+                .sheet(
+                    item: $contractsNavigationVm.insuranceUpdate,
+                    onDismiss: {
+                        contractsNavigationVm.insuranceUpdate = nil
+                    }
+                ) { insuranceUpdate in
+                    UpcomingChangesScreen(
+                        updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
+                        upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
+                    )
+                    .presentationDetents([.large, .medium])
+                }
+                .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
+                    EditCoInsuredViewJourney(configs: [editCoInsuredConfig])
+                }
+                .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
+                    let contractConfig: TerminationConfirmConfig = .init(contract: contract)
+                    TerminationViewJourney(configs: [contractConfig])
+                }
+                .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
+                    MovingFlowViewJourney()
+                }
+        }
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 1
+                    ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
+            )
+            hText(L10n.tabInsurancesTitle)
+        }
+        .tag(1)
     }
 
     var foreverTab: some View {

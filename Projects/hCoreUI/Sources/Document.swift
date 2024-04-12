@@ -5,9 +5,11 @@ import SafariServices
 import SwiftUI
 import hCore
 
-public struct Document {
-    let url: URL
-    let title: String
+public struct Document: Identifiable {
+    public var id: String?
+    public let url: URL
+    public let title: String
+
     public init(
         url: URL,
         title: String
@@ -15,7 +17,6 @@ public struct Document {
         self.url = url
         self.title = title
     }
-
 }
 
 private class DocumentView: UIView {

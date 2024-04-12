@@ -1,4 +1,5 @@
-public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
+public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable {
+    public var id: String?
     public var contractCoInsured: [CoInsuredModel]
     public var contractId: String
     public var activeFrom: String?
@@ -14,6 +15,8 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         return holderFirstName + " " + holderLastName
     }
 
+    public var fromInfoCard: Bool
+
     public init() {
         self.contractCoInsured = []
         self.contractId = ""
@@ -26,6 +29,8 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderSSN = nil
         self.preSelectedCoInsuredList = []
         self.contractDisplayName = ""
+
+        self.fromInfoCard = false
     }
 
     public init(
@@ -39,7 +44,9 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         contractDisplayName: String,
         holderFirstName: String,
         holderLastName: String,
-        holderSSN: String?
+        holderSSN: String?,
+
+        fromInfoCard: Bool
     ) {
         self.contractCoInsured = contractCoInsured
         self.contractId = contractId
@@ -52,5 +59,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable {
         self.holderFirstName = holderFirstName
         self.holderLastName = holderLastName
         self.holderSSN = holderSSN
+
+        self.fromInfoCard = fromInfoCard
     }
 }

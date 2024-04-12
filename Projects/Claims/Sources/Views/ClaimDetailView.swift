@@ -179,9 +179,6 @@ public struct ClaimDetailView: View {
                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                 }
                 .onTap {
-                    //                        vm.store.send(.openDocument(url: url, title: termsAndConditionsDocument.displayName))
-                    //                        homeVm.externalNavigationRedirect.append(termsAndConditionsDocument)
-                    homeVm.isDocumentPresented = true
                     homeVm.document = termsAndConditionsDocument
                 }
             }

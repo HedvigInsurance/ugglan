@@ -30,8 +30,10 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
     }
 }
 
-class TabControllerContext: ObservableObject {
+public class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
+
+    public init() {}
 
     @Published var selected = Views.overview {
         didSet {
@@ -65,6 +67,7 @@ public struct ContractDetail: View {
     let contractDocuments: ContractDocumentsView
 
     @State private var selectedView = ContractDetailsViews.overview
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
@@ -138,9 +141,11 @@ public struct ContractDetail: View {
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
-                            viewFor(view: panel)
-                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2)) {
+                                viewFor(view: panel)
+                                    .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                    .environmentObject(contractsNavigationVm)
+                            }
                         }
                     }
                 }

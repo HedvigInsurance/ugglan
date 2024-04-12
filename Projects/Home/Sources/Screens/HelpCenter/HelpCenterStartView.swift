@@ -214,7 +214,7 @@ public struct HelpCenterStartView: View {
                 let contractsSupportingCoInsured = contractStore.state.activeContracts
                     .filter({ $0.showEditCoInsuredInfo })
                     .compactMap({
-                        InsuredPeopleConfig(contract: $0)
+                        InsuredPeopleConfig(contract: $0, fromInfoCard: false)
                     })
 
                 EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)

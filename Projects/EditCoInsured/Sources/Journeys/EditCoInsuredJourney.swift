@@ -17,10 +17,8 @@ public struct EditCoInsuredViewJourney: View {
         } else if let config = configs.first {
             if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
                 openNewInsuredPeopleScreen(config: config)
-                EmptyView()
             } else {
                 openInsuredPeopleScreen(with: config)
-                EmptyView()
             }
         }
     }
@@ -69,16 +67,17 @@ public struct EditCoInsuredViewJourney: View {
 
     func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.config = config
         return InsuredPeopleNewScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel)
     }
 
     func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.config = config
         return InsuredPeopleScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel)
     }
 }
 
-//
 //public class EditCoInsuredJourney {
 //    @JourneyBuilder
 //    private static func getScreen(for action: EditCoInsuredAction) -> some JourneyPresentation {

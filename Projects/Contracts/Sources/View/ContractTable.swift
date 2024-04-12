@@ -5,10 +5,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractTable {
+struct ContractTable: View {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
+
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
@@ -29,9 +31,7 @@ struct ContractTable {
             }
         }
     }
-}
 
-extension ContractTable: View {
     var body: some View {
         LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
             hSection {
@@ -58,12 +58,7 @@ extension ContractTable: View {
                                 activeInFuture: contract.activeInFuture,
                                 masterInceptionDate: contract.masterInceptionDate,
                                 onClick: {
-                                    store.send(
-                                        .openDetail(
-                                            contractId: contract.id,
-                                            title: contract.currentAgreement?.productVariant.displayName ?? ""
-                                        )
-                                    )
+                                    contractsNavigationVm.externalNavigationRedirect.append(contract)
                                 }
                             )
                             .fixedSize(horizontal: false, vertical: true)
@@ -89,7 +84,8 @@ extension ContractTable: View {
                     if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                         hSection {
                             hButton.LargeButton(type: .secondary) {
-                                store.send(.openTerminatedContracts)
+                                //                                store.send(.openTerminatedContracts)
+                                contractsNavigationVm.externalNavigationRedirect.append(terminatedContracts)
                             } content: {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))

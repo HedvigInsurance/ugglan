@@ -181,7 +181,8 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             contractDisplayName: "",
             holderFirstName: "",
             holderLastName: "",
-            holderSSN: nil
+            holderSSN: nil,
+            fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)

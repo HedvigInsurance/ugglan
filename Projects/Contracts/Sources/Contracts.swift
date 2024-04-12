@@ -37,18 +37,34 @@ public indirect enum ContractFilter: Equatable, Hashable {
     case none
 }
 
-public struct Contracts {
+public class ContractsNavigationViewModel: ObservableObject {
+    public init() {}
+
+    @Published public var insurableLimit: InsurableLimits?
+    @Published public var document: InsuranceTerm?
+    @Published public var renewalDocument: Document?
+
+    @Published public var terminationContract: Contract?
+    @Published public var editCoInsuredConfig: InsuredPeopleConfig?
+    @Published public var changeYourInformationContract: Contract?
+    @Published public var insuranceUpdate: Contract?
+    @Published public var isChangeAddressPresented = false
+    @Published public var isChatPresented = false
+
+    @Published public var externalNavigationRedirect = NavigationPath()
+}
+
+public struct Contracts: View {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
+
     public init(
         showTerminated: Bool
     ) {
         self.showTerminated = showTerminated
     }
-}
 
-extension Contracts: View {
     func fetch() {
         store.send(.fetchContracts)
     }
@@ -80,11 +96,15 @@ extension Contracts: View {
     }
 }
 
-public enum ContractsResult {
-    case movingFlow
-    case openFreeTextChat
-    case openCrossSellingWebUrl(url: URL)
-    case startNewTermination(for: Contract)
-    case handleCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
-    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
+extension TerminationConfirmConfig {
+    public init(
+        contract: Contract
+    ) {
+        self.init(
+            contractId: contract.id,
+            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            contractExposureName: contract.exposureDisplayName,
+            activeFrom: contract.currentAgreement?.activeFrom
+        )
+    }
 }

@@ -50,7 +50,8 @@ public struct InsurableLimitsSectionView: View {
     }
 }
 
-public struct InsurableLimits: Codable, Hashable {
+public struct InsurableLimits: Codable, Hashable, Identifiable {
+    public var id: String?
     public let label: String
     public let limit: String
     public let description: String

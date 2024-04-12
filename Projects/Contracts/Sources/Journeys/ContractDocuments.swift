@@ -9,6 +9,8 @@ import hGraphQL
 
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
+    @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
+
     let id: String
     @State var height: CGFloat = 0
     var body: some View {
@@ -33,11 +35,7 @@ struct ContractDocumentsView: View {
                                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                                 }
                                 .onTap {
-                                    contractStore.send(
-                                        .contractDetailNavigationAction(
-                                            action: .document(url: url, title: document.displayName)
-                                        )
-                                    )
+                                    contractsNavigationViewModel.document = document
                                 }
                             }
                         }
