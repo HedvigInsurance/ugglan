@@ -1,11 +1,12 @@
 import Foundation
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ListScreen: View {
+    @StateObject var vm = ListScreenViewModel()
     @PresentableStore var store: TravelInsuranceStore
+
     let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
 
@@ -17,89 +18,149 @@ public struct ListScreen: View {
         self.infoButtonPlacement = infoButtonPlacement
     }
     public var body: some View {
-        PresentableStoreLens(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state.travelInsuranceList
+        hForm {
+            if vm.list.isEmpty {
+                VStack(spacing: 16) {
+                    Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.blueElement)
+                    hText(L10n.TravelCertificate.emptyListMessage)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 24)
+            } else {
+                hSection(vm.list) { travelCertificate in
+                    hRow {
+                        hText(travelCertificate.date.displayDateDDMMMFormat)
+                        Spacer()
+                        hText(
+                            travelCertificate.valid
+                                ? L10n.TravelCertificate.active : L10n.TravelCertificate.expired
+                        )
+                    }
+                    .withChevronAccessory
+                    .foregroundColor(travelCertificate.textColor)
+                    .onTapGesture {
+                        store.send(.navigation(.openDetails(for: travelCertificate)))
+                    }
+                }
+                .withoutHorizontalPadding
             }
-        ) { list in
-            LoadingViewWithContent(
-                TravelInsuranceStore.self,
-                [.getTravelInsurancesList],
-                [.getTravelInsruancesList]
+        }
+        .hFormContentPosition(vm.list.isEmpty ? .center : .top)
+        .hFormAttachToBottom {
+            hSection {
+                VStack(spacing: 16) {
+                    InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
+                    if canAddTravelInsurance {
+                        hButton.LargeButton(type: .secondary) {
+                            vm.createNewPressed()
+                        } content: {
+                            hText(L10n.TravelCertificate.createNewCertificate)
+                        }
+                        .hButtonIsLoading(vm.isCreateNewLoading)
+                    }
+                }
+                .padding(.vertical, 16)
+            }
+        }
+        .loading($vm.isLoading, $vm.error)
+        .toolbar {
+            ToolbarItem(
+                placement: infoButtonPlacement
             ) {
-
-                hForm {
-                    if list.isEmpty {
-                        VStack(spacing: 16) {
-                            Image(uiImage: hCoreUIAssets.infoIconFilled.image)
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(hSignalColor.blueElement)
-                            hText(L10n.TravelCertificate.emptyListMessage)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(.horizontal, 24)
-                    } else {
-                        hSection(list) { travelCertificate in
-                            hRow {
-                                hText(travelCertificate.date.displayDateDDMMMFormat)
-                                Spacer()
-                                hText(
-                                    travelCertificate.valid
-                                        ? L10n.TravelCertificate.active : L10n.TravelCertificate.expired
-                                )
-                            }
-                            .withChevronAccessory
-                            .foregroundColor(travelCertificate.textColor)
-                            .onTapGesture {
-                                store.send(.navigation(.openDetails(for: travelCertificate)))
-                            }
-                        }
-                        .withoutHorizontalPadding
-                    }
-                }
-                .hFormContentPosition(list.isEmpty ? .center : .top)
-                .hFormAttachToBottom {
-                    hSection {
-                        VStack(spacing: 16) {
-                            InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
-                            if canAddTravelInsurance {
-                                hButton.LargeButton(type: .secondary) {
-                                    Task {
-                                        do {
-                                            _ = try await TravelInsuranceFlowJourney.getTravelCertificate()
-                                            store.send(.navigation(.openCreateNew))
-                                        } catch _ {
-
-                                        }
-                                    }
-                                } content: {
-                                    hText(L10n.TravelCertificate.createNewCertificate)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 16)
-                    }
-                }
-            }
-            .toolbar {
-                ToolbarItem(
-                    placement: infoButtonPlacement
-                ) {
-                    InfoViewHolder(
-                        title: L10n.TravelCertificate.Info.title,
-                        description: L10n.TravelCertificate.Info.subtitle,
-                        type: .navigation
-                    )
-                    .foregroundColor(hTextColor.primary)
-                }
+                InfoViewHolder(
+                    title: L10n.TravelCertificate.Info.title,
+                    description: L10n.TravelCertificate.Info.subtitle,
+                    type: .navigation
+                )
+                .foregroundColor(hTextColor.primary)
             }
         }
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
-        .onAppear {
-            store.send(.getTravelInsruancesList)
+    }
+}
+
+class ListScreenViewModel: ObservableObject {
+    @Inject var service: TravelInsuranceClient
+    @PresentableStore var store: TravelInsuranceStore
+
+    @Published var list: [TravelCertificateModel] = []
+    @Published var error: String?
+    @Published var isLoading = false
+    @Published var isCreateNewLoading: Bool = false
+
+    init() {
+        Task {
+            await getTravelCertificateList()
         }
+    }
+
+    @MainActor
+    private func getTravelCertificateList() async {
+        isLoading = true
+        do {
+            let list = try await self.service.getList()
+            self.list = list
+        } catch _ {
+            self.error = L10n.General.errorBody
+        }
+        isLoading = false
+    }
+
+    func createNewPressed() {
+        Task { @MainActor in
+            withAnimation {
+                isCreateNewLoading = true
+            }
+            do {
+                let specifications = try await service.getSpecifications()
+                store.send(.navigation(.openCreateNew(specifications: specifications)))
+            } catch _ {
+
+            }
+            withAnimation {
+                isCreateNewLoading = false
+            }
+        }
+    }
+}
+
+struct LoadingViewWithContent: ViewModifier {
+    @Binding var isLoading: Bool
+    @Binding var error: String?
+    func body(content: Content) -> some View {
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            if isLoading {
+                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else if let error = error {
+                GenericErrorView(
+                    description: error,
+                    buttons: .init()
+                )
+                .hWithoutTitle
+                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else {
+                content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            }
+        }
+    }
+
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+}
+
+extension View {
+    func loading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
+        modifier(LoadingViewWithContent(isLoading: isLoading, error: error))
     }
 }

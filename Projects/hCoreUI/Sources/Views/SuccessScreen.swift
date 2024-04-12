@@ -8,19 +8,21 @@ public enum SuccessScreenIcon {
 }
 
 public struct SuccessScreen: View {
-    let title: String
+    let title: String?
     let subTitle: String?
     let withButtons: Bool
     let buttons: SuccessScreenButtonConfig?
     let icon: SuccessScreenIcon
+    @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
-        title: String,
+        title: String? = nil,
+        subtitle: String? = nil,
         icon: SuccessScreenIcon? = nil
     ) {
         self.title = title
         self.withButtons = false
-        self.subTitle = nil
+        self.subTitle = subtitle
         self.buttons = nil
         self.icon = icon ?? .tick
     }
@@ -45,25 +47,7 @@ public struct SuccessScreen: View {
                 VStack {
                     Spacer()
                     Spacer()
-                    VStack(spacing: 16) {
-                        Image(
-                            uiImage: icon == .tick
-                                ? hCoreUIAssets.tick.image : hCoreUIAssets.circularCheckmarkFilled.image
-                        )
-                        .resizable()
-                        .frame(width: icon == .tick ? 24 : 40, height: icon == .tick ? 24 : 40)
-                        .foregroundColor(hSignalColor.greenElement)
-                        hSection {
-                            VStack(spacing: 0) {
-                                hText(title)
-                                hText(subTitle ?? "")
-                                    .foregroundColor(hTextColor.secondary)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 32)
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
+                    centralContent
                     Spacer()
                     Spacer()
                     Spacer()
@@ -89,15 +73,35 @@ public struct SuccessScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         } else {
+            VStack(spacing: 20) {
+                Spacer()
+                centralContent
+                Spacer()
+                if let successBottomView = successBottomView {
+                    successBottomView
+                }
+            }
+        }
+    }
+
+    private var centralContent: some View {
+        VStack(spacing: 16) {
+            Image(
+                uiImage: icon == .tick
+                    ? hCoreUIAssets.tick.image : hCoreUIAssets.circularCheckmarkFilled.image
+            )
+            .resizable()
+            .frame(width: icon == .tick ? 24 : 40, height: icon == .tick ? 24 : 40)
+            .foregroundColor(hSignalColor.greenElement)
             hSection {
-                VStack(spacing: 20) {
-                    Spacer()
-                    Image(uiImage: hCoreUIAssets.tick.image)
-                        .resizable()
-                        .foregroundColor(hSignalColor.greenElement)
-                        .frame(width: 24, height: 24)
-                    hText(title)
-                    Spacer()
+                VStack(spacing: 0) {
+                    if let title {
+                        hText(title)
+                    }
+                    hText(subTitle ?? "")
+                        .foregroundColor(hTextColor.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -130,10 +134,43 @@ public struct SuccessScreenButtonConfig {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SuccessScreen(successViewTitle: "SUCCESS", successViewBody: "success")
+        SuccessScreen(
+            successViewTitle: "SUCCESS",
+            successViewBody: "success",
+            buttons: SuccessScreenButtonConfig(
+                primaryButton: .init(buttonTitle: "title", buttonAction: {}),
+                ghostButton: .init(buttonTitle: "title2", buttonAction: {})
+            )
+        )
     }
 }
 
+struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
+            .hSuccessBottomAttachedView {
+                hSection {
+                    VStack(spacing: 16) {
+                        InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
+                        VStack(spacing: 8) {
+                            hButton.LargeButton(type: .primary) {
+
+                            } content: {
+                                hText(L10n.TravelCertificate.download)
+                            }
+                            hButton.LargeButton(type: .ghost) {
+
+                            } content: {
+                                hText(L10n.generalCloseButton)
+                            }
+                        }
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+            }
+    }
+}
 extension SuccessScreen {
     public static func journey(with title: String) -> some JourneyPresentation {
         HostingJourney(
