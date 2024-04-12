@@ -78,10 +78,13 @@ struct MainNavigationJourney: App {
                         .navigationBarTitleDisplayMode(.inline)
                 }
             )
-            .sheet(isPresented: $homeNavigationVm.isChatPresented) {
-                ChatScreen(vm: .init(topicType: nil))
-                    .presentationDetents([.large, .medium])
-            }
+            .presentModally(
+                presented: $homeNavigationVm.isChatPresented,
+                style: .large,
+                content: {
+                    ChatScreen(vm: .init(topicType: nil))
+                }
+            )
             .sheet(isPresented: $homeNavigationVm.isDocumentPresented) {
                 if let document = homeNavigationVm.document, let url = URL(string: document.url) {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
