@@ -6,7 +6,22 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-
+    //    static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
+    //        let disposeBag = DisposeBag()
+    //        return try await withCheckedThrowingContinuation {
+    //            (inCont: CheckedContinuation<TravelInsuranceSpecification, Error>) -> Void in
+    //            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+    //            store.send(.getTravelCertificateSpecification)
+    //            let disposable = store.onAction(.travelCertificateSpecificationSet) {
+    //                if let travelInsuranceConfigs = store.state.travelInsuranceConfigs {
+    //                    inCont.resume(returning: travelInsuranceConfigs)
+    //                } else {
+    //                    inCont.resume(throwing: NetworkError.badRequest(message: nil))
+    //                }
+    //            }
+    //            disposeBag.add(disposable)
+    //        }
+    //    }
     @JourneyBuilder
     static func start(with specifications: [TravelInsuranceContractSpecification]) -> some JourneyPresentation {
         if specifications.count > 1 {
@@ -85,7 +100,6 @@ public struct TravelInsuranceFlowJourney {
             }
         }
         .addDismissFlow()
-
     }
 
     private static func openProcessingScreen() -> some JourneyPresentation {

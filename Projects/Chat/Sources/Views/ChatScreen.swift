@@ -177,7 +177,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
     }
 
     private func setSheetInteractionState(vc: UIViewController?, to: Bool) {
-        let presentationController = vc?.navigationController?.presentationController
+        let presentationController = vc?.navigationController?.presentationController ?? vc?.presentationController
         let key = [
             "_sheet", "Interaction",
         ]

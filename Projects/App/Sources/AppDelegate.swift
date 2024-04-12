@@ -185,9 +185,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
-
         AskForRating().registerSession()
-
         setupDebugger()
     }
 

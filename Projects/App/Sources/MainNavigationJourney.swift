@@ -17,6 +17,13 @@ import hCoreUI
 
 class MainNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0
+    @Published var hasLaunchFinished = false
+
+    init() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.hasLaunchFinished = true
+        }
+    }
 }
 
 @main
@@ -30,34 +37,29 @@ struct MainNavigationJourney: App {
 
     var body: some Scene {
         WindowGroup {
-            //            Launch()
-            //                .onAppear{
-            //                    DispatchQueue.main.asyncAfter(deadline: .now()+2.0) {
-            //                        hasLaunchFinished = true
-            //                    }
-            //                }
+            if vm.hasLaunchFinished {
+                TabView(selection: $vm.selectedTab) {
+                    Group {
+                        homeTab
+                        contractsTab
 
-            //            if hasLaunchFinished {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                            || store.state.activeContracts.isEmpty
+                        {
+                            foreverTab
+                        }
 
-            TabView(selection: $vm.selectedTab) {
-                Group {
-                    homeTab
-                    contractsTab
-
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
-                        || store.state.activeContracts.isEmpty
-                    {
-                        foreverTab
+                        //                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                        paymentsTab
+                        //                }
+                        profileTab
                     }
-
-                    //                if Dependencies.featureFlags().isPaymentScreenEnabled {
-                    paymentsTab
-                    //                }
-                    profileTab
                 }
+                .tint(hTextColor.primary)
+            } else {
+                ProgressView()
             }
-            .tint(hTextColor.primary)
         }
     }
 
@@ -73,20 +75,27 @@ struct MainNavigationJourney: App {
                 }
             )
             .environmentObject(homeNavigationVm)
-            .sheet(isPresented: $homeNavigationVm.isSubmitClaimPresented) {
-                HonestyPledge(onConfirmAction: {})
-                    .presentationDetents([.large, .medium])
-            }
-            .sheet(isPresented: $homeNavigationVm.isChatPresented) {
-                ChatScreen(vm: .init(topicType: nil))
-                    .presentationDetents([.large, .medium])
-            }
             .sheet(item: $homeNavigationVm.document) { document in
                 if let url = URL(string: document.url) {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
                         .presentationDetents([.large, .medium])
                 }
             }
+            .presentModally(
+                presented: $homeNavigationVm.isSubmitClaimPresented,
+                style: .height,
+                content: {
+                    HonestyPledge(onConfirmAction: {})
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+            )
+            .presentModally(
+                presented: $homeNavigationVm.isChatPresented,
+                style: .large,
+                content: {
+                    ChatScreen(vm: .init(topicType: nil))
+                }
+            )
             .sheet(isPresented: $homeNavigationVm.navBarItems.isFirstVetPresented) {
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
@@ -139,10 +148,6 @@ struct MainNavigationJourney: App {
                         .environmentObject(contractsNavigationVm)
                         .presentationDetents([.medium])
                 }
-                //                .navigationDestination(for: [Contract].self) { contract in
-                //                    Contracts(showTerminated: true)
-                //                        .presentationDetents([.medium])
-                //                }
                 .sheet(item: $contractsNavigationVm.insurableLimit) { insurableLimit in
                     InfoView(
                         title: L10n.contractCoverageMoreInfo,
