@@ -4,7 +4,7 @@ public struct TravelInsuranceClientDemo: TravelInsuranceClient {
 
     public init() {}
 
-    public func getSpecifications() async throws -> TravelInsuranceSpecification {
+    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         throw TravelInsuranceError.missingURL
     }
     public func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL {
