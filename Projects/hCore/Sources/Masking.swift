@@ -3,23 +3,23 @@ import Foundation
 import Introspect
 import SwiftUI
 
-public enum MaskType: String {
-    case none = "None"
-    case disabledSuggestion = "DisabledSuggestion"
-    case personalNumber = "PersonalNumber"
-    case norwegianPersonalNumber = "NorwegianPersonalNumber"
-    case danishPersonalNumber = "DanishPersonalNumber"
-    case postalCode = "PostalCode"
-    case address = "Address"
-    case email = "Email"
-    case birthDate = "BirthDate"
-    case birthDateCoInsured = "BirthDateCoInsured"
-    case norwegianPostalCode = "NorwegianPostalCode"
-    case digits = "Digits"
-    case euroBonus = "EuroBonus"
-    case fullName = "FullName"
-    case firstName = "FirstName"
-    case lastName = "LastName"
+public enum MaskType {
+    case none
+    case disabledSuggestion
+    case personalNumber(minAge: Int)
+    case norwegianPersonalNumber
+    case danishPersonalNumber
+    case postalCode
+    case address
+    case email
+    case birthDate(minAge: Int)
+    case birthDateCoInsured(minAge: Int)
+    case norwegianPostalCode
+    case digits
+    case euroBonus
+    case fullName
+    case firstName
+    case lastName
 }
 
 public struct Masking {
@@ -61,12 +61,12 @@ public struct Masking {
         case .personalNumber:
             let age = calculateAge(from: text)
             return text.replacingOccurrences(of: "-", with: "").count == 12 && age != nil && (age ?? 0) >= 0
-        case .birthDate:
+        case let .birthDate(minAge):
             let age = calculateAge(from: text) ?? 0
-            return 15...130 ~= age
-        case .birthDateCoInsured:
+            return minAge...130 ~= age
+        case let .birthDateCoInsured(minAge):
             let age = calculateAge(from: text) ?? 0
-            return 0...130 ~= age && text.count == 6
+            return minAge...130 ~= age && text.count == 6
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -128,10 +128,14 @@ public struct Masking {
 
             guard let dateOfBirth = dateFormatter.date(from: value) else { return nil }
 
-            let components = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date())
+            let components = Calendar.current.dateComponents([.year, .day, .minute], from: dateOfBirth, to: Date())
 
             guard let age = components.year else { return nil }
-
+            guard let day = components.day else { return nil }
+            guard let minutes = components.minute else { return nil }
+            if age == 0 && (day < 0 || minutes < 0) {
+                return age - 1
+            }
             return age
         }
 

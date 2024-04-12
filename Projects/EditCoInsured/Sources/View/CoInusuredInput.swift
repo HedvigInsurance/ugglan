@@ -330,7 +330,7 @@ struct CoInusuredInput: View {
     var ssnField: some View {
         hSection {
             hFloatingTextField(
-                masking: Masking(type: .personalNumber),
+                masking: Masking(type: .personalNumber(minAge: 0)),
                 value: $vm.SSN,
                 equals: $vm.type,
                 focusValue: .SSN,
@@ -394,14 +394,14 @@ struct CoInusuredInput: View {
 
     var buttonIsDisabled: Bool {
         if vm.noSSN {
-            let birthdayIsValid = Masking(type: .birthDateCoInsured).isValid(text: vm.birthday)
+            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: vm.birthday)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
             if birthdayIsValid && firstNameValid && lastNameValid {
                 return false
             }
         } else {
-            let masking = Masking(type: .personalNumber)
+            let masking = Masking(type: .personalNumber(minAge: 0))
             let personalNumberValid = masking.isValid(text: vm.SSN)
             return !personalNumberValid
         }
