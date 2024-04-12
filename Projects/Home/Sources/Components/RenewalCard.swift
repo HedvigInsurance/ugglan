@@ -35,7 +35,6 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
         {
-            navigationVm.isDocumentPresented = true
             navigationVm.document = InsuranceTerm(
                 displayName: contract.displayName,
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",

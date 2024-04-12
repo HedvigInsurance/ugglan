@@ -23,9 +23,7 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isConnectPayments = false
 
     //claim details
-    @Published public var isDocumentPresented = false
     @Published public var document: InsuranceTerm? = nil
-
     @Published public var externalNavigationRedirect = NavigationPath()
 
     @Published public var navBarItems = NavBarItems()

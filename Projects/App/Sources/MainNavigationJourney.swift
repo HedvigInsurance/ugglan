@@ -85,8 +85,8 @@ struct MainNavigationJourney: App {
                     ChatScreen(vm: .init(topicType: nil))
                 }
             )
-            .sheet(isPresented: $homeNavigationVm.isDocumentPresented) {
-                if let document = homeNavigationVm.document, let url = URL(string: document.url) {
+            .sheet(item: $homeNavigationVm.document) { document in
+                if let url = URL(string: document.url) {
                     DocumentRepresentable(document: .init(url: url, title: document.displayName))
                         .presentationDetents([.large, .medium])
                 }
