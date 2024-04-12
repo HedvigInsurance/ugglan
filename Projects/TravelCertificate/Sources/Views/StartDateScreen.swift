@@ -5,87 +5,75 @@ import hCoreUI
 
 struct StartDateScreen: View {
 
-    @StateObject var vm = StartDateViewModel()
+    @ObservedObject var vm: StartDateViewModel
     @PresentableStore var store: TravelInsuranceStore
     var body: some View {
         form
     }
 
     var form: some View {
-        PresentableStoreLens(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state.travelInsuranceModel
-            }
-        ) { travelInsuranceModel in
-            hForm {}
-                .sectionContainerStyle(.transparent)
-                .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whenIsYourTrip))
-                .hDisableScroll
-                .hFormAttachToBottom {
-                    VStack(spacing: 16) {
-                        hSection {
-                            VStack(spacing: 4) {
-                                hDatePickerField(
-                                    config: .init(
-                                        minDate: travelInsuranceModel?.minStartDate,
-                                        maxDate: travelInsuranceModel?.maxStartDate,
-                                        placeholder: L10n.TravelCertificate.startDateTitle,
-                                        title: L10n.TravelCertificate.startDateTitle
-                                    ),
-                                    selectedDate: travelInsuranceModel?.startDate
-                                ) { date in
-                                    store.send(.setDate(value: date, type: .startDate))
-                                }
+        hForm {}
+            .sectionContainerStyle(.transparent)
+            .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whenIsYourTrip))
+            .hDisableScroll
+            .hFormAttachToBottom {
+                VStack(spacing: 16) {
+                    hSection {
+                        VStack(spacing: 4) {
+                            hDatePickerField(
+                                config: .init(
+                                    minDate: vm.specification.minStartDate,
+                                    maxDate: vm.specification.maxStartDate,
+                                    placeholder: L10n.TravelCertificate.startDateTitle,
+                                    title: L10n.TravelCertificate.startDateTitle
+                                ),
+                                selectedDate: vm.date
+                            ) { date in
+                                vm.date = date
+                            }
 
-                                hFloatingTextField(
-                                    masking: .init(type: .email),
-                                    value: $vm.emailValue,
-                                    equals: $vm.editValue,
-                                    focusValue: .email,
-                                    placeholder: L10n.emailRowTitle,
-                                    error: $vm.emailError
-                                )
-                            }
-                        }
-                        hSection {
-                            PresentableStoreLens(
-                                TravelInsuranceStore.self,
-                                getter: { state in
-                                    state.travelInsuranceConfig
-                                }
-                            ) { config in
-                                InfoCard(
-                                    text: L10n.TravelCertificate.startDateInfo(config?.maxDuration ?? 0),
-                                    type: .info
-                                )
-                            }
-                        }
-                        hSection {
-                            hButton.LargeButton(type: .primary) {
-                                Task {
-                                    await vm.submit()
-                                }
-                            } content: {
-                                hText(L10n.generalContinueButton)
-                            }
-                            .padding(.bottom, 16)
+                            hFloatingTextField(
+                                masking: .init(type: .email),
+                                value: $vm.email,
+                                equals: $vm.editValue,
+                                focusValue: .email,
+                                placeholder: L10n.emailRowTitle,
+                                error: $vm.emailError
+                            )
                         }
                     }
+                    hSection {
+                        InfoCard(
+                            text: L10n.TravelCertificate.startDateInfo(vm.specification.maxDuration),
+                            type: .info
+                        )
+                    }
+                    hSection {
+                        hButton.LargeButton(type: .primary) {
+                            Task {
+                                await vm.submit()
+                            }
+                        } content: {
+                            hText(L10n.generalContinueButton)
+                        }
+                        .padding(.bottom, 16)
+                    }
                 }
-        }
+            }
     }
 }
 
 class StartDateViewModel: ObservableObject {
-    @Published var emailValue: String = ""
+    @Published var email: String = ""
+    @Published var date: Date
     @Published var emailError: String?
     @PresentableStore var store: TravelInsuranceStore
     @Published var editValue: StartDateViewEditType?
-
-    init() {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        emailValue = store.state.travelInsuranceModel?.email ?? ""
+    let specification: TravelInsuranceContractSpecification
+    init(specification: TravelInsuranceContractSpecification) {
+        self.specification = specification
+        email = specification.email ?? ""
+        date = specification.minStartDate
     }
 
     enum StartDateViewEditType: hTextFieldFocusStateCompliant {
@@ -107,10 +95,9 @@ class StartDateViewModel: ObservableObject {
     }
 
     func submit() async {
-        if Masking(type: .email).isValid(text: emailValue) {
+        if Masking(type: .email).isValid(text: email) {
             DispatchQueue.main.async { [weak self] in guard let self = self else { return }
                 self.emailError = nil
-                self.store.send(.setEmail(value: self.emailValue))
                 self.store.send(.navigation(.openWhoIsTravelingScreen))
             }
         } else {
@@ -126,7 +113,20 @@ class StartDateViewModel: ObservableObject {
 struct StartDateView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            StartDateScreen()
+            StartDateScreen(
+                vm: .init(
+                    specification: .init(
+                        contractId: "",
+                        minStartDate: Date(),
+                        maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 10),
+                        numberOfCoInsured: 0,
+                        maxDuration: 45,
+                        street: "",
+                        email: nil,
+                        fullName: "full name"
+                    )
+                )
+            )
         }
     }
 }

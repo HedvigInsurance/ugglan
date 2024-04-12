@@ -6,15 +6,16 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 
     public init() {}
-    public func getSpecifications() async throws -> TravelInsuranceSpecification {
+    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
         do {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             let email = data.currentMember.email
-            let specification = TravelInsuranceSpecification(
-                data.currentMember,
-                email: email
-            )
+            let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
+            let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
+                data in
+                TravelInsuranceContractSpecification(data, email: email, fullName: fullName)
+            }
             return specification
         } catch let ex {
             throw ex
@@ -74,23 +75,12 @@ extension TravenInsuranceFormDTO {
     }
 }
 
-extension TravelInsuranceSpecification {
-    public init(
-        _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember,
-        email: String
-    ) {
-        self.email = email
-        self.fullName = data.firstName + " " + data.lastName
-        travelCertificateSpecifications = data.travelCertificateSpecifications.contractSpecifications.map({
-            TravelInsuranceContractSpecification($0)
-        })
-    }
-}
-
 extension TravelInsuranceContractSpecification {
     init(
         _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
-            .ContractSpecification
+            .ContractSpecification,
+        email: String,
+        fullName: String
     ) {
         self.contractId = data.contractId
         self.minStartDate = data.minStartDate.localDateToDate ?? Date()
@@ -98,7 +88,8 @@ extension TravelInsuranceContractSpecification {
         self.numberOfCoInsured = data.numberOfCoInsured
         self.maxDuration = data.maxDurationDays
         self.street = data.location?.street ?? ""
-
+        self.email = email
+        self.fullName = fullName
     }
 }
 

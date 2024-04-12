@@ -65,7 +65,9 @@ public struct PaymentHistoryView: View {
                                         }
                                     }
                                     .onTap {
-                                        store.send(.navigation(to: .openPaymentDetails(data: month.paymentData)))
+                                        store.send(
+                                            .navigation(to: .openPaymentDetailsFromHistory(data: month.paymentData))
+                                        )
                                     }
                                     .foregroundColor(
                                         getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
@@ -120,7 +122,7 @@ extension PaymentHistoryView {
             if case let .navigation(navigateTo) = action {
                 if case .goBack = navigateTo {
                     PopJourney()
-                } else if case let .openPaymentDetails(data) = navigateTo {
+                } else if case let .openPaymentDetailsFromHistory(data) = navigateTo {
                     PaymentDetailsView.journey(with: data)
                 }
             }

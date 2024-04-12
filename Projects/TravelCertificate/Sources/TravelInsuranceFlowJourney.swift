@@ -6,30 +6,13 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-    static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
-        let disposeBag = DisposeBag()
-        return try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<TravelInsuranceSpecification, Error>) -> Void in
-            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-            store.send(.getTravelCertificateSpecification)
-            let disposable = store.onAction(.travelCertificateSpecificationSet) {
-                if let travelInsuranceConfigs = store.state.travelInsuranceConfigs {
-                    inCont.resume(returning: travelInsuranceConfigs)
-                } else {
-                    inCont.resume(throwing: NetworkError.badRequest(message: nil))
-                }
-            }
-            disposeBag.add(disposable)
-        }
-    }
+
     @JourneyBuilder
-    static func start() -> some JourneyPresentation {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        let numberOfContracts = store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 0
-        if numberOfContracts > 1 {
-            showContractsList()
-        } else {
-            showStartDateScreen(style: .modally(presentationStyle: .fullScreen))
+    static func start(with specifications: [TravelInsuranceContractSpecification]) -> some JourneyPresentation {
+        if specifications.count > 1 {
+            showContractsList(for: specifications)
+        } else if let specification = specifications.first {
+            showStartDateScreen(specification: specification, style: .modally(presentationStyle: .fullScreen))
         }
     }
 
@@ -46,14 +29,16 @@ public struct TravelInsuranceFlowJourney {
         )
     }
 
-    private static func showContractsList() -> some JourneyPresentation {
+    private static func showContractsList(
+        for specifications: [TravelInsuranceContractSpecification]
+    ) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ContractsScreen()
+            rootView: ContractsScreen(specifications: specifications)
         ) { action in
             if case let .navigation(navigationAction) = action {
-                if case .openStartDateScreen = navigationAction {
-                    showStartDateScreen(style: .default)
+                if case let .openStartDateScreen(specification) = navigationAction {
+                    showStartDateScreen(specification: specification, style: .default)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 }
@@ -62,33 +47,34 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
 
-    private static func showStartDateScreen(style: PresentationStyle) -> some JourneyPresentation {
-        let hosting = HostingJourney(
+    private static func showStartDateScreen(
+        specification: TravelInsuranceContractSpecification,
+        style: PresentationStyle
+    ) -> some JourneyPresentation {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        store.startDateViewModel = StartDateViewModel(specification: specification)
+        return HostingJourney(
             TravelInsuranceStore.self,
-            rootView: StartDateScreen(),
+            rootView: StartDateScreen(vm: store.startDateViewModel!),
             style: style
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openWhoIsTravelingScreen = navigationAction {
-                    showWhoIsTravelingScreen()
+                    showWhoIsTravelingScreen(specification: specification)
                 }
             }
         }
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        if store.state.travelInsuranceConfigs == nil {
-            return hosting
-                .hidesBackButton
-                .addDismissFlow()
-        } else {
-            return hosting.addDismissFlow()
-        }
-
+        .addDismissFlow()
     }
 
-    private static func showWhoIsTravelingScreen() -> some JourneyPresentation {
-        let hosting = HostingJourney(
+    private static func showWhoIsTravelingScreen(
+        specification: TravelInsuranceContractSpecification
+    ) -> some JourneyPresentation {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        store.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
+        return HostingJourney(
             TravelInsuranceStore.self,
-            rootView: WhoIsTravelingScreen()
+            rootView: WhoIsTravelingScreen(vm: store.whoIsTravelingViewModel!)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openProcessingScreen = navigationAction {
@@ -98,14 +84,7 @@ public struct TravelInsuranceFlowJourney {
                 DismissJourney()
             }
         }
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        if store.state.travelInsuranceConfigs == nil {
-            return hosting
-                .hidesBackButton
-                .addDismissFlow()
-        } else {
-            return hosting.addDismissFlow()
-        }
+        .addDismissFlow()
 
     }
 
@@ -125,49 +104,43 @@ public struct TravelInsuranceFlowJourney {
         .hidesBackButton
     }
 
-    @JourneyBuilder
     private static func showListScreen(
         canAddTravelInsurance: Bool,
         style: PresentationStyle,
         infoButtonPlacement: ToolbarItemPlacement
     ) -> some JourneyPresentation {
-        if #available(iOS 16.0, *) {
-            HostingJourney(
-                TravelInsuranceStore.self,
-                rootView: ListScreen(
-                    canAddTravelInsurance: canAddTravelInsurance,
-                    infoButtonPlacement: infoButtonPlacement
-                ),
-                style: style,
-                options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
-            ) { action in
-                if case let .navigation(navigationAction) = action {
-                    if case let .openDetails(model) = navigationAction {
-                        showDetails(for: model)
-                    } else if case .openCreateNew = navigationAction {
-                        start()
-                    } else if case .goBack = navigationAction {
-                        PopJourney()
-                    }
-                } else if case .dismissTravelInsuranceFlow = action {
-                    DismissJourney()
+        return HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: ListScreen(
+                canAddTravelInsurance: canAddTravelInsurance,
+                infoButtonPlacement: infoButtonPlacement
+            ),
+            style: style,
+            options: [.largeNavigationBar, .dismissOnlyTopPresentedViewController]
+        ) { action in
+            if case let .navigation(navigationAction) = action {
+                if case let .openDetails(model) = navigationAction {
+                    showDetails(for: model)
+                } else if case let .openCreateNew(specifications) = navigationAction {
+                    start(with: specifications)
+                } else if case .goBack = navigationAction {
+                    PopJourney()
                 }
+            } else if case .dismissTravelInsuranceFlow = action {
+                DismissJourney()
             }
-            .configureTitle(L10n.TravelCertificate.cardTitle)
-        } else {
-            //            // Fallback on earlier versions
-            DismissJourney()
         }
+        .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 
     private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
         //        let document = Document(url: model.url, title: model.title)
         //        return Journey(
-        ////            document,
+        //            document,
         //            style: .detented(.large)
         //        )
         //        .withDismissButton
-        return HostingJourney(rootView: EmptyView())
+        return DismissJourney()
     }
 }
 

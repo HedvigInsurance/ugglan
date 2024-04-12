@@ -69,9 +69,11 @@ public struct TerminationViewJourney: View {
             attachToBottom: true,
             disableIfNoneSelected: true,
             hButtonText: L10n.generalContinueButton,
-            title: L10n.terminationFlowTitle,
-            subTitle: L10n.terminationFlowBody,
             fieldSize: .small
+        )
+        .hFormTitle(
+            title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
+            subTitle: .init(.small, .title3, L10n.terminationFlowBody)
         )
         .hUseColoredCheckbox
         .hFieldSize(.small)
@@ -82,6 +84,51 @@ public struct TerminationViewJourney: View {
                 tabBarInfoView
             }
         }
+    }
+
+    private func openUpdateAppTerminationScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: UpdateAppScreen(
+                onSelected: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow(afterCancellationFinished: false))
+                }
+            ),
+            style: .detented(.large, modally: true)
+        ) {
+            action in
+            //            getScreen(for: action)
+            DismissJourney()
+        }
+        .withJourneyDismissButton
+        .hidesBackButton
+    }
+
+    private static func openConfirmTerminationScreen() -> some JourneyPresentation {
+        HostingJourney(
+            TerminationContractStore.self,
+            rootView: ConfirmTerminationScreen(
+                onSelected: {
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    if store.state.isDeletion {
+                        store.send(.sendConfirmDelete)
+                    } else {
+                        store.send(.sendTerminationDate)
+                    }
+                    store.send(.navigationAction(action: .openTerminationProcessingScreen))
+                }
+            ),
+            style: .detented(.scrollViewContentSize),
+            options: [.blurredBackground, .wantsGrabber]
+        ) { action in
+            //            if case .goBack = action {
+            PopJourney()
+            //            } else {
+            //                getScreen(for: action)
+            //            }
+        }
+        .withJourneyDismissButton
     }
 
     private var tabBarInfoView: some View {
@@ -397,9 +444,11 @@ public struct TerminationViewJourney: View {
 //                attachToBottom: true,
 //                disableIfNoneSelected: true,
 //                hButtonText: L10n.generalContinueButton,
-//                title: L10n.terminationFlowTitle,
-//                subTitle: L10n.terminationFlowBody,
 //                fieldSize: .small
+//            )
+//            .hFormTitle(
+//                title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
+//                subTitle: .init(.small, .title3, L10n.terminationFlowBody)
 //            )
 //            .hUseColoredCheckbox
 //            .hFieldSize(.small)

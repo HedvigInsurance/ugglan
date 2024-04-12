@@ -36,6 +36,7 @@ public enum PaymentNavigation: ActionProtocol {
     case openDiscounts
     case openConnectPayments
     case openPaymentDetails(data: PaymentData)
+    case openPaymentDetailsFromHistory(data: PaymentData)
     case openAddCampaing
     case openAllReferrals
     case openDeleteCampaing(discount: Discount)

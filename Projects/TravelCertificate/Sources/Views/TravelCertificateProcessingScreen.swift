@@ -6,10 +6,9 @@ import hCoreUI
 struct TravelCertificateProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     var body: some View {
-        ProcessingView(
-            showSuccessScreen: true,
-            TravelInsuranceStore.self,
-            loading: .postTravelInsurance,
+        ProcesssingView(
+            isLoading: $vm.isLoading,
+            error: $vm.error,
             loadingViewText: L10n.TravelCertificate.generating,
             successViewTitle: L10n.TravelCertificate.travelCertificateReady,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
@@ -28,14 +27,10 @@ struct TravelCertificateProcessingScreen: View {
                 InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primary) {
-                        Task {
-                            await vm.presentShare()
-                        }
+                        vm.presentShare()
                     } content: {
                         hText(L10n.TravelCertificate.download)
                     }
-                    .trackLoading(TravelInsuranceStore.self, action: .downloadCertificate)
-
                     hButton.LargeButton(type: .ghost) {
                         vm.store.send(.navigation(.dismissCreateTravelCertificate))
                     } content: {
@@ -50,35 +45,74 @@ struct TravelCertificateProcessingScreen: View {
 
 class ProcessingViewModel: ObservableObject {
     @PresentableStore var store: TravelInsuranceStore
+    @Inject private var service: TravelInsuranceClient
+    @Published var isLoading = true
+    @Published var error: String?
+    @Published var downloadUrl: URL?
+    init() {
+        submit()
+    }
 
-    func presentShare() async {
-        store.setLoading(for: .downloadCertificate)
-        do {
-            guard let url = store.state.downloadURL else {
-                throw FileError.urlDoesNotExist
-            }
-            do {
-                let data = try Data(contentsOf: url)
-                let temporaryFolder = FileManager.default.temporaryDirectory
-                let temporaryFileURL = temporaryFolder.appendingPathComponent(fileName)
+    private func submit() {
+        Task { @MainActor in
+            isLoading = true
+            if let startDateViewModel = store.startDateViewModel,
+                let whoIsTravelingViewModel = store.whoIsTravelingViewModel
+            {
+                let dto = TravenInsuranceFormDTO(
+                    contractId: startDateViewModel.specification.contractId,
+                    startDate: startDateViewModel.date.localDateString,
+                    isMemberIncluded: whoIsTravelingViewModel.isPolicyHolderIncluded,
+                    coInsured: whoIsTravelingViewModel.policyCoinsuredPersons.compactMap(
+                        { .init(fullName: $0.fullName, personalNumber: $0.personalNumber, birthDate: $0.birthDate) }
+                    ),
+                    email: startDateViewModel.email
+                )
                 do {
-                    try? FileManager.default.removeItem(at: temporaryFileURL)
-                    try data.write(to: temporaryFileURL)
-                } catch {
+                    async let request = try await self.service.submitForm(dto: dto)
+                    async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+                    let data = try await [request, minimumTime] as [Any]
+                    if let url = data[0] as? URL {
+                        downloadUrl = url
+                    }
+                    AskForRating().askForReview()
+                } catch _ {
+                    error = L10n.General.errorBody
+                }
+            }
+            isLoading = false
+        }
+    }
+
+    func presentShare() {
+        Task {
+            do {
+                guard let url = downloadUrl else {
+                    throw FileError.urlDoesNotExist
+                }
+                do {
+                    let data = try Data(contentsOf: url)
+                    let temporaryFolder = FileManager.default.temporaryDirectory
+                    let temporaryFileURL = temporaryFolder.appendingPathComponent(fileName)
+                    do {
+                        try? FileManager.default.removeItem(at: temporaryFileURL)
+                        try data.write(to: temporaryFileURL)
+                    } catch {
+                        throw FileError.downloadError
+                    }
+                    let activityVC = await UIActivityViewController(
+                        activityItems: [temporaryFileURL as Any],
+                        applicationActivities: nil
+                    )
+
+                    let topViewController = await UIApplication.shared.getTopViewController()
+                    await topViewController?.present(activityVC, animated: true, completion: nil)
+                } catch _ {
                     throw FileError.downloadError
                 }
-                let activityVC = await UIActivityViewController(
-                    activityItems: [temporaryFileURL as Any],
-                    applicationActivities: nil
-                )
-                store.removeLoading(for: .downloadCertificate)
-                let topViewController = await UIApplication.shared.getTopViewController()
-                await topViewController?.present(activityVC, animated: true, completion: nil)
-            } catch _ {
-                throw FileError.downloadError
+            } catch let exc {
+                error = exc.localizedDescription
             }
-        } catch let exc {
-            store.setError(exc.localizedDescription, for: .downloadCertificate)
         }
     }
 
@@ -95,10 +129,5 @@ class ProcessingViewModel: ObservableObject {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         TravelCertificateProcessingScreen()
-            .onAppear {
-                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-                store.setLoading(for: .postTravelInsurance)
-                store.setError("error", for: .postTravelInsurance)
-            }
     }
 }
