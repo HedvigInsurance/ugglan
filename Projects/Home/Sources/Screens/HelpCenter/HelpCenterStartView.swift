@@ -363,14 +363,14 @@ public struct HelpCenterStartView: View {
         VStack(spacing: 4) {
             ForEach(commonTopics, id: \.self) { item in
                 hSection {
-                    hRow {
-                        NavigationLink(value: item) {
+                    NavigationLink(value: item) {
+                        hRow {
                             hText(item.title)
                             Spacer()
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .withChevronAccessory
                     }
-                    .withChevronAccessory
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .withoutHorizontalPadding
                 .hSectionMinimumPadding

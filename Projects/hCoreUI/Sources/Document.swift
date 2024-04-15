@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import PDFKit
 import Presentation
 import SafariServices
 import SwiftUI
@@ -8,6 +9,7 @@ import hCore
 public struct Document {
     let url: URL
     let title: String
+
     public init(
         url: URL,
         title: String
@@ -18,48 +20,86 @@ public struct Document {
 
 }
 
-private class DocumentView: UIView {
-    var document: Document
+public struct PDFPreview: View {
+    @StateObject fileprivate var vm: PDFPreviewViewModel
+    public init(document: Document) {
+        _vm = StateObject(wrappedValue: PDFPreviewViewModel(document: document))
+    }
 
-    init(
-        document: Document
-    ) {
-        self.document = document
-        super.init(frame: .zero)
-
-        let bag = DisposeBag()
-
-        let viewController = UIViewController()
-        viewController.edgesForExtendedLayout = []
-        viewController.title = document.title
-
-        let pdfViewer = PDFViewer()
-        bag += viewController.install(pdfViewer)
-
-        pdfViewer.url.value = document.url
-
-        let activityButton = UIBarButtonItem(system: .action)
-
-        bag += viewController.navigationItem.addItem(activityButton, position: .right)
-            .withLatestFrom(pdfViewer.data)
-            .onValue {
-                [weak activityButton, weak viewController] _, value
-                in guard let activityButton = activityButton, let viewController = viewController else { return }
-                guard let value = value else { return }
-                let activityViewPresentation = self.transformDataToActivityView(source: activityButton, data: value)
-                viewController.present(activityViewPresentation)
+    public var body: some View {
+        Group {
+            if vm.isLoading {
+                loadingIndicatorView
+            } else if let data = vm.data {
+                DocumentRepresentable(data: data, name: vm.document.title)
+                    .introspectViewController { vc in
+                        let navBarItem = UIBarButtonItem(
+                            image: UIImage(systemName: "square.and.arrow.up"),
+                            style: .plain,
+                            target: vm,
+                            action: #selector(vm.transformDataToActivityView)
+                        )
+                        vm.navItem = navBarItem
+                        vc.navigationItem.rightBarButtonItem = navBarItem
+                    }
+            } else {
+                GenericErrorView(buttons: .init())
             }
-        bag += viewController.deallocSignal.onValue({ _ in
-            try? FileManager.default.removeItem(at: self.getPathForFile())
-        })
-        //        return (viewController, bag)
-        self.addSubview(viewController.view)
-        viewController.view.snp.makeConstraints { make in
-            make.leading.trailing.bottom.top.equalToSuperview()
+        }
+        .navigationTitle(vm.document.title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+}
+
+private class PDFPreviewViewModel: ObservableObject {
+    let document: Document
+    @Published var isLoading = false
+    @Published var data: Data?
+    weak var navItem: UIBarButtonItem?
+    init(document: Document) {
+        self.document = document
+        Task {
+            await self.getData()
         }
     }
 
-    private func transformDataToActivityView(source: UIBarButtonItem, data: Data) -> ActivityView {
+    @MainActor
+    private func getData() async {
+        withAnimation {
+            self.isLoading = true
+        }
+        do {
+            let data = try download()
+            withAnimation {
+                self.data = data
+            }
+        } catch _ {}
+        withAnimation {
+            self.isLoading = false
+        }
+    }
+
+    private func download() throws -> Data {
+        do {
+            let data = try Data(contentsOf: self.document.url)
+            return data
+        } catch let ex {
+            throw ex
+        }
+    }
+
+    @objc func transformDataToActivityView() {
+        let data = self.data!
         var thingToShare: Any = data
         let temporaryFileURL = getPathForFile()
         do {
@@ -70,13 +110,18 @@ private class DocumentView: UIView {
             print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
         }
 
-        let activityView = ActivityView(
+        let viewController = UIActivityViewController(
             activityItems: [thingToShare],
-            applicationActivities: nil,
-            sourceView: source.view,
-            sourceRect: source.bounds
+            applicationActivities: nil
         )
-        return activityView
+        viewController.preferredPresentationStyle = .activityView
+
+        if let popover = viewController.popoverPresentationController, let sourceRect = navItem?.bounds {
+            popover.sourceView = navItem!.view
+            popover.sourceRect = sourceRect
+        }
+
+        UIApplication.shared.getTopViewController()?.present(viewController, animated: true)
     }
 
     private func getPathForFile() -> URL {
@@ -85,80 +130,44 @@ private class DocumentView: UIView {
         let url = temporaryFolder.appendingPathComponent(fileName)
         return url
     }
+}
+
+private struct DocumentRepresentable: UIViewRepresentable {
+    let data: Data
+    let name: String
+
+    func makeUIView(context: Context) -> some UIView {
+        return DocumentView(data: data, name: name)
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {}
+}
+
+private class DocumentView: UIView {
+    let data: Data
+    let name: String
+    private let pdfView = PDFView()
+
+    init(
+        data: Data,
+        name: String
+    ) {
+        self.data = data
+        self.name = name
+        super.init(frame: .zero)
+
+        pdfView.backgroundColor = .brand(.primaryBackground())
+        pdfView.maxScaleFactor = 3
+        pdfView.autoScales = true
+        self.addSubview(pdfView)
+        pdfView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        pdfView.document = PDFDocument(data: data)
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-public struct DocumentRepresentable: UIViewRepresentable {
-    private var document: Document
-
-    public init(document: Document) {
-        self.document = document
-    }
-
-    public func makeUIView(context: Context) -> some UIView {
-        return DocumentView(document: document)
-    }
-
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
-}
-
-//extension Document: Presentable {
-//    public func materialize() -> (UIViewController, Disposable) {
-//        let bag = DisposeBag()
-//
-//        let viewController = UIViewController()
-//        viewController.edgesForExtendedLayout = []
-//        viewController.title = title
-//
-//        let pdfViewer = PDFViewer()
-//        bag += viewController.install(pdfViewer)
-//
-//        pdfViewer.url.value = url
-//
-//        let activityButton = UIBarButtonItem(system: .action)
-//
-//        bag += viewController.navigationItem.addItem(activityButton, position: .right)
-//            .withLatestFrom(pdfViewer.data)
-//            .onValue {
-//                [weak activityButton, weak viewController] _, value
-//                in guard let activityButton = activityButton, let viewController = viewController else { return }
-//                guard let value = value else { return }
-//                let activityViewPresentation = transformDataToActivityView(source: activityButton, data: value)
-//                viewController.present(activityViewPresentation)
-//            }
-//        bag += viewController.deallocSignal.onValue({ _ in
-//            try? FileManager.default.removeItem(at: getPathForFile())
-//        })
-//        return (viewController, bag)
-//    }
-
-//    private func transformDataToActivityView(source: UIBarButtonItem, data: Data) -> ActivityView {
-//        var thingToShare: Any = data
-//        let temporaryFileURL = getPathForFile()
-//        do {
-//            try? FileManager.default.removeItem(at: temporaryFileURL)
-//            try data.write(to: temporaryFileURL)
-//            thingToShare = temporaryFileURL
-//        } catch let error {
-//            print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
-//        }
-//
-//        let activityView = ActivityView(
-//            activityItems: [thingToShare],
-//            applicationActivities: nil,
-//            sourceView: source.view,
-//            sourceRect: source.bounds
-//        )
-//        return activityView
-//    }
-
-//    private func getPathForFile() -> URL {
-//        let temporaryFolder = FileManager.default.temporaryDirectory
-//        let fileName = "\(title).pdf"
-//        let url = temporaryFolder.appendingPathComponent(fileName)
-//        return url
-//    }
-//}
