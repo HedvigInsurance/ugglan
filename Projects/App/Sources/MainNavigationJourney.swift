@@ -124,6 +124,11 @@ struct MainNavigationJourney: App {
                 )
                 .presentationDetents([.large, .medium])
             }
+            .sheet(isPresented: $homeNavigationVm.isMissingEditCoInsuredAlertPresented) {
+                getMissingCoInsuredAlertView(onDismiss: {
+                    homeNavigationVm.isMissingEditCoInsuredAlertPresented = false
+                })
+            }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
@@ -208,6 +213,9 @@ struct MainNavigationJourney: App {
                         configs: [editCoInsuredConfig],
                         onDisappear: {
                             contractsNavigationVm.editCoInsuredConfig = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                contractsNavigationVm.isMissingEditCoInsuredAlertPresented = true
+                            }
                         }
                     )
                 }
@@ -217,6 +225,11 @@ struct MainNavigationJourney: App {
                 }
                 .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
                     MovingFlowViewJourney()
+                }
+                .sheet(isPresented: $contractsNavigationVm.isMissingEditCoInsuredAlertPresented) {
+                    getMissingCoInsuredAlertView(onDismiss: {
+                        contractsNavigationVm.isMissingEditCoInsuredAlertPresented = false
+                    })
                 }
         }
         .tabItem {
@@ -261,6 +274,32 @@ struct MainNavigationJourney: App {
                 hText(L10n.ProfileTab.title)
             }
             .tag(4)
+    }
+
+    @ViewBuilder
+    private func getMissingCoInsuredAlertView(onDismiss: @escaping () -> Void) -> some View {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        let missingContract = store.state.activeContracts.first { contract in
+            if contract.upcomingChangedAgreement != nil {
+                return false
+            } else {
+                return contract.coInsured
+                    .first(where: { coInsured in
+                        coInsured.hasMissingInfo && contract.terminationDate == nil
+                    }) != nil
+            }
+        }
+        if let missingContract {
+            let contractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+
+            EditCoInsuredViewJourney(
+                configs: [contractConfig],
+                onDisappear: {
+                    onDismiss()
+                },
+                openSpecificScreen: .missingAlert
+            )
+        }
     }
 }
 #Preview{

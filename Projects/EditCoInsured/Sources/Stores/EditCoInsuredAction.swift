@@ -4,7 +4,6 @@ import Presentation
 public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
     case performCoInsuredChanges(commitId: String)
-    case checkForAlert
 
     case fetchContracts
     case goToFreeTextChat

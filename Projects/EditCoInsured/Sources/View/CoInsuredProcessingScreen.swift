@@ -9,13 +9,16 @@ struct CoInsuredProcessingScreen: View {
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    let onDisappear: () -> Void
 
     init(
-        showSuccessScreen: Bool
+        showSuccessScreen: Bool,
+        onDisappear: @escaping () -> Void
     ) {
         self.showSuccessScreen = showSuccessScreen
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
+        self.onDisappear = onDisappear
     }
 
     var body: some View {
@@ -29,18 +32,13 @@ struct CoInsuredProcessingScreen: View {
                 intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
-                editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                editCoInsuredNavigation.editCoInsuredConfig = nil
                 missingContractAlert()
             },
             onAppearLoadingView: {
                 missingContractAlert()
             },
             onErrorCancelAction: {
-                editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                editCoInsuredNavigation.editCoInsuredConfig = nil
+                onDisappear()
             }
         )
         .hSuccessBottomAttachedView {
@@ -64,14 +62,8 @@ struct CoInsuredProcessingScreen: View {
 
     private func missingContractAlert() {
         vm.store.send(.fetchContracts)
-        editCoInsuredNavigation.showProgressScreenWithSuccess = false
-        editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-        editCoInsuredNavigation.editCoInsuredConfig = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            store.send(.checkForAlert)
-        }
+        onDisappear()
     }
-
 }
 
 class ProcessingViewModel: ObservableObject {
@@ -81,7 +73,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true)
+        CoInsuredProcessingScreen(showSuccessScreen: true, onDisappear: {})
             .onAppear {
                 let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)

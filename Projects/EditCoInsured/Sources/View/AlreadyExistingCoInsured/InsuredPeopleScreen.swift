@@ -143,6 +143,7 @@ struct CancelButton: View {
     var body: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
+                editCoInsuredNavigation.editCoInsuredConfig = nil
                 onDisappear()
             } content: {
                 hText(L10n.generalCancelButton)

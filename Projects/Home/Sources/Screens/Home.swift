@@ -17,6 +17,7 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
     @Published public var isChatPresented = false
+    @Published public var isMissingEditCoInsuredAlertPresented = false
 
     // scroll view cards
     @Published public var isCoInsuredPresented = false
