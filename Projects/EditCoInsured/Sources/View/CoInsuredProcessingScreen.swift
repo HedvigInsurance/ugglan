@@ -8,6 +8,7 @@ struct CoInsuredProcessingScreen: View {
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     init(
         showSuccessScreen: Bool
@@ -28,14 +29,18 @@ struct CoInsuredProcessingScreen: View {
                 intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
                 missingContractAlert()
             },
             onAppearLoadingView: {
                 missingContractAlert()
             },
             onErrorCancelAction: {
-                store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
             }
         )
         .hSuccessBottomAttachedView {
@@ -46,7 +51,9 @@ struct CoInsuredProcessingScreen: View {
     private var customBottomSuccessView: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
                 missingContractAlert()
             } content: {
                 hText(L10n.generalDoneButton)
@@ -57,7 +64,9 @@ struct CoInsuredProcessingScreen: View {
 
     private func missingContractAlert() {
         vm.store.send(.fetchContracts)
-        vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+        editCoInsuredNavigation.showProgressScreenWithSuccess = false
+        editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+        editCoInsuredNavigation.editCoInsuredConfig = nil
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             store.send(.checkForAlert)
         }

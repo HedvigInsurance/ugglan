@@ -217,8 +217,13 @@ public struct HelpCenterStartView: View {
                         InsuredPeopleConfig(contract: $0, fromInfoCard: false)
                     })
 
-                EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
-                    .presentationDetents([.large, .medium])
+                EditCoInsuredViewJourney(
+                    configs: contractsSupportingCoInsured,
+                    onDisappear: {
+                        helpCenterVm.quickActions.isEditCoInsuredPresented = false
+                    }
+                )
+                .presentationDetents([.large, .medium])
             }
             .sheet(isPresented: $helpCenterVm.isChatPresented) {
                 ChatScreen(vm: .init(topicType: nil))

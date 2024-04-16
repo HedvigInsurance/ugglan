@@ -9,6 +9,8 @@ struct InsuredPeopleNewScreen: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    let onDisappear: () -> Void
 
     var body: some View {
         hForm {
@@ -59,10 +61,7 @@ struct InsuredPeopleNewScreen: View {
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
-                            store.send(
-                                .coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: false))
-                            )
+                            editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
@@ -76,7 +75,7 @@ struct InsuredPeopleNewScreen: View {
                 }
 
                 hButton.LargeButton(type: .ghost) {
-                    store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                    onDisappear()
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -98,15 +97,11 @@ struct InsuredPeopleNewScreen: View {
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         hText(L10n.Claims.Edit.Screen.title)
             .onTapGesture {
-                store.send(
-                    .coInsuredNavigationAction(
-                        action: .openCoInsuredInput(
-                            actionType: .edit,
-                            coInsuredModel: coInsured,
-                            title: L10n.contractAddConisuredInfo,
-                            contractId: vm.config.contractId
-                        )
-                    )
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .edit,
+                    coInsuredModel: coInsured,
+                    title: L10n.contractAddConisuredInfo,
+                    contractId: vm.config.contractId
                 )
             }
     }
@@ -126,21 +121,13 @@ struct InsuredPeopleNewScreen: View {
             .onTapGesture {
                 let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
                 if !hasExistingCoInsured.isEmpty {
-                    store.send(
-                        .coInsuredNavigationAction(
-                            action: .openCoInsuredSelectScreen(contractId: vm.config.contractId)
-                        )
-                    )
+                    editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
                 } else {
-                    store.send(
-                        .coInsuredNavigationAction(
-                            action: .openCoInsuredInput(
-                                actionType: .add,
-                                coInsuredModel: CoInsuredModel(),
-                                title: L10n.contractAddConisuredInfo,
-                                contractId: vm.config.contractId
-                            )
-                        )
+                    editCoInsuredNavigation.coInsuredInputModel = .init(
+                        actionType: .add,
+                        coInsuredModel: CoInsuredModel(),
+                        title: L10n.contractAddConisuredInfo,
+                        contractId: vm.config.contractId
                     )
                 }
             }
@@ -185,6 +172,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm, onDisappear: {})
     }
 }

@@ -162,7 +162,7 @@ struct ContractInformationView: View {
                     hSection {
                         CoInsuredInfoView(
                             text: L10n.contractCoinsuredAddPersonalInfo,
-                            config: .init(contract: contract, fromInfoCard: false)
+                            config: .init(contract: contract, fromInfoCard: true)
                         )
                         .padding(.bottom, 16)
                     }

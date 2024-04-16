@@ -12,6 +12,7 @@ struct CoInusuredInput: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init(
         vm: CoInusuredInputViewModel,
@@ -106,7 +107,7 @@ struct CoInusuredInput: View {
                                         )
                                     }
                                     if !intentVm.showErrorViewForCoInsuredInput {
-                                        store.send(.coInsuredNavigationAction(action: .deletionSuccess))
+                                        editCoInsuredNavigation.showSuccessScreen = .delete
                                     } else {
                                         // add back
                                         if vm.noSSN {
@@ -129,6 +130,7 @@ struct CoInusuredInput: View {
                                             )
                                         }
                                     }
+                                    editCoInsuredNavigation.coInsuredInputModel = nil
                                 }
                             } content: {
                                 hText(L10n.removeConfirmationButton)
@@ -191,7 +193,7 @@ struct CoInusuredInput: View {
                                                 coInsured: insuredPeopleVm.completeList()
                                             )
                                             if !intentVm.showErrorViewForCoInsuredInput {
-                                                store.send(.coInsuredNavigationAction(action: .addSuccess))
+                                                editCoInsuredNavigation.showSuccessScreen = .add
                                             } else {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.removeCoInsured(
@@ -215,6 +217,8 @@ struct CoInusuredInput: View {
 
                                             }
                                         }
+                                        editCoInsuredNavigation.coInsuredInputModel = nil
+                                        editCoInsuredNavigation.selectCoInsured = nil
                                     }
                                 }
                             } content: {
@@ -230,7 +234,7 @@ struct CoInusuredInput: View {
 
                 hSection {
                     hButton.LargeButton(type: .ghost) {
-                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                        editCoInsuredNavigation.coInsuredInputModel = nil
                     } content: {
                         hText(L10n.generalCancelButton)
                     }

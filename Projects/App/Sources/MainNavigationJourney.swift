@@ -111,13 +111,18 @@ struct MainNavigationJourney: App {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
                 let contractsSupportingCoInsured = contractStore.state.activeContracts
-                    .filter({ $0.showEditCoInsuredInfo })
+                    .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
                     .compactMap({
                         InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                     })
 
-                EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
-                    .presentationDetents([.large, .medium])
+                EditCoInsuredViewJourney(
+                    configs: contractsSupportingCoInsured,
+                    onDisappear: {
+                        homeNavigationVm.isCoInsuredPresented = false
+                    }
+                )
+                .presentationDetents([.large, .medium])
             }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
@@ -199,7 +204,12 @@ struct MainNavigationJourney: App {
                     .presentationDetents([.large, .medium])
                 }
                 .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-                    EditCoInsuredViewJourney(configs: [editCoInsuredConfig])
+                    EditCoInsuredViewJourney(
+                        configs: [editCoInsuredConfig],
+                        onDisappear: {
+                            contractsNavigationVm.editCoInsuredConfig = nil
+                        }
+                    )
                 }
                 .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
                     let contractConfig: TerminationConfirmConfig = .init(contract: contract)

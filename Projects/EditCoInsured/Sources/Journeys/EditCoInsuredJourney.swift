@@ -4,22 +4,92 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+public class EditCoInsuredNavigationViewModel: ObservableObject {
+    public init() {}
+
+    @Published var editCoInsuredConfig: InsuredPeopleConfig?
+    @Published var coInsuredInputModel: CoInsuredInputModel?
+    @Published var selectCoInsured: SelectCoInsured?
+    @Published var showProgressScreenWithSuccess = false
+    @Published var showProgressScreenWithoutSuccess = false
+    @Published var showSuccessScreen: CoInsuredAction?
+
+    @Published var externalNavigationRedirect = NavigationPath()
+}
+
 public struct EditCoInsuredViewJourney: View {
     let configs: [InsuredPeopleConfig]
+    let onDisappear: () -> Void
+    @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
 
-    public init(configs: [InsuredPeopleConfig]) {
+    public init(
+        configs: [InsuredPeopleConfig],
+        onDisappear: @escaping () -> Void
+    ) {
         self.configs = configs
+        self.onDisappear = onDisappear
     }
 
     public var body: some View {
-        if configs.count > 1 {
-            openSelectInsurance(configs: configs)
-        } else if let config = configs.first {
-            if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
-                openNewInsuredPeopleScreen(config: config)
-            } else {
-                openInsuredPeopleScreen(with: config)
+        NavigationStack(path: $editCoInsuredNavigationVm.externalNavigationRedirect) {
+            Group {
+                if configs.count > 1 {
+                    openSelectInsurance(configs: configs)
+                        .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
+                            Group {
+                                if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                                    openNewInsuredPeopleScreen()
+                                } else {
+                                    openInsuredPeopleScreen()
+                                }
+                            }
+                            .sheet(item: $editCoInsuredNavigationVm.coInsuredInputModel) { coInsuredInputModel in
+                                openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
+                                    .presentationDetents([.medium])
+                            }
+                        }
+                } else if let config = configs.first {
+                    if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                        if config.fromInfoCard {
+                            openNewInsuredPeopleScreen()
+                        } else {
+                            openRemoveCoInsuredScreen(config: config)
+                        }
+                    } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                        openNewInsuredPeopleScreen()
+                    } else {
+                        openInsuredPeopleScreen()
+                    }
+                }
             }
+            .sheet(item: $editCoInsuredNavigationVm.coInsuredInputModel) { coInsuredInputModel in
+                openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
+                    .presentationDetents([.medium])
+            }
+            .sheet(item: $editCoInsuredNavigationVm.selectCoInsured) { selectCoInsured in
+                openCoInsuredSelectScreen(contractId: selectCoInsured.id)
+                    .presentationDetents([.medium])
+            }
+            .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
+                openProgress(showSuccess: true)
+            }
+            .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
+                openProgress(showSuccess: false)
+            }
+            .sheet(item: $editCoInsuredNavigationVm.showSuccessScreen) { actionType in
+                var title: String {
+                    switch actionType {
+                    case .add:
+                        return L10n.contractCoinsuredAdded
+                    case .delete:
+                        return L10n.contractCoinsuredRemoved
+                    default:
+                        return ""
+                    }
+                }
+                openSuccessScreen(title: title)
+            }
+            .environmentObject(editCoInsuredNavigationVm)
         }
     }
 
@@ -38,43 +108,92 @@ public struct EditCoInsuredViewJourney: View {
             },
             onSelected: { selectedConfigs in
                 if let selectedConfig = selectedConfigs.first {
-                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                     if let object = selectedConfig.0 {
-                        if object.numberOfMissingCoInsuredWithoutTermination > 0 {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleNewScreen(config: object)
-                                )
-                            )
-                        } else {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openInsuredPeopleScreen(config: object)
-                                )
-                            )
-                        }
+                        editCoInsuredNavigationVm.editCoInsuredConfig = object
                     }
                 }
             },
             onCancel: {
-                //                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                //                contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
+                onDisappear()
             },
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
         )
     }
 
-    func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some View {
+    func openNewInsuredPeopleScreen() -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        store.coInsuredViewModel.config = config
-        return InsuredPeopleNewScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel)
+        if let config = editCoInsuredNavigationVm.editCoInsuredConfig {
+            store.coInsuredViewModel.config = config
+        } else if let config = configs.first {
+            store.coInsuredViewModel.config = config
+        }
+
+        return InsuredPeopleNewScreen(
+            vm: store.coInsuredViewModel,
+            intentVm: store.intentViewModel,
+            onDisappear: {
+                onDisappear()
+            }
+        )
     }
 
-    func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some View {
+    func openInsuredPeopleScreen() -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        store.coInsuredViewModel.config = config
-        return InsuredPeopleScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel)
+        if let config = editCoInsuredNavigationVm.editCoInsuredConfig {
+            store.coInsuredViewModel.config = config
+        } else if let config = configs.first {
+            store.coInsuredViewModel.config = config
+        }
+        return InsuredPeopleScreen(
+            vm: store.coInsuredViewModel,
+            intentVm: store.intentViewModel,
+            onDisappear: {
+                onDisappear()
+            }
+        )
+    }
+
+    func openCoInsuredInput(
+        coInsuredModelEdit: CoInsuredInputModel
+    ) -> some View {
+        CoInusuredInput(
+            vm: .init(
+                coInsuredModel: coInsuredModelEdit.coInsuredModel,
+                actionType: coInsuredModelEdit.actionType,
+                contractId: coInsuredModelEdit.contractId
+            ),
+            title: coInsuredModelEdit.title
+        )
+    }
+
+    func openCoInsuredSelectScreen(contractId: String) -> some View {
+        CoInsuredSelectScreen(contractId: contractId)
+    }
+
+    func openProgress(showSuccess: Bool) -> some View {
+        CoInsuredProcessingScreen(showSuccessScreen: showSuccess)
+    }
+
+    func openSuccessScreen(title: String) -> some View {
+        SuccessScreen(title: title)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    editCoInsuredNavigationVm.showSuccessScreen = nil
+                }
+            }
+            .presentationDetents([.medium])
+    }
+
+    func openRemoveCoInsuredScreen(config: InsuredPeopleConfig) -> some View {
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        store.coInsuredViewModel.initializeCoInsured(with: config)
+        return RemoveCoInsuredScreen(
+            vm: store.coInsuredViewModel,
+            onDisappear: {
+                onDisappear()
+            }
+        )
     }
 }
 
@@ -107,99 +226,7 @@ public struct EditCoInsuredViewJourney: View {
 //            }
 //        }
 //    }
-//
-//    static func openInsuredPeopleScreen(with config: InsuredPeopleConfig) -> some JourneyPresentation {
-//        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//        store.coInsuredViewModel.initializeCoInsured(with: config)
-//        return HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: InsuredPeopleScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),
-//            style: .modally(presentationStyle: .overFullScreen),
-//            options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
-//        ) { action in
-//            getScreen(for: action)
-//        }
-//        .configureTitle(L10n.coinsuredEditTitle)
-//        .addDismissEditCoInsuredFlow()
-//    }
-//
-//    static func openNewInsuredPeopleScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
-//        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//        store.coInsuredViewModel.initializeCoInsured(with: config)
-//        return HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: InsuredPeopleNewScreen(vm: store.coInsuredViewModel, intentVm: store.intentViewModel),
-//            style: .modally(presentationStyle: .overFullScreen),
-//            options: [.defaults, .withAdditionalSpaceForProgressBar, .ignoreActionWhenNotOnTop]
-//        ) { action in
-//            getScreen(for: action)
-//        }
-//        .configureTitle(L10n.coinsuredEditTitle)
-//        .addDismissEditCoInsuredFlow()
-//    }
-//
-//    @JourneyBuilder
-//    static func openCoInsuredInput(
-//        actionType: CoInsuredAction,
-//        coInsuredModel: CoInsuredModel,
-//        title: String,
-//        contractId: String,
-//        style: PresentationStyle
-//    ) -> some JourneyPresentation {
-//        HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: CoInusuredInput(
-//                vm: .init(coInsuredModel: coInsuredModel, actionType: actionType, contractId: contractId),
-//                title: title
-//            ),
-//            style: style,
-//            options: [.largeNavigationBar, .blurredBackground]
-//        ) { action in
-//            if case .coInsuredNavigationAction(.dismissEdit) = action {
-//                PopJourney()
-//            } else if case .coInsuredNavigationAction(.deletionSuccess) = action {
-//                SuccessScreen.journey(with: L10n.contractCoinsuredRemoved)
-//                    .onPresent {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
-//                        }
-//                    }
-//            } else if case .coInsuredNavigationAction(.addSuccess) = action {
-//                SuccessScreen.journey(with: L10n.contractCoinsuredAdded)
-//                    .onPresent {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
-//                        }
-//                    }
-//            } else {
-//                getScreen(for: action)
-//            }
-//        }
-//        .onAction(EditCoInsuredStore.self) { action in
-//            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-//                PopJourney()
-//            }
-//        }
-//    }
-//
-//    @JourneyBuilder
-//    static func openProgress(showSuccess: Bool) -> some JourneyPresentation {
-//        HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: CoInsuredProcessingScreen(showSuccessScreen: showSuccess),
-//            style: .modally(presentationStyle: .overFullScreen),
-//            options: [.defaults, .withAdditionalSpaceForProgressBar]
-//        ) { action in
-//            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-//                PopJourney()
-//            } else {
-//                getScreen(for: action)
-//            }
-//        }
-//    }
-//
+
 //    static func openRemoveCoInsuredScreen(config: InsuredPeopleConfig) -> some JourneyPresentation {
 //        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
 //        store.coInsuredViewModel.initializeCoInsured(with: config)
@@ -214,43 +241,7 @@ public struct EditCoInsuredViewJourney: View {
 //        }
 //        .configureTitle(L10n.coinsuredEditTitle)
 //    }
-//
-//    @JourneyBuilder
-//    static func openGenericErrorScreen() -> some JourneyPresentation {
-//        HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: GenericErrorView(
-//                description: L10n.coinsuredErrorText,
-//                icon: .circle,
-//                buttons: .init(
-//                    actionButton:
-//                        .init(
-//                            buttonTitle: L10n.openChat,
-//                            buttonAction: {
-//                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                                    store.send(.goToFreeTextChat)
-//                                }
-//                            }
-//                        ),
-//                    dismissButton:
-//                        .init(
-//                            buttonTitle: L10n.generalCancelButton,
-//                            buttonAction: {
-//                                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-//                            }
-//                        )
-//                )
-//            ),
-//            style: .modally(presentationStyle: .overFullScreen),
-//            options: [.defaults, .withAdditionalSpaceForProgressBar]
-//        ) { action in
-//            getScreen(for: action)
-//        }
-//    }
-//
+
 //    @JourneyBuilder
 //    public static func openMissingCoInsuredAlert(config: InsuredPeopleConfig) -> some JourneyPresentation {
 //        HostingJourney(
@@ -293,109 +284,7 @@ public struct EditCoInsuredViewJourney: View {
 //            }
 //        }
 //    }
-//
-//    @JourneyBuilder
-//    static func openSelectInsurance(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
-//        HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: CheckboxPickerScreen<InsuredPeopleConfig>(
-//                items: {
-//                    return configs.compactMap({
-//                        (object: $0, displayName: .init(title: $0.displayName))
-//                    })
-//                }(),
-//                preSelectedItems: {
-//                    if let first = configs.first {
-//                        return [first]
-//                    }
-//                    return []
-//                },
-//                onSelected: { selectedConfigs in
-//                    if let selectedConfig = selectedConfigs.first {
-//                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                        if let object = selectedConfig.0 {
-//                            if object.numberOfMissingCoInsuredWithoutTermination > 0 {
-//                                store.send(
-//                                    .coInsuredNavigationAction(
-//                                        action: .openInsuredPeopleNewScreen(config: object)
-//                                    )
-//                                )
-//                            } else {
-//                                store.send(
-//                                    .coInsuredNavigationAction(
-//                                        action: .openInsuredPeopleScreen(config: object)
-//                                    )
-//                                )
-//                            }
-//                        }
-//                    }
-//                },
-//                onCancel: {
-//                    let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
-//                    contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
-//                },
-//                singleSelect: true,
-//                hButtonText: L10n.generalContinueButton
-//            ),
-//            style: .detented(.scrollViewContentSize),
-//            options: [.largeNavigationBar, .blurredBackground, .ignoreActionWhenNotOnTop]
-//        ) { action in
-//            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-//                PopJourney()
-//            } else {
-//                getScreen(for: action)
-//            }
-//        }
-//        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
-//    }
-//
-//    static func openCoInsuredSelectScreen(contractId: String) -> some JourneyPresentation {
-//        HostingJourney(
-//            EditCoInsuredStore.self,
-//            rootView: CoInsuredSelectScreen(contractId: contractId),
-//            style: .detented(.scrollViewContentSize),
-//            options: [.largeNavigationBar, .blurredBackground]
-//        ) { action in
-//            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-//                PopJourney()
-//            } else if case let .coInsuredNavigationAction(navigationAction) = action {
-//                if case let .openCoInsuredInput(actionType, coInsuredModel, title, contractId) = navigationAction {
-//                    openCoInsuredInput(
-//                        actionType: actionType,
-//                        coInsuredModel: coInsuredModel,
-//                        title: title,
-//                        contractId: contractId,
-//                        style: .detented(.scrollViewContentSize, modally: false)
-//                    )
-//                } else {
-//                    getScreen(for: action)
-//                }
-//            } else {
-//                getScreen(for: action)
-//            }
-//        }
-//        .onAction(EditCoInsuredStore.self) { action in
-//            if case .coInsuredNavigationAction(action: .dismissEdit) = action {
-//                PopJourney()
-//            }
-//        }
-//        .hidesBackButton
-//        .configureTitle(L10n.contractAddConisuredInfo)
-//    }
-//
-//    @JourneyBuilder
-//    public static func openInitialScreen(configs: [InsuredPeopleConfig]) -> some JourneyPresentation {
-//        if configs.count > 1 {
-//            openSelectInsurance(configs: configs)
-//        } else if let config = configs.first {
-//            if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
-//                openNewInsuredPeopleScreen(config: config)
-//            } else {
-//                openInsuredPeopleScreen(with: config)
-//            }
-//        }
-//    }
-//
+
 //    @JourneyBuilder
 //    public static func handleOpenEditCoInsured(
 //        for config: InsuredPeopleConfig,
@@ -423,3 +312,15 @@ public struct EditCoInsuredViewJourney: View {
 //        )
 //    }
 //}
+
+public struct CoInsuredInputModel: Identifiable {
+    public var id: String?
+    let actionType: CoInsuredAction
+    let coInsuredModel: CoInsuredModel
+    let title: String
+    let contractId: String
+}
+
+public struct SelectCoInsured: Identifiable {
+    public var id: String
+}

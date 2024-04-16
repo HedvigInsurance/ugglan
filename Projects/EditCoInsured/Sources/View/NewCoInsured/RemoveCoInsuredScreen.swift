@@ -8,6 +8,8 @@ import hCoreUI
 struct RemoveCoInsuredScreen: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    let onDisappear: () -> Void
 
     var body: some View {
         hForm {
@@ -50,7 +52,7 @@ struct RemoveCoInsuredScreen: View {
                     ConfirmChangesView()
                 }
                 hSection {
-                    CancelButton()
+                    CancelButton(onDisappear: onDisappear)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -63,15 +65,11 @@ struct RemoveCoInsuredScreen: View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
-                store.send(
-                    .coInsuredNavigationAction(
-                        action: .openCoInsuredInput(
-                            actionType: .delete,
-                            coInsuredModel: coInsuredModel,
-                            title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: vm.config.contractId
-                        )
-                    )
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .delete,
+                    coInsuredModel: coInsuredModel,
+                    title: L10n.contractRemoveCoinsuredConfirmation,
+                    contractId: vm.config.contractId
                 )
             }
     }
