@@ -33,7 +33,6 @@ struct MainNavigationJourney: App {
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
     @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
     @StateObject var tabBarControlContext = TabControllerContext()
-    //    @State private var hasLaunchFinished = false
 
     var body: some Scene {
         WindowGroup {
@@ -75,39 +74,47 @@ struct MainNavigationJourney: App {
                 }
             )
             .environmentObject(homeNavigationVm)
-            .sheet(item: $homeNavigationVm.document) { document in
-                if let url = URL(string: document.url) {
-                    DocumentRepresentable(document: .init(url: url, title: document.displayName))
-                        .presentationDetents([.large, .medium])
-                }
-            }
-            .presentModally(
+            .detent(
                 presented: $homeNavigationVm.isSubmitClaimPresented,
                 style: .height,
                 content: {
                     HonestyPledge(onConfirmAction: {})
-                        .navigationBarTitleDisplayMode(.inline)
                 }
             )
-            .presentModally(
+            .detent(
                 presented: $homeNavigationVm.isChatPresented,
                 style: .large,
                 content: {
                     ChatScreen(vm: .init(topicType: nil))
                 }
             )
-            .sheet(isPresented: $homeNavigationVm.navBarItems.isFirstVetPresented) {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
-                    FirstVetView(partners: hasVetPartners)
-                        .presentationDetents([.large])
+            .detent(
+                item: $homeNavigationVm.document,
+                style: .large
+            ) { document in
+                if let url = URL(string: document.url) {
+                    NavigationStack {
+                        PDFPreview(document: .init(url: url, title: document.displayName))
+                    }
                 }
             }
-            .sheet(isPresented: $homeNavigationVm.navBarItems.isNewOfferPresented) {
-                CrossSellingScreen()
-                    .presentationDetents([.medium])
+            .detent(
+                presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
+                style: .height
+            ) {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                return FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
             }
-            .sheet(isPresented: $homeNavigationVm.isCoInsuredPresented) {
+            .detent(
+                presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
+                style: .height
+            ) {
+                CrossSellingScreen()
+            }
+            .detent(
+                presented: $homeNavigationVm.isCoInsuredPresented,
+                style: .height
+            ) {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
                 let contractsSupportingCoInsured = contractStore.state.activeContracts
@@ -116,20 +123,17 @@ struct MainNavigationJourney: App {
                         InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                     })
 
-                EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
-                    .presentationDetents([.large, .medium])
+                return EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
             }
             .navigationDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
             }
-            .fullScreenCover(
-                isPresented: $homeNavigationVm.isHelpCenterPresented,
-                content: {
-                    HelpCenterStartView()
-                        .environmentObject(homeNavigationVm)
-                }
-            )
+            .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+                HelpCenterNavigation()
+                    .withClose(for: $homeNavigationVm.isHelpCenterPresented)
+                    .environmentObject(homeNavigationVm)
+            }
         }
         .tabItem {
             Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
@@ -148,7 +152,10 @@ struct MainNavigationJourney: App {
                         .environmentObject(contractsNavigationVm)
                         .presentationDetents([.medium])
                 }
-                .sheet(item: $contractsNavigationVm.insurableLimit) { insurableLimit in
+                .detent(
+                    item: $contractsNavigationVm.insurableLimit,
+                    style: .height
+                ) { insurableLimit in
                     InfoView(
                         title: L10n.contractCoverageMoreInfo,
                         description: insurableLimit.description,
@@ -157,45 +164,55 @@ struct MainNavigationJourney: App {
                         }
                     )
                 }
-                .sheet(
+                .detent(
                     item: $contractsNavigationVm.document,
-                    onDismiss: {
-                        contractsNavigationVm.document = nil
-                    }
+                    style: .height
                 ) { document in
                     if let url = URL(string: document.url) {
-                        DocumentRepresentable(document: .init(url: url, title: document.displayName))
-                            .presentationDetents([.large, .medium])
+                        NavigationStack {
+                            PDFPreview(document: .init(url: url, title: document.displayName))
+                                .onDisappear {
+                                    contractsNavigationVm.document = nil
+                                }
+                        }
                     }
                 }
-                .sheet(item: $contractsNavigationVm.changeYourInformationContract) { contract in
+                .detent(
+                    item: $contractsNavigationVm.changeYourInformationContract,
+                    style: .height
+                ) { contract in
                     EditContract(id: contract.id)
                         .presentationDetents([.medium])
-                        .environmentObject(contractsNavigationVm)
                 }
-                .sheet(isPresented: $contractsNavigationVm.isChatPresented) {
+                .detent(
+                    presented: $contractsNavigationVm.isChatPresented,
+                    style: .height
+                ) {
                     ChatScreen(vm: .init(topicType: nil))
                         .presentationDetents([.large, .medium])
                 }
-                .sheet(
+                .detent(
                     item: $contractsNavigationVm.renewalDocument,
-                    onDismiss: {
-                        contractsNavigationVm.renewalDocument = nil
-                    }
+                    style: .height
                 ) { renewalDocument in
-                    DocumentRepresentable(document: .init(url: renewalDocument.url, title: renewalDocument.title))
-                        .presentationDetents([.large, .medium])
-                }
-                .sheet(
-                    item: $contractsNavigationVm.insuranceUpdate,
-                    onDismiss: {
-                        contractsNavigationVm.insuranceUpdate = nil
+                    NavigationStack {
+                        PDFPreview(document: .init(url: renewalDocument.url, title: renewalDocument.title))
+                            .onDisappear {
+                                contractsNavigationVm.renewalDocument = nil
+                            }
                     }
+                }
+                .detent(
+                    item: $contractsNavigationVm.insuranceUpdate,
+                    style: .height
                 ) { insuranceUpdate in
                     UpcomingChangesScreen(
                         updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
                         upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
                     )
+                    .onDisappear {
+                        contractsNavigationVm.insuranceUpdate = nil
+                    }
                     .presentationDetents([.large, .medium])
                 }
                 .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in

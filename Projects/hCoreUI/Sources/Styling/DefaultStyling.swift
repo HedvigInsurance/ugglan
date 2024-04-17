@@ -5,7 +5,6 @@ import StoreKit
 import SwiftUI
 
 public class hNavigationController: UINavigationController {
-
     private let additionalHeight: CGFloat?
 
     public init(additionalHeight: CGFloat? = nil) {
