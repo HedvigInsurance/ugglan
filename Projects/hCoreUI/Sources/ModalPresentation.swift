@@ -96,6 +96,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         presentationViewModel.presentingVC = vc
                         topVC?.present(vc, animated: true)
                     }
+                } else {
+                    presentationViewModel.presentingVC?.dismiss(animated: true)
                 }
             }
     }
