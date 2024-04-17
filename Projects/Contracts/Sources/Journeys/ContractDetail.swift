@@ -144,7 +144,7 @@ public struct ContractDetail: View {
                             withAnimation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2)) {
                                 viewFor(view: panel)
                                     .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                    .environmentObject(contractsNavigationVm)
+                                //                                    .environmentObject(contractsNavigationVm)
                             }
                         }
                     }

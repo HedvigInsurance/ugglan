@@ -25,7 +25,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     //claim details
     @Published public var document: InsuranceTerm? = nil
-
     @Published public var externalNavigationRedirect = NavigationPath()
 
     @Published public var navBarItems = NavBarItems()

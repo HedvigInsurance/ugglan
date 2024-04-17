@@ -66,9 +66,11 @@ public struct EditCoInsuredViewJourney: View {
                                         openInsuredPeopleScreen()
                                     }
                                 }
-                                .sheet(item: $editCoInsuredNavigationVm.coInsuredInputModel) { coInsuredInputModel in
+                                .detent(
+                                    item: $editCoInsuredNavigationVm.coInsuredInputModel,
+                                    style: .height
+                                ) { coInsuredInputModel in
                                     openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
-                                        .presentationDetents([.medium])
                                 }
                             }
                     } else if let config = configs.first {
@@ -86,13 +88,18 @@ public struct EditCoInsuredViewJourney: View {
                     }
                 }
             }
-            .sheet(item: $editCoInsuredNavigationVm.coInsuredInputModel) { coInsuredInputModel in
+            .detent(
+                item: $editCoInsuredNavigationVm.coInsuredInputModel,
+                style: .height
+            ) { coInsuredInputModel in
                 openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
-                    .presentationDetents([.medium])
             }
-            .sheet(item: $editCoInsuredNavigationVm.selectCoInsured) { selectCoInsured in
+            .detent(
+                item: $editCoInsuredNavigationVm.selectCoInsured,
+                style: .height
+            ) { selectCoInsured in
                 openCoInsuredSelectScreen(contractId: selectCoInsured.id)
-                    .presentationDetents([.medium])
+                    .environmentObject(editCoInsuredNavigationVm)
             }
             .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
                 openProgress(showSuccess: true)
@@ -104,9 +111,11 @@ public struct EditCoInsuredViewJourney: View {
                 let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
                 openNewInsuredPeopleScreen()
-                    .presentationDetents([.medium])
             }
-            .sheet(item: $editCoInsuredNavigationVm.showSuccessScreen) { actionType in
+            .detent(
+                item: $editCoInsuredNavigationVm.showSuccessScreen,
+                style: .height
+            ) { actionType in
                 var title: String {
                     switch actionType {
                     case .add:
@@ -185,6 +194,7 @@ public struct EditCoInsuredViewJourney: View {
             ),
             title: coInsuredModelEdit.title
         )
+        .environmentObject(editCoInsuredNavigationVm)
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
@@ -247,7 +257,7 @@ public struct EditCoInsuredViewJourney: View {
     }
 }
 
-public struct CoInsuredInputModel: Identifiable {
+public struct CoInsuredInputModel: Identifiable, Equatable {
     public var id: String?
     let actionType: CoInsuredAction
     let coInsuredModel: CoInsuredModel
@@ -255,6 +265,6 @@ public struct CoInsuredInputModel: Identifiable {
     let contractId: String
 }
 
-public struct SelectCoInsured: Identifiable {
+public struct SelectCoInsured: Identifiable, Equatable {
     public var id: String
 }
