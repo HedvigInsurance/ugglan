@@ -10,10 +10,10 @@ public struct RouterOptions: OptionSet {
 }
 
 public class Router: ObservableObject {
-    var routes = [AnyHashable]()
-    var onPush: ((AnyView) -> Void)?
-    var onPop: (() -> Void)?
-    var onPopToRoot: (() -> Void)?
+    private var routes = [AnyHashable]()
+    fileprivate var onPush: ((AnyView) -> Void)?
+    fileprivate var onPop: (() -> Void)?
+    fileprivate var onPopToRoot: (() -> Void)?
 
     public init() {}
 
@@ -53,7 +53,7 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
     }
 
     public func makeUIViewController(context: Context) -> UINavigationController {
-        let navigation: UINavigationController = {
+        let navigation: hNavigationBaseController = {
             if options.contains(.largeNavigationBar) {
                 return hNavigationControllerWithLargerNavBar()
             } else if options.contains(.navigationBarWithProgress) {
@@ -80,7 +80,9 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
         router.onPopToRoot = { [weak navigation] in
             navigation?.popToRootViewController(animated: true)
         }
-
+        navigation.onDeinit = { [weak router] in
+            router?.builders.removeAll()
+        }
         return navigation
     }
 
