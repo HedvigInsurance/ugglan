@@ -19,7 +19,6 @@ public class Router: ObservableObject {
 
     var builders: [String: (AnyHashable) -> AnyView?] = [:]
     public func push<T>(_ route: T) where T: Hashable {
-        let type = T.self
         routes.append(route)
         if let builder = builders["\(T.self)"], let view = builder(route) {
             onPush?(view)
@@ -35,11 +34,6 @@ public class Router: ObservableObject {
         routes.removeAll()
         onPopToRoot?()
     }
-
-    deinit {
-        let ss = ""
-    }
-
 }
 public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
 
