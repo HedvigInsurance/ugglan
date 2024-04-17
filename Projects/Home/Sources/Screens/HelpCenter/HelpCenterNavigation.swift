@@ -30,88 +30,80 @@ public struct HelpCenterNavigation: View {
     @StateObject private var helpCenterVm = HelpCenterNavigationViewModel()
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
-
+    @StateObject var router = Router()
     public init() {}
 
     public var body: some View {
-        NavigationStack {
+        RouterHost(router: router) {
             HelpCenterStartView { quickAction in
                 handle(quickAction: quickAction)
             }
-            .navigationTitle(L10n.hcTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .withClose(for: $homeVm.isHelpCenterPresented)
-            .navigationDestination(
-                for: CommonTopic.self,
-                destination: { topic in
-                    HelpCenterTopicView(commonTopic: topic)
-                }
-            )
-            .navigationDestination(
-                for: Question.self,
-                destination: { question in
-                    HelpCenterQuestionView(question: question)
-                }
-            )
-            .detent(
-                presented: $helpCenterVm.quickActions.isConnectPaymentsPresented,
-                style: .large
-            ) {
-                PaymentsView()
+            .routerDestination(for: Question.self) { question in
+                HelpCenterQuestionView(question: question)
             }
-            .detent(
-                presented: $helpCenterVm.quickActions.isEditCoInsuredPresented,
-                style: .height
-            ) {
-                getEditCoInsuredView()
+            .routerDestination(for: CommonTopic.self) { topic in
+                HelpCenterTopicView(commonTopic: topic)
             }
-            .detent(
-                presented: $helpCenterVm.isChatPresented,
-                style: .large
-            ) {
-                ChatScreen(vm: .init(topicType: nil))
-            }
-            .detent(
-                presented: $helpCenterVm.quickActions.isFirstVetPresented,
-                style: .large
-            ) {
-                FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-            }
-            .detent(
-                presented: $helpCenterVm.quickActions.isSickAbroadPresented,
-                style: .large
-            ) {
-                getSubmitClaimDeflectScreen()
-            }
-            .fullScreenCover(
-                isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
-                content: {
-                    NavigationStack {
-                        ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
-                            .withClose(for: $helpCenterVm.quickActions.isTravelCertificatePresented)
-                    }
-                }
-            )
-            .fullScreenCover(
-                isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
-                content: {
-                    MovingFlowViewJourney()
-                }
-            )
-            .fullScreenCover(
-                isPresented: $helpCenterVm.quickActions.isCancellationPresented,
-                content: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-                    let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                        .filter({ $0.canTerminate })
-                        .map({
-                            $0.asTerminationConfirmConfig
-                        })
-                    TerminationViewJourney(configs: contractsConfig)
-                }
-            )
         }
+        .ignoresSafeArea()
+        .detent(
+            presented: $helpCenterVm.quickActions.isConnectPaymentsPresented,
+            style: .large
+        ) {
+            PaymentsView()
+        }
+        .detent(
+            presented: $helpCenterVm.quickActions.isEditCoInsuredPresented,
+            style: .height
+        ) {
+            getEditCoInsuredView()
+        }
+        .detent(
+            presented: $helpCenterVm.isChatPresented,
+            style: .large
+        ) {
+            ChatScreen(vm: .init(topicType: nil))
+        }
+        .detent(
+            presented: $helpCenterVm.quickActions.isFirstVetPresented,
+            style: .large
+        ) {
+            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+        }
+        .detent(
+            presented: $helpCenterVm.quickActions.isSickAbroadPresented,
+            style: .large
+        ) {
+            getSubmitClaimDeflectScreen()
+        }
+        .fullScreenCover(
+            isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
+            content: {
+                NavigationStack {
+                    ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
+                        .withClose(for: $helpCenterVm.quickActions.isTravelCertificatePresented)
+                }
+            }
+        )
+        .fullScreenCover(
+            isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
+            content: {
+                MovingFlowViewJourney()
+            }
+        )
+        .fullScreenCover(
+            isPresented: $helpCenterVm.quickActions.isCancellationPresented,
+            content: {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+                    .filter({ $0.canTerminate })
+                    .map({
+                        $0.asTerminationConfirmConfig
+                    })
+                TerminationViewJourney(configs: contractsConfig)
+            }
+        )
         .environmentObject(helpCenterVm)
     }
 
@@ -154,7 +146,6 @@ public struct HelpCenterNavigation: View {
     private func getSubmitClaimDeflectScreen() -> some View {
         let store: HomeStore = globalPresentableStoreContainer.get()
         let quickActions = store.state.quickActions
-
         let sickAbroadPartners: [Partner]? = quickActions.first(where: { $0.sickAboardPartners != nil })?
             .sickAboardPartners
             .map { sickabr in
@@ -179,7 +170,6 @@ public struct HelpCenterNavigation: View {
                 .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
                 .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
                 .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
-
             ]
         )
         return SubmitClaimDeflectScreen(

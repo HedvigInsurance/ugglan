@@ -4,7 +4,15 @@ import Presentation
 import StoreKit
 import SwiftUI
 
-public class hNavigationController: UINavigationController {
+public class hNavigationBaseController: UINavigationController {
+    var onDeinit: (() -> Void)?
+
+    deinit {
+        onDeinit?()
+    }
+}
+
+public class hNavigationController: hNavigationBaseController {
     private let additionalHeight: CGFloat?
 
     public init(additionalHeight: CGFloat? = nil) {
@@ -67,7 +75,7 @@ class NavBar: UINavigationBar {
     }
 }
 
-public class hNavigationControllerWithLargerNavBar: UINavigationController {
+public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
 
     public static var navigationBarHeight: CGFloat = 80
 
