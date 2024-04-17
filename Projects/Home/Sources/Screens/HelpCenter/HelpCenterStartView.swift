@@ -7,6 +7,7 @@ struct HelpCenterStartView: View {
     private var helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
+    @EnvironmentObject var router: Router
 
     public init(onQuickAction: @escaping (QuickAction) -> Void) {
         self.onQuickAction = onQuickAction
@@ -72,7 +73,6 @@ struct HelpCenterStartView: View {
                             name: "help center quick action",
                             attributes: ["action": quickAction.id]
                         )
-
                         onQuickAction(quickAction)
                     }
                 }
@@ -95,14 +95,14 @@ struct HelpCenterStartView: View {
         VStack(spacing: 4) {
             ForEach(commonTopics, id: \.self) { item in
                 hSection {
-                    NavigationLink(value: item) {
-                        hRow {
-                            hText(item.title)
-                            Spacer()
-                        }
-                        .withChevronAccessory
+                    hRow {
+                        hText(item.title)
+                        Spacer()
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .withChevronAccessory
+                    .onTap {
+                        router.push(item)
+                    }
                 }
                 .withoutHorizontalPadding
                 .hSectionMinimumPadding
@@ -150,7 +150,6 @@ struct HelpCenterStartView: View {
             relatedQuestions: []
         ),
     ]
-
     return HelpCenterStartView { action in
 
     }

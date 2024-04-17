@@ -98,6 +98,7 @@ struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
     let source: HelpViewSource
+    @EnvironmentObject var router: Router
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -112,12 +113,9 @@ struct QuestionsItems: View {
             VStack(alignment: .leading, spacing: 4) {
                 hSection(questions, id: \.self) { item in
                     hRow {
-                        NavigationLink(value: item) {
-                            hText(item.question)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        .buttonStyle(PlainButtonStyle())
+                        hText(item.question)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
                     }
                     .withChevronAccessory
                     .onTap {
@@ -128,6 +126,7 @@ struct QuestionsItems: View {
                             "questionType": questionType.rawValue,
                         ]
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
+                        router.push(item)
                     }
                     .hWithoutHorizontalPadding
                     .hWithoutDividerPadding

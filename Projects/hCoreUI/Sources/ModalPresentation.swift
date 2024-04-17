@@ -6,7 +6,7 @@ extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
         style: DetentPresentationStyle,
-        content: @escaping () -> SwiftUIContent
+        @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(DetentSizeModifier(presented: presented, style: style, content: content))
     }
@@ -23,21 +23,22 @@ extension View {
 private struct DetentSizeModifierModal<Item, SwiftUIContent>: ViewModifier
 where SwiftUIContent: View, Item: Identifiable & Equatable {
     @Binding var item: Item?
+    @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     let style: DetentPresentationStyle
     var content: (Item) -> SwiftUIContent
-
     func body(content: Content) -> some View {
         Group {
-            if let item = item {
-                content.detent(presented: $present, style: style) {
+            content.detent(presented: $present, style: style) {
+                if let item = itemToRenderFrom {
                     self.content(item)
                 }
-            } else {
-                content
             }
         }
         .onChange(of: item) { newValue in
+            if let item = item {
+                itemToRenderFrom = item
+            }
             present = newValue != nil
         }
         .onChange(of: present) { newValue in
@@ -96,6 +97,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         presentationViewModel.presentingVC = vc
                         topVC?.present(vc, animated: true)
                     }
+                } else {
+                    presentationViewModel.presentingVC?.dismiss(animated: true)
                 }
             }
     }
