@@ -127,7 +127,6 @@ struct MainNavigationJourney: App {
             }
             .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
                 HelpCenterNavigation()
-                    .withClose(for: $homeNavigationVm.isHelpCenterPresented)
                     .environmentObject(homeNavigationVm)
             }
         }
