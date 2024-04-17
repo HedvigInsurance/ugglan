@@ -6,20 +6,11 @@ struct hFieldBackgroundModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            if #available(iOS 15.0, *) {
-                content
-                    .padding(.horizontal, 16)
-                    .background(getBackgroundColor())
-                    .animation(.easeOut, value: animate)
-                    .clipShape(Squircle.default())
-
-            } else {
-                content
-                    .padding(.horizontal, 16)
-                    .background(getBackgroundColor())
-                    .animation(.easeOut, value: animate)
-                    .clipShape(Squircle.default())
-            }
+            content
+                .padding(.horizontal, 16)
+                .background(getBackgroundColor())
+                .animation(.easeOut, value: animate)
+                .clipShape(Squircle.default())
         }
     }
 

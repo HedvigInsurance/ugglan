@@ -308,9 +308,11 @@ public class TerminationFlowJourney {
                 attachToBottom: true,
                 disableIfNoneSelected: true,
                 hButtonText: L10n.generalContinueButton,
-                title: L10n.terminationFlowTitle,
-                subTitle: L10n.terminationFlowBody,
                 fieldSize: .small
+            )
+            .hFormTitle(
+                title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
+                subTitle: .init(.small, .title3, L10n.terminationFlowBody)
             )
             .hUseColoredCheckbox
             .hFieldSize(.small)

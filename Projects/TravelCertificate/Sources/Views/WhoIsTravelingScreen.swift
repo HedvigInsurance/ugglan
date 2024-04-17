@@ -7,121 +7,135 @@ import hCore
 import hCoreUI
 
 struct WhoIsTravelingScreen: View {
-    @StateObject var vm = WhoIsTravelingViewModel()
+    @ObservedObject var vm: WhoIsTravelingViewModel
     @PresentableStore var store: TravelInsuranceStore
 
     var body: some View {
-        PresentableStoreLens(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state
-            }
-        ) { state in
-            let travelInsuranceConfig = state.travelInsuranceConfig
-            CheckboxPickerScreen<CoInsuredModel>(
-                items: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
-
-                    let insuranceHolder = CoInsuredModel(
-                        firstName: contract?.firstName,
-                        lastName: contract?.lastName,
-                        SSN: contract?.ssn,
-                        needsMissingInfo: false
+        CheckboxPickerScreen<CoInsuredModel>(
+            items: {
+                return vm.coInsuredModelData.compactMap({
+                    (object: $0, displayName: CheckboxItemModel(title: $0.fullName ?? ""))
+                })
+            }(),
+            preSelectedItems: {
+                if let first = vm.coInsuredModelData.first {
+                    return [first]
+                }
+                return []
+            },
+            onSelected: { selectedCoInsured in
+                let listOfIncludedTravellers = selectedCoInsured.map {
+                    PolicyCoinsuredPersonModel(
+                        fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
+                        personalNumber: $0.0?.SSN,
+                        birthDate: $0.0?.birthDate
                     )
-                    var allValues = [
-                        (object: insuranceHolder, displayName: CheckboxItemModel(title: insuranceHolder.fullName ?? ""))
-                    ]
-                    let allCoInsuredOnContract =
-                        contract?.coInsured.filter({ !$0.hasMissingInfo })
-                        .map { (object: $0, displayName: CheckboxItemModel(title: $0.fullName ?? "")) } ?? []
-                    allValues.append(contentsOf: allCoInsuredOnContract)
-                    return allValues
-                }(),
-                preSelectedItems: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let contract = contractStore.state.contractForId(travelInsuranceConfig?.contractId ?? "")
-                    let insuranceHolder = CoInsuredModel(
-                        firstName: contract?.firstName,
-                        lastName: contract?.lastName,
-                        SSN: contract?.ssn,
-                        needsMissingInfo: false
-                    )
-                    return [insuranceHolder]
-                },
-                onSelected: { selectedCoInsured in
-                    let listOfIncludedTravellers = selectedCoInsured.map {
-                        PolicyCoinsuredPersonModel(
-                            fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
-                            personalNumber: $0.0?.SSN,
-                            birthDate: $0.0?.birthDate
-                        )
-                    }
-                    store.send(.setPolicyCoInsured(listOfIncludedTravellers))
-                    vm.validateAndSubmit()
-                },
-                attachToBottom: true,
-                hButtonText: L10n.General.submit,
-                infoCard: vm.showInfoCard
-                    ? .init(
-                        text: L10n.TravelCertificate.missingCoinsuredInfo,
-                        buttons: [
-                            .init(
-                                buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
-                                buttonAction: {
-                                    store.send(.dismissTravelInsuranceFlow)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                        store.send(.goToEditCoInsured)
-                                    }
+                }
+                vm.setCoInsured(data: listOfIncludedTravellers)
+                vm.validateAndSubmit()
+            },
+            attachToBottom: true,
+            hButtonText: L10n.General.submit,
+            infoCard: vm.hasMissingCoInsuredData
+                ? .init(
+                    text: L10n.TravelCertificate.missingCoinsuredInfo,
+                    buttons: [
+                        .init(
+                            buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
+                            buttonAction: {
+                                store.send(.dismissTravelInsuranceFlow)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                    store.send(.goToEditCoInsured)
                                 }
-                            )
-                        ],
-                        placement: .bottom
-                    ) : nil
-            )
-            .padding(.bottom, 16)
-            .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
-            .hDisableScroll
-            .disableOn(TravelInsuranceStore.self, [.postTravelInsurance])
-        }
+                            }
+                        )
+                    ],
+                    placement: .bottom
+                ) : nil
+        )
+        .padding(.bottom, 16)
+        .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
+        .hDisableScroll
+        .disabled(vm.isLoading)
     }
 }
 
 class WhoIsTravelingViewModel: ObservableObject {
-    let specifications: TravelInsuranceContractSpecification?
-    @PresentableStore var store: TravelInsuranceStore
-    init() {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        self.specifications = store.state.travelInsuranceConfig
-    }
-
-    var showInfoCard: Bool {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        let contractId = store.state.travelInsuranceConfig?.contractId
+    let specification: TravelInsuranceContractSpecification
+    let coInsuredModelData: [CoInsuredModel]
+    @PresentableStore private var store: TravelInsuranceStore
+    @Published var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
+    @Published var hasMissingCoInsuredData = false
+    var isPolicyHolderIncluded = true
+    @Published var isLoading = false
+    @Published var error: String?
+    let contract: Contract?
+    init(specification: TravelInsuranceContractSpecification) {
+        self.specification = specification
 
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contract = contractStore.state.contractForId(contractId ?? "")
+        contract = contractStore.state.contractForId(specification.contractId)
+        let insuranceHolder = CoInsuredModel(
+            firstName: contract?.firstName,
+            lastName: contract?.lastName,
+            SSN: contract?.ssn,
+            needsMissingInfo: false
+        )
+        var coInsured: [CoInsuredModel] = []
+        coInsured.append(insuranceHolder)
+        coInsured.append(contentsOf: contract?.coInsured.filter({ !$0.hasMissingInfo }) ?? [])
+        coInsuredModelData = coInsured
+        hasMissingCoInsuredData = contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false
+    }
 
-        if contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false {
-            return true
+    func setCoInsured(data: [PolicyCoinsuredPersonModel]) {
+        isPolicyHolderIncluded = false
+        policyCoinsuredPersons = []
+        data.forEach { coInsured in
+            if coInsured.fullName == specification.fullName && coInsured.personalNumber == contract?.ssn {
+                isPolicyHolderIncluded = true
+            } else {
+                policyCoinsuredPersons.append(contentsOf: data)
+            }
         }
-        return false
     }
 
     func validateAndSubmit() {
-        if let (valid, _) = store.state.travelInsuranceModel?.isValidWithMessage() {
-            if valid {
-                UIApplication.dismissKeyboard()
-                store.send(.postTravelInsuranceForm)
-                store.send(.navigation(.openProcessingScreen))
-            }
+        let (valid, _) = isValidWithMessage()
+        if valid {
+            UIApplication.dismissKeyboard()
+            store.send(.navigation(.openProcessingScreen))
+
         }
+    }
+
+    private func isValidWithMessage() -> (valid: Bool, message: String?) {
+        let isValid = isPolicyHolderIncluded || policyCoinsuredPersons.count > 0
+        var message: String? = nil
+        if !isValid {
+            message = L10n.TravelCertificate.coinsuredErrorLabel
+        }
+        return (isValid, message)
     }
 }
 
 struct WhoIsTravelingView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        return WhoIsTravelingScreen()
+        return WhoIsTravelingScreen(
+            vm:
+                .init(
+                    specification: .init(
+                        contractId: "",
+                        minStartDate: Date(),
+                        maxStartDate: Date(),
+                        numberOfCoInsured: 2,
+                        maxDuration: 45,
+                        street: "Street",
+                        email: "email",
+                        fullName: "full name"
+                    )
+                )
+        )
     }
 }

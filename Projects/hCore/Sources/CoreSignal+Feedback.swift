@@ -4,7 +4,7 @@ import SwiftUI
 
 public enum FeedbackType { case error, warning, success, selection, impactLight, impactMedium, impactHeavy }
 
-@available(iOS 10.0, *) private enum Feedback {
+private enum Feedback {
     static func generateNotification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(type)
@@ -24,10 +24,8 @@ public enum FeedbackType { case error, warning, success, selection, impactLight,
 extension CoreSignal {
     /// Generate haptic feedback
     public func feedback(type: FeedbackType) -> Disposable {
-        if #available(iOS 10.0, *), !UITraitCollection.isCatalyst {
+        if !UITraitCollection.isCatalyst {
             let bag = DisposeBag()
-            // hello
-
             bag += onValue { _ in
                 switch type {
                 case .error: Feedback.generateNotification(.error)

@@ -56,15 +56,13 @@ public struct HelpCenterStartView: View {
             HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                 .padding(.bottom, 4)
 
-            ForEach(store.state.quickAction) { quickAction in
+            ForEach(store.state.quickActions, id: \.displayTitle) { quickAction in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 0) {
                             hText(quickAction.displayTitle)
-                            if let subtitle = quickAction.displaySubtitle {
-                                hText(subtitle, style: .standardSmall)
-                                    .foregroundColor(hTextColor.secondary)
-                            }
+                            hText(quickAction.displaySubtitle, style: .standardSmall)
+                                .foregroundColor(hTextColor.secondary)
 
                         }
 
@@ -200,7 +198,6 @@ extension HelpCenterStartView {
                                     CoverageQuestions.q13,
                                     CoverageQuestions.q14,
                                     CoverageQuestions.q15,
-                                    CoverageQuestions.q16,
                                     CoverageQuestions.q17,
                                     CoverageQuestions.q18,
                                     CoverageQuestions.q19,

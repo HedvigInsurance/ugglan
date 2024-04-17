@@ -12,7 +12,7 @@ public struct HomeState: StateProtocol {
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
     public var importantMessages: [ImportantMessage] = []
-    public var quickAction: [QuickAction] = []
+    public var quickActions: [QuickAction] = []
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [Contract] {
@@ -50,7 +50,7 @@ public enum HomeAction: ActionProtocol {
     case openFreeTextChat(from: ChatTopicType?)
     case openHelpCenter
     case showNewOffer
-    case openQuickActionDetail(quickActions: QuickAction, fromOtherServices: Bool)
+    case openFirstVet(partners: [FirstVetPartner])
     case openCoInsured(contractIds: [InsuredPeopleConfig])
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
@@ -166,7 +166,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setLoading(for: .fetchQuickActions)
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
-            setAllQuickActions(with: quickActions, for: &newState)
+            newState.quickActions = quickActions
+            setToolbarTypes(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
@@ -189,46 +190,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         return newState
     }
 
-    private func setAllQuickActions(with appendingQuickActions: [QuickAction], for state: inout HomeState) {
-        var allQuickActions = [QuickAction]()
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contracts = contractStore.state.activeContracts
-
-        if Dependencies.featureFlags().isMovingFlowEnabled
-            && !contracts.filter({ $0.supportsAddressChange }).isEmpty
-        {
-            allQuickActions.append(.moving())
-        }
-        allQuickActions.append(.payments())
-
-        if Dependencies.featureFlags().isEditCoInsuredEnabled
-            && !contracts.filter({ $0.showEditCoInsuredInfo }).isEmpty
-        {
-            allQuickActions.append(.editCoInsured())
-        }
-
-        let canTerminateContracts = !contractStore.state.activeContracts.filter({ $0.canTerminate }).isEmpty
-        if Dependencies.featureFlags().isTerminationFlowEnabled && canTerminateContracts {
-            allQuickActions.append(.cancellation())
-        }
-
-        if Dependencies.featureFlags().isTravelInsuranceEnabled
-            && !contracts.filter({ $0.supportsTravelCertificate }).isEmpty
-        {
-            allQuickActions.append(.travelInsurance())
-        }
-
-        allQuickActions.append(contentsOf: appendingQuickActions)
-
-        state.quickAction = allQuickActions
-        setToolbarTypes(&state)
-    }
-
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 
-        if state.quickAction.vetQuickAction != nil {
+        if state.quickActions.hasFirstVet {
             types.append(.firstVet)
         }
 
@@ -243,53 +209,5 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
 
         state.toolbarOptionTypes = types
-    }
-}
-
-extension QuickAction {
-    public static func travelInsurance() -> QuickAction {
-        let quickAction = QuickAction(
-            id: "travelInsurance",
-            displayTitle: L10n.hcQuickActionsTravelCertificate,
-            displaySubtitle: L10n.hcQuickActionsTravelCertificateSubtitle,
-            layout: nil
-        )
-        return quickAction
-    }
-
-    public static func moving() -> QuickAction {
-        return QuickAction(
-            id: "moving_flow",
-            displayTitle: L10n.hcQuickActionsChangeAddressTitle,
-            displaySubtitle: L10n.hcQuickActionsChangeAddressSubtitle,
-            layout: nil
-        )
-    }
-
-    public static func editCoInsured() -> QuickAction {
-        QuickAction(
-            id: "edit_coinsured",
-            displayTitle: L10n.hcQuickActionsCoInsuredTitle,
-            displaySubtitle: L10n.hcQuickActionsCoInsuredSubtitle,
-            layout: nil
-        )
-    }
-
-    public static func payments() -> QuickAction {
-        QuickAction(
-            id: "payments",
-            displayTitle: L10n.hcQuickActionsPaymentsTitle,
-            displaySubtitle: L10n.hcQuickActionsPaymentsSubtitle,
-            layout: nil
-        )
-    }
-
-    public static func cancellation() -> QuickAction {
-        QuickAction(
-            id: "cancellation",
-            displayTitle: L10n.hcQuickActionsTerminationTitle,
-            displaySubtitle: L10n.hcQuickActionsTerminationSubtitle,
-            layout: nil
-        )
     }
 }

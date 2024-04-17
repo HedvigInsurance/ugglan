@@ -136,7 +136,7 @@ public struct hTextField: View {
 
 struct hTextFieldPreview: PreviewProvider {
     static var previews: some View {
-        hTextField(masking: Masking(type: .personalNumber), value: .constant(""), placeholder: "")
+        hTextField(masking: Masking(type: .birthDate(minAge: 0)), value: .constant(""), placeholder: "")
             .padding(20)
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Masked with Swedish Personal Number")

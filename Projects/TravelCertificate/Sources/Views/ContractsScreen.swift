@@ -5,65 +5,43 @@ import hCoreUI
 struct ContractsScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     @State var isLoading: Bool = false
+    let specifications: [TravelInsuranceContractSpecification]
+
+    init(specifications: [TravelInsuranceContractSpecification]) {
+        self.specifications = specifications
+    }
 
     public var body: some View {
-        PresentableStoreLens(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state.travelInsuranceConfig
-            }
-        ) { travelInsuranceConfig in
-            PresentableStoreLens(
-                TravelInsuranceStore.self,
-                getter: { state in
-                    state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
+        CheckboxPickerScreen<TravelInsuranceContractSpecification>(
+            items: {
+                return specifications.map {
+                    (object: $0, displayName: .init(title: $0.street))
                 }
-            ) { travelInsuranceModels in
-                if !travelInsuranceModels.isEmpty {
-                    CheckboxPickerScreen<TravelInsuranceContractSpecification>(
-                        items: {
-                            return travelInsuranceModels.map {
-                                (object: $0, displayName: .init(title: $0.street))
-                            }
-                        }(),
-                        preSelectedItems: {
-                            guard let preSelected = travelInsuranceModels.first else {
-                                return []
-                            }
-                            return [preSelected]
-                        },
-                        onSelected: { selected in
-                            if let selected = selected.first?.0 {
-                                store.send(.setTravelInsuranceData(specification: selected))
-                                store.send(.navigation(.openStartDateScreen))
-                            }
-                        },
-                        singleSelect: true,
-                        attachToBottom: true,
-                        hButtonText: L10n.generalContinueButton
-                    )
-                    .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))
-                    .hButtonIsLoading(isLoading)
-                    .hDisableScroll
-                    .onReceive(
-                        store.loadingSignal
-                            .plain()
-                            .publisher
-                    ) { value in
-                        withAnimation {
-                            isLoading = value[.getTravelInsuranceSpecifications] == .loading
-                        }
-                    }
+            }(),
+            preSelectedItems: {
+                guard let preSelected = specifications.first else {
+                    return []
                 }
-            }
-        }
-        .presentableStoreLensAnimation(.spring())
-        .trackLoading(TravelInsuranceStore.self, action: .getTravelInsuranceSpecifications)
+                return [preSelected]
+            },
+            onSelected: { selected in
+                if let selected = selected.first?.0 {
+                    store.send(.navigation(.openStartDateScreen(spacification: selected)))
+                }
+            },
+            singleSelect: true,
+            attachToBottom: true,
+            hButtonText: L10n.generalContinueButton
+        )
+        .padding(.bottom, 16)
+        .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))
+        .hButtonIsLoading(isLoading)
+        .hDisableScroll
     }
 }
 
 struct TravelInsuranceContractsScreen_Previews: PreviewProvider {
     static var previews: some View {
-        ContractsScreen()
+        ContractsScreen(specifications: [])
     }
 }

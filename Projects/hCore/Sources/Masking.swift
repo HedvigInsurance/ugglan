@@ -3,24 +3,23 @@ import Foundation
 import Introspect
 import SwiftUI
 
-public enum MaskType: String {
-    case none = "None"
-    case disabledSuggestion = "DisabledSuggestion"
-    case personalNumber = "PersonalNumber"
-    case norwegianPersonalNumber = "NorwegianPersonalNumber"
-    case danishPersonalNumber = "DanishPersonalNumber"
-    case postalCode = "PostalCode"
-    case address = "Address"
-    case email = "Email"
-    case birthDate = "BirthDate"
-    case birthDateCoInsured = "BirthDateCoInsured"
-    case personalNumberCoInsured = "PersonalNumberCoInsured"
-    case norwegianPostalCode = "NorwegianPostalCode"
-    case digits = "Digits"
-    case euroBonus = "EuroBonus"
-    case fullName = "FullName"
-    case firstName = "FirstName"
-    case lastName = "LastName"
+public enum MaskType {
+    case none
+    case disabledSuggestion
+    case personalNumber(minAge: Int)
+    case norwegianPersonalNumber
+    case danishPersonalNumber
+    case postalCode
+    case address
+    case email
+    case birthDate(minAge: Int)
+    case birthDateCoInsured(minAge: Int)
+    case norwegianPostalCode
+    case digits
+    case euroBonus
+    case fullName
+    case firstName
+    case lastName
 }
 
 public struct Masking {
@@ -60,21 +59,14 @@ public struct Masking {
         case .norwegianPersonalNumber: return text.replacingOccurrences(of: "-", with: "").count == 11
         case .danishPersonalNumber: return text.count == 11
         case .personalNumber:
+            let age = calculateAge(from: text)
+            return text.replacingOccurrences(of: "-", with: "").count == 12 && age != nil && (age ?? 0) >= 0
+        case let .birthDate(minAge):
             let age = calculateAge(from: text) ?? 0
-            return text.count > 10 && 15...130 ~= age
-        case .birthDate:
+            return minAge...130 ~= age
+        case let .birthDateCoInsured(minAge):
             let age = calculateAge(from: text) ?? 0
-            return 15...130 ~= age
-        case .birthDateCoInsured:
-            let age = calculateAge(from: text) ?? 0
-            return 0...130 ~= age && text.count == 6
-        case .personalNumberCoInsured:
-            let age = calculateAge(from: text) ?? 0
-            if text.prefix(2) == "19" || text.prefix(2) == "20" {
-                return 0...130 ~= age && text.count > 12
-            } else {
-                return 0...130 ~= age && text.count > 10
-            }
+            return minAge...130 ~= age && text.count == 6
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -114,7 +106,6 @@ public struct Masking {
         case .fullName: return text
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
-        case .personalNumberCoInsured: return text
         }
     }
 
@@ -137,10 +128,14 @@ public struct Masking {
 
             guard let dateOfBirth = dateFormatter.date(from: value) else { return nil }
 
-            let components = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date())
+            let components = Calendar.current.dateComponents([.year, .day, .minute], from: dateOfBirth, to: Date())
 
             guard let age = components.year else { return nil }
-
+            guard let day = components.day else { return nil }
+            guard let minutes = components.minute else { return nil }
+            if age == 0 && (day < 0 || minutes < 0) {
+                return age - 1
+            }
             return age
         }
 
@@ -149,10 +144,7 @@ public struct Masking {
         switch type {
         case .danishPersonalNumber, .norwegianPersonalNumber: return nil
         case .personalNumber, .birthDateCoInsured:
-            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) { return age }
-
             if let age = calculate("yyyyMMdd", value: String(unmaskedValue.prefix(8))) { return age }
-
             return nil
         case .birthDate:
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else { return nil }
@@ -172,7 +164,7 @@ public struct Masking {
         switch type {
         case .birthDate, .personalNumber, .norwegianPostalCode,
             .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateCoInsured, .personalNumberCoInsured:
+            .norwegianPersonalNumber, .danishPersonalNumber, .fullName, .birthDateCoInsured:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -231,8 +223,6 @@ public struct Masking {
             return L10n.contractFirstName
         case .lastName:
             return L10n.contractLastName
-        case .personalNumberCoInsured:
-            return nil
         }
     }
 
@@ -250,7 +240,7 @@ public struct Masking {
             return nil
         case .email:
             return L10n.emailRowTitle
-        case .birthDate, .birthDateCoInsured, .personalNumberCoInsured:
+        case .birthDate, .birthDateCoInsured:
             return nil
         case .norwegianPostalCode:
             return nil
@@ -348,11 +338,8 @@ public struct Masking {
         }
 
         switch type {
-        case .personalNumber, .personalNumberCoInsured:
-            if text.count > 11, text.prefix(2) == "19" || text.prefix(2) == "20" {
-                return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
-            }
-            return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
+        case .personalNumber:
+            return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
         case .postalCode: return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
         case .norwegianPostalCode: return delimitedDigits(delimiterPositions: [], maxCount: 4, delimiter: " ")
         case .birthDate, .birthDateCoInsured:

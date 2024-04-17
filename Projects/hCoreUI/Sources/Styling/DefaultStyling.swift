@@ -347,9 +347,7 @@ extension DefaultStyling {
         configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
 
         UITabBar.appearance().standardAppearance = standard
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        }
+        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
         UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
         UITabBar.appearance().tintColor = .brand(.primaryText())
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
@@ -380,14 +378,12 @@ extension DefaultStyling {
         .standardAppearance.shadowImage = UIColor.brand(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .light)
-            )
-            .scrollEdgeAppearance?
-            .shadowImage = UIColor.brand(.primaryText())
-                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-        }
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .scrollEdgeAppearance?
+        .shadowImage = UIColor.brand(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
         UITabBar.appearance(
             for: UITraitCollection(userInterfaceStyle: .dark)
@@ -399,14 +395,12 @@ extension DefaultStyling {
             for: UITraitCollection(userInterfaceStyle: .dark)
         )
 
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .dark)
-            )
-            .scrollEdgeAppearance?
-            .shadowImage = UIColor.brand(.primaryText())
-                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
-        }
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .scrollEdgeAppearance?
+        .shadowImage = UIColor.brand(.primaryText())
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
     }
 
     private static func setSegmentedControllAppearance() {

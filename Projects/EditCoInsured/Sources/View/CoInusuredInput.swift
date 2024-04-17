@@ -330,11 +330,12 @@ struct CoInusuredInput: View {
     var ssnField: some View {
         hSection {
             hFloatingTextField(
-                masking: Masking(type: .personalNumber),
+                masking: Masking(type: .personalNumber(minAge: 0)),
                 value: $vm.SSN,
                 equals: $vm.type,
                 focusValue: .SSN,
-                placeholder: L10n.contractPersonalIdentity
+                placeholder: L10n.contractPersonalIdentity,
+                textFieldPlaceholder: L10n.editCoinsuredSsnPlaceholder
             )
         }
         .disabled(vm.isLoading)
@@ -393,17 +394,16 @@ struct CoInusuredInput: View {
 
     var buttonIsDisabled: Bool {
         if vm.noSSN {
-            let birthdayIsValid = Masking(type: .birthDateCoInsured).isValid(text: vm.birthday)
+            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: vm.birthday)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
             if birthdayIsValid && firstNameValid && lastNameValid {
                 return false
             }
         } else {
-            let personalNumberValid = Masking(type: .personalNumberCoInsured).isValid(text: vm.SSN)
-            if personalNumberValid {
-                return false
-            }
+            let masking = Masking(type: .personalNumber(minAge: 0))
+            let personalNumberValid = masking.isValid(text: vm.SSN)
+            return !personalNumberValid
         }
         return true
     }
@@ -489,19 +489,17 @@ public class CoInusuredInputViewModel: ObservableObject {
             .sink { _ in
                 for i in 0...10 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
-                        if #available(iOS 15.0, *) {
-                            if #available(iOS 16.0, *) {
-                                UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                    .animateChanges {
-                                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                            .invalidateDetents()
-                                    }
-                            } else {
-                                UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                    .animateChanges {
+                        if #available(iOS 16.0, *) {
+                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                .animateChanges {
+                                    UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                        .invalidateDetents()
+                                }
+                        } else {
+                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                .animateChanges {
 
-                                    }
-                            }
+                                }
                         }
                     }
                 }
