@@ -25,7 +25,7 @@ public enum OpenSpecificScreen {
     case none
 }
 
-public struct EditCoInsuredViewJourney: View {
+public struct EditCoInsuredNavigation: View {
     let configs: [InsuredPeopleConfig]
     let onDisappear: () -> Void
     @State var openSpecificScreen: OpenSpecificScreen
@@ -49,7 +49,7 @@ public struct EditCoInsuredViewJourney: View {
     }
 
     public var body: some View {
-        NavigationStack(path: $editCoInsuredNavigationVm.externalNavigationRedirect) {
+        NavigationStack {
             Group {
                 if openSpecificScreen == .missingAlert {
                     openMissingCoInsuredAlert()

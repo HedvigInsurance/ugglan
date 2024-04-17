@@ -123,7 +123,7 @@ struct MainNavigationJourney: App {
                         InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                     })
 
-                EditCoInsuredViewJourney(
+                EditCoInsuredNavigation(
                     configs: contractsSupportingCoInsured,
                     onDisappear: {
                         homeNavigationVm.isCoInsuredPresented = false
@@ -226,7 +226,7 @@ struct MainNavigationJourney: App {
                     }
                 }
                 .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-                    EditCoInsuredViewJourney(
+                    EditCoInsuredNavigation(
                         configs: [editCoInsuredConfig],
                         onDisappear: {
                             contractsNavigationVm.editCoInsuredConfig = nil
@@ -334,7 +334,7 @@ struct MainNavigationJourney: App {
     @ViewBuilder
     private func getMissingCoInsuredAlertView(missingContract: Contract, onDismiss: @escaping () -> Void) -> some View {
         let contractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-        EditCoInsuredViewJourney(
+        EditCoInsuredNavigation(
             configs: [contractConfig],
             onDisappear: {
                 onDismiss()

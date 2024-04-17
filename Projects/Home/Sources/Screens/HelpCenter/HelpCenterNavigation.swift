@@ -135,7 +135,7 @@ public struct HelpCenterNavigation: View {
                 InsuredPeopleConfig(contract: $0, fromInfoCard: false)
             })
 
-        return EditCoInsuredViewJourney(
+        return EditCoInsuredNavigation(
             configs: contractsSupportingCoInsured,
             onDisappear: {
                 helpCenterVm.quickActions.isEditCoInsuredPresented = false
