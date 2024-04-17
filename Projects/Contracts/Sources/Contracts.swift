@@ -51,7 +51,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isChangeAddressPresented = false
     @Published public var isChatPresented = false
 
-    @Published public var isMissingEditCoInsuredAlertPresented = false
+    @Published public var isMissingEditCoInsuredAlertPresented: Contract?
 
     @Published public var externalNavigationRedirect = NavigationPath()
 }

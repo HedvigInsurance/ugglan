@@ -21,7 +21,7 @@ public struct RenewalCardView: View {
         self.showCoInsured = showCoInsured
     }
 
-    private func buildSheetButtons(contracts: [Contract]) -> [ActionSheet.Button] {
+    private func buildSheetButtons(contracts: [HomeContract]) -> [ActionSheet.Button] {
         var buttons = contracts.map { contract in
             ActionSheet.Button.default(Text(contract.displayName)) {
                 openDocument(contract)
@@ -31,7 +31,7 @@ public struct RenewalCardView: View {
         return buttons
     }
 
-    private func openDocument(_ contract: Contract) {
+    private func openDocument(_ contract: HomeContract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
         {
@@ -80,7 +80,7 @@ public struct RenewalCardView: View {
                             buttonAction: {
                                 let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
                                 openDocument(
-                                    Contract(
+                                    HomeContract(
                                         upcomingRenewal: .init(
                                             renewalDate: contract.upcomingChangedAgreement?.activeFrom,
                                             draftCertificateUrl: certificateURL
@@ -161,7 +161,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                     )
                 )
 
-                let contract = Home.Contract(contract: octopusContract)
+                let contract = HomeContract(contract: octopusContract)
                 store.send(.setMemberContractState(state: state, contracts: [contract]))
             }
     }
