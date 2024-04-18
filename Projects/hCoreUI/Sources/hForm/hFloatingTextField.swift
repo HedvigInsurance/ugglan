@@ -24,8 +24,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
-    let focusValue: Value
-    let onReturn: () -> Void
+    private let focusValue: Value
+    private let onReturn: () -> Void
+    private let textFieldPlaceholder: String?
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -34,6 +35,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         placeholder: String? = nil,
         suffix: String? = nil,
         error: Binding<String?>? = nil,
+        textFieldPlaceholder: String? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
@@ -46,6 +48,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self._error = error ?? Binding.constant(nil)
         self._previousInnerValue = State(initialValue: value.wrappedValue)
         self._innerValue = State(initialValue: value.wrappedValue)
+        self.textFieldPlaceholder = textFieldPlaceholder
     }
 
     public var body: some View {
@@ -206,7 +209,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private var getTextField: some View {
         return HStack {
-            SwiftUI.TextField("", text: $innerValue)
+            SwiftUI.TextField(textFieldPlaceholder ?? "", text: $innerValue)
                 .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
                 .modifier(masking)
                 .tint(foregroundColor)
@@ -227,6 +230,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     animationEnabled: $animationEnabled,
                     focusValue: focusValue
                 )
+                .clipped()
             if !(suffix ?? "").isEmpty && shouldMoveLabel {
                 getSuffixLabel
             }
