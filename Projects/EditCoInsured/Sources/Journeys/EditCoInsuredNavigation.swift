@@ -30,6 +30,7 @@ public struct EditCoInsuredNavigation: View {
     let onDisappear: () -> Void
     @State var openSpecificScreen: OpenSpecificScreen
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
+    @StateObject var router = Router()
 
     public init(
         configs: [InsuredPeopleConfig],
@@ -49,7 +50,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     public var body: some View {
-        NavigationStack {
+        RouterHost(router: router) {
             Group {
                 if openSpecificScreen == .missingAlert {
                     openMissingCoInsuredAlert()
@@ -88,48 +89,48 @@ public struct EditCoInsuredNavigation: View {
                     }
                 }
             }
-            .detent(
-                item: $editCoInsuredNavigationVm.coInsuredInputModel,
-                style: .height
-            ) { coInsuredInputModel in
-                openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
-            }
-            .detent(
-                item: $editCoInsuredNavigationVm.selectCoInsured,
-                style: .height
-            ) { selectCoInsured in
-                openCoInsuredSelectScreen(contractId: selectCoInsured.id)
-                    .environmentObject(editCoInsuredNavigationVm)
-            }
-            .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
-                openProgress(showSuccess: true)
-            }
-            .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
-                openProgress(showSuccess: false)
-            }
-            .fullScreenCover(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
-                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
-                openNewInsuredPeopleScreen()
-            }
-            .detent(
-                item: $editCoInsuredNavigationVm.showSuccessScreen,
-                style: .height
-            ) { actionType in
-                var title: String {
-                    switch actionType {
-                    case .add:
-                        return L10n.contractCoinsuredAdded
-                    case .delete:
-                        return L10n.contractCoinsuredRemoved
-                    default:
-                        return ""
-                    }
-                }
-                openSuccessScreen(title: title)
-            }
-            .environmentObject(editCoInsuredNavigationVm)
         }
+        .detent(
+            item: $editCoInsuredNavigationVm.coInsuredInputModel,
+            style: .height
+        ) { coInsuredInputModel in
+            openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
+        }
+        .detent(
+            item: $editCoInsuredNavigationVm.selectCoInsured,
+            style: .height
+        ) { selectCoInsured in
+            openCoInsuredSelectScreen(contractId: selectCoInsured.id)
+                .environmentObject(editCoInsuredNavigationVm)
+        }
+        .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
+            openProgress(showSuccess: true)
+        }
+        .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
+            openProgress(showSuccess: false)
+        }
+        .fullScreenCover(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
+            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+            let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
+            openNewInsuredPeopleScreen()
+        }
+        .detent(
+            item: $editCoInsuredNavigationVm.showSuccessScreen,
+            style: .height
+        ) { actionType in
+            var title: String {
+                switch actionType {
+                case .add:
+                    return L10n.contractCoinsuredAdded
+                case .delete:
+                    return L10n.contractCoinsuredRemoved
+                default:
+                    return ""
+                }
+            }
+            openSuccessScreen(title: title)
+        }
+        .environmentObject(editCoInsuredNavigationVm)
     }
 
     func openSelectInsurance(configs: [InsuredPeopleConfig]) -> some View {
