@@ -75,17 +75,12 @@ public struct SubmitClaimCheckoutScreen: View {
             hSection {
                 VStack {
                     if let repairCost {
-                        PresentableStoreLens(
-                            SubmitClaimStore.self,
-                            getter: { state in
-                                state.singleItemStep
-                            }
-                        ) { singleItemStep in
-                            displayField(
-                                withTitle: L10n.claimsCheckoutRepairTitle(singleItemStep?.getBrandOrModelName() ?? ""),
-                                andFor: repairCost
-                            )
-                        }
+                        displayField(
+                            withTitle: L10n.claimsCheckoutRepairTitle(
+                                singleItemCheckoutStep?.singleItemModel?.getBrandOrModelName() ?? ""
+                            ),
+                            andFor: repairCost
+                        )
                     } else {
                         displayField(
                             withTitle: L10n.keyGearItemViewValuationPageTitle,
@@ -253,7 +248,8 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
                                         depreciation: .sek(30),
                                         price: .sek(300)
                                     )
-                                )
+                                ),
+                                singleItemModel: nil
                             )
                         )
                     )
@@ -315,7 +311,8 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
                                         depreciation: .sek(30),
                                         price: .sek(300)
                                     )
-                                )
+                                ),
+                                singleItemModel: nil
                             )
                         )
                     )

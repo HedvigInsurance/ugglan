@@ -7,17 +7,20 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let compensation: Compensation
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
+    let singleItemModel: FlowClamSingleItemStepModel?
 
     init(
         id: String,
         payoutMethods: [AvailableCheckoutMethod],
         selectedPayoutMethod: AvailableCheckoutMethod? = nil,
-        compensation: Compensation
+        compensation: Compensation,
+        singleItemModel: FlowClamSingleItemStepModel?
     ) {
         self.id = id
         self.payoutMethods = payoutMethods
         self.selectedPayoutMethod = selectedPayoutMethod
         self.compensation = compensation
+        self.singleItemModel = singleItemModel
     }
 
     init(
@@ -25,6 +28,11 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     ) {
         self.id = data.id
         self.compensation = .init(with: data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment)
+        if let singleItemFragment = data.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
+            self.singleItemModel = .init(with: singleItemFragment)
+        } else {
+            self.singleItemModel = nil
+        }
 
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
