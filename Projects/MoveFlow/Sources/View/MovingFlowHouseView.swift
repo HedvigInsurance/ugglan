@@ -6,6 +6,7 @@ import hGraphQL
 
 struct MovingFlowHouseView: View {
     @StateObject var vm: HouseInformationInputModel
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     var body: some View {
         hForm {
@@ -128,7 +129,7 @@ struct MovingFlowHouseView: View {
                         }
                     }
                     hButton.MediumButton(type: .primaryAlt) {
-                        vm.addExtraBuilding()
+                        addExtraBuilding()
                     } content: {
                         HStack {
                             Image(uiImage: hCoreUIAssets.plusSmall.image)
@@ -173,6 +174,13 @@ struct MovingFlowHouseView: View {
         }
         .sectionContainerStyle(.opaque)
     }
+
+    func addExtraBuilding() {
+        UIApplication.dismissKeyboard()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            movingFlowNavigationVm.isAddExtraBuildingPresented = true
+        }
+    }
 }
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
@@ -202,6 +210,7 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 
 public typealias ExtraBuildingType = String
 public class HouseInformationInputModel: ObservableObject {
+
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""
@@ -232,13 +241,6 @@ public class HouseInformationInputModel: ObservableObject {
             }
         }
         return validate()
-    }
-
-    func addExtraBuilding() {
-        UIApplication.dismissKeyboard()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            self?.store.send(.navigation(action: .openAddBuilding))
-        }
     }
 
     func remove(extraBuilding: ExtraBuilding) {

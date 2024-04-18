@@ -1,16 +1,38 @@
+import Combine
 import Presentation
 import SwiftUI
+import hCore
 import hCoreUI
+
+struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
+    public var id: String?
+    var extraBuildingType: ExtraBuildingType?
+}
 
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
+
+    @Published var isAddExtraBuildingPresented = false
+    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+}
+
+enum MovingFlowRouterActions {
+    case confirm
+    case houseFill
+    case processing
 }
 
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
+    @State var cancellable: AnyCancellable?
+    @Binding var isFlowPresented: Bool
 
-    public init() {}
+    public init(
+        isFlowPresented: Binding<Bool>
+    ) {
+        self._isFlowPresented = isFlowPresented
+    }
 
     public var body: some View {
         RouterHost(router: router) {
@@ -18,8 +40,47 @@ public struct MovingFlowNavigation: View {
                 .routerDestination(for: HousingType.self) { housingType in
                     openApartmentFillScreen()
                 }
+                .routerDestination(for: MovingFlowRouterActions.self) { action in
+                    switch action {
+                    case .confirm:
+                        openConfirmScreen()
+                    case .houseFill:
+                        openHouseFillScreen()
+                    case .processing:
+                        openProcessingView()  //hide back button
+                    }
+                }
         }
         .environmentObject(movingFlowVm)
+        .onAppear {
+            let store: MoveFlowStore = globalPresentableStoreContainer.get()
+            cancellable = store.actionSignal.publisher.sink { _ in
+            } receiveValue: { action in
+                switch action {
+                case let .navigation(navigationAction):
+                    switch navigationAction {
+                    case .openConfirmScreen:
+                        router.push(MovingFlowRouterActions.confirm)
+                    case .openHouseFillScreen:
+                        router.push(MovingFlowRouterActions.houseFill)
+                    case .openProcessingView:
+                        router.push(MovingFlowRouterActions.processing)
+                    default:
+                        break
+                    }
+                default:
+                    break
+                }
+            }
+        }
+        .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: .height) {
+            openAddExtraBuilding()
+                .environmentObject(movingFlowVm)
+        }
+        .detent(item: $movingFlowVm.isBuildingTypePickerPresented, style: .height) { extraBuildingType in
+            openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
+            // title: L10n.changeAddressExtraBuildingContainerTitle
+        }
     }
 
     func openSelectHousingScreen() -> some View {
@@ -29,6 +90,57 @@ public struct MovingFlowNavigation: View {
     func openApartmentFillScreen() -> some View {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
         return MovingFlowAddressView(vm: store.addressInputModel)
+    }
+
+    func openHouseFillScreen() -> some View {
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        return MovingFlowHouseView(vm: store.houseInformationInputModel)
+    }
+
+    func openConfirmScreen() -> some View {
+        MovingFlowConfirm()
+    }
+
+    func openProcessingView() -> some View {
+        MovingFlowProcessingView(onSuccessButtonAction: {
+            isFlowPresented = false
+        })
+    }
+
+    func openAddExtraBuilding() -> some View {
+        MovingFlowAddExtraBuildingView()
+    }
+
+    func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
+        CheckboxPickerScreen<ExtraBuildingType>(
+            items: {
+                let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                return store.state.movingFlowModel?.extraBuildingTypes
+                    .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
+            }(),
+            preSelectedItems: {
+                if let currentlySelected {
+                    return [currentlySelected]
+                }
+                return []
+            },
+            onSelected: { selected in
+                let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                if let selected = selected.first {
+                    //                    store.send(.navigation(action: .dismissTypeOfBuilding))
+                    movingFlowVm.isBuildingTypePickerPresented = nil
+                    movingFlowVm.isAddExtraBuildingPresented = true
+                    if let object = selected.0 {
+                        store.send(.setExtraBuildingType(with: object))
+                    }
+                }
+            },
+            onCancel: {
+                movingFlowVm.isBuildingTypePickerPresented = nil
+                movingFlowVm.isAddExtraBuildingPresented = true
+            },
+            singleSelect: true
+        )
     }
 }
 
@@ -53,110 +165,6 @@ public struct MovingFlowNavigation: View {
 //            }
 //        }
 //    }
-//
-//    static func openHouseFillScreen() -> some JourneyPresentation {
-//        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-//        return HostingJourney(
-//            MoveFlowStore.self,
-//            rootView: MovingFlowHouseView(vm: store.houseInformationInputModel)
-//        ) {
-//            action in
-//            getMovingFlowScreen(for: action).showsBackButton
-//        }
-//        .withJourneyDismissButton
-//    }
-//
-//    static func openAddExtraBuilding() -> some JourneyPresentation {
-//        HostingJourney(
-//            MoveFlowStore.self,
-//            rootView: MovingFlowAddExtraBuildingView(),
-//            style: .detented(.scrollViewContentSize),
-//            options: [.largeNavigationBar]
-//        ) { action in
-//            if case .navigation(.dismissAddBuilding) = action {
-//                PopJourney()
-//            } else if case let .navigation(.openTypeOfBuilding(type)) = action {
-//                MovingFlowJourneyNew.openTypeOfBuildingPicker(for: type)
-//            } else {
-//                getMovingFlowScreen(for: action).showsBackButton
-//            }
-//        }
-//        .configureTitle(L10n.changeAddressAddBuilding)
-//    }
-//
-//    static func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some JourneyPresentation {
-//        HostingJourney(
-//            MoveFlowStore.self,
-//            rootView: CheckboxPickerScreen<ExtraBuildingType>(
-//                items: {
-//                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
-//                    return store.state.movingFlowModel?.extraBuildingTypes
-//                        .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
-//                }(),
-//                preSelectedItems: {
-//                    if let currentlySelected {
-//                        return [currentlySelected]
-//                    }
-//                    return []
-//                },
-//                onSelected: { selected in
-//                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
-//                    if let selected = selected.first {
-//                        store.send(.navigation(action: .dismissTypeOfBuilding))
-//                        if let object = selected.0 {
-//                            store.send(.setExtraBuildingType(with: object))
-//                        }
-//                    }
-//                },
-//                onCancel: {
-//                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
-//                    store.send(.navigation(action: .dismissTypeOfBuilding))
-//                },
-//                singleSelect: true
-//            ),
-//            style: .modally(presentationStyle: .fullScreen),
-//            options: [.largeNavigationBar, .blurredBackground]
-//        ) {
-//            action in
-//            if case .navigation(.dismissTypeOfBuilding) = action {
-//                PopJourney()
-//            } else {
-//                getMovingFlowScreen(for: action).showsBackButton
-//            }
-//        }
-//        .configureTitle(L10n.changeAddressExtraBuildingContainerTitle)
-//    }
-//
-//    static func openConfirmScreen() -> some JourneyPresentation {
-//        HostingJourney(
-//            MoveFlowStore.self,
-//            rootView: MovingFlowConfirm()
-//        ) {
-//            action in
-//            if case let .navigation(.document(url, title)) = action {
-//                Journey(
-//                    Document(url: url, title: title),
-//                    style: .detented(.large)
-//                )
-//                .withDismissButton
-//            } else {
-//                getMovingFlowScreen(for: action).hidesBackButton
-//            }
-//        }
-//        .configureTitle(L10n.changeAddressSummaryTitle)
-//        .withJourneyDismissButton
-//    }
-//
-//    static func openProcessingView() -> some JourneyPresentation {
-//        HostingJourney(
-//            MoveFlowStore.self,
-//            rootView: MovingFlowProcessingView()
-//        ) {
-//            action in
-//            getMovingFlowScreen(for: action).hidesBackButton
-//        }
-//    }
-//}
 //
 //public enum MovingFlowRedirectType {
 //    case chat

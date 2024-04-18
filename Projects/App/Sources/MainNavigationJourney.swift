@@ -272,7 +272,7 @@ struct MainNavigationJourney: App {
                     TerminationViewJourney(configs: [contractConfig])
                 }
                 .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-                    MovingFlowNavigation()
+                    MovingFlowNavigation(isFlowPresented: $contractsNavigationVm.isChangeAddressPresented)
                 }
                 .detent(
                     item: $contractsNavigationVm.isMissingEditCoInsuredAlertPresented,

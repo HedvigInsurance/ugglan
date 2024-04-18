@@ -6,6 +6,8 @@ import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
     @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+
     var body: some View {
         hForm {
             VStack(spacing: 8) {
@@ -30,7 +32,7 @@ struct MovingFlowAddExtraBuildingView: View {
                             hText(L10n.generalSaveButton)
                         }
                         hButton.LargeButton(type: .ghost) {
-                            vm.dissmisAddExtraBuilding()
+                            movingFlowNavigationVm.isAddExtraBuildingPresented = false
                         } content: {
                             hText(L10n.generalCancelButton)
                         }
@@ -50,7 +52,9 @@ struct MovingFlowAddExtraBuildingView: View {
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
-            vm.showTypeOfBuilding()
+            movingFlowNavigationVm.isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
+                extraBuildingType: vm.buildingType
+            )
         }
     }
 
@@ -134,18 +138,9 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
         }
     }
 
-    func dissmisAddExtraBuilding() {
-        store.send(.navigation(action: .dismissAddBuilding))
-    }
-
     private func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
         buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
         return livingAreaError == nil && buildingTypeError == nil
     }
-
-    func showTypeOfBuilding() {
-        store.send(.navigation(action: .openTypeOfBuilding(for: buildingType)))
-    }
-
 }

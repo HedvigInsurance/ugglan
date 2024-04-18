@@ -73,7 +73,10 @@ public struct MovingFlowHousingTypeView: View {
     func continuePressed() {
         let housingType = HousingType(rawValue: vm.selectedHousingType ?? "")
         vm.store.send(.setHousingType(with: housingType ?? .apartment))
-        router.push(housingType)
+
+        if let housingType {
+            router.push(housingType)
+        }
     }
 }
 
