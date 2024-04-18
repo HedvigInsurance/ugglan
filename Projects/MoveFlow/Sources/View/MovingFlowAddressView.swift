@@ -10,7 +10,7 @@ struct MovingFlowAddressView: View {
 
     var body: some View {
         switch vm.store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
                 .onDisappear {
                     vm.clearErrors()
@@ -210,7 +210,7 @@ public class AddressInputModel: ObservableObject {
     func continuePressed() {
         if isInputValid() {
             switch store.state.selectedHousingType {
-            case .apartmant, .rental:
+            case .apartment, .rental:
                 store.send(.requestMoveIntent)
             case .house:
                 store.send(.navigation(action: .openHouseFillScreen))
@@ -236,7 +236,7 @@ public class AddressInputModel: ObservableObject {
         if let size = Int(squareArea) {
             let sizeToCompare: Int? = {
                 switch store.state.selectedHousingType {
-                case .apartmant, .rental:
+                case .apartment, .rental:
                     return store.state.movingFlowModel?.maxApartmentSquareMeters
                 case .house:
                     return store.state.movingFlowModel?.maxHouseSquareMeters
@@ -258,7 +258,7 @@ public class AddressInputModel: ObservableObject {
 
     var isStudentEnabled: Bool {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return store.state.movingFlowModel?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
@@ -267,7 +267,7 @@ public class AddressInputModel: ObservableObject {
 
     var continueButtonTitle: String {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return L10n.saveAndContinueButtonLabel
         case .house:
             return L10n.saveAndContinueButtonLabel

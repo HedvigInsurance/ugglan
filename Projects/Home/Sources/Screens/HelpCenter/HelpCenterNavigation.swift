@@ -88,7 +88,7 @@ public struct HelpCenterNavigation: View {
         .fullScreenCover(
             isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
             content: {
-                MovingFlowViewJourney()
+                MovingFlowNavigation()
             }
         )
         .fullScreenCover(

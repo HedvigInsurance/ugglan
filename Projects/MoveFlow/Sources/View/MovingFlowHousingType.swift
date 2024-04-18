@@ -80,26 +80,26 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 
 class MovingFlowHousingTypeViewModel: ObservableObject {
     @PresentableStore var store: MoveFlowStore
-    @Published var selectedHousingType: String? = HousingType.apartmant.rawValue
+    @Published var selectedHousingType: String? = HousingType.apartment.rawValue
 
     init() {
         store.send(.getMoveIntent)
     }
 
     func continuePressed() {
-        store.send(.setHousingType(with: HousingType(rawValue: selectedHousingType ?? "") ?? .apartmant))
-        store.send(.navigation(action: .openAddressFillScreen))
+        store.send(.setHousingType(with: HousingType(rawValue: selectedHousingType ?? "") ?? .apartment))
+        //        store.send(.navigation(action: .openAddressFillScreen))
     }
 }
 
 public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
-    case apartmant
+    case apartment
     case rental
     case house
 
     var title: String {
         switch self {
-        case .apartmant:
+        case .apartment:
             return L10n.changeAddressApartmentOwnLabel
         case .rental:
             return L10n.changeAddressApartmentRentLabel
@@ -110,7 +110,7 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
 
     var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
         switch self {
-        case .apartmant:
+        case .apartment:
             return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         case .rental:
             return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)

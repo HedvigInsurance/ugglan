@@ -113,7 +113,7 @@ public enum MoveFlowLoadingAction: LoadingProtocol {
 public struct MoveFlowState: StateProtocol {
 
     public init() {}
-    @Transient(defaultValue: .apartmant) var selectedHousingType: HousingType
+    @Transient(defaultValue: .apartment) var selectedHousingType: HousingType
     @OptionalTransient var movingFlowModel: MovingFlowModel?
     @OptionalTransient var movingFromAddressModel: MovingFromAddressModel?
 }

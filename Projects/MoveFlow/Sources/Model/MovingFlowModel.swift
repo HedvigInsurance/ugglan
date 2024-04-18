@@ -100,7 +100,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
         switch type {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return maxApartmentNumberCoInsured ?? 5
         case .house:
             return maxHouseNumberCoInsured ?? 5
