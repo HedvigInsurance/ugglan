@@ -6,9 +6,9 @@ import hGraphQL
 
 public struct MovingFlowHousingTypeView: View {
     @ObservedObject var vm = MovingFlowHousingTypeViewModel()
+    @EnvironmentObject var router: Router
 
     public var body: some View {
-
         LoadingViewWithState(
             MoveFlowStore.self,
             .fetchMoveIntent
@@ -31,7 +31,7 @@ public struct MovingFlowHousingTypeView: View {
                             }
                             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                             hButton.LargeButton(type: .primary) {
-                                vm.continuePressed()
+                                continuePressed()
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body)
                             }
@@ -69,6 +69,12 @@ public struct MovingFlowHousingTypeView: View {
             }
         }
     }
+
+    func continuePressed() {
+        let housingType = HousingType(rawValue: vm.selectedHousingType ?? "")
+        vm.store.send(.setHousingType(with: housingType ?? .apartment))
+        router.push(housingType)
+    }
 }
 
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
@@ -84,11 +90,6 @@ class MovingFlowHousingTypeViewModel: ObservableObject {
 
     init() {
         store.send(.getMoveIntent)
-    }
-
-    func continuePressed() {
-        store.send(.setHousingType(with: HousingType(rawValue: selectedHousingType ?? "") ?? .apartment))
-        //        store.send(.navigation(action: .openAddressFillScreen))
     }
 }
 

@@ -4,11 +4,10 @@ import hCoreUI
 
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
-
-    @Published var housingType: HousingType?
 }
 
 public struct MovingFlowNavigation: View {
+    @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
 
     public init() {}
@@ -20,6 +19,7 @@ public struct MovingFlowNavigation: View {
                     openApartmentFillScreen()
                 }
         }
+        .environmentObject(movingFlowVm)
     }
 
     func openSelectHousingScreen() -> some View {
