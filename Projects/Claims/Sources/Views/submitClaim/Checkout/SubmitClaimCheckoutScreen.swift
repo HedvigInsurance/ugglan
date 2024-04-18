@@ -22,7 +22,7 @@ public struct SubmitClaimCheckoutScreen: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
-                        let repairCost = singleItemCheckoutStep?.repairCostAmount
+                        let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
                         if repairCost == nil {
                             InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                         }
@@ -32,7 +32,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         } content: {
                             hText(
                                 L10n.Claims.Payout.Button.label(
-                                    singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
+                                    singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
                                 ),
                                 style: .body
                             )
@@ -51,8 +51,11 @@ public struct SubmitClaimCheckoutScreen: View {
         VStack(spacing: 16) {
             hSection {
                 VStack(alignment: .center) {
-                    hText(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .standardExtraExtraLarge)
-                        .foregroundColor(hTextColor.primary)
+                    hText(
+                        singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? "",
+                        style: .standardExtraExtraLarge
+                    )
+                    .foregroundColor(hTextColor.primary)
                 }
                 .background(
                     Squircle.default()
@@ -67,7 +70,7 @@ public struct SubmitClaimCheckoutScreen: View {
             }
             .padding(.bottom, 8)
 
-            let repairCost = singleItemCheckoutStep?.repairCostAmount
+            let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
 
             hSection {
                 VStack {
@@ -86,16 +89,16 @@ public struct SubmitClaimCheckoutScreen: View {
                     } else {
                         displayField(
                             withTitle: L10n.keyGearItemViewValuationPageTitle,
-                            andFor: singleItemCheckoutStep?.price
+                            andFor: singleItemCheckoutStep?.compensation.valueCompensation?.price
                         )
                         displayField(
                             withTitle: L10n.Claims.Payout.Age.deduction,
-                            andFor: singleItemCheckoutStep?.depreciation.negative
+                            andFor: singleItemCheckoutStep?.compensation.valueCompensation?.depreciation.negative
                         )
                     }
                     displayField(
                         withTitle: L10n.Claims.Payout.Age.deductable,
-                        andFor: singleItemCheckoutStep?.deductible.negative
+                        andFor: singleItemCheckoutStep?.compensation.deductible.negative
                     )
                 }
             }
@@ -119,7 +122,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     displayField(
                         withTitle: L10n.claimsPayoutHedvigLabel,
                         useDarkTitle: true,
-                        andFor: singleItemCheckoutStep?.payoutAmount
+                        andFor: singleItemCheckoutStep?.compensation.payoutAmount
                     )
                     if repairCost != nil {
                         InfoCard(text: L10n.claimsCheckoutRepairInfoText, type: .info)
@@ -231,11 +234,6 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
                         action: .setSingleItemCheckoutStep(
                             model: .init(
                                 id: "id",
-                                deductible: .sek(20),
-                                depreciation: .sek(30),
-                                payoutAmount: .sek(100),
-                                price: .sek(300),
-                                repairCostAmount: .sek(250),
                                 payoutMethods: [
                                     .init(
                                         id: "id",
@@ -245,7 +243,17 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
                                             displayName: "Auto giro"
                                         )
                                     )
-                                ]
+                                ],
+                                compensation: .init(
+                                    id: "compensation id",
+                                    deductible: .sek(20),
+                                    payoutAmount: .sek(100),
+                                    repairCompensation: nil,
+                                    valueCompensation: .init(
+                                        depreciation: .sek(30),
+                                        price: .sek(300)
+                                    )
+                                )
                             )
                         )
                     )
@@ -288,11 +296,6 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
                         action: .setSingleItemCheckoutStep(
                             model: .init(
                                 id: "id",
-                                deductible: .sek(20),
-                                depreciation: .sek(30),
-                                payoutAmount: .sek(100),
-                                price: .sek(300),
-                                repairCostAmount: nil,
                                 payoutMethods: [
                                     .init(
                                         id: "id",
@@ -302,7 +305,17 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
                                             displayName: "Auto giro"
                                         )
                                     )
-                                ]
+                                ],
+                                compensation: .init(
+                                    id: "compensation id",
+                                    deductible: .sek(20),
+                                    payoutAmount: .sek(100),
+                                    repairCompensation: nil,
+                                    valueCompensation: .init(
+                                        depreciation: .sek(30),
+                                        price: .sek(300)
+                                    )
+                                )
                             )
                         )
                     )

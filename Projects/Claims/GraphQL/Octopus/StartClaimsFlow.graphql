@@ -142,21 +142,13 @@ fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
 }
 fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
     id
-    price {
-        ...MoneyFragment
+    compensation {
+        ...FlowClaimSingleItemCheckoutCompensationFragment
     }
-    depreciation {
-        ...MoneyFragment
+    singleItemStep {
+        ...FlowClaimSingleItemStepFragment
     }
-    deductible {
-        ...MoneyFragment
-    }
-    payoutAmount {
-        ...MoneyFragment
-    }
-    repairCostAmount {
-        ...MoneyFragment
-    }
+    
     availableCheckoutMethods {
         id
         ...FlowClaimAutomaticAutogiroPayoutFragment
@@ -249,4 +241,29 @@ fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
 fragment FlowClaimConfirmEmergencyOptionFragment on FlowClaimConfirmEmergencyOption {
     displayName
     displayValue: value
+}
+
+fragment FlowClaimSingleItemCheckoutCompensationFragment on FlowClaimSingleItemCheckoutCompensation {
+    id
+    deductible {
+        ...MoneyFragment
+    }
+    payoutAmount {
+        ...MoneyFragment
+    }
+    
+    ... on FlowClaimSingleItemCheckoutRepairCompensation {
+        repairCost {
+            ...MoneyFragment
+        }
+    }
+    
+    ... on FlowClaimSingleItemCheckoutValueCompensation {
+        price {
+            ...MoneyFragment
+        }
+        depreciation {
+            ...MoneyFragment
+        }
+    }
 }

@@ -4,44 +4,27 @@ import hGraphQL
 
 public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let id: String
-    let deductible: MonetaryAmount
-    let depreciation: MonetaryAmount
-    let payoutAmount: MonetaryAmount
-    let price: MonetaryAmount
-    let repairCostAmount: MonetaryAmount?
+    let compensation: Compensation
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
 
     init(
         id: String,
-        deductible: MonetaryAmount,
-        depreciation: MonetaryAmount,
-        payoutAmount: MonetaryAmount,
-        price: MonetaryAmount,
-        repairCostAmount: MonetaryAmount?,
         payoutMethods: [AvailableCheckoutMethod],
-        selectedPayoutMethod: AvailableCheckoutMethod? = nil
+        selectedPayoutMethod: AvailableCheckoutMethod? = nil,
+        compensation: Compensation
     ) {
         self.id = id
-        self.deductible = deductible
-        self.depreciation = depreciation
-        self.payoutAmount = payoutAmount
-        self.price = price
-        self.repairCostAmount = repairCostAmount
         self.payoutMethods = payoutMethods
         self.selectedPayoutMethod = selectedPayoutMethod
+        self.compensation = compensation
     }
 
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
         self.id = data.id
-        self.deductible = .init(fragment: data.deductible.fragments.moneyFragment)
-        self.depreciation = .init(fragment: data.depreciation.fragments.moneyFragment)
-        self.payoutAmount = .init(fragment: data.payoutAmount.fragments.moneyFragment)
-        self.price = .init(fragment: data.price.fragments.moneyFragment)
-
-        self.repairCostAmount = .init(optionalFragment: data.repairCostAmount?.fragments.moneyFragment)
+        self.compensation = .init(with: data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment)
 
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
@@ -55,7 +38,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
-        return selectedPayoutMethod?.getCheckoutInput(forAmount: Double(payoutAmount.floatAmount))
+        return selectedPayoutMethod?.getCheckoutInput(forAmount: Double(compensation.payoutAmount.floatAmount))
     }
 }
 
@@ -113,5 +96,76 @@ struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable, Hashable {
         self.id = data.id
         self.displayName = data.displayName
         self.amount = .init(fragment: data.amount.fragments.moneyFragment)
+    }
+}
+
+struct Compensation: Codable, Equatable, Hashable {
+    let id: String
+    let deductible: MonetaryAmount
+    let payoutAmount: MonetaryAmount
+    let repairCompensation: RepairCompensation?
+    let valueCompensation: ValueCompensation?
+
+    init(
+        with data: OctopusGraphQL.FlowClaimSingleItemCheckoutCompensationFragment
+    ) {
+        self.id = data.id
+        self.deductible = .init(fragment: data.deductible.fragments.moneyFragment)
+        self.payoutAmount = .init(fragment: data.payoutAmount.fragments.moneyFragment)
+
+        self.repairCompensation = .init(with: data.asFlowClaimSingleItemCheckoutRepairCompensation)
+        self.valueCompensation = .init(with: data.asFlowClaimSingleItemCheckoutValueCompensation)
+    }
+
+    init(
+        id: String,
+        deductible: MonetaryAmount,
+        payoutAmount: MonetaryAmount,
+        repairCompensation: RepairCompensation?,
+        valueCompensation: ValueCompensation?
+    ) {
+        self.id = id
+        self.deductible = deductible
+        self.payoutAmount = payoutAmount
+        self.repairCompensation = repairCompensation
+        self.valueCompensation = valueCompensation
+    }
+
+    struct RepairCompensation: Codable, Equatable, Hashable {
+        let repairCost: MonetaryAmount
+
+        init?(
+            with data: OctopusGraphQL.FlowClaimSingleItemCheckoutCompensationFragment
+                .AsFlowClaimSingleItemCheckoutRepairCompensation?
+        ) {
+            guard let data else {
+                return nil
+            }
+            self.repairCost = .init(fragment: data.repairCost.fragments.moneyFragment)
+        }
+    }
+
+    struct ValueCompensation: Codable, Equatable, Hashable {
+        let depreciation: MonetaryAmount
+        let price: MonetaryAmount
+
+        init(
+            depreciation: MonetaryAmount,
+            price: MonetaryAmount
+        ) {
+            self.depreciation = depreciation
+            self.price = price
+        }
+
+        init?(
+            with data: OctopusGraphQL.FlowClaimSingleItemCheckoutCompensationFragment
+                .AsFlowClaimSingleItemCheckoutValueCompensation?
+        ) {
+            guard let data else {
+                return nil
+            }
+            self.depreciation = .init(fragment: data.depreciation.fragments.moneyFragment)
+            self.price = .init(fragment: data.price.fragments.moneyFragment)
+        }
     }
 }
