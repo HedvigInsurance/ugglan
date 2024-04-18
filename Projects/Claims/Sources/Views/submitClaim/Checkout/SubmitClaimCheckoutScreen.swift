@@ -63,12 +63,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 )
                 .padding(.vertical, 6)
             }
-            .withHeader {
-                hText(L10n.Claims.Payout.Summary.subtitle, style: .body)
-                    .foregroundColor(hTextColor.primary)
-                    .padding(.top, 8)
-            }
-            .padding(.bottom, 8)
+            .padding(.vertical, 8)
 
             let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
 
