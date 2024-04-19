@@ -154,5 +154,6 @@ private struct EmbededInNavigation: ViewModifier {
             content
                 .environmentObject(router)
         }
+        .ignoresSafeArea()
     }
 }
