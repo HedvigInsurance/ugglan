@@ -51,29 +51,29 @@ public struct EditCoInsuredNavigation: View {
 
     public var body: some View {
         RouterHost(router: router) {
-            Group {
-                if openSpecificScreen == .missingAlert {
-                    openMissingCoInsuredAlert()
-                } else if openSpecificScreen == .newInsurance {
-                    openNewInsuredPeopleScreen()
-                } else if openSpecificScreen == .none {
-                    if configs.count > 1 {
-                        openSelectInsurance(configs: configs)
-                    } else if let config = configs.first {
-                        if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                            if config.fromInfoCard {
-                                openNewInsuredPeopleScreen()
-                            } else {
-                                openRemoveCoInsuredScreen()
-                            }
-                        } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+            //            Group {
+            if openSpecificScreen == .missingAlert {
+                openMissingCoInsuredAlert()
+            } else if openSpecificScreen == .newInsurance {
+                openNewInsuredPeopleScreen()
+            } else if openSpecificScreen == .none {
+                if configs.count > 1 {
+                    openSelectInsurance(configs: configs)
+                } else if let config = configs.first {
+                    if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                        if config.fromInfoCard {
                             openNewInsuredPeopleScreen()
                         } else {
-                            openInsuredPeopleScreen()
+                            openRemoveCoInsuredScreen()
                         }
+                    } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                        openNewInsuredPeopleScreen()
+                    } else {
+                        openInsuredPeopleScreen()
                     }
                 }
             }
+            //            }
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             Group {
@@ -173,6 +173,7 @@ public struct EditCoInsuredNavigation: View {
             }
         )
         .navigationTitle(L10n.coinsuredEditTitle)
+        .embededInNavigation(options: [.navigationType(type: .large)])
         .addDismissEditCoInsuredFlow()
     }
 
@@ -187,6 +188,7 @@ public struct EditCoInsuredNavigation: View {
         )
         .navigationTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
+        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 
     func openCoInsuredInput(
@@ -201,6 +203,8 @@ public struct EditCoInsuredNavigation: View {
             title: coInsuredModelEdit.title
         )
         .environmentObject(editCoInsuredNavigationVm)
+        .navigationTitle(L10n.contractAddConisuredInfo)
+        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
