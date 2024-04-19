@@ -91,7 +91,6 @@ public enum MoveFlowAction: ActionProtocol {
 }
 
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
-    case openHouseFillScreen
     case openConfirmScreen
 }
 

@@ -7,6 +7,7 @@ import hGraphQL
 
 struct MovingFlowAddressView: View {
     @StateObject var vm: AddressInputModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         switch vm.store.state.selectedHousingType {
@@ -52,7 +53,7 @@ struct MovingFlowAddressView: View {
                 }
                 hSection {
                     hButton.LargeButton(type: .primary) {
-                        vm.continuePressed()
+                        continuePressed()
                     } content: {
                         hText(vm.continueButtonTitle, style: .body)
                     }
@@ -155,6 +156,18 @@ struct MovingFlowAddressView: View {
         .padding(.vertical, 16)
         .padding(.horizontal, 16)
     }
+
+    func continuePressed() {
+        if vm.isInputValid() {
+            switch vm.store.state.selectedHousingType {
+            case .apartment, .rental:
+                vm.store.send(.requestMoveIntent)
+            case .house:
+                router.push(MovingFlowRouterActions.houseFill)
+                break
+            }
+        }
+    }
 }
 
 struct SelectAddress_Previews: PreviewProvider {
@@ -207,19 +220,7 @@ public class AddressInputModel: ObservableObject {
     var disposeBag = DisposeBag()
     init() {}
 
-    func continuePressed() {
-        if isInputValid() {
-            switch store.state.selectedHousingType {
-            case .apartment, .rental:
-                store.send(.requestMoveIntent)
-            case .house:
-                store.send(.navigation(action: .openHouseFillScreen))
-                break
-            }
-        }
-    }
-
-    private func isInputValid() -> Bool {
+    func isInputValid() -> Bool {
         func validate() -> Bool {
             withAnimation {
                 addressError = !address.isEmpty ? nil : L10n.changeAddressStreetError

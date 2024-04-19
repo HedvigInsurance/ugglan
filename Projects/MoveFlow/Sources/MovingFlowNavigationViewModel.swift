@@ -60,13 +60,8 @@ public struct MovingFlowNavigation: View {
             cancellable = store.actionSignal.publisher.sink { _ in
             } receiveValue: { action in
                 switch action {
-                case let .navigation(navigationAction):
-                    switch navigationAction {
-                    case .openConfirmScreen:
-                        router.push(MovingFlowRouterActions.confirm)
-                    case .openHouseFillScreen:
-                        router.push(MovingFlowRouterActions.houseFill)
-                    }
+                case .navigation(.openConfirmScreen):
+                    router.push(MovingFlowRouterActions.confirm)
                 default:
                     break
                 }
