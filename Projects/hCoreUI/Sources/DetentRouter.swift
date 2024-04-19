@@ -111,7 +111,21 @@ private class PresentationViewModel: ObservableObject {
 }
 
 class hHostingController<Content: View>: UIHostingController<Content> {
+    var onViewWillLayoutSubviews: () -> Void = {}
     var onDeinit: () -> Void = {}
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        onViewWillLayoutSubviews()
+    }
+
+    override init(rootView: Content) {
+        super.init(rootView: rootView)
+    }
+
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag, completion: completion)
@@ -119,6 +133,10 @@ class hHostingController<Content: View>: UIHostingController<Content> {
 
     deinit {
         onDeinit()
+    }
+
+    @objc func onCloseButton() {
+        self.dismiss(animated: true)
     }
 }
 
@@ -173,5 +191,11 @@ public struct DetentPresentationStyle: OptionSet {
             detents.append(.scrollViewContentSize)
         }
         return detents
+    }
+}
+
+extension UIViewController {
+    var className: String {
+        String(describing: Self.self)
     }
 }
