@@ -94,16 +94,15 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
                 if options.contains(.hidesBackButton) {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
-                //                if options.contains(.withDismiss) {
-                //                    let item = UIBarButtonItem(image: HCoreUIAsset.close.image, style: .done, target: vc, action: #selector(vc.onCloseButton))
-                //                    vc.navigationItem.rightBarButtonItem = item
-                //                }
             }
             navigation?
                 .pushViewController(
                     vc,
                     animated: true
                 )
+            if options.contains(.hidesBackButton) {
+                vc.navigationItem.setHidesBackButton(true, animated: true)
+            }
             return vc
         }
 
