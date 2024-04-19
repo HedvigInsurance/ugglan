@@ -66,8 +66,6 @@ public struct MovingFlowNavigation: View {
                         router.push(MovingFlowRouterActions.confirm)
                     case .openHouseFillScreen:
                         router.push(MovingFlowRouterActions.houseFill)
-                    case .openProcessingView:
-                        router.push(MovingFlowRouterActions.processing)
                     }
                 default:
                     break

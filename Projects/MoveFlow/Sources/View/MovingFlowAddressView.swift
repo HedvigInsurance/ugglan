@@ -7,7 +7,6 @@ import hGraphQL
 
 struct MovingFlowAddressView: View {
     @StateObject var vm: AddressInputModel
-    @EnvironmentObject var router: Router
 
     var body: some View {
         switch vm.store.state.selectedHousingType {
@@ -54,7 +53,6 @@ struct MovingFlowAddressView: View {
                 hSection {
                     hButton.LargeButton(type: .primary) {
                         vm.continuePressed()
-                        //                        router.pop(self)
                     } content: {
                         hText(vm.continueButtonTitle, style: .body)
                     }
