@@ -178,10 +178,12 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
 
     private func setSheetInteractionState(vc: UIViewController?, to: Bool) {
         let presentationController = vc?.navigationController?.presentationController ?? vc?.presentationController
-        let key = [
-            "_sheet", "Interaction",
-        ]
-        let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-        sheetInteraction?.setValue(to, forKey: "enabled")
+        if let presentationController = presentationController as? UISheetPresentationController {
+            let key = [
+                "_sheet", "Interaction",
+            ]
+            let sheetInteraction = presentationController.value(forKey: key.joined()) as? NSObject
+            sheetInteraction?.setValue(to, forKey: "enabled")
+        }
     }
 }
