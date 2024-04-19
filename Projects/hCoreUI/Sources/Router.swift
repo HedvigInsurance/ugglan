@@ -134,14 +134,6 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
     public typealias UIViewControllerType = UINavigationController
 }
 
-extension View {
-    public func hideBackButton() -> some View {
-        self.introspectViewController { vc in
-            vc.navigationItem.hidesBackButton = true
-        }
-    }
-}
-
 public struct ViewRouterOptions: OptionSet {
     public let rawValue: Int
     public init(rawValue: Int) {
