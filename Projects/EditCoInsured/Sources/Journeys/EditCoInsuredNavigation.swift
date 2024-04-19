@@ -51,43 +51,43 @@ public struct EditCoInsuredNavigation: View {
 
     public var body: some View {
         RouterHost(router: router) {
-            Group {
-                if openSpecificScreen == .missingAlert {
-                    openMissingCoInsuredAlert()
-                } else if openSpecificScreen == .newInsurance {
-                    openNewInsuredPeopleScreen()
-                } else if openSpecificScreen == .none {
-                    if configs.count > 1 {
-                        openSelectInsurance(configs: configs)
-                            .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
-                                Group {
-                                    if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                                        openNewInsuredPeopleScreen()
-                                    } else {
-                                        openInsuredPeopleScreen()
-                                    }
-                                }
-                                .detent(
-                                    item: $editCoInsuredNavigationVm.coInsuredInputModel,
-                                    style: .height
-                                ) { coInsuredInputModel in
-                                    openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
-                                }
-                            }
-                    } else if let config = configs.first {
-                        if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                            if config.fromInfoCard {
-                                openNewInsuredPeopleScreen()
-                            } else {
-                                openRemoveCoInsuredScreen()
-                            }
-                        } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+            //            Group {
+            if openSpecificScreen == .missingAlert {
+                openMissingCoInsuredAlert()
+            } else if openSpecificScreen == .newInsurance {
+                openNewInsuredPeopleScreen()
+            } else if openSpecificScreen == .none {
+                if configs.count > 1 {
+                    openSelectInsurance(configs: configs)
+                } else if let config = configs.first {
+                    if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                        if config.fromInfoCard {
                             openNewInsuredPeopleScreen()
                         } else {
-                            openInsuredPeopleScreen()
+                            openRemoveCoInsuredScreen()
                         }
+                    } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                        openNewInsuredPeopleScreen()
+                    } else {
+                        openInsuredPeopleScreen()
                     }
                 }
+            }
+            //            }
+        }
+        .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
+            Group {
+                if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                    openNewInsuredPeopleScreen()
+                } else {
+                    openInsuredPeopleScreen()
+                }
+            }
+            .detent(
+                item: $editCoInsuredNavigationVm.coInsuredInputModel,
+                style: .height
+            ) { coInsuredInputModel in
+                openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
             }
         }
         .detent(
@@ -159,6 +159,7 @@ public struct EditCoInsuredNavigation: View {
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
         )
+        .navigationTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 
     func openNewInsuredPeopleScreen() -> some View {
@@ -171,6 +172,9 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
+        .navigationTitle(L10n.coinsuredEditTitle)
+        .embededInNavigation(options: [.navigationType(type: .large)])
+        .addDismissEditCoInsuredFlow()
     }
 
     func openInsuredPeopleScreen() -> some View {
@@ -182,6 +186,9 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
+        .navigationTitle(L10n.coinsuredEditTitle)
+        .addDismissEditCoInsuredFlow()
+        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 
     func openCoInsuredInput(
@@ -196,10 +203,13 @@ public struct EditCoInsuredNavigation: View {
             title: coInsuredModelEdit.title
         )
         .environmentObject(editCoInsuredNavigationVm)
+        .navigationTitle(L10n.contractAddConisuredInfo)
+        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
         CoInsuredSelectScreen(contractId: contractId)
+            .navigationTitle(L10n.contractAddConisuredInfo)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -229,6 +239,7 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
+        .navigationTitle(L10n.coinsuredEditTitle)
     }
 
     public func openMissingCoInsuredAlert() -> some View {
@@ -255,6 +266,17 @@ public struct EditCoInsuredNavigation: View {
             )
         )
         .hExtraBottomPadding
+    }
+}
+
+extension View {
+    func addDismissEditCoInsuredFlow() -> some View {
+        self.withDismissButton(
+            title: L10n.General.areYouSure,
+            message: L10n.Claims.Alert.body,
+            confirmButton: L10n.General.yes,
+            cancelButton: L10n.General.no
+        )
     }
 }
 
