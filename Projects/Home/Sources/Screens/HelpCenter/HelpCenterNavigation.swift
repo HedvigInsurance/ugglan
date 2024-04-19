@@ -81,7 +81,7 @@ public struct HelpCenterNavigation: View {
             content: {
                 NavigationStack {
                     ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
-                        .withClose(for: $helpCenterVm.quickActions.isTravelCertificatePresented)
+                        .withDismissButton()
                 }
             }
         )
