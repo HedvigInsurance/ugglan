@@ -6,16 +6,18 @@ public struct RouterLink<Content, Destination>: View where Content: View, Destin
     @EnvironmentObject var router: Router
     var destination: () -> Destination
     var content: () -> Content
-
+    let options: RouterDestionationOptions
     /// Creates a navigation link that presents the destination view.
     /// - Parameters:
     ///   - destination: A view for the navigation link to present.
     ///   - content: A view builder to produce a content describing the `destination`
     ///    to present.
     public init(
+        options: RouterDestionationOptions = [],
         @ViewBuilder destination: @escaping () -> Destination,
         @ViewBuilder content: @escaping () -> Content
     ) {
+        self.options = options
         self.destination = destination
         self.content = content
     }
