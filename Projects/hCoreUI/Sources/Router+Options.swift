@@ -1,5 +1,12 @@
 import Foundation
 
+public struct RouterOptions: OptionSet {
+    public let rawValue: Int
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+}
+
 extension RouterOptions {
     public static let navigationBarHidden = RouterOptions()
     static let largeNavigationBar = RouterOptions()

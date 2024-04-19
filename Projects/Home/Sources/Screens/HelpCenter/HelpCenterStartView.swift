@@ -8,7 +8,6 @@ struct HelpCenterStartView: View {
     @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
-
     public init(onQuickAction: @escaping (QuickAction) -> Void) {
         self.onQuickAction = onQuickAction
         self.helpCenterModel = HelpCenterModel.getDefault()
