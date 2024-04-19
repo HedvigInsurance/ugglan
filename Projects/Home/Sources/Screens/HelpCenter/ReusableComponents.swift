@@ -154,7 +154,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    helpCenterVm.isChatPresented = true
+                    helpCenterVm.isChatPresented = .init(topic: topic)
                 } content: {
                     hText(L10n.hcChatButton)
                 }
