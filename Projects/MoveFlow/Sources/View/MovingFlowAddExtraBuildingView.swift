@@ -27,7 +27,7 @@ struct MovingFlowAddExtraBuildingView: View {
                     VStack {
                         hButton.LargeButton(type: .primary) {
                             withAnimation {
-                                vm.addExtraBuilding()
+                                addExtraBuilding()
                             }
                         } content: {
                             hText(L10n.generalSaveButton)
@@ -87,6 +87,20 @@ struct MovingFlowAddExtraBuildingView: View {
             .padding(.vertical, 21)
         }
     }
+
+    func addExtraBuilding() {
+        if vm.isValid() {
+            vm.store.houseInformationInputModel.extraBuildings.append(
+                ExtraBuilding(
+                    id: UUID().uuidString,
+                    type: vm.buildingType!,
+                    livingArea: Int(vm.livingArea) ?? 0,
+                    connectedToWater: vm.connectedToWater
+                )
+            )
+            movingFlowNavigationVm.isAddExtraBuildingPresented = false
+        }
+    }
 }
 
 enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
@@ -125,21 +139,8 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
         }
     }
     var disposeBag = DisposeBag()
-    func addExtraBuilding() {
-        if isValid() {
-            store.houseInformationInputModel.extraBuildings.append(
-                ExtraBuilding(
-                    id: UUID().uuidString,
-                    type: buildingType!,
-                    livingArea: Int(livingArea) ?? 0,
-                    connectedToWater: connectedToWater
-                )
-            )
-            store.send(.navigation(action: .dismissAddBuilding))
-        }
-    }
 
-    private func isValid() -> Bool {
+    func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
         buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
         return livingAreaError == nil && buildingTypeError == nil

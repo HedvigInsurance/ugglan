@@ -240,7 +240,7 @@ struct MovingFlowConfirm: View {
                 }
                 .onTap {
                     if let url = URL(string: document.url) {
-                        store.send(.navigation(action: .document(url: url, title: document.displayName)))
+                        movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
                     }
                 }
             }

@@ -7,6 +7,7 @@ import hGraphQL
 struct MovingFlowProcessingView: View {
     @StateObject var vm = ProcessingViewModel()
     var onSuccessButtonAction: () -> Void
+    var onErrorButtonAction: () -> Void
 
     var body: some View {
         ProcessingView<MoveFlowStore>(
@@ -21,7 +22,7 @@ struct MovingFlowProcessingView: View {
             errorViewButtons:
                 .init(
                     actionButton: .init(buttonAction: {
-                        vm.store.send(.navigation(action: .goBack))
+                        onErrorButtonAction()
                     }),
                     dismissButton: nil
                 )
@@ -37,6 +38,6 @@ class ProcessingViewModel: ObservableObject {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE
-        return MovingFlowProcessingView(onSuccessButtonAction: {})
+        return MovingFlowProcessingView(onSuccessButtonAction: {}, onErrorButtonAction: {})
     }
 }

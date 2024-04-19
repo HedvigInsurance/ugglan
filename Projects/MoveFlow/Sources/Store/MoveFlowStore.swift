@@ -91,18 +91,9 @@ public enum MoveFlowAction: ActionProtocol {
 }
 
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
-    case openAddressFillScreen
     case openHouseFillScreen
-    case openAddBuilding
-    case dismissAddBuilding
     case openConfirmScreen
     case openProcessingView
-    case openTypeOfBuilding(for: ExtraBuildingType?)
-    case dismissTypeOfBuilding
-    case goToFreeTextChat
-    case dismissMovingFlow
-    case document(url: URL, title: String)
-    case goBack
 }
 
 public enum MoveFlowLoadingAction: LoadingProtocol {

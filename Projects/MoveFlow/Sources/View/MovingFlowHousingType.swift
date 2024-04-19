@@ -7,6 +7,8 @@ import hGraphQL
 public struct MovingFlowHousingTypeView: View {
     @ObservedObject var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: Router
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    let onDismiss: () -> Void
 
     public var body: some View {
         LoadingViewWithState(
@@ -51,7 +53,7 @@ public struct MovingFlowHousingTypeView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                vm.store.send(.navigation(action: .goToFreeTextChat))
+                                movingFlowNavigationVm.isChatPresented = true
                             }
                         ),
                         dismissButton: nil
@@ -61,7 +63,7 @@ public struct MovingFlowHousingTypeView: View {
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {
-                        vm.store.send(.navigation(action: .dismissMovingFlow))
+                        onDismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -83,7 +85,7 @@ public struct MovingFlowHousingTypeView: View {
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .nb_NO
-        return MovingFlowHousingTypeView()
+        return MovingFlowHousingTypeView(onDismiss: {})
     }
 }
 

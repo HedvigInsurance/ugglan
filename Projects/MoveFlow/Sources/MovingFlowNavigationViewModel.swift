@@ -15,6 +15,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var isChatPresented = false
     @Published var isAddExtraBuildingPresented = false
+    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+    @Published public var document: Document? = nil
 }
 
 enum MovingFlowRouterActions {
@@ -67,8 +69,6 @@ public struct MovingFlowNavigation: View {
                         router.push(MovingFlowRouterActions.houseFill)
                     case .openProcessingView:
                         router.push(MovingFlowRouterActions.processing)
-                    default:
-                        break
                     }
                 default:
                     break
@@ -83,17 +83,25 @@ public struct MovingFlowNavigation: View {
                 }
                 .environmentObject(movingFlowVm)
         }
-
         .fullScreenCover(
             isPresented: $movingFlowVm.isChatPresented
         ) {
             ChatScreen(vm: .init(topicType: nil))
         }
-
+        .detent(
+            item: $movingFlowVm.document,
+            style: .large
+        ) { document in
+            NavigationStack {
+                PDFPreview(document: .init(url: document.url, title: document.title))
+            }
+        }
     }
 
     func openSelectHousingScreen() -> some View {
-        MovingFlowHousingTypeView()
+        MovingFlowHousingTypeView(onDismiss: {
+            isFlowPresented = false
+        })
     }
 
     func openApartmentFillScreen() -> some View {
@@ -111,9 +119,14 @@ public struct MovingFlowNavigation: View {
     }
 
     func openProcessingView() -> some View {
-        MovingFlowProcessingView(onSuccessButtonAction: {
-            isFlowPresented = false
-        })
+        MovingFlowProcessingView(
+            onSuccessButtonAction: {
+                isFlowPresented = false
+            },
+            onErrorButtonAction: {
+                router.pop()
+            }
+        )
     }
 
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
@@ -132,7 +145,6 @@ public struct MovingFlowNavigation: View {
             onSelected: { selected in
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()
                 if let selected = selected.first {
-                    //                    store.send(.navigation(action: .dismissTypeOfBuilding))
                     isBuildingTypePickerPresented = nil
                     if let object = selected.0 {
                         store.send(.setExtraBuildingType(with: object))
@@ -146,29 +158,3 @@ public struct MovingFlowNavigation: View {
         )
     }
 }
-
-//public struct MovingFlowJourneyNew {
-//    @JourneyBuilder
-//    static func getMovingFlowScreen(for action: MoveFlowAction) -> some JourneyPresentation {
-//        if case let .navigation(navigationAction) = action {
-//            if case .openAddressFillScreen = navigationAction {
-//                MovingFlowJourneyNew.openApartmentFillScreen()
-//            } else if case .openHouseFillScreen = navigationAction {
-//                MovingFlowJourneyNew.openHouseFillScreen()
-//            } else if case .openAddBuilding = navigationAction {
-//                MovingFlowJourneyNew.openAddExtraBuilding()
-//            } else if case .openConfirmScreen = navigationAction {
-//                MovingFlowJourneyNew.openConfirmScreen()
-//            } else if case .openProcessingView = navigationAction {
-//                MovingFlowJourneyNew.openProcessingView()
-//            } else if case .dismissMovingFlow = navigationAction {
-//                DismissJourney()
-//            } else if case .goBack = navigationAction {
-//                PopJourney()
-//            }
-//        }
-//    }
-//
-//public enum MovingFlowRedirectType {
-//    case chat
-//}
