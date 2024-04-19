@@ -7,6 +7,7 @@ import hGraphQL
 struct MovingFlowAddExtraBuildingView: View {
     @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     var body: some View {
         hForm {
@@ -52,7 +53,7 @@ struct MovingFlowAddExtraBuildingView: View {
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
-            movingFlowNavigationVm.isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
+            isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
                 extraBuildingType: vm.buildingType
             )
         }

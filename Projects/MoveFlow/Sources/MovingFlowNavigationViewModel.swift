@@ -15,7 +15,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var isChatPresented = false
     @Published var isAddExtraBuildingPresented = false
-    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 }
 
 enum MovingFlowRouterActions {
@@ -29,6 +28,7 @@ public struct MovingFlowNavigation: View {
     @StateObject var router = Router()
     @State var cancellable: AnyCancellable?
     @Binding var isFlowPresented: Bool
+    @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     public init(
         isFlowPresented: Binding<Bool>
@@ -76,13 +76,14 @@ public struct MovingFlowNavigation: View {
             }
         }
         .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: .height) {
-            openAddExtraBuilding()
+            MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
+                .detent(item: $isBuildingTypePickerPresented, style: .height) { extraBuildingType in
+                    openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
+                    // title: L10n.changeAddressExtraBuildingContainerTitle
+                }
                 .environmentObject(movingFlowVm)
         }
-        .detent(item: $movingFlowVm.isBuildingTypePickerPresented, style: .height) { extraBuildingType in
-            openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
-            // title: L10n.changeAddressExtraBuildingContainerTitle
-        }
+
         .fullScreenCover(
             isPresented: $movingFlowVm.isChatPresented
         ) {
@@ -115,10 +116,6 @@ public struct MovingFlowNavigation: View {
         })
     }
 
-    func openAddExtraBuilding() -> some View {
-        MovingFlowAddExtraBuildingView()
-    }
-
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
         CheckboxPickerScreen<ExtraBuildingType>(
             items: {
@@ -136,16 +133,14 @@ public struct MovingFlowNavigation: View {
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()
                 if let selected = selected.first {
                     //                    store.send(.navigation(action: .dismissTypeOfBuilding))
-                    movingFlowVm.isBuildingTypePickerPresented = nil
-                    movingFlowVm.isAddExtraBuildingPresented = true
+                    isBuildingTypePickerPresented = nil
                     if let object = selected.0 {
                         store.send(.setExtraBuildingType(with: object))
                     }
                 }
             },
             onCancel: {
-                movingFlowVm.isBuildingTypePickerPresented = nil
-                movingFlowVm.isAddExtraBuildingPresented = true
+                isBuildingTypePickerPresented = nil
             },
             singleSelect: true
         )
