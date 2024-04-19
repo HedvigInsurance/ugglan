@@ -94,16 +94,15 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
                 if options.contains(.hidesBackButton) {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
-                //                if options.contains(.withDismiss) {
-                //                    let item = UIBarButtonItem(image: HCoreUIAsset.close.image, style: .done, target: vc, action: #selector(vc.onCloseButton))
-                //                    vc.navigationItem.rightBarButtonItem = item
-                //                }
             }
             navigation?
                 .pushViewController(
                     vc,
                     animated: true
                 )
+            if options.contains(.hidesBackButton) {
+                vc.navigationItem.setHidesBackButton(true, animated: true)
+            }
             return vc
         }
 
@@ -138,5 +137,21 @@ public struct ViewRouterOptions: OptionSet {
     public let rawValue: Int
     public init(rawValue: Int) {
         self.rawValue = rawValue
+    }
+}
+
+extension View {
+    public func embededInNavigation(options: RouterOptions = []) -> some View {
+        modifier(EmbededInNavigation(options: options))
+    }
+}
+
+private struct EmbededInNavigation: ViewModifier {
+    @StateObject var router = Router()
+    let options: RouterOptions
+    func body(content: Content) -> some View {
+        return RouterHost(router: Router(), options: options) {
+            content
+        }
     }
 }

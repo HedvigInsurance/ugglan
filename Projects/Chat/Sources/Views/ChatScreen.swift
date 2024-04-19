@@ -159,10 +159,10 @@ public struct ChatScreen: View {
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
-    let disposeBag = DisposeBag()
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let vc = scrollView.viewController
+        let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = true
+        vc?.navigationController?.isModalInPresentation = true
         setSheetInteractionState(vc: vc, to: false)
     }
 
@@ -171,19 +171,35 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
-        let vc = scrollView.viewController
+        let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = false
+        vc?.navigationController?.isModalInPresentation = false
         setSheetInteractionState(vc: vc, to: true)
     }
 
     private func setSheetInteractionState(vc: UIViewController?, to: Bool) {
-        let presentationController = vc?.navigationController?.presentationController ?? vc?.presentationController
-        if let presentationController = presentationController as? UISheetPresentationController {
+        if let presentationController = vc?.presentationController as? UISheetPresentationController {
             let key = [
                 "_sheet", "Interaction",
             ]
             let sheetInteraction = presentationController.value(forKey: key.joined()) as? NSObject
+            print("SET FOR \(vc!) to \(to) - \(sheetInteraction!)")
             sheetInteraction?.setValue(to, forKey: "enabled")
         }
+    }
+
+    private func findProverVC(from vc: UIViewController?) -> UIViewController? {
+        if let vc {
+            if let navigation = vc.navigationController {
+                return findProverVC(from: navigation)
+            } else {
+                if let vccc = vc.presentationController as? BlurredSheetPresenationController {
+                    return vc
+                } else if let superviewVc = vc.view.superview?.viewController {
+                    return findProverVC(from: superviewVc)
+                }
+            }
+        }
+        return nil
     }
 }
