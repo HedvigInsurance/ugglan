@@ -71,14 +71,15 @@ public struct MovingFlowNavigation: View {
             MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
                 .detent(item: $isBuildingTypePickerPresented, style: .height) { extraBuildingType in
                     openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
-                    // title: L10n.changeAddressExtraBuildingContainerTitle
                 }
                 .environmentObject(movingFlowVm)
+                .navigationTitle(L10n.changeAddressAddBuilding)
         }
         .fullScreenCover(
             isPresented: $movingFlowVm.isChatPresented
         ) {
             ChatScreen(vm: .init(topicType: nil))
+                .withDismissButton()
         }
         .detent(
             item: $movingFlowVm.document,
@@ -94,20 +95,23 @@ public struct MovingFlowNavigation: View {
         MovingFlowHousingTypeView(onDismiss: {
             isFlowPresented = false
         })
+        .withDismissButton()
     }
 
     func openApartmentFillScreen() -> some View {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        return MovingFlowAddressView(vm: store.addressInputModel)
+        return MovingFlowAddressView(vm: store.addressInputModel).withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        return MovingFlowHouseView(vm: store.houseInformationInputModel)
+        return MovingFlowHouseView(vm: store.houseInformationInputModel).withDismissButton()
     }
 
     func openConfirmScreen() -> some View {
         MovingFlowConfirm()
+            .navigationTitle(L10n.changeAddressSummaryTitle)
+            .withDismissButton()
     }
 
     func openProcessingView() -> some View {
@@ -148,5 +152,6 @@ public struct MovingFlowNavigation: View {
             },
             singleSelect: true
         )
+        .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
     }
 }
