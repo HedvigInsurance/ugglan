@@ -700,7 +700,7 @@ extension PresentationStyle {
 }
 
 @available(iOS 16.0, *)
-class BlurredSheetPresenationController: UISheetPresentationController {
+public class BlurredSheetPresenationController: UISheetPresentationController {
 
     var effectView: PassThroughEffectView?
 
@@ -730,7 +730,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         }
     }
 
-    override func presentationTransitionWillBegin() {
+    public override func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
         if let effectView {
             containerView?.addSubview(effectView)
@@ -746,7 +746,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
             })
     }
 
-    override func dismissalTransitionWillBegin() {
+    public override func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
         presentedViewController.transitionCoordinator?

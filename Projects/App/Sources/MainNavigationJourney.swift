@@ -82,6 +82,9 @@ struct MainNavigationJourney: App {
                 style: .large,
                 content: {
                     ChatScreen(vm: .init(topicType: nil))
+                        .navigationTitle(L10n.chatTitle)
+                        .withDismissButton()
+                        .embededInNavigation(options: [.navigationType(type: .large)])
                 }
             )
             .detent(
