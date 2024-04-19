@@ -15,7 +15,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var isChatPresented = false
     @Published var isAddExtraBuildingPresented = false
-    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     @Published public var document: Document? = nil
 }
 

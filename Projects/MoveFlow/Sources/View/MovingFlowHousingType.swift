@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowHousingTypeView: View {
-    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
+    @StateObject var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: Router
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     let onDismiss: () -> Void
