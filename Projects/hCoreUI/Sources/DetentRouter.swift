@@ -140,35 +140,6 @@ class hHostingController<Content: View>: UIHostingController<Content> {
     }
 }
 
-extension View {
-    public func withClose(for presented: Binding<Bool>) -> some View {
-        modifier(CloseButtonModifier(isPresented: presented))
-    }
-}
-
-private struct CloseButtonModifier: ViewModifier {
-    @Binding var isPresented: Bool
-    func body(content: Content) -> some View {
-        content
-            .toolbar {
-                ToolbarItem(
-                    placement: .topBarTrailing
-
-                ) {
-                    dismissButton
-                }
-            }
-    }
-
-    private var dismissButton: some View {
-        hButton.MediumButton(type: .ghost) {
-            isPresented = false
-        } content: {
-            HCoreUIAsset.close.swiftUIImage
-        }
-    }
-}
-
 public struct DetentPresentationStyle: OptionSet {
     public let rawValue: UInt
     public static let medium = DetentPresentationStyle(rawValue: 1 << 0)
