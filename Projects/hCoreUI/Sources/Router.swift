@@ -139,3 +139,19 @@ public struct ViewRouterOptions: OptionSet {
         self.rawValue = rawValue
     }
 }
+
+extension View {
+    public func embededInNavigation(options: RouterOptions = []) -> some View {
+        modifier(EmbededInNavigation(options: options))
+    }
+}
+
+private struct EmbededInNavigation: ViewModifier {
+    @StateObject var router = Router()
+    let options: RouterOptions
+    func body(content: Content) -> some View {
+        return RouterHost(router: Router(), options: options) {
+            content
+        }
+    }
+}
