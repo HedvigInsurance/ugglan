@@ -406,28 +406,28 @@ extension PresentationStyle {
                 else {
                     return 0
                 }
-
+                let navigationController =
+                    viewController.navigationController ?? findNavigationController(from: viewController)
                 let transitioningDelegate =
-                    viewController.navigationController?.transitioningDelegate
+                    navigationController?.transitioningDelegate
                     as? DetentedTransitioningDelegate
                 let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
                 let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
 
                 let hasLargeTitle =
-                    (viewController.navigationController?.navigationBar.prefersLargeTitles ?? false)
+                    (navigationController?.navigationBar.prefersLargeTitles ?? false)
                     && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
-
                 let hasNavigationBar =
-                    viewController.navigationController?.navigationBar != nil
-                    && (viewController.navigationController?.isNavigationBarHidden ?? true) == false
+                    navigationController?.navigationBar != nil
+                    && (navigationController?.isNavigationBarHidden ?? true) == false
 
-                let navigationBarDynamicHeight = viewController.navigationController?.navigationBar.frame.height
+                let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
 
                 let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
 
                 let additionalNavigationSafeAreaInsets =
-                    viewController.navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+                    navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
                 let additionalNavigationHeight =
                     additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
 
@@ -446,6 +446,13 @@ extension PresentationStyle {
                 }
                 return totalHeight
             }
+        }
+
+        private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
+            if let viewController = vc?.children.first as? UINavigationController {
+                return viewController
+            }
+            return nil
         }
 
         public static var preferredContentSize: Detent {
@@ -700,7 +707,7 @@ extension PresentationStyle {
 }
 
 @available(iOS 16.0, *)
-class BlurredSheetPresenationController: UISheetPresentationController {
+public class BlurredSheetPresenationController: UISheetPresentationController {
 
     var effectView: PassThroughEffectView?
 
@@ -730,7 +737,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         }
     }
 
-    override func presentationTransitionWillBegin() {
+    public override func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
         if let effectView {
             containerView?.addSubview(effectView)
@@ -746,7 +753,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
             })
     }
 
-    override func dismissalTransitionWillBegin() {
+    public override func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
         presentedViewController.transitionCoordinator?

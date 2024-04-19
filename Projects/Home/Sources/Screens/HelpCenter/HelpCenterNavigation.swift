@@ -12,7 +12,7 @@ import hCore
 import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
-    @Published public var isChatPresented = false
+    @Published public var isChatPresented: ChatTopicModel?
     @Published var quickActions = QuickActions()
 
     struct QuickActions {
@@ -23,6 +23,11 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
+    }
+
+    public struct ChatTopicModel: Identifiable, Equatable {
+        public var id: String?
+        var topic: ChatTopicType?
     }
 }
 
@@ -59,10 +64,10 @@ public struct HelpCenterNavigation: View {
             getEditCoInsuredView()
         }
         .detent(
-            presented: $helpCenterVm.isChatPresented,
+            item: $helpCenterVm.isChatPresented,
             style: .large
-        ) {
-            ChatScreen(vm: .init(topicType: nil))
+        ) { chatTopic in
+            ChatScreen(vm: .init(topicType: chatTopic.topic))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
