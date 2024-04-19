@@ -27,17 +27,15 @@ private struct DismissButton: ViewModifier {
     let cancelButton: String
 
     @State var isPresented = false
-    @State var vm = DismissButtonViewModel()
+    @StateObject var vm = DismissButtonViewModel()
     func body(content: Content) -> some View {
         content
             .toolbar {
                 ToolbarItem(
                     placement: .topBarTrailing
                 ) {
-                    hButton.MediumButton(type: .ghost) {
+                    hCoreUIAssets.close.view.onTapGesture {
                         isPresented = true
-                    } content: {
-                        hCoreUIAssets.closeSmall.view
                     }
                 }
             }
@@ -59,4 +57,30 @@ private struct DismissButton: ViewModifier {
 
 private class DismissButtonViewModel: ObservableObject {
     weak var vc: UIViewController?
+}
+
+extension View {
+    public func withDismissButton() -> some View {
+        modifier(CloseButtonModifier())
+    }
+}
+
+private struct CloseButtonModifier: ViewModifier {
+    @StateObject var vm = DismissButtonViewModel()
+    func body(content: Content) -> some View {
+        content
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+
+                ) {
+                    hCoreUIAssets.close.view.onTapGesture {
+                        vm.vc?.dismiss(animated: true)
+                    }
+                }
+            }
+            .introspectViewController(customize: { vc in
+                vm.vc = vc
+            })
+    }
 }
