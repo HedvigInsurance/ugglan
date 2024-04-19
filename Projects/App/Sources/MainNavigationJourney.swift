@@ -79,6 +79,7 @@ struct MainNavigationJourney: App {
                 style: .height,
                 content: {
                     HonestyPledge(onConfirmAction: {})
+                        .embededInNavigation()
                 }
             )
             .detent(
@@ -96,9 +97,8 @@ struct MainNavigationJourney: App {
                 style: .large
             ) { document in
                 if let url = URL(string: document.url) {
-                    NavigationStack {
-                        PDFPreview(document: .init(url: url, title: document.displayName))
-                    }
+                    PDFPreview(document: .init(url: url, title: document.displayName))
+                        .embededInNavigation(options: [.navigationType(type: .large)])
                 }
             }
             .detent(
