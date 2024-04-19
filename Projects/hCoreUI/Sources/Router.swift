@@ -15,35 +15,8 @@ public class Router: ObservableObject {
     var builders: [String: (options: RouterDestionationOptions, builder: (AnyHashable) -> AnyView?)] = [:]
 
     public func push<T>(_ route: T) where T: Hashable {
-        let builderKey: String? = {
-            if case Optional<Any>.none = route as Any {
-                return ""
-            } else if case Optional<T>.some(let wrapped) = route {
-                do {
-                    let text = "\(T.self)"
-                    let regexPath = "<(.*?)>"
-                    let regex = try NSRegularExpression(pattern: regexPath)
-                    let results = regex.matches(
-                        in: text,
-                        range: NSRange(text.startIndex..., in: text)
-                    )
-                    return
-                        results.map {
-                            String(text[Range($0.range, in: text)!])
-                        }
-                        .first?
-                        .replacingOccurrences(of: "<", with: "")
-                        .replacingOccurrences(of: ">", with: "")
-                } catch let error {
-                    print("invalid regex: \(error.localizedDescription)")
-                    return nil
-                }
-            }
-            return nil
-        }()
-        if let key = builderKey,
-            let builder = builders[key], let view = builder.builder(route)
-        {
+        let key = "\(T.self)"
+        if let builder = builders[key], let view = builder.builder(route) {
             _ = onPush?(builder.options, view)
             self.routes.append(key)
         }
