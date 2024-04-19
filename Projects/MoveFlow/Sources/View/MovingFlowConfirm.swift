@@ -14,6 +14,7 @@ struct MovingFlowConfirm: View {
     @State var spacingFaq: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -162,7 +163,7 @@ struct MovingFlowConfirm: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.confirmMoveIntent)
-                    store.send(.navigation(action: .openProcessingView))
+                    router.push(MovingFlowRouterActions.processing)
                 } content: {
                     hText(L10n.changeAddressAcceptOffer, style: .standard)
                 }
