@@ -1,3 +1,4 @@
+import Chat
 import Combine
 import Presentation
 import SwiftUI
@@ -12,6 +13,7 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
 
+    @Published public var isChatPresented = false
     @Published var isAddExtraBuildingPresented = false
     @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 }
@@ -81,6 +83,12 @@ public struct MovingFlowNavigation: View {
             openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
             // title: L10n.changeAddressExtraBuildingContainerTitle
         }
+        .fullScreenCover(
+            isPresented: $movingFlowVm.isChatPresented
+        ) {
+            ChatScreen(vm: .init(topicType: nil))
+        }
+
     }
 
     func openSelectHousingScreen() -> some View {

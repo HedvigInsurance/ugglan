@@ -13,8 +13,9 @@ struct MovingFlowConfirm: View {
     @State var selectedFaq: [String] = [""]
     @State var spacingFaq: CGFloat = 0
     @State var totalHeight: CGFloat = 0
-    var body: some View {
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
+    var body: some View {
         ScrollViewReader { proxy in
             hForm {
                 PresentableStoreLens(
@@ -313,7 +314,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                store.send(.navigation(action: .goToFreeTextChat))
+                movingFlowNavigationVm.isChatPresented = true
             } content: {
                 hText(L10n.openChat, style: .body)
             }

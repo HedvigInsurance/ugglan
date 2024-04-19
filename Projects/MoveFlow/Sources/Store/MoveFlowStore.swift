@@ -1,8 +1,8 @@
 import Apollo
-import hCoreUI
 import Foundation
 import Presentation
 import hCore
+import hCoreUI
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
     @Inject var moveFlowService: MoveFlowService
@@ -36,7 +36,6 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                     addressInputModel: self.addressInputModel,
                     houseInformationInputModel: self.houseInformationInputModel
                 )
-//                router?.push(movingFlowData)
                 self.send(.setMoveIntent(with: movingFlowData))
                 self.send(.navigation(action: .openConfirmScreen))
                 self.removeLoading(for: .requestMoveIntent)
