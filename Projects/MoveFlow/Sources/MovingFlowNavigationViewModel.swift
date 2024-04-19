@@ -50,7 +50,7 @@ public struct MovingFlowNavigation: View {
                     case .houseFill:
                         openHouseFillScreen()
                     case .processing:
-                        openProcessingView()  //hide back button
+                        openProcessingView()
                     }
                 }
         }
@@ -74,12 +74,15 @@ public struct MovingFlowNavigation: View {
                 }
                 .environmentObject(movingFlowVm)
                 .navigationTitle(L10n.changeAddressAddBuilding)
+                .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .fullScreenCover(
             isPresented: $movingFlowVm.isChatPresented
         ) {
             ChatScreen(vm: .init(topicType: nil))
+                .navigationTitle(L10n.chatTitle)
                 .withDismissButton()
+                .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(
             item: $movingFlowVm.document,
@@ -123,6 +126,7 @@ public struct MovingFlowNavigation: View {
                 router.pop()
             }
         )
+        // hides back button
     }
 
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
@@ -153,5 +157,6 @@ public struct MovingFlowNavigation: View {
             singleSelect: true
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
+        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 }
