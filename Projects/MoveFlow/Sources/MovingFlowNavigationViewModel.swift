@@ -18,10 +18,13 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var document: Document? = nil
 }
 
+enum MovingFlowRouterWithHiddenBackButtonActions {
+    case processing
+}
+
 enum MovingFlowRouterActions {
     case confirm
     case houseFill
-    case processing
 }
 
 public struct MovingFlowNavigation: View {
@@ -43,14 +46,19 @@ public struct MovingFlowNavigation: View {
                 .routerDestination(for: HousingType.self) { housingType in
                     openApartmentFillScreen()
                 }
+                .routerDestination(for: MovingFlowRouterWithHiddenBackButtonActions.self, options: .hidesBackButton) {
+                    action in
+                    switch action {
+                    case .processing:
+                        openProcessingView()
+                    }
+                }
                 .routerDestination(for: MovingFlowRouterActions.self) { action in
                     switch action {
                     case .confirm:
                         openConfirmScreen()
                     case .houseFill:
                         openHouseFillScreen()
-                    case .processing:
-                        openProcessingView()
                     }
                 }
         }
@@ -126,7 +134,6 @@ public struct MovingFlowNavigation: View {
                 router.pop()
             }
         )
-        // hides back button
     }
 
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
