@@ -278,9 +278,7 @@ public struct TerminationFlowNavigation: View {
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: {
-                        //                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                         isFlowPresented(.chat)
-                        //                        }
                     }
                 ),
                 dismissButton: .init(
