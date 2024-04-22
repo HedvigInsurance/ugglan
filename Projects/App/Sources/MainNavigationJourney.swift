@@ -114,9 +114,8 @@ struct MainNavigationJourney: App {
             ) {
                 CrossSellingScreen()
             }
-            .detent(
-                presented: $homeNavigationVm.isCoInsuredPresented,
-                style: .height
+            .fullScreenCover(
+                isPresented: $homeNavigationVm.isCoInsuredPresented
             ) {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
 

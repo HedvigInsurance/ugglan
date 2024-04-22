@@ -51,7 +51,6 @@ public struct EditCoInsuredNavigation: View {
 
     public var body: some View {
         RouterHost(router: router) {
-            //            Group {
             if openSpecificScreen == .missingAlert {
                 openMissingCoInsuredAlert()
             } else if openSpecificScreen == .newInsurance {
@@ -73,7 +72,6 @@ public struct EditCoInsuredNavigation: View {
                     }
                 }
             }
-            //            }
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             Group {
@@ -173,7 +171,6 @@ public struct EditCoInsuredNavigation: View {
             }
         )
         .navigationTitle(L10n.coinsuredEditTitle)
-        .embededInNavigation(options: [.navigationType(type: .large)])
         .addDismissEditCoInsuredFlow()
     }
 
@@ -188,7 +185,6 @@ public struct EditCoInsuredNavigation: View {
         )
         .navigationTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
-        .embededInNavigation(options: [.navigationType(type: .large)])
     }
 
     func openCoInsuredInput(

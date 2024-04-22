@@ -19,7 +19,8 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isConnectPaymentsPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredPresented = false
+        var isEditCoInsuredDetentPresented: CoInsuredConfigModel?
+        var isEditCoInsuredFullScreenPresented: CoInsuredConfigModel?
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
@@ -28,6 +29,11 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     public struct ChatTopicModel: Identifiable, Equatable {
         public var id: String?
         var topic: ChatTopicType?
+    }
+
+    public struct CoInsuredConfigModel: Identifiable, Equatable {
+        public var id: String?
+        var configs: [InsuredPeopleConfig]
     }
 }
 
@@ -58,10 +64,15 @@ public struct HelpCenterNavigation: View {
             PaymentsView()
         }
         .detent(
-            presented: $helpCenterVm.quickActions.isEditCoInsuredPresented,
+            item: $helpCenterVm.quickActions.isEditCoInsuredDetentPresented,
             style: .height
-        ) {
-            getEditCoInsuredView()
+        ) { configs in
+            getEditCoInsuredView(configs: configs.configs)
+        }
+        .fullScreenCover(
+            item: $helpCenterVm.quickActions.isEditCoInsuredFullScreenPresented
+        ) { configs in
+            getEditCoInsuredView(configs: configs.configs)
         }
         .detent(
             item: $helpCenterVm.isChatPresented,
@@ -127,23 +138,38 @@ public struct HelpCenterNavigation: View {
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
-            helpCenterVm.quickActions.isEditCoInsuredPresented = true
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+            let contractsSupportingCoInsured = contractStore.state.activeContracts
+                .filter({ $0.showEditCoInsuredInfo })
+                .compactMap({
+                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                })
+
+            if contractsSupportingCoInsured.count > 1 {
+                helpCenterVm.quickActions.isEditCoInsuredDetentPresented = .init(configs: contractsSupportingCoInsured)
+            } else {
+                helpCenterVm.quickActions.isEditCoInsuredFullScreenPresented = .init(
+                    configs: contractsSupportingCoInsured
+                )
+            }
         }
     }
 
-    private func getEditCoInsuredView() -> some View {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-        let contractsSupportingCoInsured = contractStore.state.activeContracts
-            .filter({ $0.showEditCoInsuredInfo })
-            .compactMap({
-                InsuredPeopleConfig(contract: $0, fromInfoCard: false)
-            })
+    private func getEditCoInsuredView(configs: [InsuredPeopleConfig]) -> some View {
+        //        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        //
+        //        let contractsSupportingCoInsured = contractStore.state.activeContracts
+        //            .filter({ $0.showEditCoInsuredInfo })
+        //            .compactMap({
+        //                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+        //            })
 
         return EditCoInsuredNavigation(
-            configs: contractsSupportingCoInsured,
+            configs: configs,
             onDisappear: {
-                helpCenterVm.quickActions.isEditCoInsuredPresented = false
+                helpCenterVm.quickActions.isEditCoInsuredDetentPresented = nil
+                helpCenterVm.quickActions.isEditCoInsuredFullScreenPresented = nil
             }
         )
     }
