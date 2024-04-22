@@ -304,8 +304,17 @@ extension JourneyPresentation {
             if case let .navigation(navigateTo) = action {
                 if case .openConnectPayments = navigateTo {
                     DirectDebitSetup(setupType: .initial).journey()
-                } else if case let .openUrl(url) = navigateTo {
-                    AppJourney.urlHandledBySystem(url: url)
+                } else if case let .openUrl(url, handledBySystem) = navigateTo {
+                    if handledBySystem {
+                        AppJourney.urlHandledBySystem(url: url)
+                    } else {
+                        ContinueJourney()
+                            .onPresent {
+                                if let vc = UIApplication.shared.getTopViewController() {
+                                    UIApplication.shared.appDelegate.handleDeepLink(url, fromVC: vc)
+                                }
+                            }
+                    }
                 }
             }
         }

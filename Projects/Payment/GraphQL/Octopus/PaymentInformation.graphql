@@ -7,11 +7,9 @@ query PaymentInformation {
       }
       status
     }
-    futureCharge {
-      date
-    }
-    chargeHistory {
-      status
+    activeContracts {
+      terminationDueToMissedPayments
+      terminationDate
     }
   }
 }

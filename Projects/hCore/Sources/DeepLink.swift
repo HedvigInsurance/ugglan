@@ -14,6 +14,7 @@ public enum DeepLink: String, Codable {
     case helpCenter = "help-center"
     case moveContract = "move-contract"
     case terminateContract = "terminate-contract"
+    case openChat = "open-chat"
 
     public func wholeText(displayText: String) -> String {
         return L10n.generalGoTo(displayText)
@@ -45,35 +46,8 @@ public enum DeepLink: String, Codable {
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
             return L10n.hcQuickActionsTerminationTitle
-        }
-    }
-
-    private var getName: String {
-        switch self {
-        case .forever:
-            return "forever"
-        case .directDebit:
-            return "direct-debit"
-        case .profile:
-            return "profile"
-        case .insurances:
-            return "insurances"
-        case .home:
-            return "home"
-        case .sasEuroBonus:
-            return "eurobonus"
-        case .payments:
-            return "payments"
-        case .contract:
-            return "contract"
-        case .travelCertificate:
-            return "travelCertificate"
-        case .helpCenter:
-            return "help-center"
-        case .moveContract:
-            return "move-contract"
-        case .terminateContract:
-            return "terminate-contract"
+        case .openChat:
+            return L10n.chatTitle
         }
     }
 
@@ -85,7 +59,7 @@ public enum DeepLink: String, Codable {
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.getName
+        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.rawValue
         guard let url = URL(string: path) else {
             return nil
         }
