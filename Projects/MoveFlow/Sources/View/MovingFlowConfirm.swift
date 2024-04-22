@@ -163,7 +163,7 @@ struct MovingFlowConfirm: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.confirmMoveIntent)
-                    router.push(MovingFlowRouterActions.processing)
+                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                 } content: {
                     hText(L10n.changeAddressAcceptOffer, style: .standard)
                 }
