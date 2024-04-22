@@ -67,7 +67,7 @@ public enum HomeAction: ActionProtocol {
     case openHelpCenterTopicView(commonTopic: CommonTopic)
     case openHelpCenterQuestionView(question: Question)
     case goToQuickAction(QuickAction)
-    case goToURL(url: URL)
+    //    case goToURL(url: URL)
     case dismissHelpCenter
 }
 

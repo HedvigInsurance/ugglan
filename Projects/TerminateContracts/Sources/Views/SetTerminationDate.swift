@@ -7,6 +7,7 @@ struct SetTerminationDate: View {
     @PresentableStore var store: TerminationContractStore
     @State private var terminationDate = Date()
     @State private var isHidden = false
+    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
     let onSelected: (Date) -> Void
 
     init(
@@ -34,7 +35,7 @@ struct SetTerminationDate: View {
                             }
                         },
                         cancelAction: {
-                            store.send(.goBack)
+                            terminationNavigationVm.isDatePickerPresented = false
                         },
                         date: $terminationDate,
                         config: .init(

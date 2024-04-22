@@ -58,7 +58,7 @@ struct DisplayQuestionView: View {
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }
                     ) { url in
-                        store.send(.goToUrl(url: url))
+                        //                        store.send(.goToUrl(url: url))
                     }
                 }
             }

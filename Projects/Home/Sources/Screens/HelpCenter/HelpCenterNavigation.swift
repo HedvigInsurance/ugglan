@@ -5,6 +5,7 @@ import EditCoInsuredShared
 import MoveFlow
 import Payment
 import Presentation
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -36,12 +37,22 @@ public struct HelpCenterNavigation: View {
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @StateObject var router = Router()
-    public init() {}
+    @Binding var isFlowPresented: Bool
+
+    public init(
+        isFlowPresented: Binding<Bool>
+    ) {
+        self._isFlowPresented = isFlowPresented
+    }
 
     public var body: some View {
         RouterHost(router: router) {
             HelpCenterStartView { quickAction in
                 handle(quickAction: quickAction)
+            }
+            .onAppear {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
             }
             .routerDestination(for: Question.self) { question in
                 HelpCenterQuestionView(question: question)
@@ -106,7 +117,37 @@ public struct HelpCenterNavigation: View {
                     .map({
                         $0.asTerminationConfirmConfig
                     })
-                TerminationViewJourney(configs: contractsConfig)
+                TerminationFlowNavigation(
+                    configs: contractsConfig,
+                    isFlowPresented: { dismissType in
+                        helpCenterVm.quickActions.isCancellationPresented = false
+                        switch dismissType {
+                        case .none:
+                            isFlowPresented = false
+                        case .chat:
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                helpCenterVm.isChatPresented = .init(topic: .none)
+                            }
+                        case let .openFeedback(url):
+                            // TODO: move somewhere else. Also not working
+                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                            if urlComponent?.scheme == nil {
+                                urlComponent?.scheme = "https"
+                            }
+                            let schema = urlComponent?.scheme
+                            if let finalUrl = urlComponent?.url {
+                                if schema == "https" || schema == "http" {
+                                    let vc = SFSafariViewController(url: finalUrl)
+                                    vc.modalPresentationStyle = .pageSheet
+                                    vc.preferredControlTintColor = .brand(.primaryText())
+                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                                } else {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         )
         .environmentObject(helpCenterVm)
@@ -189,5 +230,5 @@ public struct HelpCenterNavigation: View {
 }
 
 #Preview{
-    HelpCenterNavigation()
+    HelpCenterNavigation(isFlowPresented: .constant(false))
 }
