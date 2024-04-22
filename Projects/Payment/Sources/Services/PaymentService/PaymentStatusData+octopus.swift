@@ -9,7 +9,7 @@ struct TestConnect {
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
         self.status = {
-            if data.currentMember.activeContracts.isEmpty {
+            if data.currentMember.activeContracts.isEmpty && data.currentMember.pendingContracts.isEmpty {
                 return .noNeedToConnect
             }
 

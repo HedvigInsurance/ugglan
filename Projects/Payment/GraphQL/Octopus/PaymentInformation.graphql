@@ -1,15 +1,18 @@
 query PaymentInformation {
-  currentMember {
-    paymentInformation {
-      connection {
-        displayName
-        descriptor
-      }
-      status
+    currentMember {
+        paymentInformation {
+            connection {
+            displayName
+            descriptor
+            }
+            status
+        }
+        activeContracts {
+            terminationDueToMissedPayments
+            terminationDate
+        }
+        pendingContracts {
+            id
+        }
     }
-    activeContracts {
-      terminationDueToMissedPayments
-      terminationDate
-    }
-  }
 }
