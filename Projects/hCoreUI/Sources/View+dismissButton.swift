@@ -46,10 +46,10 @@ private struct DismissButton: ViewModifier {
                 Alert(
                     title: Text(title),
                     message: { if let message { return Text(message) } else { return nil } }(),
-                    primaryButton: .default(Text(confirmButton)) { [weak vm] in
+                    primaryButton: .default(Text(cancelButton)),
+                    secondaryButton: .destructive(Text(confirmButton)) { [weak vm] in
                         vm?.vc?.dismiss(animated: true)
-                    },
-                    secondaryButton: .default(Text(cancelButton))
+                    }
                 )
             }
     }
