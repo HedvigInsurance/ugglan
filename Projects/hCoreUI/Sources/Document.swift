@@ -49,6 +49,7 @@ public struct PDFPreview: View {
         }
         .navigationTitle(vm.document.title)
         .navigationBarTitleDisplayMode(.inline)
+        .embededInNavigation()
     }
 
     private var loadingIndicatorView: some View {

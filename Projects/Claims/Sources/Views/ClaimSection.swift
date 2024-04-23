@@ -10,11 +10,11 @@ struct ClaimSection: View {
 
     @PresentableStore
     var store: ClaimsStore
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
+    @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in
-            homeVm.externalNavigationRedirect.append(claim)
+            homeRouter.push(claim)
         }
     }
 
