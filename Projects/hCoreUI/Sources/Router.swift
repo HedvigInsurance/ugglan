@@ -150,7 +150,7 @@ private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
     func body(content: Content) -> some View {
-        return RouterHost(router: Router(), options: options) {
+        return RouterHost(router: router, options: options) {
             content
                 .environmentObject(router)
         }
