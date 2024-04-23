@@ -83,8 +83,8 @@ struct Debug: View {
                         "Go to market picker",
                         action: {
                             ApplicationState.preserveState(.notLoggedIn)
-                            UIApplication.shared.appDelegate.bag += UIApplication.shared
-                                .appDelegate.window.present(AppJourney.main)
+                            //                            UIApplication.shared.appDelegate.bag += UIApplication.shared
+                            //                                .appDelegate.window.present(AppJourney.main)
                         }
                     )
                 }

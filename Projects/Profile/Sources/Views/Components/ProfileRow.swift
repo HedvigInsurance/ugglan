@@ -27,8 +27,5 @@ struct ProfileRow: View {
             }
         }
         .withChevronAccessory
-        .onTap {
-            store.send(row.action)
-        }
     }
 }

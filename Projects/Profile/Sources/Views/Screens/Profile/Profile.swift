@@ -42,9 +42,9 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if store.state.showTravelCertificate {
-                        ProfileRow(row: .travelCertificate)
-                    }
+                    //                        if store.state.showTravelCertificate {
+                    ProfileRow(row: .travelCertificate)
+                    //                        }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty

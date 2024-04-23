@@ -118,7 +118,9 @@ public struct ForeverView: View {
     }
 }
 
+@available(iOS 16.0, *)
 extension ForeverView {
+    @available(iOS 16.0, *)
     public static func journey() -> some JourneyPresentation {
         HostingJourney(
             ForeverStore.self,
@@ -181,5 +183,13 @@ struct ForeverView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
             }
+    }
+}
+
+struct VisualEffectView: UIViewRepresentable {
+    var effect: UIVisualEffect?
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
+    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) {
+        uiView.effect = effect
     }
 }

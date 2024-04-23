@@ -11,10 +11,36 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+public class HomeNavigationViewModel: ObservableObject {
+    public init() {}
+
+    @Published public var isSubmitClaimPresented = false
+    @Published public var isHelpCenterPresented = false
+    @Published public var isChatPresented = false
+
+    // scroll view cards
+    @Published public var isCoInsuredPresented = false
+    @Published public var isConnectPayments = false
+
+    //claim details
+    @Published public var document: InsuranceTerm? = nil
+
+    @Published public var navBarItems = NavBarItems()
+
+    public struct NavBarItems {
+        public var isFirstVetPresented = false
+        public var isNewOfferPresented = false
+    }
+}
+
 public struct HomeView<Claims: View>: View {
+
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
+
+    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+
     var claimsContent: Claims
     var memberId: String
 
@@ -45,13 +71,11 @@ extension HomeView {
             action: { type in
                 switch type {
                 case .newOffer:
-                    store.send(.showNewOffer)
+                    navigationVm.navBarItems.isNewOfferPresented = true
                 case .firstVet:
-                    if let hasVetPartners = store.state.quickActions.getFirstVetPartners {
-                        store.send(.openFirstVet(partners: hasVetPartners))
-                    }
+                    navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    store.send(.openFreeTextChat(from: nil))
+                    navigationVm.isChatPresented = true
                 }
             }
         )
@@ -67,6 +91,7 @@ extension HomeView {
             fetch()
         }
     }
+
     @ViewBuilder
     private var centralContent: some View {
         switch vm.memberContractState {
@@ -124,7 +149,7 @@ extension HomeView {
     private var startAClaimButton: some View {
         if featureFlags.isSubmitClaimEnabled {
             hButton.LargeButton(type: .primary) {
-                store.send(.startClaim)
+                navigationVm.isSubmitClaimPresented = true
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }
@@ -139,7 +164,7 @@ extension HomeView {
             || contractStore.state.activeContracts.count == 0
         if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
-                store.send(.openHelpCenter)
+                navigationVm.isHelpCenterPresented = true
             } content: {
                 hText(L10n.HomeTab.getHelp)
             }
@@ -200,69 +225,70 @@ class HomeVM: ObservableObject {
     }
 }
 
-extension HomeView {
-    public static func journey<ResultJourney: JourneyPresentation>(
-        claimsContent: Claims,
-        memberId: @escaping () -> String,
-        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: HomeView(
-                claimsContent: claimsContent,
-                memberId: memberId
-            ),
-            options: [
-                .defaults
-            ]
-        ) { action in
-            if case let .openFreeTextChat(type) = action {
-                resultJourney(.openFreeTextChat(topic: type))
-            } else if case .dismissHelpCenter = action {
-                resultJourney(.dismissHelpCenter)
-            } else if case .openHelpCenter = action {
-                HelpCenterStartView.journey
-            } else if case let .openFirstVet(partners) = action {
-                FirstVetView.journey(partners: partners)
-                    .withJourneyDismissButton
-                    .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+//extension HomeView {
+//    public static func journey<ResultJourney: JourneyPresentation>(
+//        claimsContent: Claims,
+//        memberId: @escaping () -> String,
+//        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
+//    ) -> some JourneyPresentation {
+//        HostingJourney(
+//            HomeStore.self,
+//            rootView: HomeView(
+//                claimsContent: claimsContent,
+//                memberId: memberId
+//            ),
+//            options: [
+//                .defaults
+//            ]
+//        ) { action in
+//            if case let .openFreeTextChat(type) = action {
+//                resultJourney(.openFreeTextChat(topic: type))
+//            } else if case .dismissHelpCenter = action {
+//                resultJourney(.dismissHelpCenter)
+//            } else if case .openHelpCenter = action {
+//                HelpCenterStartView.journey
+//            } else if case let .openQuickActionDetail(quickAction, fromOtherService) = action {
+//                if !fromOtherService {
+//                    QuickActionDetailScreen.journey(quickAction: quickAction)
+//                        .withJourneyDismissButton
+//                        .configureTitle(quickAction.displayTitle)
+//                }
+//            } else if case let .openDocument(contractURL) = action {
+//                Journey(
+//                    Document(url: contractURL, title: L10n.insuranceCertificateTitle),
+//                    style: .detented(.large),
+//                    options: .defaults
+//                )
+//            } else if case .startClaim = action {
+//                resultJourney(.startNewClaim)
+//            } else if case .showNewOffer = action {
+//                resultJourney(.openCrossSells)
+//            } else if case let .openCoInsured(configs) = action {
+//                resultJourney(.startCoInsuredFlow(configs: configs))
+//            } else if case let .goToQuickAction(quickAction) = action {
+//                resultJourney(.goToQuickAction(quickAction: quickAction))
+//            } else if case let .goToURL(url) = action {
+//                resultJourney(.goToURL(url: url))
+//            }
+//        }
+//        .configureTabBarItem(
+//            title: L10n.tabHomeTitle,
+//            image: hCoreUIAssets.homeTab.image,
+//            selectedImage: hCoreUIAssets.homeTabActive.image
+//        )
+//        .configureHomeScroll()
+//    }
+//}
 
-            } else if case let .openDocument(contractURL) = action {
-                Journey(
-                    Document(url: contractURL, title: L10n.insuranceCertificateTitle),
-                    style: .detented(.large),
-                    options: .defaults
-                )
-            } else if case .startClaim = action {
-                resultJourney(.startNewClaim)
-            } else if case .showNewOffer = action {
-                resultJourney(.openCrossSells)
-            } else if case let .openCoInsured(configs) = action {
-                resultJourney(.startCoInsuredFlow(configs: configs))
-            } else if case let .goToQuickAction(quickAction) = action {
-                resultJourney(.goToQuickAction(quickAction: quickAction))
-            } else if case let .goToURL(url) = action {
-                resultJourney(.goToURL(url: url))
-            }
-        }
-        .configureTabBarItem(
-            title: L10n.tabHomeTitle,
-            image: hCoreUIAssets.homeTab.image,
-            selectedImage: hCoreUIAssets.homeTabActive.image
-        )
-        .configureHomeScroll()
-    }
-}
-
-public enum HomeResult {
-    case openFreeTextChat(topic: ChatTopicType?)
-    case startNewClaim
-    case openCrossSells
-    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
-    case goToQuickAction(quickAction: QuickAction)
-    case goToURL(url: URL)
-    case dismissHelpCenter
-}
+//public enum HomeResult {
+//    case openFreeTextChat(topic: ChatTopicType?)
+//    case startNewClaim
+////    case openCrossSells
+//    case startCoInsuredFlow(configs: [InsuredPeopleConfig])
+//    case goToQuickAction(quickAction: QuickAction)
+//    case goToURL(url: URL)
+//    case dismissHelpCenter
+//}
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {

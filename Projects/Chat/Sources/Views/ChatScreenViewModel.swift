@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-class ChatScreenViewModel: ObservableObject {
+public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
     @Published var isFetchingNext = false
@@ -21,7 +21,7 @@ class ChatScreenViewModel: ObservableObject {
     private let topicType: ChatTopicType?
     private var haveSentAMessage = false
     private var storeActionSignal: AnyCancellable?
-    init(topicType: ChatTopicType?) {
+    public init(topicType: ChatTopicType?) {
         self.topicType = topicType
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in

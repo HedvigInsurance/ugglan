@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
 struct DiscountCodeSectionView: View {
     @PresentableStore var store: ForeverStore
     var body: some View {
@@ -58,13 +59,13 @@ struct DiscountCodeSectionView: View {
     }
 }
 
-struct DiscountCodeSectionView_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
-    static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return DiscountCodeSectionView()
-            .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
-            }
-    }
-}
+//struct DiscountCodeSectionView_Previews: PreviewProvider {
+//    @PresentableStore static var store: ForeverStore
+//    static var previews: some View {
+//        Localization.Locale.currentLocale = .en_SE
+//        return DiscountCodeSectionView()
+//            .onAppear {
+//                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
+//            }
+//    }
+//}

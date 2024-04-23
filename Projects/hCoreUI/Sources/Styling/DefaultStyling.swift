@@ -4,8 +4,15 @@ import Presentation
 import StoreKit
 import SwiftUI
 
-public class hNavigationController: UINavigationController {
+public class hNavigationBaseController: UINavigationController {
+    var onDeinit: (() -> Void)?
 
+    deinit {
+        onDeinit?()
+    }
+}
+
+public class hNavigationController: hNavigationBaseController {
     private let additionalHeight: CGFloat?
 
     public init(additionalHeight: CGFloat? = nil) {
@@ -68,7 +75,7 @@ class NavBar: UINavigationBar {
     }
 }
 
-public class hNavigationControllerWithLargerNavBar: UINavigationController {
+public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
 
     public static var navigationBarHeight: CGFloat = 80
 
@@ -325,6 +332,14 @@ extension DefaultStyling {
     }
 
     private static func setTabBarAppearance() {
+
+        // set tab bar colors
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().barTintColor = tabBarBackgroundColor
+            UITabBar.appearance().backgroundColor = tabBarBackgroundColor
+            UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        }
+
         let standard = UITabBarAppearance()
         let scrollEdgeAppearance = UITabBarAppearance()
         scrollEdgeAppearance.configureWithOpaqueBackground()
@@ -347,8 +362,11 @@ extension DefaultStyling {
         configureTabBar(appearance: standard.stackedLayoutAppearance.disabled)
 
         UITabBar.appearance().standardAppearance = standard
-        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        }
+        //        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
+        UITabBar.appearance().unselectedItemTintColor = .red
         UITabBar.appearance().tintColor = .brand(.primaryText())
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
 
@@ -378,12 +396,14 @@ extension DefaultStyling {
         .standardAppearance.shadowImage = UIColor.brand(.primaryText())
             .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .light)
-        )
-        .scrollEdgeAppearance?
-        .shadowImage = UIColor.brand(.primaryText())
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brand(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        }
 
         UITabBar.appearance(
             for: UITraitCollection(userInterfaceStyle: .dark)
@@ -395,12 +415,14 @@ extension DefaultStyling {
             for: UITraitCollection(userInterfaceStyle: .dark)
         )
 
-        UITabBar.appearance(
-            for: UITraitCollection(userInterfaceStyle: .dark)
-        )
-        .scrollEdgeAppearance?
-        .shadowImage = UIColor.brand(.primaryText())
-            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            )
+            .scrollEdgeAppearance?
+            .shadowImage = UIColor.brand(.primaryText())
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        }
     }
 
     private static func setSegmentedControllAppearance() {

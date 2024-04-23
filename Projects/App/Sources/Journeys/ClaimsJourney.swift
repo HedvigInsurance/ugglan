@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
-
     static func claimDetailJourney(claim: ClaimModel) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -60,38 +59,74 @@ extension AppJourney {
 
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        honestyPledge(from: origin)
-            .onDismiss {
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimsStore.send(.fetchClaims)
-            }
+        //<<<<<<< Updated upstream
+        //        honestyPledge(from: origin)
+        //            .onDismiss {
+        //                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+        //                claimsStore.send(.fetchClaims)
+        //            }
+        //=======
+        //        honestyPledge(from: origin)
+        DismissJourney()
     }
 
-    private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: HonestyPledge.journey(from: origin),
-            style: .detented(.scrollViewContentSize, bgColor: nil),
-            options: [.defaults, .blurredBackground]
-        ) { action in
-            if case let .navigationAction(navigationAction) = action {
-                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                        .onAction(SubmitClaimStore.self) { action in
-                            if case .dissmissNewClaimFlow = action {
-                                DismissJourney()
-                            }
-                        }
-                } else if case .openNotificationsPermissionScreen = navigationAction {
-                    AskForPushnotifications.journey(for: origin)
-                } else if case .openTriagingGroupScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                }
-            } else if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            }
-        }
+    @ViewBuilder
+    static func honestyPledge(from origin: ClaimsOrigin) -> some View {
+        HonestyPledge(onConfirmAction: {
+
+        })
+
+        //        HostingJourney(
+        //            SubmitClaimStore.self,
+        //            rootView: HonestyPledge.journey(from: origin),
+        //            style: .detented(.scrollViewContentSize, bgColor: nil),
+        //            options: [.defaults, .blurredBackground]
+        //        ) { action in
+        //            if case let .navigationAction(navigationAction) = action {
+        //                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
+        //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+        //                        .onAction(SubmitClaimStore.self) { action in
+        //                            if case .dissmissNewClaimFlow = action {
+        //                                DismissJourney()
+        //                            }
+        //                        }
+        //                } else if case .openNotificationsPermissionScreen = navigationAction {
+        //                    AskForPushnotifications.journey(for: origin)
+        //                } else if case .openTriagingGroupScreen = navigationAction {
+        //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+        //                }
+        //            } else if case .dissmissNewClaimFlow = action {
+        //                DismissJourney()
+        //            }
+        //        }
+        //>>>>>>> Stashed changes
     }
+
+    //    private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
+    //        HostingJourney(
+    //            SubmitClaimStore.self,
+    //            rootView: HonestyPledge.journey(from: origin),
+    //            style: .detented(.scrollViewContentSize, bgColor: nil),
+    //            options: [.defaults, .blurredBackground]
+    //        ) { action in
+    //            if case let .navigationAction(navigationAction) = action {
+    //                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
+    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+    //                        .onAction(SubmitClaimStore.self) { action in
+    //                            if case .dissmissNewClaimFlow = action {
+    //                                DismissJourney()
+    //                            }
+    //                        }
+    //                } else if case .openNotificationsPermissionScreen = navigationAction {
+    //                    AskForPushnotifications.journey(for: origin)
+    //                } else if case .openTriagingGroupScreen = navigationAction {
+    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+    //                }
+    //            } else if case .dissmissNewClaimFlow = action {
+    //                DismissJourney()
+    //            }
+    //        }
+    //    }
 }
 
 extension JourneyPresentation {

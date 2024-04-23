@@ -98,7 +98,7 @@ struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
     let source: HelpViewSource
-    @PresentableStore var store: HomeStore
+    @EnvironmentObject var router: Router
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -126,7 +126,7 @@ struct QuestionsItems: View {
                             "questionType": questionType.rawValue,
                         ]
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
-                        store.send(.openHelpCenterQuestionView(question: item))
+                        router.push(item)
                     }
                     .hWithoutHorizontalPadding
                     .hWithoutDividerPadding
@@ -142,7 +142,7 @@ struct QuestionsItems: View {
 
 struct SupportView: View {
     let topic: ChatTopicType?
-    @PresentableStore var store: HomeStore
+    @EnvironmentObject var helpCenterVm: HelpCenterNavigationViewModel
 
     var body: some View {
         HStack {
@@ -154,7 +154,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    store.send(.openFreeTextChat(from: topic))
+                    helpCenterVm.isChatPresented = .init(topic: topic)
                 } content: {
                     hText(L10n.hcChatButton)
                 }

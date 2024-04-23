@@ -1,7 +1,8 @@
 import Foundation
 import hGraphQL
 
-public struct InsuranceTerm: Codable, Equatable, Hashable {
+public struct InsuranceTerm: Codable, Equatable, Hashable, Identifiable {
+    public var id: String?
     public var displayName: String
     public var url: String
     public var type: TypeOfDocument

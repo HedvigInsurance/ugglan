@@ -1,4 +1,5 @@
 import Combine
+import Home
 import Kingfisher
 import Photos
 import Presentation
@@ -13,6 +14,9 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject var vm: ClaimDetailViewModel
+
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
+
     public init(
         claim: ClaimModel
     ) {
@@ -175,9 +179,7 @@ public struct ClaimDetailView: View {
                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                 }
                 .onTap {
-                    if let url = URL(string: termsAndConditionsDocument.url) {
-                        vm.store.send(.openDocument(url: url, title: termsAndConditionsDocument.displayName))
-                    }
+                    homeVm.document = termsAndConditionsDocument
                 }
             }
         }

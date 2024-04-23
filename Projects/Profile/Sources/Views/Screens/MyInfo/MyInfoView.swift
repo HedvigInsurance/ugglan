@@ -6,9 +6,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MyInfoView: View {
+public struct MyInfoView: View {
     @StateObject var vm = MyInfoViewModel()
-    var body: some View {
+
+    public init() {}
+
+    public var body: some View {
         hForm {
             hSection {
                 VStack(spacing: 4) {
@@ -117,7 +120,7 @@ struct MyInfoView: View {
     }
 }
 
-class MyInfoViewModel: ObservableObject {
+public class MyInfoViewModel: ObservableObject {
     @Inject var profileService: ProfileService
     @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?

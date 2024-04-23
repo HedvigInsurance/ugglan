@@ -62,7 +62,7 @@ public enum HomeAction: ActionProtocol {
 
     case dismissOtherServices
     case hideImportantMessage(id: String)
-    case openContractCertificate(url: URL, title: String)
+    //    case openContractCertificate(url: URL, title: String)
 
     case openHelpCenterTopicView(commonTopic: CommonTopic)
     case openHelpCenterQuestionView(question: Question)
