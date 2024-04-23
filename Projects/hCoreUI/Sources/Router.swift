@@ -9,6 +9,7 @@ public class Router: ObservableObject {
     fileprivate var onPopToRoot: (() -> Void)?
     fileprivate var onPopVC: ((UIViewController) -> Void)?
     fileprivate var onPopAtIndex: ((Int) -> Void)?
+    fileprivate var onDismiss: (() -> Void)?
 
     public init() {}
 
@@ -52,6 +53,10 @@ public class Router: ObservableObject {
     public func popToRoot() {
         routes.removeAll()
         onPopToRoot?()
+    }
+
+    public func dismiss() {
+        onDismiss?()
     }
 
     deinit {
@@ -148,6 +153,11 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         navigation.onDeinit = { [weak router] in
             router?.builders.removeAll()
         }
+
+        router.onDismiss = { [weak navigation] in
+            navigation?.dismiss(animated: true)
+        }
+
         return navigation
     }
 
