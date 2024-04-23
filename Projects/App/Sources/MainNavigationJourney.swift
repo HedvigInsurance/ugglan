@@ -31,9 +31,7 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
-    @StateObject var tabBarControlContext = TabControllerContext()
-    @StateObject var homeRouter = Router()
+    @StateObject var router = Router()
 
     var body: some Scene {
         WindowGroup {
@@ -41,6 +39,7 @@ struct MainNavigationJourney: App {
                 TabView(selection: $vm.selectedTab) {
                     Group {
                         homeTab
+                            .environmentObject(router)
                         contractsTab
 
                         let store: ContractStore = globalPresentableStoreContainer.get()
@@ -66,7 +65,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter) {
+        return RouterHost(router: router) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -74,6 +73,10 @@ struct MainNavigationJourney: App {
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )
+            .routerDestination(for: ClaimModel.self) { claim in
+                ClaimDetailView(claim: claim)
+                    .environmentObject(homeNavigationVm)
+            }
         }
         .environmentObject(homeNavigationVm)
         .detent(
@@ -130,10 +133,6 @@ struct MainNavigationJourney: App {
                 }
             )
         }
-        .navigationDestination(for: ClaimModel.self) { claim in
-            ClaimDetailView(claim: claim)
-                .environmentObject(homeNavigationVm)
-        }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation()
                 .environmentObject(homeNavigationVm)
@@ -151,10 +150,6 @@ struct MainNavigationJourney: App {
         ) {
             CrossSellingScreen()
         }
-        .navigationDestination(for: ClaimModel.self) { claim in
-            ClaimDetailView(claim: claim)
-                .environmentObject(homeNavigationVm)
-        }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation()
                 .environmentObject(homeNavigationVm)
@@ -167,135 +162,19 @@ struct MainNavigationJourney: App {
     }
 
     var contractsTab: some View {
-        return NavigationStack(path: $contractsNavigationVm.externalNavigationRedirect) {
-            Contracts(showTerminated: false)
-                .navigationDestination(for: Contract.self) { contract in
-                    ContractDetail(id: contract.id, title: contract.currentAgreement?.productVariant.displayName ?? "")
-                        .environmentObject(tabBarControlContext)
-                }
-                .detent(
-                    item: $contractsNavigationVm.insurableLimit,
-                    style: .height
-                ) { insurableLimit in
-                    InfoView(
-                        title: L10n.contractCoverageMoreInfo,
-                        description: insurableLimit.description,
-                        onDismiss: {
-                            contractsNavigationVm.insurableLimit = nil
-                        }
-                    )
-                }
-                .detent(
-                    item: $contractsNavigationVm.document,
-                    style: .height
-                ) { document in
-                    if let url = URL(string: document.url) {
-                        NavigationStack {
-                            PDFPreview(document: .init(url: url, title: document.displayName))
-                                .onDisappear {
-                                    contractsNavigationVm.document = nil
-                                }
-                        }
-                    }
-                }
-                .detent(
-                    item: $contractsNavigationVm.changeYourInformationContract,
-                    style: .height
-                ) { contract in
-                    EditContract(id: contract.id)
-                        .environmentObject(contractsNavigationVm)
-                }
-                .detent(
-                    presented: $contractsNavigationVm.isChatPresented,
-                    style: .height
-                ) {
-                    ChatScreen(vm: .init(topicType: nil))
-                }
-                .detent(
-                    item: $contractsNavigationVm.renewalDocument,
-                    style: .height
-                ) { renewalDocument in
-                    NavigationStack {
-                        PDFPreview(document: .init(url: renewalDocument.url, title: renewalDocument.title))
-                            .onDisappear {
-                                contractsNavigationVm.renewalDocument = nil
-                            }
-                    }
-                }
-                .detent(
-                    item: $contractsNavigationVm.insuranceUpdate,
-                    style: .height
-                ) { insuranceUpdate in
-                    UpcomingChangesScreen(
-                        updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
-                        upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
-                    )
-                    .onDisappear {
-                        contractsNavigationVm.insuranceUpdate = nil
-                    }
-                }
-                .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-                    EditCoInsuredNavigation(
-                        configs: [editCoInsuredConfig],
-                        onDisappear: {
-                            contractsNavigationVm.editCoInsuredConfig = nil
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                let store: ContractStore = globalPresentableStoreContainer.get()
-                                let missingContract = store.state.activeContracts.first { contract in
-                                    if contract.upcomingChangedAgreement != nil {
-                                        return false
-                                    } else {
-                                        return contract.coInsured
-                                            .first(where: { coInsured in
-                                                coInsured.hasMissingInfo && contract.terminationDate == nil
-                                            }) != nil
-                                    }
-                                }
-
-                                if let missingContract {
-                                    contractsNavigationVm.editCoInsuredConfig = nil
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        let store: ContractStore = globalPresentableStoreContainer.get()
-                                        let missingContract = store.state.activeContracts.first { contract in
-                                            if contract.upcomingChangedAgreement != nil {
-                                                return false
-                                            } else {
-                                                return contract.coInsured
-                                                    .first(where: { coInsured in
-                                                        coInsured.hasMissingInfo && contract.terminationDate == nil
-                                                    }) != nil
-                                            }
-                                        }
-
-                                        if let missingContract {
-                                            contractsNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    )
-                }
-                .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-                    let contractConfig: TerminationConfirmConfig = .init(contract: contract)
-                    TerminationViewJourney(configs: [contractConfig])
-                }
-                .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-                    MovingFlowViewJourney()
-                }
-                .detent(
-                    item: $contractsNavigationVm.isMissingEditCoInsuredAlertPresented,
-                    style: .height
-                ) { contract in
-                    getMissingCoInsuredAlertView(
-                        missingContract: contract,
-                        onDismiss: {
-                            contractsNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-                        }
-                    )
-                }
+        ContractsNavigation { redirectType in
+            switch redirectType {
+            case let .editCoInsured(editCoInsuredConfig, onDisappear):
+                EditCoInsuredNavigation(configs: [editCoInsuredConfig], onDisappear: onDisappear)
+            case .chat:
+                ChatScreen(vm: .init(topicType: nil))
+                    .presentationDetents([.large, .medium])
+            case .movingFlow:
+                MovingFlowViewJourney()
+            case let .pdf(document):
+                PDFPreview(document: .init(url: document.url, title: document.title))
+            }
         }
-        .environmentObject(contractsNavigationVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 1

@@ -11,7 +11,7 @@ struct ContractTable: View {
     @State var onlyTerminatedInsurances = false
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
-
+    @EnvironmentObject var router: Router
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -58,7 +58,7 @@ struct ContractTable: View {
                                 activeInFuture: contract.activeInFuture,
                                 masterInceptionDate: contract.masterInceptionDate,
                                 onClick: {
-                                    contractsNavigationVm.externalNavigationRedirect.append(contract)
+                                    router.push(contract)
                                 }
                             )
                             .fixedSize(horizontal: false, vertical: true)
@@ -84,8 +84,7 @@ struct ContractTable: View {
                     if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                         hSection {
                             hButton.LargeButton(type: .secondary) {
-                                //                                store.send(.openTerminatedContracts)
-                                contractsNavigationVm.externalNavigationRedirect.append(terminatedContracts)
+                                router.push(ContractsRouterType.terminatedContracts)
                             } content: {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))

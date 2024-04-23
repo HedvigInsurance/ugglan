@@ -90,14 +90,14 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
     let router: Router
     let options: RouterOptions
 
-    var initialView: Screen
+    var initialView: () -> Screen
 
     init(
         router: Router,
         options: RouterOptions = [],
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        self.initialView = initial()
+        self.initialView = initial
         self.router = router
         self.options = options
     }
@@ -112,7 +112,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             return hNavigationController()
         }()
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView.environmentObject(router))],
+            [hHostingController(rootView: initialView().environmentObject(router))],
             animated: false
         )
         router.onPush = { [weak router, weak navigation] options, view in guard let router = router else { return nil }
