@@ -57,10 +57,9 @@ public class TabControllerContext: ObservableObject {
 
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
-    @EnvironmentObject var context: TabControllerContext
+    @StateObject var context = TabControllerContext()
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
-    var title: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
@@ -84,11 +83,9 @@ public struct ContractDetail: View {
     }
 
     public init(
-        id: String,
-        title: String
+        id: String
     ) {
         self.id = id
-        self.title = title
         self._vm = .init(wrappedValue: .init(id: id))
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(id: id)

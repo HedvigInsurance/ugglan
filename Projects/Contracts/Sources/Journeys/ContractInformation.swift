@@ -230,7 +230,7 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            contractsNavigationVm.renewalDocument = Document(
+                            contractsNavigationVm.document = Document(
                                 url: url,
                                 title: L10n.insuranceCertificateTitle
                             )
@@ -259,7 +259,7 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    contractsNavigationVm.renewalDocument = Document(
+                                    contractsNavigationVm.document = Document(
                                         url: url,
                                         title: L10n.myDocumentsInsuranceCertificate
                                     )

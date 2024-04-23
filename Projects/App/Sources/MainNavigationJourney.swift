@@ -31,7 +31,6 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
     @StateObject var tabBarControlContext = TabControllerContext()
 
     var body: some Scene {
@@ -145,88 +144,18 @@ struct MainNavigationJourney: App {
     }
 
     var contractsTab: some View {
-        return NavigationStack(path: $contractsNavigationVm.externalNavigationRedirect) {
-            Contracts(showTerminated: false)
-                .environmentObject(contractsNavigationVm)
-                .navigationDestination(for: Contract.self) { contract in
-                    ContractDetail(id: contract.id, title: contract.currentAgreement?.productVariant.displayName ?? "")
-                        .environmentObject(tabBarControlContext)
-                        .environmentObject(contractsNavigationVm)
-                        .presentationDetents([.medium])
-                }
-                .detent(
-                    item: $contractsNavigationVm.insurableLimit,
-                    style: .height
-                ) { insurableLimit in
-                    InfoView(
-                        title: L10n.contractCoverageMoreInfo,
-                        description: insurableLimit.description,
-                        onDismiss: {
-                            contractsNavigationVm.insurableLimit = nil
-                        }
-                    )
-                }
-                .detent(
-                    item: $contractsNavigationVm.document,
-                    style: .height
-                ) { document in
-                    if let url = URL(string: document.url) {
-                        NavigationStack {
-                            PDFPreview(document: .init(url: url, title: document.displayName))
-                                .onDisappear {
-                                    contractsNavigationVm.document = nil
-                                }
-                        }
-                    }
-                }
-                .detent(
-                    item: $contractsNavigationVm.changeYourInformationContract,
-                    style: .height
-                ) { contract in
-                    EditContract(id: contract.id)
-                        .presentationDetents([.medium])
-                }
-                .detent(
-                    presented: $contractsNavigationVm.isChatPresented,
-                    style: .height
-                ) {
-                    ChatScreen(vm: .init(topicType: nil))
-                        .presentationDetents([.large, .medium])
-                }
-                .detent(
-                    item: $contractsNavigationVm.renewalDocument,
-                    style: .height
-                ) { renewalDocument in
-                    NavigationStack {
-                        PDFPreview(document: .init(url: renewalDocument.url, title: renewalDocument.title))
-                            .onDisappear {
-                                contractsNavigationVm.renewalDocument = nil
-                            }
-                    }
-                }
-                .detent(
-                    item: $contractsNavigationVm.insuranceUpdate,
-                    style: .height
-                ) { insuranceUpdate in
-                    UpcomingChangesScreen(
-                        updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
-                        upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
-                    )
-                    .onDisappear {
-                        contractsNavigationVm.insuranceUpdate = nil
-                    }
+        ContractsNavigation { redirectType in
+            switch redirectType {
+            case let .editCoInsured(editCoInsuredConfig):
+                EditCoInsuredViewJourney(configs: [editCoInsuredConfig])
+            case .chat:
+                ChatScreen(vm: .init(topicType: nil))
                     .presentationDetents([.large, .medium])
-                }
-                .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-                    EditCoInsuredViewJourney(configs: [editCoInsuredConfig])
-                }
-                .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-                    let contractConfig: TerminationConfirmConfig = .init(contract: contract)
-                    TerminationViewJourney(configs: [contractConfig])
-                }
-                .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-                    MovingFlowViewJourney()
-                }
+            case .movingFlow:
+                MovingFlowViewJourney()
+            case let .pdf(document):
+                PDFPreview(document: .init(url: document.url, title: document.title))
+            }
         }
         .tabItem {
             Image(

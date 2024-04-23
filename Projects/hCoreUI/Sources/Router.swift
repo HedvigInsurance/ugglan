@@ -63,14 +63,14 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
     let router: Router
     let options: RouterOptions
 
-    var initialView: Screen
+    var initialView: () -> Screen
 
     public init(
         router: Router,
         options: RouterOptions = [],
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        self.initialView = initial()
+        self.initialView = initial
         self.router = router
         self.options = options
     }
@@ -85,7 +85,7 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
             return hNavigationController()
         }()
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView.environmentObject(router))],
+            [hHostingController(rootView: initialView().environmentObject(router))],
             animated: false
         )
         router.onPush = { [weak router, weak navigation] options, view in guard let router = router else { return nil }
@@ -150,7 +150,7 @@ private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
     func body(content: Content) -> some View {
-        return RouterHost(router: Router(), options: options) {
+        return RouterHost(router: router, options: options) {
             content
                 .environmentObject(router)
         }
