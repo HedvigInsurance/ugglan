@@ -58,14 +58,36 @@ public class Router: ObservableObject {
         let ss = ""
     }
 }
-public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
+public struct RouterHost<Screen: View>: View {
+    let router: Router
+    let options: RouterOptions
+    @ViewBuilder var initialView: () -> Screen
+
+    public init(
+        router: Router,
+        options: RouterOptions = [],
+        @ViewBuilder initial: @escaping () -> Screen
+    ) {
+        self.initialView = initial
+        self.router = router
+        self.options = options
+    }
+
+    public var body: some View {
+        RouterWrappedValue(router: router, options: options, initial: initialView)
+            .ignoresSafeArea()
+            .environmentObject(router)
+    }
+}
+
+private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
     let router: Router
     let options: RouterOptions
 
     var initialView: () -> Screen
 
-    public init(
+    init(
         router: Router,
         options: RouterOptions = [],
         @ViewBuilder initial: @escaping () -> Screen
@@ -155,5 +177,13 @@ private struct EmbededInNavigation: ViewModifier {
                 .environmentObject(router)
         }
         .ignoresSafeArea()
+    }
+}
+
+extension View {
+    public func configureTitle(_ title: String) -> some View {
+        self.introspectViewController { vc in
+            vc.title = title
+        }
     }
 }
