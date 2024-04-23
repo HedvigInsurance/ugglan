@@ -33,6 +33,7 @@ struct MainNavigationJourney: App {
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
     @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
     @StateObject var tabBarControlContext = TabControllerContext()
+    @StateObject var homeRouter = Router()
 
     var body: some Scene {
         WindowGroup {
@@ -65,7 +66,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return NavigationStack(path: $homeNavigationVm.externalNavigationRedirect) {
+        return RouterHost(router: homeRouter) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -73,84 +74,90 @@ struct MainNavigationJourney: App {
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )
-            .environmentObject(homeNavigationVm)
-            .detent(
-                presented: $homeNavigationVm.isSubmitClaimPresented,
-                style: .height,
-                content: {
-                    HonestyPledge(onConfirmAction: {})
-                        .embededInNavigation()
+        }
+        .environmentObject(homeNavigationVm)
+        .detent(
+            presented: $homeNavigationVm.isSubmitClaimPresented,
+            style: .height
+        ) {
+            HonestyPledge(onConfirmAction: {})
+                .embededInNavigation()
+        }
+        .detent(
+            presented: $homeNavigationVm.isChatPresented,
+            style: .large
+        ) {
+            ChatScreen(vm: .init(topicType: nil))
+                .navigationTitle(L10n.chatTitle)
+                .withDismissButton()
+                .embededInNavigation(options: [.navigationType(type: .large)])
+        }
+        .detent(
+            item: $homeNavigationVm.document,
+            style: .large
+        ) { document in
+            if let url = URL(string: document.url) {
+                PDFPreview(document: .init(url: url, title: document.displayName))
+                    .embededInNavigation(options: [.navigationType(type: .large)])
+            }
+        }
+        .fullScreenCover(
+            isPresented: $homeNavigationVm.isCoInsuredPresented
+        ) {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+            let contractsSupportingCoInsured = contractStore.state.activeContracts
+                .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
+                .compactMap({
+                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                })
+
+            EditCoInsuredNavigation(
+                configs: contractsSupportingCoInsured,
+                onDisappear: {
+                    homeNavigationVm.isCoInsuredPresented = false
                 }
             )
-            .detent(
-                presented: $homeNavigationVm.isChatPresented,
-                style: .large,
-                content: {
-                    ChatScreen(vm: .init(topicType: nil))
-                        .navigationTitle(L10n.chatTitle)
-                        .withDismissButton()
-                        .embededInNavigation(options: [.navigationType(type: .large)])
+        }
+        .detent(
+            item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
+            style: .height
+        ) { contract in
+            getMissingCoInsuredAlertView(
+                missingContract: contract,
+                onDismiss: {
+                    homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
                 }
             )
-            .detent(
-                item: $homeNavigationVm.document,
-                style: .large
-            ) { document in
-                if let url = URL(string: document.url) {
-                    PDFPreview(document: .init(url: url, title: document.displayName))
-                        .embededInNavigation(options: [.navigationType(type: .large)])
-                }
-            }
-            .detent(
-                presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-                style: .height
-            ) {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-            }
-            .detent(
-                presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
-                style: .height
-            ) {
-                CrossSellingScreen()
-            }
-            .fullScreenCover(
-                isPresented: $homeNavigationVm.isCoInsuredPresented
-            ) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-                let contractsSupportingCoInsured = contractStore.state.activeContracts
-                    .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
-                    .compactMap({
-                        InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                    })
-
-                EditCoInsuredNavigation(
-                    configs: contractsSupportingCoInsured,
-                    onDisappear: {
-                        homeNavigationVm.isCoInsuredPresented = false
-                    }
-                )
-            }
-            .detent(
-                item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-                style: .height
-            ) { contract in
-                getMissingCoInsuredAlertView(
-                    missingContract: contract,
-                    onDismiss: {
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-                    }
-                )
-            }
-            .navigationDestination(for: ClaimModel.self) { claim in
-                ClaimDetailView(claim: claim)
-                    .environmentObject(homeNavigationVm)
-            }
-            .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-                HelpCenterNavigation()
-                    .environmentObject(homeNavigationVm)
-            }
+        }
+        .navigationDestination(for: ClaimModel.self) { claim in
+            ClaimDetailView(claim: claim)
+                .environmentObject(homeNavigationVm)
+        }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation()
+                .environmentObject(homeNavigationVm)
+        }
+        .detent(
+            presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
+            style: .height
+        ) {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+        }
+        .detent(
+            presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
+            style: .height
+        ) {
+            CrossSellingScreen()
+        }
+        .navigationDestination(for: ClaimModel.self) { claim in
+            ClaimDetailView(claim: claim)
+                .environmentObject(homeNavigationVm)
+        }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation()
+                .environmentObject(homeNavigationVm)
         }
         .tabItem {
             Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
