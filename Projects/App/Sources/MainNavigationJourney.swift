@@ -31,13 +31,15 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var homeRouter = Router()
+    @StateObject var router = Router()
+
     var body: some Scene {
         WindowGroup {
             if vm.hasLaunchFinished {
                 TabView(selection: $vm.selectedTab) {
                     Group {
                         homeTab
+                            .environmentObject(router)
                         contractsTab
 
                         let store: ContractStore = globalPresentableStoreContainer.get()
@@ -63,7 +65,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter) {
+        return RouterHost(router: router) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -71,26 +73,28 @@ struct MainNavigationJourney: App {
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )
+            .routerDestination(for: ClaimModel.self) { claim in
+                ClaimDetailView(claim: claim)
+                    .environmentObject(homeNavigationVm)
+            }
         }
         .environmentObject(homeNavigationVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: .height,
-            content: {
-                HonestyPledge(onConfirmAction: {})
-                    .embededInNavigation()
-            }
-        )
+            style: .height
+        ) {
+            HonestyPledge(onConfirmAction: {})
+                .embededInNavigation()
+        }
         .detent(
             presented: $homeNavigationVm.isChatPresented,
-            style: .large,
-            content: {
-                ChatScreen(vm: .init(topicType: nil))
-                    .navigationTitle(L10n.chatTitle)
-                    .withDismissButton()
-                    .embededInNavigation(options: [.navigationType(type: .large)])
-            }
-        )
+            style: .large
+        ) {
+            ChatScreen(vm: .init(topicType: nil))
+                .navigationTitle(L10n.chatTitle)
+                .withDismissButton()
+                .embededInNavigation(options: [.navigationType(type: .large)])
+        }
         .detent(
             item: $homeNavigationVm.document,
             style: .large
@@ -124,10 +128,6 @@ struct MainNavigationJourney: App {
                     InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                 })
             EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
-        }
-        .navigationDestination(for: ClaimModel.self) { claim in
-            ClaimDetailView(claim: claim)
-                .environmentObject(homeNavigationVm)
         }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation()
