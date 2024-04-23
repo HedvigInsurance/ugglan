@@ -35,7 +35,7 @@ struct ContractDocumentsView: View {
                                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                                 }
                                 .onTap {
-                                    contractsNavigationViewModel.document = document
+                                    contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
                                 }
                             }
                         }

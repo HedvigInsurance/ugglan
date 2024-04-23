@@ -9,6 +9,7 @@ public class Router: ObservableObject {
     fileprivate var onPopToRoot: (() -> Void)?
     fileprivate var onPopVC: ((UIViewController) -> Void)?
     fileprivate var onPopAtIndex: ((Int) -> Void)?
+    fileprivate var onDismiss: (() -> Void)?
 
     public init() {}
 
@@ -54,23 +55,49 @@ public class Router: ObservableObject {
         onPopToRoot?()
     }
 
+    public func dismiss() {
+        onDismiss?()
+    }
+
     deinit {
         let ss = ""
     }
 }
-public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
-
+public struct RouterHost<Screen: View>: View {
     let router: Router
     let options: RouterOptions
-
-    var initialView: Screen
+    @ViewBuilder var initialView: () -> Screen
 
     public init(
         router: Router,
         options: RouterOptions = [],
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        self.initialView = initial()
+        self.initialView = initial
+        self.router = router
+        self.options = options
+    }
+
+    public var body: some View {
+        RouterWrappedValue(router: router, options: options, initial: initialView)
+            .ignoresSafeArea()
+            .environmentObject(router)
+    }
+}
+
+private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
+
+    let router: Router
+    let options: RouterOptions
+
+    var initialView: () -> Screen
+
+    init(
+        router: Router,
+        options: RouterOptions = [],
+        @ViewBuilder initial: @escaping () -> Screen
+    ) {
+        self.initialView = initial
         self.router = router
         self.options = options
     }
@@ -85,7 +112,7 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
             return hNavigationController()
         }()
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView.environmentObject(router))],
+            [hHostingController(rootView: initialView().environmentObject(router))],
             animated: false
         )
         router.onPush = { [weak router, weak navigation] options, view in guard let router = router else { return nil }
@@ -126,6 +153,11 @@ public struct RouterHost<Screen: View>: UIViewControllerRepresentable {
         navigation.onDeinit = { [weak router] in
             router?.builders.removeAll()
         }
+
+        router.onDismiss = { [weak navigation] in
+            navigation?.dismiss(animated: true)
+        }
+
         return navigation
     }
 
@@ -150,10 +182,18 @@ private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
     func body(content: Content) -> some View {
-        return RouterHost(router: Router(), options: options) {
+        return RouterHost(router: router, options: options) {
             content
                 .environmentObject(router)
         }
         .ignoresSafeArea()
+    }
+}
+
+extension View {
+    public func configureTitle(_ title: String) -> some View {
+        self.introspectViewController { vc in
+            vc.title = title
+        }
     }
 }

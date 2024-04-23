@@ -13,16 +13,19 @@ struct CoInusuredInput: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @Binding var isSuccessPresented: CoInsuredAction?
 
     public init(
         vm: CoInusuredInputViewModel,
-        title: String
+        title: String,
+        isSuccessPresented: Binding<CoInsuredAction?>
     ) {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm
         self.title = title
+        self._isSuccessPresented = isSuccessPresented
 
         vm.SSNError = nil
         intentVm.errorMessageForInput = nil
@@ -107,7 +110,7 @@ struct CoInusuredInput: View {
                                         )
                                     }
                                     if !intentVm.showErrorViewForCoInsuredInput {
-                                        editCoInsuredNavigation.showSuccessScreen = .delete
+                                        isSuccessPresented = .delete
                                     } else {
                                         // add back
                                         if vm.noSSN {
@@ -193,7 +196,7 @@ struct CoInusuredInput: View {
                                                 coInsured: insuredPeopleVm.completeList()
                                             )
                                             if !intentVm.showErrorViewForCoInsuredInput {
-                                                editCoInsuredNavigation.showSuccessScreen = .add
+                                                isSuccessPresented = .add
                                             } else {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.removeCoInsured(
@@ -417,7 +420,8 @@ struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
         CoInusuredInput(
             vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
-            title: "title"
+            title: "title",
+            isSuccessPresented: .constant(nil)
         )
     }
 }
