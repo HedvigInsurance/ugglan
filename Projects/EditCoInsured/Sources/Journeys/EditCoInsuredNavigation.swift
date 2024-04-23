@@ -85,14 +85,52 @@ public struct EditCoInsuredNavigation: View {
                 item: $editCoInsuredNavigationVm.coInsuredInputModel,
                 style: .height
             ) { coInsuredInputModel in
-                openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
+                openCoInsuredInput(
+                    coInsuredModelEdit: coInsuredInputModel,
+                    isSuccessPresented: $editCoInsuredNavigationVm.showSuccessScreen
+                )
+                .detent(
+                    item: $editCoInsuredNavigationVm.showSuccessScreen,
+                    style: .height
+                ) { actionType in
+                    var title: String {
+                        switch actionType {
+                        case .add:
+                            return L10n.contractCoinsuredAdded
+                        case .delete:
+                            return L10n.contractCoinsuredRemoved
+                        default:
+                            return ""
+                        }
+                    }
+                    openSuccessScreen(title: title)
+                }
             }
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
             style: .height
         ) { coInsuredInputModel in
-            openCoInsuredInput(coInsuredModelEdit: coInsuredInputModel)
+            openCoInsuredInput(
+                coInsuredModelEdit: coInsuredInputModel,
+                isSuccessPresented: $editCoInsuredNavigationVm.showSuccessScreen
+            )
+            .detent(
+                item: $editCoInsuredNavigationVm.showSuccessScreen,
+                style: .height
+            ) { actionType in
+                var title: String {
+                    switch actionType {
+                    case .add:
+                        return L10n.contractCoinsuredAdded
+                    case .delete:
+                        return L10n.contractCoinsuredRemoved
+                    default:
+                        return ""
+                    }
+                }
+                openSuccessScreen(title: title)
+            }
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
@@ -111,22 +149,6 @@ public struct EditCoInsuredNavigation: View {
             let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
             let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
             openNewInsuredPeopleScreen()
-        }
-        .detent(
-            item: $editCoInsuredNavigationVm.showSuccessScreen,
-            style: .height
-        ) { actionType in
-            var title: String {
-                switch actionType {
-                case .add:
-                    return L10n.contractCoinsuredAdded
-                case .delete:
-                    return L10n.contractCoinsuredRemoved
-                default:
-                    return ""
-                }
-            }
-            openSuccessScreen(title: title)
         }
         .environmentObject(editCoInsuredNavigationVm)
     }
@@ -188,7 +210,8 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openCoInsuredInput(
-        coInsuredModelEdit: CoInsuredInputModel
+        coInsuredModelEdit: CoInsuredInputModel,
+        isSuccessPresented: Binding<CoInsuredAction?>
     ) -> some View {
         CoInusuredInput(
             vm: .init(
@@ -196,7 +219,8 @@ public struct EditCoInsuredNavigation: View {
                 actionType: coInsuredModelEdit.actionType,
                 contractId: coInsuredModelEdit.contractId
             ),
-            title: coInsuredModelEdit.title
+            title: coInsuredModelEdit.title,
+            isSuccessPresented: isSuccessPresented
         )
         .environmentObject(editCoInsuredNavigationVm)
         .navigationTitle(L10n.contractAddConisuredInfo)
@@ -224,7 +248,6 @@ public struct EditCoInsuredNavigation: View {
                     editCoInsuredNavigationVm.showSuccessScreen = nil
                 }
             }
-            .presentationDetents([.medium])
     }
 
     func openRemoveCoInsuredScreen() -> some View {
