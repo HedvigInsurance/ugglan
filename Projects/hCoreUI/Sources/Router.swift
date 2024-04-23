@@ -157,3 +157,11 @@ private struct EmbededInNavigation: ViewModifier {
         .ignoresSafeArea()
     }
 }
+
+extension View {
+    public func configureTitle(_ title: String) -> some View {
+        self.introspectViewController { vc in
+            vc.title = title
+        }
+    }
+}
