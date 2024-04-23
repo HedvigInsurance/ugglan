@@ -51,7 +51,9 @@ public struct ContractsNavigation<Content: View>: View {
                 style: .height
             ) { contract in
                 EditContract(id: contract.id)
-                    .presentationDetents([.medium])
+                    .configureTitle(L10n.contractChangeInformationTitle)
+                    .environmentObject(contractsNavigationVm)
+                    .embededInNavigation(options: .navigationType(type: .large))
             }
             .detent(
                 presented: $contractsNavigationVm.isChatPresented,
@@ -70,7 +72,6 @@ public struct ContractsNavigation<Content: View>: View {
                 .onDisappear {
                     contractsNavigationVm.insuranceUpdate = nil
                 }
-                .presentationDetents([.large, .medium])
             }
             .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
                 redirect(.editCoInsured(config: editCoInsuredConfig))
