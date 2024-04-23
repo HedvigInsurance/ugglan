@@ -118,22 +118,12 @@ struct MainNavigationJourney: App {
             style: .height
         ) {
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-<<<<<<< HEAD
-                let contractsSupportingCoInsured = contractStore.state.activeContracts
-                    .filter({ $0.showEditCoInsuredInfo })
-                    .compactMap({
-                        InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                    })
-=======
             let contractsSupportingCoInsured = contractStore.state.activeContracts
                 .filter({ $0.showEditCoInsuredInfo })
                 .compactMap({
-                    InsuredPeopleConfig(contract: $0)
+                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                 })
->>>>>>> improvement/new-navigation
-
-            return EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
+            EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
         }
         .navigationDestination(for: ClaimModel.self) { claim in
             ClaimDetailView(claim: claim)
