@@ -43,6 +43,8 @@ public struct HelpCenterNavigation: View {
             HelpCenterStartView { quickAction in
                 handle(quickAction: quickAction)
             }
+            .navigationTitle(L10n.hcTitle)
+            .withDismissButton()
             .routerDestination(for: Question.self) { question in
                 HelpCenterQuestionView(question: question)
             }

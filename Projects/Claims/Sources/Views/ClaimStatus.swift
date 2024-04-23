@@ -8,14 +8,14 @@ struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
 
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
+    @EnvironmentObject var homeRouter: Router
 
     @PresentableStore
     var store: ClaimsStore
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in
-            homeVm.externalNavigationRedirect.append(claim)
+            homeRouter.push(claim)
         }
     }
 

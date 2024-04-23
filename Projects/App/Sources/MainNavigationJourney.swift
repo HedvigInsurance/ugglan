@@ -29,6 +29,7 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
+    @StateObject var homeRouter = Router()
 
     var body: some Scene {
         WindowGroup {
@@ -61,7 +62,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return NavigationStack(path: $homeNavigationVm.externalNavigationRedirect) {
+        return RouterHost(router: homeRouter) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -69,69 +70,69 @@ struct MainNavigationJourney: App {
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )
-            .environmentObject(homeNavigationVm)
-            .detent(
-                presented: $homeNavigationVm.isSubmitClaimPresented,
-                style: .height,
-                content: {
-                    HonestyPledge(onConfirmAction: {})
-                        .embededInNavigation()
-                }
-            )
-            .detent(
-                presented: $homeNavigationVm.isChatPresented,
-                style: .large,
-                content: {
-                    ChatScreen(vm: .init(topicType: nil))
-                        .navigationTitle(L10n.chatTitle)
-                        .withDismissButton()
-                        .embededInNavigation(options: [.navigationType(type: .large)])
-                }
-            )
-            .detent(
-                item: $homeNavigationVm.document,
-                style: .large
-            ) { document in
-                if let url = URL(string: document.url) {
-                    PDFPreview(document: .init(url: url, title: document.displayName))
-                        .embededInNavigation(options: [.navigationType(type: .large)])
-                }
+        }
+        .environmentObject(homeNavigationVm)
+        .detent(
+            presented: $homeNavigationVm.isSubmitClaimPresented,
+            style: .height,
+            content: {
+                HonestyPledge(onConfirmAction: {})
+                    .embededInNavigation()
             }
-            .detent(
-                presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-                style: .height
-            ) {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                return FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+        )
+        .detent(
+            presented: $homeNavigationVm.isChatPresented,
+            style: .large,
+            content: {
+                ChatScreen(vm: .init(topicType: nil))
+                    .navigationTitle(L10n.chatTitle)
+                    .withDismissButton()
+                    .embededInNavigation(options: [.navigationType(type: .large)])
             }
-            .detent(
-                presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
-                style: .height
-            ) {
-                CrossSellingScreen()
+        )
+        .detent(
+            item: $homeNavigationVm.document,
+            style: .large
+        ) { document in
+            if let url = URL(string: document.url) {
+                PDFPreview(document: .init(url: url, title: document.displayName))
+                    .embededInNavigation(options: [.navigationType(type: .large)])
             }
-            .detent(
-                presented: $homeNavigationVm.isCoInsuredPresented,
-                style: .height
-            ) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        }
+        .detent(
+            presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
+            style: .height
+        ) {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            return FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+        }
+        .detent(
+            presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
+            style: .height
+        ) {
+            CrossSellingScreen()
+        }
+        .detent(
+            presented: $homeNavigationVm.isCoInsuredPresented,
+            style: .height
+        ) {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
-                let contractsSupportingCoInsured = contractStore.state.activeContracts
-                    .filter({ $0.showEditCoInsuredInfo })
-                    .compactMap({
-                        InsuredPeopleConfig(contract: $0)
-                    })
+            let contractsSupportingCoInsured = contractStore.state.activeContracts
+                .filter({ $0.showEditCoInsuredInfo })
+                .compactMap({
+                    InsuredPeopleConfig(contract: $0)
+                })
 
-                return EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
-            }
-            .navigationDestination(for: ClaimModel.self) { claim in
-                ClaimDetailView(claim: claim)
-                    .environmentObject(homeNavigationVm)
-            }
-            .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-                HelpCenterNavigation()
-                    .environmentObject(homeNavigationVm)
-            }
+            return EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
+        }
+        .navigationDestination(for: ClaimModel.self) { claim in
+            ClaimDetailView(claim: claim)
+                .environmentObject(homeNavigationVm)
+        }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation()
+                .environmentObject(homeNavigationVm)
         }
         .tabItem {
             Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
