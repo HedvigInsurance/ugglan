@@ -18,7 +18,7 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var externalNavigationRedirect = NavigationPath()
 }
 
-public enum OpenSpecificScreen {
+public enum EditCoInsuredScreenType {
     case missingAlert
     case newInsurance
     case none
@@ -26,18 +26,15 @@ public enum OpenSpecificScreen {
 
 public struct EditCoInsuredNavigation: View {
     let configs: [InsuredPeopleConfig]
-    let onDisappear: () -> Void
-    @State var openSpecificScreen: OpenSpecificScreen
+    @State var openSpecificScreen: EditCoInsuredScreenType
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
     @StateObject var router = Router()
 
     public init(
         configs: [InsuredPeopleConfig],
-        onDisappear: @escaping () -> Void,
-        openSpecificScreen: OpenSpecificScreen? = OpenSpecificScreen.none
+        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
     ) {
         self.configs = configs
-        self.onDisappear = onDisappear
         self.openSpecificScreen = openSpecificScreen ?? .none
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
@@ -166,7 +163,7 @@ public struct EditCoInsuredNavigation: View {
                 }
             },
             onCancel: {
-                onDisappear()
+                router.dismiss()
             },
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
@@ -179,10 +176,7 @@ public struct EditCoInsuredNavigation: View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleNewScreen(
             vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel,
-            onDisappear: {
-                onDisappear()
-            }
+            intentVm: store.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -192,10 +186,7 @@ public struct EditCoInsuredNavigation: View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleScreen(
             vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel,
-            onDisappear: {
-                onDisappear()
-            }
+            intentVm: store.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -225,7 +216,7 @@ public struct EditCoInsuredNavigation: View {
         CoInsuredProcessingScreen(
             showSuccessScreen: showSuccess,
             onDisappear: {
-                onDisappear()
+                router.dismiss()
             }
         )
     }
@@ -244,7 +235,7 @@ public struct EditCoInsuredNavigation: View {
         return RemoveCoInsuredScreen(
             vm: store.coInsuredViewModel,
             onDisappear: {
-                onDisappear()
+                router.dismiss()
             }
         )
         .configureTitle(L10n.coinsuredEditTitle)
@@ -268,7 +259,7 @@ public struct EditCoInsuredNavigation: View {
                     .init(
                         buttonTitle: L10n.contractCoinsuredMissingLater,
                         buttonAction: {
-                            onDisappear()
+                            router.dismiss()
                         }
                     )
             )
