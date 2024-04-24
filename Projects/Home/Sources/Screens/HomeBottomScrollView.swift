@@ -114,7 +114,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
         let needsPaymentSetupPublisher = paymentStore.stateSignal.plain()
-            .map({ $0.paymentStatusData?.status == .needsSetup })
+            .map({ $0.paymentStatusData?.status })
             .distinct()
             .publisher
         let memberStatePublisher = homeStore.stateSignal.plain()
@@ -125,20 +125,21 @@ class HomeButtonScrollViewModel: ObservableObject {
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] (paymentStatus, memberState) in
-                self?.setConnectPayments(for: memberState, needSetup: paymentStatus)
+                self?.setConnectPayments(for: memberState, status: paymentStatus)
             })
             .store(in: &cancellables)
         setConnectPayments(
             for: homeStore.state.memberContractState,
-            needSetup: paymentStore.state.paymentStatusData?.status == .needsSetup
+            status: paymentStore.state.paymentStatusData?.status
         )
         paymentStore.send(.fetchPaymentStatus)
     }
 
-    private func setConnectPayments(for userStatus: MemberContractState?, needSetup: Bool) {
+    private func setConnectPayments(for userStatus: MemberContractState?, status: PayinMethodStatus?) {
         handleItem(
             .payment,
-            with: needSetup && [MemberContractState.active, MemberContractState.future].contains(userStatus)
+            with: status?.showConnectPayment ?? false
+                && [MemberContractState.active, MemberContractState.future].contains(userStatus)
         )
     }
 

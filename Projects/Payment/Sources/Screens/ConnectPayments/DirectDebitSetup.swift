@@ -339,7 +339,7 @@ extension DirectDebitSetup {
                         let paymentServcice: AdyenService = Dependencies.shared.resolve()
                         do {
                             let url = try await paymentServcice.getAdyenUrl()
-                            paymentStore.send(.navigation(to: .openUrl(url: url)))
+                            paymentStore.send(.navigation(to: .openUrl(url: url, handledBySystem: true)))
                         } catch {
                             //we are not so concern about this
                         }

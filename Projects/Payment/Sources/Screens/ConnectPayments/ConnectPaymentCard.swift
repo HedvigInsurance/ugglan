@@ -15,27 +15,41 @@ public struct ConnectPaymentCardView: View {
                 state.paymentStatusData
             }
         ) { paymentStatusData in
-            if let nextChargeDate = paymentStatusData?.nextChargeDate?.displayDate,
-                paymentStatusData?.status == .needsSetup
-            {
-                InfoCard(
-                    text: L10n.InfoCardMissingPayment.bodyWithDate(nextChargeDate),
-                    type: .attention
-                )
-                .buttons([
+            if let status = paymentStatusData?.status {
+                getStatusInfoView(from: status)
+            }
+        }
+        .onAppear {
+            store.send(.fetchPaymentStatus)
+        }
+    }
+
+    @ViewBuilder
+    func getStatusInfoView(from status: PayinMethodStatus) -> some View {
+        if case let .contactUs(date) = status {
+            InfoCard(
+                text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
+                type: .attention
+            )
+            .buttons(
+                [
                     .init(
-                        buttonTitle: L10n.PayInExplainer.buttonText,
+                        buttonTitle: L10n.General.chatButton,
                         buttonAction: {
-                            store.send(.navigation(to: .openConnectPayments))
+                            if let url = DeepLink.getUrl(from: .openChat) {
+                                store.send(.navigation(to: .openUrl(url: url, handledBySystem: false)))
+                            }
                         }
                     )
-                ])
-            } else if paymentStatusData?.status == .needsSetup {
-                InfoCard(
-                    text: L10n.InfoCardMissingPayment.body,
-                    type: .attention
-                )
-                .buttons([
+                ]
+            )
+        } else if case .needsSetup = status {
+            InfoCard(
+                text: L10n.InfoCardMissingPayment.body,
+                type: .attention
+            )
+            .buttons(
+                [
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
@@ -43,11 +57,8 @@ public struct ConnectPaymentCardView: View {
                         }
                     )
                 ]
-                )
-            }
-        }
-        .onAppear {
-            store.send(.fetchPaymentStatus)
+            )
         }
     }
+
 }
