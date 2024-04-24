@@ -71,14 +71,9 @@ extension AppDelegate {
                                 ugglanStore.send(.makeTabActive(deeplink: .insurances))
                                 if let contractId {
                                     if let contract = contractStore.state.contractForId(contractId) {
-                                        //                                        contractStore.send(
-                                        //                                            .openDetail(
-                                        //                                                contractId: contractId,
-                                        //                                                title: contract.currentAgreement?.productVariant.displayName ?? ""
-                                        //                                            )
-                                        //                                        )
+                                        // TODO: add logic to open contract detail
                                     } else {
-                                        //                                        contractStore.send(.openContractDetailErrorScreen)
+                                        // TODO: add logic to open contract detail error screen
                                     }
                                 } else {
                                     ugglanStore.send(.makeTabActive(deeplink: .home))
