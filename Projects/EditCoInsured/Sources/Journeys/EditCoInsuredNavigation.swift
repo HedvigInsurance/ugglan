@@ -72,7 +72,6 @@ public struct EditCoInsuredNavigation: View {
                 }
             }
         }
-        .environmentObject(router)
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             Group {
                 if config.numberOfMissingCoInsuredWithoutTermination > 0 {
@@ -185,7 +184,6 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
-        .environmentObject(router)
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }

@@ -105,20 +105,23 @@ struct MainNavigationJourney: App {
             }
         }
         .fullScreenCover(
-            isPresented: $homeNavigationVm.isCoInsuredPresented
-        ) {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
+            item: $homeNavigationVm.isEditCoInsuredFullScreenPresented
+        ) { configs in
             EditCoInsuredNavigation(
-                configs: contractsSupportingCoInsured,
+                configs: configs.configs,
                 onDisappear: {
-                    homeNavigationVm.isCoInsuredPresented = false
+                    homeNavigationVm.isEditCoInsuredFullScreenPresented = nil
+                }
+            )
+        }
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredDetentPresented,
+            style: .height
+        ) { configs in
+            EditCoInsuredNavigation(
+                configs: configs.configs,
+                onDisappear: {
+                    homeNavigationVm.isEditCoInsuredDetentPresented = nil
                 }
             )
         }

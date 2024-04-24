@@ -19,8 +19,8 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isConnectPaymentsPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredDetentPresented: CoInsuredConfigModel?
-        var isEditCoInsuredFullScreenPresented: CoInsuredConfigModel?
+        var isEditCoInsuredDetentPresented: HomeNavigationViewModel.CoInsuredConfigModel?
+        var isEditCoInsuredFullScreenPresented: HomeNavigationViewModel.CoInsuredConfigModel?
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
@@ -29,11 +29,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     public struct ChatTopicModel: Identifiable, Equatable {
         public var id: String?
         var topic: ChatTopicType?
-    }
-
-    public struct CoInsuredConfigModel: Identifiable, Equatable {
-        public var id: String?
-        var configs: [InsuredPeopleConfig]
     }
 }
 
