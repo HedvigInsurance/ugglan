@@ -81,7 +81,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
                         let topVC = presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
                         let content = self.content()
-                        let vc = hHostingController(rootView: content)
+                        let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
                         let delegate = DetentedTransitioningDelegate(
                             detents: style.asDetent(),
                             options: [.blurredBackground],
@@ -110,17 +110,18 @@ private class PresentationViewModel: ObservableObject {
 
 }
 
-class hHostingController<Content: View>: UIHostingController<Content> {
+public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewWillLayoutSubviews: () -> Void = {}
     var onDeinit: () -> Void = {}
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        onViewWillLayoutSubviews()
+    private let contentName: String
+    public init(rootView: Content, contentName: String) {
+        self.contentName = contentName
+        super.init(rootView: rootView)
     }
 
-    override init(rootView: Content) {
-        super.init(rootView: rootView)
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        onViewWillLayoutSubviews()
     }
 
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
@@ -137,6 +138,10 @@ class hHostingController<Content: View>: UIHostingController<Content> {
 
     @objc func onCloseButton() {
         self.dismiss(animated: true)
+    }
+
+    public override var debugDescription: String {
+        return contentName
     }
 }
 

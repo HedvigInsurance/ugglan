@@ -48,33 +48,3 @@ struct Contracts: View {
         }
     }
 }
-
-public indirect enum ContractFilter: Equatable, Hashable {
-    var displaysActiveContracts: Bool {
-        switch self {
-        case .terminated: return false
-        case .active: return true
-        case .none: return false
-        }
-    }
-
-    var displaysTerminatedContracts: Bool {
-        switch self {
-        case .terminated: return true
-        case .active: return false
-        case .none: return false
-        }
-    }
-
-    var emptyFilter: ContractFilter {
-        switch self {
-        case let .terminated(ifEmpty): return ifEmpty
-        case let .active(ifEmpty): return ifEmpty
-        case .none: return .none
-        }
-    }
-
-    case terminated(ifEmpty: ContractFilter)
-    case active(ifEmpty: ContractFilter)
-    case none
-}

@@ -13,7 +13,6 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
 
-    @Published public var isChatPresented = false
     @Published var isAddExtraBuildingPresented = false
     @Published public var document: Document? = nil
 }
@@ -82,14 +81,6 @@ public struct MovingFlowNavigation: View {
                 }
                 .environmentObject(movingFlowVm)
                 .navigationTitle(L10n.changeAddressAddBuilding)
-                .embededInNavigation(options: [.navigationType(type: .large)])
-        }
-        .fullScreenCover(
-            isPresented: $movingFlowVm.isChatPresented
-        ) {
-            ChatScreen(vm: .init(topicType: nil))
-                .navigationTitle(L10n.chatTitle)
-                .withDismissButton()
                 .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(

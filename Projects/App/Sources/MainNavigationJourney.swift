@@ -23,6 +23,15 @@ class MainNavigationViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.hasLaunchFinished = true
         }
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) { notification in
+            let topicType = notification.object as? ChatTopicType
+            let rootVc = UIApplication.shared.getTopViewController()
+            let chatVc = hHostingController(
+                rootView: ChatScreen(vm: .init(topicType: topicType)),
+                contentName: "\(ChatScreen.self)"
+            )
+            rootVc?.present(chatVc, animated: true)
+        }
     }
 }
 
@@ -87,15 +96,6 @@ struct MainNavigationJourney: App {
                 .embededInNavigation()
         }
         .detent(
-            presented: $homeNavigationVm.isChatPresented,
-            style: .large
-        ) {
-            ChatScreen(vm: .init(topicType: nil))
-                .navigationTitle(L10n.chatTitle)
-                .withDismissButton()
-                .embededInNavigation(options: [.navigationType(type: .large)])
-        }
-        .detent(
             item: $homeNavigationVm.document,
             style: .large
         ) { document in
@@ -105,20 +105,23 @@ struct MainNavigationJourney: App {
             }
         }
         .fullScreenCover(
-            isPresented: $homeNavigationVm.isCoInsuredPresented
-        ) {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
+            item: $homeNavigationVm.isEditCoInsuredFullScreenPresented
+        ) { configs in
             EditCoInsuredNavigation(
-                configs: contractsSupportingCoInsured,
+                configs: configs.configs,
                 onDisappear: {
-                    homeNavigationVm.isCoInsuredPresented = false
+                    homeNavigationVm.isEditCoInsuredFullScreenPresented = nil
+                }
+            )
+        }
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredDetentPresented,
+            style: .height
+        ) { configs in
+            EditCoInsuredNavigation(
+                configs: configs.configs,
+                onDisappear: {
+                    homeNavigationVm.isEditCoInsuredDetentPresented = nil
                 }
             )
         }

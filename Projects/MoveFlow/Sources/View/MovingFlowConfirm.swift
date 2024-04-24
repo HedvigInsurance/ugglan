@@ -315,7 +315,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                movingFlowNavigationVm.isChatPresented = true
+                NotificationCenter.default.post(name: .openChat, object: nil)
             } content: {
                 hText(L10n.openChat, style: .body)
             }
