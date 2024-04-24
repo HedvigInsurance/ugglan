@@ -1,11 +1,6 @@
 import Foundation
 import hGraphQL
 
-struct TestConnect {
-    let terminationDueToMissedPayments: Bool
-    let terminationDate: String?
-}
-
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
         self.status = {
