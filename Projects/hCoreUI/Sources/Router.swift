@@ -119,7 +119,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             return hNavigationController()
         }()
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView.environmentObject(router), contentName: "\(Screen.self)")],
+            [hHostingController(rootView: initialView().environmentObject(router), contentName: "\(Screen.self)")],
             animated: false
         )
         router.onPush = { [weak router, weak navigation] options, view, name in
