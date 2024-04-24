@@ -146,11 +146,7 @@ extension ForeverView {
         HostingJourney(
             rootView: InfoView(
                 title: L10n.ReferralsInfoSheet.headline,
-                description: L10n.ReferralsInfoSheet.body(potentialDiscount),
-                onDismiss: {
-                    let store: ForeverStore = globalPresentableStoreContainer.get()
-                    store.send(.closeInfoSheet)
-                }
+                description: L10n.ReferralsInfoSheet.body(potentialDiscount)
             ),
             style: .detented(.scrollViewContentSize),
             options: [.blurredBackground]
