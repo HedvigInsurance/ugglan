@@ -97,13 +97,11 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
             return nil
         }
 
-        let viewName = viewController.getViewNameForRum
-        if !viewName.shouldBeLoggedAsView {
-            return nil
-        }
+        guard let viewName = viewController.getViewNameForRum else { return nil }
         var view = RUMView(name: viewName)
         view.path = viewName
         print("VIEW NAME: \(viewName) ")
+        return nil
         return view
     }
 
@@ -117,50 +115,42 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
 }
 
 extension UIViewController {
-    fileprivate var getViewNameForRum: String {
-
-        var viewControllerName = String(describing: type(of: self).self)
-        if let self = self as? UINavigationController, self.viewControllers.count == 1 {
-            if let vc = self.viewControllers.first, HedvigUIKitRUMViewsPredicate.isUIKit(class: type(of: vc)),
-                let title = vc.title
-            {
-                return title
-            }
-        }
-
-        if viewControllerName.contains("HostingJourneyController") {
-            if let range = viewControllerName.range(of: "HostingJourneyController<") {
-                viewControllerName.removeSubrange(range)
-            }
-
-            if let lastIndex = viewControllerName.lastIndex(of: ">") {
-                viewControllerName.remove(at: lastIndex)
-            }
-        }
-
-        if viewControllerName.contains("ModifiedContent") {
-            if let range = viewControllerName.range(of: "ModifiedContent<") {
-                viewControllerName.removeSubrange(range)
-            }
-            if let viewName = viewControllerName.components(separatedBy: ",").first {
-                return viewName
-            }
-        }
-        return viewControllerName
+    fileprivate var getViewNameForRum: String? {
+        let debugDescriptionName = self.debugDescription
+        return debugDescriptionName.getViewName()
     }
 }
 
 extension String {
-    fileprivate var shouldBeLoggedAsView: Bool {
-        switch self {
-
-        case String(describing: hNavigationController.self),
-            String(describing: hNavigationControllerWithLargerNavBar.self),
-            String(describing: IntrospectionUIViewController.self):
-            return false
-        default:
-            return true
+    fileprivate func getViewName() -> String? {
+        let removedModifiedContent = self.replacingOccurrences(of: "ModifiedContent<", with: "")
+        guard let firstElement = removedModifiedContent.split(separator: ",").first else { return nil }
+        let nameToLog = String(firstElement)
+        if !nameToLog.shouldBeLoggedAsView {
+            return nil
         }
+        let elements = nameToLog.split(separator: "SizeModifier<")
+        if elements.count > 1, let lastElement = elements.last {
+            return String(lastElement).replacingOccurrences(of: ">", with: "")
+        } else {
+            return nameToLog
+        }
+    }
+    fileprivate var shouldBeLoggedAsView: Bool {
+
+        let array = [
+            String(describing: hNavigationController.self),
+            String(describing: hNavigationControllerWithLargerNavBar.self),
+            String(describing: IntrospectionUIViewController.self),
+            "EmbededInNavigation",
+        ]
+
+        for element in array {
+            if self.contains(element) {
+                return false
+            }
+        }
+        return true
     }
 }
 

@@ -8,88 +8,91 @@ import hCoreUI
 public struct ContractsNavigation<Content: View>: View {
     @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
-
+    @StateObject var router = Router()
     public init(@ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content) {
         self.redirect = redirect
     }
 
     public var body: some View {
-        Contracts(showTerminated: false)
-            .environmentObject(contractsNavigationVm)
-            .routerDestination(for: Contract.self) { contract in
-                ContractDetail(id: contract.id)
-                    .environmentObject(contractsNavigationVm)
-            }
-            .routerDestination(for: ContractsRouterType.self) { type in
-                switch type {
-                case .terminatedContracts:
-                    Contracts(showTerminated: true)
+        RouterHost(router: router) {
+            Contracts(showTerminated: false)
+                .environmentObject(contractsNavigationVm)
+                .configureTitle(L10n.InsurancesTab.title)
+                .routerDestination(for: Contract.self) { contract in
+                    ContractDetail(id: contract.id)
                         .environmentObject(contractsNavigationVm)
                 }
+                .routerDestination(for: ContractsRouterType.self) { type in
+                    switch type {
+                    case .terminatedContracts:
+                        Contracts(showTerminated: true)
+                            .environmentObject(contractsNavigationVm)
+                            .configureTitle(L10n.InsurancesTab.cancelledInsurancesTitle)
+                    }
+                }
+        }
+        .detent(
+            item: $contractsNavigationVm.insurableLimit,
+            style: .height
+        ) { insurableLimit in
+            InfoView(
+                title: L10n.contractCoverageMoreInfo,
+                description: insurableLimit.description,
+                onDismiss: {
+                    contractsNavigationVm.insurableLimit = nil
+                }
+            )
+        }
+        .detent(
+            item: $contractsNavigationVm.document,
+            style: .large
+        ) { document in
+            redirect(.pdf(document: document))
+        }
+        .detent(
+            item: $contractsNavigationVm.changeYourInformationContract,
+            style: .height
+        ) { contract in
+            EditContract(id: contract.id)
+                .configureTitle(L10n.contractChangeInformationTitle)
+                .environmentObject(contractsNavigationVm)
+                .embededInNavigation(options: .navigationType(type: .large))
+        }
+        .detent(
+            presented: $contractsNavigationVm.isChatPresented,
+            style: .height
+        ) {
+            redirect(.chat)
+        }
+        .detent(
+            item: $contractsNavigationVm.insuranceUpdate,
+            style: .height
+        ) { insuranceUpdate in
+            UpcomingChangesScreen(
+                updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
+                upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
+            )
+            .onDisappear {
+                contractsNavigationVm.insuranceUpdate = nil
             }
-            .embededInNavigation()
-            .detent(
-                item: $contractsNavigationVm.insurableLimit,
-                style: .height
-            ) { insurableLimit in
-                InfoView(
-                    title: L10n.contractCoverageMoreInfo,
-                    description: insurableLimit.description,
+        }
+        .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
+            redirect(
+                .editCoInsured(
+                    config: editCoInsuredConfig,
                     onDismiss: {
-                        contractsNavigationVm.insurableLimit = nil
+                        contractsNavigationVm.editCoInsuredConfig = nil
                     }
                 )
-            }
-            .detent(
-                item: $contractsNavigationVm.document,
-                style: .large
-            ) { document in
-                redirect(.pdf(document: document))
-            }
-            .detent(
-                item: $contractsNavigationVm.changeYourInformationContract,
-                style: .height
-            ) { contract in
-                EditContract(id: contract.id)
-                    .configureTitle(L10n.contractChangeInformationTitle)
-                    .environmentObject(contractsNavigationVm)
-                    .embededInNavigation(options: .navigationType(type: .large))
-            }
-            .detent(
-                presented: $contractsNavigationVm.isChatPresented,
-                style: .height
-            ) {
-                redirect(.chat)
-            }
-            .detent(
-                item: $contractsNavigationVm.insuranceUpdate,
-                style: .height
-            ) { insuranceUpdate in
-                UpcomingChangesScreen(
-                    updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
-                    upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
-                )
-                .onDisappear {
-                    contractsNavigationVm.insuranceUpdate = nil
-                }
-            }
-            .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-                redirect(
-                    .editCoInsured(
-                        config: editCoInsuredConfig,
-                        onDismiss: {
-                            contractsNavigationVm.editCoInsuredConfig = nil
-                        }
-                    )
-                )
-            }
-            .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-                let contractConfig: TerminationConfirmConfig = .init(contract: contract)
-                TerminationViewJourney(configs: [contractConfig])
-            }
-            .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-                redirect(.movingFlow)
-            }
+            )
+        }
+        .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
+            let contractConfig: TerminationConfirmConfig = .init(contract: contract)
+            TerminationViewJourney(configs: [contractConfig])
+        }
+        .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
+            redirect(.movingFlow)
+        }
     }
 }
 
