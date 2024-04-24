@@ -16,7 +16,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
-    @Published public var isChatPresented = false
 
     // scroll view cards
     @Published public var isCoInsuredPresented = false
@@ -75,7 +74,7 @@ extension HomeView {
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    navigationVm.isChatPresented = true
+                    NotificationCenter.default.post(name: .openChat, object: nil)
                 }
             }
         )

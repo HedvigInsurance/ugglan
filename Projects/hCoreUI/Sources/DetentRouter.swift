@@ -110,16 +110,16 @@ private class PresentationViewModel: ObservableObject {
 
 }
 
-class hHostingController<Content: View>: UIHostingController<Content> {
+public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewWillLayoutSubviews: () -> Void = {}
     var onDeinit: () -> Void = {}
     private let contentName: String
-    init(rootView: Content, contentName: String) {
+    public init(rootView: Content, contentName: String) {
         self.contentName = contentName
         super.init(rootView: rootView)
     }
 
-    override func viewWillLayoutSubviews() {
+    public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         onViewWillLayoutSubviews()
     }
@@ -140,7 +140,7 @@ class hHostingController<Content: View>: UIHostingController<Content> {
         self.dismiss(animated: true)
     }
 
-    override var debugDescription: String {
+    public override var debugDescription: String {
         return contentName
     }
 }
