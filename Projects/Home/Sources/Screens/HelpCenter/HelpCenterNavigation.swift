@@ -141,7 +141,6 @@ public struct HelpCenterNavigation: View {
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
             let contractsSupportingCoInsured = contractStore.state.activeContracts
                 .filter({ $0.showEditCoInsuredInfo })
                 .compactMap({
@@ -159,14 +158,6 @@ public struct HelpCenterNavigation: View {
     }
 
     private func getEditCoInsuredView(configs: [InsuredPeopleConfig]) -> some View {
-        //        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        //
-        //        let contractsSupportingCoInsured = contractStore.state.activeContracts
-        //            .filter({ $0.showEditCoInsuredInfo })
-        //            .compactMap({
-        //                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-        //            })
-
         return EditCoInsuredNavigation(
             configs: configs,
             onDisappear: {

@@ -12,7 +12,6 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var selectCoInsured: SelectCoInsured?
     @Published var showProgressScreenWithSuccess = false
     @Published var showProgressScreenWithoutSuccess = false
-    @Published var showSuccessScreen: CoInsuredAction?
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
@@ -73,6 +72,7 @@ public struct EditCoInsuredNavigation: View {
                 }
             }
         }
+        .environmentObject(router)
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             Group {
                 if config.numberOfMissingCoInsuredWithoutTermination > 0 {
@@ -86,13 +86,9 @@ public struct EditCoInsuredNavigation: View {
                 style: .height
             ) { coInsuredInputModel in
                 openCoInsuredInput(
-                    coInsuredModelEdit: coInsuredInputModel,
-                    isSuccessPresented: $editCoInsuredNavigationVm.showSuccessScreen
+                    coInsuredModelEdit: coInsuredInputModel
                 )
-                .detent(
-                    item: $editCoInsuredNavigationVm.showSuccessScreen,
-                    style: .height
-                ) { actionType in
+                .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
                     var title: String {
                         switch actionType {
                         case .add:
@@ -112,13 +108,9 @@ public struct EditCoInsuredNavigation: View {
             style: .height
         ) { coInsuredInputModel in
             openCoInsuredInput(
-                coInsuredModelEdit: coInsuredInputModel,
-                isSuccessPresented: $editCoInsuredNavigationVm.showSuccessScreen
+                coInsuredModelEdit: coInsuredInputModel
             )
-            .detent(
-                item: $editCoInsuredNavigationVm.showSuccessScreen,
-                style: .height
-            ) { actionType in
+            .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
                 var title: String {
                     switch actionType {
                     case .add:
@@ -131,6 +123,7 @@ public struct EditCoInsuredNavigation: View {
                 }
                 openSuccessScreen(title: title)
             }
+            .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
@@ -179,7 +172,7 @@ public struct EditCoInsuredNavigation: View {
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
         )
-        .navigationTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
+        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 
     func openNewInsuredPeopleScreen() -> some View {
@@ -192,7 +185,8 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
-        .navigationTitle(L10n.coinsuredEditTitle)
+        .environmentObject(router)
+        .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
 
@@ -205,13 +199,12 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
-        .navigationTitle(L10n.coinsuredEditTitle)
+        .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
 
     func openCoInsuredInput(
-        coInsuredModelEdit: CoInsuredInputModel,
-        isSuccessPresented: Binding<CoInsuredAction?>
+        coInsuredModelEdit: CoInsuredInputModel
     ) -> some View {
         CoInusuredInput(
             vm: .init(
@@ -219,17 +212,15 @@ public struct EditCoInsuredNavigation: View {
                 actionType: coInsuredModelEdit.actionType,
                 contractId: coInsuredModelEdit.contractId
             ),
-            title: coInsuredModelEdit.title,
-            isSuccessPresented: isSuccessPresented
+            title: coInsuredModelEdit.title
         )
         .environmentObject(editCoInsuredNavigationVm)
-        .navigationTitle(L10n.contractAddConisuredInfo)
-        .embededInNavigation(options: [.navigationType(type: .large)])
+        .configureTitle(L10n.contractAddConisuredInfo)
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
         CoInsuredSelectScreen(contractId: contractId)
-            .navigationTitle(L10n.contractAddConisuredInfo)
+            .configureTitle(L10n.contractAddConisuredInfo)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -245,7 +236,7 @@ public struct EditCoInsuredNavigation: View {
         SuccessScreen(title: title)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    editCoInsuredNavigationVm.showSuccessScreen = nil
+                    editCoInsuredNavigationVm.coInsuredInputModel = nil
                 }
             }
     }
@@ -258,7 +249,7 @@ public struct EditCoInsuredNavigation: View {
                 onDisappear()
             }
         )
-        .navigationTitle(L10n.coinsuredEditTitle)
+        .configureTitle(L10n.coinsuredEditTitle)
     }
 
     public func openMissingCoInsuredAlert() -> some View {
