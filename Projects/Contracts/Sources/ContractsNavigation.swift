@@ -58,7 +58,7 @@ public struct ContractsNavigation<Content: View>: View {
             }
             .detent(
                 presented: $contractsNavigationVm.isChatPresented,
-                style: .height
+                style: .large
             ) {
                 redirect(.chat)
             }
