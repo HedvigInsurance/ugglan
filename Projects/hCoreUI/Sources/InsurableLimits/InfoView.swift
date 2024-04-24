@@ -27,9 +27,7 @@ public struct InfoViewHolder: View {
 
     private func showInfoView() {
         let cancelAction = ReferenceAction {}
-        let view = InfoView(title: title, description: description) {
-            cancelAction.execute()
-        }
+        let view = InfoView(title: title, description: description)
         let journey = HostingJourney(
             rootView: view,
             style: .detented(.scrollViewContentSize),
@@ -76,23 +74,21 @@ extension InfoViewHolder {
     public static func showInfoView(with title: String, and description: String) {
         let disposeBag = DisposeBag()
         let cancelAction = ReferenceAction {}
-        let view = InfoView(title: title, description: description) {
-            cancelAction.execute()
-        }
+        let view = InfoView(title: title, description: description)
         let journey = HostingJourney(
             rootView: view,
             style: .detented(.scrollViewContentSize),
             options: [.blurredBackground]
         )
 
-        let calendarJourney = journey.addConfiguration { presenter in
+        let infoViewJourney = journey.addConfiguration { presenter in
             cancelAction.execute = {
                 presenter.dismisser(JourneyError.cancelled)
             }
         }
         let vc = UIApplication.shared.getTopViewController()
         if let vc {
-            disposeBag += vc.present(calendarJourney)
+            disposeBag += vc.present(infoViewJourney)
         }
     }
 }
@@ -100,18 +96,15 @@ extension InfoViewHolder {
 public struct InfoView: View {
     let title: String
     let description: String
-    let onDismiss: () -> Void
     let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
-
+    @StateObject private var vm = InfoViewModel()
     public init(
         title: String,
         description: String,
-        onDismiss: @escaping () -> Void,
         extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
-        self.onDismiss = onDismiss
         self.extraButton = extraButton
     }
 
@@ -149,14 +142,21 @@ public struct InfoView: View {
                     }
                 }
                 hButton.LargeButton(type: .ghost) {
-                    onDismiss()
+                    vm.vc?.dismiss(animated: true)
                 } content: {
                     hText(L10n.generalCloseButton)
                 }
             }
             .padding(.horizontal, 24)
         }
+        .introspectViewController { vc in
+            vm.vc = vc
+        }
     }
+}
+
+private class InfoViewModel: ObservableObject {
+    weak var vc: UIViewController?
 }
 
 extension InfoView {

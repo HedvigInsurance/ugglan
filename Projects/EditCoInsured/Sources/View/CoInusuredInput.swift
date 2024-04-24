@@ -13,19 +13,17 @@ struct CoInusuredInput: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @Binding var isSuccessPresented: CoInsuredAction?
+    @EnvironmentObject private var router: Router
 
     public init(
         vm: CoInusuredInputViewModel,
-        title: String,
-        isSuccessPresented: Binding<CoInsuredAction?>
+        title: String
     ) {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm
         self.title = title
-        self._isSuccessPresented = isSuccessPresented
 
         vm.SSNError = nil
         intentVm.errorMessageForInput = nil
@@ -110,7 +108,7 @@ struct CoInusuredInput: View {
                                         )
                                     }
                                     if !intentVm.showErrorViewForCoInsuredInput {
-                                        isSuccessPresented = .delete
+                                        router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
                                         if vm.noSSN {
@@ -133,7 +131,6 @@ struct CoInusuredInput: View {
                                             )
                                         }
                                     }
-                                    editCoInsuredNavigation.coInsuredInputModel = nil
                                 }
                             } content: {
                                 hText(L10n.removeConfirmationButton)
@@ -196,7 +193,7 @@ struct CoInusuredInput: View {
                                                 coInsured: insuredPeopleVm.completeList()
                                             )
                                             if !intentVm.showErrorViewForCoInsuredInput {
-                                                isSuccessPresented = .add
+                                                router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.removeCoInsured(
@@ -220,7 +217,6 @@ struct CoInusuredInput: View {
 
                                             }
                                         }
-                                        editCoInsuredNavigation.coInsuredInputModel = nil
                                         editCoInsuredNavigation.selectCoInsured = nil
                                     }
                                 }
@@ -420,8 +416,7 @@ struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
         CoInusuredInput(
             vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
-            title: "title",
-            isSuccessPresented: .constant(nil)
+            title: "title"
         )
     }
 }

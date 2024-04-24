@@ -16,11 +16,12 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
-    @Published public var isChatPresented = false
     @Published public var isMissingEditCoInsuredAlertPresented: Contract?
 
     // scroll view cards
-    @Published public var isCoInsuredPresented = false
+    @Published public var isEditCoInsuredDetentPresented: CoInsuredConfigModel?
+    @Published public var isEditCoInsuredFullScreenPresented: CoInsuredConfigModel?
+
     @Published public var isConnectPayments = false
 
     //claim details
@@ -31,6 +32,11 @@ public class HomeNavigationViewModel: ObservableObject {
     public struct NavBarItems {
         public var isFirstVetPresented = false
         public var isNewOfferPresented = false
+    }
+
+    public struct CoInsuredConfigModel: Identifiable, Equatable {
+        public var id: String?
+        public var configs: [InsuredPeopleConfig]
     }
 }
 
@@ -76,7 +82,7 @@ extension HomeView {
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    navigationVm.isChatPresented = true
+                    NotificationCenter.default.post(name: .openChat, object: nil)
                 }
             }
         )

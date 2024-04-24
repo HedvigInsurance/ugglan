@@ -25,11 +25,12 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
     func body(content: Content) -> some View {
         content
             .onAppear { [weak router] in
-                router?.builders["\(D.self)"] = (
-                    options,
-                    { item in
-                        return AnyView(destination(item as! D))
-                    }
+                router?.builders["\(D.self)"] = .init(
+                    builder: { item in
+                        AnyView(destination(item as! D))
+                    },
+                    contentName: "\(C.self)",
+                    options: options
                 )
             }
     }

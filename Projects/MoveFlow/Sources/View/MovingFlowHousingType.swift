@@ -53,7 +53,7 @@ public struct MovingFlowHousingTypeView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                movingFlowNavigationVm.isChatPresented = true
+                                NotificationCenter.default.post(name: .openChat, object: nil)
                             }
                         ),
                         dismissButton: nil

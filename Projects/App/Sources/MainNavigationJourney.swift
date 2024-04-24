@@ -24,6 +24,15 @@ class MainNavigationViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.hasLaunchFinished = true
         }
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) { notification in
+            let topicType = notification.object as? ChatTopicType
+            let rootVc = UIApplication.shared.getTopViewController()
+            let chatVc = hHostingController(
+                rootView: ChatScreen(vm: .init(topicType: topicType)),
+                contentName: "\(ChatScreen.self)"
+            )
+            rootVc?.present(chatVc, animated: true)
+        }
     }
 }
 
@@ -88,15 +97,6 @@ struct MainNavigationJourney: App {
                 .embededInNavigation()
         }
         .detent(
-            presented: $homeNavigationVm.isChatPresented,
-            style: .large
-        ) {
-            ChatScreen(vm: .init(topicType: nil))
-                .navigationTitle(L10n.chatTitle)
-                .withDismissButton()
-                .embededInNavigation(options: [.navigationType(type: .large)])
-        }
-        .detent(
             item: $homeNavigationVm.document,
             style: .large
         ) { document in
@@ -106,20 +106,23 @@ struct MainNavigationJourney: App {
             }
         }
         .fullScreenCover(
-            isPresented: $homeNavigationVm.isCoInsuredPresented
-        ) {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
+            item: $homeNavigationVm.isEditCoInsuredFullScreenPresented
+        ) { configs in
             EditCoInsuredNavigation(
-                configs: contractsSupportingCoInsured,
+                configs: configs.configs,
                 onDisappear: {
-                    homeNavigationVm.isCoInsuredPresented = false
+                    homeNavigationVm.isEditCoInsuredFullScreenPresented = nil
+                }
+            )
+        }
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredDetentPresented,
+            style: .height
+        ) { configs in
+            EditCoInsuredNavigation(
+                configs: configs.configs,
+                onDisappear: {
+                    homeNavigationVm.isEditCoInsuredDetentPresented = nil
                 }
             )
         }
@@ -170,6 +173,35 @@ struct MainNavigationJourney: App {
                 MovingFlowNavigation(isFlowPresented: isFlowPresented)
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
+            case let .cancellation(contractConfig, isFlowPresented):
+                TerminationFlowNavigation(
+                    configs: [contractConfig],
+                    isFlowPresented: { cancelAction in
+                        switch cancelAction {
+                        case .none:
+                            break
+                        case .chat:
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        case .openFeedback(let url):
+                            // TODO: move somewhere else. Also not working
+                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                            if urlComponent?.scheme == nil {
+                                urlComponent?.scheme = "https"
+                            }
+                            let schema = urlComponent?.scheme
+                            if let finalUrl = urlComponent?.url {
+                                if schema == "https" || schema == "http" {
+                                    let vc = SFSafariViewController(url: finalUrl)
+                                    vc.modalPresentationStyle = .pageSheet
+                                    vc.preferredControlTintColor = .brand(.primaryText())
+                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                                } else {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         }
         .tabItem {

@@ -13,15 +13,14 @@ import hCore
 import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
-    @Published public var isChatPresented: ChatTopicModel?
     @Published var quickActions = QuickActions()
 
     struct QuickActions {
         var isConnectPaymentsPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredDetentPresented: CoInsuredConfigModel?
-        var isEditCoInsuredFullScreenPresented: CoInsuredConfigModel?
+        var isEditCoInsuredDetentPresented: HomeNavigationViewModel.CoInsuredConfigModel?
+        var isEditCoInsuredFullScreenPresented: HomeNavigationViewModel.CoInsuredConfigModel?
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
@@ -30,11 +29,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     public struct ChatTopicModel: Identifiable, Equatable {
         public var id: String?
         var topic: ChatTopicType?
-    }
-
-    public struct CoInsuredConfigModel: Identifiable, Equatable {
-        public var id: String?
-        var configs: [InsuredPeopleConfig]
     }
 }
 
@@ -84,12 +78,6 @@ public struct HelpCenterNavigation: View {
             getEditCoInsuredView(configs: configs.configs)
         }
         .detent(
-            item: $helpCenterVm.isChatPresented,
-            style: .large
-        ) { chatTopic in
-            ChatScreen(vm: .init(topicType: chatTopic.topic))
-        }
-        .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
             style: .large
         ) {
@@ -135,7 +123,7 @@ public struct HelpCenterNavigation: View {
                             isFlowPresented = false
                         case .chat:
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                helpCenterVm.isChatPresented = .init(topic: .none)
+                                NotificationCenter.default.post(name: .openChat, object: nil)
                             }
                         case let .openFeedback(url):
                             // TODO: move somewhere else. Also not working
@@ -178,7 +166,6 @@ public struct HelpCenterNavigation: View {
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
             let contractsSupportingCoInsured = contractStore.state.activeContracts
                 .filter({ $0.showEditCoInsuredInfo })
                 .compactMap({
@@ -236,7 +223,7 @@ public struct HelpCenterNavigation: View {
         )
         return SubmitClaimDeflectScreen(
             openChat: {
-                homeVm.isChatPresented = true
+                NotificationCenter.default.post(name: .openChat, object: nil)
             },
             isEmergencyStep: true,
             partners: sickAbroadPartners ?? [],
