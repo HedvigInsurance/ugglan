@@ -42,7 +42,7 @@ struct UpcomingChangesScreen: View {
                 VStack(spacing: 8) {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            contractsNavigationVm.isChatPresented = true
+                            NotificationCenter.default.post(name: .openChat, object: nil)
                         } content: {
                             hText(L10n.openChat)
                         }

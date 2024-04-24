@@ -66,7 +66,7 @@ struct EditContract: View {
                                         )
                                     }
                                 } else {
-                                    contractsNavigationVm.isChatPresented = true
+                                    NotificationCenter.default.post(name: .openChat, object: nil)
                                 }
                             case .changeAddress:
                                 contractsNavigationVm.isChangeAddressPresented = true

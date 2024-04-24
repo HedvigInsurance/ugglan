@@ -30,7 +30,7 @@ struct ContactChatView: View {
             Spacer()
 
             Button {
-                homeVm.isChatPresented = true
+                NotificationCenter.default.post(name: .openChat, object: nil)
             } label: {
             }
             .buttonStyle(ChatButtonStyle())

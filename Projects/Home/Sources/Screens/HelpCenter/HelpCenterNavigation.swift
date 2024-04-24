@@ -12,7 +12,6 @@ import hCore
 import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
-    @Published public var isChatPresented: ChatTopicModel?
     @Published var quickActions = QuickActions()
 
     struct QuickActions {
@@ -70,12 +69,6 @@ public struct HelpCenterNavigation: View {
             item: $helpCenterVm.quickActions.isEditCoInsuredFullScreenPresented
         ) { configs in
             getEditCoInsuredView(configs: configs.configs)
-        }
-        .detent(
-            item: $helpCenterVm.isChatPresented,
-            style: .large
-        ) { chatTopic in
-            ChatScreen(vm: .init(topicType: chatTopic.topic))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
@@ -193,7 +186,7 @@ public struct HelpCenterNavigation: View {
         )
         return SubmitClaimDeflectScreen(
             openChat: {
-                homeVm.isChatPresented = true
+                NotificationCenter.default.post(name: .openChat, object: nil)
             },
             isEmergencyStep: true,
             partners: sickAbroadPartners ?? [],

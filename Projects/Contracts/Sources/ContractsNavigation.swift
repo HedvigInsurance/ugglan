@@ -56,12 +56,6 @@ public struct ContractsNavigation<Content: View>: View {
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
-            presented: $contractsNavigationVm.isChatPresented,
-            style: .height
-        ) {
-            redirect(.chat)
-        }
-        .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             style: .height
         ) { insuranceUpdate in
@@ -103,7 +97,6 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
-    @Published public var isChatPresented = false
 }
 
 public enum RedirectType {
