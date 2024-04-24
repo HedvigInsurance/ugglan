@@ -17,6 +17,7 @@ public struct ContractsNavigation<Content: View>: View {
         RouterHost(router: router) {
             Contracts(showTerminated: false)
                 .environmentObject(contractsNavigationVm)
+                .configureTitle(L10n.InsurancesTab.title)
                 .routerDestination(for: Contract.self) { contract in
                     ContractDetail(id: contract.id)
                         .environmentObject(contractsNavigationVm)
@@ -26,6 +27,7 @@ public struct ContractsNavigation<Content: View>: View {
                     case .terminatedContracts:
                         Contracts(showTerminated: true)
                             .environmentObject(contractsNavigationVm)
+                            .configureTitle(L10n.InsurancesTab.cancelledInsurancesTitle)
                     }
                 }
                 .detent(
