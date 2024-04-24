@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct EditContract: View {
+struct EditContract: View {
     @PresentableStore var store: ContractStore
     @State var selectedType: EditType?
     @State var editTypes: [EditType] = []

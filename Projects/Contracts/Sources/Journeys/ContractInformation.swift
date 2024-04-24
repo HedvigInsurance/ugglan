@@ -327,32 +327,6 @@ struct ContractInformationView: View {
     }
 }
 
-struct ChangePeopleView: View {
-    @PresentableStore var store: ContractStore
-    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
-
-    var body: some View {
-        hSection {
-            VStack(alignment: .leading, spacing: 16) {
-                L10n.InsuranceDetailsViewYourInfo.editInsuranceTitle
-                    .hText(.title2)
-                L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
-                    .hText(.subheadline)
-                    .foregroundColor(hTextColor.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-                    .padding(.bottom, 10)
-                hButton.LargeButton(type: .primary) {
-                    contractsNavigationVm.isChatPresented
-                } content: {
-                    L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
-    }
-}
-
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 

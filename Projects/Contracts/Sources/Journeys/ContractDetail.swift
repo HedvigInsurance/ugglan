@@ -30,7 +30,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
     }
 }
 
-public class TabControllerContext: ObservableObject {
+class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
 
     public init() {}
