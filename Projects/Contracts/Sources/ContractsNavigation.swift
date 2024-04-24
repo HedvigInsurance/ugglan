@@ -37,10 +37,7 @@ public struct ContractsNavigation<Content: View>: View {
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
-                description: insurableLimit.description,
-                onDismiss: {
-                    contractsNavigationVm.insurableLimit = nil
-                }
+                description: insurableLimit.description
             )
         }
         .detent(

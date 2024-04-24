@@ -131,8 +131,13 @@ extension String {
         }
         let elements = nameToLog.split(separator: "SizeModifier<")
         if elements.count > 1, let lastElement = elements.last {
-            return String(lastElement).replacingOccurrences(of: ">", with: "")
+            return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
+                .replacingOccurrences(of: ">", with: "")
         } else {
+            let elements = nameToLog.split(separator: ":")
+            if elements.count > 1, let firstElement = elements.first {
+                return String(firstElement).replacingOccurrences(of: "<", with: "")
+            }
             return nameToLog
         }
     }
@@ -143,6 +148,10 @@ extension String {
             String(describing: hNavigationControllerWithLargerNavBar.self),
             String(describing: IntrospectionUIViewController.self),
             "EmbededInNavigation",
+            "PUPickerRemoteViewController",
+            "CAMImagePickerCameraViewController",
+            "CAMViewfinderViewController",
+            "UIDocumentBrowserViewController",
         ]
 
         for element in array {
