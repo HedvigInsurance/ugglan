@@ -1,4 +1,6 @@
 import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
 
 public struct File: Codable, Equatable, Identifiable, Hashable {
     public let id: String
@@ -68,6 +70,35 @@ extension FilePickerDto {
             )
         } catch let ex {
             return nil
+        }
+    }
+}
+
+extension FilePickerDto {
+    public init?(from url: URL) {
+        guard let data = FileManager.default.contents(atPath: url.relativePath) else { return nil }
+        let mimeType = MimeType.findBy(mimeType: url.mimeType)
+        if mimeType == .HEIC {
+            if let image = UIImage(data: data),
+                let data = image.jpegData(compressionQuality: 0.9),
+                let thumbnailData = image.jpegData(compressionQuality: 0.1)
+            {
+                self.id = UUID().uuidString
+                self.size = Double(data.count)
+                self.mimeType = .JPEG
+                self.name = url.deletingPathExtension().appendingPathExtension(for: UTType.jpeg).lastPathComponent
+                self.data = data
+                self.thumbnailData = thumbnailData
+            } else {
+                return nil
+            }
+        } else {
+            self.id = UUID().uuidString
+            self.size = Double(data.count)
+            self.mimeType = mimeType
+            self.name = url.lastPathComponent
+            self.data = data
+            self.thumbnailData = nil
         }
     }
 }
