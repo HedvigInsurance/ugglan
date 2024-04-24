@@ -131,7 +131,8 @@ extension String {
         }
         let elements = nameToLog.split(separator: "SizeModifier<")
         if elements.count > 1, let lastElement = elements.last {
-            return String(lastElement).replacingOccurrences(of: ">", with: "")
+            return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
+                .replacingOccurrences(of: ">", with: "")
         } else {
             return nameToLog
         }
