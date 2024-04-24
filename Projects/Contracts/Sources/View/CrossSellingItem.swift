@@ -15,7 +15,7 @@ struct CrossSellingItem: View {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             UIApplication.shared.open(url)
         } else {
-            contractsNavigationVm.isChatPresented = true
+            NotificationCenter.default.post(name: .openChat, object: nil)
         }
     }
 
