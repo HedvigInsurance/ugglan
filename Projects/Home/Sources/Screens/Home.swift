@@ -20,6 +20,9 @@ public class HomeNavigationViewModel: ObservableObject {
             if let topicWrapper = notification.object as? ChatTopicWrapper {
                 self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop] : []
                 self?.openChat = topicWrapper
+            } else {
+                self?.openChatOptions = [.alwaysOpenOnTop]
+                self?.openChat = .init(topic: nil, onTop: false)
             }
         }
     }
