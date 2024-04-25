@@ -5,7 +5,8 @@ import hCoreUI
 
 public struct ListScreen: View {
     @StateObject var vm = ListScreenViewModel()
-    @PresentableStore var store: TravelInsuranceStore
+    //    @PresentableStore var store: TravelInsuranceStore
+    @EnvironmentObject var router: Router
 
     let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
@@ -42,7 +43,7 @@ public struct ListScreen: View {
                     .withChevronAccessory
                     .foregroundColor(travelCertificate.textColor)
                     .onTapGesture {
-                        store.send(.navigation(.openDetails(for: travelCertificate)))
+                        //                        store.send(.navigation(.openDetails(for: travelCertificate)))
                     }
                 }
                 .withoutHorizontalPadding
@@ -55,7 +56,7 @@ public struct ListScreen: View {
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
                     if canAddTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
-                            vm.createNewPressed()
+                            createNewPressed()
                         } content: {
                             hText(L10n.TravelCertificate.createNewCertificate)
                         }
@@ -80,11 +81,28 @@ public struct ListScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
+
+    func createNewPressed() {
+        Task { @MainActor in
+            withAnimation {
+                vm.isCreateNewLoading = true
+            }
+            do {
+                let specifications = try await vm.service.getSpecifications()
+                router.push(TravelInsuranceSpecificationNavigationModel.init(specification: specifications))
+
+            } catch _ {
+
+            }
+            withAnimation {
+                vm.isCreateNewLoading = false
+            }
+        }
+    }
 }
 
 class ListScreenViewModel: ObservableObject {
     @Inject var service: TravelInsuranceClient
-    @PresentableStore var store: TravelInsuranceStore
 
     @Published var list: [TravelCertificateModel] = []
     @Published var error: String?
@@ -107,23 +125,6 @@ class ListScreenViewModel: ObservableObject {
             self.error = L10n.General.errorBody
         }
         isLoading = false
-    }
-
-    func createNewPressed() {
-        Task { @MainActor in
-            withAnimation {
-                isCreateNewLoading = true
-            }
-            do {
-                let specifications = try await service.getSpecifications()
-                store.send(.navigation(.openCreateNew(specifications: specifications)))
-            } catch _ {
-
-            }
-            withAnimation {
-                isCreateNewLoading = false
-            }
-        }
     }
 }
 

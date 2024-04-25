@@ -142,7 +142,8 @@ extension ProfileView {
             } else if case .openEuroBonus = action {
                 EuroBonusView.journey
             } else if case .openTravelCertificate = action {
-                TravelInsuranceJourney.travelCertificatePush()
+                //                TravelInsuranceJourney.travelCertificatePush()
+                DismissJourney()
             } else if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {

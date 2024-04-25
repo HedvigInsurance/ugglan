@@ -32,13 +32,17 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     }
 }
 
-public struct HelpCenterNavigation: View {
+public struct HelpCenterNavigation<Content: View>: View {
     @StateObject private var helpCenterVm = HelpCenterNavigationViewModel()
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
+    @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
-    public init() {}
+    //    public init() {}
+    public init(@ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content) {
+        self.redirect = redirect
+    }
 
     public var body: some View {
         RouterHost(router: router) {
@@ -87,10 +91,7 @@ public struct HelpCenterNavigation: View {
         .fullScreenCover(
             isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
             content: {
-                NavigationStack {
-                    ListScreen(canAddTravelInsurance: true, infoButtonPlacement: .topBarLeading)
-                        .withDismissButton()
-                }
+                redirect(.travelInsurance)
             }
         )
         .fullScreenCover(
@@ -223,6 +224,12 @@ public struct HelpCenterNavigation: View {
     }
 }
 
+public enum HelpCenterRedirectType {
+    case travelInsurance
+}
+
 #Preview{
-    HelpCenterNavigation()
+    HelpCenterNavigation<EmptyView>(redirect: { redirectType in
+
+    })
 }

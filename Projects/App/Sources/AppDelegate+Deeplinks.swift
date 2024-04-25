@@ -95,9 +95,9 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
-                    let vc = TravelInsuranceJourney.travelCertificateModally()
+                    //                    let vc = TravelInsuranceJourney.travelCertificateModally()
                     let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+                    //                    disposeBag += fromVC.present(vc)
                 }
         } else if path == .helpCenter {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

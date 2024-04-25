@@ -11,9 +11,8 @@ public enum TravelInsuranceAction: ActionProtocol, Hashable {
 }
 
 public enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
-    case openCreateNew(specifications: [TravelInsuranceContractSpecification])
-    case openStartDateScreen(spacification: TravelInsuranceContractSpecification)
-    case openWhoIsTravelingScreen
+    //    case openStartDateScreen(spacification: TravelInsuranceContractSpecification)
+    //    case openWhoIsTravelingScreen
     case dismissCreateTravelCertificate
     case openFreeTextChat
     case openProcessingScreen

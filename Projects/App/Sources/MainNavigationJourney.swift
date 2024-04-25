@@ -136,8 +136,17 @@ struct MainNavigationJourney: App {
             CrossSellingScreen()
         }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-            HelpCenterNavigation()
-                .environmentObject(homeNavigationVm)
+            HelpCenterNavigation(redirect: { redirectType in
+                switch redirectType {
+                case .travelInsurance:
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    TravelCertificateNavigation(
+                        canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
+                        infoButtonPlacement: .navigationBarLeading
+                    )
+                }
+            })
+            .environmentObject(homeNavigationVm)
         }
         .detent(
             item: $homeNavigationVm.openChat,
