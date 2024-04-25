@@ -9,7 +9,7 @@ struct RemoveCoInsuredScreen: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    let onDisappear: () -> Void
+    @EnvironmentObject private var router: Router
 
     var body: some View {
         hForm {
@@ -52,7 +52,7 @@ struct RemoveCoInsuredScreen: View {
                     ConfirmChangesView()
                 }
                 hSection {
-                    CancelButton(onDisappear: onDisappear)
+                    CancelButton()
                 }
                 .sectionContainerStyle(.transparent)
             }
