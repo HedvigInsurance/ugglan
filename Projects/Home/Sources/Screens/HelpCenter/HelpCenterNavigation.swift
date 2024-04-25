@@ -37,13 +37,8 @@ public struct HelpCenterNavigation: View {
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @StateObject var router = Router()
-    @Binding var isFlowPresented: Bool
 
-    public init(
-        isFlowPresented: Binding<Bool>
-    ) {
-        self._isFlowPresented = isFlowPresented
-    }
+    public init() {}
 
     public var body: some View {
         RouterHost(router: router) {
@@ -120,7 +115,7 @@ public struct HelpCenterNavigation: View {
                         helpCenterVm.quickActions.isCancellationPresented = false
                         switch dismissType {
                         case .none:
-                            isFlowPresented = false
+                            router.dismiss()
                         case .chat:
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 NotificationCenter.default.post(name: .openChat, object: nil)
@@ -219,7 +214,7 @@ public struct HelpCenterNavigation: View {
         )
         return SubmitClaimDeflectScreen(
             openChat: {
-                NotificationCenter.default.post(name: .openChat, object: nil)
+                NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: true))
             },
             isEmergencyStep: true,
             partners: sickAbroadPartners ?? [],
@@ -229,5 +224,5 @@ public struct HelpCenterNavigation: View {
 }
 
 #Preview{
-    HelpCenterNavigation(isFlowPresented: .constant(false))
+    HelpCenterNavigation()
 }

@@ -24,15 +24,6 @@ class MainNavigationViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.hasLaunchFinished = true
         }
-        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) { notification in
-            let topicType = notification.object as? ChatTopicType
-            let rootVc = UIApplication.shared.getTopViewController()
-            let chatVc = hHostingController(
-                rootView: ChatScreen(vm: .init(topicType: topicType)),
-                contentName: "\(ChatScreen.self)"
-            )
-            rootVc?.present(chatVc, animated: true)
-        }
     }
 }
 
@@ -131,10 +122,6 @@ struct MainNavigationJourney: App {
                 }
             )
         }
-        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-            HelpCenterNavigation(isFlowPresented: $homeNavigationVm.isHelpCenterPresented)
-                .environmentObject(homeNavigationVm)
-        }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             style: .height
@@ -148,6 +135,20 @@ struct MainNavigationJourney: App {
         ) {
             CrossSellingScreen()
         }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation()
+                .environmentObject(homeNavigationVm)
+        }
+        .detent(
+            item: $homeNavigationVm.openChat,
+            style: .large,
+            options: $homeNavigationVm.openChatOptions,
+            content: { openChat in
+                ChatScreen(vm: .init(topicType: openChat.topic))
+                    .navigationTitle(L10n.chatTitle)
+                    .embededInNavigation()
+            }
+        )
         .tabItem {
             Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
             hText(L10n.tabHomeTitle)

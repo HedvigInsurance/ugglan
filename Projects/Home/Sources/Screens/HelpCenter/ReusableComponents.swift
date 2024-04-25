@@ -153,7 +153,10 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
-                    NotificationCenter.default.post(name: .openChat, object: topic)
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatTopicWrapper(topic: topic, onTop: true)
+                    )
                 } content: {
                     hText(L10n.hcChatButton)
                 }

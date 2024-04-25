@@ -1,4 +1,5 @@
 import Apollo
+import Chat
 import Combine
 import Contracts
 import EditCoInsuredShared
@@ -12,7 +13,19 @@ import hCoreUI
 import hGraphQL
 
 public class HomeNavigationViewModel: ObservableObject {
-    public init() {}
+    public init() {
+
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
+            [weak self] notification in
+            if let topicWrapper = notification.object as? ChatTopicWrapper {
+                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop] : []
+                self?.openChat = topicWrapper
+            } else {
+                self?.openChatOptions = [.alwaysOpenOnTop]
+                self?.openChat = .init(topic: nil, onTop: false)
+            }
+        }
+    }
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
@@ -29,6 +42,9 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var navBarItems = NavBarItems()
 
+    @Published public var openChat: ChatTopicWrapper?
+    @Published public var openChatOptions: DetentPresentationOption = []
+
     public struct NavBarItems {
         public var isFirstVetPresented = false
         public var isNewOfferPresented = false
@@ -37,6 +53,10 @@ public class HomeNavigationViewModel: ObservableObject {
     public struct CoInsuredConfigModel: Identifiable, Equatable {
         public var id: String?
         public var configs: [InsuredPeopleConfig]
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -82,7 +102,7 @@ extension HomeView {
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: false))
                 }
             }
         )
