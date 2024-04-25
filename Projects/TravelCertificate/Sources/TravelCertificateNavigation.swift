@@ -23,7 +23,7 @@ public struct TravelCertificateNavigation: View {
     @StateObject var router = Router()
     private var canCreateTravelInsurance: Bool
     private var infoButtonPlacement: ToolbarItemPlacement
-    
+
     public init(
         canCreateTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement
@@ -31,9 +31,9 @@ public struct TravelCertificateNavigation: View {
         self.canCreateTravelInsurance = canCreateTravelInsurance
         self.infoButtonPlacement = infoButtonPlacement
     }
-    
+
     public var body: some View {
-        RouterHost(router: router) { 
+        RouterHost(router: router) {
             showListScreen(
                 canAddTravelInsurance: canCreateTravelInsurance,
                 infoButtonPlacement: infoButtonPlacement
@@ -64,7 +64,7 @@ public struct TravelCertificateNavigation: View {
         .configureTitle(L10n.TravelCertificate.cardTitle)
         .withDismissButton()
     }
-    
+
     @ViewBuilder
     private func start(with specifications: [TravelInsuranceContractSpecification]) -> some View {
         if specifications.count > 1 {
@@ -73,46 +73,45 @@ public struct TravelCertificateNavigation: View {
             showStartDateScreen(specification: specification)
         }
     }
-    
-        private func showContractsList(
-            for specifications: [TravelInsuranceContractSpecification]
-        ) -> some View {
-            ContractsScreen(specifications: specifications)
+
+    private func showContractsList(
+        for specifications: [TravelInsuranceContractSpecification]
+    ) -> some View {
+        ContractsScreen(specifications: specifications)
             .addDismissFlow()
-        }
-    
-        private func showStartDateScreen(
-            specification: TravelInsuranceContractSpecification
-//            style: PresentationStyle
-        ) -> some View {
-            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-            store.startDateViewModel = StartDateViewModel(specification: specification)
-            return StartDateScreen(vm: store.startDateViewModel!)
+    }
+
+    private func showStartDateScreen(
+        specification: TravelInsuranceContractSpecification
+            //            style: PresentationStyle
+    ) -> some View {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        store.startDateViewModel = StartDateViewModel(specification: specification)
+        return StartDateScreen(vm: store.startDateViewModel!)
             .addDismissFlow()
-        }
-    
-        private func showWhoIsTravelingScreen(
-            specification: TravelInsuranceContractSpecification
-        ) -> some View {
-            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-            store.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
-    //        return HostingJourney(
-    //            TravelInsuranceStore.self,
-    //            rootView: 
-            return WhoIsTravelingScreen(vm: store.whoIsTravelingViewModel!)
-    //        ) { action in
-    //            if case let .navigation(navigationAction) = action {
-    //                if case .openProcessingScreen = navigationAction {
-    //                    openProcessingScreen()
-    //                }
-    //            } else if case .dismissTravelInsuranceFlow = action {
-    //                DismissJourney()
-    //            }
-    //        }
+    }
+
+    private func showWhoIsTravelingScreen(
+        specification: TravelInsuranceContractSpecification
+    ) -> some View {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        store.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
+        //        return HostingJourney(
+        //            TravelInsuranceStore.self,
+        //            rootView:
+        return WhoIsTravelingScreen(vm: store.whoIsTravelingViewModel!)
+            //        ) { action in
+            //            if case let .navigation(navigationAction) = action {
+            //                if case .openProcessingScreen = navigationAction {
+            //                    openProcessingScreen()
+            //                }
+            //            } else if case .dismissTravelInsuranceFlow = action {
+            //                DismissJourney()
+            //            }
+            //        }
             .addDismissFlow()
-        }
-    
-    
+    }
+
     //    static func getTravelCertificate() async throws -> TravelInsuranceSpecification {
     //        let disposeBag = DisposeBag()
     //        return try await withCheckedThrowingContinuation {
@@ -129,32 +128,32 @@ public struct TravelCertificateNavigation: View {
     //            disposeBag.add(disposable)
     //        }
     //    }
-//
-//    private static func openProcessingScreen() -> some JourneyPresentation {
-//        HostingJourney(
-//            TravelInsuranceStore.self,
-//            rootView: TravelCertificateProcessingScreen()
-//        ) { action in
-//            if case let .navigation(navigationAction) = action {
-//                if case .dismissCreateTravelCertificate = navigationAction {
-//                    DismissJourney()
-//                } else if case .goBack = navigationAction {
-//                    PopJourney()
-//                }
-//            }
-//        }
-//        .hidesBackButton
-//    }
-//
-//    private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
-//        //        let document = Document(url: model.url, title: model.title)
-//        //        return Journey(
-//        //            document,
-//        //            style: .detented(.large)
-//        //        )
-//        //        .withDismissButton
-//        return DismissJourney()
-//    }
+    //
+    //    private static func openProcessingScreen() -> some JourneyPresentation {
+    //        HostingJourney(
+    //            TravelInsuranceStore.self,
+    //            rootView: TravelCertificateProcessingScreen()
+    //        ) { action in
+    //            if case let .navigation(navigationAction) = action {
+    //                if case .dismissCreateTravelCertificate = navigationAction {
+    //                    DismissJourney()
+    //                } else if case .goBack = navigationAction {
+    //                    PopJourney()
+    //                }
+    //            }
+    //        }
+    //        .hidesBackButton
+    //    }
+    //
+    //    private static func showDetails(for model: TravelCertificateModel) -> some JourneyPresentation {
+    //        //        let document = Document(url: model.url, title: model.title)
+    //        //        return Journey(
+    //        //            document,
+    //        //            style: .detented(.large)
+    //        //        )
+    //        //        .withDismissButton
+    //        return DismissJourney()
+    //    }
 }
 
 extension View {
