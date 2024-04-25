@@ -4,9 +4,9 @@ import Foundation
 
 public class TokenRefresher {
     public static let shared = TokenRefresher()
-    var isRefreshing: CurrentValueSubject<Bool, Never> = CurrentValueSubject<Bool, Never>(false)
-    var cancellables = Set<AnyCancellable>()
-    var needRefresh: Bool {
+    private var isRefreshing: CurrentValueSubject<Bool, Never> = CurrentValueSubject<Bool, Never>(false)
+    private var cancellables = Set<AnyCancellable>()
+    private var needRefresh: Bool {
         guard let token = try? ApolloClient.retreiveToken() else {
             return false
         }
