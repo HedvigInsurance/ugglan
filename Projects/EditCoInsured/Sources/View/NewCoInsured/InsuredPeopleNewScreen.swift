@@ -10,7 +10,7 @@ struct InsuredPeopleNewScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    let onDisappear: () -> Void
+    @EnvironmentObject var router: Router
 
     var body: some View {
         hForm {
@@ -77,7 +77,7 @@ struct InsuredPeopleNewScreen: View {
                 }
 
                 hButton.LargeButton(type: .ghost) {
-                    onDisappear()
+                    router.dismiss()
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
@@ -174,6 +174,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm, onDisappear: {})
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
     }
 }

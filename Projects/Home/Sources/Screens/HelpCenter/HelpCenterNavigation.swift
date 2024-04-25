@@ -184,11 +184,7 @@ public struct HelpCenterNavigation: View {
 
     private func getEditCoInsuredView(configs: [InsuredPeopleConfig]) -> some View {
         return EditCoInsuredNavigation(
-            configs: configs,
-            onDisappear: {
-                helpCenterVm.quickActions.isEditCoInsuredDetentPresented = nil
-                helpCenterVm.quickActions.isEditCoInsuredFullScreenPresented = nil
-            }
+            configs: configs
         )
     }
 

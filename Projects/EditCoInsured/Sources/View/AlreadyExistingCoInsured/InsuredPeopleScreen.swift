@@ -10,7 +10,7 @@ struct InsuredPeopleScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    let onDisappear: () -> Void
+    @EnvironmentObject var router: Router
 
     @ViewBuilder
     func getView(coInsured: CoInsuredListType) -> some View {
@@ -76,7 +76,9 @@ struct InsuredPeopleScreen: View {
                     ConfirmChangesView()
                 }
                 hSection {
-                    CancelButton(onDisappear: onDisappear)
+                    CancelButton(onDisappear: {
+                        router.dismiss()
+                    })
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -223,7 +225,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm, onDisappear: {})
+        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
     }
 }
 
