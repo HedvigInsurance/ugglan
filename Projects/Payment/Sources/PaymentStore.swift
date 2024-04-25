@@ -31,7 +31,7 @@ public enum PaymentAction: ActionProtocol {
 }
 
 public enum PaymentNavigation: ActionProtocol {
-    case openUrl(url: URL)
+    case openUrl(url: URL, handledBySystem: Bool)
     case openHistory
     case openDiscounts
     case openConnectPayments
