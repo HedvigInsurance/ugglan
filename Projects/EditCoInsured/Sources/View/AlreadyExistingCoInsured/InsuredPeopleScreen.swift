@@ -76,9 +76,7 @@ struct InsuredPeopleScreen: View {
                     ConfirmChangesView()
                 }
                 hSection {
-                    CancelButton(onDisappear: {
-                        router.dismiss()
-                    })
+                    CancelButton()
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -140,13 +138,13 @@ struct InsuredPeopleScreen: View {
 
 struct CancelButton: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    let onDisappear: () -> Void
+    @EnvironmentObject private var router: Router
 
     var body: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
                 editCoInsuredNavigation.editCoInsuredConfig = nil
-                onDisappear()
+                router.dismiss()
             } content: {
                 hText(L10n.generalCancelButton)
             }

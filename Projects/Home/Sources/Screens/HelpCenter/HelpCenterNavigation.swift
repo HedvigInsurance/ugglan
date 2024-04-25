@@ -182,7 +182,7 @@ public struct HelpCenterNavigation: View {
         )
         return SubmitClaimDeflectScreen(
             openChat: {
-                NotificationCenter.default.post(name: .openChat, object: nil)
+                NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: true))
             },
             isEmergencyStep: true,
             partners: sickAbroadPartners ?? [],

@@ -6,17 +6,19 @@ extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
         style: DetentPresentationStyle,
+        options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
-        modifier(DetentSizeModifier(presented: presented, style: style, content: content))
+        modifier(DetentSizeModifier(presented: presented, style: style, options: options, content: content))
     }
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
         style: DetentPresentationStyle,
+        options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(DetentSizeModifierModal(item: item, style: style, content: content))
+        return modifier(DetentSizeModifierModal(item: item, style: style, options: options, content: content))
     }
 }
 
@@ -26,10 +28,11 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     let style: DetentPresentationStyle
+    @Binding var options: DetentPresentationOption
     var content: (Item) -> SwiftUIContent
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, style: style) {
+            content.detent(presented: $present, style: style, options: $options) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -54,15 +57,18 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
     private let style: DetentPresentationStyle
+    @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
         style: DetentPresentationStyle,
+        options: Binding<DetentPresentationOption>,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
         self.style = style
+        self._options = options
     }
 
     @ViewBuilder
@@ -74,12 +80,20 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             .onChange(of: presented) { newValue in
                 if newValue {
                     var withDelay = false
-                    if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
-                        presentedVC.dismiss(animated: true)
-                        withDelay = true
+                    if !options.contains(.alwaysOpenOnTop) {
+                        if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
+                            presentedVC.dismiss(animated: true)
+                            withDelay = true
+                        }
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                        let topVC = presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+                        let vcToPresent: UIViewController? = {
+                            if options.contains(.alwaysOpenOnTop) {
+                                return UIApplication.shared.getTopViewController()
+                            }
+                            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+
+                        }()
                         let content = self.content()
                         let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
                         let delegate = DetentedTransitioningDelegate(
@@ -95,7 +109,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                             presented = false
                         }
                         presentationViewModel.presentingVC = vc
-                        topVC?.present(vc, animated: true)
+                        vcToPresent?.present(vc, animated: true)
                     }
                 } else {
                     presentationViewModel.presentingVC?.dismiss(animated: true)
@@ -174,4 +188,14 @@ extension UIViewController {
     var className: String {
         String(describing: Self.self)
     }
+}
+
+public struct DetentPresentationOption: OptionSet {
+    public let rawValue: UInt
+    public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
+
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
 }

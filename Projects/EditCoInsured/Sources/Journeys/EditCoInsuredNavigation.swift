@@ -184,10 +184,7 @@ public struct EditCoInsuredNavigation: View {
 
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
-            showSuccessScreen: showSuccess,
-            onDisappear: {
-                router.dismiss()
-            }
+            showSuccessScreen: showSuccess
         )
     }
 
@@ -203,10 +200,7 @@ public struct EditCoInsuredNavigation: View {
     func openRemoveCoInsuredScreen() -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return RemoveCoInsuredScreen(
-            vm: store.coInsuredViewModel,
-            onDisappear: {
-                router.dismiss()
-            }
+            vm: store.coInsuredViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
     }

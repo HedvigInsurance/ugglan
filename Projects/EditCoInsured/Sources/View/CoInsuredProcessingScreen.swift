@@ -9,16 +9,14 @@ struct CoInsuredProcessingScreen: View {
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    let onDisappear: () -> Void
+    @EnvironmentObject private var router: Router
 
     init(
-        showSuccessScreen: Bool,
-        onDisappear: @escaping () -> Void
+        showSuccessScreen: Bool
     ) {
         self.showSuccessScreen = showSuccessScreen
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
-        self.onDisappear = onDisappear
     }
 
     var body: some View {
@@ -38,7 +36,7 @@ struct CoInsuredProcessingScreen: View {
                 missingContractAlert()
             },
             onErrorCancelAction: {
-                onDisappear()
+                router.dismiss()
             }
         )
         .hSuccessBottomAttachedView {
@@ -62,7 +60,7 @@ struct CoInsuredProcessingScreen: View {
 
     private func missingContractAlert() {
         vm.store.send(.fetchContracts)
-        onDisappear()
+        router.dismiss()
     }
 }
 
@@ -73,7 +71,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true, onDisappear: {})
+        CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
                 let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)
