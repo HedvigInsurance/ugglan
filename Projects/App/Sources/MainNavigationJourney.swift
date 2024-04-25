@@ -108,10 +108,7 @@ struct MainNavigationJourney: App {
             item: $homeNavigationVm.isEditCoInsuredFullScreenPresented
         ) { configs in
             EditCoInsuredNavigation(
-                configs: configs.configs,
-                onDisappear: {
-                    homeNavigationVm.isEditCoInsuredFullScreenPresented = nil
-                }
+                configs: configs.configs
             )
         }
         .detent(
@@ -119,10 +116,7 @@ struct MainNavigationJourney: App {
             style: .height
         ) { configs in
             EditCoInsuredNavigation(
-                configs: configs.configs,
-                onDisappear: {
-                    homeNavigationVm.isEditCoInsuredDetentPresented = nil
-                }
+                configs: configs.configs
             )
         }
         .detent(
@@ -168,7 +162,7 @@ struct MainNavigationJourney: App {
         ContractsNavigation { redirectType in
             switch redirectType {
             case let .editCoInsured(editCoInsuredConfig, onDisappear):
-                EditCoInsuredNavigation(configs: [editCoInsuredConfig], onDisappear: onDisappear)
+                EditCoInsuredNavigation(configs: [editCoInsuredConfig])
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
                     .presentationDetents([.large, .medium])
@@ -227,9 +221,6 @@ struct MainNavigationJourney: App {
         let contractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
         EditCoInsuredNavigation(
             configs: [contractConfig],
-            onDisappear: {
-                onDismiss()
-            },
             openSpecificScreen: .missingAlert
         )
     }

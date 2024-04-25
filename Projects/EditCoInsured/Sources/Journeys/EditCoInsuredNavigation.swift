@@ -18,7 +18,7 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var externalNavigationRedirect = NavigationPath()
 }
 
-public enum OpenSpecificScreen {
+public enum EditCoInsuredScreenType {
     case missingAlert
     case newInsurance
     case none
@@ -26,18 +26,15 @@ public enum OpenSpecificScreen {
 
 public struct EditCoInsuredNavigation: View {
     let configs: [InsuredPeopleConfig]
-    let onDisappear: () -> Void
-    @State var openSpecificScreen: OpenSpecificScreen
+    @State var openSpecificScreen: EditCoInsuredScreenType
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
     @StateObject var router = Router()
 
     public init(
         configs: [InsuredPeopleConfig],
-        onDisappear: @escaping () -> Void,
-        openSpecificScreen: OpenSpecificScreen? = OpenSpecificScreen.none
+        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
     ) {
         self.configs = configs
-        self.onDisappear = onDisappear
         self.openSpecificScreen = openSpecificScreen ?? .none
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
@@ -84,45 +81,15 @@ public struct EditCoInsuredNavigation: View {
                 item: $editCoInsuredNavigationVm.coInsuredInputModel,
                 style: .height
             ) { coInsuredInputModel in
-                openCoInsuredInput(
-                    coInsuredModelEdit: coInsuredInputModel
-                )
-                .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-                    var title: String {
-                        switch actionType {
-                        case .add:
-                            return L10n.contractCoinsuredAdded
-                        case .delete:
-                            return L10n.contractCoinsuredRemoved
-                        default:
-                            return ""
-                        }
-                    }
-                    openSuccessScreen(title: title)
-                }
+                coInsuredInput(coInsuredInputModel: coInsuredInputModel)
             }
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
             style: .height
         ) { coInsuredInputModel in
-            openCoInsuredInput(
-                coInsuredModelEdit: coInsuredInputModel
-            )
-            .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-                var title: String {
-                    switch actionType {
-                    case .add:
-                        return L10n.contractCoinsuredAdded
-                    case .delete:
-                        return L10n.contractCoinsuredRemoved
-                    default:
-                        return ""
-                    }
-                }
-                openSuccessScreen(title: title)
-            }
-            .embededInNavigation(options: [.navigationType(type: .large)])
+            coInsuredInput(coInsuredInputModel: coInsuredInputModel)
+                .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
@@ -166,7 +133,7 @@ public struct EditCoInsuredNavigation: View {
                 }
             },
             onCancel: {
-                onDisappear()
+                router.dismiss()
             },
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
@@ -179,10 +146,7 @@ public struct EditCoInsuredNavigation: View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleNewScreen(
             vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel,
-            onDisappear: {
-                onDisappear()
-            }
+            intentVm: store.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -192,10 +156,7 @@ public struct EditCoInsuredNavigation: View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleScreen(
             vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel,
-            onDisappear: {
-                onDisappear()
-            }
+            intentVm: store.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -225,7 +186,7 @@ public struct EditCoInsuredNavigation: View {
         CoInsuredProcessingScreen(
             showSuccessScreen: showSuccess,
             onDisappear: {
-                onDisappear()
+                router.dismiss()
             }
         )
     }
@@ -244,7 +205,7 @@ public struct EditCoInsuredNavigation: View {
         return RemoveCoInsuredScreen(
             vm: store.coInsuredViewModel,
             onDisappear: {
-                onDisappear()
+                router.dismiss()
             }
         )
         .configureTitle(L10n.coinsuredEditTitle)
@@ -268,12 +229,31 @@ public struct EditCoInsuredNavigation: View {
                     .init(
                         buttonTitle: L10n.contractCoinsuredMissingLater,
                         buttonAction: {
-                            onDisappear()
+                            router.dismiss()
                         }
                     )
             )
         )
         .hExtraBottomPadding
+    }
+
+    func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {
+        openCoInsuredInput(
+            coInsuredModelEdit: coInsuredInputModel
+        )
+        .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
+            var title: String {
+                switch actionType {
+                case .add:
+                    return L10n.contractCoinsuredAdded
+                case .delete:
+                    return L10n.contractCoinsuredRemoved
+                default:
+                    return ""
+                }
+            }
+            openSuccessScreen(title: title)
+        }
     }
 }
 
