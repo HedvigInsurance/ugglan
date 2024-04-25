@@ -94,10 +94,8 @@ public struct MovingFlowNavigation: View {
     }
 
     func openSelectHousingScreen() -> some View {
-        MovingFlowHousingTypeView(onDismiss: {
-            isFlowPresented = false
-        })
-        .withDismissButton()
+        MovingFlowHousingTypeView()
+            .withDismissButton()
     }
 
     func openApartmentFillScreen() -> some View {

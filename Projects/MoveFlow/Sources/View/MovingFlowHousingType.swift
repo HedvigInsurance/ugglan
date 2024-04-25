@@ -8,7 +8,6 @@ public struct MovingFlowHousingTypeView: View {
     @StateObject var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: Router
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    let onDismiss: () -> Void
 
     public var body: some View {
         LoadingViewWithState(
@@ -63,7 +62,7 @@ public struct MovingFlowHousingTypeView: View {
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {
-                        onDismiss()
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -85,7 +84,7 @@ public struct MovingFlowHousingTypeView: View {
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .nb_NO
-        return MovingFlowHousingTypeView(onDismiss: {})
+        return MovingFlowHousingTypeView()
     }
 }
 
