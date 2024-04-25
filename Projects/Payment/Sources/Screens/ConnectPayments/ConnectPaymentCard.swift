@@ -20,45 +20,50 @@ public struct ConnectPaymentCardView: View {
                 state.paymentStatusData
             }
         ) { paymentStatusData in
-            if let nextChargeDate = paymentStatusData?.nextChargeDate?.displayDate,
-                paymentStatusData?.status == .needsSetup
-            {
-                InfoCard(
-                    text: L10n.InfoCardMissingPayment.bodyWithDate(nextChargeDate),
-                    type: .attention
-                )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.PayInExplainer.buttonText,
-                        buttonAction: {
-                            connectPaymentsVm.isConnectPaymentPresented = true
-                        }
-                    )
-                ])
-            } else if paymentStatusData?.status == .needsSetup {
-                NavigationStack {
-                    InfoCard(
-                        text: L10n.InfoCardMissingPayment.body,
-                        type: .attention
-                    )
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.PayInExplainer.buttonText,
-                            buttonAction: {
-                                connectPaymentsVm.isConnectPaymentPresented = true
-                            }
-                        )
-                    ]
-                    )
-                    .sheet(isPresented: $connectPaymentsVm.isConnectPaymentPresented) {
-                        DirectDebitSetup()
-                            .presentationDetents([.medium])
-                    }
-                }
+            if let status = paymentStatusData?.status {
+                getStatusInfoView(from: status)
             }
         }
         .onAppear {
             store.send(.fetchPaymentStatus)
         }
     }
+
+    @ViewBuilder
+    func getStatusInfoView(from status: PayinMethodStatus) -> some View {
+        if case let .contactUs(date) = status {
+            InfoCard(
+                text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
+                type: .attention
+            )
+            .buttons(
+                [
+                    .init(
+                        buttonTitle: L10n.General.chatButton,
+                        buttonAction: {
+                            if let url = DeepLink.getUrl(from: .openChat) {
+                                store.send(.navigation(to: .openUrl(url: url, handledBySystem: false)))
+                            }
+                        }
+                    )
+                ]
+            )
+        } else if case .needsSetup = status {
+            InfoCard(
+                text: L10n.InfoCardMissingPayment.body,
+                type: .attention
+            )
+            .buttons(
+                [
+                    .init(
+                        buttonTitle: L10n.PayInExplainer.buttonText,
+                        buttonAction: {
+                            connectPaymentsVm.isConnectPaymentPresented = true
+                        }
+                    )
+                ]
+            )
+        }
+    }
+
 }

@@ -4,27 +4,17 @@ import hGraphQL
 
 public struct PaymentStatusData: Codable, Equatable {
     public var status: PayinMethodStatus = .active
-    public var nextChargeDate: ServerBasedDate?  //TODO: FIX this
     let displayName: String?
     let descriptor: String?
 
     init(
         status: PayinMethodStatus,
-        nextChargeDate: String?,
         displayName: String?,
         descriptor: String?
     ) {
         self.status = status
-        self.nextChargeDate = nextChargeDate
         self.displayName = displayName
         self.descriptor = descriptor
-    }
-
-    init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
-        self.status = data.currentMember.paymentInformation.status.asPayinMethodStatus
-        self.displayName = data.currentMember.paymentInformation.connection?.displayName
-        self.descriptor = data.currentMember.paymentInformation.connection?.descriptor
-        self.nextChargeDate = data.currentMember.futureCharge?.date
     }
 }
 
@@ -40,24 +30,37 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
             case .needsSetup:
                 return .needsSetup
             }
-        case .unknown(let string):
+        case .unknown:
             return .unknown
         }
     }
 }
 
-public enum PayinMethodStatus {
+public enum PayinMethodStatus: Equatable {
     case active
+    case noNeedToConnect
     case needsSetup
     case pending
+    case contactUs(date: String)
     case unknown
 
     var connectButtonTitle: String {
         switch self {
         case .active, .pending:
             return L10n.myPaymentDirectDebitReplaceButton
-        case .needsSetup, .unknown:
+        case .needsSetup, .unknown, .noNeedToConnect:
             return L10n.myPaymentDirectDebitButton
+        case .contactUs:
+            return L10n.General.chatButton
+        }
+    }
+
+    public var showConnectPayment: Bool {
+        switch self {
+        case .contactUs, .needsSetup:
+            return true
+        case .noNeedToConnect, .pending, .active, .unknown:
+            return false
         }
     }
 }

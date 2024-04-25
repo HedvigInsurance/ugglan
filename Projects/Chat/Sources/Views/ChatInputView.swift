@@ -295,7 +295,7 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
-                name: "camera shoot",
+                name: "Camera shoot",
                 data: image.jpegData(compressionQuality: 0.9)!,
                 thumbnailData: image.jpegData(compressionQuality: 0.1)!
             )
@@ -379,18 +379,9 @@ extension ChatInputViewModel: UIDocumentPickerDelegate {
         var files: [FilePickerDto] = []
         for url in urls {
             _ = url.startAccessingSecurityScopedResource()
-            guard let data = FileManager.default.contents(atPath: url.relativePath) else { return }
-            let mimeType = MimeType.findBy(mimeType: url.mimeType)
-            files.append(
-                .init(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: mimeType,
-                    name: url.lastPathComponent,
-                    data: data,
-                    thumbnailData: nil
-                )
-            )
+            if let file = FilePickerDto(from: url) {
+                files.append(file)
+            }
             url.stopAccessingSecurityScopedResource()
         }
         for fileDTO in files {
