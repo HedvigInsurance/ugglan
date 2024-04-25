@@ -9,7 +9,9 @@ struct EditContract: View {
     @State var selectedType: EditType?
     @State var editTypes: [EditType] = []
     private let contract: Contract?
-    init(id: String) {
+    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
+
+    public init(id: String) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         contract = store.state.contractForId(id)
         if let contract {
@@ -18,7 +20,7 @@ struct EditContract: View {
             _editTypes = State(initialValue: [])
         }
     }
-    var body: some View {
+    public var body: some View {
         hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 4) {
@@ -53,26 +55,21 @@ struct EditContract: View {
                 hSection {
                     VStack(spacing: 8) {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.dismissEditInfo(type: selectedType))
+                            contractsNavigationVm.changeYourInformationContract = nil
                             switch selectedType {
                             case .coInsured:
                                 if Dependencies.featureFlags().isEditCoInsuredEnabled {
                                     if let contract {
-                                        store.send(
-                                            .coInsuredNavigationAction(
-                                                action:
-                                                    .openEditCoInsured(
-                                                        config: .init(contract: contract),
-                                                        fromInfoCard: false
-                                                    )
-                                            )
+                                        contractsNavigationVm.editCoInsuredConfig = .init(
+                                            contract: contract,
+                                            fromInfoCard: false
                                         )
                                     }
                                 } else {
-                                    store.send(.goToFreeTextChat)
+                                    NotificationCenter.default.post(name: .openChat, object: nil)
                                 }
                             case .changeAddress:
-                                store.send(.goToMovingFlow)
+                                contractsNavigationVm.isChangeAddressPresented = true
                             case nil:
                                 break
                             }
@@ -82,7 +79,7 @@ struct EditContract: View {
                         .disabled(selectedType == nil)
 
                         hButton.LargeButton(type: .ghost) {
-                            store.send(.dismissEditInfo(type: nil))
+                            contractsNavigationVm.changeYourInformationContract = nil
                         } content: {
                             hText(L10n.generalCancelButton)
                         }

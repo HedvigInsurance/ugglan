@@ -54,7 +54,7 @@ public struct ProductVariant: Codable, Hashable {
 
 }
 
-public struct Contract: Codable, Hashable, Equatable {
+public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public init(
         id: String,
         currentAgreement: Agreement,
@@ -540,7 +540,8 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
 extension InsuredPeopleConfig {
     public init(
-        contract: Contract
+        contract: Contract,
+        fromInfoCard: Bool
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
@@ -554,7 +555,8 @@ extension InsuredPeopleConfig {
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
-            holderSSN: contract.ssn
+            holderSSN: contract.ssn,
+            fromInfoCard: fromInfoCard
         )
     }
 }

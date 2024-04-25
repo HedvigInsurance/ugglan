@@ -9,11 +9,13 @@ struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: CrossSell
 
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            store.send(.openCrossSellingWebUrl(url: url))
+            UIApplication.shared.open(url)
         } else {
-            store.send(.goToFreeTextChat)
+            NotificationCenter.default.post(name: .openChat, object: nil)
         }
     }
 

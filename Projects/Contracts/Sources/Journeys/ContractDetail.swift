@@ -33,6 +33,8 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
 
+    public init() {}
+
     @Published var selected = Views.overview {
         didSet {
             if previous != selected {
@@ -55,16 +57,16 @@ class TabControllerContext: ObservableObject {
 
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
-    @EnvironmentObject var context: TabControllerContext
+    @StateObject var context = TabControllerContext()
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
-    var title: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
     let contractDocuments: ContractDocumentsView
 
     @State private var selectedView = ContractDetailsViews.overview
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
@@ -81,11 +83,9 @@ public struct ContractDetail: View {
     }
 
     public init(
-        id: String,
-        title: String
+        id: String
     ) {
         self.id = id
-        self.title = title
         self._vm = .init(wrappedValue: .init(id: id))
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(id: id)
@@ -138,9 +138,11 @@ public struct ContractDetail: View {
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
-                            viewFor(view: panel)
-                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2)) {
+                                viewFor(view: panel)
+                                    .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                                    .environmentObject(contractsNavigationVm)
+                            }
                         }
                     }
                 }

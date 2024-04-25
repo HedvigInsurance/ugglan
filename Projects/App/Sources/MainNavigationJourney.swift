@@ -5,10 +5,12 @@ import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Home
+import MoveFlow
 import Payment
 import Presentation
 import Profile
 import SwiftUI
+import TerminateContracts
 import TravelCertificate
 import hCore
 import hCoreUI
@@ -111,14 +113,12 @@ struct MainNavigationJourney: App {
             style: .height
         ) {
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
             let contractsSupportingCoInsured = contractStore.state.activeContracts
                 .filter({ $0.showEditCoInsuredInfo })
                 .compactMap({
-                    InsuredPeopleConfig(contract: $0)
+                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                 })
-
-            return EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
+            EditCoInsuredViewJourney(configs: contractsSupportingCoInsured)
         }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation()
@@ -143,15 +143,27 @@ struct MainNavigationJourney: App {
     }
 
     var contractsTab: some View {
-        Contracts(showTerminated: false)
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 1
-                        ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
-                )
-                hText(L10n.tabInsurancesTitle)
+        ContractsNavigation { redirectType in
+            switch redirectType {
+            case let .editCoInsured(editCoInsuredConfig):
+                EditCoInsuredViewJourney(configs: [editCoInsuredConfig])
+            case .chat:
+                ChatScreen(vm: .init(topicType: nil))
+                    .presentationDetents([.large, .medium])
+            case .movingFlow:
+                MovingFlowViewJourney()
+            case let .pdf(document):
+                PDFPreview(document: .init(url: document.url, title: document.title))
             }
-            .tag(1)
+        }
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 1
+                    ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
+            )
+            hText(L10n.tabInsurancesTitle)
+        }
+        .tag(1)
     }
 
     var foreverTab: some View {

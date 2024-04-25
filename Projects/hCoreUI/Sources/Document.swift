@@ -6,9 +6,10 @@ import SafariServices
 import SwiftUI
 import hCore
 
-public struct Document {
-    let url: URL
-    let title: String
+public struct Document: Equatable, Identifiable {
+    public var id: String?
+    public let url: URL
+    public let title: String
 
     public init(
         url: URL,
@@ -48,6 +49,7 @@ public struct PDFPreview: View {
         }
         .navigationTitle(vm.document.title)
         .navigationBarTitleDisplayMode(.inline)
+        .embededInNavigation()
     }
 
     private var loadingIndicatorView: some View {

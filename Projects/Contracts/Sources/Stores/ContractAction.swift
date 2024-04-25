@@ -7,14 +7,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
-    case peril(peril: Perils)
-    case insurableLimit(insurableLimit: InsurableLimits)
-    case document(url: URL, title: String)
-    case openInsuranceUpdate(contract: Contract)
-    case dismissUpcomingChanges
-}
-
 public enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
@@ -28,21 +20,7 @@ public enum ContractAction: ActionProtocol, Hashable {
     case setPendingContracts(contracts: [Contract])
 
     case setCrossSells(crossSells: [CrossSell])
-    case goToMovingFlow
-    case goToFreeTextChat
-    case openCrossSellingWebUrl(url: URL)
-
     case hasSeenCrossSells(value: Bool)
-    case openDetail(contractId: String, title: String)
-    case openTerminatedContracts
-    case openContractDetailErrorScreen
-
-    case contractDetailNavigationAction(action: ContractDetailNavigationAction)
-    case dismissContractDetailNavigation
-    case contractEditInfo(id: String)
-    case dismissEditInfo(type: EditType?)
-    case startTermination(contract: Contract)
-    case coInsuredNavigationAction(action: CoInsuredNavigationAction)
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
@@ -86,15 +64,4 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         }
         return editTypes
     }
-}
-
-public enum CoInsuredAction: Codable {
-    case delete
-    case edit
-    case add
-}
-
-public enum CoInsuredNavigationAction: ActionProtocol, Hashable {
-    case openMissingCoInsuredAlert(config: InsuredPeopleConfig)
-    case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
 }
