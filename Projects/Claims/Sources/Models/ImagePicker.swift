@@ -135,18 +135,9 @@ struct FileImporterView: UIViewControllerRepresentable {
             didFinishAdding = true
             for url in urls {
                 _ = url.startAccessingSecurityScopedResource()
-                guard let data = FileManager.default.contents(atPath: url.relativePath) else { return }
-                let mimeType = MimeType.findBy(mimeType: url.mimeType)
-                files.append(
-                    .init(
-                        id: UUID().uuidString,
-                        size: Double(data.count),
-                        mimeType: mimeType,
-                        name: url.lastPathComponent,
-                        data: data,
-                        thumbnailData: nil
-                    )
-                )
+                if let file = FilePickerDto(from: url) {
+                    files.append(file)
+                }
                 url.stopAccessingSecurityScopedResource()
             }
             parent.imagesSelected(files)
