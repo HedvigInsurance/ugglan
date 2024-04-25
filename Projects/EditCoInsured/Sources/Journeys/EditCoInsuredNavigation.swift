@@ -81,45 +81,15 @@ public struct EditCoInsuredNavigation: View {
                 item: $editCoInsuredNavigationVm.coInsuredInputModel,
                 style: .height
             ) { coInsuredInputModel in
-                openCoInsuredInput(
-                    coInsuredModelEdit: coInsuredInputModel
-                )
-                .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-                    var title: String {
-                        switch actionType {
-                        case .add:
-                            return L10n.contractCoinsuredAdded
-                        case .delete:
-                            return L10n.contractCoinsuredRemoved
-                        default:
-                            return ""
-                        }
-                    }
-                    openSuccessScreen(title: title)
-                }
+                coInsuredInput(coInsuredInputModel: coInsuredInputModel)
             }
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
             style: .height
         ) { coInsuredInputModel in
-            openCoInsuredInput(
-                coInsuredModelEdit: coInsuredInputModel
-            )
-            .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-                var title: String {
-                    switch actionType {
-                    case .add:
-                        return L10n.contractCoinsuredAdded
-                    case .delete:
-                        return L10n.contractCoinsuredRemoved
-                    default:
-                        return ""
-                    }
-                }
-                openSuccessScreen(title: title)
-            }
-            .embededInNavigation(options: [.navigationType(type: .large)])
+            coInsuredInput(coInsuredInputModel: coInsuredInputModel)
+                .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
@@ -265,6 +235,25 @@ public struct EditCoInsuredNavigation: View {
             )
         )
         .hExtraBottomPadding
+    }
+
+    func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {
+        openCoInsuredInput(
+            coInsuredModelEdit: coInsuredInputModel
+        )
+        .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
+            var title: String {
+                switch actionType {
+                case .add:
+                    return L10n.contractCoinsuredAdded
+                case .delete:
+                    return L10n.contractCoinsuredRemoved
+                default:
+                    return ""
+                }
+            }
+            openSuccessScreen(title: title)
+        }
     }
 }
 
