@@ -8,6 +8,7 @@ import hGraphQL
 public struct BankIDLoginQRView: View {
     @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
+    @EnvironmentObject var router: Router
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
         self.onStartDemoMode = onStartDemoMode
@@ -102,6 +103,9 @@ public struct BankIDLoginQRView: View {
         }
         .onAppear {
             vm.onAppear()
+            vm.onSuccess = { [weak router] in
+                router?.dismiss()
+            }
         }
     }
 }
@@ -117,7 +121,9 @@ class BandIDViewModel: ObservableObject {
     @Inject var authentificationService: AuthentificationService
     private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
+    var onSuccess: () -> Void
     init() {
+        onSuccess = {}
         checkIfCanOpenBankId()
     }
 
@@ -134,8 +140,9 @@ class BandIDViewModel: ObservableObject {
                                 case .pending(let qrCode):
                                     self?.set(qrData: qrCode)
                                 case .completed:
-                                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
-                                    store.send(.navigationAction(action: .authSuccess))
+                                    ApplicationState.preserveState(.loggedIn)
+                                    ApplicationState.state = .loggedIn
+                                    self?.onSuccess()
                                 }
                             }
                         }

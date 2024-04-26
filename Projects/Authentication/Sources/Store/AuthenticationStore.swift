@@ -16,6 +16,7 @@ enum LoginStatus: Equatable {
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     @Inject var authentificationService: AuthentificationService
     let otpState = OTPState()
+
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction

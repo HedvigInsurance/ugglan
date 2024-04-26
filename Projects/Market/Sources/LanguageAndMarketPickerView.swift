@@ -21,9 +21,13 @@ extension Market {
     }
 }
 
-struct LanguageAndMarketPickerView: View {
+public struct LanguageAndMarketPickerView: View {
     @StateObject private var vm = LanguageAndMarketPickerViewModel()
-    var body: some View {
+    @EnvironmentObject var router: Router
+
+    public init() {}
+
+    public var body: some View {
         hForm {
             VStack(spacing: 8) {
                 hSection {
@@ -56,11 +60,12 @@ struct LanguageAndMarketPickerView: View {
 
                     hButton.LargeButton(type: .primary) {
                         vm.save()
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
                     hButton.LargeButton(type: .ghost) {
-                        vm.dismiss()
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -190,11 +195,6 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
         let store: MarketStore = globalPresentableStoreContainer.get()
         store.send(.selectMarket(market: selectedMarket))
         store.send(.selectLanguage(language: selectedLocale.rawValue))
-        dismiss()
-    }
-    func dismiss() {
-        let store: MarketStore = globalPresentableStoreContainer.get()
-        store.send(.dismissPicker)
     }
 }
 

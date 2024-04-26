@@ -66,7 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ugglanStore.send(.setIsDemoMode(to: false))
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
-        ApplicationContext.shared.$isLoggedIn.value = false
         ApolloClient.deleteToken()
         self.presentMainJourney()
     }
@@ -215,37 +214,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         log.info("Starting app")
 
         UIApplication.shared.registerForRemoteNotifications()
-
-        //        let (launchView, launchFuture) = Launch.shared.materialize()
-        //        window.rootView.addSubview(launchView)
-        //        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
-        //        forceLogoutHook = {
-        //            if ApplicationState.currentState != .notLoggedIn {
-        //                DispatchQueue.main.async {
-        //                    launchView.removeFromSuperview()
-        //                    ApplicationState.preserveState(.notLoggedIn)
-        //
-        //                    ApplicationContext.shared.hasFinishedBootstrapping = true
-        ////                    Launch.shared.completeAnimationCallbacker.callAll()
-        //
-        //                    UIApplication.shared.appDelegate.logout()
-        //                    let toast = Toast(
-        //                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
-        //                        body: L10n.forceLogoutMessageTitle,
-        //                        textColor: .brand(.secondaryText),
-        //                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
-        //                        symbolColor: .brand(.secondaryText)
-        //                    )
-        //                    Toasts.shared.displayToast(toast: toast)
-        //                }
-        //            }
-        //        }
+        forceLogoutHook = {
+            if ApplicationState.currentState != .notLoggedIn {
+                DispatchQueue.main.async {
+                    ApplicationState.preserveState(.notLoggedIn)
+                    ApplicationContext.shared.hasFinishedBootstrapping = true
+                    //                    Launch.shared.completeAnimationCallbacker.callAll()
+                    UIApplication.shared.appDelegate.logout()
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                        body: L10n.forceLogoutMessageTitle,
+                        textColor: .brand(.secondaryText),
+                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
+                        symbolColor: .brand(.secondaryText)
+                    )
+                    Toasts.shared.displayToast(toast: toast)
+                }
+            }
+        }
 
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
-
-        //        launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
-
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
@@ -276,16 +265,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //        }
 
         let store: UgglanStore = globalPresentableStoreContainer.get()
-        setupExperiments()
         observeNotificationsSettings()
         return true
-    }
-
-    private func setupExperiments() {
-        self.setupFeatureFlags(onComplete: { success in
-            DispatchQueue.main.async {
-                //                self.bag += self.window.present(AppJourney.main)
-            }
-        })
     }
 }
