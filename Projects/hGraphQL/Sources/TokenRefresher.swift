@@ -1,15 +1,15 @@
 import Apollo
-import Flow
+import Combine
 import Foundation
 
 public class TokenRefresher {
     public static let shared = TokenRefresher()
-    var isRefreshing: ReadWriteSignal<Bool> = ReadWriteSignal(false)
-    var needRefresh: Bool {
+    private var isRefreshing: CurrentValueSubject<Bool, Never> = CurrentValueSubject<Bool, Never>(false)
+    private var cancellables = Set<AnyCancellable>()
+    private var needRefresh: Bool {
         guard let token = try? ApolloClient.retreiveToken() else {
             return false
         }
-
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
@@ -29,16 +29,14 @@ public class TokenRefresher {
 
         if self.isRefreshing.value {
             log.debug("Already refreshing waiting until that is complete")
-            try await withCheckedThrowingContinuation { (inCont: CheckedContinuation<Void, Error>) -> Void in
-                let bag = DisposeBag()
-                bag += self.isRefreshing
-                    .filter(predicate: { isRefreshing in
-                        !isRefreshing
-                    })
-                    .onFirstValue({ _ in
+            try await withCheckedThrowingContinuation {
+                [weak self] (inCont: CheckedContinuation<Void, Error>) -> Void in guard let self = self else { return }
+                self.isRefreshing.first(where: { !$0 })
+                    .sink { value in
                         log.debug("Refresh completed")
                         inCont.resume()
-                    })
+                    }
+                    .store(in: &self.cancellables)
             }
             return
         } else if Date() > token.refreshTokenExpirationDate {
@@ -46,15 +44,21 @@ public class TokenRefresher {
             forceLogoutHook()
             throw AuthError.refreshTokenExpired
         } else {
-            self.isRefreshing.value = true
+            self.isRefreshing.send(true)
             log.info("Will start refreshing token")
 
             do {
                 try await onRefresh?(token.refreshToken)
-                self.isRefreshing.value = false
+                self.isRefreshing.send(false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.cancellables.removeAll()
+                }
             } catch let error {
                 log.error("Refreshing failed \(error.localizedDescription), forcing logout")
                 forceLogoutHook()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.cancellables.removeAll()
+                }
                 throw error
             }
         }

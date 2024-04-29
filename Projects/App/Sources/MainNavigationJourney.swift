@@ -122,6 +122,15 @@ struct MainNavigationJourney: App {
                 }
             )
         }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation(redirect: { redirectType in
+                switch redirectType {
+                case .moveFlow:
+                    MovingFlowNavigation()
+                }
+            })
+            .environmentObject(homeNavigationVm)
+        }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             style: .height
@@ -134,10 +143,6 @@ struct MainNavigationJourney: App {
             style: .height
         ) {
             CrossSellingScreen()
-        }
-        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-            HelpCenterNavigation()
-                .environmentObject(homeNavigationVm)
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -159,13 +164,12 @@ struct MainNavigationJourney: App {
     var contractsTab: some View {
         ContractsNavigation { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, onDisappear):
+            case let .editCoInsured(editCoInsuredConfig, _):
                 EditCoInsuredNavigation(configs: [editCoInsuredConfig])
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
-                    .presentationDetents([.large, .medium])
-            case let .movingFlow(isFlowPresented):
-                MovingFlowNavigation(isFlowPresented: isFlowPresented)
+            case .movingFlow:
+                MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
             case let .cancellation(contractConfig, isFlowPresented):

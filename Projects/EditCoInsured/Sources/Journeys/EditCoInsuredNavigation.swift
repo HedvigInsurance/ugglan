@@ -38,15 +38,13 @@ public struct EditCoInsuredNavigation: View {
         self.openSpecificScreen = openSpecificScreen ?? .none
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        if let config = editCoInsuredNavigationVm.editCoInsuredConfig {
-            store.coInsuredViewModel.initializeCoInsured(with: config)
-        } else if let config = configs.first {
+        if let config = configs.first, configs.count == 1 {
             store.coInsuredViewModel.initializeCoInsured(with: config)
         }
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, options: .navigationType(type: .large)) {
             if openSpecificScreen == .missingAlert {
                 openMissingCoInsuredAlert()
             } else if openSpecificScreen == .newInsurance {
@@ -70,19 +68,7 @@ public struct EditCoInsuredNavigation: View {
             }
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
-            Group {
-                if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                    openNewInsuredPeopleScreen()
-                } else {
-                    openInsuredPeopleScreen()
-                }
-            }
-            .detent(
-                item: $editCoInsuredNavigationVm.coInsuredInputModel,
-                style: .height
-            ) { coInsuredInputModel in
-                coInsuredInput(coInsuredInputModel: coInsuredInputModel)
-            }
+            EditCoInsuredNavigation(configs: [config])
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
@@ -129,6 +115,8 @@ public struct EditCoInsuredNavigation: View {
                 if let selectedConfig = selectedConfigs.first {
                     if let object = selectedConfig.0 {
                         editCoInsuredNavigationVm.editCoInsuredConfig = object
+                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                        store.coInsuredViewModel.initializeCoInsured(with: object)
                     }
                 }
             },

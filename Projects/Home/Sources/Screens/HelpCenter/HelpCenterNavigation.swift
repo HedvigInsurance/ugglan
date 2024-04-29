@@ -2,7 +2,6 @@ import Chat
 import Contracts
 import EditCoInsured
 import EditCoInsuredShared
-import MoveFlow
 import Payment
 import Presentation
 import SafariServices
@@ -32,13 +31,16 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     }
 }
 
-public struct HelpCenterNavigation: View {
+public struct HelpCenterNavigation<Content: View>: View {
     @StateObject private var helpCenterVm = HelpCenterNavigationViewModel()
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @StateObject var router = Router()
+    @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
 
-    public init() {}
+    public init(@ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content) {
+        self.redirect = redirect
+    }
 
     public var body: some View {
         RouterHost(router: router) {
@@ -96,7 +98,7 @@ public struct HelpCenterNavigation: View {
         .fullScreenCover(
             isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
             content: {
-                MovingFlowNavigation(isFlowPresented: $helpCenterVm.quickActions.isChangeAddressPresented)
+                redirect(.moveFlow)
             }
         )
         .fullScreenCover(
@@ -223,6 +225,12 @@ public struct HelpCenterNavigation: View {
     }
 }
 
+public enum HelpCenterRedirectType {
+    case moveFlow
+}
+
 #Preview{
-    HelpCenterNavigation()
+    HelpCenterNavigation<EmptyView>(redirect: { redirectType in
+
+    })
 }

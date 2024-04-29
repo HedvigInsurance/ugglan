@@ -106,7 +106,7 @@ public class ContractsNavigationViewModel: ObservableObject {
 public enum RedirectType {
     case editCoInsured(config: InsuredPeopleConfig, onDismiss: () -> Void)
     case chat
-    case movingFlow(isFlowPresented: Binding<Bool>)
+    case movingFlow
     case pdf(document: Document)
     case cancellation(contractConfig: TerminationConfirmConfig, isFlowPresented: () -> Void)
 }
