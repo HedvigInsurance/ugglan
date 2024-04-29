@@ -180,7 +180,7 @@ public struct PaymentsView: View {
                 state.paymentStatusData?.status
             }
         ) { statusData in
-            if let statusData, statusData != .needsSetup {
+            if let statusData, !statusData.showConnectPayment {
                 hSection {
                     VStack(spacing: 16) {
                         if statusData == .pending {
