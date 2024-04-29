@@ -1,4 +1,5 @@
 import AVKit
+import Apollo
 import Authentication
 import Combine
 import Foundation
@@ -16,17 +17,55 @@ import hCore
 import hCoreUI
 
 struct LoginNavigation: View {
+    @StateObject var vm = NotLoggedViewModel()
+    @StateObject private var router = Router()
     var body: some View {
-        NotLoggedInView {}
+        RouterHost(router: router, options: .navigationBarHidden) {
+            NotLoggedInView(vm: vm)
+        }
+        .detent(presented: $vm.showLanguagePicker, style: .height) {
+            LanguageAndMarketPickerView()
+                .navigationTitle(L10n.loginMarketPickerPreferences)
+                .embededInNavigation()
+
+        }
+        .detent(presented: $vm.showLogin, style: .large) {
+            BankIDLoginQRView {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                await store.sendAsync(.setIsDemoMode(to: true))
+                ApolloClient.initAndRegisterClient()
+            }
+            .withDismissButton()
+            .embededInNavigation()
+        }
     }
 }
 
 public struct NotLoggedInView: View {
-    @ObservedObject var vm = NotLoggedViewModel()
+    @ObservedObject var vm: NotLoggedViewModel
     public init(
-        onLoad: @escaping () -> Void
+        vm: NotLoggedViewModel
     ) {
-        self.vm.onLoad = onLoad
+        self.vm = vm
+    }
+
+    public var body: some View {
+        ZStack {
+            LoginVideoView().ignoresSafeArea()
+            hSection {
+                VStack {
+                    switch vm.viewState {
+                    case .loading:
+                        ZStack {}
+                    case .marketAndLanguage:
+                        marketAndLanguage
+                    }
+                }
+                .environment(\.colorScheme, .light)
+                .opacity(vm.viewState == .loading ? 0 : 1)
+            }
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     @ViewBuilder
@@ -73,50 +112,17 @@ public struct NotLoggedInView: View {
                 }
             }
         }
-        .detent(presented: $vm.showLanguagePicker, style: .height) {
-            LanguageAndMarketPickerView()
-                .navigationTitle(L10n.loginMarketPickerPreferences)
-                .embededInNavigation()
-
-        }
-        .detent(presented: $vm.showLogin, style: .large) {
-            BankIDLoginQRView {}
-                .embededInNavigation()
-        }
     }
-
-    public var body: some View {
-        ZStack {
-            LoginVideoView().ignoresSafeArea()
-            hSection {
-                VStack {
-                    switch vm.viewState {
-                    case .loading:
-                        ZStack {}
-                    case .marketAndLanguage:
-                        marketAndLanguage
-                    }
-                }
-                .environment(\.colorScheme, .light)
-                .opacity(vm.viewState == .loading ? 0 : 1)
-            }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-
 }
 
 struct NotLoggedInView_Previews: PreviewProvider {
     static var previews: some View {
-        NotLoggedInView {
-
-        }
+        NotLoggedInView(vm: .init())
     }
 }
 
 public class NotLoggedViewModel: ObservableObject {
     @PresentableStore var store: MarketStore
-
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
@@ -171,6 +177,10 @@ public class NotLoggedViewModel: ObservableObject {
     enum ViewState {
         case loading
         case marketAndLanguage
+    }
+
+    deinit {
+        let ss = ""
     }
 }
 

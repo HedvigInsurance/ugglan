@@ -14,22 +14,24 @@ public struct OTPAuthJourney {
         let store: AuthenticationStore = globalPresentableStoreContainer.get()
         return HostingJourney(
             AuthenticationStore.self,
-            rootView: OTPEntryView(otpVM: store.otpState)
+            rootView: OTPEntryView()
         ) { action in
-            if case .navigationAction(action: .otpCode) = action {
-                HostingJourney(
-                    AuthenticationStore.self,
-                    rootView: OTPCodeEntryView(otpVM: store.otpState)
-                ) { action in
-                    if case .navigationAction(action: .authSuccess) = action {
-                        next(.success).hidesBackButton
-                    }
-                }
-            }
+            //            if case .navigationAction(action: .otpCode) = action {
+            //                HostingJourney(
+            //                    AuthenticationStore.self,
+            //                    rootView: OTPCodeEntryView(otpVM: .init())
+            //                ) { action in
+            //                    if case .navigationAction(action: .authSuccess) = action {
+            //                        next(.success).hidesBackButton
+            //                    }
+            //                }
+            //            }
+            ContinueJourney()
+
         }
-        .onPresent {
-            let store: AuthenticationStore = globalPresentableStoreContainer.get()
-            store.otpState.reset()
-        }
+        //        .onPresent {
+        //            let store: AuthenticationStore = globalPresentableStoreContainer.get()
+        //            store.otpState.reset()
+        //        }
     }
 }

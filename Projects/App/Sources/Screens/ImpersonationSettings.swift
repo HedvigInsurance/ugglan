@@ -8,6 +8,7 @@ import hCoreUI
 struct ImpersonationSettings: View {
     @PresentableStore var store: UgglanStore
     @PresentableStore var marketStore: MarketStore
+    @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
     var body: some View {
         hForm {
@@ -22,7 +23,7 @@ struct ImpersonationSettings: View {
                         }
                         marketStore.send(.selectLanguage(language: locale.rawValue))
                         Localization.Locale.currentLocale = locale
-                        store.send(.showLoggedIn)
+                        state = .loggedIn
                     }
                 }
             }

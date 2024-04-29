@@ -1,14 +1,7 @@
 import Foundation
 import Presentation
 
-public enum BankIDLoginQRResult: ActionProtocol {
-    case loggedIn
-    case emailLogin
-}
-
 public enum AuthenticationNavigationAction: ActionProtocol {
-    case otpCode
-    case authSuccess
     case impersonation
 }
 
@@ -23,5 +16,4 @@ public enum AuthenticationAction: ActionProtocol {
     case logoutFailure
     case loginFailure(message: String?)
     case navigationAction(action: AuthenticationNavigationAction)
-    case bankIdQrResultAction(action: BankIDLoginQRResult)
 }

@@ -15,19 +15,12 @@ enum LoginStatus: Equatable {
 
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     @Inject var authentificationService: AuthentificationService
-    let otpState = OTPState()
 
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
         _ action: AuthenticationAction
     ) async {
-        if case .navigationAction(action: .authSuccess) = action {
-            Task {
-                let generator = await UINotificationFeedbackGenerator()
-                await generator.notificationOccurred(.success)
-            }
-            send(.bankIdQrResultAction(action: .loggedIn))
-        } else if case .logout = action {
+        if case .logout = action {
             do {
                 try await authentificationService.logout()
                 send(.logoutSuccess)

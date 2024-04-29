@@ -9,6 +9,8 @@ public struct BankIDLoginQRView: View {
     @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
     @EnvironmentObject var router: Router
+    @StateObject var otpVM = OTPState()
+
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
         self.onStartDemoMode = onStartDemoMode
@@ -49,8 +51,9 @@ public struct BankIDLoginQRView: View {
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                                     Task {
                                         await onStartDemoMode()
-                                        store.send(.bankIdQrResultAction(action: .loggedIn))
-                                        vm.cancelLogin()
+                                        router.dismiss()
+                                        ApplicationState.preserveState(.loggedIn)
+                                        ApplicationState.state = .loggedIn
                                     }
                                 }
                             )
@@ -88,7 +91,7 @@ public struct BankIDLoginQRView: View {
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                store.send(.bankIdQrResultAction(action: .emailLogin))
+                                router.push(AuthentificationRouterType.emailLogin)
                                 vm.cancelLogin()
                             } content: {
                                 hText(L10n.BankidMissingLogin.emailButton)
@@ -105,6 +108,18 @@ public struct BankIDLoginQRView: View {
             vm.onAppear()
             vm.onSuccess = { [weak router] in
                 router?.dismiss()
+            }
+        }
+        .routerDestination(for: AuthentificationRouterType.self) { type in
+            switch type {
+            case .emailLogin:
+                OTPEntryView()
+                    .environmentObject(otpVM)
+                    .withDismissButton()
+            case .otpCodeEntry:
+                OTPCodeEntryView()
+                    .environmentObject(otpVM)
+                    .withDismissButton()
             }
         }
     }
@@ -248,4 +263,9 @@ struct BankIDLoginQR_Previews: PreviewProvider {
     static var previews: some View {
         BankIDLoginQRView {}
     }
+}
+
+enum AuthentificationRouterType {
+    case emailLogin
+    case otpCodeEntry
 }

@@ -4,8 +4,8 @@ import hCoreUI
 
 struct OTPEntryView: View {
     @StateObject private var vm: OTPEntryViewModel = .init()
-    @ObservedObject var otpVM: OTPState
-
+    @EnvironmentObject var otpVM: OTPState
+    @EnvironmentObject var router: Router
     var body: some View {
         hForm {
             hSection {
@@ -42,15 +42,15 @@ struct OTPEntryView: View {
         .sectionContainerStyle(.transparent)
         .onAppear {
             vm.focusInputField = true
+            vm.router = router
         }
     }
 }
 
 class OTPEntryViewModel: ObservableObject {
-    @PresentableStore var store: AuthenticationStore
     @Inject var authorizationService: AuthentificationService
     @hTextFieldFocusState var focusInputField = false
-
+    weak var router: Router?
     var masking: Masking {
         switch Localization.Locale.currentLocale.market {
         case .dk:
@@ -89,7 +89,7 @@ class OTPEntryViewModel: ObservableObject {
                     otpState.canResendAt = Date().addingTimeInterval(60)
                     otpState.isResending = false
                     otpState.maskedEmail = data.maskedEmail
-                    self?.store.send(.navigationAction(action: .otpCode))
+                    self?.router?.push(AuthentificationRouterType.otpCodeEntry)
                 }
             } catch let error {
                 otpState?.isLoading = false

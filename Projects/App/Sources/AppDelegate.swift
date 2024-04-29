@@ -39,7 +39,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return window
     }()
 
-    func presentMainJourney() {
+    //    func presentMainJourney() {
+    //        ApolloClient.cache = InMemoryNormalizedCache()
+    //
+    //        // remove all persisted state
+    //        globalPresentableStoreContainer.deletePersistanceContainer()
+    //
+    //        // create new store container to remove all old store instances
+    //        globalPresentableStoreContainer = PresentableStoreContainer()
+    //
+    //        self.setupSession()
+    //        //        self.bag += self.window.present(AppJourney.main)
+    //        ApolloClient.initAndRegisterClient()
+    //        UIView.transition(
+    //            with: self.window,
+    //            duration: 0.3,
+    //            options: .transitionCrossDissolve,
+    //            animations: {},
+    //            completion: { _ in }
+    //        )
+    //    }
+
+    private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
         // remove all persisted state
@@ -48,16 +69,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        self.setupSession()
-        //        self.bag += self.window.present(AppJourney.main)
+        //self.bag += self.window.present(AppJourney.main)
         ApolloClient.initAndRegisterClient()
-        UIView.transition(
-            with: self.window,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: {},
-            completion: { _ in }
-        )
     }
 
     func logout() {
@@ -67,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
         ApolloClient.deleteToken()
-        self.presentMainJourney()
+        clearData()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -128,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+    func handleURL(url: URL) {
         if url.relativePath.contains("login-failure") {
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
             authenticationStore.send(.loginFailure(message: nil))
@@ -136,9 +149,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            impersonate.impersonate(with: url)
-        }
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            store.send(.setIsDemoMode(to: false))
+            Task {
+                setupSession()
+                await impersonate.impersonate(with: url)
 
+            }
+
+        }
+        if let rootView = window.rootViewController {
+            self.handleDeepLink(url, fromVC: rootView)
+        }
+    }
+
+    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        handleURL(url: url)
         return false
     }
 
@@ -214,13 +240,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         log.info("Starting app")
 
         UIApplication.shared.registerForRemoteNotifications()
-        forceLogoutHook = {
+        forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationContext.shared.hasFinishedBootstrapping = true
                     //                    Launch.shared.completeAnimationCallbacker.callAll()
-                    UIApplication.shared.appDelegate.logout()
+                    self?.logout()
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,

@@ -118,10 +118,17 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             }
             return hNavigationController()
         }()
+        let controller = hHostingController(
+            rootView: initialView().environmentObject(router),
+            contentName: "\(Screen.self)"
+        )
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView().environmentObject(router), contentName: "\(Screen.self)")],
+            [controller],
             animated: false
         )
+        if options.contains(.navigationBarHidden) {
+            navigation.setNavigationBarHidden(true, animated: true)
+        }
         router.onPush = { [weak router, weak navigation] options, view, name in
             guard let router = router else { return nil }
             let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)
@@ -158,8 +165,10 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                 navigation?.setViewControllers(newVCs, animated: true)
             }
         }
-        navigation.onDeinit = { [weak router] in
+        navigation.onDeinit = { [weak navigation, weak router] in
             router?.builders.removeAll()
+            let presentingVC = navigation?.presentedViewController
+            let ss = ""
         }
 
         router.onDismiss = { [weak navigation] in
