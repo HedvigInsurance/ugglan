@@ -14,8 +14,6 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var showProgressScreenWithoutSuccess = false
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
-
-    @Published var externalNavigationRedirect = NavigationPath()
 }
 
 public enum EditCoInsuredScreenType {
@@ -29,13 +27,16 @@ public struct EditCoInsuredNavigation: View {
     @State var openSpecificScreen: EditCoInsuredScreenType
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
     @StateObject var router = Router()
+    var checkForAlert: () -> Void
 
     public init(
         configs: [InsuredPeopleConfig],
-        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
+        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none,
+        checkForAlert: @escaping () -> Void
     ) {
         self.configs = configs
         self.openSpecificScreen = openSpecificScreen ?? .none
+        self.checkForAlert = checkForAlert
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         if let config = configs.first, configs.count == 1 {
@@ -68,7 +69,12 @@ public struct EditCoInsuredNavigation: View {
             }
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
-            EditCoInsuredNavigation(configs: [config])
+            EditCoInsuredNavigation(
+                configs: [config],
+                checkForAlert: {
+                    checkForAlert()
+                }
+            )
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
@@ -86,6 +92,7 @@ public struct EditCoInsuredNavigation: View {
         }
         .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
+                .environmentObject(router)
         }
         .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
             openProgress(showSuccess: false)
@@ -172,7 +179,11 @@ public struct EditCoInsuredNavigation: View {
 
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
-            showSuccessScreen: showSuccess
+            showSuccessScreen: showSuccess,
+            checkForMissingAlert: {
+                editCoInsuredNavigationVm.selectCoInsured = nil
+                checkForAlert()
+            }
         )
     }
 
@@ -195,28 +206,10 @@ public struct EditCoInsuredNavigation: View {
 
     public func openMissingCoInsuredAlert() -> some View {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        return GenericErrorView(
-            title: store.coInsuredViewModel.config.contractDisplayName,
-            description: L10n.contractCoinsuredMissingInformationLabel,
-            buttons: .init(
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                        buttonAction: {
-                            openSpecificScreen = .newInsurance
-                            editCoInsuredNavigationVm.editCoInsuredConfig = store.coInsuredViewModel.config
-                        }
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: L10n.contractCoinsuredMissingLater,
-                        buttonAction: {
-                            router.dismiss()
-                        }
-                    )
-            )
-        )
-        .hExtraBottomPadding
+        return MissingCoInsuredAlert(onButtonAction: {
+            openSpecificScreen = .newInsurance
+            editCoInsuredNavigationVm.editCoInsuredConfig = store.coInsuredViewModel.config
+        })
     }
 
     func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {

@@ -67,12 +67,29 @@ public struct ContractsNavigation<Content: View>: View {
                 contractsNavigationVm.insuranceUpdate = nil
             }
         }
+        .detent(
+            item: $contractsNavigationVm.editCoInsuredMissingAlert,
+            style: .height
+        ) { editCoInsuredConfig in
+            redirect(
+                .editCoInsured(
+                    config: editCoInsuredConfig,
+                    showMissingAlert: true,
+                    isMissingAlertAction: { _ in
+
+                    }
+                )
+            )
+        }
         .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
             redirect(
                 .editCoInsured(
                     config: editCoInsuredConfig,
-                    onDismiss: {
-                        contractsNavigationVm.editCoInsuredConfig = nil
+                    showMissingAlert: false,
+                    isMissingAlertAction: { isMissingAltert in
+                        if isMissingAltert {
+                            contractsNavigationVm.editCoInsuredMissingAlert = editCoInsuredConfig
+                        }
                     }
                 )
             )
@@ -94,13 +111,14 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var document: Document?
     @Published public var terminationContract: Contract?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
+    @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
 }
 
 public enum RedirectType {
-    case editCoInsured(config: InsuredPeopleConfig, onDismiss: () -> Void)
+    case editCoInsured(config: InsuredPeopleConfig, showMissingAlert: Bool, isMissingAlertAction: (Bool) -> Void)
     case chat
     case movingFlow
     case pdf(document: Document)
