@@ -86,10 +86,8 @@ public struct ContractsNavigation<Content: View>: View {
                 .editCoInsured(
                     config: editCoInsuredConfig,
                     showMissingAlert: false,
-                    isMissingAlertAction: { isMissingAltert in
-                        if isMissingAltert {
-                            contractsNavigationVm.editCoInsuredMissingAlert = editCoInsuredConfig
-                        }
+                    isMissingAlertAction: { isMissingAlert in
+                        contractsNavigationVm.editCoInsuredMissingAlert = isMissingAlert
                     }
                 )
             )
@@ -118,7 +116,11 @@ public class ContractsNavigationViewModel: ObservableObject {
 }
 
 public enum RedirectType {
-    case editCoInsured(config: InsuredPeopleConfig, showMissingAlert: Bool, isMissingAlertAction: (Bool) -> Void)
+    case editCoInsured(
+        config: InsuredPeopleConfig,
+        showMissingAlert: Bool,
+        isMissingAlertAction: (InsuredPeopleConfig) -> Void
+    )
     case chat
     case movingFlow
     case pdf(document: Document)
