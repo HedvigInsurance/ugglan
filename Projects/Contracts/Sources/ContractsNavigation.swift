@@ -69,7 +69,8 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.editCoInsuredMissingAlert,
-            style: .height
+            style: .height,
+            options: .constant(.replaceCurrent)
         ) { editCoInsuredConfig in
             redirect(
                 .editCoInsured(
