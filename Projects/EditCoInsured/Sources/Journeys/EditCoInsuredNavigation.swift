@@ -81,17 +81,19 @@ public struct EditCoInsuredNavigation: View {
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
         }
-        .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
+        .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
-                .environmentObject(router)
+                .environmentObject(editCoInsuredNavigationVm)
         }
-        .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
+        .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
             openProgress(showSuccess: false)
+                .environmentObject(editCoInsuredNavigationVm)
         }
-        .fullScreenCover(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
+        .modally(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
             let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
             let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
             openNewInsuredPeopleScreen()
+                .environmentObject(router)
         }
         .environmentObject(editCoInsuredNavigationVm)
     }
@@ -206,11 +208,13 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             openSelectInsurance()
         }
-        .fullScreenCover(
-            item: $editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig
-        ) { config in
-            EditCoInsuredNavigation(config: config, checkForAlert: checkForAlert)
-        }
+        .modally(
+            item: $editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig,
+            options: .constant(.replaceCurrent),
+            content: { config in
+                EditCoInsuredNavigation(config: config, checkForAlert: checkForAlert)
+            }
+        )
     }
 
     func openSelectInsurance() -> some View {
@@ -267,7 +271,10 @@ public struct EditCoInsuredAlertNavigation: View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             openMissingCoInsuredAlert()
         }
-        .fullScreenCover(item: $editCoInsuredAlertNavigationVm.editCoInsuredConfig) { config in
+        .modally(
+            item: $editCoInsuredAlertNavigationVm.editCoInsuredConfig,
+            options: .constant(.replaceCurrent)
+        ) { config in
             EditCoInsuredNavigation(
                 config: config,
                 openSpecificScreen: .newInsurance,
@@ -279,9 +286,12 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public func openMissingCoInsuredAlert() -> some View {
-        return MissingCoInsuredAlert(onButtonAction: {
-            editCoInsuredAlertNavigationVm.editCoInsuredConfig = config
-        })
+        return MissingCoInsuredAlert(
+            config: config,
+            onButtonAction: { [weak editCoInsuredAlertNavigationVm] in
+                editCoInsuredAlertNavigationVm?.editCoInsuredConfig = config
+            }
+        )
     }
 }
 

@@ -9,7 +9,7 @@ struct CoInsuredProcessingScreen: View {
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @EnvironmentObject private var router: Router
+    @StateObject var router = Router()
     private var checkForMissingAlert: () -> Void
 
     init(
@@ -23,27 +23,23 @@ struct CoInsuredProcessingScreen: View {
     }
 
     var body: some View {
-        ProcessingView(
-            showSuccessScreen: showSuccessScreen,
-            EditCoInsuredStore.self,
-            loading: .postCoInsured,
-            loadingViewText: L10n.contractAddCoinsuredProcessing,
-            successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-            successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-            ),
-            successViewButtonAction: {
-                missingContractAlert()
-            },
-            onAppearLoadingView: {
-                missingContractAlert()
-            },
-            onErrorCancelAction: {
-                router.dismiss()
+        RouterHost(router: router, options: [.navigationBarHidden]) {
+            ProcessingView(
+                showSuccessScreen: showSuccessScreen,
+                EditCoInsuredStore.self,
+                loading: .postCoInsured,
+                loadingViewText: L10n.contractAddCoinsuredProcessing,
+                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
+                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+                    intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                onErrorCancelAction: {
+                    router.dismiss()
+                }
+            )
+            .hSuccessBottomAttachedView {
+                customBottomSuccessView
             }
-        )
-        .hSuccessBottomAttachedView {
-            customBottomSuccessView
         }
     }
 
