@@ -29,11 +29,11 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
-    @Published public var isMissingEditCoInsuredAlertPresented: Contract?
+    @Published public var isMissingEditCoInsuredAlertPresented: InsuredPeopleConfig?
 
     // scroll view cards
-    @Published public var isEditCoInsuredDetentPresented: CoInsuredConfigModel?
-    @Published public var isEditCoInsuredFullScreenPresented: CoInsuredConfigModel?
+    @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
+    @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
 
     @Published public var isConnectPayments = false
 
@@ -51,6 +51,12 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public struct CoInsuredConfigModel: Identifiable, Equatable {
+        public init(
+            configs: [InsuredPeopleConfig]
+        ) {
+            self.configs = configs
+        }
+
         public var id: String?
         public var configs: [InsuredPeopleConfig]
     }
