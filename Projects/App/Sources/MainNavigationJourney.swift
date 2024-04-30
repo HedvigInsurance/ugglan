@@ -124,7 +124,8 @@ struct MainNavigationJourney: App {
         }
         .detent(
             item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-            style: .height
+            style: .height,
+            options: .constant(.replaceCurrent)
         ) { config in
             getMissingCoInsuredAlertView(missingContractConfig: config)
         }
