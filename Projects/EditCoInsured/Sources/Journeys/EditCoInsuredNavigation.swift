@@ -280,8 +280,7 @@ public struct EditCoInsuredAlertNavigation: View {
 
     public func openMissingCoInsuredAlert() -> some View {
         return MissingCoInsuredAlert(onButtonAction: {
-            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-            editCoInsuredAlertNavigationVm.editCoInsuredConfig = store.coInsuredViewModel.config
+            editCoInsuredAlertNavigationVm.editCoInsuredConfig = config
         })
     }
 }
