@@ -5,11 +5,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
-    public var id: String?
-    var extraBuildingType: ExtraBuildingType?
-}
-
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
 
@@ -26,18 +21,18 @@ enum MovingFlowRouterActions {
     case houseFill
 }
 
+struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
+    public var id: String?
+    var extraBuildingType: ExtraBuildingType?
+}
+
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
     @State var cancellable: AnyCancellable?
-    @Binding var isFlowPresented: Bool
     @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
-    public init(
-        isFlowPresented: Binding<Bool>
-    ) {
-        self._isFlowPresented = isFlowPresented
-    }
+    public init() {}
 
     public var body: some View {
         RouterHost(router: router) {
@@ -87,9 +82,8 @@ public struct MovingFlowNavigation: View {
             item: $movingFlowVm.document,
             style: .large
         ) { document in
-            NavigationStack {
-                PDFPreview(document: .init(url: document.url, title: document.title))
-            }
+            PDFPreview(document: .init(url: document.url, title: document.title))
+                .embededInNavigation(options: .navigationType(type: .large))
         }
     }
 
@@ -117,7 +111,7 @@ public struct MovingFlowNavigation: View {
     func openProcessingView() -> some View {
         MovingFlowProcessingView(
             onSuccessButtonAction: {
-                isFlowPresented = false
+                router.dismiss()
             },
             onErrorButtonAction: {
                 router.pop()
@@ -126,31 +120,9 @@ public struct MovingFlowNavigation: View {
     }
 
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
-        CheckboxPickerScreen<ExtraBuildingType>(
-            items: {
-                let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                return store.state.movingFlowModel?.extraBuildingTypes
-                    .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
-            }(),
-            preSelectedItems: {
-                if let currentlySelected {
-                    return [currentlySelected]
-                }
-                return []
-            },
-            onSelected: { selected in
-                let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                if let selected = selected.first {
-                    isBuildingTypePickerPresented = nil
-                    if let object = selected.0 {
-                        store.send(.setExtraBuildingType(with: object))
-                    }
-                }
-            },
-            onCancel: {
-                isBuildingTypePickerPresented = nil
-            },
-            singleSelect: true
+        TypeOfBuildingPickerView(
+            currentlySelected: currentlySelected,
+            isBuildingTypePickerPresented: $isBuildingTypePickerPresented
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
         .embededInNavigation(options: [.navigationType(type: .large)])

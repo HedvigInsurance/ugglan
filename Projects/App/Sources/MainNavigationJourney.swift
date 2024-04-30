@@ -97,30 +97,80 @@ struct MainNavigationJourney: App {
             }
         }
         .fullScreenCover(
-            item: $homeNavigationVm.isEditCoInsuredFullScreenPresented
-        ) { configs in
+            item: $homeNavigationVm.isEditCoInsuredPresented
+        ) { config in
             EditCoInsuredNavigation(
-                configs: configs.configs
+                config: config,
+                checkForAlert: {
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
+                        }
+                    }
+                }
             )
         }
         .detent(
-            item: $homeNavigationVm.isEditCoInsuredDetentPresented,
+            item: $homeNavigationVm.isEditCoInsuredSelectContractPresented,
             style: .height
         ) { configs in
-            EditCoInsuredNavigation(
-                configs: configs.configs
+            EditCoInsuredSelectInsuranceNavigation(
+                configs: configs.configs,
+                checkForAlert: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
+                    }
+                }
             )
         }
         .detent(
             item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-            style: .height
-        ) { contract in
+            style: .height,
+            options: .constant(.replaceCurrent)
+        ) { config in
             getMissingCoInsuredAlertView(
-                missingContract: contract,
-                onDismiss: {
-                    homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
+                missingContractConfig: config,
+                isMissingAlert: { config in
+                    router.dismiss()
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
+                        }
+                    }
                 }
             )
+        }
+        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+            HelpCenterNavigation(redirect: { redirectType in
+                switch redirectType {
+                case .moveFlow:
+                    MovingFlowNavigation()
+                case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
+                    getEditCoInsuredView(
+                        config: config,
+                        hasMissingAlert: hasMissingAlert,
+                        isMissingAlert: isMissingAlertAction
+                    )
+                case let .editCoInuredSelectInsurance(configs, isMissingAlertAction):
+                    EditCoInsuredSelectInsuranceNavigation(
+                        configs: configs,
+                        checkForAlert: {
+                            if let isMissingContract {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    isMissingAlertAction(isMissingContract)
+                                }
+                            }
+                        }
+                    )
+                case .travelInsurance:
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    TravelCertificateNavigation(
+                        canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
+                        infoButtonPlacement: .navigationBarLeading
+                    )
+                }
+            })
+            .environmentObject(homeNavigationVm)
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
@@ -134,19 +184,6 @@ struct MainNavigationJourney: App {
             style: .height
         ) {
             CrossSellingScreen()
-        }
-        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
-            HelpCenterNavigation(redirect: { redirectType in
-                switch redirectType {
-                case .travelInsurance:
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                    TravelCertificateNavigation(
-                        canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
-                        infoButtonPlacement: .navigationBarLeading
-                    )
-                }
-            })
-            .environmentObject(homeNavigationVm)
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -168,13 +205,16 @@ struct MainNavigationJourney: App {
     var contractsTab: some View {
         ContractsNavigation { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, onDisappear):
-                EditCoInsuredNavigation(configs: [editCoInsuredConfig])
+            case let .editCoInsured(editCoInsuredConfig, hasMissingAlert, isMissingAlert):
+                getEditCoInsuredView(
+                    config: editCoInsuredConfig,
+                    hasMissingAlert: hasMissingAlert,
+                    isMissingAlert: isMissingAlert
+                )
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
-                    .presentationDetents([.large, .medium])
-            case let .movingFlow(isFlowPresented):
-                MovingFlowNavigation(isFlowPresented: isFlowPresented)
+            case .movingFlow:
+                MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
             case let .cancellation(contractConfig, isFlowPresented):
@@ -253,14 +293,76 @@ struct MainNavigationJourney: App {
     }
 
     @ViewBuilder
-    private func getMissingCoInsuredAlertView(missingContract: Contract, onDismiss: @escaping () -> Void) -> some View {
-        let contractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-        EditCoInsuredNavigation(
-            configs: [contractConfig],
-            openSpecificScreen: .missingAlert
+    private func getEditCoInsuredView(
+        config: InsuredPeopleConfig,
+        hasMissingAlert: Bool,
+        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+    ) -> some View {
+        if hasMissingAlert {
+            getMissingCoInsuredAlertView(
+                missingContractConfig: config,
+                isMissingAlert: { config in
+                    router.dismiss()
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isMissingAlert(isMissingContract)
+                        }
+                    }
+                }
+            )
+        } else {
+            EditCoInsuredNavigation(
+                config: config,
+                checkForAlert: {
+                    router.dismiss()
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isMissingAlert(isMissingContract)
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private func getMissingCoInsuredAlertView(
+        missingContractConfig: InsuredPeopleConfig,
+        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+    ) -> some View {
+        EditCoInsuredAlertNavigation(
+            config: missingContractConfig,
+            checkForAlert: {
+                router.dismiss()
+                if let isMissingContract {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isMissingAlert(isMissingContract)
+                    }
+                }
+            }
         )
     }
+
+    private var isMissingContract: InsuredPeopleConfig? {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetchContracts)
+
+        let missingContract = contractStore.state.activeContracts.first { contract in
+            if contract.upcomingChangedAgreement != nil {
+                return false
+            } else {
+                return contract.coInsured
+                    .first(where: { coInsured in
+                        coInsured.hasMissingInfo && contract.terminationDate == nil
+                    }) != nil
+            }
+        }
+        if let missingContract {
+            return .init(contract: missingContract, fromInfoCard: false)
+        }
+        return nil
+    }
 }
+
 #Preview{
     Launch()
 }
