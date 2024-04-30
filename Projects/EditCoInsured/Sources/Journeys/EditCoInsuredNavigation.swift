@@ -263,7 +263,6 @@ public struct EditCoInsuredAlertNavigation: View {
         self.checkForAlert = checkForAlert
     }
 
-    // not entering here???
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             openMissingCoInsuredAlert()
@@ -273,7 +272,7 @@ public struct EditCoInsuredAlertNavigation: View {
                 config: config,
                 openSpecificScreen: .newInsurance,
                 checkForAlert: {
-                    /* TODO: add check for alert dismiss */
+                    checkForAlert()
                 }
             )
         }
