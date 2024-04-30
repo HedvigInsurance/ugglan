@@ -18,7 +18,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
     var onLoadingDismiss: (() -> Void)?
 
     var errorViewButtons: ErrorViewButtonConfig?
-
+    @Environment(\.hSuccessBottomAttachedView) var successBottomView
     public init(
         showSuccessScreen: Bool? = true,
         _ storeType: S.Type,
@@ -56,14 +56,18 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 errorView
             } success: {
                 if showSuccessScreen {
-                    SuccessScreen(
-                        successViewTitle: successViewTitle ?? "",
-                        successViewBody: successViewBody ?? "",
-                        buttons: .init(
-                            primaryButton: nil,
-                            ghostButton: .init(buttonAction: successViewButtonAction ?? {})
+                    if let successBottomView = successBottomView {
+                        SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
+                    } else {
+                        SuccessScreen(
+                            successViewTitle: successViewTitle ?? "",
+                            successViewBody: successViewBody ?? "",
+                            buttons: .init(
+                                primaryButton: nil,
+                                ghostButton: .init(buttonAction: successViewButtonAction ?? {})
+                            )
                         )
-                    )
+                    }
                 } else {
                     loadingView
                         .onAppear {
