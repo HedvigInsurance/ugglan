@@ -99,12 +99,7 @@ struct MainNavigationJourney: App {
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
-                checkForAlert: {
-                    Task {
-                        let missingContract = await isMissingContract()
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
         .detent(
@@ -113,12 +108,7 @@ struct MainNavigationJourney: App {
         ) { configs in
             EditCoInsuredSelectInsuranceNavigation(
                 configs: configs.configs,
-                checkForAlert: {
-                    Task {
-                        let missingContract = await isMissingContract()
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
         .detent(
@@ -126,13 +116,7 @@ struct MainNavigationJourney: App {
             style: .height
         ) { config in
             getMissingCoInsuredAlertView(
-                missingContractConfig: config,
-                isMissingAlert: { config in
-                    Task {
-                        let missingContract = await isMissingContract()
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                    }
-                }
+                missingContractConfig: config
             )
         }
         .modally(presented: $homeNavigationVm.isHelpCenterPresented) {
@@ -147,12 +131,7 @@ struct MainNavigationJourney: App {
                 case let .editCoInuredSelectInsurance(configs, isMissingAlertAction):
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: configs,
-                        checkForAlert: {
-                            Task {
-                                let missingContract = await isMissingContract()
-                                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                            }
-                        }
+                        checkForAlert: checkForAlert
                     )
                 }
             })
@@ -257,59 +236,45 @@ struct MainNavigationJourney: App {
     ) -> some View {
         if hasMissingAlert {
             getMissingCoInsuredAlertView(
-                missingContractConfig: config,
-                isMissingAlert: { config in
-                    Task {
-                        let missingContract = await isMissingContract()
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                    }
-                }
+                missingContractConfig: config
             )
         } else {
             EditCoInsuredNavigation(
                 config: config,
-                checkForAlert: {
-                    Task {
-                        let missingContract = await isMissingContract()
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
     }
 
     private func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig,
-        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+        missingContractConfig: InsuredPeopleConfig
     ) -> some View {
         EditCoInsuredAlertNavigation(
             config: missingContractConfig,
-            checkForAlert: {
-                Task {
-                    let missingContract = await isMissingContract()
-                    homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContract
-                }
-            }
+            checkForAlert: checkForAlert
         )
     }
 
-    private func isMissingContract() async -> InsuredPeopleConfig? {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        await contractStore.sendAsync(.fetchContracts)
-        let missingContract = contractStore.state.activeContracts.first { contract in
-            if contract.upcomingChangedAgreement != nil {
-                return false
-            } else {
-                return contract.coInsured
-                    .first(where: { coInsured in
-                        coInsured.hasMissingInfo && contract.terminationDate == nil
-                    }) != nil
+    private func checkForAlert() {
+        Task {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let missingContract = contractStore.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
             }
         }
-        if let missingContract {
-            return .init(contract: missingContract, fromInfoCard: false)
-        }
-        return nil
     }
 }
 

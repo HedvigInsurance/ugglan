@@ -33,6 +33,9 @@ struct CoInsuredProcessingScreen: View {
                 successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
                     intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 ),
+                onAppearLoadingView: {
+                    missingContractAlert()
+                },
                 onErrorCancelAction: {
                     router.dismiss()
                 }
