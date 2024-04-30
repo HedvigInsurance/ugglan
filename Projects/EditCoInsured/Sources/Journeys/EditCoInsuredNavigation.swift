@@ -143,7 +143,9 @@ public struct EditCoInsuredNavigation: View {
         CoInsuredProcessingScreen(
             showSuccessScreen: showSuccess,
             checkForMissingAlert: {
-                router.dismiss()
+                if !showSuccess {
+                    router.dismiss()
+                }
                 checkForAlert()
             }
         )
