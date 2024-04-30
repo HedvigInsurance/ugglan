@@ -5,6 +5,8 @@ import hCoreUI
 
 struct TravelCertificateProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
+    @EnvironmentObject var router: Router
+
     var body: some View {
         ProcesssingView(
             isLoading: $vm.isLoading,
@@ -13,7 +15,7 @@ struct TravelCertificateProcessingScreen: View {
             successViewTitle: L10n.TravelCertificate.travelCertificateReady,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             onErrorCancelAction: {
-                vm.store.send(.navigation(.goBack))
+                router.pop()
             }
         )
         .hSuccessBottomAttachedView {
@@ -32,7 +34,7 @@ struct TravelCertificateProcessingScreen: View {
                         hText(L10n.TravelCertificate.download)
                     }
                     hButton.LargeButton(type: .ghost) {
-                        vm.store.send(.navigation(.dismissCreateTravelCertificate))
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCloseButton)
                     }

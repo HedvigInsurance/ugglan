@@ -162,11 +162,16 @@ struct MainNavigationJourney: App {
                             }
                         }
                     )
-                case .travelInsurance:
+                case let .travelInsurance(redirectType):
                     let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     TravelCertificateNavigation(
                         canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
-                        infoButtonPlacement: .navigationBarLeading
+                        infoButtonPlacement: .navigationBarLeading,
+                        openCoInsured: {
+                            redirectType(
+                                .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
+                            )
+                        }
                     )
                 }
             })

@@ -113,7 +113,16 @@ public struct HelpCenterNavigation<Content: View>: View {
         .fullScreenCover(
             isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
             content: {
-                redirect(.travelInsurance)
+                redirect(
+                    .travelInsurance(redirect: { redirectType in
+                        switch redirectType {
+                        case let .editCoInsured(config, _, _):
+                            handle(quickAction: .editCoInsured)
+                        default:
+                            break
+                        }
+                    })
+                )
             }
         )
         .fullScreenCover(
@@ -256,7 +265,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 }
 
 public enum HelpCenterRedirectType {
-    case travelInsurance
+    case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
     case moveFlow
     case editCoInsured(
         config: InsuredPeopleConfig,

@@ -9,6 +9,9 @@ import hCoreUI
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @PresentableStore var store: TravelInsuranceStore
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
+    var openCoInsured: () -> Void
 
     var body: some View {
         CheckboxPickerScreen<CoInsuredModel>(
@@ -32,7 +35,7 @@ struct WhoIsTravelingScreen: View {
                     )
                 }
                 vm.setCoInsured(data: listOfIncludedTravellers)
-                vm.validateAndSubmit()
+                validateAndSubmit()
             },
             attachToBottom: true,
             hButtonText: L10n.General.submit,
@@ -43,9 +46,9 @@ struct WhoIsTravelingScreen: View {
                         .init(
                             buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
                             buttonAction: {
-                                store.send(.dismissTravelInsuranceFlow)
+                                router.dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    store.send(.goToEditCoInsured)
+                                    openCoInsured()
                                 }
                             }
                         )
@@ -57,6 +60,14 @@ struct WhoIsTravelingScreen: View {
         .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
         .hDisableScroll
         .disabled(vm.isLoading)
+    }
+
+    func validateAndSubmit() {
+        let (valid, _) = vm.isValidWithMessage()
+        if valid {
+            UIApplication.dismissKeyboard()
+            router.push(TravelCertificateRouterActionsWithoutBackButton.processingScreen)
+        }
     }
 }
 
@@ -100,16 +111,7 @@ class WhoIsTravelingViewModel: ObservableObject {
         }
     }
 
-    func validateAndSubmit() {
-        let (valid, _) = isValidWithMessage()
-        if valid {
-            UIApplication.dismissKeyboard()
-            store.send(.navigation(.openProcessingScreen))
-
-        }
-    }
-
-    private func isValidWithMessage() -> (valid: Bool, message: String?) {
+    func isValidWithMessage() -> (valid: Bool, message: String?) {
         let isValid = isPolicyHolderIncluded || policyCoinsuredPersons.count > 0
         var message: String? = nil
         if !isValid {
@@ -135,7 +137,8 @@ struct WhoIsTravelingView_Previews: PreviewProvider {
                         email: "email",
                         fullName: "full name"
                     )
-                )
+                ),
+            openCoInsured: {}
         )
     }
 }

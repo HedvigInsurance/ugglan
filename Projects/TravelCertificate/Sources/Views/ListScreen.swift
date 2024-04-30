@@ -5,8 +5,8 @@ import hCoreUI
 
 public struct ListScreen: View {
     @StateObject var vm = ListScreenViewModel()
-    //    @PresentableStore var store: TravelInsuranceStore
     @EnvironmentObject var router: Router
+    @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
     let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
@@ -43,7 +43,7 @@ public struct ListScreen: View {
                     .withChevronAccessory
                     .foregroundColor(travelCertificate.textColor)
                     .onTapGesture {
-                        //                        store.send(.navigation(.openDetails(for: travelCertificate)))
+                        travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
                 }
                 .withoutHorizontalPadding
@@ -90,7 +90,6 @@ public struct ListScreen: View {
             do {
                 let specifications = try await vm.service.getSpecifications()
                 router.push(TravelInsuranceSpecificationNavigationModel.init(specification: specifications))
-
             } catch _ {
 
             }
