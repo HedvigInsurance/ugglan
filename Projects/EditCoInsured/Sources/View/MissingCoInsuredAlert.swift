@@ -1,21 +1,23 @@
+import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct MissingCoInsuredAlert: View {
-    @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject var router: Router
     private var onButtonAction: () -> Void
-
+    let config: InsuredPeopleConfig
     public init(
+        config: InsuredPeopleConfig,
         onButtonAction: @escaping () -> Void
     ) {
+        self.config = config
         self.onButtonAction = onButtonAction
     }
 
     public var body: some View {
         GenericErrorView(
-            title: store.coInsuredViewModel.config.contractDisplayName,
+            title: config.contractDisplayName,
             description: L10n.contractCoinsuredMissingInformationLabel,
             buttons: .init(
                 actionButtonAttachedToBottom:
@@ -39,5 +41,21 @@ public struct MissingCoInsuredAlert: View {
 }
 
 #Preview{
-    MissingCoInsuredAlert(onButtonAction: {})
+    MissingCoInsuredAlert(
+        config: .init(
+            contractCoInsured: [],
+            contractId: "id",
+            activeFrom: nil,
+            numberOfMissingCoInsured: 1,
+            numberOfMissingCoInsuredWithoutTermination: 1,
+            displayName: "Display name",
+            preSelectedCoInsuredList: [],
+            contractDisplayName: "Contract display name",
+            holderFirstName: "Fist name",
+            holderLastName: "Last name",
+            holderSSN: nil,
+            fromInfoCard: false
+        ),
+        onButtonAction: {}
+    )
 }

@@ -32,7 +32,7 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var router = Router()
+    @StateObject var homeRouter = Router()
 
     var body: some Scene {
         WindowGroup {
@@ -40,7 +40,6 @@ struct MainNavigationJourney: App {
                 TabView(selection: $vm.selectedTab) {
                     Group {
                         homeTab
-                            .environmentObject(router)
                         contractsTab
 
                         let store: ContractStore = globalPresentableStoreContainer.get()
@@ -66,7 +65,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return RouterHost(router: router) {
+        return RouterHost(router: homeRouter) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -96,18 +95,12 @@ struct MainNavigationJourney: App {
                     .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
-        .fullScreenCover(
+        .modally(
             item: $homeNavigationVm.isEditCoInsuredPresented
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
-                checkForAlert: {
-                    if let isMissingContract {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
-                        }
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
         .detent(
@@ -116,31 +109,18 @@ struct MainNavigationJourney: App {
         ) { configs in
             EditCoInsuredSelectInsuranceNavigation(
                 configs: configs.configs,
-                checkForAlert: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
         .detent(
             item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-            style: .height,
-            options: .constant(.replaceCurrent)
+            style: .height
         ) { config in
             getMissingCoInsuredAlertView(
-                missingContractConfig: config,
-                isMissingAlert: { config in
-                    router.dismiss()
-                    if let isMissingContract {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
-                        }
-                    }
-                }
+                missingContractConfig: config
             )
         }
-        .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
+        .modally(presented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation(redirect: { redirectType in
                 switch redirectType {
                 case .moveFlow:
@@ -154,13 +134,7 @@ struct MainNavigationJourney: App {
                 case let .editCoInuredSelectInsurance(configs, isMissingAlertAction):
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: configs,
-                        checkForAlert: {
-                            if let isMissingContract {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    isMissingAlertAction(isMissingContract)
-                                }
-                            }
-                        }
+                        checkForAlert: checkForAlert
                     )
                 case let .travelInsurance(redirectType):
                     let profileStore: ProfileStore = globalPresentableStoreContainer.get()
@@ -306,66 +280,45 @@ struct MainNavigationJourney: App {
     ) -> some View {
         if hasMissingAlert {
             getMissingCoInsuredAlertView(
-                missingContractConfig: config,
-                isMissingAlert: { config in
-                    router.dismiss()
-                    if let isMissingContract {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            isMissingAlert(isMissingContract)
-                        }
-                    }
-                }
+                missingContractConfig: config
             )
         } else {
             EditCoInsuredNavigation(
                 config: config,
-                checkForAlert: {
-                    router.dismiss()
-                    if let isMissingContract {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            isMissingAlert(isMissingContract)
-                        }
-                    }
-                }
+                checkForAlert: checkForAlert
             )
         }
     }
 
     private func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig,
-        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+        missingContractConfig: InsuredPeopleConfig
     ) -> some View {
         EditCoInsuredAlertNavigation(
             config: missingContractConfig,
-            checkForAlert: {
-                router.dismiss()
-                if let isMissingContract {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        isMissingAlert(isMissingContract)
-                    }
-                }
-            }
+            checkForAlert: checkForAlert
         )
     }
 
-    private var isMissingContract: InsuredPeopleConfig? {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+    private func checkForAlert() {
+        Task {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let missingContract = contractStore.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
 
-        let missingContract = contractStore.state.activeContracts.first { contract in
-            if contract.upcomingChangedAgreement != nil {
-                return false
-            } else {
-                return contract.coInsured
-                    .first(where: { coInsured in
-                        coInsured.hasMissingInfo && contract.terminationDate == nil
-                    }) != nil
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
             }
         }
-        if let missingContract {
-            return .init(contract: missingContract, fromInfoCard: false)
-        }
-        return nil
     }
 }
 
