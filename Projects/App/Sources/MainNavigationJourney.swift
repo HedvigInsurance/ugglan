@@ -127,7 +127,17 @@ struct MainNavigationJourney: App {
             style: .height,
             options: .constant(.replaceCurrent)
         ) { config in
-            getMissingCoInsuredAlertView(missingContractConfig: config)
+            getMissingCoInsuredAlertView(
+                missingContractConfig: config,
+                isMissingAlert: { config in
+                    router.dismiss()
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            homeNavigationVm.isMissingEditCoInsuredAlertPresented = isMissingContract
+                        }
+                    }
+                }
+            )
         }
         .fullScreenCover(isPresented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation(redirect: { redirectType in
@@ -251,7 +261,17 @@ struct MainNavigationJourney: App {
         isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
     ) -> some View {
         if hasMissingAlert {
-            getMissingCoInsuredAlertView(missingContractConfig: config)
+            getMissingCoInsuredAlertView(
+                missingContractConfig: config,
+                isMissingAlert: { config in
+                    router.dismiss()
+                    if let isMissingContract {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isMissingAlert(isMissingContract)
+                        }
+                    }
+                }
+            )
         } else {
             EditCoInsuredNavigation(
                 config: config,
@@ -268,9 +288,20 @@ struct MainNavigationJourney: App {
     }
 
     private func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
+        missingContractConfig: InsuredPeopleConfig,
+        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
     ) -> some View {
-        EditCoInsuredAlertNavigation(config: missingContractConfig)
+        EditCoInsuredAlertNavigation(
+            config: missingContractConfig,
+            checkForAlert: {
+                router.dismiss()
+                if let isMissingContract {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isMissingAlert(isMissingContract)
+                    }
+                }
+            }
+        )
     }
 
     private var isMissingContract: InsuredPeopleConfig? {

@@ -253,11 +253,14 @@ public struct EditCoInsuredAlertNavigation: View {
     let config: InsuredPeopleConfig
     @StateObject var router = Router()
     @StateObject private var editCoInsuredAlertNavigationVm = EditCoInsuredAlertNavigationViewModel()
+    private var checkForAlert: () -> Void
 
     public init(
-        config: InsuredPeopleConfig
+        config: InsuredPeopleConfig,
+        checkForAlert: @escaping () -> Void
     ) {
         self.config = config
+        self.checkForAlert = checkForAlert
     }
 
     // not entering here???
