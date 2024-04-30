@@ -306,14 +306,6 @@ extension View {
     }
 }
 
-public struct CoInsuredInputModel: Identifiable, Equatable {
-    public var id: String?
-    let actionType: CoInsuredAction
-    let coInsuredModel: CoInsuredModel
-    let title: String
-    let contractId: String
-}
-
 public struct SelectCoInsured: Identifiable, Equatable {
     public var id: String
 }
