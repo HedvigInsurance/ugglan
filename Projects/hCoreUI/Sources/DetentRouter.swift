@@ -106,7 +106,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         let delegate = DetentedTransitioningDelegate(
                             detents: style.asDetent(),
                             options: [.blurredBackground],
-                            wantsGrabber: true,
+                            wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                             viewController: vc
                         )
                         vc.transitioningDelegate = delegate
@@ -200,6 +200,7 @@ public struct DetentPresentationOption: OptionSet {
     public let rawValue: UInt
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let replaceCurrent = DetentPresentationOption(rawValue: 1 << 1)
+    public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
 
     public init(rawValue: UInt) {
         self.rawValue = rawValue
