@@ -49,11 +49,11 @@ struct HomeBottomScrollView: View {
                             })
 
                         if contractsSupportingCoInsured.count > 1 {
-                            navigationVm.isEditCoInsuredDetentPresented = .init(configs: contractsSupportingCoInsured)
-                        } else {
-                            navigationVm.isEditCoInsuredFullScreenPresented = .init(
+                            navigationVm.isEditCoInsuredSelectContractPresented = .init(
                                 configs: contractsSupportingCoInsured
                             )
+                        } else {
+                            navigationVm.isEditCoInsuredPresented = contractsSupportingCoInsured.first
                         }
                     }
                 case .terminated:

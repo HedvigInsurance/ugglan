@@ -14,61 +14,58 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var showProgressScreenWithoutSuccess = false
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
-
-    @Published var externalNavigationRedirect = NavigationPath()
 }
 
 public enum EditCoInsuredScreenType {
-    case missingAlert
     case newInsurance
     case none
 }
 
 public struct EditCoInsuredNavigation: View {
-    let configs: [InsuredPeopleConfig]
+    let config: InsuredPeopleConfig
     @State var openSpecificScreen: EditCoInsuredScreenType
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
     @StateObject var router = Router()
+    var checkForAlert: () -> Void
 
     public init(
-        configs: [InsuredPeopleConfig],
-        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
+        config: InsuredPeopleConfig,
+        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none,
+        checkForAlert: @escaping () -> Void
     ) {
-        self.configs = configs
+        self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
+        self.checkForAlert = checkForAlert
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        if let config = configs.first, configs.count == 1 {
-            store.coInsuredViewModel.initializeCoInsured(with: config)
-        }
+        store.coInsuredViewModel.initializeCoInsured(with: config)
     }
 
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
-            if openSpecificScreen == .missingAlert {
-                openMissingCoInsuredAlert()
-            } else if openSpecificScreen == .newInsurance {
+            if openSpecificScreen == .newInsurance {
                 openNewInsuredPeopleScreen()
             } else if openSpecificScreen == .none {
-                if configs.count > 1 {
-                    openSelectInsurance(configs: configs)
-                } else if let config = configs.first {
-                    if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                        if config.fromInfoCard {
-                            openNewInsuredPeopleScreen()
-                        } else {
-                            openRemoveCoInsuredScreen()
-                        }
-                    } else if configs.first?.numberOfMissingCoInsuredWithoutTermination ?? 0 > 0 {
+                if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                    if config.fromInfoCard {
                         openNewInsuredPeopleScreen()
                     } else {
-                        openInsuredPeopleScreen()
+                        openRemoveCoInsuredScreen()
                     }
+                } else if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                    openNewInsuredPeopleScreen()
+                } else {
+                    openInsuredPeopleScreen()
                 }
             }
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
-            EditCoInsuredNavigation(configs: [config])
+            EditCoInsuredNavigation(
+                config: config,
+                checkForAlert: {
+                    checkForAlert()
+                }
+            )
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
@@ -86,6 +83,7 @@ public struct EditCoInsuredNavigation: View {
         }
         .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
+                .environmentObject(router)
         }
         .fullScreenCover(isPresented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
             openProgress(showSuccess: false)
@@ -96,37 +94,6 @@ public struct EditCoInsuredNavigation: View {
             openNewInsuredPeopleScreen()
         }
         .environmentObject(editCoInsuredNavigationVm)
-    }
-
-    func openSelectInsurance(configs: [InsuredPeopleConfig]) -> some View {
-        CheckboxPickerScreen<InsuredPeopleConfig>(
-            items: {
-                return configs.compactMap({
-                    (object: $0, displayName: .init(title: $0.displayName))
-                })
-            }(),
-            preSelectedItems: {
-                if let first = configs.first {
-                    return [first]
-                }
-                return []
-            },
-            onSelected: { selectedConfigs in
-                if let selectedConfig = selectedConfigs.first {
-                    if let object = selectedConfig.0 {
-                        editCoInsuredNavigationVm.editCoInsuredConfig = object
-                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                        store.coInsuredViewModel.initializeCoInsured(with: object)
-                    }
-                }
-            },
-            onCancel: {
-                router.dismiss()
-            },
-            singleSelect: true,
-            hButtonText: L10n.generalContinueButton
-        )
-        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 
     func openNewInsuredPeopleScreen() -> some View {
@@ -172,7 +139,10 @@ public struct EditCoInsuredNavigation: View {
 
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
-            showSuccessScreen: showSuccess
+            showSuccessScreen: showSuccess,
+            checkForMissingAlert: {
+                checkForAlert()
+            }
         )
     }
 
@@ -193,32 +163,6 @@ public struct EditCoInsuredNavigation: View {
         .configureTitle(L10n.coinsuredEditTitle)
     }
 
-    public func openMissingCoInsuredAlert() -> some View {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        return GenericErrorView(
-            title: store.coInsuredViewModel.config.contractDisplayName,
-            description: L10n.contractCoinsuredMissingInformationLabel,
-            buttons: .init(
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                        buttonAction: {
-                            openSpecificScreen = .newInsurance
-                            editCoInsuredNavigationVm.editCoInsuredConfig = store.coInsuredViewModel.config
-                        }
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: L10n.contractCoinsuredMissingLater,
-                        buttonAction: {
-                            router.dismiss()
-                        }
-                    )
-            )
-        )
-        .hExtraBottomPadding
-    }
-
     func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
@@ -236,6 +180,108 @@ public struct EditCoInsuredNavigation: View {
             }
             openSuccessScreen(title: title)
         }
+    }
+}
+
+public class EditCoInsuredSelectInsuranceNavigationViewModel: ObservableObject {
+    @Published var editCoInsuredConfig: InsuredPeopleConfig?
+}
+
+public struct EditCoInsuredSelectInsuranceNavigation: View {
+    let configs: [InsuredPeopleConfig]
+    @StateObject var router = Router()
+    @StateObject private var editCoInsuredSelectInsuranceNavigationVm =
+        EditCoInsuredSelectInsuranceNavigationViewModel()
+    private var checkForAlert: () -> Void
+
+    public init(
+        configs: [InsuredPeopleConfig],
+        checkForAlert: @escaping () -> Void
+    ) {
+        self.configs = configs
+        self.checkForAlert = checkForAlert
+    }
+
+    public var body: some View {
+        RouterHost(router: router, options: .navigationType(type: .large)) {
+            openSelectInsurance()
+        }
+        .fullScreenCover(
+            item: $editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig
+        ) { config in
+            EditCoInsuredNavigation(config: config, checkForAlert: checkForAlert)
+        }
+    }
+
+    func openSelectInsurance() -> some View {
+        CheckboxPickerScreen<InsuredPeopleConfig>(
+            items: {
+                return configs.compactMap({
+                    (object: $0, displayName: .init(title: $0.displayName))
+                })
+            }(),
+            preSelectedItems: {
+                if let first = configs.first {
+                    return [first]
+                }
+                return []
+            },
+            onSelected: { selectedConfigs in
+                if let selectedConfig = selectedConfigs.first {
+                    if let object = selectedConfig.0 {
+                        editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig = object
+                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                        store.coInsuredViewModel.initializeCoInsured(with: object)
+                    }
+                }
+            },
+            onCancel: {
+                router.dismiss()
+            },
+            singleSelect: true,
+            hButtonText: L10n.generalContinueButton
+        )
+        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
+    }
+}
+
+public class EditCoInsuredAlertNavigationViewModel: ObservableObject {
+    @Published var editCoInsuredConfig: InsuredPeopleConfig?
+}
+
+public struct EditCoInsuredAlertNavigation: View {
+    let config: InsuredPeopleConfig
+    @StateObject var router = Router()
+    @StateObject private var editCoInsuredAlertNavigationVm = EditCoInsuredAlertNavigationViewModel()
+    private var checkForAlert: () -> Void
+
+    public init(
+        config: InsuredPeopleConfig,
+        checkForAlert: @escaping () -> Void
+    ) {
+        self.config = config
+        self.checkForAlert = checkForAlert
+    }
+
+    public var body: some View {
+        RouterHost(router: router, options: .navigationType(type: .large)) {
+            openMissingCoInsuredAlert()
+        }
+        .fullScreenCover(item: $editCoInsuredAlertNavigationVm.editCoInsuredConfig) { config in
+            EditCoInsuredNavigation(
+                config: config,
+                openSpecificScreen: .newInsurance,
+                checkForAlert: {
+                    checkForAlert()
+                }
+            )
+        }
+    }
+
+    public func openMissingCoInsuredAlert() -> some View {
+        return MissingCoInsuredAlert(onButtonAction: {
+            editCoInsuredAlertNavigationVm.editCoInsuredConfig = config
+        })
     }
 }
 
