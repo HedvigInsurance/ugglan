@@ -255,6 +255,7 @@ public struct TerminationFlowNavigation: View {
                 ghostButton: .init(
                     buttonTitle: L10n.terminationFlowShareFeedback,
                     buttonAction: {
+                        router.dismiss()
                         log.addUserAction(type: .click, name: "terminationSurvey")
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {

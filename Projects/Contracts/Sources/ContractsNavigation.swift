@@ -97,10 +97,7 @@ public struct ContractsNavigation<Content: View>: View {
         .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
             redirect(
                 .cancellation(
-                    contractConfig: .init(contract: contract),
-                    isFlowPresented: {
-                        contractsNavigationVm.terminationContract = nil
-                    }
+                    contractConfig: .init(contract: contract)
                 )
             )
         }
@@ -129,7 +126,7 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
-    case cancellation(contractConfig: TerminationConfirmConfig, isFlowPresented: () -> Void)
+    case cancellation(contractConfig: TerminationConfirmConfig)
 }
 
 enum ContractsRouterType {

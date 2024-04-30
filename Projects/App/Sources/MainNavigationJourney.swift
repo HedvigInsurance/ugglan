@@ -211,10 +211,11 @@ struct MainNavigationJourney: App {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
-            case let .cancellation(contractConfig, isFlowPresented):
+            case let .cancellation(contractConfig):
                 TerminationFlowNavigation(
                     configs: [contractConfig],
                     isFlowPresented: { cancelAction in
+                        router.dismiss()
                         switch cancelAction {
                         case .none:
                             break
