@@ -230,17 +230,17 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
                 }
                 return []
             },
-            onSelected: { selectedConfigs in
+            onSelected: { [weak editCoInsuredSelectInsuranceNavigationVm] selectedConfigs in
                 if let selectedConfig = selectedConfigs.first {
                     if let object = selectedConfig.0 {
-                        editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig = object
+                        editCoInsuredSelectInsuranceNavigationVm?.editCoInsuredConfig = object
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                         store.coInsuredViewModel.initializeCoInsured(with: object)
                     }
                 }
             },
-            onCancel: {
-                router.dismiss()
+            onCancel: { [weak router] in
+                router?.dismiss()
             },
             singleSelect: true,
             hButtonText: L10n.generalContinueButton
