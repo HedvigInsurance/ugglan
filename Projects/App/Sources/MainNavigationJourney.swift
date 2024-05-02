@@ -200,14 +200,19 @@ struct MainNavigationJourney: App {
                 TerminationFlowNavigation(
                     configs: [contractConfig],
                     isFlowPresented: { cancelAction in
-                        router.dismiss()
                         switch cancelAction {
-                        case .none:
-                            break
+                        case .done:
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                         case .chat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
                         case .openFeedback(let url):
-                            // TODO: move somewhere else. Also not working
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                             if urlComponent?.scheme == nil {
                                 urlComponent?.scheme = "https"
@@ -301,6 +306,9 @@ struct MainNavigationJourney: App {
 
     private func checkForAlert() {
         Task {
+            homeNavigationVm.isEditCoInsuredPresented = nil
+            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
+            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             await contractStore.sendAsync(.fetchContracts)
             let missingContract = contractStore.state.activeContracts.first { contract in

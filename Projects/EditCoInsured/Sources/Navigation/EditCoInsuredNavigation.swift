@@ -143,9 +143,6 @@ public struct EditCoInsuredNavigation: View {
         CoInsuredProcessingScreen(
             showSuccessScreen: showSuccess,
             checkForMissingAlert: {
-                if !showSuccess {
-                    router.dismiss()
-                }
                 checkForAlert()
             }
         )
@@ -307,14 +304,6 @@ extension View {
             cancelButton: L10n.General.no
         )
     }
-}
-
-public struct CoInsuredInputModel: Identifiable, Equatable {
-    public var id: String?
-    let actionType: CoInsuredAction
-    let coInsuredModel: CoInsuredModel
-    let title: String
-    let contractId: String
 }
 
 public struct SelectCoInsured: Identifiable, Equatable {

@@ -18,7 +18,7 @@ enum TerminationFlowRouterActions {
 }
 
 public enum DismissTerminationAction {
-    case none
+    case done
     case chat
     case openFeedback(url: URL)
 }
@@ -188,7 +188,7 @@ public struct TerminationFlowNavigation: View {
     private func openUpdateAppTerminationScreen() -> some View {
         UpdateAppScreen(
             onSelected: {
-                isFlowPresented(.none)
+                router.dismiss()
             }
         )
         .withDismissButton()
@@ -232,10 +232,7 @@ public struct TerminationFlowNavigation: View {
             showSuccessScreen: false,
             TerminationContractStore.self,
             loading: .sendTerminationDate,
-            loadingViewText: L10n.terminateContractTerminatingProgress,
-            onErrorCancelAction: {
-                isFlowPresented(.none)
-            }
+            loadingViewText: L10n.terminateContractTerminatingProgress
         )
     }
 
@@ -249,13 +246,14 @@ public struct TerminationFlowNavigation: View {
                 ? L10n.terminateContractTerminationComplete
                 : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
             buttons: .init(
-                primaryButton: .init(buttonAction: {
-                    isFlowPresented(.none)
+                primaryButton: .init(buttonAction: { [weak router] in
+                    router?.dismiss()
+                    isFlowPresented(.done)
                 }),
                 ghostButton: .init(
                     buttonTitle: L10n.terminationFlowShareFeedback,
-                    buttonAction: {
-                        router.dismiss()
+                    buttonAction: { [weak router] in
+                        router?.dismiss()
                         log.addUserAction(type: .click, name: "terminationSurvey")
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
@@ -284,8 +282,8 @@ public struct TerminationFlowNavigation: View {
                 ),
                 dismissButton: .init(
                     buttonTitle: L10n.generalCloseButton,
-                    buttonAction: {
-                        isFlowPresented(.none)
+                    buttonAction: { [weak router] in
+                        router?.dismiss()
                     }
                 )
             )
