@@ -9,6 +9,7 @@ import MoveFlow
 import Payment
 import Presentation
 import Profile
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -184,6 +185,41 @@ struct MainNavigationJourney: App {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
+            case let .cancellation(contractConfig):
+                TerminationFlowNavigation(
+                    configs: [contractConfig],
+                    isFlowPresented: { cancelAction in
+                        switch cancelAction {
+                        case .done:
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
+                        case .chat:
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        case .openFeedback(let url):
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
+                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                            if urlComponent?.scheme == nil {
+                                urlComponent?.scheme = "https"
+                            }
+                            let schema = urlComponent?.scheme
+                            if let finalUrl = urlComponent?.url {
+                                if schema == "https" || schema == "http" {
+                                    let vc = SFSafariViewController(url: finalUrl)
+                                    vc.modalPresentationStyle = .pageSheet
+                                    vc.preferredControlTintColor = .brand(.primaryText())
+                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                                } else {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         }
         .tabItem {

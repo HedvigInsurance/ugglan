@@ -4,6 +4,7 @@ import EditCoInsured
 import EditCoInsuredShared
 import Payment
 import Presentation
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -85,9 +86,9 @@ public struct HelpCenterNavigation<Content: View>: View {
             redirect(
                 .editCoInuredSelectInsurance(
                     configs: configs.configs,
-                    isMissingAlertAction: { missingContract in
-                        helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented = nil
-                        helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented = missingContract
+                    isMissingAlertAction: { [weak helpCenterVm] missingContract in
+                        helpCenterVm?.quickActions.isEditCoInsuredSelectContractPresented = nil
+                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
                     }
                 )
             )
@@ -134,7 +135,42 @@ public struct HelpCenterNavigation<Content: View>: View {
                     .map({
                         $0.asTerminationConfirmConfig
                     })
-                TerminationViewJourney(configs: contractsConfig)
+                TerminationFlowNavigation(
+                    configs: contractsConfig,
+                    isFlowPresented: { dismissType in
+                        switch dismissType {
+                        case .done:
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
+                        case .chat:
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                NotificationCenter.default.post(name: .openChat, object: nil)
+                            }
+                        case let .openFeedback(url):
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
+                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                            if urlComponent?.scheme == nil {
+                                urlComponent?.scheme = "https"
+                            }
+                            let schema = urlComponent?.scheme
+                            if let finalUrl = urlComponent?.url {
+                                if schema == "https" || schema == "http" {
+                                    let vc = SFSafariViewController(url: finalUrl)
+                                    vc.modalPresentationStyle = .pageSheet
+                                    vc.preferredControlTintColor = .brand(.primaryText())
+                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                                } else {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         )
         .environmentObject(helpCenterVm)
@@ -177,10 +213,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             .editCoInsured(
                 config: config,
                 showMissingAlert: false,
-                isMissingAlertAction: { missingContract in
-                    helpCenterVm.quickActions.isEditCoInsuredPresented = nil
+                isMissingAlertAction: { [weak helpCenterVm] missingContract in
+                    helpCenterVm?.quickActions.isEditCoInsuredPresented = nil
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented = missingContract
+                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
                     }
                 }
             )

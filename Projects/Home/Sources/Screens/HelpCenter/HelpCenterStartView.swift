@@ -50,33 +50,40 @@ struct HelpCenterStartView: View {
     }
 
     private func displayQuickActions() -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
-                .padding(.bottom, 4)
+        PresentableStoreLens(
+            HomeStore.self,
+            getter: { state in
+                state.quickActions
+            }
+        ) { quickActions in
+            VStack(alignment: .leading, spacing: 4) {
+                HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
+                    .padding(.bottom, 4)
 
-            ForEach(store.state.quickActions, id: \.displayTitle) { quickAction in
-                hSection {
-                    hRow {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(quickAction.displayTitle)
-                            hText(quickAction.displaySubtitle, style: .standardSmall)
-                                .foregroundColor(hTextColor.secondary)
+                ForEach(quickActions, id: \.displayTitle) { quickAction in
+                    hSection {
+                        hRow {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText(quickAction.displayTitle)
+                                hText(quickAction.displaySubtitle, style: .standardSmall)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
+                            Spacer()
                         }
-                        Spacer()
+                        .withChevronAccessory
+                        .verticalPadding(12)
+                        .onTap {
+                            log.addUserAction(
+                                type: .click,
+                                name: "help center quick action",
+                                attributes: ["action": quickAction.id]
+                            )
+                            onQuickAction(quickAction)
+                        }
                     }
-                    .withChevronAccessory
-                    .verticalPadding(12)
-                    .onTap {
-                        log.addUserAction(
-                            type: .click,
-                            name: "help center quick action",
-                            attributes: ["action": quickAction.id]
-                        )
-                        onQuickAction(quickAction)
-                    }
+                    .withoutHorizontalPadding
+                    .sectionContainerStyle(.opaque)
                 }
-                .withoutHorizontalPadding
-                .sectionContainerStyle(.opaque)
             }
         }
     }

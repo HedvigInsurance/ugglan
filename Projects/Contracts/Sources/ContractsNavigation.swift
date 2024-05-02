@@ -1,5 +1,6 @@
 import EditCoInsuredShared
 import Foundation
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -94,8 +95,11 @@ public struct ContractsNavigation<Content: View>: View {
             )
         }
         .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-            let contractConfig: TerminationConfirmConfig = .init(contract: contract)
-            TerminationViewJourney(configs: [contractConfig])
+            redirect(
+                .cancellation(
+                    contractConfig: .init(contract: contract)
+                )
+            )
         }
     }
 }
@@ -122,6 +126,7 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
+    case cancellation(contractConfig: TerminationConfirmConfig)
 }
 
 enum ContractsRouterType {
