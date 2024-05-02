@@ -28,16 +28,13 @@ enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
 public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
-    private let canCreateTravelInsurance: Bool
     private let infoButtonPlacement: ToolbarItemPlacement
     private let openCoInsured: () -> Void
 
     public init(
-        canCreateTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement,
         openCoInsured: @escaping () -> Void
     ) {
-        self.canCreateTravelInsurance = canCreateTravelInsurance
         self.infoButtonPlacement = infoButtonPlacement
         self.openCoInsured = openCoInsured
     }
@@ -45,7 +42,6 @@ public struct TravelCertificateNavigation: View {
     public var body: some View {
         RouterHost(router: router) {
             showListScreen(
-                canAddTravelInsurance: canCreateTravelInsurance,
                 infoButtonPlacement: infoButtonPlacement
             )
             .routerDestination(for: TravelInsuranceSpecificationNavigationModel.self) { specificationModel in
@@ -83,11 +79,9 @@ public struct TravelCertificateNavigation: View {
     }
 
     private func showListScreen(
-        canAddTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement
     ) -> some View {
         ListScreen(
-            canAddTravelInsurance: canAddTravelInsurance,
             infoButtonPlacement: infoButtonPlacement
         )
         .withDismissButton()

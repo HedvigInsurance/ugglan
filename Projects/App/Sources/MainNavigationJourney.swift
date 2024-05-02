@@ -137,9 +137,7 @@ struct MainNavigationJourney: App {
                         checkForAlert: checkForAlert
                     )
                 case let .travelInsurance(redirectType):
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     TravelCertificateNavigation(
-                        canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
                         infoButtonPlacement: .navigationBarLeading,
                         openCoInsured: {
                             redirectType(

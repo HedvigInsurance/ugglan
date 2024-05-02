@@ -43,13 +43,24 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> [TravelCertificateModel] {
+    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
         do {
             let query = OctopusGraphQL.TravelCertificatesQuery()
             let data = try await self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-            return data.currentMember.travelCertificates.compactMap({
-                TravelCertificateModel.init($0)
-            })
+
+            let canAddTravelInsuranceQuery = OctopusGraphQL.CanCreateTravelCertificateQuery()
+            let canAddTravelInsuranceData = try await self.octopus.client.fetch(
+                query: canAddTravelInsuranceQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let canAddTravelInsurance = !canAddTravelInsuranceData.currentMember.activeContracts
+                .filter({ $0.supportsTravelCertificate }).isEmpty
+
+            return (
+                data.currentMember.travelCertificates.compactMap({
+                    TravelCertificateModel.init($0)
+                }), canAddTravelInsurance
+            )
         } catch let ex {
             throw ex
         }
