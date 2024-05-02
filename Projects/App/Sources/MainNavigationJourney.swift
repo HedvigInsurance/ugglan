@@ -132,15 +132,13 @@ struct MainNavigationJourney: App {
                         hasMissingAlert: hasMissingAlert,
                         isMissingAlert: isMissingAlertAction
                     )
-                case let .editCoInuredSelectInsurance(configs, isMissingAlertAction):
+                case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: configs,
                         checkForAlert: checkForAlert
                     )
                 case let .travelInsurance(redirectType):
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     TravelCertificateNavigation(
-                        canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
                         infoButtonPlacement: .leading,
                         openCoInsured: {
                             redirectType(
@@ -273,7 +271,6 @@ struct MainNavigationJourney: App {
             case .travelCertificate:
                 let store: ProfileStore = globalPresentableStoreContainer.get()
                 TravelCertificateNavigation(
-                    canCreateTravelInsurance: store.state.canCreateTravelInsurance,
                     infoButtonPlacement: .trailing,
                     openCoInsured: {
                         router.pop()

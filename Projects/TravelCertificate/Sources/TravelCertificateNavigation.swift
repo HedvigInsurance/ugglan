@@ -34,15 +34,12 @@ public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
     private var infoButtonPlacement: ListToolBarPlacement
-    private let canCreateTravelInsurance: Bool
     private let openCoInsured: () -> Void
 
     public init(
-        canCreateTravelInsurance: Bool,
         infoButtonPlacement: ListToolBarPlacement,
         openCoInsured: @escaping () -> Void
     ) {
-        self.canCreateTravelInsurance = canCreateTravelInsurance
         self.infoButtonPlacement = infoButtonPlacement
         self.openCoInsured = openCoInsured
     }
@@ -51,13 +48,11 @@ public struct TravelCertificateNavigation: View {
     private var getListScreen: some View {
         if infoButtonPlacement == .trailing {
             showListScreen(
-                canAddTravelInsurance: canCreateTravelInsurance,
                 infoButtonPlacement: .topBarTrailing
             )
             .embededInNavigation()
         } else {
             showListScreen(
-                canAddTravelInsurance: canCreateTravelInsurance,
                 infoButtonPlacement: .topBarLeading
             )
             .withDismissButton()
@@ -102,11 +97,9 @@ public struct TravelCertificateNavigation: View {
     }
 
     private func showListScreen(
-        canAddTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement
     ) -> some View {
         ListScreen(
-            canAddTravelInsurance: canAddTravelInsurance,
             infoButtonPlacement: infoButtonPlacement
         )
         .configureTitle(L10n.TravelCertificate.cardTitle)
