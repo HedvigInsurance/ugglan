@@ -54,7 +54,6 @@ public struct ProfileNavigation<Content: View>: View {
                     }
                 }
         }
-        .environmentObject(router)
         .environmentObject(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,

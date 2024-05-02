@@ -11,35 +11,32 @@ enum EuroBonusRouterType {
 }
 
 public struct EuroBonusNavigation: View {
-    @StateObject var router = Router()
+    @EnvironmentObject var router: Router
     @StateObject var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
 
     public var body: some View {
-        RouterHost(router: router) {
-            EuroBonusView()
-                .configureTitle(L10n.SasIntegration.title)
-        }
-        .environmentObject(euroBonusNavigationViewModel)
-        .environmentObject(router)
-        .detent(
-            presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
-            style: .height
-        ) {
-            ChangeEuroBonusView()
-                .configureTitle(L10n.SasIntegration.enterYourNumber)
-                .routerDestination(for: EuroBonusRouterType.self) { routerType in
-                    switch routerType {
-                    case .successChangeEuroBonus:
-                        SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    router.dismiss()
+        EuroBonusView()
+            .configureTitle(L10n.SasIntegration.title)
+            .environmentObject(euroBonusNavigationViewModel)
+            .detent(
+                presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
+                style: .height
+            ) {
+                ChangeEuroBonusView()
+                    .configureTitle(L10n.SasIntegration.enterYourNumber)
+                    .routerDestination(for: EuroBonusRouterType.self) { routerType in
+                        switch routerType {
+                        case .successChangeEuroBonus:
+                            SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        router.dismiss()
+                                    }
                                 }
-                            }
+                        }
                     }
-                }
-                .embededInNavigation(options: .navigationType(type: .large))
-        }
+                    .embededInNavigation(options: .navigationType(type: .large))
+            }
     }
 }
 
