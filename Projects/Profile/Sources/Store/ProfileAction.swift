@@ -5,12 +5,6 @@ import hGraphQL
 
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
-    //    case openProfile
-    //    case openEuroBonus
-    //    case openTravelCertificate
-    //    case openChangeEuroBonus
-    case dismissChangeEuroBonus
-    case openSuccessChangeEuroBonus
     case openFreeTextChat
     case openAppInformation
     case openAppSettings(animated: Bool)
@@ -22,15 +16,11 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case setOpenAppSettings(to: Bool)
-    //    case openLangaugePicker
-    //    case closeLanguagePicker
     case languageChanged
 
     case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails
 
-    //    case deleteAccount(details: MemberDetails)
-    //    case deleteAccountAlreadyRequested
     case sendAccountDeleteRequest(details: MemberDetails)
     case makeTabActive(deeplink: DeepLink)
 

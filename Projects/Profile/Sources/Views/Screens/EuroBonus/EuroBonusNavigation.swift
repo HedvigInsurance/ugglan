@@ -4,8 +4,10 @@ import hCoreUI
 
 public class EuroBonusNavigationViewModel: ObservableObject {
     @Published var isChangeEuroBonusPresented = false
-    @Published var isSuccessChangeEuroBonusPresented = false
+}
 
+enum EuroBonusRouterType {
+    case successChangeEuroBonus
 }
 
 public struct EuroBonusNavigation: View {
@@ -18,12 +20,24 @@ public struct EuroBonusNavigation: View {
                 .configureTitle(L10n.SasIntegration.title)
         }
         .environmentObject(euroBonusNavigationViewModel)
+        .environmentObject(router)
         .detent(
             presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
             style: .height
         ) {
             ChangeEuroBonusView()
                 .configureTitle(L10n.SasIntegration.enterYourNumber)
+                .routerDestination(for: EuroBonusRouterType.self) { routerType in
+                    switch routerType {
+                    case .successChangeEuroBonus:
+                        SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    router.dismiss()
+                                }
+                            }
+                    }
+                }
                 .embededInNavigation(options: .navigationType(type: .large))
         }
     }

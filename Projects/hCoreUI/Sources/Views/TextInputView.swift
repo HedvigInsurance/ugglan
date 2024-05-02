@@ -5,10 +5,14 @@ import hCore
 
 public struct TextInputView: View {
     @ObservedObject private var vm: TextInputViewModel
+    let dismissAction: (() -> Void)?
+
     public init(
-        vm: TextInputViewModel
+        vm: TextInputViewModel,
+        dismissAction: (() -> Void)? = nil
     ) {
         self.vm = vm
+        self.dismissAction = dismissAction
     }
 
     public var body: some View {
@@ -42,7 +46,11 @@ public struct TextInputView: View {
                         }
                         .hButtonIsLoading(vm.isLoading)
                         hButton.LargeButton(type: .ghost) {
-                            vm.dismiss()
+                            if let dismissAction = dismissAction?() {
+                                dismissAction
+                            } else {
+                                vm.dismiss()
+                            }
                         } content: {
                             hText(L10n.generalCancelButton, style: .body)
                         }

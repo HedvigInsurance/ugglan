@@ -7,8 +7,15 @@ import hGraphQL
 
 struct ChangeEuroBonusView: View {
     @StateObject private var vm = ChangeEurobonusViewModel()
+    @EnvironmentObject var router: Router
+
     var body: some View {
-        TextInputView(vm: vm.inputVm)
+        TextInputView(
+            vm: vm.inputVm,
+            dismissAction: {
+                router.dismiss()
+            }
+        )
     }
 }
 
@@ -22,15 +29,14 @@ private class ChangeEurobonusViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     @Inject var profileService: ProfileService
     let disposeBag = DisposeBag()
+
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .euroBonus),
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
             title: L10n.SasIntegration.title,
-            dismiss: { [weak store] in
-                store?.send(.dismissChangeEuroBonus)
-            }
+            dismiss: {}
         )
 
         inputVm.onSave = { [weak self] text in
@@ -42,7 +48,9 @@ private class ChangeEurobonusViewModel: ObservableObject {
             let data = try await self?.profileService.update(eurobonus: text)
             let store: ProfileStore = globalPresentableStoreContainer.get()
             store.send(.setEurobonusNumber(partnerData: data))
-            store.send(.openSuccessChangeEuroBonus)
+
+            /* TODO: SOMEHOW SET SUCESS HERE*/
+            //  router.push(EuroBonusRouterType.successChangeEuroBonus)
         }
     }
 }
