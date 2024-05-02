@@ -10,6 +10,8 @@ public class ProfileNavigationViewModel: ObservableObject {
 
 public enum ProfileNavigationDismissAction {
     case openChat
+    case makeHomeTabActive
+    case makeHomeTabActiveAndOpenChat
 }
 
 public struct ProfileNavigation<Content: View>: View {
@@ -39,6 +41,8 @@ public struct ProfileNavigation<Content: View>: View {
                     case .deleteAccount:
                         EmptyView()
                     case .pickLanguage:
+                        EmptyView()
+                    case .deleteRequestLoading:
                         EmptyView()
                     }
                 }
@@ -71,8 +75,7 @@ public struct ProfileNavigation<Content: View>: View {
         .fullScreenCover(
             isPresented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented
         ) {
-            DeleteRequestLoadingView(screenState: .success)
-            environmentObject(profileNavigationViewModel)
+            redirect(.deleteRequestLoading)
         }
     }
 }
@@ -84,5 +87,6 @@ public enum ProfileRedirectType: Hashable {
     case settings
     case euroBonus
     case deleteAccount(memberDetails: MemberDetails)
+    case deleteRequestLoading
     case pickLanguage
 }
