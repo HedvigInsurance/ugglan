@@ -33,9 +33,9 @@ public enum ListToolBarPlacement {
 public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
-    private var canCreateTravelInsurance: Bool
     private var infoButtonPlacement: ListToolBarPlacement
-    private var openCoInsured: () -> Void
+    private let canCreateTravelInsurance: Bool
+    private let openCoInsured: () -> Void
 
     public init(
         canCreateTravelInsurance: Bool,
