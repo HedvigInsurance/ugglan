@@ -190,12 +190,18 @@ struct MainNavigationJourney: App {
                     configs: [contractConfig],
                     isFlowPresented: { cancelAction in
                         switch cancelAction {
-                        case .none:
-                            break
+                        case .done:
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                         case .chat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
                         case .openFeedback(let url):
-                            // TODO: move somewhere else. Also not working
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                             if urlComponent?.scheme == nil {
                                 urlComponent?.scheme = "https"
