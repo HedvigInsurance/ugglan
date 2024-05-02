@@ -56,7 +56,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 errorView
             } success: {
                 if showSuccessScreen {
-                    if let successBottomView = successBottomView {
+                    if successBottomView != nil {
                         SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
                     } else {
                         SuccessScreen(
@@ -78,7 +78,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
         }
         .presentableStoreLensAnimation(.default)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
                 withAnimation(.easeInOut(duration: 1.25)) {
                     vm.progress = 1
                 }

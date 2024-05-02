@@ -86,9 +86,9 @@ public struct HelpCenterNavigation<Content: View>: View {
             redirect(
                 .editCoInuredSelectInsurance(
                     configs: configs.configs,
-                    isMissingAlertAction: { missingContract in
-                        helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented = nil
-                        helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented = missingContract
+                    isMissingAlertAction: { [weak helpCenterVm] missingContract in
+                        helpCenterVm?.quickActions.isEditCoInsuredSelectContractPresented = nil
+                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
                     }
                 )
             )
@@ -144,16 +144,21 @@ public struct HelpCenterNavigation<Content: View>: View {
                 TerminationFlowNavigation(
                     configs: contractsConfig,
                     isFlowPresented: { dismissType in
-                        helpCenterVm.quickActions.isCancellationPresented = false
                         switch dismissType {
-                        case .none:
-                            router.dismiss()
+                        case .done:
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                         case .chat:
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 NotificationCenter.default.post(name: .openChat, object: nil)
                             }
                         case let .openFeedback(url):
-                            // TODO: move somewhere else. Also not working
+                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                            contractStore.send(.fetchContracts)
+                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                            homeStore.send(.fetchQuickActions)
                             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                             if urlComponent?.scheme == nil {
                                 urlComponent?.scheme = "https"
@@ -214,10 +219,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             .editCoInsured(
                 config: config,
                 showMissingAlert: false,
-                isMissingAlertAction: { missingContract in
-                    helpCenterVm.quickActions.isEditCoInsuredPresented = nil
+                isMissingAlertAction: { [weak helpCenterVm] missingContract in
+                    helpCenterVm?.quickActions.isEditCoInsuredPresented = nil
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented = missingContract
+                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
                     }
                 }
             )
