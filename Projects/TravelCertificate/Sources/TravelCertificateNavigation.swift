@@ -8,6 +8,8 @@ import hCoreUI
 public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
+    var startDateViewModel: StartDateViewModel?
+    var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable {
@@ -29,7 +31,7 @@ public enum ListToolBarPlacement {
 }
 
 public struct TravelCertificateNavigation: View {
-    @StateObject private var travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
+    @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
     private var canCreateTravelInsurance: Bool
     private var infoButtonPlacement: ListToolBarPlacement
@@ -87,9 +89,9 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
         }
-        .environmentObject(travelCertificateNavigationVm)
+        .environmentObject(vm)
         .detent(
-            item: $travelCertificateNavigationVm.isDocumentPresented,
+            item: $vm.isDocumentPresented,
             style: .large,
             options: .constant(.withoutGrabber)
         ) { model in
@@ -129,19 +131,17 @@ public struct TravelCertificateNavigation: View {
     private func showStartDateScreen(
         specification: TravelInsuranceContractSpecification
     ) -> some View {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        store.startDateViewModel = StartDateViewModel(specification: specification)
-        return StartDateScreen(vm: store.startDateViewModel!)
+        vm.startDateViewModel = StartDateViewModel(specification: specification)
+        return StartDateScreen(vm: vm.startDateViewModel!)
             .addDismissFlow()
     }
 
     private func showWhoIsTravelingScreen(
         specification: TravelInsuranceContractSpecification
     ) -> some View {
-        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-        store.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
+        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
         return WhoIsTravelingScreen(
-            vm: store.whoIsTravelingViewModel!,
+            vm: vm.whoIsTravelingViewModel!,
             openCoInsured: {
                 openCoInsured()
             }
@@ -151,6 +151,8 @@ public struct TravelCertificateNavigation: View {
 
     private func openProcessingScreen() -> some View {
         TravelCertificateProcessingScreen()
+            .environmentObject(vm.whoIsTravelingViewModel!)
+            .environmentObject(vm.startDateViewModel!)
     }
 }
 

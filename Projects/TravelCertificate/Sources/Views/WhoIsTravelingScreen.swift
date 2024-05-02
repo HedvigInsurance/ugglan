@@ -8,7 +8,6 @@ import hCoreUI
 
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
-    @PresentableStore var store: TravelInsuranceStore
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
     var openCoInsured: () -> Void
@@ -74,7 +73,6 @@ struct WhoIsTravelingScreen: View {
 class WhoIsTravelingViewModel: ObservableObject {
     let specification: TravelInsuranceContractSpecification
     let coInsuredModelData: [CoInsuredModel]
-    @PresentableStore private var store: TravelInsuranceStore
     @Published var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
     @Published var hasMissingCoInsuredData = false
     var isPolicyHolderIncluded = true
