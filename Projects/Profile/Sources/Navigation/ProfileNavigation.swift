@@ -3,9 +3,13 @@ import hCore
 import hCoreUI
 
 public class ProfileNavigationViewModel: ObservableObject {
-    @Published var isDeleteAccountPresented: MemberDetails?
+    @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published var isLanguagePickerPresnted = false
+
+    public init() {
+
+    }
 }
 
 public enum ProfileNavigationDismissAction {
@@ -17,9 +21,13 @@ public enum ProfileNavigationDismissAction {
 public struct ProfileNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: ProfileRedirectType) -> Content
     @StateObject var router = Router()
-    @StateObject var profileNavigationViewModel = ProfileNavigationViewModel()
+    @ObservedObject var profileNavigationViewModel: ProfileNavigationViewModel
 
-    public init(@ViewBuilder redirect: @escaping (_ type: ProfileRedirectType) -> Content) {
+    public init(
+        profileNavigationViewModel: ProfileNavigationViewModel,
+        @ViewBuilder redirect: @escaping (_ type: ProfileRedirectType) -> Content
+    ) {
+        self.profileNavigationViewModel = profileNavigationViewModel
         self.redirect = redirect
     }
 

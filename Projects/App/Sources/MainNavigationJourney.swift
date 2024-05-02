@@ -33,6 +33,7 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
+    @StateObject var profileNavigationVm = ProfileNavigationViewModel()
     @StateObject var router = Router()
     var body: some Scene {
         WindowGroup {
@@ -267,7 +268,7 @@ struct MainNavigationJourney: App {
     }
 
     var profileTab: some View {
-        ProfileNavigation { redirectType in
+        ProfileNavigation(profileNavigationViewModel: profileNavigationVm) { redirectType in
             switch redirectType {
             case .travelCertificate:
                 let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -291,9 +292,16 @@ struct MainNavigationJourney: App {
                 DeleteAccountView(
                     vm: model,
                     dismissAction: { profileDismissAction in
+                        profileNavigationVm.isDeleteAccountPresented = nil
                         switch profileDismissAction {
                         case .openChat:
-                            NotificationCenter.default.post(name: .openChat, object: nil)
+                            withAnimation {
+                                vm.selectedTab = 0
+                            }
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: false)
+                            )
                         default:
                             break
                         }
