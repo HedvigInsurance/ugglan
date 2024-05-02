@@ -87,35 +87,3 @@ public struct ProfileView: View {
         }
     }
 }
-
-public enum ProfileResult {
-    case resetAppLanguage
-    case openChat
-    case logout
-    case registerForPushNotifications
-}
-
-extension ProfileView {
-    public static func journey<ResultJourney: JourneyPresentation>(
-        @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            ProfileStore.self,
-            rootView: ProfileView()
-        ) { action in
-            if case .languageChanged = action {
-                resultJourney(.resetAppLanguage)
-            } else if case .logout = action {
-                resultJourney(.logout)
-            } else if case .registerForPushNotifications = action {
-                resultJourney(.registerForPushNotifications)
-            }
-        }
-        .configureTitle(L10n.profileTitle)
-        .configureTabBarItem(
-            title: L10n.ProfileTab.title,
-            image: hCoreUIAssets.profileTab.image,
-            selectedImage: hCoreUIAssets.profileTabActive.image
-        )
-    }
-}
