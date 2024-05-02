@@ -4,10 +4,22 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DeleteRequestLoadingView: View {
+public struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     @Inject var profileService: ProfileService
-    enum ScreenState {
+    @EnvironmentObject var router: Router
+
+    private var dismissAction: (ProfileNavigationDismissAction) -> Void
+
+    public init(
+        screenState: ScreenState,
+        dismissAction: @escaping (ProfileNavigationDismissAction) -> Void
+    ) {
+        self.screenState = screenState
+        self.dismissAction = dismissAction
+    }
+
+    public enum ScreenState {
         case tryToDelete(with: MemberDetails)
         case success
         case error(errorMessage: String)
@@ -41,7 +53,7 @@ struct DeleteRequestLoadingView: View {
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {
-                    store.send(.makeTabActive(deeplink: .home))
+                    dismissAction(.makeHomeTabActive)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
                 }
@@ -57,7 +69,7 @@ struct DeleteRequestLoadingView: View {
                 actionButton: .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
-                        store.send(.makeTabActive(deeplink: .home))
+                        dismissAction(.makeHomeTabActive)
                     }
                 )
             )
@@ -74,10 +86,7 @@ struct DeleteRequestLoadingView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                store.send(.makeTabActive(deeplink: .home))
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    store.send(.dismissScreen(openChatAfter: true))
-                                }
+                                dismissAction(.makeHomeTabActiveAndOpenChat)
                             }
                         ),
                         dismissButton: nil
@@ -87,10 +96,7 @@ struct DeleteRequestLoadingView: View {
                 Spacer()
                 hSection {
                     hButton.LargeButton(type: .ghost) {
-                        store.send(.makeTabActive(deeplink: .home))
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            store.send(.dismissScreen(openChatAfter: false))
-                        }
+                        dismissAction(.makeHomeTabActiveAndOpenChat)
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -103,7 +109,7 @@ struct DeleteRequestLoadingView: View {
         )
     }
 
-    var body: some View {
+    public var body: some View {
         switch screenState {
         case let .tryToDelete(memberDetails):
             sendingState
@@ -132,6 +138,6 @@ struct DeleteRequestLoadingView: View {
 
 struct DeleteRequestLoadingView_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteRequestLoadingView(screenState: .success)
+        DeleteRequestLoadingView(screenState: .success, dismissAction: { _ in })
     }
 }

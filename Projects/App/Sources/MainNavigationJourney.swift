@@ -294,6 +294,8 @@ struct MainNavigationJourney: App {
                         switch profileDismissAction {
                         case .openChat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
+                        default:
+                            break
                         }
                     }
                 )
@@ -307,6 +309,21 @@ struct MainNavigationJourney: App {
                 } onCancel: {
                     router.dismiss()
                 }
+            case .deleteRequestLoading:
+                DeleteRequestLoadingView(
+                    screenState: .success,
+                    dismissAction: { profileDismissAction in
+                        switch profileDismissAction {
+                        case .makeHomeTabActiveAndOpenChat:
+                            vm.selectedTab = 0
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        default:
+                            router.dismiss()
+                            vm.selectedTab = 0
+                        }
+                    }
+                )
+                .environmentObject(router)
             default:
                 EmptyView()
             }

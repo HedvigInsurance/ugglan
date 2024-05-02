@@ -5,9 +5,6 @@ import hGraphQL
 
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
-    case openFreeTextChat
-    case openAppInformation
-    case openAppSettings(animated: Bool)
     case setMember(memberData: MemberDetails)
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
@@ -22,10 +19,6 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchMemberDetails
 
     case sendAccountDeleteRequest(details: MemberDetails)
-    case makeTabActive(deeplink: DeepLink)
-
-    case openChat
-    case dismissScreen(openChatAfter: Bool)
     case logout
 
     case setPushNotificationStatus(status: Int?)

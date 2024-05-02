@@ -9,13 +9,12 @@ import hCoreUI
 public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
+    @EnvironmentObject var router: Router
 
     public init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if store.state.openSettingsDirectly {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                store.send(.openAppSettings(animated: false))
-            }
+            router.push(ProfileRedirectType.settings)
             store.send(.setOpenAppSettings(to: false))
         }
     }
@@ -94,7 +93,6 @@ public enum ProfileResult {
     case openChat
     case logout
     case registerForPushNotifications
-
 }
 
 extension ProfileView {
@@ -105,49 +103,8 @@ extension ProfileView {
             ProfileStore.self,
             rootView: ProfileView()
         ) { action in
-            //            if case .openProfile = action {
-            //                HostingJourney(rootView: MyInfoView())
-            //                    .configureTitle(L10n.profileMyInfoRowTitle)
-            //            } else if case .openAppInformation = action {
-            //                HostingJourney(rootView: AppInfoView())
-            //                    .configureTitle(L10n.profileAppInfo)
-            //            } else if case let .openAppSettings(animated) = action {
-            //                HostingJourney(
-            //                    ProfileStore.self,
-            //                    rootView: SettingsScreen(),
-            //                    options: animated ? [.defaults] : [.defaults, .unanimated]
-            //                ) { action in
-            //                    if case let .deleteAccount(details) = action {
-            //                        DeleteAccountView.deleteAccountJourney(details: details)
-            //                    } else if case .deleteAccountAlreadyRequested = action {
-            //                        DeleteAccountView.deleteRequestAlreadyPlacedJourney
-            //                    if case .openLangaugePicker = action {
-            //                        PickLanguage { _ in
-            //                            let store: ProfileStore = globalPresentableStoreContainer.get()
-            //                            store.send(.languageChanged)
-            //                            store.send(.setOpenAppSettings(to: true))
-            //                        } onCancel: {
-            //                            let store: ProfileStore = globalPresentableStoreContainer.get()
-            //                            store.send(.closeLanguagePicker)
-            //                        }
-            //                        .journey
-            //                        .onAction(ProfileStore.self) { action in
-            //                            if case .closeLanguagePicker = action {
-            //                                DismissJourney()
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
-            //            } else if case .openEuroBonus = action {
-            //                EuroBonusView.journey
-            //            } else if case .openTravelCertificate = action {
-            //                //                TravelInsuranceJourney.travelCertificatePush()
-            //                DismissJourney()
             if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
-            } else if case .openChat = action {
-                resultJourney(.openChat)
             } else if case .logout = action {
                 resultJourney(.logout)
             } else if case .registerForPushNotifications = action {
