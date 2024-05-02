@@ -97,9 +97,6 @@ public struct ContractsNavigation<Content: View>: View {
             let contractConfig: TerminationConfirmConfig = .init(contract: contract)
             TerminationViewJourney(configs: [contractConfig])
         }
-        .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-            redirect(.movingFlow)
-        }
     }
 }
 

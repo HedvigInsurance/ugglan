@@ -13,8 +13,10 @@ struct MovingFlowConfirm: View {
     @State var selectedFaq: [String] = [""]
     @State var spacingFaq: CGFloat = 0
     @State var totalHeight: CGFloat = 0
-    var body: some View {
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @EnvironmentObject var router: Router
 
+    var body: some View {
         ScrollViewReader { proxy in
             hForm {
                 PresentableStoreLens(
@@ -161,7 +163,7 @@ struct MovingFlowConfirm: View {
             VStack(spacing: 8) {
                 hButton.LargeButton(type: .primary) {
                     store.send(.confirmMoveIntent)
-                    store.send(.navigation(action: .openProcessingView))
+                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                 } content: {
                     hText(L10n.changeAddressAcceptOffer, style: .standard)
                 }
@@ -239,7 +241,7 @@ struct MovingFlowConfirm: View {
                 }
                 .onTap {
                     if let url = URL(string: document.url) {
-                        store.send(.navigation(action: .document(url: url, title: document.displayName)))
+                        movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
                     }
                 }
             }
@@ -313,7 +315,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                store.send(.navigation(action: .goToFreeTextChat))
+                NotificationCenter.default.post(name: .openChat, object: nil)
             } content: {
                 hText(L10n.openChat, style: .body)
             }

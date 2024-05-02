@@ -7,10 +7,11 @@ import hGraphQL
 
 struct MovingFlowAddressView: View {
     @StateObject var vm: AddressInputModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         switch vm.store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
                 .onDisappear {
                     vm.clearErrors()
@@ -52,7 +53,7 @@ struct MovingFlowAddressView: View {
                 }
                 hSection {
                     hButton.LargeButton(type: .primary) {
-                        vm.continuePressed()
+                        continuePressed()
                     } content: {
                         hText(vm.continueButtonTitle, style: .body)
                     }
@@ -155,6 +156,18 @@ struct MovingFlowAddressView: View {
         .padding(.vertical, 16)
         .padding(.horizontal, 16)
     }
+
+    func continuePressed() {
+        if vm.isInputValid() {
+            switch vm.store.state.selectedHousingType {
+            case .apartment, .rental:
+                vm.store.send(.requestMoveIntent)
+            case .house:
+                router.push(MovingFlowRouterActions.houseFill)
+                break
+            }
+        }
+    }
 }
 
 struct SelectAddress_Previews: PreviewProvider {
@@ -207,18 +220,7 @@ public class AddressInputModel: ObservableObject {
     var disposeBag = DisposeBag()
     init() {}
 
-    func continuePressed() {
-        if isInputValid() {
-            switch store.state.selectedHousingType {
-            case .apartmant, .rental:
-                store.send(.requestMoveIntent)
-            case .house:
-                store.send(.navigation(action: .openHouseFillScreen))
-            }
-        }
-    }
-
-    private func isInputValid() -> Bool {
+    func isInputValid() -> Bool {
         func validate() -> Bool {
             withAnimation {
                 addressError = !address.isEmpty ? nil : L10n.changeAddressStreetError
@@ -236,7 +238,7 @@ public class AddressInputModel: ObservableObject {
         if let size = Int(squareArea) {
             let sizeToCompare: Int? = {
                 switch store.state.selectedHousingType {
-                case .apartmant, .rental:
+                case .apartment, .rental:
                     return store.state.movingFlowModel?.maxApartmentSquareMeters
                 case .house:
                     return store.state.movingFlowModel?.maxHouseSquareMeters
@@ -258,7 +260,7 @@ public class AddressInputModel: ObservableObject {
 
     var isStudentEnabled: Bool {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return store.state.movingFlowModel?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
@@ -267,7 +269,7 @@ public class AddressInputModel: ObservableObject {
 
     var continueButtonTitle: String {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return L10n.saveAndContinueButtonLabel
         case .house:
             return L10n.saveAndContinueButtonLabel

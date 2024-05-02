@@ -2,7 +2,6 @@ import Chat
 import Contracts
 import EditCoInsured
 import EditCoInsuredShared
-import MoveFlow
 import Payment
 import Presentation
 import SwiftUI
@@ -122,7 +121,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .fullScreenCover(
             isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
             content: {
-                MovingFlowViewJourney()
+                redirect(.moveFlow)
             }
         )
         .fullScreenCover(
@@ -229,6 +228,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 }
 
 public enum HelpCenterRedirectType {
+    case moveFlow
     case editCoInsured(
         config: InsuredPeopleConfig,
         showMissingAlert: Bool,

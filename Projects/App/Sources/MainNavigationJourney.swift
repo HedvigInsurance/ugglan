@@ -122,6 +122,8 @@ struct MainNavigationJourney: App {
         .modally(presented: $homeNavigationVm.isHelpCenterPresented) {
             HelpCenterNavigation(redirect: { redirectType in
                 switch redirectType {
+                case .moveFlow:
+                    MovingFlowNavigation()
                 case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
                     getEditCoInsuredView(
                         config: config,
@@ -179,7 +181,7 @@ struct MainNavigationJourney: App {
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
-                MovingFlowViewJourney()
+                MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
             }
