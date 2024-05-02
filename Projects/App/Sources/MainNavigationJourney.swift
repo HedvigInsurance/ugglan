@@ -290,6 +290,9 @@ struct MainNavigationJourney: App {
 
     private func checkForAlert() {
         Task {
+            homeNavigationVm.isEditCoInsuredPresented = nil
+            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
+            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             await contractStore.sendAsync(.fetchContracts)
             let missingContract = contractStore.state.activeContracts.first { contract in
