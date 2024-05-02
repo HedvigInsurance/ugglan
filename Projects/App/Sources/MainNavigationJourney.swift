@@ -189,7 +189,6 @@ struct MainNavigationJourney: App {
                 TerminationFlowNavigation(
                     configs: [contractConfig],
                     isFlowPresented: { cancelAction in
-                        router.dismiss()
                         switch cancelAction {
                         case .none:
                             break
