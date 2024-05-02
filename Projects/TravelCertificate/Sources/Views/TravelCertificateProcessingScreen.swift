@@ -6,6 +6,8 @@ import hCoreUI
 struct TravelCertificateProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @EnvironmentObject var router: Router
+    @EnvironmentObject var startDateViewModel: StartDateViewModel
+    @EnvironmentObject var whoIsTravelingViewModel: WhoIsTravelingViewModel
 
     var body: some View {
         ProcesssingView(
@@ -20,6 +22,11 @@ struct TravelCertificateProcessingScreen: View {
         )
         .hSuccessBottomAttachedView {
             bottomSuccessView
+        }
+        .task { [weak vm] in
+            vm?.whoIsTravelingViewModel = whoIsTravelingViewModel
+            vm?.startDateViewModel = startDateViewModel
+            vm?.submit()
         }
     }
 
@@ -46,20 +53,19 @@ struct TravelCertificateProcessingScreen: View {
 }
 
 class ProcessingViewModel: ObservableObject {
-    @PresentableStore var store: TravelInsuranceStore
     @Inject private var service: TravelInsuranceClient
     @Published var isLoading = true
     @Published var error: String?
     @Published var downloadUrl: URL?
-    init() {
-        submit()
-    }
+    weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
+    weak var startDateViewModel: StartDateViewModel?
+    init() {}
 
-    private func submit() {
+    func submit() {
         Task { @MainActor in
             isLoading = true
-            if let startDateViewModel = store.startDateViewModel,
-                let whoIsTravelingViewModel = store.whoIsTravelingViewModel
+            if let startDateViewModel = startDateViewModel,
+                let whoIsTravelingViewModel = whoIsTravelingViewModel
             {
                 let dto = TravenInsuranceFormDTO(
                     contractId: startDateViewModel.specification.contractId,

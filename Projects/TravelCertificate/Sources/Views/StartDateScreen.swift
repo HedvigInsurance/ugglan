@@ -82,7 +82,6 @@ class StartDateViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var date: Date
     @Published var emailError: String?
-    @PresentableStore var store: TravelInsuranceStore
     @Published var editValue: StartDateViewEditType?
     let specification: TravelInsuranceContractSpecification
     init(specification: TravelInsuranceContractSpecification) {
