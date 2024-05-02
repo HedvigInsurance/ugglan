@@ -8,17 +8,20 @@ import hCoreUI
 public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
+    @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
+
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 }
 
-struct TravelInsuranceSpecificationNavigationModel: Hashable {
+struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
     public var id: String?
     let specification: [TravelInsuranceContractSpecification]
 }
 
 enum TravelCertificateRouterActions: Hashable {
     case whoIsTravelling(specifiction: TravelInsuranceContractSpecification)
+    case startDate(specification: TravelInsuranceContractSpecification)
 }
 
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
@@ -44,27 +47,6 @@ public struct TravelCertificateNavigation: View {
             showListScreen(
                 infoButtonPlacement: infoButtonPlacement
             )
-            .routerDestination(for: TravelInsuranceSpecificationNavigationModel.self) { specificationModel in
-                start(with: specificationModel.specification)
-            }
-            .routerDestination(for: TravelInsuranceContractSpecification.self) { specification in
-                showStartDateScreen(specification: specification)
-            }
-            .routerDestination(for: TravelCertificateRouterActions.self) { action in
-                switch action {
-                case let .whoIsTravelling(specification):
-                    showWhoIsTravelingScreen(specification: specification)
-                }
-            }
-            .routerDestination(
-                for: TravelCertificateRouterActionsWithoutBackButton.self,
-                options: .hidesBackButton
-            ) { action in
-                switch action {
-                case .processingScreen:
-                    openProcessingScreen()
-                }
-            }
         }
         .environmentObject(vm)
         .detent(
@@ -75,6 +57,30 @@ public struct TravelCertificateNavigation: View {
             PDFPreview(
                 document: .init(url: model.url, title: model.title)
             )
+        }
+        .fullScreenCover(
+            item: $vm.isStartDateScreenPresented
+        ) { specificationModel in
+            start(with: specificationModel.specification)
+                .routerDestination(for: TravelCertificateRouterActions.self) { action in
+                    switch action {
+                    case let .whoIsTravelling(specification):
+                        showWhoIsTravelingScreen(specification: specification)
+                    case let .startDate(specification):
+                        showStartDateScreen(specification: specification)
+                    }
+                }
+                .routerDestination(
+                    for: TravelCertificateRouterActionsWithoutBackButton.self,
+                    options: .hidesBackButton
+                ) { action in
+                    switch action {
+                    case .processingScreen:
+                        openProcessingScreen()
+                    }
+                }
+                .embededInNavigation()
+                .addDismissFlow()
         }
     }
 
@@ -91,9 +97,11 @@ public struct TravelCertificateNavigation: View {
     @ViewBuilder
     private func start(with specifications: [TravelInsuranceContractSpecification]) -> some View {
         if specifications.count > 1 {
+            /* TODO: CHANGE TO PUSH? */
             showContractsList(for: specifications)
         } else if let specification = specifications.first {
             showStartDateScreen(specification: specification)
+                .addDismissFlow()
         }
     }
 
@@ -109,7 +117,6 @@ public struct TravelCertificateNavigation: View {
     ) -> some View {
         vm.startDateViewModel = StartDateViewModel(specification: specification)
         return StartDateScreen(vm: vm.startDateViewModel!)
-            .addDismissFlow()
     }
 
     private func showWhoIsTravelingScreen(
@@ -122,7 +129,6 @@ public struct TravelCertificateNavigation: View {
                 openCoInsured()
             }
         )
-        .addDismissFlow()
     }
 
     private func openProcessingScreen() -> some View {
