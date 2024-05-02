@@ -32,17 +32,16 @@ public struct ProfileNavigation<Content: View>: View {
                         redirect(.travelCertificate)
                     case .myInfo:
                         MyInfoView()
+                            .configureTitle(L10n.profileMyInfoRowTitle)
                     case .appInfo:
                         AppInfoView()
+                            .configureTitle(L10n.profileAppInfo)
                     case .settings:
                         SettingsScreen()
+                            .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation()
-                    case .deleteAccount:
-                        EmptyView()
-                    case .pickLanguage:
-                        EmptyView()
-                    case .deleteRequestLoading:
+                    default:
                         EmptyView()
                     }
                 }
