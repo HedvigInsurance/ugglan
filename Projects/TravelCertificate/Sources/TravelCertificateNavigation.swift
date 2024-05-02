@@ -28,9 +28,9 @@ enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
 public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
-    private var canCreateTravelInsurance: Bool
-    private var infoButtonPlacement: ToolbarItemPlacement
-    private var openCoInsured: () -> Void
+    private let canCreateTravelInsurance: Bool
+    private let infoButtonPlacement: ToolbarItemPlacement
+    private let openCoInsured: () -> Void
 
     public init(
         canCreateTravelInsurance: Bool,
