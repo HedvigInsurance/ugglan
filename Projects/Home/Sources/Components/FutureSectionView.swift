@@ -63,7 +63,6 @@ struct ActiveInFutureView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
                 }
         }
-
     }
 }
 
