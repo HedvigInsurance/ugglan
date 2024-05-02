@@ -115,19 +115,3 @@ public struct PickLanguage: View {
         }
     }
 }
-
-extension PickLanguage {
-    public var journey: some JourneyPresentation {
-        HostingJourney(
-            MarketStore.self,
-            rootView: self,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dismissPicker = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
-    }
-}

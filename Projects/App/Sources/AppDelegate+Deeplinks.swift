@@ -40,10 +40,7 @@ extension AppDelegate {
                         if case .setMemberDetails = action {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 if let shouldShowEuroBonus = profileStore.state.partnerData?.shouldShowEuroBonus {
-                                    self?.deepLinkDisposeBag.dispose()
-                                    let vc = EuroBonusView.journey
-                                    let disposeBag = DisposeBag()
-                                    disposeBag += fromVC.present(vc)
+                                    /* TODO: ADD deeplink for euro bonus */
                                 }
                             }
                         }

@@ -5,6 +5,7 @@ import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Home
+import Market
 import MoveFlow
 import Payment
 import Presentation
@@ -32,8 +33,7 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var homeRouter = Router()
-
+    @StateObject var router = Router()
     var body: some Scene {
         WindowGroup {
             if vm.hasLaunchFinished {
@@ -65,7 +65,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter) {
+        return RouterHost(router: router) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -140,7 +140,7 @@ struct MainNavigationJourney: App {
                     let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     TravelCertificateNavigation(
                         canCreateTravelInsurance: profileStore.state.canCreateTravelInsurance,
-                        infoButtonPlacement: .navigationBarLeading,
+                        infoButtonPlacement: .leading,
                         openCoInsured: {
                             redirectType(
                                 .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
@@ -262,14 +262,57 @@ struct MainNavigationJourney: App {
     }
 
     var profileTab: some View {
-        ProfileView()
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
+        ProfileNavigation { redirectType in
+            switch redirectType {
+            case .travelCertificate:
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                TravelCertificateNavigation(
+                    canCreateTravelInsurance: store.state.canCreateTravelInsurance,
+                    infoButtonPlacement: .trailing,
+                    openCoInsured: {
+                        router.pop()
+                        /* TODO: open co-insured */
+                    }
                 )
-                hText(L10n.ProfileTab.title)
+            case let .deleteAccount(memberDetails):
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+                let model = DeleteAccountViewModel(
+                    memberDetails: memberDetails,
+                    claimsStore: claimsStore,
+                    contractsStore: contractsStore
+                )
+
+                DeleteAccountView(
+                    vm: model,
+                    dismissAction: { profileDismissAction in
+                        switch profileDismissAction {
+                        case .openChat:
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        }
+                    }
+                )
+                .environmentObject(router)
+            case .pickLanguage:
+                PickLanguage { _ in
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    router.dismiss()
+                    store.send(.setOpenAppSettings(to: true))
+                    vm.selectedTab = 0
+                } onCancel: {
+                    router.dismiss()
+                }
+            default:
+                EmptyView()
             }
-            .tag(4)
+        }
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
+            )
+            hText(L10n.ProfileTab.title)
+        }
+        .tag(4)
     }
 
     @ViewBuilder

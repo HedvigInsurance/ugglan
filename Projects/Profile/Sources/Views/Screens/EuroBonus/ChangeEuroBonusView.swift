@@ -47,32 +47,6 @@ private class ChangeEurobonusViewModel: ObservableObject {
     }
 }
 
-extension ChangeEuroBonusView {
-    static var journey: some JourneyPresentation {
-        HostingJourney(
-            ProfileStore.self,
-            rootView: ChangeEuroBonusView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .openSuccessChangeEuroBonus = action {
-                SuccessScreen.journey(with: L10n.SasIntegration.eurobonusConnected)
-                    .onPresent {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissChangeEuroBonus)
-                        }
-                    }
-            }
-        }
-        .configureTitle(L10n.SasIntegration.enterYourNumber)
-        .onAction(ProfileStore.self) { action in
-            if case .dismissChangeEuroBonus = action {
-                PopJourney()
-            }
-        }
-    }
-}
 extension String {
     var toAlphaNumeric: String {
         let pattern = "[^A-Za-z0-9]+"

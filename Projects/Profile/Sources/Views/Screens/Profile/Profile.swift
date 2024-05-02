@@ -45,13 +45,13 @@ public struct ProfileView: View {
                     //                        if store.state.showTravelCertificate {
                     ProfileRow(row: .travelCertificate)
                     //                        }
-                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
-                        let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
-                        let hasEntereNumber = !number.isEmpty
-                        ProfileRow(
-                            row: .eurobonus(hasEnteredNumber: hasEntereNumber)
-                        )
-                    }
+                    //                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
+                    let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
+                    let hasEntereNumber = !number.isEmpty
+                    ProfileRow(
+                        row: .eurobonus(hasEnteredNumber: hasEntereNumber)
+                    )
+                    //                    }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
@@ -105,46 +105,46 @@ extension ProfileView {
             ProfileStore.self,
             rootView: ProfileView()
         ) { action in
-            if case .openProfile = action {
-                HostingJourney(rootView: MyInfoView())
-                    .configureTitle(L10n.profileMyInfoRowTitle)
-            } else if case .openAppInformation = action {
-                HostingJourney(rootView: AppInfoView())
-                    .configureTitle(L10n.profileAppInfo)
-            } else if case let .openAppSettings(animated) = action {
-                HostingJourney(
-                    ProfileStore.self,
-                    rootView: SettingsScreen(),
-                    options: animated ? [.defaults] : [.defaults, .unanimated]
-                ) { action in
-                    if case let .deleteAccount(details) = action {
-                        DeleteAccountView.deleteAccountJourney(details: details)
-                    } else if case .deleteAccountAlreadyRequested = action {
-                        DeleteAccountView.deleteRequestAlreadyPlacedJourney
-                    } else if case .openLangaugePicker = action {
-                        PickLanguage { _ in
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.languageChanged)
-                            store.send(.setOpenAppSettings(to: true))
-                        } onCancel: {
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.closeLanguagePicker)
-                        }
-                        .journey
-                        .onAction(ProfileStore.self) { action in
-                            if case .closeLanguagePicker = action {
-                                DismissJourney()
-                            }
-                        }
-                    }
-                }
-                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
-            } else if case .openEuroBonus = action {
-                EuroBonusView.journey
-            } else if case .openTravelCertificate = action {
-                //                TravelInsuranceJourney.travelCertificatePush()
-                DismissJourney()
-            } else if case .languageChanged = action {
+            //            if case .openProfile = action {
+            //                HostingJourney(rootView: MyInfoView())
+            //                    .configureTitle(L10n.profileMyInfoRowTitle)
+            //            } else if case .openAppInformation = action {
+            //                HostingJourney(rootView: AppInfoView())
+            //                    .configureTitle(L10n.profileAppInfo)
+            //            } else if case let .openAppSettings(animated) = action {
+            //                HostingJourney(
+            //                    ProfileStore.self,
+            //                    rootView: SettingsScreen(),
+            //                    options: animated ? [.defaults] : [.defaults, .unanimated]
+            //                ) { action in
+            //                    if case let .deleteAccount(details) = action {
+            //                        DeleteAccountView.deleteAccountJourney(details: details)
+            //                    } else if case .deleteAccountAlreadyRequested = action {
+            //                        DeleteAccountView.deleteRequestAlreadyPlacedJourney
+            //                    if case .openLangaugePicker = action {
+            //                        PickLanguage { _ in
+            //                            let store: ProfileStore = globalPresentableStoreContainer.get()
+            //                            store.send(.languageChanged)
+            //                            store.send(.setOpenAppSettings(to: true))
+            //                        } onCancel: {
+            //                            let store: ProfileStore = globalPresentableStoreContainer.get()
+            //                            store.send(.closeLanguagePicker)
+            //                        }
+            //                        .journey
+            //                        .onAction(ProfileStore.self) { action in
+            //                            if case .closeLanguagePicker = action {
+            //                                DismissJourney()
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //                .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
+            //            } else if case .openEuroBonus = action {
+            //                EuroBonusView.journey
+            //            } else if case .openTravelCertificate = action {
+            //                //                TravelInsuranceJourney.travelCertificatePush()
+            //                DismissJourney()
+            if case .languageChanged = action {
                 resultJourney(.resetAppLanguage)
             } else if case .openChat = action {
                 resultJourney(.openChat)

@@ -23,16 +23,21 @@ enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
     case processingScreen
 }
 
+public enum ListToolBarPlacement {
+    case trailing
+    case leading
+}
+
 public struct TravelCertificateNavigation: View {
     @StateObject private var travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
     private var canCreateTravelInsurance: Bool
-    private var infoButtonPlacement: ToolbarItemPlacement
+    private var infoButtonPlacement: ListToolBarPlacement
     private var openCoInsured: () -> Void
 
     public init(
         canCreateTravelInsurance: Bool,
-        infoButtonPlacement: ToolbarItemPlacement,
+        infoButtonPlacement: ListToolBarPlacement,
         openCoInsured: @escaping () -> Void
     ) {
         self.canCreateTravelInsurance = canCreateTravelInsurance
@@ -40,33 +45,47 @@ public struct TravelCertificateNavigation: View {
         self.openCoInsured = openCoInsured
     }
 
-    public var body: some View {
-        RouterHost(router: router) {
+    @ViewBuilder
+    private var getListScreen: some View {
+        if infoButtonPlacement == .trailing {
             showListScreen(
                 canAddTravelInsurance: canCreateTravelInsurance,
-                infoButtonPlacement: infoButtonPlacement
+                infoButtonPlacement: .topBarTrailing
             )
-            .routerDestination(for: TravelInsuranceSpecificationNavigationModel.self) { specificationModel in
-                start(with: specificationModel.specification)
-            }
-            .routerDestination(for: TravelInsuranceContractSpecification.self) { specification in
-                showStartDateScreen(specification: specification)
-            }
-            .routerDestination(for: TravelCertificateRouterActions.self) { action in
-                switch action {
-                case let .whoIsTravelling(specification):
-                    showWhoIsTravelingScreen(specification: specification)
+            .embededInNavigation()
+        } else {
+            showListScreen(
+                canAddTravelInsurance: canCreateTravelInsurance,
+                infoButtonPlacement: .topBarLeading
+            )
+            .withDismissButton()
+        }
+    }
+
+    public var body: some View {
+        RouterHost(router: router) {
+            getListScreen
+                .routerDestination(for: TravelInsuranceSpecificationNavigationModel.self) { specificationModel in
+                    start(with: specificationModel.specification)
                 }
-            }
-            .routerDestination(
-                for: TravelCertificateRouterActionsWithoutBackButton.self,
-                options: .hidesBackButton
-            ) { action in
-                switch action {
-                case .processingScreen:
-                    openProcessingScreen()
+                .routerDestination(for: TravelInsuranceContractSpecification.self) { specification in
+                    showStartDateScreen(specification: specification)
                 }
-            }
+                .routerDestination(for: TravelCertificateRouterActions.self) { action in
+                    switch action {
+                    case let .whoIsTravelling(specification):
+                        showWhoIsTravelingScreen(specification: specification)
+                    }
+                }
+                .routerDestination(
+                    for: TravelCertificateRouterActionsWithoutBackButton.self,
+                    options: .hidesBackButton
+                ) { action in
+                    switch action {
+                    case .processingScreen:
+                        openProcessingScreen()
+                    }
+                }
         }
         .environmentObject(travelCertificateNavigationVm)
         .detent(
@@ -88,7 +107,6 @@ public struct TravelCertificateNavigation: View {
             canAddTravelInsurance: canAddTravelInsurance,
             infoButtonPlacement: infoButtonPlacement
         )
-        .withDismissButton()
         .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 
