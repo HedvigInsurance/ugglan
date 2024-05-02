@@ -11,7 +11,6 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setEurobonusNumber(partnerData: PartnerData?)
     case isTravelCertificateEnabled(has: Bool)
     case fetchProfileStateCompleted
-    case updateEurobonusNumber(number: String)
     case setOpenAppSettings(to: Bool)
     case languageChanged
 
@@ -25,7 +24,6 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setPushNotificationsTo(date: Date?)
 
     case registerForPushNotifications
-    case goToURL(url: URL)
 
     case updateLanguage
 }
