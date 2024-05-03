@@ -26,7 +26,7 @@ struct ContractsScreen: View {
             },
             onSelected: { selected in
                 if let selected = selected.first?.0 {
-                    router.push(selected)
+                    router.push(TravelCertificateRouterActions.startDate(specification: selected))
                 }
             },
             singleSelect: true,

@@ -87,7 +87,7 @@ public struct ListScreen: View {
             }
             do {
                 let specifications = try await vm.service.getSpecifications()
-                router.push(TravelInsuranceSpecificationNavigationModel.init(specification: specifications))
+                travelCertificateNavigationVm.isStartDateScreenPresented = .init(specification: specifications)
             } catch _ {
 
             }
