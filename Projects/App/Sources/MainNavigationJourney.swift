@@ -127,11 +127,7 @@ struct MainNavigationJourney: App {
                 case .moveFlow:
                     MovingFlowNavigation()
                 case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
-                    getEditCoInsuredView(
-                        config: config,
-                        hasMissingAlert: hasMissingAlert,
-                        isMissingAlert: isMissingAlertAction
-                    )
+                    getEditCoInsuredView(config: config)
                 case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: configs,
@@ -140,6 +136,7 @@ struct MainNavigationJourney: App {
                 case let .travelInsurance(redirectType):
                     TravelCertificateNavigation(
                         infoButtonPlacement: .leading,
+                        useOwnNavigation: true,
                         openCoInsured: {
                             redirectType(
                                 .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
@@ -184,11 +181,7 @@ struct MainNavigationJourney: App {
         ContractsNavigation { redirectType in
             switch redirectType {
             case let .editCoInsured(editCoInsuredConfig, hasMissingAlert, isMissingAlert):
-                getEditCoInsuredView(
-                    config: editCoInsuredConfig,
-                    hasMissingAlert: hasMissingAlert,
-                    isMissingAlert: isMissingAlert
-                )
+                getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
@@ -269,12 +262,23 @@ struct MainNavigationJourney: App {
         ProfileNavigation(profileNavigationViewModel: profileNavigationVm) { redirectType in
             switch redirectType {
             case .travelCertificate:
-                let store: ProfileStore = globalPresentableStoreContainer.get()
                 TravelCertificateNavigation(
                     infoButtonPlacement: .trailing,
+                    useOwnNavigation: false,
                     openCoInsured: {
-                        router.pop()
-                        /* TODO: open co-insured */
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contractsSupportingCoInsured = contractStore.state.activeContracts
+                            .filter({ $0.showEditCoInsuredInfo })
+                            .compactMap({
+                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                            })
+                        if contractsSupportingCoInsured.count > 1 {
+                            profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
+                                configs: contractsSupportingCoInsured
+                            )
+                        } else if let config = contractsSupportingCoInsured.first {
+                            profileNavigationVm.isEditCoInsuredPresented = config
+                        }
                     }
                 )
             case let .deleteAccount(memberDetails):
@@ -330,6 +334,13 @@ struct MainNavigationJourney: App {
                     }
                 )
                 .environmentObject(router)
+            case let .editCoInuredSelectInsurance(configs):
+                EditCoInsuredSelectInsuranceNavigation(
+                    configs: configs,
+                    checkForAlert: checkForAlert
+                )
+            case let .editCoInsured(config):
+                getEditCoInsuredView(config: config)
             default:
                 EmptyView()
             }
@@ -345,20 +356,12 @@ struct MainNavigationJourney: App {
 
     @ViewBuilder
     private func getEditCoInsuredView(
-        config: InsuredPeopleConfig,
-        hasMissingAlert: Bool,
-        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+        config: InsuredPeopleConfig
     ) -> some View {
-        if hasMissingAlert {
-            getMissingCoInsuredAlertView(
-                missingContractConfig: config
-            )
-        } else {
-            EditCoInsuredNavigation(
-                config: config,
-                checkForAlert: checkForAlert
-            )
-        }
+        EditCoInsuredNavigation(
+            config: config,
+            checkForAlert: checkForAlert
+        )
     }
 
     private func getMissingCoInsuredAlertView(

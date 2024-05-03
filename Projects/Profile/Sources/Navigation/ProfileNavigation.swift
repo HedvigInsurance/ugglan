@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,11 +6,12 @@ import hCoreUI
 public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
-    @Published var isLanguagePickerPresnted = false
+    @Published var isLanguagePickerPresented = false
 
-    public init() {
+    @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
+    @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
 
-    }
+    public init() {}
 }
 
 public enum ProfileNavigationDismissAction {
@@ -67,7 +69,7 @@ public struct ProfileNavigation<Content: View>: View {
             )
         }
         .detent(
-            presented: $profileNavigationViewModel.isLanguagePickerPresnted,
+            presented: $profileNavigationViewModel.isLanguagePickerPresented,
             style: .height,
             content: {
                 redirect(.pickLanguage)
@@ -80,6 +82,27 @@ public struct ProfileNavigation<Content: View>: View {
         ) {
             redirect(.deleteRequestLoading)
         }
+        .detent(
+            item: $profileNavigationViewModel.isEditCoInsuredSelectContractPresented,
+            style: .height
+        ) { configs in
+            redirect(
+                .editCoInuredSelectInsurance(
+                    configs: configs.configs
+                )
+            )
+        }
+        .fullScreenCover(
+            item: $profileNavigationViewModel.isEditCoInsuredPresented
+        ) { config in
+            getEditCoInsuredView(config: config)
+        }
+    }
+
+    private func getEditCoInsuredView(config: InsuredPeopleConfig) -> some View {
+        redirect(
+            .editCoInsured(config: config)
+        )
     }
 }
 
@@ -92,4 +115,6 @@ public enum ProfileRedirectType: Hashable {
     case deleteAccount(memberDetails: MemberDetails)
     case deleteRequestLoading
     case pickLanguage
+    case editCoInsured(config: InsuredPeopleConfig)
+    case editCoInuredSelectInsurance(configs: [InsuredPeopleConfig])
 }

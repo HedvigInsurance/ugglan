@@ -18,7 +18,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isConnectPaymentsPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredSelectContractPresented: HomeNavigationViewModel.CoInsuredConfigModel?
+        var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
 
         var isEditCoInsuredPresented: InsuredPeopleConfig?
         var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?

@@ -21,7 +21,7 @@ struct SettingsScreen: View {
                         value: Localization.Locale.currentLocale.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-                            profileNavigationVm.isLanguagePickerPresnted = true
+                            profileNavigationVm.isLanguagePickerPresented = true
                         }
                     )
                     PresentableStoreLens(

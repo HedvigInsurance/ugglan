@@ -50,17 +50,6 @@ public class HomeNavigationViewModel: ObservableObject {
         public var isNewOfferPresented = false
     }
 
-    public struct CoInsuredConfigModel: Identifiable, Equatable {
-        public init(
-            configs: [InsuredPeopleConfig]
-        ) {
-            self.configs = configs
-        }
-
-        public var id: String?
-        public var configs: [InsuredPeopleConfig]
-    }
-
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

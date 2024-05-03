@@ -37,13 +37,16 @@ public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
     private var infoButtonPlacement: ListToolBarPlacement
+    private let useOwnNavigation: Bool
     private let openCoInsured: () -> Void
 
     public init(
         infoButtonPlacement: ListToolBarPlacement,
+        useOwnNavigation: Bool,
         openCoInsured: @escaping () -> Void
     ) {
         self.infoButtonPlacement = infoButtonPlacement
+        self.useOwnNavigation = useOwnNavigation
         self.openCoInsured = openCoInsured
     }
 
@@ -53,7 +56,6 @@ public struct TravelCertificateNavigation: View {
             showListScreen(
                 infoButtonPlacement: .topBarTrailing
             )
-            .embededInNavigation()
         } else {
             showListScreen(
                 infoButtonPlacement: .topBarLeading
@@ -63,8 +65,14 @@ public struct TravelCertificateNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
-            getListScreen
+        Group {
+            if useOwnNavigation {
+                RouterHost(router: router) {
+                    getListScreen
+                }
+            } else {
+                getListScreen
+            }
         }
         .environmentObject(vm)
         .detent(
