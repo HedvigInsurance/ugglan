@@ -247,15 +247,23 @@ struct MainNavigationJourney: App {
     }
 
     var paymentsTab: some View {
-        PaymentsView()
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 3
-                        ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
-                )
-                hText(L10n.tabPaymentsTitle)
+        PaymentsNavigation(redirect: { redirectType in
+            switch redirectType {
+            case .forever:
+                foreverTab
+                    .onAppear {
+                        vm.selectedTab = 2
+                    }
             }
-            .tag(3)
+        })
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 3
+                    ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
+            )
+            hText(L10n.tabPaymentsTitle)
+        }
+        .tag(3)
     }
 
     var profileTab: some View {

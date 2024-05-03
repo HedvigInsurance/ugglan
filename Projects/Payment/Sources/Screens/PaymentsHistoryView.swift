@@ -113,24 +113,6 @@ class PaymentsHistoryViewModel: ObservableObject {
     }
 }
 
-extension PaymentHistoryView {
-    public static var journey: some JourneyPresentation {
-        return HostingJourney(
-            PaymentStore.self,
-            rootView: PaymentHistoryView(vm: .init())
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                } else if case let .openPaymentDetailsFromHistory(data) = navigateTo {
-                    PaymentDetailsView.journey(with: data)
-                }
-            }
-        }
-        .configureTitle(L10n.paymentHistoryTitle)
-    }
-}
-
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE

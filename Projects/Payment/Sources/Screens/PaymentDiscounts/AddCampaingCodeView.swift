@@ -59,23 +59,6 @@ class AddCampaingCodeViewModel: ObservableObject {
     }
 }
 
-extension AddCampaingCodeView {
-    static var journey: some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: AddCampaingCodeView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                }
-            }
-        }
-    }
-}
-
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsServiceDemo() })

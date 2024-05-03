@@ -7,13 +7,16 @@ import hCoreUI
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
     @PresentableStore var store: PaymentStore
+    @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject var router: Router
+
     var body: some View {
         hForm {
             VStack(spacing: 8) {
                 discounts
                 hSection {
                     hButton.LargeButton(type: .secondary) {
-                        store.send(.navigation(to: .openAddCampaing))
+                        paymentsNavigationVm.isAddCampaignPresented = true
                     } content: {
                         hText(L10n.paymentsAddCampaignCode)
                     }
@@ -102,7 +105,7 @@ struct PaymentsDiscountsView: View {
                     .init(
                         buttonTitle: L10n.paymentsInviteFriends,
                         buttonAction: {
-                            store.send(.navigation(to: .openForever))
+                            router.push(PaymentsRedirectType.forever)
                         }
                     )
                 ]

@@ -6,6 +6,8 @@ import hGraphQL
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
+    @EnvironmentObject var router: Router
+
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
@@ -85,13 +87,7 @@ public struct PaymentsView: View {
                         }
                         .withEmptyAccessory
                         .onTap {
-                            store.send(
-                                .navigation(
-                                    to: .openPaymentDetails(
-                                        data: upcomingPayment
-                                    )
-                                )
-                            )
+                            router.push(upcomingPayment)
                         }
                     }
                 } else {
@@ -130,7 +126,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openDiscounts))
+            router.push(PaymentsRouterAction.discounts)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
