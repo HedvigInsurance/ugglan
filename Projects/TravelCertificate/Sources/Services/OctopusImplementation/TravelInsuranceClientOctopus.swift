@@ -31,8 +31,8 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
 
             let response = try await [data, sleepTask] as [Any]
 
-            if let mutationResposne = response[0] as? OctopusGraphQL.CreateTravelCertificateMutation.Data,
-                let url = URL(string: mutationResposne.travelCertificateCreate.signedUrl)
+            if let mutationResponse = response[0] as? OctopusGraphQL.CreateTravelCertificateMutation.Data,
+                let url = URL(string: mutationResponse.travelCertificateCreate.signedUrl)
             {
                 return url
             }
@@ -43,13 +43,34 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> [TravelCertificateModel] {
+    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+        let query = OctopusGraphQL.TravelCertificatesQuery()
+        let canAddTravelInsuranceQuery = OctopusGraphQL.CanCreateTravelCertificateQuery()
         do {
-            let query = OctopusGraphQL.TravelCertificatesQuery()
-            let data = try await self.octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-            return data.currentMember.travelCertificates.compactMap({
-                TravelCertificateModel.init($0)
-            })
+            async let listData = try await self.octopus.client.fetch(
+                query: query,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            async let canAddTravelInsuranceData = try await self.octopus.client.fetch(
+                query: canAddTravelInsuranceQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+
+            let response = try await [listData, canAddTravelInsuranceData] as [Any]
+
+            if let listResponse = response[0] as? OctopusGraphQL.TravelCertificatesQuery.Data,
+                let canAddTravelInsuranceResponse = response[1] as? OctopusGraphQL.CanCreateTravelCertificateQuery.Data
+            {
+                let listData = listResponse.currentMember.travelCertificates.compactMap({
+                    TravelCertificateModel.init($0)
+                })
+                let canAddTravelInsuranceData = !canAddTravelInsuranceResponse.currentMember.activeContracts
+                    .filter({ $0.supportsTravelCertificate }).isEmpty
+
+                return (listData, canAddTravelInsuranceData)
+            }
+            throw TravelInsuranceError.missingURL
+
         } catch let ex {
             throw ex
         }

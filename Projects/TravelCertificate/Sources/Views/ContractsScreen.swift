@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 struct ContractsScreen: View {
-    @PresentableStore var store: TravelInsuranceStore
     @State var isLoading: Bool = false
     let specifications: [TravelInsuranceContractSpecification]
+    @EnvironmentObject var router: Router
 
     init(specifications: [TravelInsuranceContractSpecification]) {
         self.specifications = specifications
@@ -26,7 +26,7 @@ struct ContractsScreen: View {
             },
             onSelected: { selected in
                 if let selected = selected.first?.0 {
-                    store.send(.navigation(.openStartDateScreen(spacification: selected)))
+                    router.push(TravelCertificateRouterActions.startDate(specification: selected))
                 }
             },
             singleSelect: true,
