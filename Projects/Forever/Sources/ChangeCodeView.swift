@@ -38,32 +38,6 @@ class ChangeCodeViewModel: ObservableObject {
     }
 }
 
-extension ChangeCodeView {
-    static var journey: some JourneyPresentation {
-        HostingJourney(
-            ForeverStore.self,
-            rootView: ChangeCodeView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .showChangeCodeSuccess = action {
-                SuccessScreen.journey(with: L10n.ReferralsChange.codeChanged)
-                    .onPresent {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            let store: ForeverStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissChangeCodeDetail)
-                        }
-                    }
-            }
-        }
-        .configureTitle(L10n.ReferralsChange.changeCode)
-        .onAction(ForeverStore.self) { action, pres in
-            if case .dismissChangeCodeDetail = action {
-                pres.bag.dispose()
-            }
-        }
-    }
-}
 struct ChangeCodeView_Previews: PreviewProvider {
     static var previews: some View {
         ChangeCodeView()

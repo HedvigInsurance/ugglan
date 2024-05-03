@@ -76,24 +76,27 @@ public struct ForeverView: View {
             .onAppear {
                 store.send(.fetch)
             }
-            .navigationBarItems(
-                trailing:
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+                ) {
                     PresentableStoreLens(
                         ForeverStore.self,
                         getter: { state in
                             state.foreverData?.monthlyDiscountPerReferral
                         }
                     ) { discountAmount in
-                        Button(action: {
-                            if let discountAmount {
-                                store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
-                            }
-                        }) {
-                            Image(uiImage: hCoreUIAssets.infoIcon.image)
-                                .foregroundColor(hTextColor.primary)
+                        if let discountAmount {
+                            InfoViewHolder(
+                                title: L10n.ReferralsInfoSheet.headline,
+                                description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                                type: .navigation
+                            )
+                            .foregroundColor(hTextColor.primary)
                         }
                     }
-            )
+                }
+            }
             .onPullToRefresh {
                 await store.sendAsync(.fetch)
             }
@@ -115,59 +118,6 @@ public struct ForeverView: View {
 
     private func recalculateHeight() {
         spacing = max(totalHeight - discountCodeHeight - headerHeight, 0)
-    }
-}
-
-@available(iOS 16.0, *)
-extension ForeverView {
-    @available(iOS 16.0, *)
-    public static func journey() -> some JourneyPresentation {
-        HostingJourney(
-            ForeverStore.self,
-            rootView: ForeverView()
-        ) { action in
-            if case .showChangeCodeDetail = action {
-                ChangeCodeView.journey
-            } else if case let .showShareSheetOnly(code, discount) = action {
-                shareSheetJourney(code: code, discount: discount)
-            } else if case let .showInfoSheet(discount) = action {
-                infoSheetJourney(potentialDiscount: discount)
-            }
-        }
-        .configureTitle(L10n.ReferralsInfoSheet.headline)
-        .configureTabBarItem(
-            title: L10n.tabReferralsTitle,
-            image: hCoreUIAssets.foreverTab.image,
-            selectedImage: hCoreUIAssets.foreverTabActive.image
-        )
-    }
-
-    static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
-        HostingJourney(
-            rootView: InfoView(
-                title: L10n.ReferralsInfoSheet.headline,
-                description: L10n.ReferralsInfoSheet.body(potentialDiscount)
-            ),
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
-        )
-        .onAction(ForeverStore.self) { action in
-            if case .closeInfoSheet = action {
-                DismissJourney()
-            }
-        }
-    }
-
-    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
-        let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
-        let message = L10n.referralSmsMessage(discount, url)
-        return HostingJourney(
-            rootView: ActivityViewController(activityItems: [
-                message
-            ]),
-            style: .activityView
-        )
     }
 }
 

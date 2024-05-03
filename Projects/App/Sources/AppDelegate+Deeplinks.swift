@@ -83,10 +83,7 @@ extension AppDelegate {
         } else if path == .payments {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
-                    self?.deepLinkDisposeBag.dispose()
-                    let vc = PaymentsView().detentJourney(schema: Bundle.main.urlScheme ?? "")
-                    let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+                    /* TODO: Add deep link for payments */
                 }
         } else if path == .travelCertificate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
