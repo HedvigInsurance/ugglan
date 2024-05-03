@@ -39,9 +39,4 @@ public class DeleteAccountViewModel: ObservableObject {
         bag += activeClaimsSignal.distinct(on: .main).onValue { self.hasActiveClaims = $0 }
         bag += activeContractsSignal.distinct(on: .main).onValue { self.hasActiveContracts = $0 }
     }
-
-    func deleteAccount() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.sendAccountDeleteRequest(details: memberDetails))
-    }
 }

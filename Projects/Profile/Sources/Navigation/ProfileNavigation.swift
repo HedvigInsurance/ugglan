@@ -63,9 +63,6 @@ public struct ProfileNavigation<Content: View>: View {
             redirect(
                 .deleteAccount(
                     memberDetails: memberDetails
-                        //                onDismiss: {
-                        //                    profileNavigationViewModel.isDeleteAccountPresented = nil
-                        //                }
                 )
             )
         }

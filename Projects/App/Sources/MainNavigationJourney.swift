@@ -305,6 +305,7 @@ struct MainNavigationJourney: App {
                     }
                 )
                 .environmentObject(router)
+                .environmentObject(profileNavigationVm)
             case .pickLanguage:
                 PickLanguage { _ in
                     let store: ProfileStore = globalPresentableStoreContainer.get()

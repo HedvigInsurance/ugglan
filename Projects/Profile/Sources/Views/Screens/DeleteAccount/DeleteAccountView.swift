@@ -9,6 +9,7 @@ import hGraphQL
 public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
     @EnvironmentObject var router: Router
+    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
 
     public init(
@@ -50,8 +51,9 @@ public struct DeleteAccountView: View {
             hSection {
                 VStack(spacing: 8) {
                     if !vm.hasActiveClaims && !vm.hasActiveContracts {
-                        hButton.LargeButton(type: .alert) { [weak vm] in
-                            vm?.deleteAccount()
+                        hButton.LargeButton(type: .alert) {
+                            profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+
                         } content: {
                             hText(L10n.profileDeleteAccountConfirmDeletion)
                         }
