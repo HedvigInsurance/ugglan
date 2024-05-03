@@ -136,6 +136,15 @@ struct MainNavigationJourney: App {
                         configs: configs,
                         checkForAlert: checkForAlert
                     )
+                case let .travelInsurance(redirectType):
+                    TravelCertificateNavigation(
+                        infoButtonPlacement: .navigationBarLeading,
+                        openCoInsured: {
+                            redirectType(
+                                .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
+                            )
+                        }
+                    )
                 }
             })
             .environmentObject(homeNavigationVm)

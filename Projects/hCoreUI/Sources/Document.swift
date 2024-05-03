@@ -23,7 +23,10 @@ public struct Document: Equatable, Identifiable {
 
 public struct PDFPreview: View {
     @StateObject fileprivate var vm: PDFPreviewViewModel
-    public init(document: Document) {
+
+    public init(
+        document: Document
+    ) {
         _vm = StateObject(wrappedValue: PDFPreviewViewModel(document: document))
     }
 
@@ -41,7 +44,7 @@ public struct PDFPreview: View {
                             action: #selector(vm.transformDataToActivityView)
                         )
                         vm.navItem = navBarItem
-                        vc.navigationItem.rightBarButtonItem = navBarItem
+                        vc.navigationItem.leftBarButtonItem = navBarItem
                     }
             } else {
                 GenericErrorView(buttons: .init())
@@ -50,6 +53,7 @@ public struct PDFPreview: View {
         .navigationTitle(vm.document.title)
         .navigationBarTitleDisplayMode(.inline)
         .embededInNavigation()
+        .withDismissButton()
     }
 
     private var loadingIndicatorView: some View {

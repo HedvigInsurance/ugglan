@@ -4,9 +4,9 @@ import hCore
 import hCoreUI
 
 struct StartDateScreen: View {
-
     @ObservedObject var vm: StartDateViewModel
-    @PresentableStore var store: TravelInsuranceStore
+    @EnvironmentObject var router: Router
+
     var body: some View {
         form
     }
@@ -51,7 +51,7 @@ struct StartDateScreen: View {
                     hSection {
                         hButton.LargeButton(type: .primary) {
                             Task {
-                                await vm.submit()
+                                await submit()
                             }
                         } content: {
                             hText(L10n.generalContinueButton)
@@ -61,13 +61,27 @@ struct StartDateScreen: View {
                 }
             }
     }
+
+    func submit() async {
+        if Masking(type: .email).isValid(text: vm.email) {
+            DispatchQueue.main.async {
+                self.vm.emailError = nil
+                router.push(TravelCertificateRouterActions.whoIsTravelling(specifiction: vm.specification))
+            }
+        } else {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.vm.emailError = L10n.myInfoEmailMalformedError
+                }
+            }
+        }
+    }
 }
 
 class StartDateViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var date: Date
     @Published var emailError: String?
-    @PresentableStore var store: TravelInsuranceStore
     @Published var editValue: StartDateViewEditType?
     let specification: TravelInsuranceContractSpecification
     init(specification: TravelInsuranceContractSpecification) {
@@ -92,21 +106,6 @@ class StartDateViewModel: ObservableObject {
 
         case date
         case email
-    }
-
-    func submit() async {
-        if Masking(type: .email).isValid(text: email) {
-            DispatchQueue.main.async { [weak self] in guard let self = self else { return }
-                self.emailError = nil
-                self.store.send(.navigation(.openWhoIsTravelingScreen))
-            }
-        } else {
-            DispatchQueue.main.async { [weak self] in
-                withAnimation {
-                    self?.emailError = L10n.myInfoEmailMalformedError
-                }
-            }
-        }
     }
 }
 
