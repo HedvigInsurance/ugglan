@@ -97,7 +97,6 @@ public struct TravelCertificateNavigation: View {
     @ViewBuilder
     private func start(with specifications: [TravelInsuranceContractSpecification]) -> some View {
         if specifications.count > 1 {
-            /* TODO: CHANGE TO PUSH? */
             showContractsList(for: specifications)
         } else if let specification = specifications.first {
             showStartDateScreen(specification: specification)
