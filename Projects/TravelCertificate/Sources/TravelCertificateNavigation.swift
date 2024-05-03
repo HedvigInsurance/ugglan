@@ -98,7 +98,6 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
                 .embededInNavigation()
-                .addDismissFlow()
         }
     }
 
@@ -117,7 +116,6 @@ public struct TravelCertificateNavigation: View {
             showContractsList(for: specifications)
         } else if let specification = specifications.first {
             showStartDateScreen(specification: specification)
-                .addDismissFlow()
         }
     }
 
@@ -133,6 +131,7 @@ public struct TravelCertificateNavigation: View {
     ) -> some View {
         vm.startDateViewModel = StartDateViewModel(specification: specification)
         return StartDateScreen(vm: vm.startDateViewModel!)
+            .addDismissFlow()
     }
 
     private func showWhoIsTravelingScreen(
@@ -145,6 +144,7 @@ public struct TravelCertificateNavigation: View {
                 openCoInsured()
             }
         )
+        .addDismissFlow()
     }
 
     private func openProcessingScreen() -> some View {
