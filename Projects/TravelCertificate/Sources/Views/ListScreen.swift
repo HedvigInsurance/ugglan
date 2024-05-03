@@ -8,16 +8,14 @@ public struct ListScreen: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
-    let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
 
     public init(
-        canAddTravelInsurance: Bool,
         infoButtonPlacement: ToolbarItemPlacement
     ) {
-        self.canAddTravelInsurance = canAddTravelInsurance
         self.infoButtonPlacement = infoButtonPlacement
     }
+
     public var body: some View {
         hForm {
             if vm.list.isEmpty {
@@ -54,7 +52,7 @@ public struct ListScreen: View {
             hSection {
                 VStack(spacing: 16) {
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
-                    if canAddTravelInsurance {
+                    if vm.canCreateTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
                             createNewPressed()
                         } content: {
@@ -89,7 +87,7 @@ public struct ListScreen: View {
             }
             do {
                 let specifications = try await vm.service.getSpecifications()
-                router.push(TravelInsuranceSpecificationNavigationModel.init(specification: specifications))
+                travelCertificateNavigationVm.isStartDateScreenPresented = .init(specification: specifications)
             } catch _ {
 
             }
@@ -104,6 +102,7 @@ class ListScreenViewModel: ObservableObject {
     @Inject var service: TravelInsuranceClient
 
     @Published var list: [TravelCertificateModel] = []
+    @Published var canCreateTravelInsurance: Bool = false
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
@@ -118,8 +117,9 @@ class ListScreenViewModel: ObservableObject {
     private func getTravelCertificateList() async {
         isLoading = true
         do {
-            let list = try await self.service.getList()
+            let (list, canCreateTravelInsurance) = try await self.service.getList()
             self.list = list
+            self.canCreateTravelInsurance = canCreateTravelInsurance
         } catch _ {
             self.error = L10n.General.errorBody
         }
