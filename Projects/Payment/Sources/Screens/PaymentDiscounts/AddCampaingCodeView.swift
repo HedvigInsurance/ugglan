@@ -28,14 +28,13 @@ class AddCampaingCodeViewModel: ObservableObject {
     @Inject var campaignsService: hCampaignsService
     @PresentableStore var store: PaymentStore
     init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: "",
-            title: L10n.referralAddcouponInputplaceholder,
-            dismiss: { [weak store] in
-                store?.send(.navigation(to: .goBack))
-            }
+            title: L10n.referralAddcouponInputplaceholder
+                //            dismiss: { [weak store] in
+                //                store?.send(.navigation(to: .goBack))
+                //            }
         )
 
         inputVm.onSave = { [weak self] text in

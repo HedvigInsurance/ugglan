@@ -236,7 +236,7 @@ struct MainNavigationJourney: App {
     }
 
     var foreverTab: some View {
-        ForeverView()
+        ForeverNavigation()
             .tabItem {
                 Image(
                     uiImage: vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image

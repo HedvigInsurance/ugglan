@@ -209,37 +209,6 @@ struct PaymentsDiscountsRootView: View {
     }
 }
 
-extension PaymentsDiscountsRootView {
-    var journey: some JourneyPresentation {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.fetchDiscountsData)
-        return HostingJourney(
-            PaymentStore.self,
-            rootView: self
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .openForever = navigateTo {
-                    if #available(iOS 16.0, *) {
-                        ForeverView.journey()
-                            .hidesBottomBarWhenPushed
-                    } else {
-                        // Fallback on earlier versions
-                        DismissJourney()
-                    }
-                } else if case .openAddCampaing = navigateTo {
-                    AddCampaingCodeView.journey
-                } else if case .openAllReferrals = navigateTo {
-                    ReferralsView.journey
-                } else if case let .openDeleteCampaing(discount) = navigateTo {
-                    DeleteCampaignView.journeyWith(discount: discount)
-                }
-            }
-        }
-        .configureTitle(L10n.paymentsDiscountsSectionTitle)
-    }
-
-}
-
 struct ReferralView: View {
     let referral: Referral
     var body: some View {

@@ -5,7 +5,6 @@ import Presentation
 import Profile
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension AppJourney {
     @JourneyBuilder
