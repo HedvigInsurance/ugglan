@@ -25,7 +25,6 @@ private struct DismissButton: ViewModifier {
     let message: String?
     let confirmButton: String
     let cancelButton: String
-
     @State var isPresented = false
     @StateObject var vm = DismissButtonViewModel()
     func body(content: Content) -> some View {

@@ -41,21 +41,6 @@ enum ProfileRowType {
         }
     }
 
-    var action: ProfileAction {
-        switch self {
-        case .myInfo:
-            return .openProfile
-        case .appInfo:
-            return .openAppInformation
-        case .settings:
-            return .openAppSettings(animated: true)
-        case .eurobonus:
-            return .openEuroBonus
-        case .travelCertificate:
-            return .openTravelCertificate
-        }
-    }
-
     var imageSize: CGFloat {
         switch self {
         case .myInfo, .appInfo, .settings, .travelCertificate:

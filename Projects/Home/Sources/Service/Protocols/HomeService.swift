@@ -9,7 +9,7 @@ public protocol HomeService {
 }
 
 public struct MemberState {
-    let contracts: [Contract]
+    let contracts: [HomeContract]
     let contractState: MemberContractState
     let futureState: FutureStatus
 }

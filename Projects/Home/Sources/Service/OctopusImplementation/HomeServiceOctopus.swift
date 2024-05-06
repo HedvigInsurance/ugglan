@@ -22,7 +22,7 @@ public class HomeServiceOctopus: HomeService {
             .client
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 
-        let contracts = data.currentMember.activeContracts.map { Contract(contract: $0) }
+        let contracts = data.currentMember.activeContracts.map { HomeContract(contract: $0) }
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
 
@@ -146,7 +146,7 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     }
 }
 
-extension Contract {
+extension HomeContract {
     public init(
         contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
     ) {

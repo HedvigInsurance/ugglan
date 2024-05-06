@@ -8,45 +8,50 @@ struct CoInsuredProcessingScreen: View {
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @StateObject var router = Router()
+    private var checkForMissingAlert: () -> Void
 
     init(
-        showSuccessScreen: Bool
+        showSuccessScreen: Bool,
+        checkForMissingAlert: @escaping () -> Void
     ) {
         self.showSuccessScreen = showSuccessScreen
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
+        self.checkForMissingAlert = checkForMissingAlert
     }
 
     var body: some View {
-        ProcessingView(
-            showSuccessScreen: showSuccessScreen,
-            EditCoInsuredStore.self,
-            loading: .postCoInsured,
-            loadingViewText: L10n.contractAddCoinsuredProcessing,
-            successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-            successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-            ),
-            successViewButtonAction: {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                missingContractAlert()
-            },
-            onAppearLoadingView: {
-                missingContractAlert()
-            },
-            onErrorCancelAction: {
-                store.send(.coInsuredNavigationAction(action: .dismissEdit))
+        RouterHost(router: router, options: [.navigationBarHidden]) {
+            ProcessingView(
+                showSuccessScreen: showSuccessScreen,
+                EditCoInsuredStore.self,
+                loading: .postCoInsured,
+                loadingViewText: L10n.contractAddCoinsuredProcessing,
+                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
+                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+                    intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                onAppearLoadingView: {
+                    missingContractAlert()
+                },
+                onErrorCancelAction: {
+                    router.dismiss()
+                }
+            )
+            .hSuccessBottomAttachedView {
+                customBottomSuccessView
             }
-        )
-        .hSuccessBottomAttachedView {
-            customBottomSuccessView
         }
     }
 
     private var customBottomSuccessView: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
                 missingContractAlert()
             } content: {
                 hText(L10n.generalDoneButton)
@@ -56,13 +61,8 @@ struct CoInsuredProcessingScreen: View {
     }
 
     private func missingContractAlert() {
-        vm.store.send(.fetchContracts)
-        vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            store.send(.checkForAlert)
-        }
+        checkForMissingAlert()
     }
-
 }
 
 class ProcessingViewModel: ObservableObject {
@@ -72,7 +72,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true)
+        CoInsuredProcessingScreen(showSuccessScreen: true, checkForMissingAlert: {})
             .onAppear {
                 let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)

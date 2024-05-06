@@ -65,7 +65,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
 
     private func apartmentInput(addressInputModel: AddressInputModel) -> OctopusGraphQL.MoveToApartmentInput? {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return OctopusGraphQL.MoveToApartmentInput(
                 subType: store.state.selectedHousingType.asMoveApartmentSubType,
                 isStudent: addressInputModel.isStudent
@@ -78,7 +78,7 @@ public class MoveFlowServiceOctopus: MoveFlowService {
     private func houseInput(houseInformationInputModel: HouseInformationInputModel) -> OctopusGraphQL.MoveToHouseInput?
     {
         switch store.state.selectedHousingType {
-        case .apartmant, .rental:
+        case .apartment, .rental:
             return nil
         case .house:
             return OctopusGraphQL.MoveToHouseInput(

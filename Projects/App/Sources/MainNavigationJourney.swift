@@ -1,5 +1,14 @@
 import Contracts
+import EditCoInsured
+import EditCoInsuredShared
+import Forever
+import Home
+import Market
+import MoveFlow
+import Payment
 import Presentation
+import Profile
+import SafariServices
 import SwiftUI
 import hCore
 
@@ -15,6 +24,7 @@ struct MainNavigationJourney: App {
                     switch vm.stateToShow {
                     case .loggedIn:
                         LoggedInNavigation()
+                            .environmentObject(vm)
                     case .impersonation:
                         ImpersonationSettings()
                     default:
@@ -85,8 +95,4 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
     }
-}
-
-#Preview{
-    Launch()
 }

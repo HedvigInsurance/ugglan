@@ -6,6 +6,9 @@ import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
     @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+
     var body: some View {
         hForm {
             VStack(spacing: 8) {
@@ -24,13 +27,13 @@ struct MovingFlowAddExtraBuildingView: View {
                     VStack {
                         hButton.LargeButton(type: .primary) {
                             withAnimation {
-                                vm.addExtraBuilding()
+                                addExtraBuilding()
                             }
                         } content: {
                             hText(L10n.generalSaveButton)
                         }
                         hButton.LargeButton(type: .ghost) {
-                            vm.dissmisAddExtraBuilding()
+                            movingFlowNavigationVm.isAddExtraBuildingPresented = false
                         } content: {
                             hText(L10n.generalCancelButton)
                         }
@@ -50,7 +53,9 @@ struct MovingFlowAddExtraBuildingView: View {
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
-            vm.showTypeOfBuilding()
+            isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
+                extraBuildingType: vm.buildingType
+            )
         }
     }
 
@@ -80,6 +85,20 @@ struct MovingFlowAddExtraBuildingView: View {
                 }
             }
             .padding(.vertical, 21)
+        }
+    }
+
+    func addExtraBuilding() {
+        if vm.isValid() {
+            vm.store.houseInformationInputModel.extraBuildings.append(
+                ExtraBuilding(
+                    id: UUID().uuidString,
+                    type: vm.buildingType!,
+                    livingArea: Int(vm.livingArea) ?? 0,
+                    connectedToWater: vm.connectedToWater
+                )
+            )
+            movingFlowNavigationVm.isAddExtraBuildingPresented = false
         }
     }
 }
@@ -120,32 +139,10 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
         }
     }
     var disposeBag = DisposeBag()
-    func addExtraBuilding() {
-        if isValid() {
-            store.houseInformationInputModel.extraBuildings.append(
-                ExtraBuilding(
-                    id: UUID().uuidString,
-                    type: buildingType!,
-                    livingArea: Int(livingArea) ?? 0,
-                    connectedToWater: connectedToWater
-                )
-            )
-            store.send(.navigation(action: .dismissAddBuilding))
-        }
-    }
 
-    func dissmisAddExtraBuilding() {
-        store.send(.navigation(action: .dismissAddBuilding))
-    }
-
-    private func isValid() -> Bool {
+    func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
         buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
         return livingAreaError == nil && buildingTypeError == nil
     }
-
-    func showTypeOfBuilding() {
-        store.send(.navigation(action: .openTypeOfBuilding(for: buildingType)))
-    }
-
 }

@@ -10,12 +10,12 @@ import hCoreUI
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
     public var futureStatus: FutureStatus = .none
-    public var contracts: [Contract] = []
+    public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
     public var quickActions: [QuickAction] = []
     public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
-    public var upcomingRenewalContracts: [Contract] {
+    public var upcomingRenewalContracts: [HomeContract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
     public var showChatNotification = false
@@ -40,7 +40,7 @@ public enum HomeAction: ActionProtocol {
     case fetchMemberState
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
-    case setMemberContractState(state: MemberContractState, contracts: [Contract])
+    case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
     case setFutureStatus(status: FutureStatus)
     case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
@@ -67,7 +67,7 @@ public enum HomeAction: ActionProtocol {
     case openHelpCenterTopicView(commonTopic: CommonTopic)
     case openHelpCenterQuestionView(question: Question)
     case goToQuickAction(QuickAction)
-    case goToURL(url: URL)
+    //    case goToURL(url: URL)
     case dismissHelpCenter
 }
 

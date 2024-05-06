@@ -1,5 +1,6 @@
 import EditCoInsuredShared
 import Foundation
+import SafariServices
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -67,15 +68,38 @@ public struct ContractsNavigation<Content: View>: View {
                 contractsNavigationVm.insuranceUpdate = nil
             }
         }
+        .detent(
+            item: $contractsNavigationVm.editCoInsuredMissingAlert,
+            style: .height,
+            options: .constant(.replaceCurrent)
+        ) { editCoInsuredConfig in
+            redirect(
+                .editCoInsured(
+                    config: editCoInsuredConfig,
+                    showMissingAlert: true,
+                    isMissingAlertAction: { _ in
+
+                    }
+                )
+            )
+        }
         .fullScreenCover(item: $contractsNavigationVm.editCoInsuredConfig) { editCoInsuredConfig in
-            redirect(.editCoInsured(config: editCoInsuredConfig))
+            redirect(
+                .editCoInsured(
+                    config: editCoInsuredConfig,
+                    showMissingAlert: false,
+                    isMissingAlertAction: { isMissingAlert in
+                        contractsNavigationVm.editCoInsuredMissingAlert = isMissingAlert
+                    }
+                )
+            )
         }
         .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-            let contractConfig: TerminationConfirmConfig = .init(contract: contract)
-            TerminationViewJourney(configs: [contractConfig])
-        }
-        .fullScreenCover(isPresented: $contractsNavigationVm.isChangeAddressPresented) {
-            redirect(.movingFlow)
+            redirect(
+                .cancellation(
+                    contractConfig: .init(contract: contract)
+                )
+            )
         }
     }
 }
@@ -87,16 +111,22 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var document: Document?
     @Published public var terminationContract: Contract?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
+    @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
 }
 
 public enum RedirectType {
-    case editCoInsured(config: InsuredPeopleConfig)
+    case editCoInsured(
+        config: InsuredPeopleConfig,
+        showMissingAlert: Bool,
+        isMissingAlertAction: (InsuredPeopleConfig) -> Void
+    )
     case chat
     case movingFlow
     case pdf(document: Document)
+    case cancellation(contractConfig: TerminationConfirmConfig)
 }
 
 enum ContractsRouterType {

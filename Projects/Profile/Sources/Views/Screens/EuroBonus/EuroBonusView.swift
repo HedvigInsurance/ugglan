@@ -1,10 +1,9 @@
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct EuroBonusView: View {
-    @PresentableStore var store: ProfileStore
+    @EnvironmentObject var euroBonusNavigationVm: EuroBonusNavigationViewModel
 
     public init() {
 
@@ -27,7 +26,7 @@ public struct EuroBonusView: View {
                 hSection {
                     VStack(spacing: 16) {
                         hFloatingField(value: fieldValue, placeholder: L10n.SasIntegration.title) {
-                            store.send(.openChangeEuroBonus)
+                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
                         }
                     }
                 }
@@ -42,7 +41,7 @@ public struct EuroBonusView: View {
                             type: .info
                         )
                         hButton.LargeButton(type: .primary) {
-                            store.send(.openChangeEuroBonus)
+                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
                         } content: {
                             hText(L10n.SasIntegration.connectEurobonus)
                         }
@@ -51,7 +50,7 @@ public struct EuroBonusView: View {
                 } else {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
-                            store.send(.openChangeEuroBonus)
+                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
                         } content: {
                             hText(L10n.SasIntegration.changeEurobonusNumber)
                         }
@@ -70,19 +69,5 @@ struct EuroBonusView_Previews: PreviewProvider {
             EuroBonusView().navigationBarTitleDisplayMode(.inline)
                 .navigationTitle(L10n.SasIntegration.title)
         }
-    }
-}
-
-extension EuroBonusView {
-    public static var journey: some JourneyPresentation {
-        HostingJourney(
-            ProfileStore.self,
-            rootView: EuroBonusView()
-        ) { action in
-            if case .openChangeEuroBonus = action {
-                ChangeEuroBonusView.journey
-            }
-        }
-        .configureTitle(L10n.SasIntegration.title)
     }
 }

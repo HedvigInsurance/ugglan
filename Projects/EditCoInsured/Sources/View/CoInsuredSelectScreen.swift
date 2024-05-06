@@ -10,6 +10,7 @@ struct CoInsuredSelectScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     let alreadyAddedCoinsuredMembers: [CoInsuredModel]
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init(
         contractId: String
@@ -77,7 +78,7 @@ struct CoInsuredSelectScreen: View {
                             isLoading = false
                         }
                         if !store.intentViewModel.showErrorViewForCoInsuredList {
-                            store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                            editCoInsuredNavigation.selectCoInsured = nil
                         } else {
                             if let object = selectedCoinsured.0 {
                                 store.coInsuredViewModel.removeCoInsured(
@@ -91,12 +92,12 @@ struct CoInsuredSelectScreen: View {
                                 )
                             }
                         }
+                        editCoInsuredNavigation.selectCoInsured = nil
                     }
                 }
             },
             onCancel: {
-                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                contractStore.send(.coInsuredNavigationAction(action: .dismissEdit))
+                editCoInsuredNavigation.selectCoInsured = nil
             },
             singleSelect: true,
             attachToBottom: true
@@ -104,15 +105,11 @@ struct CoInsuredSelectScreen: View {
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
                 let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                contractStore.send(
-                    .coInsuredNavigationAction(
-                        action: .openCoInsuredInput(
-                            actionType: .add,
-                            coInsuredModel: .init(),
-                            title: L10n.contractAddCoinsured,
-                            contractId: contractId
-                        )
-                    )
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .add,
+                    coInsuredModel: .init(),
+                    title: L10n.contractAddCoinsured,
+                    contractId: contractId
                 )
             } content: {
                 HStack(alignment: .center) {

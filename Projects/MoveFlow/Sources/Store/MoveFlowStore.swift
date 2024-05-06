@@ -2,6 +2,7 @@ import Apollo
 import Foundation
 import Presentation
 import hCore
+import hCoreUI
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
     @Inject var moveFlowService: MoveFlowService
@@ -90,18 +91,7 @@ public enum MoveFlowAction: ActionProtocol {
 }
 
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
-    case openAddressFillScreen
-    case openHouseFillScreen
-    case openAddBuilding
-    case dismissAddBuilding
     case openConfirmScreen
-    case openProcessingView
-    case openTypeOfBuilding(for: ExtraBuildingType?)
-    case dismissTypeOfBuilding
-    case goToFreeTextChat
-    case dismissMovingFlow
-    case document(url: URL, title: String)
-    case goBack
 }
 
 public enum MoveFlowLoadingAction: LoadingProtocol {
@@ -113,7 +103,7 @@ public enum MoveFlowLoadingAction: LoadingProtocol {
 public struct MoveFlowState: StateProtocol {
 
     public init() {}
-    @Transient(defaultValue: .apartmant) var selectedHousingType: HousingType
+    @Transient(defaultValue: .apartment) var selectedHousingType: HousingType
     @OptionalTransient var movingFlowModel: MovingFlowModel?
     @OptionalTransient var movingFromAddressModel: MovingFromAddressModel?
 }
