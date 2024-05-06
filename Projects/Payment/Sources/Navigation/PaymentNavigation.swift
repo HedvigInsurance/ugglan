@@ -7,6 +7,7 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
     @Published public var isAddCampaignPresented = false
     @Published public var isConnectPaymentPresented: SetupTypeNavigationModel?
+    @Published public var isDeleteCampaignPresented: Discount?
 }
 
 public struct SetupTypeNavigationModel: Equatable, Identifiable {
@@ -55,23 +56,6 @@ public struct PaymentsNavigation<Content: View>: View {
                     }
                 }
         }
-        .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { action in
-                switch action {
-                case let .navigation(to):
-                    switch to {
-                    case .goBack:
-                        router.dismiss()
-                    default:
-                        break
-                    }
-                default:
-                    break
-                }
-            }
-        }
         .environmentObject(paymentsNavigationVm)
         .detent(
             presented: $paymentsNavigationVm.isAddCampaignPresented,
@@ -79,6 +63,13 @@ public struct PaymentsNavigation<Content: View>: View {
         ) {
             AddCampaingCodeView()
                 .configureTitle(L10n.paymentsAddCampaignCode)
+                .embededInNavigation(options: .navigationType(type: .large))
+        }
+        .detent(
+            item: $paymentsNavigationVm.isDeleteCampaignPresented,
+            style: .height
+        ) { discount in
+            DeleteCampaignView(vm: .init(discount: discount))
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(

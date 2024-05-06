@@ -4,6 +4,7 @@ import hCoreUI
 
 struct PaymentDetailsDiscountView: View {
     @ObservedObject var vm: PaymentDetailsDiscountViewModel
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     init(vm: PaymentDetailsDiscountViewModel) {
         self.vm = vm
@@ -28,7 +29,7 @@ struct PaymentDetailsDiscountView: View {
                             .fill(hFillColor.opaqueOne)
                     )
                     .onTapGesture {
-                        vm.startRemoveCode()
+                        startRemoveCode()
                     }
                     Spacer()
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
@@ -81,6 +82,12 @@ struct PaymentDetailsDiscountView: View {
             hTextColor.primary
         }
     }
+
+    func startRemoveCode() {
+        if vm.shouldShowRemove {
+            paymentNavigationVm.isDeleteCampaignPresented = vm.discount
+        }
+    }
 }
 
 class PaymentDetailsDiscountViewModel: ObservableObject {
@@ -107,12 +114,6 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
 
     var shouldShowRemove: Bool {
         options.contains(.enableRemoving) && discount.isValid && discount.canBeDeleted
-    }
-
-    func startRemoveCode() {
-        if shouldShowRemove {
-            store.send(.navigation(to: .openDeleteCampaing(discount: discount)))
-        }
     }
 
 }

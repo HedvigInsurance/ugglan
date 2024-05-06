@@ -7,6 +7,7 @@ import hCoreUI
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
     @EnvironmentObject var connectPaymentsVm: PaymentsNavigationViewModel
+    @EnvironmentObject var router: Router
 
     public init() {}
     public var body: some View {

@@ -31,17 +31,10 @@ public enum PaymentAction: ActionProtocol {
 }
 
 public enum PaymentNavigation: ActionProtocol {
-    case openUrl(url: URL, handledBySystem: Bool)
     case openHistory
-    //    case openDiscounts
     case openConnectPayments
-    //    case openPaymentDetails(data: PaymentData)
     case openPaymentDetailsFromHistory(data: PaymentData)
-    //    case openAddCampaing
     case openAllReferrals
-    case openDeleteCampaing(discount: Discount)
-    case goBack
-    //    case openForever
 }
 
 public enum LoadingAction: LoadingProtocol {
