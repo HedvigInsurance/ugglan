@@ -40,7 +40,7 @@ extension AppDelegate {
                         if case .setMemberDetails = action {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 if let shouldShowEuroBonus = profileStore.state.partnerData?.shouldShowEuroBonus {
-                                    /* TODO: Add deep link for euro bonus */
+                                    /* TODO: ADD deeplink for euro bonus */
                                 }
                             }
                         }

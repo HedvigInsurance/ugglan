@@ -28,25 +28,51 @@ enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
     case processingScreen
 }
 
+public enum ListToolBarPlacement {
+    case trailing
+    case leading
+}
+
 public struct TravelCertificateNavigation: View {
     @StateObject private var vm = TravelCertificateNavigationViewModel()
     @StateObject var router = Router()
-    private let infoButtonPlacement: ToolbarItemPlacement
+    private var infoButtonPlacement: ListToolBarPlacement
+    private let useOwnNavigation: Bool
     private let openCoInsured: () -> Void
 
     public init(
-        infoButtonPlacement: ToolbarItemPlacement,
+        infoButtonPlacement: ListToolBarPlacement,
+        useOwnNavigation: Bool,
         openCoInsured: @escaping () -> Void
     ) {
         self.infoButtonPlacement = infoButtonPlacement
+        self.useOwnNavigation = useOwnNavigation
         self.openCoInsured = openCoInsured
     }
 
-    public var body: some View {
-        RouterHost(router: router) {
+    @ViewBuilder
+    private var getListScreen: some View {
+        if infoButtonPlacement == .trailing {
             showListScreen(
-                infoButtonPlacement: infoButtonPlacement
+                infoButtonPlacement: .topBarTrailing
             )
+        } else {
+            showListScreen(
+                infoButtonPlacement: .topBarLeading
+            )
+            .withDismissButton()
+        }
+    }
+
+    public var body: some View {
+        Group {
+            if useOwnNavigation {
+                RouterHost(router: router) {
+                    getListScreen
+                }
+            } else {
+                getListScreen
+            }
         }
         .environmentObject(vm)
         .detent(
@@ -80,7 +106,6 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
                 .embededInNavigation()
-                .addDismissFlow()
         }
     }
 
@@ -90,7 +115,6 @@ public struct TravelCertificateNavigation: View {
         ListScreen(
             infoButtonPlacement: infoButtonPlacement
         )
-        .withDismissButton()
         .configureTitle(L10n.TravelCertificate.cardTitle)
     }
 
@@ -100,7 +124,6 @@ public struct TravelCertificateNavigation: View {
             showContractsList(for: specifications)
         } else if let specification = specifications.first {
             showStartDateScreen(specification: specification)
-                .addDismissFlow()
         }
     }
 
@@ -116,6 +139,7 @@ public struct TravelCertificateNavigation: View {
     ) -> some View {
         vm.startDateViewModel = StartDateViewModel(specification: specification)
         return StartDateScreen(vm: vm.startDateViewModel!)
+            .addDismissFlow()
     }
 
     private func showWhoIsTravelingScreen(
@@ -128,6 +152,7 @@ public struct TravelCertificateNavigation: View {
                 openCoInsured()
             }
         )
+        .addDismissFlow()
     }
 
     private func openProcessingScreen() -> some View {

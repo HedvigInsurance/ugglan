@@ -5,6 +5,7 @@ import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Home
+import Market
 import MoveFlow
 import Payment
 import Presentation
@@ -32,8 +33,8 @@ struct MainNavigationJourney: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var homeRouter = Router()
-
+    @StateObject var profileNavigationVm = ProfileNavigationViewModel()
+    @StateObject var router = Router()
     var body: some Scene {
         WindowGroup {
             if vm.hasLaunchFinished {
@@ -65,7 +66,7 @@ struct MainNavigationJourney: App {
     var homeTab: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter) {
+        return RouterHost(router: router) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -126,19 +127,16 @@ struct MainNavigationJourney: App {
                 case .moveFlow:
                     MovingFlowNavigation()
                 case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
-                    getEditCoInsuredView(
-                        config: config,
-                        hasMissingAlert: hasMissingAlert,
-                        isMissingAlert: isMissingAlertAction
-                    )
-                case let .editCoInuredSelectInsurance(configs, isMissingAlertAction):
+                    getEditCoInsuredView(config: config)
+                case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: configs,
                         checkForAlert: checkForAlert
                     )
                 case let .travelInsurance(redirectType):
                     TravelCertificateNavigation(
-                        infoButtonPlacement: .navigationBarLeading,
+                        infoButtonPlacement: .leading,
+                        useOwnNavigation: true,
                         openCoInsured: {
                             redirectType(
                                 .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
@@ -183,11 +181,7 @@ struct MainNavigationJourney: App {
         ContractsNavigation { redirectType in
             switch redirectType {
             case let .editCoInsured(editCoInsuredConfig, hasMissingAlert, isMissingAlert):
-                getEditCoInsuredView(
-                    config: editCoInsuredConfig,
-                    hasMissingAlert: hasMissingAlert,
-                    isMissingAlert: isMissingAlert
-                )
+                getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
@@ -265,32 +259,113 @@ struct MainNavigationJourney: App {
     }
 
     var profileTab: some View {
-        ProfileView()
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
+        ProfileNavigation(profileNavigationViewModel: profileNavigationVm) { redirectType in
+            switch redirectType {
+            case .travelCertificate:
+                TravelCertificateNavigation(
+                    infoButtonPlacement: .trailing,
+                    useOwnNavigation: false,
+                    openCoInsured: {
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contractsSupportingCoInsured = contractStore.state.activeContracts
+                            .filter({ $0.showEditCoInsuredInfo })
+                            .compactMap({
+                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                            })
+                        if contractsSupportingCoInsured.count > 1 {
+                            profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
+                                configs: contractsSupportingCoInsured
+                            )
+                        } else if let config = contractsSupportingCoInsured.first {
+                            profileNavigationVm.isEditCoInsuredPresented = config
+                        }
+                    }
                 )
-                hText(L10n.ProfileTab.title)
+            case let .deleteAccount(memberDetails):
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+                let model = DeleteAccountViewModel(
+                    memberDetails: memberDetails,
+                    claimsStore: claimsStore,
+                    contractsStore: contractsStore
+                )
+
+                DeleteAccountView(
+                    vm: model,
+                    dismissAction: { profileDismissAction in
+                        profileNavigationVm.isDeleteAccountPresented = nil
+                        switch profileDismissAction {
+                        case .openChat:
+                            withAnimation {
+                                vm.selectedTab = 0
+                            }
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: false)
+                            )
+                        default:
+                            break
+                        }
+                    }
+                )
+                .environmentObject(profileNavigationVm)
+            case .pickLanguage:
+                PickLanguage { [weak profileNavigationVm, weak vm] _ in
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+
+                    //show loading screen since we everything needs to be updated
+                    vm?.hasLaunchFinished = false
+                    profileNavigationVm?.isLanguagePickerPresented = false
+
+                    //show home screen with updated langauge
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        vm?.hasLaunchFinished = true
+                        vm?.selectedTab = 0
+                    }
+                } onCancel: { [weak profileNavigationVm] in
+                    profileNavigationVm?.isLanguagePickerPresented = false
+                }
+            case .deleteRequestLoading:
+                DeleteRequestLoadingView(
+                    screenState: .success,
+                    dismissAction: { [weak vm] profileDismissAction in
+                        switch profileDismissAction {
+                        case .makeHomeTabActiveAndOpenChat:
+                            vm?.selectedTab = 0
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        default:
+                            vm?.selectedTab = 0
+                        }
+                    }
+                )
+            case let .editCoInuredSelectInsurance(configs):
+                EditCoInsuredSelectInsuranceNavigation(
+                    configs: configs,
+                    checkForAlert: checkForAlert
+                )
+            case let .editCoInsured(config):
+                getEditCoInsuredView(config: config)
+            default:
+                EmptyView()
             }
-            .tag(4)
+        }
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
+            )
+            hText(L10n.ProfileTab.title)
+        }
+        .tag(4)
     }
 
     @ViewBuilder
     private func getEditCoInsuredView(
-        config: InsuredPeopleConfig,
-        hasMissingAlert: Bool,
-        isMissingAlert: @escaping (InsuredPeopleConfig) -> Void
+        config: InsuredPeopleConfig
     ) -> some View {
-        if hasMissingAlert {
-            getMissingCoInsuredAlertView(
-                missingContractConfig: config
-            )
-        } else {
-            EditCoInsuredNavigation(
-                config: config,
-                checkForAlert: checkForAlert
-            )
-        }
+        EditCoInsuredNavigation(
+            config: config,
+            checkForAlert: checkForAlert
+        )
     }
 
     private func getMissingCoInsuredAlertView(

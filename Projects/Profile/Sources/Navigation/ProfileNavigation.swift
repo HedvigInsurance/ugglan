@@ -1,0 +1,120 @@
+import EditCoInsuredShared
+import SwiftUI
+import hCore
+import hCoreUI
+
+public class ProfileNavigationViewModel: ObservableObject {
+    @Published public var isDeleteAccountPresented: MemberDetails?
+    @Published var isDeleteAccountAlreadyRequestedPresented = false
+    @Published public var isLanguagePickerPresented = false
+
+    @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
+    @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
+
+    public init() {}
+}
+
+public enum ProfileNavigationDismissAction {
+    case openChat
+    case makeHomeTabActive
+    case makeHomeTabActiveAndOpenChat
+}
+
+public struct ProfileNavigation<Content: View>: View {
+    @ViewBuilder var redirect: (_ type: ProfileRedirectType) -> Content
+    @StateObject var router = Router()
+    @ObservedObject var profileNavigationViewModel: ProfileNavigationViewModel
+
+    public init(
+        profileNavigationViewModel: ProfileNavigationViewModel,
+        @ViewBuilder redirect: @escaping (_ type: ProfileRedirectType) -> Content
+    ) {
+        self.profileNavigationViewModel = profileNavigationViewModel
+        self.redirect = redirect
+    }
+
+    public var body: some View {
+        RouterHost(router: router) {
+            ProfileView()
+                .routerDestination(for: ProfileRedirectType.self) { redirectType in
+                    switch redirectType {
+                    case .travelCertificate:
+                        redirect(.travelCertificate)
+                    case .myInfo:
+                        MyInfoView()
+                            .configureTitle(L10n.profileMyInfoRowTitle)
+                    case .appInfo:
+                        AppInfoView()
+                            .configureTitle(L10n.profileAppInfo)
+                    case .settings:
+                        SettingsScreen()
+                            .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
+                    case .euroBonus:
+                        EuroBonusNavigation()
+                    default:
+                        EmptyView()
+                    }
+                }
+        }
+        .environmentObject(profileNavigationViewModel)
+        .detent(
+            item: $profileNavigationViewModel.isDeleteAccountPresented,
+            style: .height,
+            options: .constant(.withoutGrabber)
+        ) { memberDetails in
+            redirect(
+                .deleteAccount(
+                    memberDetails: memberDetails
+                )
+            )
+        }
+        .detent(
+            presented: $profileNavigationViewModel.isLanguagePickerPresented,
+            style: .height,
+            content: {
+                redirect(.pickLanguage)
+                    .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
+                    .embededInNavigation(options: .navigationType(type: .large))
+            }
+        )
+        .fullScreenCover(
+            isPresented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented
+        ) {
+            redirect(.deleteRequestLoading)
+        }
+        .detent(
+            item: $profileNavigationViewModel.isEditCoInsuredSelectContractPresented,
+            style: .height
+        ) { configs in
+            redirect(
+                .editCoInuredSelectInsurance(
+                    configs: configs.configs
+                )
+            )
+        }
+        .fullScreenCover(
+            item: $profileNavigationViewModel.isEditCoInsuredPresented
+        ) { config in
+            getEditCoInsuredView(config: config)
+        }
+    }
+
+    private func getEditCoInsuredView(config: InsuredPeopleConfig) -> some View {
+        redirect(
+            .editCoInsured(config: config)
+        )
+    }
+}
+
+public enum ProfileRedirectType: Hashable {
+    case travelCertificate
+    case myInfo
+    case appInfo
+    case settings
+    case euroBonus
+    case deleteAccount(memberDetails: MemberDetails)
+    case deleteRequestLoading
+    case pickLanguage
+    case editCoInsured(config: InsuredPeopleConfig)
+    case editCoInuredSelectInsurance(configs: [InsuredPeopleConfig])
+}

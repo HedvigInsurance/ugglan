@@ -8,7 +8,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-class DeleteAccountViewModel: ObservableObject {
+public class DeleteAccountViewModel: ObservableObject {
     var memberDetails: MemberDetails
     let claimsStore: ClaimsStore
     let contractsStore: ContractStore
@@ -25,7 +25,7 @@ class DeleteAccountViewModel: ObservableObject {
     @Published var hasActiveClaims: Bool = false
     @Published var hasActiveContracts: Bool = false
 
-    internal init(
+    public init(
         memberDetails: MemberDetails,
         claimsStore: ClaimsStore,
         contractsStore: ContractStore
@@ -38,10 +38,5 @@ class DeleteAccountViewModel: ObservableObject {
         self.hasActiveContracts = activeContractsSignal.value
         bag += activeClaimsSignal.distinct(on: .main).onValue { self.hasActiveClaims = $0 }
         bag += activeContractsSignal.distinct(on: .main).onValue { self.hasActiveContracts = $0 }
-    }
-
-    func deleteAccount() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.sendAccountDeleteRequest(details: memberDetails))
     }
 }
