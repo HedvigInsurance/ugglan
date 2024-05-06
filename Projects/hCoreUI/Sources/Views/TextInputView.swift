@@ -49,7 +49,9 @@ public struct TextInputView: View {
                             if let dismissAction = dismissAction?() {
                                 dismissAction
                             } else {
-                                vm.dismiss()
+                                Task { [weak vm] in
+                                    await vm?.dismiss()
+                                }
                             }
                         } content: {
                             hText(L10n.generalCancelButton, style: .body)
@@ -86,18 +88,16 @@ public class TextInputViewModel: ObservableObject {
 
     let title: String
     public var onSave: ((String) async throws -> Void)?
-    var dismiss: () -> Void = {}
+    public var onDismiss: (() async throws -> Void)?
 
     public init(
         masking: Masking,
         input: String,
-        title: String,
-        dismiss: @escaping () -> Void
+        title: String
     ) {
         self.masking = masking
         self.input = input
         self.title = title
-        self.dismiss = dismiss
     }
 
     @MainActor
@@ -114,5 +114,12 @@ public class TextInputViewModel: ObservableObject {
                 self.error = error.localizedDescription
             }
         }
+    }
+
+    @MainActor
+    func dismiss() async {
+        do {
+            try await onDismiss?()
+        } catch let error {}
     }
 }

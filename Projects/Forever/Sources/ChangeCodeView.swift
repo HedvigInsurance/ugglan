@@ -27,13 +27,21 @@ class ChangeCodeViewModel: ObservableObject {
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: store.state.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsEmpty.Code.headline,
-            dismiss: {}
+            title: L10n.ReferralsEmpty.Code.headline
         )
 
         inputVm.onSave = { [weak self] text in
             try await self?.handleOnSave()
         }
+
+        inputVm.onDismiss = {
+            try await self.dismissRouter()
+        }
+    }
+
+    @MainActor
+    private func dismissRouter() async throws {
+        self.router?.dismiss()
     }
 
     @MainActor

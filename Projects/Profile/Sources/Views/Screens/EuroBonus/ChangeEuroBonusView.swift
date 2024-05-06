@@ -35,8 +35,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
         inputVm = TextInputViewModel(
             masking: .init(type: .euroBonus),
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
-            title: L10n.SasIntegration.title,
-            dismiss: {}
+            title: L10n.SasIntegration.title
         )
 
         inputVm.onSave = { [weak self] text in
