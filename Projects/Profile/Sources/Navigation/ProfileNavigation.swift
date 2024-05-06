@@ -6,7 +6,7 @@ import hCoreUI
 public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
-    @Published var isLanguagePickerPresented = false
+    @Published public var isLanguagePickerPresented = false
 
     @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
     @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?

@@ -9,7 +9,6 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     public var partnerData: PartnerData?
-    var openSettingsDirectly = false
     public var memberDetails: MemberDetails?
     var pushNotificationStatus: Int?
     var pushNotificationsSnoozeDate: Date?

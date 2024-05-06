@@ -9,15 +9,6 @@ import hCoreUI
 public struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
-    @EnvironmentObject var router: Router
-
-    public init() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        if store.state.openSettingsDirectly {
-            router.push(ProfileRedirectType.settings)
-            store.send(.setOpenAppSettings(to: false))
-        }
-    }
 
     private var logoutAlert: SwiftUI.Alert {
         return Alert(
@@ -50,7 +41,6 @@ public struct ProfileView: View {
                     ProfileRow(
                         row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                     )
-                    //                    }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
@@ -85,5 +75,6 @@ public struct ProfileView: View {
         .onPullToRefresh {
             await store.sendAsync(.fetchProfileState)
         }
+        .configureTitle(L10n.profileTitle)
     }
 }
