@@ -1,4 +1,3 @@
-import Combine
 import Presentation
 import SwiftUI
 import hCore
@@ -19,7 +18,6 @@ public struct PaymentsNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: PaymentsRedirectType) -> Content
     @StateObject var router = Router()
     @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
-    @State var cancellable: AnyCancellable?
 
     public init(
         @ViewBuilder redirect: @escaping (_ type: PaymentsRedirectType) -> Content

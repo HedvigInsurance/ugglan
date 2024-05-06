@@ -26,7 +26,6 @@ public enum PaymentAction: ActionProtocol {
     case setConnectionID(id: String)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
-    case dismissPayment
 }
 
 public enum LoadingAction: LoadingProtocol {
