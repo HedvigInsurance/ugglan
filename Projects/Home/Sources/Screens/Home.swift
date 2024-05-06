@@ -233,6 +233,12 @@ extension HomeView {
                     style: .detented(.large),
                     options: .defaults
                 )
+            } else if case let .openContractCertificate(url, title) = action {
+                Journey(
+                    Document(url: url, title: title),
+                    style: .detented(.large),
+                    options: .defaults
+                )
             } else if case .startClaim = action {
                 resultJourney(.startNewClaim)
             } else if case .showNewOffer = action {
