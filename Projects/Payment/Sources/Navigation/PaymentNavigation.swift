@@ -6,10 +6,12 @@ import hCoreUI
 
 public class PaymentsNavigationViewModel: ObservableObject {
     @Published public var isAddCampaignPresented = false
+    @Published public var isConnectPaymentPresented: SetupTypeNavigationModel?
 }
 
-public enum PaymentsRouterAction {
-    case discounts
+public struct SetupTypeNavigationModel: Equatable, Identifiable {
+    public var id: String?
+    var setUpType: SetupType
 }
 
 public struct PaymentsNavigation<Content: View>: View {
@@ -43,9 +45,13 @@ public struct PaymentsNavigation<Content: View>: View {
                                 switch redirectType {
                                 case .forever:
                                     redirect(.forever)
+                                case let .openUrl(url):
+                                    redirect(.openUrl(url: url))
                                 }
                             }
                             .configureTitle(L10n.paymentsDiscountsSectionTitle)
+                    case let .openUrl(url):
+                        redirect(.openUrl(url: url))
                     }
                 }
         }
@@ -75,11 +81,47 @@ public struct PaymentsNavigation<Content: View>: View {
                 .configureTitle(L10n.paymentsAddCampaignCode)
                 .embededInNavigation(options: .navigationType(type: .large))
         }
+        .detent(
+            item: $paymentsNavigationVm.isConnectPaymentPresented,
+            style: .large
+        ) { setupTypeModel in
+
+            let featureFlags: FeatureFlags = Dependencies.shared.resolve()
+            switch featureFlags.paymentType {
+            case .adyen:
+                EmptyView()
+                    .onAppear {
+                        Task {
+                            let paymentServcice: AdyenService = Dependencies.shared.resolve()
+                            do {
+                                let url = try await paymentServcice.getAdyenUrl()
+                                router.push(PaymentsRouterAction.openUrl(url: url))
+                            } catch {
+                                //we are not so concern about this
+                            }
+                        }
+                    }
+
+            case .trustly:
+                DirectDebitSetup()
+                    .configureTitle(
+                        setupTypeModel.setUpType == .replacement
+                            ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+                    )
+            }
+
+        }
     }
+}
+
+public enum PaymentsRouterAction: Hashable {
+    case discounts
+    case openUrl(url: URL)
 }
 
 public enum PaymentsRedirectType: Hashable {
     case forever
+    case openUrl(url: URL)
 }
 
 #Preview{

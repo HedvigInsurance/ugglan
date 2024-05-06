@@ -22,15 +22,8 @@ extension AppDelegate {
 
         if path == .directDebit {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { [weak self] _ in
-                    UIApplication.shared.getTopViewController()?
-                        .present(
-                            DirectDebitSetup(setupType: .initial).journey()
-                        )
-                        .onValue { _ in
-
-                        }
-                    self?.deepLinkDisposeBag.dispose()
+                .onValue { _ in
+                    /* TODO: ADD deeplink for connect payments */
                 }
         } else if path == .sasEuroBonus {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

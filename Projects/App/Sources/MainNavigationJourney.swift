@@ -180,7 +180,7 @@ struct MainNavigationJourney: App {
     var contractsTab: some View {
         ContractsNavigation { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, hasMissingAlert, isMissingAlert):
+            case let .editCoInsured(editCoInsuredConfig, _, _):
                 getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
@@ -200,26 +200,8 @@ struct MainNavigationJourney: App {
                             homeStore.send(.fetchQuickActions)
                         case .chat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
-                        case .openFeedback(let url):
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            contractStore.send(.fetchContracts)
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.fetchQuickActions)
-                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                            if urlComponent?.scheme == nil {
-                                urlComponent?.scheme = "https"
-                            }
-                            let schema = urlComponent?.scheme
-                            if let finalUrl = urlComponent?.url {
-                                if schema == "https" || schema == "http" {
-                                    let vc = SFSafariViewController(url: finalUrl)
-                                    vc.modalPresentationStyle = .pageSheet
-                                    vc.preferredControlTintColor = .brand(.primaryText())
-                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-                                } else {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
+                        case let .openFeedback(url):
+                            openUrl(url: url)
                         }
                     }
                 )
@@ -253,6 +235,11 @@ struct MainNavigationJourney: App {
                 foreverTab
                     .onAppear {
                         vm.selectedTab = 2
+                    }
+            case let .openUrl(url):
+                EmptyView()
+                    .onAppear {
+                        openUrl(url: url)
                     }
             }
         })
@@ -402,6 +389,28 @@ struct MainNavigationJourney: App {
             if let missingContract {
                 let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
                 homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
+            }
+        }
+    }
+
+    private func openUrl(url: URL) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetchContracts)
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchQuickActions)
+        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        if urlComponent?.scheme == nil {
+            urlComponent?.scheme = "https"
+        }
+        let schema = urlComponent?.scheme
+        if let finalUrl = urlComponent?.url {
+            if schema == "https" || schema == "http" {
+                let vc = SFSafariViewController(url: finalUrl)
+                vc.modalPresentationStyle = .pageSheet
+                vc.preferredControlTintColor = .brand(.primaryText())
+                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+            } else {
+                UIApplication.shared.open(url)
             }
         }
     }
