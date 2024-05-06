@@ -41,7 +41,6 @@ public struct ProfileView: View {
                     ProfileRow(
                         row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                     )
-                    //                    }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
