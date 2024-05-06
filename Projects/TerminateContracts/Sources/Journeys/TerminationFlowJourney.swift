@@ -59,6 +59,8 @@ public class TerminationFlowJourney {
                 openSelectInsuranceScreen(configs: configs)
             } else if case let .openSetTerminationDateLandingScreen(config) = navigationAction {
                 openSetTerminationDateLandingScreen(config: config)
+            } else if case let .openTerminationSurveyStep(options) = navigationAction {
+                openSurveyScreen(options: options)
             }
         }
     }
@@ -326,6 +328,19 @@ public class TerminationFlowJourney {
             style: .modally(presentationStyle: .overFullScreen)
         ) { action in
             getScreen(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    private static func openSurveyScreen(options: [TerminationFlowSurveyStepModelOption]) -> some JourneyPresentation {
+        return HostingJourney(
+            TerminationContractStore.self,
+            rootView: TerminationSurveyScreen(vm: .init(options: options))
+        ) {
+            action in
+            if case let .navigationAction(navigationAction) = action {
+                getScreen(for: action)
+            }
         }
         .withJourneyDismissButton
     }

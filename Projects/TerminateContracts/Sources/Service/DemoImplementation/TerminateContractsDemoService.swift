@@ -15,4 +15,8 @@ public class TerminateContractsDemoService: TerminateContractsService {
     public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
         return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
     }
+
+    public func sendSurvey(option: String, inputData: String) async throws -> TerminateStepResponse {
+        return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
+    }
 }

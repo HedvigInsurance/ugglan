@@ -10,7 +10,54 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
         )
-        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        //        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+        let suboptions = [
+            TerminationFlowSurveyStepModelOption(
+                id: "optionId3",
+                title: "Option title 3",
+                suggestion: nil,
+                feedBack: .init(
+                    id: "feedbackId",
+                    isRequired: true
+                ),
+                subOptions: nil
+            )
+        ]
+        let options = [
+            TerminationFlowSurveyStepModelOption(
+                id: "optionId",
+                title: "Option title",
+                suggestion: .action(
+                    action: .init(
+                        id: "actionId",
+                        action: .updateAddress
+                    )
+                ),
+                feedBack: nil,
+                subOptions: suboptions
+            ),
+            .init(
+                id: "optionId2",
+                title: "Option title 2",
+                suggestion: .action(
+                    action: .init(
+                        id: "actionId",
+                        action: .messageUs
+                    )
+                ),
+                feedBack: .init(
+                    id: "feedbackId",
+                    isRequired: true
+                ),
+                subOptions: nil
+            ),
+        ]
+
+        return .init(
+            context: "",
+            action: .stepModelAction(action: .setTerminationSurveyStep(model: .init(id: "id", options: options)))
+        )
     }
 
     public func sendTerminationDate(
@@ -32,6 +79,10 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: GraphQLNullable(optionalValue: store.state.terminationDeleteStep?.returnDeltionInput())
         )
         return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func sendSurvey(option: String, inputData: String) async throws -> TerminateStepResponse {
+        return .init(context: "", action: .navigationAction(action: .openTerminationSuccessScreen))
     }
 }
 

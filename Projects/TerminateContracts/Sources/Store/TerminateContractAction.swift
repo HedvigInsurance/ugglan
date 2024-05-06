@@ -6,11 +6,14 @@ public enum TerminationStepModelAction: ActionProtocol, Hashable {
     case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
     case setSuccessStep(model: TerminationFlowSuccessNextModel)
     case setFailedStep(model: TerminationFlowFailedNextModel)
+    case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)
 }
 
 public enum TerminationContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
+
+    case submitSurvey(option: String, feedback: String?)
 
     case startTermination(config: TerminationConfirmConfig)
     case setTerminationDate(terminationDate: Date)
@@ -35,6 +38,7 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationProcessingScreen
     case openSelectInsuranceScreen(configs: [TerminationConfirmConfig])
     case openSetTerminationDateLandingScreen(with: TerminationConfirmConfig)
+    case openTerminationSurveyStep(options: [TerminationFlowSurveyStepModelOption])
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {

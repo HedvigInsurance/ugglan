@@ -59,6 +59,7 @@ public final class TerminationContractStore: LoadingStateStore<
             newState.currentTerminationContext = nil
             newState.terminationDateStep = nil
             newState.terminationDeleteStep = nil
+            newState.terminationSurveyStep = nil
             newState.successStep = nil
             newState.failedStep = nil
             newState.config = config
@@ -78,6 +79,9 @@ public final class TerminationContractStore: LoadingStateStore<
                 log.info("termination failed", attributes: ["contractId": newState.config?.contractId])
                 newState.failedStep = model
                 send(.navigationAction(action: .openTerminationFailScreen))
+            case let .setTerminationSurveyStep(model):
+                newState.terminationSurveyStep = model
+                send(.navigationAction(action: .openTerminationSurveyStep(options: model.options)))
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate

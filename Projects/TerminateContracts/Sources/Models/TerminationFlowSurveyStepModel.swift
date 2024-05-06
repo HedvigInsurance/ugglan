@@ -1,12 +1,12 @@
 import Foundation
 
-struct TerminationFlowSurveyStepModel: FlowStepModel {
+public struct TerminationFlowSurveyStepModel: FlowStepModel {
     let id: String
     let options: [TerminationFlowSurveyStepModelOption]
 }
 
-struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable {
-    let id: String
+public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable {
+    public let id: String
     let title: String
     let suggestion: TerminationFlowSurveyStepSuggestion?
     let feedBack: TerminationFlowSurveyStepFeedback?
