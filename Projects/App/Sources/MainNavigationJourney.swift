@@ -308,32 +308,36 @@ struct MainNavigationJourney: App {
                         }
                     }
                 )
-                .environmentObject(router)
                 .environmentObject(profileNavigationVm)
             case .pickLanguage:
-                PickLanguage { _ in
+                PickLanguage { [weak profileNavigationVm, weak vm] _ in
                     let store: ProfileStore = globalPresentableStoreContainer.get()
-                    router.dismiss()
-                    store.send(.setOpenAppSettings(to: true))
-                    vm.selectedTab = 0
-                } onCancel: {
-                    router.dismiss()
+
+                    //show loading screen since we everything needs to be updated
+                    vm?.hasLaunchFinished = false
+                    profileNavigationVm?.isLanguagePickerPresented = false
+
+                    //show home screen with updated langauge
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        vm?.hasLaunchFinished = true
+                        vm?.selectedTab = 0
+                    }
+                } onCancel: { [weak profileNavigationVm] in
+                    profileNavigationVm?.isLanguagePickerPresented = false
                 }
             case .deleteRequestLoading:
                 DeleteRequestLoadingView(
                     screenState: .success,
-                    dismissAction: { profileDismissAction in
+                    dismissAction: { [weak vm] profileDismissAction in
                         switch profileDismissAction {
                         case .makeHomeTabActiveAndOpenChat:
-                            vm.selectedTab = 0
+                            vm?.selectedTab = 0
                             NotificationCenter.default.post(name: .openChat, object: nil)
                         default:
-                            router.dismiss()
-                            vm.selectedTab = 0
+                            vm?.selectedTab = 0
                         }
                     }
                 )
-                .environmentObject(router)
             case let .editCoInuredSelectInsurance(configs):
                 EditCoInsuredSelectInsuranceNavigation(
                     configs: configs,
