@@ -31,9 +31,7 @@ public enum PaymentAction: ActionProtocol {
 }
 
 public enum PaymentNavigation: ActionProtocol {
-    case openHistory
     case openConnectPayments
-    case openPaymentDetailsFromHistory(data: PaymentData)
     case openAllReferrals
 }
 

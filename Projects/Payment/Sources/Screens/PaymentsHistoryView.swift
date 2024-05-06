@@ -7,8 +7,9 @@ import hCoreUI
 import hGraphQL
 
 public struct PaymentHistoryView: View {
-    @PresentableStore var store: PaymentStore
     @ObservedObject var vm: PaymentsHistoryViewModel
+    @EnvironmentObject var router: Router
+
     public var body: some View {
         LoadingViewWithContent(
             PaymentStore.self,
@@ -65,9 +66,7 @@ public struct PaymentHistoryView: View {
                                         }
                                     }
                                     .onTap {
-                                        store.send(
-                                            .navigation(to: .openPaymentDetailsFromHistory(data: month.paymentData))
-                                        )
+                                        router.push(month.paymentData)
                                     }
                                     .foregroundColor(
                                         getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)

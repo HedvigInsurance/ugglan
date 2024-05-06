@@ -30,9 +30,10 @@ public struct PaymentsNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(router: router) {
             PaymentsView()
+                .configureTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitle(L10n.paymentsUpcomingPayment)
+                        .configureTitleView(paymentData)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
@@ -53,6 +54,9 @@ public struct PaymentsNavigation<Content: View>: View {
                             .configureTitle(L10n.paymentsDiscountsSectionTitle)
                     case let .openUrl(url):
                         redirect(.openUrl(url: url))
+                    case .history:
+                        PaymentHistoryView(vm: .init())
+                            .configureTitle(L10n.paymentHistoryTitle)
                     }
                 }
         }
@@ -76,7 +80,6 @@ public struct PaymentsNavigation<Content: View>: View {
             item: $paymentsNavigationVm.isConnectPaymentPresented,
             style: .large
         ) { setupTypeModel in
-
             let featureFlags: FeatureFlags = Dependencies.shared.resolve()
             switch featureFlags.paymentType {
             case .adyen:
@@ -107,6 +110,7 @@ public struct PaymentsNavigation<Content: View>: View {
 
 public enum PaymentsRouterAction: Hashable {
     case discounts
+    case history
     case openUrl(url: URL)
 }
 

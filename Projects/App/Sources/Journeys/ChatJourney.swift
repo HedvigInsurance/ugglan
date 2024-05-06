@@ -15,31 +15,32 @@ extension AppJourney {
         if Dependencies.featureFlags().isChatDisabled {
             AppJourney.disableChatScreen(style: style)
         } else {
-            ChatJourney.start(
-                topic: topic,
-                style: style,
-                resultJourney: { result in
-                    if case .notifications = result {
-                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                        let status = profileStore.state.pushNotificationCurrentStatus()
-                        if case .notDetermined = status {
-                            HostingJourney(
-                                UgglanStore.self,
-                                rootView: AskForPushnotifications(
-                                    text: L10n.chatActivateNotificationsBody,
-                                    onActionExecuted: {
-                                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                                        store.send(.dismissScreen)
-                                    }
-                                ),
-                                style: .detented(.large)
-                            ) { action in
-                                PopJourney()
-                            }
-                        }
-                    }
-                }
-            )
+            ContinueJourney()
+            //            ChatJourney.start(
+            //                topic: topic,
+            //                style: style,
+            //                resultJourney: { result in
+            //                    if case .notifications = result {
+            //                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            //                        let status = profileStore.state.pushNotificationCurrentStatus()
+            //                        if case .notDetermined = status {
+            //                            HostingJourney(
+            //                                UgglanStore.self,
+            //                                rootView: AskForPushnotifications(
+            //                                    text: L10n.chatActivateNotificationsBody,
+            //                                    onActionExecuted: {
+            //                                        let store: UgglanStore = globalPresentableStoreContainer.get()
+            //                                        store.send(.dismissScreen)
+            //                                    }
+            //                                ),
+            //                                style: .detented(.large)
+            //                            ) { action in
+            //                                PopJourney()
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            )
         }
     }
 
@@ -70,6 +71,5 @@ extension AppJourney {
                 PopJourney()
             }
         }
-        .configureTitle(L10n.chatTitle)
     }
 }

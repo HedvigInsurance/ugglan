@@ -204,4 +204,14 @@ extension View {
             vc.title = title
         }
     }
+
+    public func configureTitleView(_ titleView: some TitleView) -> some View {
+        self.introspectViewController { vc in
+            vc.navigationItem.titleView = titleView.getTitleView()
+        }
+    }
+}
+
+public protocol TitleView {
+    func getTitleView() -> UIView
 }

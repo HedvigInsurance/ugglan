@@ -145,7 +145,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openHistory))
+            router.push(PaymentsRouterAction.history)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
