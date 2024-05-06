@@ -1,5 +1,3 @@
-import Combine
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -15,7 +13,6 @@ enum ForeverRouterActions {
 public struct ForeverNavigation: View {
     @StateObject var router = Router()
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
-    @State var cancellable: AnyCancellable?
 
     public init() {}
 
@@ -43,20 +40,6 @@ public struct ForeverNavigation: View {
                 }
                 .configureTitle(L10n.changeAddressAddBuilding)
                 .embededInNavigation(options: [.navigationType(type: .large)])
-        }
-        .onAppear {
-            let store: ForeverStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { action in
-                switch action {
-                case .showChangeCodeSuccess:
-                    router.push(ForeverRouterActions.success)
-                case .dismissChangeCodeDetail:
-                    router.dismiss()
-                default:
-                    break
-                }
-            }
         }
     }
 }
