@@ -2,10 +2,8 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct DiscountCodeSectionView: View {
-    @PresentableStore var store: ForeverStore
     @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
 
     var body: some View {
@@ -34,7 +32,7 @@ struct DiscountCodeSectionView: View {
                     hSection {
                         VStack(spacing: 8) {
                             hButton.LargeButton(type: .primary) {
-                                shareCode(code: code)
+                                foreverNavigationVm.shareCode(code: code)
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
@@ -52,21 +50,6 @@ struct DiscountCodeSectionView: View {
         }
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
-    }
-
-    private func shareCode(code: String) {
-        let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
-        let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
-        let message = L10n.referralSmsMessage(discount ?? "", url)
-
-        let activityVC = UIActivityViewController(
-            activityItems: [message as Any],
-            applicationActivities: nil
-        )
-
-        let topViewController = UIApplication.shared.getTopViewController()
-        topViewController?.present(activityVC, animated: true, completion: nil)
     }
 }
 

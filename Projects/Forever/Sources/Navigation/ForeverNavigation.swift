@@ -1,9 +1,27 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public class ForeverNavigationViewModel: ObservableObject {
     @Published public var isChangeCodePresented = false
+
+    func shareCode(code: String) {
+        let store: ForeverStore = globalPresentableStoreContainer.get()
+        let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
+        let url =
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+        let message = L10n.referralSmsMessage(discount ?? "", url)
+
+        let activityVC = UIActivityViewController(
+            activityItems: [message as Any],
+            applicationActivities: nil
+        )
+
+        let topViewController = UIApplication.shared.getTopViewController()
+        topViewController?.present(activityVC, animated: true, completion: nil)
+    }
 }
 
 enum ForeverRouterActions {
