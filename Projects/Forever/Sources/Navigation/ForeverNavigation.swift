@@ -31,9 +31,9 @@ public struct ForeverNavigation: View {
                     switch routerAction {
                     case .success:
                         SuccessScreen(title: L10n.ReferralsChange.codeChanged)
-                            .onAppear {
+                            .onAppear { [weak router] in
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    router.dismiss()
+                                    router?.dismiss()
                                 }
                             }
                     }

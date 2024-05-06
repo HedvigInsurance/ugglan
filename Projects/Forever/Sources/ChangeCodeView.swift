@@ -34,8 +34,8 @@ class ChangeCodeViewModel: ObservableObject {
             try await self?.handleOnSave()
         }
 
-        inputVm.onDismiss = {
-            try await self.dismissRouter()
+        inputVm.onDismiss = { [weak self] in
+            try await self?.dismissRouter()
         }
     }
 
