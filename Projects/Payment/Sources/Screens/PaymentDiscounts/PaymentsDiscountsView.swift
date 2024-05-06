@@ -121,17 +121,6 @@ struct PaymentsDiscountsView: View {
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
-
-    private var seeAllInvitesView: some View {
-        hRow {
-            hText(L10n.referralsSeeAllInvites)
-        }
-        .onTap {
-            store.send(.navigation(to: .openAllReferrals))
-        }
-        .hWithoutHorizontalPadding
-        .padding(.horizontal, -16)
-    }
 }
 
 struct PaymentsDiscountView_Previews: PreviewProvider {

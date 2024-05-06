@@ -7,6 +7,7 @@ import hGraphQL
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
     @EnvironmentObject var router: Router
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
@@ -183,7 +184,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            store.send(.navigation(to: .openConnectPayments))
+                            paymentNavigationVm.isConnectPaymentPresented = .init(setUpType: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }

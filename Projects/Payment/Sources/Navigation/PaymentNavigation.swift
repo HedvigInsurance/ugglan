@@ -12,7 +12,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
 
 public struct SetupTypeNavigationModel: Equatable, Identifiable {
     public var id: String?
-    var setUpType: SetupType
+    var setUpType: SetupType?
 }
 
 public struct PaymentsNavigation<Content: View>: View {

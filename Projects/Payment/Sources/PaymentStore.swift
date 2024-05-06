@@ -24,15 +24,9 @@ public enum PaymentAction: ActionProtocol {
     case fetchDiscountsData
     case setDiscountsData(data: PaymentDiscountsData)
     case setConnectionID(id: String)
-    case navigation(to: PaymentNavigation)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
     case dismissPayment
-}
-
-public enum PaymentNavigation: ActionProtocol {
-    case openConnectPayments
-    case openAllReferrals
 }
 
 public enum LoadingAction: LoadingProtocol {
