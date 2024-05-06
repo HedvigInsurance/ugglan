@@ -24,7 +24,7 @@ public struct EuroBonusNavigation: View {
             ) {
                 ChangeEuroBonusView()
                     .configureTitle(L10n.SasIntegration.enterYourNumber)
-                    .routerDestination(for: EuroBonusRouterType.self) { routerType in
+                    .routerDestination(for: EuroBonusRouterType.self, options: [.hidesBackButton]) { routerType in
                         switch routerType {
                         case .successChangeEuroBonus:
                             SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
