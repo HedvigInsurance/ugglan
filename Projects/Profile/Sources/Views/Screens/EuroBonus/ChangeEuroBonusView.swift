@@ -1,9 +1,7 @@
-import Flow
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ChangeEuroBonusView: View {
     @StateObject private var vm = ChangeEurobonusViewModel()
@@ -16,6 +14,9 @@ struct ChangeEuroBonusView: View {
                 router.dismiss()
             }
         )
+        .task {
+            vm.router = router
+        }
     }
 }
 
@@ -28,7 +29,7 @@ struct ChangeEuroBonusView_Previews: PreviewProvider {
 private class ChangeEurobonusViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     @Inject var profileService: ProfileService
-    let disposeBag = DisposeBag()
+    var router: Router?
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -39,18 +40,21 @@ private class ChangeEurobonusViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            let text = text.toAlphaNumeric
-            guard !text.isEmpty else { throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber) }
-            guard Masking(type: .euroBonus).isValid(text: text) else {
-                throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
-            }
-            let data = try await self?.profileService.update(eurobonus: text)
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setEurobonusNumber(partnerData: data))
-
-            /* TODO: SOMEHOW SET SUCESS HERE*/
-            //  router.push(EuroBonusRouterType.successChangeEuroBonus)
+            try await self?.handleOnSave(with: text)
         }
+    }
+
+    @MainActor
+    private func handleOnSave(with text: String) async throws {
+        let text = text.toAlphaNumeric
+        guard !text.isEmpty else { throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber) }
+        guard Masking(type: .euroBonus).isValid(text: text) else {
+            throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
+        }
+        let data = try await self.profileService.update(eurobonus: text)
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        store.send(.setEurobonusNumber(partnerData: data))
+        self.router?.push(EuroBonusRouterType.successChangeEuroBonus)
     }
 }
 
