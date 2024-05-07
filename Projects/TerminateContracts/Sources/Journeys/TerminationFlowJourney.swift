@@ -20,7 +20,10 @@ public class TerminationFlowJourney {
                 } else if case let .openSelectInsuranceScreen(configs) = navigationAction {
                     openSelectInsuranceScreen(configs: configs)
                 } else if case let .openSetTerminationDateLandingScreen(config) = navigationAction {
-                    openSetTerminationDateLandingScreen(config: config)
+                    openSetTerminationDateLandingScreen(
+                        config: config,
+                        style: .modally(presentationStyle: .overFullScreen)
+                    )
                 } else if case let .openTerminationSurveyStep(options) = navigationAction {
                     openSurveyScreen(options: options)
                 }
@@ -324,6 +327,7 @@ public class TerminationFlowJourney {
                 title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
                 subTitle: .init(.small, .title3, L10n.terminationFlowBody)
             )
+            .trackLoading(TerminationContractStore.self, action: .getInitialStep)
             .hUseColoredCheckbox
             .hFieldSize(.small)
             .toolbar {
