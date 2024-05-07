@@ -153,7 +153,6 @@ public struct ClaimsNavigation: View {
                 .routerDestination(
                     for: ClaimFlowItemBrandOptionModel.self
                 ) { brandModel in
-                    /* TODO: FIX - IS NEVER TRIGGERED */
                     openModelPickerScreen(brand: brandModel)
                 }
                 .embededInNavigation(options: .navigationType(type: .large))
@@ -380,62 +379,13 @@ public struct ClaimsNavigation: View {
     }
 
     private func openBrandPickerScreen() -> some View {
-        ItemPickerScreen<ClaimFlowItemBrandOptionModel>(
-            items: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                return store.state.singleItemStep?.availableItemBrandOptions
-                    .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
-            }(),
-            onSelected: { item in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.setItemBrand(brand: item))
-                router.push(item)
-
-            },
-            onCancel: {
-                router.dismiss()
-            }
-        )
-        .configureTitle(L10n.claimsChooseBrandTitle)
+        BrandPickerView()
+            .navigationTitle(L10n.claimsChooseBrandTitle)
     }
 
     private func openModelPickerScreen(brand: ClaimFlowItemBrandOptionModel) -> some View {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        let step = store.state.singleItemStep
-        let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
-
-        return CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
-            items: {
-                return step?.getListOfModels(for: brand.itemBrandId)?
-                    .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
-
-            }(),
-            preSelectedItems: {
-                if let item = step?.getListOfModels()?.first(where: { $0.itemModelId == step?.selectedItemModel }) {
-                    return [item]
-                }
-                return []
-            },
-            onSelected: { [weak store] item in guard let store = store else { return }
-                if item.first?.0 == nil {
-                    let customName = item.first?.1 ?? ""
-                    store.send(.setItemModel(model: .custom(brand: brand, name: customName)))
-                } else {
-                    if let object = item.first?.0 {
-                        store.send(.setItemModel(model: .model(object)))
-                    }
-                }
-            },
-            onCancel: {
-                router.dismiss()
-            },
-            singleSelect: true,
-            showDividers: true,
-            manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
-            manualBrandName: customName
-        )
-        .hIncludeManualInput
-        .configureTitle(L10n.claimsChooseModelTitle)
+        ModelPickerView(brand: brand)
+            .navigationTitle(L10n.claimsChooseModelTitle)
     }
 
     private func openPriceInputScreen() -> some View {
