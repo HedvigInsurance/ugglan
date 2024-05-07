@@ -128,6 +128,7 @@ extension AppDelegate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
                     self?.deepLinkDisposeBag.dispose()
+                    let disposeBag = DisposeBag()
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
                     let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
@@ -135,25 +136,59 @@ extension AppDelegate {
                         .map({
                             $0.asTerminationConfirmConfig
                         })
-                    let vc = TerminationFlowJourney.start(for: contractsConfig) { success in
-                        if success {
-                            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                            ugglanStore.send(.makeTabActive(deeplink: .insurances))
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.dismissHelpCenter)
-                            let chatStore: ChatStore = globalPresentableStoreContainer.get()
-                            chatStore.send(.navigation(action: .closeChat))
-                            guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
-                            else { return }
+                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    if contractsConfig.count > 1 {
+                        let vc = TerminationFlowJourney.getInitalScreen(
+                            for: .navigationAction(action: .openSelectInsuranceScreen(configs: contractsConfig))
+                        ) { success in
+                            if success {
+                                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                                ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                                homeStore.send(.dismissHelpCenter)
+                                let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                                chatStore.send(.navigation(action: .closeChat))
+                                guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
+                                else { return }
 
-                            guard let navigation = tabBar.selectedViewController as? UINavigationController else {
-                                return
+                                guard let navigation = tabBar.selectedViewController as? UINavigationController else {
+                                    return
+                                }
+                                navigation.popToRootViewController(animated: true)
                             }
-                            navigation.popToRootViewController(animated: true)
+                        }
+                        disposeBag += fromVC.present(vc)
+                    } else if let config = contractsConfig.first {
+                        store.send(.startTermination(config: config))
+                        disposeBag += store.actionSignal.onValue { action in
+                            if case let .navigationAction(navigationAction) = action {
+                                let vc = TerminationFlowJourney.getInitalScreen(for: action) { success in
+                                    if success {
+                                        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                                        ugglanStore.send(.makeTabActive(deeplink: .insurances))
+                                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                                        homeStore.send(.dismissHelpCenter)
+                                        let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                                        chatStore.send(.navigation(action: .closeChat))
+                                        guard
+                                            let tabBar = UIApplication.shared.getRootViewController()
+                                                as? UITabBarController
+                                        else { return }
+
+                                        guard let navigation = tabBar.selectedViewController as? UINavigationController
+                                        else {
+                                            return
+                                        }
+                                        navigation.popToRootViewController(animated: true)
+                                    }
+                                }
+                                disposeBag += fromVC.present(vc)
+                                disposeBag.dispose()
+                            }
+
                         }
                     }
-                    let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+
                 }
 
         } else if path == .openChat {

@@ -75,19 +75,15 @@ extension AppJourney {
             case let .openCrossSellingWebUrl(url):
                 AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(contract):
-                TerminationFlowJourney.start(
-                    for: [
-                        contract.asTerminationConfirmConfig
-                    ]
-                ) { success in
-                    if success {
-                        guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
-                            return
+                ContinueJourney()
+                    .onPresent {
+                        Task {
+                            do {
+                                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                                store.send(.startTermination(config: contract.asTerminationConfirmConfig))
+                            }
                         }
-                        guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
-                        navigation.popToRootViewController(animated: true)
                     }
-                }
             case let .handleCoInsured(config, fromInfoCard):
                 EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
                     .onDismiss {
@@ -100,6 +96,17 @@ extension AppJourney {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetch)
                     }
+            }
+        }
+        .onAction(TerminationContractStore.self) { action in
+            TerminationFlowJourney.getInitalScreen(for: action) { onDismiss in
+                if onDismiss {
+                    guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
+                        return
+                    }
+                    guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
+                    navigation.popToRootViewController(animated: true)
+                }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

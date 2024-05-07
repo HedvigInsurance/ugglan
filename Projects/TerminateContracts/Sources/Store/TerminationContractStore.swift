@@ -69,8 +69,14 @@ public final class TerminationContractStore: LoadingStateStore<
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
+                if let config = newState.config {
+                    send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
+                }
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
+                if let config = newState.config {
+                    send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
+                }
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])

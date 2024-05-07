@@ -11,7 +11,7 @@ public class TerminateContractsOctopus: TerminateContractsService {
             context: nil
         )
         try await Task.sleep(nanoseconds: 1_000_000_000)
-        //        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
         let suboptions = [
             TerminationFlowSurveyStepModelOption(
                 id: "optionId3",
