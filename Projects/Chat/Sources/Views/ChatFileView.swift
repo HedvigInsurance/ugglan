@@ -62,17 +62,17 @@ struct ChatFileView: View {
     }
 
     func showFile() {
-        let disposeBag = DisposeBag()
-        if let topVC = UIApplication.shared.getTopViewController() {
-            switch file.source {
-            case let .localFile(url, _):
-                let preview = DocumentPreview(url: url)
-                disposeBag += topVC.present(preview.journey)
-            case .url(let url):
-                let preview = DocumentPreview(url: url)
-                disposeBag += topVC.present(preview.journey)
-            }
-        }
+        //        let disposeBag = DisposeBag()
+        //        if let topVC = UIApplication.shared.getTopViewController() {
+        //            switch file.source {
+        //            case let .localFile(url, _):
+        //                let preview = DocumentPreview(url: url)
+        //                disposeBag += topVC.present(preview.journey)
+        //            case .url(let url):
+        //                let preview = DocumentPreview(url: url)
+        //                disposeBag += topVC.present(preview.journey)
+        //            }
+        //        }
     }
 
     private func getSource() -> Kingfisher.Source {

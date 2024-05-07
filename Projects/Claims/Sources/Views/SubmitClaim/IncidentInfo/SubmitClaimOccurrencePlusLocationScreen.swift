@@ -4,6 +4,7 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     private let options: SubmitClaimsNavigationAction.SubmitClaimOption
 
     init(
@@ -43,7 +44,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     value: locationStep.getSelectedOption()?.displayName ?? "",
                     placeholder: L10n.Claims.Location.Screen.title,
                     onTap: {
-                        store.send(.navigationAction(action: .openLocationPicker))
+                        claimsNavigationVm.isLocationPickerPresented = true
                     }
                 )
                 .padding(.bottom, 4)

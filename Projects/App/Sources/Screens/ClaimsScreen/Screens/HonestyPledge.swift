@@ -14,14 +14,14 @@ struct SlideTrack: View {
 
     var body: some View {
         ZStack {
-            VStack(alignment: .center) {
-                L10n.claimsPledgeSlideLabel.hText(.body)
-                    .foregroundColor(getLabelColor)
-
+            withAnimation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil) {
+                VStack(alignment: .center) {
+                    L10n.claimsPledgeSlideLabel.hText(.body)
+                        .foregroundColor(getLabelColor)
+                        .frame(maxWidth: .infinity)
+                        .opacity(didFinished ? 0 : labelOpacity)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .opacity(didFinished ? 0 : labelOpacity)
-            .animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
@@ -225,26 +225,26 @@ struct HonestyPledge: View {
     }
 }
 
-extension HonestyPledge {
-    static func journey<Next: JourneyPresentation>(
-        style: PresentationStyle,
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: HonestyPledge(onConfirmAction: nil),
-            style: style,
-            options: [
-                .defaults, .blurredBackground,
-            ]
-        ) { action in
-            if case .didAcceptHonestyPledge = action {
-                next()
-            }
-        }
-        .withDismissButton
-    }
-}
+//extension HonestyPledge {
+//    static func journey<Next: JourneyPresentation>(
+//        style: PresentationStyle,
+//        @JourneyBuilder _ next: @escaping () -> Next
+//    ) -> some JourneyPresentation {
+//        HostingJourney(
+//            ClaimsStore.self,
+//            rootView: HonestyPledge(onConfirmAction: nil),
+//            style: style,
+//            options: [
+//                .defaults, .blurredBackground,
+//            ]
+//        ) { action in
+//            if case .didAcceptHonestyPledge = action {
+//                next()
+//            }
+//        }
+//        .withDismissButton
+//    }
+//}
 
 extension HonestyPledge {
     @ViewBuilder
@@ -260,7 +260,7 @@ extension HonestyPledge {
                     vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                 }
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                //                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
 
             }
         }

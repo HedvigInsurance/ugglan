@@ -116,11 +116,8 @@ extension AppDelegate {
 
         } else if path == .openChat {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { [weak self] _ in
-                    self?.deepLinkDisposeBag.dispose()
-                    let vc = AppJourney.freeTextChat().withDismissButton
-                    let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+                .onValue { _ in
+                    /* TODO: Add deep link for chat */
                 }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

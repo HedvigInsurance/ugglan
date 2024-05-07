@@ -1,9 +1,8 @@
 import Foundation
 import hCore
-import hCoreUI
 import hGraphQL
 
-enum FlowClaimDeflectStepType: Decodable, Encodable {
+public enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectGlassDamageStep
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
@@ -27,6 +26,23 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
             return ""
         }
     }
+}
+
+public struct FlowClaimDeflectConfig {
+    let infoText: String
+    let infoSectionText: String
+    let infoSectionTitle: String
+    let cardTitle: String?
+    let cardText: String
+    let buttonText: String?
+    let infoViewTitle: String?
+    let infoViewText: String?
+    let questions: [DeflectQuestion]
+}
+
+struct DeflectQuestion {
+    let question: String
+    let answer: String
 }
 
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
@@ -140,7 +156,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
     }
 
-    init(
+    public init(
         id: FlowClaimDeflectStepType,
         partners: [Partner]? = [],
         isEmergencyStep: Bool
@@ -167,15 +183,30 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     }
 }
 
-extension Partner {
+public struct Partner: Codable, Equatable, Hashable {
+    let id: String
+    let imageUrl: String?
+    let url: String?
+    let phoneNumber: String?
+
     init(
         with data: OctopusGraphQL.FlowClaimDeflectPartnerFragment
     ) {
-        self.init(
-            id: data.id,
-            imageUrl: data.imageUrl,
-            url: data.url,
-            phoneNumber: data.phoneNumber
-        )
+        self.id = data.id
+        self.imageUrl = data.imageUrl
+        self.url = data.url
+        self.phoneNumber = data.phoneNumber
+    }
+
+    public init(
+        id: String,
+        imageUrl: String?,
+        url: String?,
+        phoneNumber: String?
+    ) {
+        self.id = id
+        self.imageUrl = imageUrl
+        self.url = url
+        self.phoneNumber = phoneNumber
     }
 }

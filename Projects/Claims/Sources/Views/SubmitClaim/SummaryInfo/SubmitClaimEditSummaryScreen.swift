@@ -5,6 +5,7 @@ import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State var purchasePrice: String = ""
 
     public init() {}
@@ -88,7 +89,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 }
             }
             .onTap {
-                store.send(.navigationAction(action: .openLocationPicker))
+                claimsNavigationVm.isLocationPickerPresented = true
             }
         }
     }
@@ -112,9 +113,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                     }
                 }
             }
-            .onTap {
-                store.send(.navigationAction(action: .openModelPicker))
-            }
+            .onTap {}
         }
 
     }
@@ -173,7 +172,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
         }
         .onTap {
-            store.send(.navigationAction(action: .openDamagePickerScreen))
+            claimsNavigationVm.isDamagePickerPresented = true
         }
     }
 }

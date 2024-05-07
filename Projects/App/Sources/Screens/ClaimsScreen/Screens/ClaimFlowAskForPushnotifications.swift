@@ -82,28 +82,12 @@ extension AskForPushnotifications {
                         vc?.sheetPresentationController?.detents = [.medium()]
                     }
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                    //                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                 }
             ),
             style: .detented(.large, modally: false, bgColor: nil)
         ) { action in
-            if case let .navigationAction(navigationAction) = action {
-                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                    //                        .onAction(SubmitClaimStore.self) { action in
-                    //                            if case .dissmissNewClaimFlow = action {
-                    //                                DismissJourney()
-                    //                            }
-                    //                        }
-                    DismissJourney()
-                } else if case .openTriagingGroupScreen = navigationAction {
-                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                    DismissJourney()
-                }
-            } else {
-                //                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
-                DismissJourney()
-            }
+            DismissJourney()
         }
         .hidesBackButton
     }

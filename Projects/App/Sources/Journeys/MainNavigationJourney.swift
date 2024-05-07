@@ -82,10 +82,10 @@ struct MainNavigationJourney: App {
         .environmentObject(homeNavigationVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: .height
+            style: .height,
+            options: .constant(.withoutGrabber)
         ) {
-            HonestyPledge(onConfirmAction: {})
-                .embededInNavigation()
+            ClaimsJourneyMain(from: .generic)
         }
         .detent(
             item: $homeNavigationVm.document,
@@ -96,8 +96,9 @@ struct MainNavigationJourney: App {
                     .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
-        .modally(
-            item: $homeNavigationVm.isEditCoInsuredPresented
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredPresented,
+            style: .height
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
@@ -121,12 +122,15 @@ struct MainNavigationJourney: App {
                 missingContractConfig: config
             )
         }
-        .modally(presented: $homeNavigationVm.isHelpCenterPresented) {
+        .detent(
+            presented: $homeNavigationVm.isHelpCenterPresented,
+            style: .height
+        ) {
             HelpCenterNavigation(redirect: { redirectType in
                 switch redirectType {
                 case .moveFlow:
                     MovingFlowNavigation()
-                case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
+                case let .editCoInsured(config, _, _):
                     getEditCoInsuredView(config: config)
                 case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
@@ -143,6 +147,76 @@ struct MainNavigationJourney: App {
                             )
                         }
                     )
+                case .deflect:
+                    let model: FlowClaimDeflectStepModel? = {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        let quickActions = store.state.quickActions
+                        if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                            .sickAboardPartners
+                        {
+                            return FlowClaimDeflectStepModel(
+                                id: .FlowClaimDeflectEmergencyStep,
+                                partners: sickAbroadPartners.compactMap({
+                                    .init(
+                                        id: "",
+                                        imageUrl: $0.imageUrl,
+                                        url: "",
+                                        phoneNumber: $0.phoneNumber
+                                    )
+                                }),
+                                isEmergencyStep: true
+                            )
+                        }
+                        return nil
+                    }()
+
+                    SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: true)
+                            )
+                        }
+                    )
+
+                //        let store: HomeStore = globalPresentableStoreContainer.get()
+                //        let quickActions = store.state.quickActions
+                //        let sickAbroadPartners: [Partner]? = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                //            .sickAboardPartners
+                //            .map { sickabr in
+                //                sickabr.map { partner in
+                //                    Partner(id: "", imageUrl: partner.imageUrl, url: "", phoneNumber: partner.phoneNumber)
+                //                }
+                //            }
+                //
+                //        let config = FlowClaimDeflectConfig(
+                //            infoText: L10n.submitClaimEmergencyInfoLabel,
+                //            infoSectionText: L10n.submitClaimEmergencyInsuranceCoverLabel,
+                //            infoSectionTitle: L10n.submitClaimEmergencyInsuranceCoverTitle,
+                //            cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                //            cardText: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                //            buttonText: nil,
+                //            infoViewTitle: nil,
+                //            infoViewText: nil,
+                //            questions: [
+                //                .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
+                //                .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
+                //                .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
+                //                .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
+                //                .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
+                //                .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
+                //            ]
+                //        )
+
+                //        return SubmitClaimDeflectScreen(
+                //            openChat: {
+                //                NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: true))
+                //            },
+                //            isEmergencyStep: true,
+                //            partners: sickAbroadPartners ?? [],
+                //            config: config
+                //        )
                 }
             })
             .environmentObject(homeNavigationVm)
