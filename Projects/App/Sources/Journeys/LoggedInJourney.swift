@@ -77,12 +77,30 @@ extension AppJourney {
             case let .startNewTermination(contract):
                 ContinueJourney()
                     .onPresent {
-                        Task {
-                            do {
-                                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                                store.send(.startTermination(config: contract.asTerminationConfirmConfig))
+                        let disposeBag = DisposeBag()
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        disposeBag += store.actionSignal.onValue { action in
+                            if case let .navigationAction(navigationAction) = action {
+                                let vc = TerminationFlowJourney.getInitalScreen(for: action) { success in
+                                    if success {
+                                        guard
+                                            let tabBar = UIApplication.shared.getRootViewController()
+                                                as? UITabBarController
+                                        else {
+                                            return
+                                        }
+                                        guard let navigation = tabBar.selectedViewController as? UINavigationController
+                                        else { return }
+                                        navigation.popToRootViewController(animated: true)
+                                    }
+                                }
+                                if let topView = UIApplication.shared.getTopViewController() {
+                                    disposeBag += topView.present(vc)
+                                }
+                                disposeBag.dispose()
                             }
                         }
+                        store.send(.startTermination(config: contract.asTerminationConfirmConfig))
                     }
             case let .handleCoInsured(config, fromInfoCard):
                 EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
@@ -96,17 +114,6 @@ extension AppJourney {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetch)
                     }
-            }
-        }
-        .onAction(TerminationContractStore.self) { action in
-            TerminationFlowJourney.getInitalScreen(for: action) { onDismiss in
-                if onDismiss {
-                    guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
-                        return
-                    }
-                    guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
-                    navigation.popToRootViewController(animated: true)
-                }
             }
         }
         .makeTabSelected(UgglanStore.self) { action in

@@ -67,6 +67,7 @@ struct TerminationSurveyScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .trackLoading(TerminationContractStore.self, action: .sendSurvey)
     }
 
     @ViewBuilder
@@ -167,7 +168,7 @@ class SurveyScreenViewModel: ObservableObject {
         if let subOptions = selectedOption?.subOptions {
             store.send(.navigationAction(action: .openTerminationSurveyStep(options: subOptions)))
         } else if let selectedOption {
-            store.send(.submitSurvey(option: selectedOption.id, feedback: nil))
+            store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
     }
 }
@@ -233,7 +234,7 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             placeholder: L10n.terminationSurveyFeedbackHint,
             required: vm.required,
             maxCharacters: 140
-        ) { text in
+        ) { [weak vm] text in guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
             vm.text = text
         }

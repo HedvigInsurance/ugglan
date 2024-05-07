@@ -169,7 +169,6 @@ extension AppDelegate {
                         store.send(.navigationAction(action: .openSelectInsuranceScreen(configs: contractsConfig)))
                     } else if let config = contractsConfig.first {
                         store.send(.startTermination(config: config))
-
                     }
 
                 }

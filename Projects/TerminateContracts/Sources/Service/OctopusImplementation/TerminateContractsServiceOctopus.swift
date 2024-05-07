@@ -10,7 +10,6 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
         )
-        try await Task.sleep(nanoseconds: 1_000_000_000)
         return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
         let suboptions = [
             TerminationFlowSurveyStepModelOption(
@@ -90,8 +89,8 @@ public class TerminateContractsOctopus: TerminateContractsService {
         return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
     }
 
-    public func sendSurvey(option: String, inputData: String) async throws -> TerminateStepResponse {
-        return .init(context: "", action: .navigationAction(action: .openTerminationSuccessScreen))
+    public func sendSurvey(option: String, inputData: String?) async throws -> TerminateStepResponse {
+        return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
     }
 }
 

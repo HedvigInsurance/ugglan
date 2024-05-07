@@ -44,6 +44,10 @@ public final class TerminationContractStore: LoadingStateStore<
                 let terminateStepResponse = data[1] as! TerminateStepResponse
                 return terminateStepResponse
             }
+        case let .submitSurvey(option, feedback):
+            return await executeAsFiniteSignal(loadingType: .sendSurvey) { [weak self] in
+                try await self?.terminateContractsService.sendSurvey(option: option, inputData: feedback)
+            }
         default:
             break
         }

@@ -46,4 +46,5 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
 public enum TerminationContractLoadingAction: LoadingProtocol {
     case getInitialStep
     case sendTerminationDate
+    case sendSurvey
 }
