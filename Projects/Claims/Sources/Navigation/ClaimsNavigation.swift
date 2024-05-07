@@ -48,7 +48,7 @@ public struct ClaimsNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, options: [.navigationType(type: .withProgress)]) {
             showClaimEntrypointGroup(origin: origin)
                 .routerDestination(for: ClaimsRouterActions.self) { routerAction in
                     switch routerAction {
