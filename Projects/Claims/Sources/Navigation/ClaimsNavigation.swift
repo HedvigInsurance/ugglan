@@ -21,7 +21,6 @@ enum ClaimsRouterActions: Hashable {
     case selectContract
     case phoneNumber(model: FlowClaimPhoneNumberStepModel)
     case audioRecording
-    case success
     case singleItem
     case summary
     case deflect
@@ -31,8 +30,9 @@ enum ClaimsRouterActions: Hashable {
 }
 
 enum ClaimsRouterActionsWithoutBackButton {
-    case updateApp
+    case success
     case failure
+    case updateApp
 }
 
 public struct ClaimsNavigation: View {
@@ -64,8 +64,6 @@ public struct ClaimsNavigation: View {
                         submitClaimPhoneNumberScreen(model: model)
                     case .audioRecording:
                         openAudioRecordingSceen()
-                    case .success:
-                        openSuccessScreen()
                     case .singleItem:
                         openSingleItemScreen()
                     case .summary:
@@ -85,10 +83,12 @@ public struct ClaimsNavigation: View {
                     options: .hidesBackButton
                 ) { routerAction in
                     switch routerAction {
-                    case .updateApp:
-                        openUpdateAppScreen()
                     case .failure:
                         showClaimFailureScreen()
+                    case .success:
+                        openSuccessScreen()
+                    case .updateApp:
+                        openUpdateAppScreen()
                     }
                 }
         }
@@ -112,8 +112,6 @@ public struct ClaimsNavigation: View {
                         router.push(ClaimsRouterActions.phoneNumber(model: model))
                     case .openAudioRecordingScreen:
                         router.push(ClaimsRouterActions.audioRecording)
-                    case .openSuccessScreen:
-                        router.push(ClaimsRouterActions.success)
                     case .openSingleItemScreen:
                         router.push(ClaimsRouterActions.singleItem)
                     case .openSummaryScreen:
@@ -126,10 +124,12 @@ public struct ClaimsNavigation: View {
                         router.push(ClaimsRouterActions.uploadFiles)
                     case .openCheckoutNoRepairScreen:
                         router.push(ClaimsRouterActions.checkOutNoRepair)
-                    case .openUpdateAppScreen:
-                        router.push(ClaimsRouterActionsWithoutBackButton.updateApp)
+                    case .openSuccessScreen:
+                        router.push(ClaimsRouterActionsWithoutBackButton.success)
                     case .openFailureSceen:
                         router.push(ClaimsRouterActionsWithoutBackButton.failure)
+                    case .openUpdateAppScreen:
+                        router.push(ClaimsRouterActionsWithoutBackButton.updateApp)
                     default:
                         break
                     }
@@ -234,16 +234,19 @@ public struct ClaimsNavigation: View {
     ) -> some View {
         SubmitClaimOccurrencePlusLocationScreen(options: options)
             .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     private func openSelectContractScreen() -> some View {
         SelectContractScreen()
             .resetProgressToPreviousValueOnDismiss
+            .addDismissClaimsFlow()
     }
 
     private func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some View {
         SubmitClaimContactScreen(model: model)
             .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     private func openAudioRecordingSceen() -> some View {
@@ -251,6 +254,7 @@ public struct ClaimsNavigation: View {
         let url = store.state.audioRecordingStep?.getUrl()
         return SubmitClaimAudioRecordingScreen(url: url)
             .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     private func openSuccessScreen() -> some View {
@@ -260,11 +264,14 @@ public struct ClaimsNavigation: View {
     private func openSingleItemScreen() -> some View {
         SubmitClaimSingleItem()
             .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     private func openSummaryScreen() -> some View {
         SubmitClaimSummaryScreen()
+            .configureTitle(L10n.Claims.Summary.Screen.title)
             .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     @ViewBuilder
@@ -309,6 +316,7 @@ public struct ClaimsNavigation: View {
     private func openFileUploadScreen() -> some View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         return SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
+            .addDismissClaimsFlow()
     }
 
     private func openCheckoutNoRepairScreen() -> some View {
@@ -418,7 +426,7 @@ public struct ClaimsNavigation: View {
                     }
                 }
             },
-            onCancel: { [weak store] in guard let store = store else { return }
+            onCancel: {
                 router.dismiss()
             },
             singleSelect: true,
