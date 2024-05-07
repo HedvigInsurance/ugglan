@@ -537,7 +537,8 @@ extension View {
     var resetProgressToPreviousValueOnDismiss: some View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let previousProgress = store.state.previousProgress
-        return self.onDisappear {
+        return self.onDeinit {
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             store.send(.setProgress(progress: previousProgress))
         }
     }
@@ -545,4 +546,28 @@ extension View {
 
 #Preview{
     ClaimsNavigation(origin: .generic)
+}
+
+extension View {
+    func onDeinit(_ execute: @escaping () -> Void) -> some View {
+        modifier(OnDeinit(execute: execute))
+    }
+}
+
+struct OnDeinit: ViewModifier {
+    @StateObject var vm = OnDeinitViewModel()
+    let execute: () -> Void
+    func body(content: Content) -> some View {
+        content.onAppear { [weak vm] in
+            vm?.execute = execute
+        }
+    }
+}
+
+class OnDeinitViewModel: ObservableObject {
+    var execute: (() -> Void)?
+
+    deinit {
+        execute?()
+    }
 }
