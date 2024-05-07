@@ -8,15 +8,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class ClaimsJourneyMainNavigationViewModel: ObservableObject {
-    @Published public var isClaimsFlowPresented = false
+private class ClaimsJourneyMainNavigationViewModel: ObservableObject {
+    @Published var isClaimsFlowPresented = false
 }
 
 public struct ClaimsJourneyMain: View {
     var from: ClaimsOrigin
     @StateObject var router = Router()
-    @StateObject var claimsNavigationVm = ClaimsJourneyMainNavigationViewModel()
-
+    @StateObject private var claimsNavigationVm = ClaimsJourneyMainNavigationViewModel()
+    @State var shouldHideHonestyPledge = false
     public var body: some View {
         RouterHost(router: router) {
             honestyPledge(from: from)
@@ -24,11 +24,20 @@ public struct ClaimsJourneyMain: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchClaims)
                 }
+                .hidden($shouldHideHonestyPledge)
         }
         .fullScreenCover(
             isPresented: $claimsNavigationVm.isClaimsFlowPresented
         ) {
             ClaimsNavigation(origin: from)
+                .onAppear {
+                    shouldHideHonestyPledge = true
+                }
+        }
+        .onChange(of: claimsNavigationVm.isClaimsFlowPresented) { presented in
+            if !presented {
+                router.dismiss()
+            }
         }
     }
 
@@ -38,6 +47,7 @@ public struct ClaimsJourneyMain: View {
             /* TODO: ADD PUSH NOTIFICATION */
         })
     }
+
 }
 
 //extension AppJourney {
