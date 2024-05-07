@@ -373,6 +373,31 @@ extension JourneyPresentation {
                 AppJourney.freeTextChat().withDismissButton
             }
         }
+        .onAction(TerminationContractStore.self) { action, pre in
+            if case let .navigationAction(navigationAction) = action {
+                if case let .openRedirectAction(redirectAction) = navigationAction {
+                    switch redirectAction {
+                    case .updateAddress:
+                        let vc = UIApplication.shared.getTopViewController()
+                        if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                UIApplication.shared.appDelegate.handleDeepLink(
+                                    deepLink,
+                                    fromVC: vc
+                                )
+                            }
+                        }
+                    }
+                } else if case let .openRedirectUrl(redirectUrl) = navigationAction {
+                    let vc = UIApplication.shared.getTopViewController()
+                    if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            AppJourney.openUrl(url: redirectUrl)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public var configureTravelCertificateNavigation: some JourneyPresentation {

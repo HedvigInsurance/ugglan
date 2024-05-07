@@ -61,6 +61,10 @@ public class TerminationFlowJourney {
                 openSetTerminationDateLandingScreen(config: config)
             } else if case let .openTerminationSurveyStep(options) = navigationAction {
                 openSurveyScreen(options: options)
+            } else if case .openRedirectAction = navigationAction {
+                DismissJourney()
+            } else if case .openRedirectUrl = navigationAction {
+                DismissJourney()
             }
         }
     }

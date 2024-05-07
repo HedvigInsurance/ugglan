@@ -38,14 +38,23 @@ public class TerminateContractsOctopus: TerminateContractsService {
                 subOptions: suboptions
             ),
             .init(
-                id: "optionId2",
-                title: "Option title 2",
-                suggestion: .action(
-                    action: .init(
-                        id: "actionId",
-                        action: .messageUs
+                id: "option44",
+                title: "Option with url",
+                suggestion: .redirect(
+                    redirect: .init(
+                        id: "idOfRedirect",
+                        url: "https://www.hedvig.com",
+                        description: "Description",
+                        buttonTitle: "Button title"
                     )
                 ),
+                feedBack: nil,
+                subOptions: nil
+            ),
+            .init(
+                id: "optionId2",
+                title: "Option title 2",
+                suggestion: nil,
                 feedBack: .init(
                     id: "feedbackId",
                     isRequired: true

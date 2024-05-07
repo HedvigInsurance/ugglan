@@ -6,6 +6,7 @@ import hCoreUI
 struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
     @Namespace var animationNamespace
+    @PresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {}
             .hFormTitle(
@@ -18,9 +19,10 @@ struct TerminationSurveyScreen: View {
                 subTitle: .init(
                     .small,
                     .title3,
-                    L10n.terminationFlowReason
+                    L10n.terminationSurveySubtitle
                 )
             )
+            .hFormIgnoreKeyboard()
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
@@ -44,12 +46,10 @@ struct TerminationSurveyScreen: View {
                                         if let feedBack = vm.allFeedBackViewModels[option.id],
                                             option.id == vm.selectedOption?.id
                                         {
-                                            ZStack {
-                                                TerminationFlowSurveyStepFeedBackView(
-                                                    vm: feedBack
-                                                )
-                                                .matchedGeometryEffect(id: "feedBack", in: animationNamespace)
-                                            }
+                                            TerminationFlowSurveyStepFeedBackView(
+                                                vm: feedBack
+                                            )
+                                            .matchedGeometryEffect(id: "feedBack", in: animationNamespace)
                                         }
                                     }
                                 }
@@ -73,12 +73,12 @@ struct TerminationSurveyScreen: View {
     func buildInfo(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
         case .action(let action):
-            InfoCard(text: "action", type: .campaign)
+            InfoCard(text: action.action.title, type: .campaign)
                 .buttons([
                     .init(
-                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
-                        buttonAction: {
-
+                        buttonTitle: action.action.buttonTitle,
+                        buttonAction: { [weak store] in
+                            store?.send(.navigationAction(action: .openRedirectAction(action: action.action)))
                         }
                     )
                 ])
@@ -87,8 +87,10 @@ struct TerminationSurveyScreen: View {
                 .buttons([
                     .init(
                         buttonTitle: redirect.buttonTitle,
-                        buttonAction: {
-
+                        buttonAction: { [weak store] in
+                            if let url = URL(string: redirect.url) {
+                                store?.send(.navigationAction(action: .openRedirectUrl(url: url)))
+                            }
                         }
                     )
                 ])
@@ -135,10 +137,8 @@ class SurveyScreenViewModel: ObservableObject {
             }
             return nil
         }()
-        print("SETTINGS")
         selectedFeedBackViewModelCancellable = selectedFeedBackViewModel?.$text
             .sink(receiveValue: { [weak self] value in
-                print(value)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self?.checkContinueButtonStatus()
                 }
@@ -173,6 +173,7 @@ class SurveyScreenViewModel: ObservableObject {
 }
 
 #Preview{
+    Localization.Locale.currentLocale = .en_SE
     let options = [
         TerminationFlowSurveyStepModelOption(
             id: "optionId",
@@ -227,21 +228,16 @@ class SurveyScreenViewModel: ObservableObject {
 struct TerminationFlowSurveyStepFeedBackView: View {
     @ObservedObject var vm: TerminationFlowSurveyStepFeedBackViewModel
     var body: some View {
-        ZStack {
-            hFreeTextInputField2(
-                selectedValue: vm.text,
-                placeholder: "Please let us know more...",
-                required: vm.required,
-                maxCharacters: 140
-            ) { text in
-                print("TEXT IS \(text)")
-                vm.error = vm.required && text.isEmpty ? "Please enter your feedback" : nil
-                vm.text = text
-            }
-            .hTextFieldError(vm.error)
+        hTextView(
+            selectedValue: vm.text,
+            placeholder: L10n.terminationSurveyFeedbackHint,
+            required: vm.required,
+            maxCharacters: 140
+        ) { text in
+            vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
+            vm.text = text
         }
-        .cornerRadius(12)
-        .frame(height: 128)
+        .hTextFieldError(vm.error)
     }
 }
 

@@ -39,6 +39,8 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openSelectInsuranceScreen(configs: [TerminationConfirmConfig])
     case openSetTerminationDateLandingScreen(with: TerminationConfirmConfig)
     case openTerminationSurveyStep(options: [TerminationFlowSurveyStepModelOption])
+    case openRedirectAction(action: FlowTerminationSurveyRedirectAction)
+    case openRedirectUrl(url: URL)
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {

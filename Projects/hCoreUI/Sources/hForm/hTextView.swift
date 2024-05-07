@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Hero
 import Presentation
 import SwiftUI
 import hCore
@@ -9,6 +10,7 @@ public struct hTextView: View {
     private let selectedValue: String
     private let required: Bool
     private let maxCharacters: Int
+    @State private var height: CGFloat = 50
     @Environment(\.hTextFieldError) var errorMessage
     @State private var value: String = ""
     @State private var disposeBag = DisposeBag()
@@ -28,46 +30,48 @@ public struct hTextView: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack(alignment: .leading, spacing: 8) {
-                hSection {
-                    VStack {
-                        SwiftUITextView(
-                            placeholder: placeholder,
-                            text: .constant(selectedValue),
-                            becomeFirstResponder: false,
-                            disabled: true
-                        )
-                        .padding(.horizontal, -2)
-                        .padding(.vertical, -2)
-                        hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
-                            .foregroundColor(getTextColor)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.horizontal, 16)
+        VStack(alignment: .leading, spacing: 4) {
+            ZStack(alignment: .topTrailing) {
+                ZStack {
+                    DummyView()
+                    hSection {
+                        VStack {
+                            SwiftUITextView(
+                                placeholder: placeholder,
+                                text: .constant(selectedValue),
+                                becomeFirstResponder: false,
+                                disabled: true,
+                                height: $height
+                            )
+                            .frame(height: height)
+                            hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
+                                .foregroundColor(getTextColor)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .padding(.horizontal, 16)
+                        }
+                        .padding(.bottom, 12)
                     }
-                    .padding([.horizontal], 16)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, -16)
+                    .sectionContainerStyle(.opaque)
                 }
-                .sectionContainerStyle(.opaque)
-                .padding(.horizontal, -16)
-                .padding(.vertical, -8)
-                if let errorMessage {
-                    hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hTextColor.secondary)
+                if errorMessage != nil {
+                    hCoreUIAssets.warningTriangleFilled.view
+                        .foregroundColor(hSignalColor.amberElement)
+                        .padding(.top, 12)
+                        .padding(.trailing, 16)
                 }
+                Rectangle()
+                    .fill(Color.white.opacity(0.000001))
+                    .onTapGesture {
+                        showFreeTextField()
+                    }
             }
-            .padding(.vertical, 12)
-            if errorMessage != nil {
-                hCoreUIAssets.warningTriangleFilled.view
-                    .foregroundColor(hSignalColor.amberElement)
-                    .padding(.top, 12)
-                    .padding(.trailing, 16)
+            if let errorMessage {
+                hText(errorMessage, style: .standardSmall).foregroundColor(hTextColor.secondary)
+                    .padding(.horizontal, 16)
             }
-            Rectangle().fill(Color.white.opacity(0.000001))
-                .onTapGesture {
-                    showFreeTextField()
-                }
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @hColorBuilder
@@ -98,6 +102,11 @@ public struct hTextView: View {
             style: .modally(presentationStyle: .overFullScreen),
             options: []
         )
+        .addHero
+        .addConfiguration { presenter in
+            presenter.viewController.view.hero.id = "heroId"
+            presenter.viewController.view.backgroundColor = .clear
+        }
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
@@ -119,13 +128,25 @@ public struct hTextView: View {
 }
 
 #Preview{
-    VStack(spacing: 4) {
-        hTextView(
-            selectedValue: "value",
-            placeholder: "placeholder",
-            required: true,
-            maxCharacters: 140
-        )
+    @State var valuee = ""
+    return VStack(spacing: 4) {
+        VStack {
+            hForm {}
+                .hFormAttachToBottom {
+                    hSection {
+                        hTextView(
+                            selectedValue: valuee,
+                            placeholder: "placeholder",
+                            required: true,
+                            maxCharacters: 140
+                        ) { value in
+                            valuee = value
+                        }
+                        Rectangle()
+                            .frame(height: 200)
+                    }
+                }
+        }
     }
 }
 
@@ -135,6 +156,7 @@ private struct FreeTextInputView: View {
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
+    @State private var height: CGFloat = 140
 
     public init(
         continueAction: ReferenceAction,
@@ -151,36 +173,46 @@ private struct FreeTextInputView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 16) {
-            hSection {
-                VStack {
-                    SwiftUITextView(
-                        placeholder: placeholder,
-                        text: $value,
-                        becomeFirstResponder: true,
-                        disabled: false
-                    )
-                    hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
-                        .foregroundColor(getTextColor)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+        ZStack {
+            hBackgroundColor.primary
+                .ignoresSafeArea()
+            VStack(spacing: 8) {
+                hSection {
+                    VStack {
+                        SwiftUITextView(
+                            placeholder: placeholder,
+                            text: $value,
+                            becomeFirstResponder: true,
+                            disabled: false,
+                            height: $height
+                        )
+                        hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
+                            .foregroundColor(getTextColor)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    .padding(.vertical, 12)
                 }
-                .padding([.horizontal], 16)
-                .padding(.vertical, 12)
+                hSection {
+                    HStack(spacing: 8) {
+                        hButton.MediumButton(type: .secondary) {
+                            cancelAction.execute()
+                        } content: {
+                            hText(L10n.generalCancelButton)
+                        }
+                        hButton.MediumButton(type: .primary) {
+                            //                            UIApplication.dismissKeyboard()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak continueAction] in
+                                continueAction?.execute()
+                            }
+                        } content: {
+                            hText(L10n.generalSaveButton)
+                        }
+                        .disabled(value.count > maxCharacters)
+                    }
+                    .padding(.bottom, 8)
+                }
+                .sectionContainerStyle(.transparent)
             }
-            HStack(spacing: 8) {
-                hButton.MediumButton(type: .primary) {
-                    continueAction.execute()
-                } content: {
-                    hText(L10n.generalSaveButton)
-                }
-                .disabled(value.count > maxCharacters)
-                hButton.MediumButton(type: .ghost) {
-                    cancelAction.execute()
-                } content: {
-                    hText(L10n.generalCancelButton)
-                }
-            }
-            .padding(.horizontal, 16)
         }
     }
 
@@ -194,26 +226,60 @@ private struct FreeTextInputView: View {
     }
 }
 
+private struct DummyView: UIViewRepresentable {
+    internal func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.hero.id = "heroId"
+        view.layer.cornerRadius = 12
+        return view
+    }
+
+    internal func updateUIView(_ uiView: UIView, context: Context) {
+        let schema = UITraitCollection.current.userInterfaceStyle
+        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(schema)!, .base).color.uiColor()
+    }
+}
+
 private struct SwiftUITextView: UIViewRepresentable {
     let placeholder: String
     @Binding var text: String
     let becomeFirstResponder: Bool
     let disabled: Bool
-    internal func makeUIView(context: Context) -> TextView {
+    @Binding var height: CGFloat
+    internal func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
         let textView = TextView(
             placeholder: placeholder,
             inputText: $text,
+            height: $height,
             becomeFirstResponder: becomeFirstResponder,
             disabled: disabled
         )
         textView.setText(text: text)
-        return textView
+        view.layer.cornerRadius = 12
+        view.addSubview(textView)
+        textView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalToSuperview().offset(12)
+            make.bottom.equalToSuperview()
+        }
+        textView.updateHeight()
+        return view
     }
 
-    internal func updateUIView(_ uiView: TextView, context: Context) {
-        if !uiView.isFirstResponder {
-            uiView.setText(text: text)
+    internal func updateUIView(_ uiView: UIView, context: Context) {
+        if let textView = uiView.subviews.first as? TextView {
+            if !textView.isFirstResponder {
+                textView.setText(text: text)
+            }
+            textView.updateHeight()
         }
+        let schema = UITraitCollection.current.userInterfaceStyle
+        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(schema)!, .base).color.uiColor()
+
     }
 }
 
@@ -221,22 +287,24 @@ private class TextView: UITextView, UITextViewDelegate {
     let placeholder: String
     @Binding var inputText: String
     let disabled: Bool
-
+    @Binding var height: CGFloat
     init(
         placeholder: String,
         inputText: Binding<String>,
+        height: Binding<CGFloat>,
         becomeFirstResponder: Bool,
         disabled: Bool
     ) {
         self.placeholder = placeholder
         self._inputText = inputText
         self.disabled = disabled
-
+        self._height = height
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
         self.delegate = self
         self.font = Fonts.fontFor(style: .standard)
-        self.backgroundColor = UIColor.clear
+        self.backgroundColor = .clear
+        self.layer.cornerRadius = 12
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         let doneButton = UIBarButtonItem(
             barButtonSystemItem: .done,
@@ -252,6 +320,7 @@ private class TextView: UITextView, UITextViewDelegate {
         if becomeFirstResponder {
             self.becomeFirstResponder()
         }
+        updateHeight()
     }
 
     @objc private func handleDoneButtonTap() {
@@ -273,11 +342,11 @@ private class TextView: UITextView, UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         inputText = textView.text
         self.textColor = getTextColor()
+        self.updateHeight()
     }
 
     func setText(text: String) {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let schema = UITraitCollection.current.userInterfaceStyle
         if text.isEmpty {
             self.text = placeholder
         } else {
@@ -295,12 +364,39 @@ private class TextView: UITextView, UITextViewDelegate {
         }
     }
 
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard text.rangeOfCharacter(from: CharacterSet.newlines) == nil else {
+            // textView.resignFirstResponder() // uncomment this to close the keyboard when return key is pressed
+            return false
+        }
+
+        return true
+    }
+
     private func getTextColor() -> UIColor {
         let schema = UITraitCollection.current.userInterfaceStyle
         if text.isEmpty || placeholder == text {
             return hTextColor.tertiary.colorFor(.init(schema)!, .base).color.uiColor()
         } else {
             return hTextColor.primary.colorFor(.init(schema)!, .base).color.uiColor()
+        }
+    }
+
+    func updateHeight() {
+        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+            withAnimation {
+                self.height = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height + 12
+            }
+        }
+    }
+}
+
+extension JourneyPresentation {
+    public var addHero: Self {
+        addConfiguration { presenter in
+            presenter.viewController.hero.isEnabled = true
+            //            presenter.viewController.hero.modalAnimationType = .pageOut(direction: .down)
+            //            presenter.viewController.hero.modalAnimationType = .uncover(direction: .down)
         }
     }
 }

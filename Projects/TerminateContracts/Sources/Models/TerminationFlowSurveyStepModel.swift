@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 public struct TerminationFlowSurveyStepModel: FlowStepModel {
     let id: String
@@ -18,14 +19,27 @@ enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
     case redirect(redirect: TerminationFlowSurveyStepSuggestionRedirection)
 }
 
-struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
+public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
     let id: String
-    let action: FlowTerminationSurveyRedirectAction
+    public let action: FlowTerminationSurveyRedirectAction
 }
 
-enum FlowTerminationSurveyRedirectAction: FlowStepModel {
+public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
     case updateAddress
-    case messageUs
+
+    var title: String {
+        switch self {
+        case .updateAddress:
+            return L10n.terminationSurveyMovingSuggestion
+        }
+    }
+
+    var buttonTitle: String {
+        switch self {
+        case .updateAddress:
+            return L10n.terminationSurveyMovingButton
+        }
+    }
 }
 
 struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
