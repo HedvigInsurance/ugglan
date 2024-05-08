@@ -69,29 +69,6 @@ struct AskForPushnotifications: View {
     }
 }
 
-extension AskForPushnotifications {
-    static func journey(for origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: AskForPushnotifications(
-                text: L10n.claimsActivateNotificationsBody,
-                onActionExecuted: {
-                    let vc = UIApplication.shared.getTopViewController()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                        vc?.sheetPresentationController?.detents = [.medium()]
-                    }
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    //                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-                }
-            ),
-            style: .detented(.large, modally: false, bgColor: nil)
-        ) { action in
-            DismissJourney()
-        }
-        .hidesBackButton
-    }
-}
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
         AskForPushnotifications(text: "TEXT") {

@@ -16,7 +16,7 @@ public struct SetupTypeNavigationModel: Equatable, Identifiable {
 
 public struct PaymentsNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: PaymentsRedirectType) -> Content
-    @StateObject var router = Router()
+    @EnvironmentObject var router: Router
     @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
 
     public init(

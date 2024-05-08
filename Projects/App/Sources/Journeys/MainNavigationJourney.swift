@@ -35,6 +35,8 @@ struct MainNavigationJourney: App {
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
     @StateObject var profileNavigationVm = ProfileNavigationViewModel()
     @StateObject var router = Router()
+    @StateObject var foreverRouter = Router()
+    @StateObject var paymentsRouter = Router()
     var body: some Scene {
         WindowGroup {
             if vm.hasLaunchFinished {
@@ -260,7 +262,8 @@ struct MainNavigationJourney: App {
     }
 
     var foreverTab: some View {
-        ForeverNavigation()
+        ForeverNavigation(useOwnNavigation: true)
+            .environmentObject(foreverRouter)
             .tabItem {
                 Image(
                     uiImage: vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image
@@ -274,10 +277,8 @@ struct MainNavigationJourney: App {
         PaymentsNavigation(redirect: { redirectType in
             switch redirectType {
             case .forever:
-                foreverTab
-                    .onAppear {
-                        vm.selectedTab = 2
-                    }
+                ForeverNavigation(useOwnNavigation: false)
+                    .toolbar(.hidden, for: .tabBar)
             case let .openUrl(url):
                 EmptyView()
                     .onAppear {
@@ -285,6 +286,7 @@ struct MainNavigationJourney: App {
                     }
             }
         })
+        .environmentObject(paymentsRouter)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 3
