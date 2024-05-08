@@ -69,45 +69,6 @@ struct AskForPushnotifications: View {
     }
 }
 
-extension AskForPushnotifications {
-    static func journey(for origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: AskForPushnotifications(
-                text: L10n.claimsActivateNotificationsBody,
-                onActionExecuted: {
-                    let vc = UIApplication.shared.getTopViewController()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                        vc?.sheetPresentationController?.detents = [.medium()]
-                    }
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-                }
-            ),
-            style: .detented(.large, modally: false, bgColor: nil)
-        ) { action in
-            if case let .navigationAction(navigationAction) = action {
-                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                    //                        .onAction(SubmitClaimStore.self) { action in
-                    //                            if case .dissmissNewClaimFlow = action {
-                    //                                DismissJourney()
-                    //                            }
-                    //                        }
-                    DismissJourney()
-                } else if case .openTriagingGroupScreen = navigationAction {
-                    //                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                    DismissJourney()
-                }
-            } else {
-                //                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
-                DismissJourney()
-            }
-        }
-        .hidesBackButton
-    }
-}
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
         AskForPushnotifications(text: "TEXT") {
