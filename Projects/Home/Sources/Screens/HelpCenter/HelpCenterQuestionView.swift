@@ -34,7 +34,6 @@ struct HelpCenterQuestionView: View {
                                     linkColor: hTextColor.primary,
                                     linkUnderlineStyle: .single
                                 ) { url in
-                                    //                                    store.send(.goToURL(url: url))
                                 }
                             )
                         }

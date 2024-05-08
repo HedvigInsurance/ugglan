@@ -216,65 +216,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UIApplication.shared.registerForRemoteNotifications()
 
-        //        let (launchView, launchFuture) = Launch.shared.materialize()
-        //        window.rootView.addSubview(launchView)
-        //        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
-        //        forceLogoutHook = {
-        //            if ApplicationState.currentState != .notLoggedIn {
-        //                DispatchQueue.main.async {
-        //                    launchView.removeFromSuperview()
-        //                    ApplicationState.preserveState(.notLoggedIn)
-        //
-        //                    ApplicationContext.shared.hasFinishedBootstrapping = true
-        ////                    Launch.shared.completeAnimationCallbacker.callAll()
-        //
-        //                    UIApplication.shared.appDelegate.logout()
-        //                    let toast = Toast(
-        //                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
-        //                        body: L10n.forceLogoutMessageTitle,
-        //                        textColor: .brand(.secondaryText),
-        //                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
-        //                        symbolColor: .brand(.secondaryText)
-        //                    )
-        //                    Toasts.shared.displayToast(toast: toast)
-        //                }
-        //            }
-        //        }
-
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
-
-        //        launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
-
-        //        bag += launchFuture.valueSignal.onValue { _ in
-        //            launchView.removeFromSuperview()
-        //            ApplicationContext.shared.hasFinishedBootstrapping = true
-        //
-        //            if Environment.hasOverridenDefault {
-        //                let toast = Toast(
-        //                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
-        //                    body: "Targeting \(Environment.current.displayName) environment",
-        //                    textColor: .black,
-        //                    backgroundColor: .brand(.caution)
-        //                )
-        //
-        //                self.bag += toast.onTap.onValue {
-        //                    self.window.rootViewController?
-        //                        .present(
-        //                            UIHostingController(rootView: Debug()),
-        //                            style: .detented(.medium, .large),
-        //                            options: []
-        //                        )
-        //                }
-        //
-        //                Toasts.shared.displayToast(toast: toast)
-        //            }
-        //        }
-
         let store: UgglanStore = globalPresentableStoreContainer.get()
         setupExperiments()
         observeNotificationsSettings()
@@ -284,7 +231,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setupExperiments() {
         self.setupFeatureFlags(onComplete: { success in
             DispatchQueue.main.async {
-                //                self.bag += self.window.present(AppJourney.main)
             }
         })
     }
