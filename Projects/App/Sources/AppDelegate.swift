@@ -264,32 +264,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
-
-        //        bag += launchFuture.valueSignal.onValue { _ in
-        //            launchView.removeFromSuperview()
-        //            ApplicationContext.shared.hasFinishedBootstrapping = true
-        //
-        //            if Environment.hasOverridenDefault {
-        //                let toast = Toast(
-        //                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
-        //                    body: "Targeting \(Environment.current.displayName) environment",
-        //                    textColor: .black,
-        //                    backgroundColor: .brand(.caution)
-        //                )
-        //
-        //                self.bag += toast.onTap.onValue {
-        //                    self.window.rootViewController?
-        //                        .present(
-        //                            UIHostingController(rootView: Debug()),
-        //                            style: .detented(.medium, .large),
-        //                            options: []
-        //                        )
-        //                }
-        //
-        //                Toasts.shared.displayToast(toast: toast)
-        //            }
-        //        }
-
         let store: UgglanStore = globalPresentableStoreContainer.get()
         observeNotificationsSettings()
         return true

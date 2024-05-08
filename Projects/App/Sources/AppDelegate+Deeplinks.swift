@@ -83,10 +83,7 @@ extension AppDelegate {
         } else if path == .payments {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { [weak self] _ in
-                    self?.deepLinkDisposeBag.dispose()
-                    let vc = PaymentsView().detentJourney(schema: Bundle.main.urlScheme ?? "")
-                    let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+                    /* TODO: Add deep link for payments */
                 }
         } else if path == .travelCertificate {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
@@ -126,11 +123,8 @@ extension AppDelegate {
 
         } else if path == .openChat {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { [weak self] _ in
-                    self?.deepLinkDisposeBag.dispose()
-                    let vc = AppJourney.freeTextChat().withDismissButton
-                    let disposeBag = DisposeBag()
-                    disposeBag += fromVC.present(vc)
+                .onValue { _ in
+                    /* TODO: Add deep link for chat */
                 }
         } else {
             deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
