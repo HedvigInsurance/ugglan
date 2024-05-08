@@ -267,7 +267,8 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
                                 prefferedCurrency: "sek",
                                 currencyCode: "SEK",
                                 selectedItemModel: "testModel",
-                                defaultItemProblems: []
+                                defaultItemProblems: [],
+                                purchasePriceApplicable: false
                             )
                         )
                     )
@@ -330,7 +331,8 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
                                 prefferedCurrency: "sek",
                                 currencyCode: "SEK",
                                 selectedItemModel: "testModel",
-                                defaultItemProblems: []
+                                defaultItemProblems: [],
+                                purchasePriceApplicable: false
                             )
                         )
                     )

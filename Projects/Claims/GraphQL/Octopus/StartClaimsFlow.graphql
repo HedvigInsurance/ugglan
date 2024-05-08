@@ -182,6 +182,7 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
         itemModelId
     }
     customName
+    purchasePriceApplicable
 }
 
 fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {

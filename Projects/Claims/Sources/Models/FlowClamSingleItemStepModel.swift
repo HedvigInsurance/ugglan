@@ -17,6 +17,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     var selectedItemModel: String?
     var selectedItemProblems: [String]?
     let defaultItemProblems: [String]?
+    let purchasePriceApplicable: Bool
 
     init(
         id: String,
@@ -31,7 +32,8 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         selectedItemBrand: String? = nil,
         selectedItemModel: String? = nil,
         selectedItemProblems: [String]? = nil,
-        defaultItemProblems: [String]?
+        defaultItemProblems: [String]?,
+        purchasePriceApplicable: Bool
     ) {
         self.id = id
         self.availableItemBrandOptions = availableItemBrandOptions
@@ -46,6 +48,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.selectedItemModel = selectedItemModel
         self.selectedItemProblems = selectedItemProblems
         self.defaultItemProblems = defaultItemProblems
+        self.purchasePriceApplicable = purchasePriceApplicable
     }
 
     init(
@@ -65,6 +68,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.currencyCode = data.purchasePrice?.currencyCode.rawValue
         self.selectedItemBrand = data.selectedItemBrand
         self.selectedItemModel = data.selectedItemModel
+        self.purchasePriceApplicable = data.purchasePriceApplicable
 
         if self.selectedItemModel == nil && self.customName == nil {
             let currentDeviceName = UIDevice.modelName.lowercased()
