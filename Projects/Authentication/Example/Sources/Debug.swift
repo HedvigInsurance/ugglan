@@ -36,29 +36,3 @@ struct Debug: View {
         }
     }
 }
-
-extension Debug {
-    static var journey: some JourneyPresentation {
-        HostingJourney(
-            DebugStore.self,
-            rootView: Debug()
-        ) { action in
-            if action == .openOTPEmailEntry {
-                OTPEmailEntry()
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-            } else if action == .openOTPCodeEntry {
-                OTPCodeEntry()
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-            } else if action == .openOTPJourney {
-                OTPAuthJourney.login { _ in
-                    HostingJourney(rootView: hText("Login success")).withJourneyDismissButton
-                }
-                .setStyle(.detented(.large))
-                .mapJourneyDismissToCancel
-            }
-        }
-        .configureTitle("Authentication")
-    }
-}
