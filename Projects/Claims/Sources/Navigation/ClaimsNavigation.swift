@@ -364,10 +364,12 @@ public struct ClaimsNavigation: View {
                 return []
             },
             onSelected: { selectedLocation in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 if let object = selectedLocation.first?.0 {
-                    store.send(.setNewLocation(location: object))
                     claimsNavigationVm.isLocationPickerPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(.setNewLocation(location: object))
+                    }
                 }
             },
             onCancel: {
@@ -419,7 +421,6 @@ public struct ClaimsNavigation: View {
                 return []
             },
             onSelected: { selectedDamages in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 var damages: [String] = []
 
                 for damage in selectedDamages {
@@ -427,12 +428,15 @@ public struct ClaimsNavigation: View {
                         damages.append(object.itemProblemId)
                     }
                 }
-                store.send(
-                    .submitDamage(
-                        damage: damages
-                    )
-                )
                 claimsNavigationVm.isDamagePickerPresented = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(
+                        .submitDamage(
+                            damage: damages
+                        )
+                    )
+                }
             },
             onCancel: {
                 router.dismiss()

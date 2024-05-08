@@ -5,8 +5,6 @@ import hCore
 import hCoreUI
 
 extension View {
-
-    /* TODO: MAKE THIS WORK */
     public var addClaimsProgressBar: some View {
         self.introspectViewController { vc in
             let progressViewTag = "navigationProgressBar".hashValue
