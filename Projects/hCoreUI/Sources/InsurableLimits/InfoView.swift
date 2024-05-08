@@ -159,12 +159,12 @@ private class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }
 
-extension InfoView {
-    public var journey: some JourneyPresentation {
-        HostingJourney(
-            rootView: self,
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
-        )
-    }
-}
+//extension InfoView {
+//    public var journey: some JourneyPresentation {
+//        HostingJourney(
+//            rootView: self,
+//            style: .detented(.scrollViewContentSize),
+//            options: [.blurredBackground]
+//        )
+//    }
+//}

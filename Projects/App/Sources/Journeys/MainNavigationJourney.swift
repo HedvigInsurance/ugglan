@@ -201,9 +201,8 @@ struct MainNavigationJourney: App {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatScreen(vm: .init(topicType: openChat.topic))
-                    .navigationTitle(L10n.chatTitle)
-                    .embededInNavigation()
+                let options = homeNavigationVm.openChatOptions
+                ChatNavigation(openChat: openChat)
             }
         )
         .tabItem {

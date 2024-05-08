@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import WebKit
 import hCore
@@ -37,11 +36,5 @@ public struct DocumentPreview: UIViewRepresentable {
             webView.load(request)
 
         }
-    }
-}
-
-extension DocumentPreview {
-    public var journey: some JourneyPresentation {
-        return HostingJourney(rootView: self, style: .detented(.large)).withDismissButton
     }
 }

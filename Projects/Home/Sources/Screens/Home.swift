@@ -18,10 +18,10 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
             if let topicWrapper = notification.object as? ChatTopicWrapper {
-                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop] : []
+                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
                 self?.openChat = topicWrapper
             } else {
-                self?.openChatOptions = [.alwaysOpenOnTop]
+                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
                 self?.openChat = .init(topic: nil, onTop: false)
             }
         }

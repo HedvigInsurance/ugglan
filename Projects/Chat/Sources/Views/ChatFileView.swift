@@ -6,6 +6,8 @@ import hCoreUI
 
 struct ChatFileView: View {
     let file: File
+    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+
     init(file: File) {
         self.file = file
     }
@@ -62,17 +64,12 @@ struct ChatFileView: View {
     }
 
     func showFile() {
-        //        let disposeBag = DisposeBag()
-        //        if let topVC = UIApplication.shared.getTopViewController() {
-        //            switch file.source {
-        //            case let .localFile(url, _):
-        //                let preview = DocumentPreview(url: url)
-        //                disposeBag += topVC.present(preview.journey)
-        //            case .url(let url):
-        //                let preview = DocumentPreview(url: url)
-        //                disposeBag += topVC.present(preview.journey)
-        //            }
-        //        }
+        switch file.source {
+        case let .localFile(url, _):
+            chatNavigationVm.isFilePresented = .init(url: url)
+        case .url(let url):
+            chatNavigationVm.isFilePresented = .init(url: url)
+        }
     }
 
     private func getSource() -> Kingfisher.Source {
