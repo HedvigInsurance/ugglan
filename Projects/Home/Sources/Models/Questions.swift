@@ -284,7 +284,7 @@ enum CoverageQuestions {
         return .init(
             question: L10n.hcCoverageQ09,
             questionEn: L10n.hcCoverageQ09_en,
-            answer: L10n.hcCoverageA09(0),
+            answer: L10n.hcCoverageA09,
             topicType: .coverage
         )
     }
@@ -308,7 +308,7 @@ enum CoverageQuestions {
         return .init(
             question: L10n.hcCoverageQ12,
             questionEn: L10n.hcCoverageQ12_en,
-            answer: L10n.hcCoverageA12(0),
+            answer: L10n.hcCoverageA12,
             topicType: .coverage
         )
     }
