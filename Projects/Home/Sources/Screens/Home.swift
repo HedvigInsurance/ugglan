@@ -27,6 +27,7 @@ public class HomeNavigationViewModel: ObservableObject {
         }
     }
 
+    @Published public var isFilePresented: FileUrlModel?
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
     @Published public var isMissingEditCoInsuredAlertPresented: InsuredPeopleConfig?
@@ -48,6 +49,17 @@ public class HomeNavigationViewModel: ObservableObject {
     public struct NavBarItems {
         public var isFirstVetPresented = false
         public var isNewOfferPresented = false
+    }
+
+    public struct FileUrlModel: Identifiable {
+        public var id: String?
+        public var url: URL
+
+        public init(
+            url: URL
+        ) {
+            self.url = url
+        }
     }
 
     deinit {
