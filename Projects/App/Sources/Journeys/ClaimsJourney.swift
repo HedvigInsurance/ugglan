@@ -50,34 +50,6 @@ public struct ClaimsJourneyMain: View {
 
 }
 
-//extension AppJourney {
-////    static func claimDetailJourney(claim: ClaimModel) -> some JourneyPresentation {
-////        HostingJourney(
-////            ClaimsStore.self,
-////            rootView: ClaimDetailView(claim: claim)
-////        ) { action in
-////            if case .closeClaimStatus = action {
-////                PopJourney()
-////            } else if case let .navigation(navAction) = action {
-////                if case let .openFilesFor(claim, files) = navAction {
-////                    openFilesFor(claim: claim, files: files)
-////                }
-////            }
-////        }
-////        .hidesBottomBarWhenPushed
-////    }
-//
-//    func startClaimsNavigation(from origin: ClaimsOrigin) -> some View {
-//        honestyPledge(from: origin)
-//    }
-//
-////    func honestyPledge(from origin: ClaimsOrigin) -> some View {
-////        HonestyPledge(onConfirmAction: {
-////
-////        })
-////    }
-//}
-
 extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
