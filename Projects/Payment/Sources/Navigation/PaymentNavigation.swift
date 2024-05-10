@@ -4,12 +4,22 @@ import hCore
 import hCoreUI
 
 public class PaymentsNavigationViewModel: ObservableObject {
+
+    public init() {}
+
     @Published public var isAddCampaignPresented = false
     @Published public var isConnectPaymentPresented: SetupTypeNavigationModel?
     @Published public var isDeleteCampaignPresented: Discount?
 }
 
 public struct SetupTypeNavigationModel: Equatable, Identifiable {
+
+    public init(
+        setUpType: SetupType?
+    ) {
+        self.setUpType = setUpType
+    }
+
     public var id: String?
     var setUpType: SetupType?
 }
@@ -17,11 +27,13 @@ public struct SetupTypeNavigationModel: Equatable, Identifiable {
 public struct PaymentsNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: PaymentsRedirectType) -> Content
     @EnvironmentObject var router: Router
-    @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
+    @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
 
     public init(
+        paymentsNavigationVm: PaymentsNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: PaymentsRedirectType) -> Content
     ) {
+        self.paymentsNavigationVm = paymentsNavigationVm
         self.redirect = redirect
     }
 
@@ -100,6 +112,7 @@ public struct PaymentsNavigation<Content: View>: View {
                         setupTypeModel.setUpType == .replacement
                             ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
                     )
+                    .embededInNavigation(options: .navigationType(type: .large))
             }
 
         }
@@ -118,5 +131,5 @@ public enum PaymentsRedirectType: Hashable {
 }
 
 #Preview{
-    PaymentsNavigation(redirect: { redirectType in })
+    PaymentsNavigation(paymentsNavigationVm: .init(), redirect: { redirectType in })
 }
