@@ -14,7 +14,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case submitAudioRecording(type: SubmitAudioRecordingType)
     case resetAudioRecording
-    case submitDamage(damage: [String])
 
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
