@@ -31,6 +31,11 @@ extension UIApplication {
             }
         } else if let topVC = topVC as? UINavigationController {
             return topVC
+        } else if let topVC = topVC,
+            let navigationChildren = topVC.children.first(where: { $0 as? UINavigationController != nil })
+                as? UINavigationController
+        {
+            return navigationChildren
         }
         return nil
     }
