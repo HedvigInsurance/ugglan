@@ -62,7 +62,7 @@ public struct hFreeTextInputField: View {
             style: .detented(.scrollViewContentSize),
             options: [.largeNavigationBar, .blurredBackground]
         )
-        .configureTitle(placeholder)
+        //        .configureTitle(placeholder)
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
