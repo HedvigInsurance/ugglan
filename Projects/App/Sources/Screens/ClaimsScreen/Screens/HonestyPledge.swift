@@ -183,6 +183,7 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
+    @EnvironmentObject var router: Router
     let onConfirmAction: (() -> Void)?
 
     init(
@@ -210,8 +211,7 @@ struct HonestyPledge: View {
                 .padding(.bottom, 20)
 
                 hButton.LargeButton(type: .ghost) {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.dissmissNewClaimFlow)
+                    router.dismiss()
                 } content: {
                     L10n.generalCancelButton.hText(.body)
                         .foregroundColor(hTextColor.primary)
