@@ -33,7 +33,7 @@ public struct hTextView: View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topTrailing) {
                 ZStack {
-                    DummyView()
+                    HeroAnimationStartView()
                     hSection {
                         VStack {
                             SwiftUITextView(
@@ -44,7 +44,7 @@ public struct hTextView: View {
                                 height: $height
                             )
                             .frame(height: height)
-                            hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
+                            hText("\(selectedValue.count)/\(maxCharacters)", style: .standardSmall)
                                 .foregroundColor(getTextColor)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .padding(.horizontal, 16)
@@ -76,7 +76,7 @@ public struct hTextView: View {
 
     @hColorBuilder
     var getTextColor: some hColor {
-        if value.count < 140 {
+        if selectedValue.count < 140 {
             hTextColor.tertiary
         } else {
             hSignalColor.redElement
@@ -89,28 +89,29 @@ public struct hTextView: View {
 
         value = selectedValue
 
-        let view = FreeTextInputView(
-            continueAction: continueAction,
-            cancelAction: cancelAction,
-            value: $value,
-            placeholder: placeholder,
-            maxCharacters: 140
-        )
+        let view = HeroAnimationDestinationView {
+            FreeTextInputView(
+                continueAction: continueAction,
+                cancelAction: cancelAction,
+                value: $value,
+                placeholder: placeholder,
+                maxCharacters: maxCharacters
+            )
+        }
 
         let journey = HostingJourney(
             rootView: view,
             style: .modally(presentationStyle: .overFullScreen),
             options: []
+
         )
-        .addHero
+        .enableHero
         .addConfiguration { presenter in
-            presenter.viewController.view.hero.id = "heroId"
             presenter.viewController.view.backgroundColor = .clear
         }
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
-                print("VALUE IS \(value)")
                 self.value = value
                 self.onContinue(value)
                 presenter.dismisser(JourneyError.cancelled)
@@ -124,7 +125,6 @@ public struct hTextView: View {
             disposeBag += vc.present(freeTextFieldJourney)
         }
     }
-
 }
 
 #Preview{
@@ -142,8 +142,6 @@ public struct hTextView: View {
                         ) { value in
                             valuee = value
                         }
-                        Rectangle()
-                            .frame(height: 200)
                     }
                 }
         }
@@ -156,8 +154,8 @@ private struct FreeTextInputView: View {
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
-    @State private var height: CGFloat = 140
-
+    @State private var height: CGFloat = 0
+    @State var showButtons = false
     public init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
@@ -174,8 +172,7 @@ private struct FreeTextInputView: View {
 
     public var body: some View {
         ZStack {
-            hBackgroundColor.primary
-                .ignoresSafeArea()
+            BackgroundView().ignoresSafeArea()
             VStack(spacing: 8) {
                 hSection {
                     VStack {
@@ -189,29 +186,39 @@ private struct FreeTextInputView: View {
                         hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
                             .foregroundColor(getTextColor)
                             .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.horizontal, 16)
                     }
                     .padding(.vertical, 12)
                 }
-                hSection {
-                    HStack(spacing: 8) {
-                        hButton.MediumButton(type: .secondary) {
-                            cancelAction.execute()
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
-                        hButton.MediumButton(type: .primary) {
-                            //                            UIApplication.dismissKeyboard()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak continueAction] in
-                                continueAction?.execute()
+                if showButtons {
+                    VStack(spacing: 0) {
+                        hSection {
+                            HStack(spacing: 8) {
+                                hButton.MediumButton(type: .secondary) {
+                                    cancelAction.execute()
+                                } content: {
+                                    hText(L10n.generalCancelButton)
+                                }
+                                hButton.MediumButton(type: .primary) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak continueAction] in
+                                        continueAction?.execute()
+                                    }
+                                } content: {
+                                    hText(L10n.generalSaveButton)
+                                }
+                                .disabled(value.count > maxCharacters)
                             }
-                        } content: {
-                            hText(L10n.generalSaveButton)
+                            .padding(.bottom, 8)
                         }
-                        .disabled(value.count > maxCharacters)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom))
                 }
-                .sectionContainerStyle(.transparent)
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.4).delay(0.4)) {
+                self.showButtons = true
             }
         }
     }
@@ -223,21 +230,6 @@ private struct FreeTextInputView: View {
         } else {
             hSignalColor.redElement
         }
-    }
-}
-
-private struct DummyView: UIViewRepresentable {
-    internal func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.hero.id = "heroId"
-        view.layer.cornerRadius = 12
-        return view
-    }
-
-    internal func updateUIView(_ uiView: UIView, context: Context) {
-        let schema = UITraitCollection.current.userInterfaceStyle
-        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(schema)!, .base).color.uiColor()
     }
 }
 
@@ -318,7 +310,9 @@ private class TextView: UITextView, UITextViewDelegate {
         self.setText(text: inputText.wrappedValue)
         self.isUserInteractionEnabled = !disabled
         if becomeFirstResponder {
+            //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {[weak self] in
             self.becomeFirstResponder()
+            //            }
         }
         updateHeight()
     }
@@ -333,7 +327,7 @@ private class TextView: UITextView, UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if textView.text == placeholder {
+        if text == placeholder {
             textView.text = nil
             textView.textColor = getTextColor()
         }
@@ -366,7 +360,7 @@ private class TextView: UITextView, UITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard text.rangeOfCharacter(from: CharacterSet.newlines) == nil else {
-            // textView.resignFirstResponder() // uncomment this to close the keyboard when return key is pressed
+            textView.resignFirstResponder()
             return false
         }
 
@@ -387,16 +381,6 @@ private class TextView: UITextView, UITextViewDelegate {
             withAnimation {
                 self.height = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height + 12
             }
-        }
-    }
-}
-
-extension JourneyPresentation {
-    public var addHero: Self {
-        addConfiguration { presenter in
-            presenter.viewController.hero.isEnabled = true
-            //            presenter.viewController.hero.modalAnimationType = .pageOut(direction: .down)
-            //            presenter.viewController.hero.modalAnimationType = .uncover(direction: .down)
         }
     }
 }
