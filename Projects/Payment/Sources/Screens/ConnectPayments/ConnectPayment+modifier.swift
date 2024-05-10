@@ -1,5 +1,6 @@
 import SwiftUI
 import hCore
+import hCoreUI
 
 extension View {
     public func handleConnectPayment(with vm: ConnectPaymentViewModel) -> some View {
@@ -9,6 +10,8 @@ extension View {
 
 struct ConnectPayment: ViewModifier {
     @ObservedObject var vm: ConnectPaymentViewModel
+    @EnvironmentObject var router: Router
+
     func body(content: Content) -> some View {
         content
             .detent(item: $vm.connectPaymentModel, style: .large) { setupTypeModel in
@@ -21,8 +24,7 @@ struct ConnectPayment: ViewModifier {
                                 let paymentServcice: AdyenService = Dependencies.shared.resolve()
                                 do {
                                     let url = try await paymentServcice.getAdyenUrl()
-                                    //router.push(PaymentsRouterAction.openUrl(url: url))
-                                    // TODO: OPEN URL
+                                    router.push(PaymentsRouterAction.openUrl(url: url))
                                 } catch {
                                     //we are not so concern about this
                                 }
